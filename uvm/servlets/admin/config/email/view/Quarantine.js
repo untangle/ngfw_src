@@ -81,7 +81,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
             flex: 1,
 
             viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
             },
             selModel: {
                 selType: 'checkboxmodel'
@@ -125,6 +125,14 @@ Ext.define('Ung.config.email.view.Quarantine', {
                 width: 185,
                 align: 'right',
                 dataIndex: 'totalSz'
+            }, {
+                xtype: 'actioncolumn',
+                width: 80,
+                menuDisabled: true,
+                align: 'center',
+                header: 'Show Detail'.t(),
+                iconCls: 'fa fa-envelope',
+                handler: 'showQuarantineDetails'
             }]
         }]
     }, {
