@@ -295,7 +295,7 @@ Ext.define('Ung.widget.WidgetController', {
         var me = this;
         if (me.getView().getXType() === 'networklayoutwidget') {
             // get devices
-            Rpc.asyncData('rpc.deviceTable.getDevices')
+            Rpc.asyncData('rpc.hostTable.getHosts')
                 .then(function (result) {
                     // reset the number of devices
                     Ext.Array.each(me.getView().query('interfaceitem'), function (intfCmp) {
