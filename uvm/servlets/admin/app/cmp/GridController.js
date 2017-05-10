@@ -132,16 +132,13 @@ Ext.define('Ung.cmp.GridController', {
                     valueRenderer.push(Util.weekdaysMap[day]);
                 });
                 break;
-            // case 'CLIENT_COUNTRY':
-            // case 'SERVER_COUNTRY':
-            // case 'REMOTE_HOST_COUNTRY':
-            //     conds[i].value.toString().split(',').forEach(function (code) {
-            //         var country = Ext.getStore('countries').findRecord('code', code);
-            //         valueRenderer.push(country ? country.get('name') : code);
-            //     });
-            //     break;
             default:
-                valueRenderer = conds[i].value.toString().split(',');
+                // to avoid exceptions, in some situations condition value is null
+                if (conds[i].value !== null) {
+                    valueRenderer = conds[i].value.toString().split(',');
+                } else {
+                    valueRenderer = [];
+                }
             }
             resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
         }
