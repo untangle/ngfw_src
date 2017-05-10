@@ -18,22 +18,6 @@ Ext.define('Ung.view.extra.UsersController', {
         view.destroy();
     },
 
-    setAutoRefresh: function (btn) {
-        var me = this,
-            vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
-
-        if (btn.pressed) {
-            me.getUsers();
-            this.refreshInterval = setInterval(function () {
-                me.getUsers();
-            }, 5000);
-        } else {
-            clearInterval(this.refreshInterval);
-        }
-
-    },
-
     resetView: function( btn ){
         var grid = this.getView().down('#usersgrid');
         Ext.state.Manager.clear(grid.stateId);
