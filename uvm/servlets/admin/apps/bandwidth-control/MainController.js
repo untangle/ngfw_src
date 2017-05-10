@@ -22,7 +22,6 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
             vm.set({
                 settings: result,
                 isConfigured: result.configured,
-                // to fix qos retreival
                 qosEnabled: rpc.networkManager.getNetworkSettings().qosSettings.qosEnabled
             });
             if (cb) { cb(result.configured); }
@@ -66,7 +65,7 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
                 // when wizard is finished, reload settings and try to start the app
                 finish: function () {
                     me.getSettings(function (configured) {
-                        if (configured) {
+                        if (configured && me.getView().appManager.getRunState() !== 'RUNNING') {
                             me.getView().down('appstate > button').click();
                         }
                     });
