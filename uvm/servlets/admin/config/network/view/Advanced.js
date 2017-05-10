@@ -411,10 +411,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     columnLines: true,
                     enableColumnHide: false,
 
-                    store: {
-                        data: [] // todo: to set data
-                    },
-
+                    bind: '{qosStatistics}',
 
                     viewConfig: {
                         emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
@@ -429,10 +426,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     columns: [{
                         header: 'Interface'.t(),
                         width: 150,
-                        dataIndex: 'interface_name',
-                        renderer: function (value) {
-                            return value.t();
-                        }
+                        dataIndex: 'interface_name'
                     }, {
                         header: 'Priority'.t(),
                         dataIndex: 'priority',
