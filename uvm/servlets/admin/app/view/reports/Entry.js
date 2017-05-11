@@ -792,12 +792,13 @@ Ext.define('Ung.view.reports.Entry', {
                 }]
             }],
             bbar: ['->', {
-                text: 'Remove'.t(),
+                text: 'Delete'.t(),
                 iconCls: 'fa fa-minus-circle',
                 disabled: true,
                 bind: {
                     disabled: '{entry.readOnly}'
-                }
+                },
+                handler: 'removeReport'
             }, {
                 text: 'Save'.t(),
                 iconCls: 'fa fa-save',
