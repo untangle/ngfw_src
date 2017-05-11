@@ -48,5 +48,46 @@ Ext.define('Ung.view.extra.HostsController', {
                 Ext.getStore('hosts').loadData(result.list);
                 grid.getSelectionModel().select(0);
             });
+    },
+
+    megaByteRenderer: function(bytes) {
+        var units = ['bytes','Kbytes','Mbytes','Gbytes'];
+        var units_itr = 0;
+
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+
+        bytes = Math.round(bytes*100)/100;
+
+        return '' + bytes + ' ' + units[units_itr];
+    },
+
+    refillQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Refilling...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.hostTable.refillQuota', record.get('address'))
+            .then(function () {
+                me.getHosts();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
+    },
+
+    dropQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Removing Quota...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.hostTable.removeQuota', record.get('address'))
+            .then(function () {
+                me.getHosts();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
     }
+
 });
