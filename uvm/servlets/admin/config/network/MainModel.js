@@ -52,7 +52,8 @@ Ext.define('Ung.config.network.MainModel', {
         upnpStatus: null
     },
     stores: {
-        interfaces:         { model: 'Ung.model.Interface', data: '{settings.interfaces.list}' },
+        interfaces:         { model: 'Ung.model.Interface', data: '{settings.interfaces.list}', sorters: 'interfaceId' },
+        devInterfaces:      { source: '{interfaces}', filters: [{ property: 'isVlanInterface', value: false}] },
         interfaceArp:       { data: '{siArp}' },
         // Port Forward
         portForwardRules:   { data: '{settings.portForwardRules.list}' },
