@@ -62,7 +62,7 @@ else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=256m
     else
-        MAX_HEAP_SIZE=128m
+        MAX_HEAP_SIZE=100m
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
