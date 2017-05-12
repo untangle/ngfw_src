@@ -242,10 +242,10 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                     editable: false,
                     store: [
                         [1, 'bytes'.t()],
-                        [1000, 'Kilobytes'.t()],
-                        [1000000, 'Megabytes'.t()],
-                        [1000000000, 'Gigabytes'.t()],
-                        [1000000000000, 'Terrabytes'.t()]
+                        [1024, 'Kilobytes'.t()],
+                        [1024*1024, 'Megabytes'.t()],
+                        [1024*1024*1024, 'Gigabytes'.t()],
+                        [1024*1024*1024*1024, 'Terrabytes'.t()]
                     ],
                     queryMode: 'local',
                     bind: '{quota.unit}'
