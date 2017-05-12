@@ -382,6 +382,29 @@ Ext.define('Ung.cmp.GridController', {
             }
         }
         return value;
+    },
+
+    /**
+     * Used for extra column actions which can be added to the grid but are very specific to that context
+     * The grid requires to have defined a parentView tied to the controller on which action method is implemented
+     * action - is an extra configuration set on actioncolumn and represents the name of the method to be called
+     * see Users/UsersController implementation
+     */
+    externalAction: function (v, rowIndex, colIndex, item, e, record) {
+        var view = this.getView(),
+            extraCtrl = view.up(view.parentView).getController();
+
+        if (!extraCtrl) {
+            console.log('Unable to get the extra controller');
+            return;
+        }
+
+        // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
+        if (item.action) {
+            extraCtrl[item.action].apply(extraCtrl, arguments);
+        } else {
+            console.log('External action not defined!');
+        }
     }
 
 });

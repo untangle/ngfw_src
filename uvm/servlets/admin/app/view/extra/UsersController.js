@@ -77,5 +77,31 @@ Ext.define('Ung.view.extra.UsersController', {
         }).always(function () {
             me.getView().setLoading(false);
         });
-   }
+   },
+
+    refillQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Refilling...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.userTable.refillQuota', record.get('username'))
+            .then(function () {
+                me.getUsers();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
+    },
+
+    dropQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Removing Quota...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.userTable.removeQuota', record.get('username'))
+            .then(function () {
+                me.getUsers();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
+    }
 });
