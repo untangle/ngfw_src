@@ -543,7 +543,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 colors[i] = isTimeGraph ? ( isColumnOverlapped ? new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba') : new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')) : colors[i];
             }
             // add gradient
-            if (entry.get('pieStyle')) {
+            if ((isPie || isDonut) && !is3d) {
                 colors = Highcharts.map( colors, function (color) {
                     return {
                         radialGradient: {
@@ -553,7 +553,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                         },
                         stops: [
                             [0, Highcharts.Color(color).setOpacity(0.3).get('rgba')],
-                            [1, Highcharts.Color(color).setOpacity(0.7).get('rgba')]
+                            [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
                         ]
                     };
                 });
