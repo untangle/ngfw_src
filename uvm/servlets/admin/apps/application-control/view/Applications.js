@@ -7,6 +7,21 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
     listProperty: 'settings.protoRules.list',
     bind: '{protoRules}',
 
+    dockedItems: [{
+        xtype: 'toolbar',
+        dock: 'top',
+        items: [{
+            xtype: 'tbtext',
+            padding: '8 5',
+            style: { fontSize: '12px', fontWeight: 600 },
+            html: 'Application Control Applications allows for simple control over all recognized traffic types.'.t()
+        }]
+    }, {
+        xtype: 'toolbar',
+        dock: 'top',
+        items: ['->', '@replace', '@export']
+    }],
+
     columns: [{
         header: 'Application'.t(),
         width: 120,

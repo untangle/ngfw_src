@@ -249,6 +249,73 @@ Ext.define('Ung.cmp.GridController', {
         this.importDialog.show();
     },
 
+    // same as import but without prepend or append options
+    replaceData: function () {
+        var me = this;
+        this.importDialog = this.getView().add({
+            xtype: 'window',
+            title: 'Import Settings'.t(),
+            modal: true,
+            layout: 'fit',
+            width: 450,
+            items: [{
+                xtype: 'form',
+                border: false,
+                url: 'gridSettings',
+                bodyPadding: 10,
+                layout: 'anchor',
+                items: [{
+                    xtype: 'component',
+                    margin: 10,
+                    html: 'Replace current settings with settings from:'.t()
+                }, {
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    fieldLabel: 'File'.t(),
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'import'
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-red',
+                    handler: function () {
+                        me.importDialog.close();
+                    }
+                }, {
+                    text: 'Import'.t(),
+                    iconCls: 'fa fa-check',
+                    formBind: true,
+                    handler: function (btn) {
+                        btn.up('form').submit({
+                            waitMsg: 'Please wait while the settings are uploaded...'.t(),
+                            success: function(form, action) {
+                                if (!action.result) {
+                                    Ext.MessageBox.alert('Warning'.t(), 'Import failed.'.t());
+                                    return;
+                                }
+                                if (!action.result.success) {
+                                    Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                                    return;
+                                }
+                                me.importHandler('replace', action.result.msg);
+                                me.importDialog.close();
+                            },
+                            failure: function(form, action) {
+                                Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                            }
+                        });
+                    }
+                }]
+            }],
+        });
+        this.importDialog.show();
+    },
+
     importHandler: function (importMode, newData) {
         var grid = this.getView(),
             vm = this.getViewModel(),
