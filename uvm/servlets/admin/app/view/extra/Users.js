@@ -87,6 +87,9 @@ Ext.define('Ung.view.extra.Users', {
         title: 'Current Users'.t(),
         stateful: true,
 
+        // the view passed to the grid for accessing it's controller
+        parentView: '#users',
+
         sortField: 'username',
         sortOrder: 'ASC',
 
@@ -177,6 +180,24 @@ Ext.define('Ung.view.extra.Users', {
                 type: 'date'
             },
             rtype: 'timestamp'
+        }, {
+            xtype: 'actioncolumn',
+            width: 80,
+            align: 'center',
+            header: 'Refill Quota'.t(),
+            iconCls: 'fa fa-refresh fa-green',
+
+            handler: 'externalAction', // this handler is defined in the ungrid controller
+            action: 'refillQuota' // this is the method to be called in this view controller
+        }, {
+            xtype: 'actioncolumn',
+            width: 80,
+            align: 'center',
+            header: 'Drop Quota'.t(),
+            iconCls: 'fa fa-minus-circle',
+
+            handler: 'externalAction',
+            action: 'dropQuota'
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
