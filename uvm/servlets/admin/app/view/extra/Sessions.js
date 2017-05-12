@@ -76,10 +76,11 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             rtype: 'timestamp',
             filter: { type: 'date' },
+            width: TableConfig.timestampFieldWidth
         }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
-            width: 70,
+            width: 50,
             filter: {
                 type: 'list',
                 options: ['TCP', 'UDP']
@@ -87,7 +88,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Bypassed'.t(),
             dataIndex: 'bypassed',
-            width: 70,
+            width: TableConfig.booleanFieldWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',
@@ -115,6 +116,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
+            width: TableConfig.booleanFieldWidth,
             hidden: true
         }, {
             header: 'Port Forwarded'.t(),
@@ -124,6 +126,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
+            width: TableConfig.booleanFieldWidth,
             hidden: true
         }, {
             header: 'Hostname'.t(),
@@ -132,7 +135,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Username'.t(),
             dataIndex: 'platform-username',
-            hidden: true
+            hidden: false
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
@@ -146,12 +149,14 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             header: 'Local Address'.t(),
             dataIndex: "localAddr",
-            filter: { type: 'string' }
+            filter: { type: 'string' },
+            width: TableConfig.ipFieldWidth
         },{
             hidden: true,
             header: 'Remote Address'.t(),
             dataIndex: "remoteAddr",
-            filter: { type: 'string' }
+            filter: { type: 'string' },
+            width: TableConfig.ipFieldWidth
         },{
             hidden: true,
             header: 'Bandwidth Control' + " - " + 'Priority'.t(),
@@ -189,25 +194,30 @@ Ext.define('Ung.view.extra.Sessions', {
             }, {
                 header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
                 dataIndex: 'preNatClient',
-                filter: { type: 'string' }
+                filter: { type: 'string' },
+                width: TableConfig.ipFieldWidth
             }, {
                 header: 'Pre-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'preNatClientPort',
-                filter: { type: 'numeric' }
+                filter: { type: 'numeric' },
+                width: TableConfig.portFieldWidth
             }, {
                 header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
+                width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
                 header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
+                width: TableConfig.portFieldWidth,
                 hidden: true
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
                 filter: { type: 'string' },
+                width: TableConfig.booleanFieldWidth,
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
@@ -231,25 +241,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
+                width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
                 header: 'Pre-NAT'.t() + ' - ' + 'Port'.t(),
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
+                width: TableConfig.portFieldWidth,
                 hidden: true
             }, {
                 header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
                 dataIndex: 'postNatServer',
+                width: TableConfig.ipFieldWidth,
                 filter: { type: 'string' }
             }, {
                 header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'postNatServerPort',
-                filter: { type: 'numeric' }
+                filter: { type: 'numeric' },
+                width: TableConfig.portFieldWidth
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
                 filter: { type: 'string' },
-                hidden: true
+                width: TableConfig.booleanFieldWidth
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
@@ -267,17 +281,20 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Client'.t(),
                 dataIndex: 'clientKBps',
                 filter: 'number',
-                align: 'right'
+                align: 'right',
+                width: 60
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
                 filter: 'number',
-                align: 'right'
+                align: 'right',
+                width: 60
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
                 filter: 'number',
-                align: 'right'
+                align: 'right',
+                width: 60
             }]
         }, {
             header: 'Application Control Lite',
@@ -310,12 +327,10 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Application Control',
             columns: [{
-                hidden: true,
                 header: 'Protochain'.t(),
                 dataIndex: "application-control-protochain",
                 filter: { type: 'string' }
             },{
-                hidden: true,
                 header: 'Application'.t(),
                 dataIndex: "application-control-application",
                 filter: { type: 'string' }
