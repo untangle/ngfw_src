@@ -221,10 +221,21 @@ Ext.define('Ung.view.extra.Users', {
             emptyText: '[enter Username]'.t(),
             allowBlank: false,
         }, {
-            xtype: 'numberfield',
-            bind: '{record.quotaSize}',
+            xtype: 'unitsfield',
             fieldLabel: 'Quota Size'.t(),
-            emptyText: '[enter quota]'.t()
+            minValue: 0,
+            maxValue: 1024,
+            units: [
+                [ 1, 'B'.t() ],
+                [ 1024, 'KB'.t() ],
+                [ 1048576, 'MB'.t() ],
+                [ 1073741824, 'GB'.t() ],
+                [ 1099511627776, 'TB'.t() ],
+                [ 1125899906842624, 'PB'.t() ]
+            ],
+            bind: {
+                value: '{record.quotaSize}'
+            }
         }]
     }, {
         // region: 'east',
