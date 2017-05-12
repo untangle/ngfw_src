@@ -54,8 +54,8 @@ Ext.define('Ung.view.extra.HostsController', {
         var units = ['bytes','Kbytes','Mbytes','Gbytes'];
         var units_itr = 0;
 
-        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
-            bytes = bytes/1000;
+        while ((bytes >= 1024 || bytes <= -1024) && units_itr < 3) {
+            bytes = bytes/1024;
             units_itr++;
         }
 

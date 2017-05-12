@@ -43,7 +43,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
             userEnabled: true,
             expiration: -2,
             size: 1,
-            unit: 1000000000,
+            unit: 1024*1024*1024,
             priority: 6
         },
 
