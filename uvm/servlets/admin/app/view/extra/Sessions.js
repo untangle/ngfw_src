@@ -161,24 +161,42 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             header: 'Bandwidth Control' + " - " + 'Priority'.t(),
             dataIndex: "priority",
-            // renderer: function(value) {
-            //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
-            // },
-            // filter: {
-            //     type: 'list',
-            //     store: priorityOptionsStore
-            // }
+            renderer: function(value) {
+                if (Ext.isEmpty(value)) {
+                    return '';
+                }
+                switch(value) {
+                  case 0: return '';
+                  case 1: return 'Very High'.t();
+                  case 2: return 'High'.t();
+                  case 3: return 'Medium'.t();
+                  case 4: return 'Low'.t();
+                  case 5: return 'Limited'.t();
+                  case 6: return 'Limited More'.t();
+                  case 7: return 'Limited Severely'.t();
+                default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
+                }
+            }
         },{
             hidden: true,
             header: 'QoS' + " - " + 'Priority'.t(),
             dataIndex: "qosPriority",
-            // renderer: function(value) {
-            //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
-            // },
-            // filter: {
-            //     type: 'list',
-            //     store: priorityOptionsStore
-            // }
+            renderer: function(value) {
+                if (Ext.isEmpty(value)) {
+                    return '';
+                }
+                switch(value) {
+                  case 0: return '';
+                  case 1: return 'Very High'.t();
+                  case 2: return 'High'.t();
+                  case 3: return 'Medium'.t();
+                  case 4: return 'Low'.t();
+                  case 5: return 'Limited'.t();
+                  case 6: return 'Limited More'.t();
+                  case 7: return 'Limited Severely'.t();
+                default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
+                }
+            }
         },{
             hidden: true,
             header: 'Pipeline'.t(),
