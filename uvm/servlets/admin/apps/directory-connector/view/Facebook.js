@@ -13,11 +13,13 @@ Ext.define('Ung.apps.directoryconnector.view.Facebook', {
         title: 'Facebook Authentication Connector'.t(),
         items: [{
             xtype: 'component',
+            margin: '10 0 0 0',
             html: Ext.String.format(
                 "This allows your server to connect to {0}Facebook{1} in order to identify users for use by Captive Portal.".t(),
                 '<b>','</b>')
         }, {
             xtype: 'component',
+            margin: '10 0 0 0',
             html: 'WARNING: Facebook Authentication is experimental and uses an unofficial API. Read the documentation for details.'.t(),
             cls: 'warning',
             style: {color:'red'},
@@ -26,6 +28,7 @@ Ext.define('Ung.apps.directoryconnector.view.Facebook', {
             bind: '{settings.facebookSettings.authenticationEnabled}',
             fieldLabel: 'Enable Facebook Authentication Connector'.t(),
             labelWidth: 250,
+            margin: '10 0 10 0',
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -41,6 +44,7 @@ Ext.define('Ung.apps.directoryconnector.view.Facebook', {
             },
             items:[{
                 xtype: 'component',
+                margin: '10 0 10 0',
                 html: Ext.String.format( 'The {0}Facebook Authentication Test{1} verifies that the server can authenticate the provided username/password.'.t(),'<b>','</b>')
             },{
                 xtype:'textfield',
@@ -54,7 +58,8 @@ Ext.define('Ung.apps.directoryconnector.view.Facebook', {
             },{
                 xtype: 'button',
                 text: 'Facebook Authentication Test'.t(),
-                iconCls: 'test-icon',
+                margin: '10 0 10 0',
+                iconCls: 'fa fa-cogs',
                 handler: 'facebookAuthenticationTest'
             }]
         }]

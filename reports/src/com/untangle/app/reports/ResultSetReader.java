@@ -77,9 +77,8 @@ public class ResultSetReader implements Runnable
         ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
 
         try {
-            if ( resultSet.isClosed() ) {
+            if ( resultSet.isClosed() || !resultSet.isBeforeFirst() /*isEmpty*/ )
                 return newList;
-            }
 
             ResultSetMetaData metadata = this.resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
@@ -116,14 +115,16 @@ public class ResultSetReader implements Runnable
 
     public ArrayList<JSONObject> getAllEvents()
     {
+        ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
+
         try {
             if (resultSet == null || connection == null)
-                return null;
+                return newList;
+            if ( resultSet.isClosed() || !resultSet.isBeforeFirst() /*isEmpty*/ )
+                return newList;
 
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
-                
-            ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
 
             while (resultSet.next()) {
                 try {

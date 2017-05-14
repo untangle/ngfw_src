@@ -88,12 +88,20 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     fetchData: function (reset, cb) {
-        var me = this, vm = this.getViewModel();
+        var me = this,
+            vm = this.getViewModel();
+
+        var limit = 0;
+        if( me.getView().up('reports-entry') ){
+            limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
+        }
         me.entry = vm.get('entry');
 
+        var startDate = vm.get('startDate');
+        var endDate = vm.get('tillNow') ? null : vm.get('endDate');
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
-            vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
+            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000);
+            endDate = new Date(rpc.systemManager.getMilliseconds());
         }
 
         me.getViewModel().set('eventsData', []);
@@ -101,9 +109,9 @@ Ext.define('Ung.view.reports.EventReportController', {
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
-                        1000, // limit
-                        vm.get('startDate'), // start date
-                        vm.get('tillNow') ? null : vm.get('endDate')) // end date
+                        limit,
+                        startDate, // start date
+                        endDate) // end date
             .then(function(result) {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);

@@ -4,6 +4,8 @@ Ext.define('Ung.apps.reports.view.Users', {
     itemId: 'users',
     title: 'Reports Users'.t(),
 
+    controller: 'unreportsusersgrid',
+
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -63,18 +65,8 @@ Ext.define('Ung.apps.reports.view.Users', {
     }, {
         header: 'Email Templates'.t(),
         flex: 1,
-        dataIndex: 'emailTemplateIds'
-        // renderer: Ext.bind(function(value){
-        //     console.log(this.getViewModel());
-        //     var titles = [];
-        //     for(var i = 0; i < this.settings["emailTemplates"].list.length; i++){
-        //         var template = this.settings["emailTemplates"].list[i];
-        //         if(value.list.indexOf(template.templateId) > -1){
-        //             titles.push(template.title);
-        //         }
-        //     }
-        //     return titles.join(", ");
-        // }, this)
+        dataIndex: 'emailTemplateIds',
+        renderer: 'emailTemplatesRenderer'
     }, {
         xtype: 'checkcolumn',
         header: 'Online Access'.t(),
@@ -82,6 +74,7 @@ Ext.define('Ung.apps.reports.view.Users', {
         dataIndex: 'onlineAccess',
         resizable: false
     }],
+
     editorFields: [{
         xtype: 'textfield',
         bind: '{record.emailAddress}',
@@ -95,23 +88,18 @@ Ext.define('Ung.apps.reports.view.Users', {
         bind: '{record.emailAlerts}',
         fieldLabel: 'Email Alerts'.t()
     }, {
-        xtype: 'textfield',
-        inputType: 'password',
-        bind: '{record.password}',
-        fieldLabel: 'Password'.t(),
-        allowBlank: false,
-        minLength: 3,
-        minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3)
-    }, {
         xtype: 'checkbox',
         bind: '{record.emailSummaries}',
         fieldLabel: 'Email Reports'.t()
     }, {
-        xtype: 'checkboxgroup',
-        bind: '{record.emailTemplateIds}',
+        xtype: 'unemailtemplateselect',
+        bind: {
+            store: '{record.emailTemplateIds.list}',
+            disabled: '{record.emailSummaries == false}',
+            hidden: '{record.emailSummaries == false}',
+        },
         fieldLabel: 'Email Templates'.t(),
-        columns: 1,
-        vertical: true,
-        items: []
+        disabled: true,
+        hidden: true,
     }]
 });

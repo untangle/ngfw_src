@@ -15,7 +15,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         title: 'Static DNS Entries'.t(),
 
-        tbar: ['@addInline'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
 
         listProperty: 'settings.dnsSettings.staticEntries.list',
@@ -59,7 +59,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         title: 'Domain DNS Servers'.t(),
 
-        tbar: ['@addInline'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
 
         listProperty: 'settings.dnsSettings.localServers.list',

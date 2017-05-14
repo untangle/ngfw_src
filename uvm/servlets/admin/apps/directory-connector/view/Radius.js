@@ -13,6 +13,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
         title: 'RADIUS Connector'.t(),
         items: [{
             xtype: 'component',
+            margin: '10 0 0 0',
             html: Ext.String.format(
                 "This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.".t(),
                 '<b>','</b>')
@@ -21,6 +22,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
             bind: '{settings.radiusSettings.enabled}',
             fieldLabel: 'Enable RADIUS Connector'.t(),
             labelWidth: 200,
+            margin: '10 0 10 0',
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -89,6 +91,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
             items: [{
                 xtype: 'component',
                 width: 'auto',
+                margin: '10 0 10 0',
                 html: Ext.String.format( 'The {0}RADIUS Test{1} verifies that the server can authenticate the provided username/password.'.t(),'<b>','</b>')
             },{
                 xtype:'textfield',
@@ -101,9 +104,10 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
             },{
                 xtype: 'button',
                 text: 'RADIUS Test'.t(),
-                iconCls: 'test-icon',
+                iconCls: 'fa fa-cogs',
                 labelWidth: 'auto',
                 width: 'auto',
+                margin: '10 0 10 0',
                 handler: 'radiusTest'
             }]
         }]

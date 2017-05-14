@@ -199,7 +199,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 */
                 return title;
             } else {
-                return 'Some ' + 'Widget'.t();
+                return 'Unknown Widget'.t();
             }
         } else {
             return '<span style="color: #999;">' + 'App Widget'.t() + '</span>';

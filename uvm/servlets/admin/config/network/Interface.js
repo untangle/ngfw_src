@@ -962,7 +962,9 @@ Ext.define('Ung.config.network.Interface', {
             }, '->', {
                 xtype: 'component',
                 margin: 2,
-                html: 'Is VRRP Master'.t() + ' <i class="fa fa-circle fa-gray"></i>'
+                bind: {
+                    html: 'Is VRRP Master'.t() + ' <i class="fa fa-circle {vrrpmaster ? "fa-green" : "fa-gray"}"></i>'
+                }
             }],
             layout: {
                 type: 'vbox',

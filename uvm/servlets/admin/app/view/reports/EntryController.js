@@ -575,6 +575,47 @@ Ext.define('Ung.view.reports.EntryController', {
             });
     },
 
+    removeReport: function () {
+        var me = this, v = this.getView(),
+            vm = this.getViewModel(),
+            entry = vm.get('entry');
+
+        if (vm.get('widget')) {
+            Ext.MessageBox.confirm('Warning'.t(),
+                'Deleting this report will remove also the Widget from Dashboard!'.t() + '<br/><br/>' +
+                'Do you want to continue?'.t(),
+                function (btn) {
+                    if (btn === 'yes') {
+                        // remove it from dashboard first
+                        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
+                            vm.set('widget', wg);
+                            me.removeReportAction(entry.getData());
+                        });
+                    }
+                });
+        } else {
+            me.removeReportAction(entry.getData());
+        }
+
+    },
+
+    removeReportAction: function (entry) {
+        Rpc.asyncData('rpc.reportsManager.removeReportEntry', entry)
+            .then(function (result) {
+                Ung.app.redirectTo('#reports/' + entry.category.replace(/ /g, '-').toLowerCase());
+                Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
+
+                var removableRec = Ext.getStore('reports').findRecord('uniqueId', entry.uniqueId);
+                if (removableRec) {
+                    Ext.getStore('reports').remove(removableRec); // remove record
+                    Ext.getStore('reportstree').build(); // rebuild tree after save new
+                }
+            }, function (ex) {
+                Util.handleException(ex);
+            });
+    },
+
+
     // filters EVENT_LIST
     filterEventList: function (field, value) {
         var me = this, grid = me.getView().down('grid'),
@@ -619,7 +660,14 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [];
         if (!entry) { return; }
 
-        Ext.Array.each(me.getView().down('#eventsGrid').getColumns(), function (col) {
+        var grid = me.getView().down('eventreport > ungrid');
+
+        if (!grid) {
+            console.log('Grid not found');
+            return;
+        }
+
+        Ext.Array.each(grid.getColumns(), function (col) {
             if (col.dataIndex && !col.hidden) {
                 columns.push(col.dataIndex);
             }

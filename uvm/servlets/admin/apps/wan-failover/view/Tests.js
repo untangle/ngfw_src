@@ -42,7 +42,7 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add']
+        items: ['@add', '->', '@import', '@export']
     }],
 
     recordActions: ['edit', 'delete'],

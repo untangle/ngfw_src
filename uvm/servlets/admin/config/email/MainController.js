@@ -204,5 +204,201 @@ Ext.define('Ung.config.email.MainController', {
             }).always(function () {
                 Ext.MessageBox.hide();
             });
+    },
+
+    showQuarantineDetails: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        me.dialog = me.getView().add({
+            xtype: 'window',
+            title: 'Email Quarantine Details for:'.t() + ' ' + record.get('address'),
+            width: 1200,
+            height: 600,
+            modal: true,
+            layout: 'fit',
+            items: [{
+                xtype: 'grid',
+                reference: 'mailsGrid',
+                account: record.get('address'),
+                border: false,
+                bodyBorder: false,
+                viewConfig: {
+                    enableTextSelection: true,
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Emails!</p>',
+                },
+                selModel: {
+                    selType: 'checkboxmodel'
+                },
+                store: { data: [] },
+                plugins: ['gridfilters'],
+                sortField: 'quarantinedDate',
+                fields: [{
+                    name: 'mailID'
+                }, {
+                    name: 'quarantinedDate',
+                    mapping: 'internDate'
+                }, {
+                    name: 'size'
+                }, {
+                    name: 'sender'
+                }, {
+                    name: 'subject'
+                }, {
+                    name: 'quarantineCategory'
+                }, {
+                    name: 'quarantineDetail'
+                }],
+                columns: [{
+                    header: 'Date'.t(),
+                    width: 140,
+                    dataIndex: 'quarantinedDate',
+                    renderer: function(value) {
+                        var date = new Date();
+                        date.setTime(value);
+                        return Util.timestampFormat(value);
+                    }
+                }, {
+                    header: 'Sender'.t(),
+                    width: 180,
+                    dataIndex: 'sender',
+                    filter: { type: 'string' }
+                }, {
+                    header: 'Subject'.t(),
+                    width: 150,
+                    flex: 1,
+                    dataIndex: 'subject',
+                    filter: { type: 'string' }
+                }, {
+                    header: 'Size (KB)'.t(),
+                    width: 85,
+                    dataIndex: 'size',
+                    renderer: function(value) {
+                        return (value/1024.0).toFixed(3);
+                    },
+                    filter: { type: 'numeric' }
+                }, {
+                    header: 'Category'.t(),
+                    width: 85,
+                    dataIndex: 'quarantineCategory',
+                    filter: { type: 'string' }
+                }, {
+                    header: 'Detail'.t(),
+                    width: 85,
+                    dataIndex: 'quarantineDetail',
+                    renderer: function(value) {
+                        var detail = value;
+                        if (isNaN(parseFloat(detail))) {
+                            if (detail === 'Message determined to be a fraud attempt') {
+                                return 'Phish'.t();
+                            }
+                        } else {
+                            return parseFloat(detail).toFixed(3);
+                        }
+                        return detail;
+                    },
+                    filter: { type: 'numeric' }
+                }],
+                tbar: [{
+                    text: 'Purge Selected'.t(),
+                    iconCls: 'fa fa-circle fa-red',
+                    handler: 'purgeMails',
+                    disabled: true,
+                    bind: {
+                        disabled: '{!mailsGrid.selection}'
+                    }
+                }, {
+                    text: 'Release Selected'.t(),
+                    iconCls: 'fa fa-circle fa-green',
+                    handler: 'releaseMails',
+                    disabled: true,
+                    bind: {
+                        disabled: '{!mailsGrid.selection}'
+                    }
+                }],
+            }],
+            fbar: [{
+                text: 'Cancel'.t(),
+                iconCls: 'fa fa-ban fa-gray',
+                handler: function (btn) {
+                    btn.up('window').close();
+                }
+            }],
+            listeners: {
+                afterrender: function (win) {
+                    me.getAccountEmails();
+                }
+            }
+        });
+        me.dialog.show();
+    },
+
+    getAccountEmails: function () {
+        var me = this;
+        if (!me.dialog) {
+            return;
+        }
+
+        var grid = me.dialog.down('grid');
+        me.dialog.setLoading(true);
+        Rpc.asyncData('rpc.quarantineMaintenenceView.getInboxRecords', grid.account)
+            .then(function (result) {
+                if (result && result.list) {
+                    for (var i=0; i< result.list.length; i++) {
+                        /* copy values from mailSummary to object */
+                        result.list[i].subject = result.list[i].mailSummary.subject;
+                        result.list[i].sender = result.list[i].mailSummary.sender;
+                        result.list[i].quarantineCategory = result.list[i].mailSummary.quarantineCategory;
+                        result.list[i].quarantineDetail = result.list[i].mailSummary.quarantineDetail;
+                        result.list[i].size = result.list[i].mailSummary.quarantineSize;
+                    }
+                }
+                grid.getStore().loadData(result.list);
+            }, function (ex) { console.log(ex); })
+            .always(function () { me.dialog.setLoading(false); });
+    },
+
+    purgeMails: function (btn) {
+        var me = this,
+            grid = btn.up('grid'),
+            selected = grid.getSelectionModel().getSelected(),
+            emails = [];
+
+        if (!selected || selected.length === 0) {
+            return;
+        }
+
+        selected.each(function(record) {
+            emails.push(record.get('mailID'));
+        });
+
+        Ext.MessageBox.wait('Purging...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.quarantineMaintenenceView.purge', grid.account, emails)
+            .then(function() {
+                me.getAccountEmails();
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
+    },
+
+    releaseMails: function (btn) {
+        var me = this,
+            grid = btn.up('grid'),
+            selected = grid.getSelectionModel().getSelected(),
+            emails = [];
+
+        if (!selected || selected.length === 0) {
+            return;
+        }
+
+        selected.each(function(record) {
+            emails.push(record.get('mailID'));
+        });
+
+        Ext.MessageBox.wait('Releasing...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.quarantineMaintenenceView.rescue', grid.account, emails)
+            .then(function() {
+                me.getAccountEmails();
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
     }
 });

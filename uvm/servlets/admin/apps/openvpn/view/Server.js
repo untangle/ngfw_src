@@ -83,7 +83,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add']
+        items: ['@add', '->', '@import', '@export']
     }],
 
     recordActions: ['edit', 'delete'],
@@ -171,7 +171,7 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add']
+        items: ['@add', '->', '@import', '@export']
     }],
 
     recordActions: ['edit', 'delete'],
@@ -264,7 +264,7 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add']
+        items: ['@add', '->', '@import', '@export']
     }],
 
     recordActions: ['edit', 'delete'],

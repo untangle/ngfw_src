@@ -13,6 +13,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
         title: 'Active Directory Connector'.t(),
         items: [{
             xtype: 'component',
+            margin: '10 0 0 0',
             html: Ext.String.format(
                 "This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.".t(),
                 '<b>','</b>')
@@ -21,6 +22,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             bind: '{settings.activeDirectorySettings.enabled}',
             fieldLabel: 'Enable Active Directory Connector'.t(),
             labelWidth: 200,
+            margin: '10 0 10 0',
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -66,6 +68,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             },{
                 xtype: 'container',
                 layout: 'column',
+                margin: '0 0 5 0',
                 width: 800,
                 items: [{
                     xtype:'textfield',
@@ -81,6 +84,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             }, {
                 xtype: 'container',
                 layout: 'column',
+                margin: '0 0 5 0',
                 width: 800,
                 items: [{
                     xtype: 'textfield',
@@ -109,11 +113,12 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 items:[{
                     xtype: 'button',
                     text: 'Active Directory Test'.t(),
-                    iconCls: 'test-icon',
+                    margin: '10 0 10 0',
+                    iconCls: 'fa fa-cogs',
                     handler: 'activeDirectoryTest'
                 },{
                     xtype: 'component',
-                    margin: '5 0 10 0',
+                    margin: '12 0 10 10',
                     html: Ext.String.format( 'The {0}Active Directory Test{1} verifies that the server can connect to the Active Directory Server.'.t(),'<b>','</b>')
                 }]
             }]
@@ -137,7 +142,8 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             },{
                 xtype: 'button',
                 text: 'Active Directory Users'.t(),
-                iconCls: 'test-icon',
+                margin: '10 0 10 0',
+                iconCls: 'fa fa-cogs',
                 handler: 'activeDirectoryUsers'
             }]
         },{
@@ -187,12 +193,14 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             },{
                 xtype: 'button',
                 text: 'User Group Map'.t(),
-                iconCls: 'test-icon',
+                margin: '10 10 10 0',
+                iconCls: 'fa fa-cogs',
                 handler: 'activeDirectoryGroupMap'
             }, {
                 xtype: 'button',
                 text: 'Refresh group cache'.t(),
-                iconCls: 'test-icon',
+                margin: '10 10 10 0',
+                iconCls: 'fa fa-refresh',
                 handler: 'activeDirectoryGroupRefreshCache'
             }]
         }]

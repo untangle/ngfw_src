@@ -11,43 +11,42 @@ Ext.define('Ung.view.extra.Users', {
 
     viewModel: {
         data: {
-            autoRefresh: false,
             usersData: []
         },
         stores: {
             users: {
                 data: '{usersData}'
             }
-        },
-        formulas: {
-            userDetails: function (get) {
-                this.userDetailsGet = get;
-                this.getView().down('#usersgrid').getSelectionModel().select(0);
-                this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
-                    this.getView().down('#usersgrid').getSelectionModel().select(0);
-                    if( !this.userDetailsGet('usersgrid.selection') ){
-                        this.userDetailsSelectTask.delay(100);
-                    }
-                }, this) );
-                this.userDetailsSelectTask.delay(100);
-                if (get('usersgrid.selection')) {
-                    var data = get('usersgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    for( var k in data ){
-                        /*
-                         * Encode objects and arrays for details
-                         */
-                        if( ( typeof( data[k] ) == 'object' ) ||
-                            ( typeof( data[k] ) == 'array' ) ){
-                            data[k] = Ext.encode(data[k]);
-                        }
-                    }
-                    return data;
-                }
-                return;
-            }
         }
+        // formulas: {
+        //     userDetails: function (get) {
+        //         this.userDetailsGet = get;
+        //         this.getView().down('#usersgrid').getSelectionModel().select(0);
+        //         this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
+        //             this.getView().down('#usersgrid').getSelectionModel().select(0);
+        //             if( !this.userDetailsGet('usersgrid.selection') ){
+        //                 this.userDetailsSelectTask.delay(100);
+        //             }
+        //         }, this) );
+        //         this.userDetailsSelectTask.delay(100);
+        //         if (get('usersgrid.selection')) {
+        //             var data = get('usersgrid.selection').getData();
+        //             delete data._id;
+        //             delete data.javaClass;
+        //             for( var k in data ){
+        //                 /*
+        //                  * Encode objects and arrays for details
+        //                  */
+        //                 if( ( typeof( data[k] ) == 'object' ) ||
+        //                     ( typeof( data[k] ) == 'array' ) ){
+        //                     data[k] = Ext.encode(data[k]);
+        //                 }
+        //             }
+        //             return data;
+        //         }
+        //         return;
+        //     }
+        // }
     },
 
     layout: 'border',
@@ -88,6 +87,9 @@ Ext.define('Ung.view.extra.Users', {
         title: 'Current Users'.t(),
         stateful: true,
 
+        // the view passed to the grid for accessing it's controller
+        parentView: '#users',
+
         sortField: 'username',
         sortOrder: 'ASC',
 
@@ -96,22 +98,36 @@ Ext.define('Ung.view.extra.Users', {
 
         enableColumnHide: true,
         forceFit: false,
-        viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true,
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
-        },
 
         bind: '{users}',
 
+        tbar: ['@add', '->', '@import', '@export'],
+        recordActions: ['edit', 'delete'],
+        emptyRow: {
+            username: '',
+            lastAccessTime: 0,
+            lastSessionTime: 0,
+            quotaSize: 0,
+            quotaRemaining: 0,
+            quotaIssueTime: 0,
+            quotaExpirationTime: 0,
+            tags: {
+                javaClass: 'java.util.LinkedList',
+                list: []
+            },
+            javaClass: 'com.untangle.uvm.UserTableEntry'
+        },
+
         columns: [{
             header: 'Username'.t(),
+            width: 200,
             dataIndex: 'username',
             filter: {
                 type: 'string'
             }
         }, {
             header: 'Creation Time'.t(),
+            width: 160,
             dataIndex: 'creationTime',
             rtype: 'timestamp',
             filter: {
@@ -119,6 +135,7 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Access Time'.t(),
+            width: 160,
             dataIndex: 'lastAccessTime',
             rtype: 'timestamp',
             filter: {
@@ -126,46 +143,65 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Session Time'.t(),
+            width: 160,
             dataIndex: 'lastSessionTime',
             rtype: 'timestamp',
             filter: {
                 type: 'date'
             }
         }, {
-            header: 'Quota'.t(),
-            columns: [{
-                header: 'Quota Size'.t(),
-                dataIndex: 'quotaSize',
-                renderer: function (value) {
-                    return value === 0 || value === '' ? '' : value;
-                },
-                filter: {
-                    type: 'numeric'
-                }
-            }, {
-                header: 'Quota Remaining'.t(),
-                dataIndex: 'quotaRemaining',
-                filter: {
-                    type: 'numeric'
-                }
-            }, {
-                header: 'Quota Issue Time'.t(),
-                dataIndex: 'quotaIssueTime',
-                rtype: 'timestamp',
-                filter: {
-                    type: 'date'
-                }
-            }, {
-                header: 'Quota Expiration Time'.t(),
-                dataIndex: 'quotaExpirationTime',
-                rtype: 'timestamp',
-                filter: {
-                    type: 'date'
-                }
-            }]
+            header: 'Quota Size'.t(),
+            dataIndex: 'quotaSize',
+            renderer: function (value) {
+                return value === 0 || value === '' ? '' : value;
+            },
+            filter: {
+                type: 'numeric'
+            },
+            rtype: 'datasize'
+        }, {
+            header: 'Quota Remaining'.t(),
+            dataIndex: 'quotaRemaining',
+            filter: {
+                type: 'numeric'
+            },
+            rtype: 'datasize'
+        }, {
+            header: 'Quota Issue Time'.t(),
+            dataIndex: 'quotaIssueTime',
+            filter: {
+                type: 'date'
+            },
+            rtype: 'timestamp'
+        }, {
+            header: 'Quota Expiration Time'.t(),
+            dataIndex: 'quotaExpirationTime',
+            filter: {
+                type: 'date'
+            },
+            rtype: 'timestamp'
+        }, {
+            xtype: 'actioncolumn',
+            width: 80,
+            align: 'center',
+            header: 'Refill Quota'.t(),
+            iconCls: 'fa fa-refresh fa-green',
+
+            handler: 'externalAction', // this handler is defined in the ungrid controller
+            action: 'refillQuota' // this is the method to be called in this view controller
+        }, {
+            xtype: 'actioncolumn',
+            width: 80,
+            align: 'center',
+            header: 'Drop Quota'.t(),
+            iconCls: 'fa fa-minus-circle',
+
+            handler: 'externalAction',
+            action: 'dropQuota'
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
+            flex: 1,
             filter: {
                 type: 'string'
             },
@@ -177,33 +213,46 @@ Ext.define('Ung.view.extra.Users', {
             filter: {
                 type: 'string'
             }
+        }],
+        editorFields: [{
+            xtype: 'textfield',
+            bind: '{record.username}',
+            fieldLabel: 'Username'.t(),
+            emptyText: '[enter Username]'.t(),
+            allowBlank: false,
+        }, {
+            xtype: 'unitsfield',
+            fieldLabel: 'Quota Size'.t(),
+            minValue: 0,
+            maxValue: 1024,
+            units: [
+                [ 1, 'B'.t() ],
+                [ 1024, 'KB'.t() ],
+                [ 1048576, 'MB'.t() ],
+                [ 1073741824, 'GB'.t() ],
+                [ 1099511627776, 'TB'.t() ],
+                [ 1125899906842624, 'PB'.t() ]
+            ],
+            bind: {
+                value: '{record.quotaSize}'
+            }
         }]
     }, {
-        region: 'east',
-        xtype: 'unpropertygrid',
-        title: 'User Details'.t(),
-        itemId: 'details',
-
-        bind: {
-            source: '{userDetails}'
-        }
+        // region: 'east',
+        // xtype: 'unpropertygrid',
+        // title: 'User Details'.t(),
+        // itemId: 'details',
+        // hidden: true,
+        // bind: {
+        //     source: '{userDetails}',
+        //     hidden: '{!usersgrid.selection}'
+        // }
     }],
     tbar: [{
         xtype: 'button',
         text: 'Refresh'.t(),
         iconCls: 'fa fa-repeat',
-        handler: 'getUsers',
-        bind: {
-            disabled: '{autoRefresh}'
-        }
-    }, {
-        xtype: 'button',
-        text: 'Auto Refresh'.t(),
-        bind: {
-            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}'
-        },
-        enableToggle: true,
-        toggleHandler: 'setAutoRefresh'
+        handler: 'getUsers'
     }, {
         xtype: 'button',
         text: 'Reset View'.t(),
@@ -216,5 +265,10 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
         hrefTarget: '_self'
+    }],
+    bbar: ['->', {
+        text: '<strong>' + 'Save'.t() + '</strong>',
+        iconCls: 'fa fa-floppy-o',
+        handler: 'saveUsers'
     }]
 });

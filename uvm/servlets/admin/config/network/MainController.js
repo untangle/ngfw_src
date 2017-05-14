@@ -399,13 +399,30 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     refreshQosStatistics: function (cmp) {
-        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp,
+            vm = this.getViewModel();
         view.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-status.py')
             .then(function (result) {
                 var list = [];
                 try {
                     list = eval(result);
+                    vm.set('qosStatistics', Ext.create('Ext.data.Store', {
+                        fields: [
+                            'tokens',
+                            'priority',
+                            'rate',
+                            'burst',
+                            'ctokens',
+                            'interface_name',
+                            'sent'
+                        ],
+                        sorters: [{
+                            property: 'interface_name',
+                            direction: 'ASC'
+                        }],
+                        data: list
+                    }) );
                 } catch (e) {
                     Util.handleException('Unable to get QoS statistics');
                     console.error('Could not execute /usr/share/untangle-netd/bin/qos-status.py output: ', result, e);
@@ -613,6 +630,12 @@ Ext.define('Ung.config.network.MainController', {
             configTypes.push(configTypesRadios[confType]);
         });
 
+        // if non-wan set v4, v6 configs to STATIC
+        if (!me.editIntf.get('isWan')) {
+            me.editIntf.set('v4ConfigType', 'STATIC');
+            me.editIntf.set('v6ConfigType', 'STATIC');
+        }
+
         me.dialog = me.getView().add({
             xtype: 'config.interface',
             configTypesRadios: configTypes, // holds the radio buttons based on interface supported config types
@@ -621,7 +644,8 @@ Ext.define('Ung.config.network.MainController', {
                 data: {
                     // intf: btn.getWidgetRecord().copy(null)
                     intf: me.editIntf,
-                    wirelessChannelsList: []
+                    wirelessChannelsList: [],
+                    vrrpmaster: false
                 },
                 formulas: {
                     isAddressed: function (get) { return get('intf.configType') === 'ADDRESSED'; },
@@ -665,6 +689,15 @@ Ext.define('Ung.config.network.MainController', {
                 });
         }
 
+        // check VRRP master
+        if (me.editIntf.get('vrrpEnabled') && me.editIntf.get('interfaceId') > 0) {
+            Rpc.asyncData('rpc.networkManager.isVrrpMaster', me.editIntf.get('interfaceId'))
+                .then(function(result) {
+                    me.dialog.getViewModel().set('vrrpmaster', result);
+                }, function (ex) {
+                    Util.handleException(ex);
+                });
+        }
     },
     cancelEdit: function (button) {
         this.editIntf.reject();
@@ -754,7 +787,204 @@ Ext.define('Ung.config.network.MainController', {
         });
     },
 
-    addVlanInterface: function () {
-        console.log('add');
+    remapInterfaces: function () {
+        var me = this, vm = this.getViewModel(), physicalDevsStore = [], intfOrderArr = [];
+        // create array store of physicalDevs for the editor combo
+        // create an array with initial interfaces order, used for drag&drop remapping
+        vm.get('devInterfaces').each(function (intf) {
+            physicalDevsStore.push([intf.get('physicalDev'), intf.get('physicalDev')]);
+            intfOrderArr.push(intf.copy(null));
+        });
+
+
+        me.remapDialog = me.getView().add({
+            xtype: 'window',
+            title: 'Remap Interfaces'.t(),
+            modal: true,
+            width: 900,
+            height: 400,
+            layout: 'fit',
+            closable: false,
+            onEsc: Ext.emptyFn,
+            items: [{
+                xtype: 'grid',
+                border: false,
+                bodyBorder: false,
+                bind: '{devInterfaces}',
+                plugins: {
+                    ptype: 'cellediting',
+                    clicksToEdit: 1
+                },
+                viewConfig: {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        dragText: 'Drag and drop to reorganize'.t(),
+                        dragZone: {
+                            onBeforeDrag: function (data, e) {
+                                return Ext.get(e.target).hasCls('fa-arrows');
+                            }
+                        }
+                    },
+                    listeners: {
+                        drop: function (app, data, overModel, dropPosition, eOpts) {
+                            var i = 0;
+                            vm.get('devInterfaces').each(function( currentRow ) {
+                                var intf = intfOrderArr[i];
+                                currentRow.set({
+                                    interfaceId: intf.get('interfaceId'),
+                                    name: intf.get('name')
+                                });
+                                i++;
+                            });
+                        }
+                    }
+                },
+                enableColumnHide: false,
+                sortableColumns: false,
+                columns: [{
+                    dataIndex: 'connected',
+                    width: 40,
+                    align: 'center',
+                    resizable: false,
+                    sortable: false,
+                    menuEnabled: false,
+                    renderer: function (value) {
+                        switch (value) {
+                        case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
+                        case 'DISCONNECTED': return '<i class="fa fa-circle fa-gray"></i>';
+                        case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
+                        default: return '<i class="fa fa-question-circle fa-gray"></i>';
+                        }
+                    }
+                }, {
+                    header: 'Name'.t(),
+                    dataIndex: 'name',
+                    width: 130
+                },
+                    {
+                    xtype: 'gridcolumn',
+                    header: '<i class="fa fa-sort"></i>',
+                    align: 'center',
+                    width: 30,
+                    resizable: false,
+                    tdCls: 'action-cell',
+                    renderer: function() {
+                        return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+                    },
+                },
+                    {
+                    header: 'Device'.t(),
+                    dataIndex: 'deviceName',
+                    width: 100,
+                    editor: {
+                        xtype: 'combo',
+                        store: physicalDevsStore,
+                        editable: false,
+                        valueField: 'physicalDev',
+                        displayField: 'physicalDev',
+                        queryMode: 'local',
+                        listeners: {
+                            change: 'setMapInterfaces'
+                        }
+                    }
+                }, {
+                    header: 'Speed'.t(),
+                    dataIndex: 'mbit',
+                    width: 80
+                }, {
+                    header: 'Duplex'.t(),
+                    dataIndex: 'duplex',
+                    width: 100,
+                    renderer: function (value) {
+                        return (value === 'FULL_DUPLEX') ? 'full-duplex'.t() : (value === 'HALF_DUPLEX') ? 'half-duplex'.t() : 'unknown'.t();
+                    }
+                }, {
+                    header: 'Vendor'.t(),
+                    dataIndex: 'vendor',
+                    flex: 1
+                }, {
+                    header: 'MAC Address'.t(),
+                    dataIndex: 'macAddress',
+                    width: 150,
+                    renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        var text = '';
+                        if (value && value.length > 0) {
+                            // Build the link for the mac address
+                            text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' +
+                            value.substring(0, 8).replace(/:/g, '') + '">' + value + '</a>';
+                        }
+                        return text;
+                    }
+                }],
+                dockedItems: [{
+                    xtype: 'component',
+                    ui: 'navigation',
+                    dock: 'top',
+                    padding: 10,
+                    border: false,
+                    html: '<strong>' + 'How to map Devices with Interfaces'.t() + '</strong><br/><br/>' +
+                        '<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.'.t()
+                }]
+            }],
+            fbar: [{
+                text: 'Cancel'.t(),
+                iconCls: 'fa fa-ban',
+                handler: function (btn) {
+                    me.loadSettings(); // reload initial settings on Cancel
+                    btn.up('window').close();
+                }
+            }, {
+                text: 'Done'.t(),
+                iconCls: 'fa fa-check',
+                handler: function (btn) {
+                    btn.up('window').close();
+                }
+            }]
+        });
+        me.remapDialog.show();
+    },
+
+    setMapInterfaces: function (combo, newValue, oldValue) {
+        var vm = this.getViewModel(), sourceRecord = null, targetRecord = null;
+
+        vm.get('devInterfaces').each( function( currentRow ) {
+            if (oldValue === currentRow.get('physicalDev')) {
+                sourceRecord = currentRow;
+            } else if (newValue === currentRow.get('physicalDev')) {
+                targetRecord = currentRow;
+            }
+        });
+        // make sure sourceRecord & targetRecord are defined
+        if (sourceRecord === null || targetRecord === null) {
+            return;
+        }
+
+        // clone phantom records to manipulate (switch) data properly
+        var sourceRecordCopy = sourceRecord.copy(null),
+            targetRecordCopy = targetRecord.copy(null);
+
+        // switch data between records (interfaces) - remapping
+        sourceRecord.set({
+            deviceName: newValue,
+            physicalDev: targetRecordCopy.get('physicalDev'),
+            systemDev:   targetRecordCopy.get('systemDev'),
+            symbolicDev: targetRecordCopy.get('symbolicDev'),
+            macAddress:  targetRecordCopy.get('macAddress'),
+            duplex:      targetRecordCopy.get('duplex'),
+            vendor:      targetRecordCopy.get('vendor'),
+            mbit:        targetRecordCopy.get('mbit'),
+            connected:   targetRecordCopy.get('connected')
+        });
+        targetRecord.set({
+            deviceName: oldValue,
+            physicalDev: sourceRecordCopy.get('physicalDev'),
+            systemDev:   sourceRecordCopy.get('systemDev'),
+            symbolicDev: sourceRecordCopy.get('symbolicDev'),
+            macAddress:  sourceRecordCopy.get('macAddress'),
+            duplex:      sourceRecordCopy.get('duplex'),
+            vendor:      sourceRecordCopy.get('vendor'),
+            mbit:        sourceRecordCopy.get('mbit'),
+            connected:   sourceRecordCopy.get('connected')
+        });
     }
 });
