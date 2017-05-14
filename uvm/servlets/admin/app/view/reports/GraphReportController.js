@@ -552,7 +552,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                             r: 0.7
                         },
                         stops: [
-                            [0, Highcharts.Color(color).setOpacity(0.3).get('rgba')],
+                            [0, Highcharts.Color(color).setOpacity(0.4).get('rgba')],
                             [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
                         ]
                     };
@@ -584,7 +584,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 },
                 // pie graphs
                 pie: {
-                    innerSize: isDonut ? '40%' : 0
+                    innerSize: isDonut ? '40%' : 0,
+                    //borderColor: '#666666'
                 },
                 // time graphs
                 spline: {
