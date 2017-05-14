@@ -191,33 +191,37 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
 
     onConditionsRender: function (conditionsGrid) {
-        var conds = this.mainGrid.conditions, menuConditions = [], i;
-
-        // when record is modified update conditions menu
-        this.recordBind = this.getViewModel().bind({
-            bindTo: '{record}',
-        }, this.setMenuConditions);
+        var conds = this.mainGrid.conditions, 
+            menuConditions = [], i;
 
         // create and add conditions to the menu
-        for (i = 0; i < conds.length; i += 1) {
-            if (conds[i].visible) {
-                menuConditions.push({
-                    text: conds[i].displayName,
-                    conditionType: conds[i].name,
-                    index: i
-                });
+        if( conds ){
+            // when record is modified update conditions menu
+            this.recordBind = this.getViewModel().bind({
+                bindTo: '{record}',
+            }, this.setMenuConditions);
+
+            for (i = 0; i < conds.length; i += 1) {
+                if (conds[i].visible) {
+                    menuConditions.push({
+                        text: conds[i].displayName,
+                        conditionType: conds[i].name,
+                        index: i
+                    });
+                }
             }
+
+            conditionsGrid.down('#addConditionBtn').setMenu({
+                showSeparator: false,
+                plain: true,
+                items: menuConditions,
+                mouseLeaveDelay: 0,
+                listeners: {
+                    click: 'addCondition'
+                }
+            });
         }
 
-        conditionsGrid.down('#addConditionBtn').setMenu({
-            showSeparator: false,
-            plain: true,
-            items: menuConditions,
-            mouseLeaveDelay: 0,
-            listeners: {
-                click: 'addCondition'
-            }
-        });
     },
 
     /**

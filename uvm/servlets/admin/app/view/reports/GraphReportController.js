@@ -536,12 +536,29 @@ Ext.define('Ung.view.reports.GraphReportController', {
             is3d = entry.get('pieStyle').indexOf('3D') >= 0;
         }
 
-        colors = Ext.clone(entry.get('colors')) || Ext.clone(Util.defaultColors);
+        var colors = Ext.clone(entry.get('colors')) || Ext.clone(Util.defaultColors);
 
         if (colors) {
             for (var i = 0; i < colors.length; i += 1) {
                 colors[i] = isTimeGraph ? ( isColumnOverlapped ? new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba') : new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')) : colors[i];
             }
+            // add gradient
+            if ((isPie || isDonut) && !is3d) {
+                colors = Highcharts.map( colors, function (color) {
+                    return {
+                        radialGradient: {
+                            cx: 0.5,
+                            cy: 0.5,
+                            r: 0.7
+                        },
+                        stops: [
+                            [0, Highcharts.Color(color).setOpacity(0.3).get('rgba')],
+                            [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
+                        ]
+                    };
+                });
+            }
+
         }
 
         me.chart.update({

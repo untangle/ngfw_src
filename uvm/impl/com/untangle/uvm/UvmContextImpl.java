@@ -68,6 +68,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private static String uid = null;
     private static String applianceModel = null;
+    private static int threadNumber = 1;
 
     private UvmState state;
     private AdminManagerImpl adminManager;
@@ -111,18 +112,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private UserTableImpl userTableImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
+
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
     
-    // constructor ------------------------------------------------------------
-
     private UvmContextImpl()
     {
         state = UvmState.LOADED;
     }
-
-    // static factory ---------------------------------------------------------
 
     static UvmContextImpl getInstance()
     {
@@ -133,8 +131,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         return CONTEXT;
     }
-
-    // singletons -------------------------------------------------------------
 
     public LocalDirectory localDirectory()
     {
@@ -363,22 +359,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.serializer;
     }
 
-    // service methods --------------------------------------------------------
-
-    /* For autonumbering anonymous threads. */
-    private static class ThreadNumber
-    {
-        private static int threadInitNumber = 1;
-
-        public static synchronized int nextThreadNum()
-        {
-            return threadInitNumber++;
-        }
-    }
-
     public Thread newThread(final Runnable runnable)
     {
-        return newThread(runnable, "UTThread-" + ThreadNumber.nextThreadNum());
+        int threadNum;
+        synchronized( UvmContextImpl.class ) {
+            threadNum = threadNumber++;
+        }
+        return newThread(runnable, "UTThread-" + threadNum);
     }
 
     public Thread newThread(final Runnable runnable, final String name)
@@ -699,7 +686,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         try {
             json.put("languageManager", this.languageManager());
             json.put("skinManager", this.skinManager());
-            json.put("appManager", this.appManager()); // remove me
             json.put("appManager", this.appManager());
             json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());

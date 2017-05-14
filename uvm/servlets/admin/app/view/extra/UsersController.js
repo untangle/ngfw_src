@@ -18,22 +18,6 @@ Ext.define('Ung.view.extra.UsersController', {
         view.destroy();
     },
 
-    setAutoRefresh: function (btn) {
-        var me = this,
-            vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
-
-        if (btn.pressed) {
-            me.getUsers();
-            this.refreshInterval = setInterval(function () {
-                me.getUsers();
-            }, 5000);
-        } else {
-            clearInterval(this.refreshInterval);
-        }
-
-    },
-
     resetView: function( btn ){
         var grid = this.getView().down('#usersgrid');
         Ext.state.Manager.clear(grid.stateId);
@@ -50,6 +34,74 @@ Ext.define('Ung.view.extra.UsersController', {
             .then(function(result) {
                 grid.getView().setLoading(false);
                 vm.set('usersData', result.list);
+            });
+    },
+
+    saveUsers: function () {
+        var me = this,
+            store = me.getView().down('ungrid').getStore(),
+            list = [];
+
+        me.getView().query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+
+            var filters = store.getFilters().clone();
+            store.clearFilter();
+
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                list = Ext.Array.pluck(store.getRange(), 'data');
+            }
+
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
+        });
+
+        me.getView().setLoading(true);
+        Rpc.asyncData('rpc.userTable.setUsers', {
+            javaClass: 'java.util.LinkedList',
+            list: list
+        }).then(function(result, ex) {
+             me.getUsers();
+        }, function (ex) {
+            Util.handleException(ex);
+        }).always(function () {
+            me.getView().setLoading(false);
+        });
+   },
+
+    refillQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Refilling...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.userTable.refillQuota', record.get('username'))
+            .then(function () {
+                me.getUsers();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
+            });
+    },
+
+    dropQuota: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.wait('Removing Quota...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.userTable.removeQuota', record.get('username'))
+            .then(function () {
+                me.getUsers();
+            }, function (ex) {
+                Util.handleException(ex);
+            }).always(function () {
+                Ext.MessageBox.hide();
             });
     }
 });

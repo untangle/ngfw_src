@@ -41,6 +41,10 @@ Ext.define('Ung.cmp.GridController', {
             newRecord = record.copy(null);
         newRecord.set('markedForNew', true);
 
+        if( newRecord.get('readOnly') == true){
+            delete newRecord.data['readOnly'];
+        }
+
         if (v.topInsert) {
             v.getStore().insert(0, newRecord);
         } else {
@@ -54,7 +58,7 @@ Ext.define('Ung.cmp.GridController', {
 
     editorWin: function (record) {
         this.dialog = this.getView().add({
-            xtype: 'ung.cmp.recordeditor',
+            xtype: this.getView().editorXtype,
             record: record
         });
 
@@ -128,16 +132,13 @@ Ext.define('Ung.cmp.GridController', {
                     valueRenderer.push(Util.weekdaysMap[day]);
                 });
                 break;
-            // case 'CLIENT_COUNTRY':
-            // case 'SERVER_COUNTRY':
-            // case 'REMOTE_HOST_COUNTRY':
-            //     conds[i].value.toString().split(',').forEach(function (code) {
-            //         var country = Ext.getStore('countries').findRecord('code', code);
-            //         valueRenderer.push(country ? country.get('name') : code);
-            //     });
-            //     break;
             default:
-                valueRenderer = conds[i].value.toString().split(',');
+                // to avoid exceptions, in some situations condition value is null
+                if (conds[i].value !== null) {
+                    valueRenderer = conds[i].value.toString().split(',');
+                } else {
+                    valueRenderer = [];
+                }
             }
             resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
         }
@@ -235,6 +236,73 @@ Ext.define('Ung.cmp.GridController', {
                                     return;
                                 }
                                 me.importHandler(form.getValues().importMode, action.result.msg);
+                                me.importDialog.close();
+                            },
+                            failure: function(form, action) {
+                                Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                            }
+                        });
+                    }
+                }]
+            }],
+        });
+        this.importDialog.show();
+    },
+
+    // same as import but without prepend or append options
+    replaceData: function () {
+        var me = this;
+        this.importDialog = this.getView().add({
+            xtype: 'window',
+            title: 'Import Settings'.t(),
+            modal: true,
+            layout: 'fit',
+            width: 450,
+            items: [{
+                xtype: 'form',
+                border: false,
+                url: 'gridSettings',
+                bodyPadding: 10,
+                layout: 'anchor',
+                items: [{
+                    xtype: 'component',
+                    margin: 10,
+                    html: 'Replace current settings with settings from:'.t()
+                }, {
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    fieldLabel: 'File'.t(),
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'import'
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-red',
+                    handler: function () {
+                        me.importDialog.close();
+                    }
+                }, {
+                    text: 'Import'.t(),
+                    iconCls: 'fa fa-check',
+                    formBind: true,
+                    handler: function (btn) {
+                        btn.up('form').submit({
+                            waitMsg: 'Please wait while the settings are uploaded...'.t(),
+                            success: function(form, action) {
+                                if (!action.result) {
+                                    Ext.MessageBox.alert('Warning'.t(), 'Import failed.'.t());
+                                    return;
+                                }
+                                if (!action.result.success) {
+                                    Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                                    return;
+                                }
+                                me.importHandler('replace', action.result.msg);
                                 me.importDialog.close();
                             },
                             failure: function(form, action) {
@@ -362,10 +430,47 @@ Ext.define('Ung.cmp.GridController', {
         this.pswdDialog.show();
     },
 
+    beforeEdit: function( editor, context ){
+        if( context &&
+            context.record &&
+            context.record.get('readOnly') === true ){
+            return false;
+        }
+        return true;
+    },
+
     columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
         var rtype = view.grid.getColumns()[columnIndex].rtype;
         if(rtype != null){
-            return Renderer[rtype](value);
+            if( !Renderer[rtype] ){
+                console.log('Missing renderer for rtype=' + rtype);
+            }else{
+                return Renderer[rtype](value);
+            }
+        }
+        return value;
+    },
+
+    /**
+     * Used for extra column actions which can be added to the grid but are very specific to that context
+     * The grid requires to have defined a parentView tied to the controller on which action method is implemented
+     * action - is an extra configuration set on actioncolumn and represents the name of the method to be called
+     * see Users/UsersController implementation
+     */
+    externalAction: function (v, rowIndex, colIndex, item, e, record) {
+        var view = this.getView(),
+            extraCtrl = view.up(view.parentView).getController();
+
+        if (!extraCtrl) {
+            console.log('Unable to get the extra controller');
+            return;
+        }
+
+        // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
+        if (item.action) {
+            extraCtrl[item.action].apply(extraCtrl, arguments);
+        } else {
+            console.log('External action not defined!');
         }
     }
 

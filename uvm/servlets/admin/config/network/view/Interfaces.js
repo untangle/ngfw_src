@@ -30,24 +30,16 @@ Ext.define('Ung.config.network.view.Interfaces', {
             hidden: true,
             bind: { hidden: '{!settings.vlansEnabled}' },
             handler: 'editInterface'
+        }, {
+            text: 'Remap Interfaces'.t(),
+            iconCls: 'fa fa-random',
+            handler: 'remapInterfaces'
         }],
 
         layout: 'fit',
         forceFit: true,
-        // viewConfig: {
-        //     plugins: {
-        //         ptype: 'gridviewdragdrop',
-        //         dragText: 'Drag and drop to reorganize'.t(),
-        //         // allow drag only from drag column icons
-        //         dragZone: {
-        //             onBeforeDrag: function (data, e) {
-        //                 return Ext.get(e.target).hasCls('fa-arrows');
-        //             }
-        //         }
-        //     }
-        // },
-        // title: 'Interfaces'.t(),
         bind: '{interfaces}',
+        sortableColumns: false,
         fields: [
             'interfaceId'
         ],
@@ -57,7 +49,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             align: 'center',
             resizable: false,
             sortable: false,
-            menuEnabled: false,
+            hideable: false,
             renderer: function (value) {
                 switch (value) {
                 case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';

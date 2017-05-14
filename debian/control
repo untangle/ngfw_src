@@ -346,7 +346,8 @@ Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
 Depends: untangle-libuvm,
          untangle-libuvmcore (>= 11.1),
          untangle-libuvmthirdparty,
-         untangle-development-runtime (> 13.0.0)
+         untangle-development-runtime (> 13.0.0),
+         gzip, zip, unzip
 Description: Platform
  The Platform.
 

@@ -17,6 +17,7 @@ Ext.define('Ung.cmp.Grid', {
         addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
         import: { text: 'Import'.t(), iconCls: 'fa fa-arrow-down', handler: 'importData' },
         export: { text: 'Export'.t(), iconCls: 'fa fa-arrow-up', handler: 'exportData' },
+        replace: { text: 'Import'.t(), iconCls: 'fa fa-arrow-down', handler: 'replaceData' },
         // moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
         // moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
     },
@@ -27,8 +28,9 @@ Ext.define('Ung.cmp.Grid', {
      * Possible values:
      * '@add' - opens up a popup form with an emptyRecord
      * '@addInline' - add a new emptyRecord directly to the grid (meaning that grid columns have an editor defined for inline cell editing)
-     * '@import' - imports data from file (not implemented)
-     * '@export' - exports data to file (not implemented)
+     * '@import' - imports data from file
+     * '@export' - exports data to file
+     * '@replace' - imports data from file without prepend or append options
      */
     tbar: null,
 
@@ -73,6 +75,12 @@ Ext.define('Ung.cmp.Grid', {
      */
     editorFields: null,
 
+    /**
+     * @cfg {string} editorXtype
+     * Override the default record editor xtype of 'ung.cmp.recordeditor'.
+     * Almost certainly a defintion you'll extend from ung.cmp.recordeditor.
+     */
+    editorXtype: 'ung.cmp.recordeditor',
 
     /**
      * @cfg {Object} emptyRow
@@ -98,6 +106,13 @@ Ext.define('Ung.cmp.Grid', {
      * e.g. 'Forward to the following location:'.t()
      */
     actionText: 'Perform the following action(s):'.t(),
+
+    /**
+     * @cfg {String} parentView
+     * The itemId of the component used to get an extra controller with actioncolumn methods specific for that view purpose
+     * e.g. '#users' which alloes accessing the UsersController and call actioncolumn methods from it
+     */
+    parentView: null,
 
     stateful: false,
 
@@ -164,6 +179,10 @@ Ext.define('Ung.cmp.Grid', {
         if( column.rtype ){
             column.renderer = 'columnRenderer';
         }
+    },
+
+    listeners: {
+        beforeedit: 'beforeEdit'
     },
 
     initComponent: function () {

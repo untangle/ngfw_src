@@ -4,15 +4,17 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     itemId: 'advanced',
     title: 'Advanced'.t(),
     viewModel: true,
+    autoScroll: true,
 
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px', fontWeight: 600 },
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' +
-              'Advanced settings require careful configuration.' +
-              ' <i class="fa fa-exclamation-triangle" style="color: red;"></i><br>' +
+              'Advanced settings require careful configuration.<br>' +
+              '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' +
               'Misconfiguration can compromise the proper operation and security of your server.<br>' +
+              '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' +
               'Changes made on this tab are not officially supported.<br>'.t()
     }],
 
@@ -107,7 +109,7 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@addInline']
+        items: ['@addInline', '->', '@import', '@export']
     }],
 
     recordActions: ['delete'],

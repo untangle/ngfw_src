@@ -28,8 +28,12 @@ Ext.define('Ung.store.PoliciesTree', {
             policies = result.policies.list;
 
             Ext.Array.each(policies, function (policy) {
-                policy.parentPolicyId = policy.parentId || 0;
-                policy.slug = policy.name.replace(/ /g, '-').toLowerCase();
+                /**
+                 * parentId can be 0 or null (if no parent policy), so it is normalized to be just 0 (None)
+                 * parentId is also used by the treestore internals so it will be used "parentPolicyId" instead
+                 */
+                policy.parentId = policy.parentId || 0;
+                policy.parentPolicyId = policy.parentId;
             });
 
             var tree = me.recursiveTree(Ext.clone(policies));
@@ -47,7 +51,7 @@ Ext.define('Ung.store.PoliciesTree', {
     recursiveTree: function (array, parent, tree) {
         var me = this;
         tree = typeof tree !== undefined ? tree : [];
-        parent = parent || { policyId: null };
+        parent = parent || { policyId: 0 };
 
 
         var children = Ext.Array.filter(array, function (child) {
@@ -57,7 +61,7 @@ Ext.define('Ung.store.PoliciesTree', {
         if (!Ext.isEmpty(children)) {
             parent.expanded = true;
             parent.iconCls = 'fa fa-file-text-o';
-            if (parent.policyId === null) {
+            if (parent.policyId === 0) {
                 tree = children;
             } else {
                 parent.children = children;

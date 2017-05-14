@@ -57,7 +57,7 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     items: [{
-        xtype: 'ungrid',
+        xtype: 'grid',
 
         region: 'center',
         itemId: 'hostsgrid',
@@ -98,7 +98,7 @@ Ext.define('Ung.view.extra.Hosts', {
             rtype: 'interface'
         },{
             header: 'Creation Time'.t(),
-            dataIndex: 'creationTimeDate',
+            dataIndex: 'creationTime',
             hidden: true,
             rtype: 'timestamp',
             filter: { type: 'date' },
@@ -244,20 +244,37 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 filter: 'number',
+                renderer: 'megaByteRenderer'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 filter: 'number',
+                renderer: 'megaByteRenderer'
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
-                hidden: true
+                hidden: true,
+                rtype: 'timestamp'
             },{
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 hidden: true,
                 rtype: 'timestamp',
                 filter: { type: 'date' },
+            }, {
+                xtype: 'actioncolumn',
+                width: 80,
+                align: 'center',
+                header: 'Refill Quota'.t(),
+                iconCls: 'fa fa-refresh fa-green',
+                handler: 'refillQuota'
+            }, {
+                xtype: 'actioncolumn',
+                width: 80,
+                align: 'center',
+                header: 'Drop Quota'.t(),
+                iconCls: 'fa fa-minus-circle',
+                handler: 'dropQuota'
             }]
         }]
     }, {
