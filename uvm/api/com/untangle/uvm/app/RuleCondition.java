@@ -785,13 +785,13 @@ public class RuleCondition implements JSONString, Serializable
             return false;
 
         case USERNAME:
-            tmpStr = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
+            tmpStr = sess.user();
             if (this.userMatcher.isMatch(tmpStr))
                 return true;
             return false;
 
         case DIRECTORY_CONNECTOR_GROUP:
-            String username = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
+            String username = sess.user();
             if (username == null)
                 return false;
 
