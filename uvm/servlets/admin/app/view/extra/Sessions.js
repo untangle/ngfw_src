@@ -129,14 +129,6 @@ Ext.define('Ung.view.extra.Sessions', {
             width: TableConfig.booleanFieldWidth,
             hidden: true
         }, {
-            header: 'Platform Hostname'.t(),
-            dataIndex: 'platform-hostname',
-            hidden: true
-        }, {
-            header: 'Platform Username'.t(),
-            dataIndex: 'platform-username',
-            hidden: false
-        }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             rtype: 'tags'
