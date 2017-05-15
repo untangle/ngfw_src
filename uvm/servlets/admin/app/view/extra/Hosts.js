@@ -78,7 +78,6 @@ Ext.define('Ung.view.extra.Hosts', {
         columns: [{
             header: 'Address'.t(),
             dataIndex: 'address',
-            resizable: false,
             filter: { type: 'string' }
         },{
             header: 'MAC'.t(),
