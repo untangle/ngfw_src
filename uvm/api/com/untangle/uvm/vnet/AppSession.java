@@ -112,9 +112,6 @@ public interface AppSession
      * The following are attachment keys used by various apps to
      * share information with other apps.
      */
-    public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
-    public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */
-
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE = "application-control-lite-protocol"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY = "application-control-lite-category"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION = "application-control-lite-description"; /* String */
