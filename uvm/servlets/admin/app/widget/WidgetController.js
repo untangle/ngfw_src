@@ -304,7 +304,7 @@ Ext.define('Ung.widget.WidgetController', {
 
                     Ext.Array.each(result.list, function (device) {
                         var intfCmp = me.getView().down('#intf_' + device.interfaceId), devNo;
-                        if (intfCmp) {
+                        if (intfCmp && device.active) {
                             devNo = intfCmp.getViewModel().get('devicesCount') || 0;
                             intfCmp.getViewModel().set('devicesCount', devNo += 1);
                         }
