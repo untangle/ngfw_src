@@ -208,7 +208,6 @@ Ext.define('Ung.config.email.view.Quarantine', {
             items: [{
                 xtype: 'ungrid',
                 border: false,
-                forceFit: true,
 
                 bind: '{qForwards}',
 

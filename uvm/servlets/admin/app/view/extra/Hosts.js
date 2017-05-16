@@ -67,7 +67,7 @@ Ext.define('Ung.view.extra.Hosts', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
