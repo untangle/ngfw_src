@@ -181,7 +181,7 @@ Ext.define('Ung.view.extra.Users', {
             rtype: 'timestamp'
         }, {
             xtype: 'actioncolumn',
-            width: 80,
+            width: 60,
             align: 'center',
             header: 'Refill Quota'.t(),
             iconCls: 'fa fa-refresh fa-green',
@@ -190,7 +190,7 @@ Ext.define('Ung.view.extra.Users', {
             action: 'refillQuota' // this is the method to be called in this view controller
         }, {
             xtype: 'actioncolumn',
-            width: 80,
+            width: 60,
             align: 'center',
             header: 'Drop Quota'.t(),
             iconCls: 'fa fa-minus-circle',
