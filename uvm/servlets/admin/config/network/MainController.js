@@ -68,11 +68,9 @@ Ext.define('Ung.config.network.MainController', {
         var vm = this.getViewModel();
         var me = this;
 
-        if (!Util.validateForms(view)) {
-            return;
-        }
-
-        view.setLoading(true);
+        // if (!Util.validateForms(view)) {
+        //     return;
+        // }
 
         // update interfaces data
         var interfacesStore = view.down('#interfacesGrid').getStore();
@@ -103,12 +101,40 @@ Ext.define('Ung.config.network.MainController', {
             }
         });
 
-        // check if Block All input filter rule is enabled
-        var blockAllEnabled = me.isBlockAllInputFilterRuleEnabled(vm.get('settings'));
-        if (!blockAllEnabled) {
-            Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.".t());
-            view.setLoading(false);
+        // extra validations
+        var domainNameCmp = view.down('textfield[name="DomainName"]');
+        if (domainNameCmp.rendered && !domainNameCmp.isValid()) {
+            Ung.app.redirectTo('#config/network/hostname');
+            Ext.MessageBox.alert('Warning'.t(), 'A Domain Name must be specified.'.t());
+            domainNameCmp.focus(true);
             return;
+        }
+        var httpsPortCmp = view.down('textfield[name="httpsPort"]');
+        if (httpsPortCmp.rendered && !httpsPortCmp.isValid()) {
+            Ung.app.redirectTo('#config/network/services');
+            Ext.MessageBox.alert('Warning'.t(), 'A HTTPS port must be specified.'.t());
+            httpsPortCmp.focus(true);
+            return;
+        }
+
+        var httpPortCmp = view.down('textfield[name="httpPort"]');
+        if (httpPortCmp.rendered && !httpPortCmp.isValid()) {
+            Ung.app.redirectTo('#config/network/services');
+            Ext.MessageBox.alert('Warning'.t(), 'A HTTP port must be specified.'.t());
+            httpPortCmp.focus(true);
+            return;
+        }
+
+        // check if Block All input filter rule exists and is enabled
+        var blockAllRule = me.isBlockAllInputFilterRuleEnabled(vm.get('settings'));
+        if (!blockAllRule) {
+            Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation.".t());
+            return;
+        } else {
+            if (!blockAllRule.enabled) {
+                Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.".t());
+                return;
+            }
         }
 
         // check to see if any input filter rules have been added/removed
@@ -192,6 +218,7 @@ Ext.define('Ung.config.network.MainController', {
         var vm = this.getViewModel();
         var me = this;
 
+        view.setLoading(true);
         Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
         .then(function(result) {
             me.loadSettings();
@@ -224,23 +251,18 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     isBlockAllInputFilterRuleEnabled: function(networkSettings) {
-        var blockAllEnabled = true; //assume true because we used different names in the past
+        var rule;
+        // var blockAllEnabled = true; //assume true because we used different names in the past
+        // var found = false;
         if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
             var i;
             for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
-                var rule = networkSettings.inputFilterRules.list[i];
+                rule = networkSettings.inputFilterRules.list[i];
                 if ( rule.description == "Block All" ) {
-                    if ( !rule.enabled || !rule.ipv6Enabled ) {
-                        blockAllEnabled = false;
-                    }
-                    else {
-                        blockAllEnabled = true;
-                        break;
-                    }
+                    return rule;
                 }
             }
         }
-        return blockAllEnabled;
     },
 
     onInterfaces: function () {
