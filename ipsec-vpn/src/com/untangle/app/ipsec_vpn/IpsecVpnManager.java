@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONString;
 import org.json.JSONObject;
 
-import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.CertificateManager;
@@ -175,13 +174,6 @@ public class IpsecVpnManager
             // We also prefix this name with UT123_ to ensure no dupes in the config file.
             String workname = data.getDescription().replaceAll("\\W", "-");
 
-            // use the IPMaskedAddress thingy to write the correct
-            // network/prefix values in the ipsec.conf file
-            IPMaskedAddress leftFixer = new IPMaskedAddress(data.getLeftSubnet());
-            IPMaskedAddress rightFixer = new IPMaskedAddress(data.getRightSubnet());
-            String leftString = leftFixer.getMaskedAddress().getHostAddress() + "/" + leftFixer.getPrefixLength();
-            String rightString = rightFixer.getMaskedAddress().getHostAddress() + "/" + rightFixer.getPrefixLength();
-
             ipsec_conf.write("conn UT" + Integer.toString(data.getId()) + "_" + workname + RET);
             ipsec_conf.write(TAB + "keyexchange=ikev" + Integer.toString(data.getIkeVersion()) + RET);
             ipsec_conf.write(TAB + "type=" + data.getConntype() + RET);
@@ -229,7 +221,7 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "leftid=" + data.getLeft() + RET);
             }
 
-            ipsec_conf.write(TAB + "leftsubnet=" + leftString + RET);
+            ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
             ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
 
             // use the configured rightid if available otherwise use right
@@ -239,7 +231,7 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
             }
 
-            ipsec_conf.write(TAB + "rightsubnet=" + rightString + RET);
+            ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
             ipsec_conf.write(TAB + "auto=" + data.getRunmode() + RET);
             ipsec_conf.write(RET);
 
