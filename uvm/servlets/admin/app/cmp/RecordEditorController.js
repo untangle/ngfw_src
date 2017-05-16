@@ -159,10 +159,31 @@ Ext.define('Ung.cmp.RecordEditorController', {
     onApply: function () {
         var v = this.getView(),
             vm = this.getViewModel(),
-            condStore;
+            condStore, invalidConditionFields = [];
 
         // if conditions
         if (v.down('grid')) {
+
+            // check for invalid conditions fields
+            Ext.Array.each(v.down('grid').query('field'), function (field) {
+                if (!field.isValid()) {
+                    invalidConditionFields.push(
+                        ( field.fieldLabel ? '<b>' + field.fieldLabel + '</b>: ' : '' ) +
+                        ( field.activeErrors ? field.activeErrors.join(', ') : '' )
+                    );
+                }
+            });
+
+            if (invalidConditionFields.length > 0){
+                Ext.MessageBox.alert(
+                    'Warning'.t(),
+                    'One or more fields contain invalid values. Settings cannot be saved until these problems are resolved.'.t() +
+                    '<br><br>' +
+                    invalidConditionFields.join('<br>')
+                );
+                return false;
+            }
+
             condStore = v.down('grid').getStore();
             if (condStore.getModifiedRecords().length > 0 || condStore.getRemovedRecords().length > 0 || condStore.getNewRecords().length > 0) {
                 v.record.set('conditions', {
@@ -191,7 +212,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
 
     onConditionsRender: function (conditionsGrid) {
-        var conds = this.mainGrid.conditions, 
+        var conds = this.mainGrid.conditions,
             menuConditions = [], i;
 
         // create and add conditions to the menu
@@ -286,21 +307,27 @@ Ext.define('Ung.cmp.RecordEditorController', {
         case 'textfield':
             container.add({
                 xtype: 'textfield',
+                fieldLabel: condition.displayName,
+                hideLabel: true,
                 style: { margin: 0 },
                 bind: {
                     value: '{record.value}'
                 },
-                vtype: condition.vtype
+                vtype: condition.vtype,
+                allowBlank: false
             });
             break;
         case 'numberfield':
             container.add({
                 xtype: 'numberfield',
+                fieldLabel: condition.displayName,
+                hideLabel: true,
                 style: { margin: 0 },
                 bind: {
                     value: '{record.value}'
                 },
-                vtype: condition.vtype
+                vtype: condition.vtype,
+                allowBlank: false
             });
             break;
         case 'checkboxgroup':
