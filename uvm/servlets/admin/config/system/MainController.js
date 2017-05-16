@@ -6,13 +6,13 @@ Ext.define('Ung.config.system.MainController', {
         '#': { afterrender: 'loadSettings' }
     },
 
-    loadSettings: function (v) {
+    loadSettings: function () {
         var me = this, vm = this.getViewModel(),
             timeZones = [];
 
         vm.set('isExpertMode', rpc.isExpertMode);
 
-        v.setLoading(true);
+        me.getView().setLoading(true);
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.directPromise('rpc.languageManager.getLanguagesList'),
@@ -21,7 +21,7 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.directPromise('rpc.systemManager.getTimeZone'),
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
         ], this).then(function (result) {
-            v.setLoading(false);
+            me.getView().setLoading(false);
             vm.set({
                 languageSettings: result[0],
                 languagesList: result[1],
@@ -125,6 +125,7 @@ Ext.define('Ung.config.system.MainController', {
             // Rpc.asyncPromise('rpc.systemManager.setDate', newDate),
         ], this).then(function () {
             v.setLoading(false);
+            me.loadSettings();
             Util.successToast('System settings saved!');
         }, function (ex) {
             v.setLoading(false);
