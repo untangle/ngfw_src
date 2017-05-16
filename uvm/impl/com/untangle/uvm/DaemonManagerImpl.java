@@ -91,6 +91,12 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
+    public int getUsageCount(String daemonName)
+    {
+        DaemonObject daemonObject = getDaemonObject( daemonName );
+        return daemonObject.usageCount;
+    }
+
     public void incrementUsageCount(String daemonName)
     {
         DaemonObject daemonObject = getDaemonObject( daemonName );

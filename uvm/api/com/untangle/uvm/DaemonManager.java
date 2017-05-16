@@ -14,6 +14,8 @@ public interface DaemonManager
 
     public void decrementUsageCount(String daemonName);
 
+    public int getUsageCount(String daemonName);
+
     public boolean enableDaemonMonitoring(String daemonName, long secondInterval, String processName);
 
     public boolean enableRequestMonitoring(String daemonName, long secondInterval, String hostString, int hostPort, String transmitString, String searchString);

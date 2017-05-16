@@ -76,7 +76,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
             logger.error("Could not apply app settings", exn);
         }
 
-        // 12.1 special - try to download spamassassin sigs if they do not exist
+        // try to download spamassassin sigs if they do not exist
         try {
             if ( ! (new java.io.File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
                 UvmContextFactory.context().execManager().exec("nohup sleep 120 && /etc/cron.daily/spamassassin >/dev/null 2>&1 &");
@@ -107,6 +107,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         search = "SPAMD/1.5 0 PONG";
         UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
 
+        // enable CRON job
+        UvmContextFactory.context().execManager().exec("grep -q -F 'CRON=1' /etc/default/spamassassin || sed -i -e 's/^CRON=.*/CRON=1/' /etc/default/spamassassin");
+
         super.preStart( isPermanentTransition );
     }
 
@@ -116,7 +119,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("spamassassin");
 
-        super.postStop( isPermanentTransition );
+        // disable CRON job if permanent and no one else using SA
+        if ( isPermanentTransition && UvmContextFactory.context().daemonManager().getUsageCount("spamassassin") == 0 )
+            UvmContextFactory.context().execManager().exec("sed -i -e 's/^CRON=.*/CRON=0/' /etc/default/spamassassin");
     }
 
     @Override
