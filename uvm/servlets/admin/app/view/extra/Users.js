@@ -17,36 +17,36 @@ Ext.define('Ung.view.extra.Users', {
             users: {
                 data: '{usersData}'
             }
+        },
+        formulas: {
+            userDetails: function (get) {
+                this.userDetailsGet = get;
+                this.getView().down('#usersgrid').getSelectionModel().select(0);
+                this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                    this.getView().down('#usersgrid').getSelectionModel().select(0);
+                    if( !this.userDetailsGet('usersgrid.selection') ){
+                        this.userDetailsSelectTask.delay(100);
+                    }
+                }, this) );
+                this.userDetailsSelectTask.delay(100);
+                if (get('usersgrid.selection')) {
+                    var data = get('usersgrid.selection').getData();
+                    delete data._id;
+                    delete data.javaClass;
+                    for( var k in data ){
+                        /*
+                         * Encode objects and arrays for details
+                         */
+                        if( ( typeof( data[k] ) == 'object' ) ||
+                            ( typeof( data[k] ) == 'array' ) ){
+                            data[k] = Ext.encode(data[k]);
+                        }
+                    }
+                    return data;
+                }
+                return;
+            }
         }
-        // formulas: {
-        //     userDetails: function (get) {
-        //         this.userDetailsGet = get;
-        //         this.getView().down('#usersgrid').getSelectionModel().select(0);
-        //         this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
-        //             this.getView().down('#usersgrid').getSelectionModel().select(0);
-        //             if( !this.userDetailsGet('usersgrid.selection') ){
-        //                 this.userDetailsSelectTask.delay(100);
-        //             }
-        //         }, this) );
-        //         this.userDetailsSelectTask.delay(100);
-        //         if (get('usersgrid.selection')) {
-        //             var data = get('usersgrid.selection').getData();
-        //             delete data._id;
-        //             delete data.javaClass;
-        //             for( var k in data ){
-        //                 /*
-        //                  * Encode objects and arrays for details
-        //                  */
-        //                 if( ( typeof( data[k] ) == 'object' ) ||
-        //                     ( typeof( data[k] ) == 'array' ) ){
-        //                     data[k] = Ext.encode(data[k]);
-        //                 }
-        //             }
-        //             return data;
-        //         }
-        //         return;
-        //     }
-        // }
     },
 
     layout: 'border',
@@ -119,14 +119,12 @@ Ext.define('Ung.view.extra.Users', {
 
         columns: [{
             header: 'Username'.t(),
-            width: 200,
             dataIndex: 'username',
             filter: {
                 type: 'string'
             }
         }, {
             header: 'Creation Time'.t(),
-            width: 160,
             dataIndex: 'creationTime',
             rtype: 'timestamp',
             filter: {
@@ -134,7 +132,6 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Access Time'.t(),
-            width: 160,
             dataIndex: 'lastAccessTime',
             rtype: 'timestamp',
             filter: {
@@ -142,61 +139,61 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Session Time'.t(),
-            width: 160,
             dataIndex: 'lastSessionTime',
             rtype: 'timestamp',
             filter: {
                 type: 'date'
             }
         }, {
-            header: 'Quota Size'.t(),
-            dataIndex: 'quotaSize',
-            renderer: function (value) {
-                return value === 0 || value === '' ? '' : value;
-            },
-            filter: {
-                type: 'numeric'
-            },
-            rtype: 'datasize'
-        }, {
-            header: 'Quota Remaining'.t(),
-            dataIndex: 'quotaRemaining',
-            filter: {
-                type: 'numeric'
-            },
-            rtype: 'datasize'
-        }, {
-            header: 'Quota Issue Time'.t(),
-            dataIndex: 'quotaIssueTime',
-            filter: {
-                type: 'date'
-            },
-            rtype: 'timestamp'
-        }, {
-            header: 'Quota Expiration Time'.t(),
-            dataIndex: 'quotaExpirationTime',
-            filter: {
-                type: 'date'
-            },
-            rtype: 'timestamp'
-        }, {
-            xtype: 'actioncolumn',
-            width: 60,
-            align: 'center',
-            header: 'Refill Quota'.t(),
-            iconCls: 'fa fa-refresh fa-green',
-
-            handler: 'externalAction', // this handler is defined in the ungrid controller
-            action: 'refillQuota' // this is the method to be called in this view controller
-        }, {
-            xtype: 'actioncolumn',
-            width: 60,
-            align: 'center',
-            header: 'Drop Quota'.t(),
-            iconCls: 'fa fa-minus-circle',
-
-            handler: 'externalAction',
-            action: 'dropQuota'
+            header: 'Quota'.t(),
+            columns: [{
+                header: 'Size'.t(),
+                dataIndex: 'quotaSize',
+                renderer: function (value) {
+                    return value === 0 || value === '' ? '' : value;
+                },
+                filter: {
+                    type: 'numeric'
+                },
+                rtype: 'datasize'
+            }, {
+                header: 'Remaining'.t(),
+                dataIndex: 'quotaRemaining',
+                filter: {
+                    type: 'numeric'
+                },
+                rtype: 'datasize'
+            }, {
+                header: 'Issue Time'.t(),
+                dataIndex: 'quotaIssueTime',
+                filter: {
+                    type: 'date'
+                },
+                rtype: 'timestamp'
+            }, {
+                header: 'Expiration Time'.t(),
+                dataIndex: 'quotaExpirationTime',
+                filter: {
+                    type: 'date'
+                },
+                rtype: 'timestamp'
+            }, {
+                xtype: 'actioncolumn',
+                width: 50,
+                align: 'center',
+                header: 'Refill'.t(),
+                iconCls: 'fa fa-refresh fa-green',
+                handler: 'externalAction',
+                action: 'refillQuota'
+            }, {
+                xtype: 'actioncolumn',
+                width: 50,
+                align: 'center',
+                header: 'Drop'.t(),
+                iconCls: 'fa fa-minus-circle',
+                handler: 'externalAction',
+                action: 'dropQuota'
+            }]
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
@@ -237,15 +234,15 @@ Ext.define('Ung.view.extra.Users', {
             }
         }]
     }, {
-        // region: 'east',
-        // xtype: 'unpropertygrid',
-        // title: 'User Details'.t(),
-        // itemId: 'details',
-        // hidden: true,
-        // bind: {
-        //     source: '{userDetails}',
-        //     hidden: '{!usersgrid.selection}'
-        // }
+        region: 'east',
+        xtype: 'unpropertygrid',
+        title: 'User Details'.t(),
+        itemId: 'details',
+        collapsed: true,
+
+        bind: {
+            source: '{userDetails}'
+        }
     }],
     tbar: [{
         xtype: 'button',
