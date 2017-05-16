@@ -124,22 +124,6 @@ Ext.define('Ung.cmp.Grid', {
     selModel: {
         type: 'cellmodel'
     },
-    viewConfig: {
-        enableTextSelection: true,
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
-        stripeRows: false,
-        getRowClass: function(record) {
-            if (record.get('markedForDelete')) {
-                return 'mark-delete';
-            }
-            if (record.get('markedForNew')) {
-                return 'mark-new';
-            }
-            if (record.get('readOnly')) {
-                return 'mark-readonly';
-            }
-        }
-    },
 
     plugins: {
         ptype: 'cellediting',
@@ -185,7 +169,6 @@ Ext.define('Ung.cmp.Grid', {
     },
 
     initComponent: function () {
-        // to revisit the way columns are attached
         var columns = Ext.clone(this.columns), i;
 
         if( this.stateful &&
@@ -201,6 +184,7 @@ Ext.define('Ung.cmp.Grid', {
         if( this.tbarSeparatorIndex == -1 ){
             this.tbarSeparatorIndex = this.tbar.length;
         }
+
         if(columns){
             /*
              * Reports and others can set their columns manually.
@@ -316,8 +300,34 @@ Ext.define('Ung.cmp.Grid', {
                 }
             }
         }
+
+        /*
+         * Treat viewConfig as an object that inline configuration can override on an
+         * individual field level instead of the entire viewConfig object itself.
+         */
+        var viewConfig = {
+            enableTextSelection: true,
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
+            stripeRows: false,
+            getRowClass: function(record) {
+                if (record.get('markedForDelete')) {
+                    return 'mark-delete';
+                }
+                if (record.get('markedForNew')) {
+                    return 'mark-new';
+                }
+                if (record.get('readOnly')) {
+                    return 'mark-readonly';
+                }
+            }
+        };
+        if( this.viewConfig ){
+            Ext.apply( viewConfig, this.viewConfig );
+        }
+
         Ext.apply(this, {
-            columns: columns
+            columns: columns,
+            viewConfig: viewConfig
         });
         this.callParent(arguments);
     }
