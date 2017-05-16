@@ -190,21 +190,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 // distance: 30,
                 padding: 5,
                 hideDelay: 0,
-                // pointFormat: '<span style="color: {point.color}">\u25CF</span> <strong>{series.name}</strong>: {point.y}<br/>',
-                pointFormatter: function () {
-                    return '<span style="color: ' + this.color + '">\u25CF</span> <strong>' + this.series.name + '</strong>: ' + this.y.toFixed(2) + '<br/>';
-                }
-                // useHTML: true,
-                // headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
-                // pointFormatter: function () {
-                //     var str = '<span>' + this.series.name + '</span>';
-                //     if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
-                //         str += ': <span style="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span>';
-                //     } else {
-                //         str += ': <spanstyle="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span> ' + entry.get('units');
-                //     }
-                //     return str + '<br/>';
-                // }
             },
             plotOptions: {
                 column: {
@@ -362,7 +347,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
         var me = this, vm = this.getViewModel(),
             timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
             colors = (vm.get('entry.colors') && vm.get('entry.colors').length > 0) ? vm.get('entry.colors') : Util.defaultColors,
-            i, j, seriesData, series = [], seriesRenderer = null, column;
+            i, j, seriesData, series = [], seriesRenderer = null, column,
+            units = vm.get('entry.units');
 
         if (!me.data) { return; }
 
@@ -406,6 +392,17 @@ Ext.define('Ung.view.reports.GraphReportController', {
                         [0, Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')],
                         [1, Highcharts.Color(colors[i]).setOpacity(0.1).get('rgba')]
                     ]
+                },
+                tooltip: {
+                    pointFormatter: function () {
+                        var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                        if (units === "bytes" || units === "bytes/s") {
+                            str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
+                        } else {
+                            str += ': <b>' + this.y + '</b> ' + units;
+                        }
+                        return str + '<br/>';
+                    }
                 }
             });
         }
