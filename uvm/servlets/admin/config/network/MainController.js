@@ -251,18 +251,17 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     isBlockAllInputFilterRuleEnabled: function(networkSettings) {
-        var rule;
-        // var blockAllEnabled = true; //assume true because we used different names in the past
-        // var found = false;
+        var rule, blockAllRule = null;
         if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
             var i;
             for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
                 rule = networkSettings.inputFilterRules.list[i];
-                if ( rule.description == "Block All" ) {
-                    return rule;
+                if ( rule.description === "Block All" ) {
+                    blockAllRule = rule;
                 }
             }
         }
+        return blockAllRule;
     },
 
     onInterfaces: function () {
