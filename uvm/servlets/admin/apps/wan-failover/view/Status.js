@@ -66,7 +66,7 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
                 trackMouseOver: false,
                 sortableColumns: false,
                 enableColumnHide: false,
-                forceFit: true,
+
                 minHeight: 120,
                 maxHeight: 250,
                 flex: 1,

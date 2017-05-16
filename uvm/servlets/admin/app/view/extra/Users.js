@@ -97,7 +97,6 @@ Ext.define('Ung.view.extra.Users', {
         columnLines: true,
 
         enableColumnHide: true,
-        forceFit: false,
 
         bind: '{users}',
 

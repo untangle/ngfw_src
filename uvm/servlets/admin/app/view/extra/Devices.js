@@ -63,7 +63,7 @@ Ext.define('Ung.view.extra.Devices', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true

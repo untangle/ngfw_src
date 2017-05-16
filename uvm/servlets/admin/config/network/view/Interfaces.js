@@ -37,7 +37,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }],
 
         layout: 'fit',
-        forceFit: true,
+
         bind: '{interfaces}',
         sortableColumns: false,
         fields: [
@@ -67,8 +67,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Name'.t(),
             dataIndex: 'name',
-            minWidth: 200
-            // flex: 1
+            minWidth: 200,
+            flex: 1
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
@@ -281,11 +281,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
             // border: false,
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
-            forceFit: true,
+
             viewConfig: {
                 emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
             },
-            // forceFit: true,
             bind: '{interfaceArp}',
             columns: [{
                 header: 'MAC Address'.t(),

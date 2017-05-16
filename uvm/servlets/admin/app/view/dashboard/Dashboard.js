@@ -132,7 +132,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         cls: 'widget-manager',
         split: true,
         xtype: 'grid',
-        // forceFit: true,
         hideHeaders: true,
         // disableSelection: true,
         // trackMouseOver: false,

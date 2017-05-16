@@ -21,7 +21,6 @@ Ext.define('Ung.config.about.view.Licenses', {
                 data: '{licenses}'
             }
         },
-        forceFit: true,
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'displayName',

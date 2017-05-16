@@ -57,7 +57,7 @@ Ext.define('Ung.view.extra.Sessions', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
