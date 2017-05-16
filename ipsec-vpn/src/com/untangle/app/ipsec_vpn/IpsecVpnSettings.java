@@ -31,6 +31,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private String virtualDnsOne = "";
     private String virtualDnsTwo = "";
     private String charonDebug = "";
+    private String uniqueIds = "yes";
 
     public IpsecVpnSettings()
     {
@@ -82,6 +83,9 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public String getCharonDebug() { return (charonDebug); }
     public void setCharonDebug(String charonDebug) { this.charonDebug = charonDebug; }
+
+    public String getUniqueIds() { return(uniqueIds); }
+    public void setUniqueIds(String uniqueIds) { this.uniqueIds = uniqueIds; }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 

@@ -14,11 +14,27 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecOptions', {
     }],
 
     items: [{
+        xtype:'combobox',
+        fieldLabel: "Unique ID's".t(),
+        labelWidth: 180,
+        editable: false,
+        width: 400,
+        bind: '{settings.uniqueIds}',
+        store: [['yes','Yes'],['no','No'],['never','Never'],['keep','Keep']]
+    }, {
+        xtype: 'component',
+        margin: '0 0 20 10',
+        html: 'The recommended default value is Yes unless you have a specific reason to change this setting.'.t(),
+    }, {
         xtype: 'checkbox',
-        margin: '0 0 0 20',
-        boxLabel: 'Bypass all IPsec traffic'.t(),
+        fieldLabel: 'Bypass all IPsec traffic'.t(),
+        labelWidth: 180,
         bind: {
             value: '{settings.bypassflag}'
         },
+    }, {
+        xtype: 'component',
+        margin: '0 0 20 10',
+        html: 'When enable, IPsec traffic will bypass processing by all Apps and Service Apps'.t(),
     }]
 });
