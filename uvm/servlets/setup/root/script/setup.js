@@ -230,6 +230,8 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                         ['business', i18n._('Business')],
                         ['school', i18n._('School')],
                         ['college', i18n._('College/University')],
+                        ['government', i18n._('Government')],
+                        ['nonprofit', i18n._('Non-Profit')],
                         ['home', i18n._('Home')],
                         ['other', i18n._('Other')]
                     ],
