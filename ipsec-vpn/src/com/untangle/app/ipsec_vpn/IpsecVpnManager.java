@@ -151,7 +151,7 @@ public class IpsecVpnManager
         // this section is required and contains general protocol
         // config directives and items that are common to all tunnels
         ipsec_conf.write("config setup" + RET);
-        ipsec_conf.write(TAB + "uniqueids=yes" + RET);
+        ipsec_conf.write(TAB + "uniqueids=" + settings.getUniqueIds() + RET);
 
         if (settings.getCharonDebug().length() > 0) {
             ipsec_conf.write(TAB + "charondebug=" + settings.getCharonDebug() + RET);
