@@ -1,8 +1,6 @@
 Ext.define('Ung.view.extra.Sessions', {
     extend: 'Ext.panel.Panel',
-    // extend: 'Ext.grid.Panel',
     xtype: 'ung.sessions',
-    // layout: 'border',
     /* requires-start */
     requires: [
         'Ung.view.extra.SessionsController'

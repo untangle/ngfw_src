@@ -42,17 +42,6 @@ Ext.define('Ung.view.extra.Hosts', {
     viewModel: {
         data: {
             autoRefresh: false
-        },
-        formulas: {
-            hostDetails: function (get) {
-                if (get('hostsgrid.selection')) {
-                    var data = get('hostsgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    return data;
-                }
-                return;
-            }
         }
     },
 

@@ -25,7 +25,6 @@ Ext.define('Ung.view.extra.DevicesController', {
             .then(function(result) {
                 me.getView().setLoading(false);
                 Ext.getStore('devices').loadData(result.list);
-                grid.getSelectionModel().select(0);
             });
     },
 
