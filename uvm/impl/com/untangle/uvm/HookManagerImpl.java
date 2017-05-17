@@ -141,11 +141,11 @@ public class HookManagerImpl implements HookManager
                 return 0;
             }
         
-            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get( hookName ));
-            if ( callbacks == null ) {
+            if ( registeredCallbacks.get( hookName ) == null ) {
                 logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
                 return 0;
             }
+            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get( hookName ));
 
             /**
              * Call all callbacks sequentially, but in a new thread.
