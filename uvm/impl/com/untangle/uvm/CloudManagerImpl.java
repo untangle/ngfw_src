@@ -77,7 +77,7 @@ public class CloudManagerImpl implements CloudManager
         }
     }
 
-    public JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion )
+    public JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType )
         throws Exception
     {
         try {
@@ -92,6 +92,7 @@ public class CloudManagerImpl implements CloudManager
             builder.addParameter( "uid" , uid );
             builder.addParameter( "applianceModel" , applianceModel );
             builder.addParameter( "majorVersion" , majorVersion );
+            builder.addParameter( "installType" , installType );
             
             String url = builder.build().toString();
 

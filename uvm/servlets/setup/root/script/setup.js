@@ -1,6 +1,6 @@
 /*global
- Ext, Ung, Webui, rpc:true, i18n:true, JSONRpcClient, console, window
- */
+  Ext, Ung, Webui, rpc:true, i18n:true, JSONRpcClient, console, window
+*/
 
 // the main json rpc object
 var rpc = {};
@@ -213,8 +213,30 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                     allowBlank: true,
                     width: 310,
                     vtype: 'email',
+                    cls: 'small-top-margin',
+                }]
+            }, {
+                xtype: 'container',
+                items: [{
+                    xtype: 'component',
+                    html: '<b>' + i18n._('Select a install type.') + '</b>'
+                }, {
+                    xtype: 'combo',
+                    fieldLabel: i18n._('Install Type'),
+                    name: 'installType',
+                    editable: false,
+                    store: [
+                        ['', ''],
+                        ['business', i18n._('Business')],
+                        ['school', i18n._('School')],
+                        ['college', i18n._('College/University')],
+                        ['home', i18n._('Home')],
+                        ['other', i18n._('Other')]
+                    ],
+                    width: 300,
+                    queryMode: 'local',
+                    value: '',
                     cls: 'small-top-margin'
-
                 }]
             }, {
                 xtype: 'container',
@@ -224,10 +246,10 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                 }, {
                     xtype: 'combo',
                     name: 'timezone',
+                    fieldLabel: i18n._('Timezone'),
                     editable: false,
                     store: Ung.setupWizard.TimeZoneStore,
                     width: 350,
-                    hideLabel: true,
                     queryMode: 'local',
                     value: rpc.timezoneID,
                     cls: 'small-top-margin'
@@ -243,6 +265,17 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                 if (emailField[0].getValue() == null || emailField[0].getValue() == '') {
                     emailField[0].setValue(rpc.adminEmail);
                 }
+                var adminEmail = this.panel.down('field[name="adminEmail"]');
+                Ext.create('Ext.tip.ToolTip', {
+                    html: 'Administrators receive email alerts and report summaries.',
+                    target: adminEmail.id
+                });
+                var installType = this.panel.down('field[name="installType"]');
+                Ext.create('Ext.tip.ToolTip', {
+                    html: 'Install type determines the optimal default settings for this deployment.',
+                    target: installType.id
+                });
+                
                 complete();
             }, this),
             onNext: Ext.bind(this.saveServerSettings, this),
@@ -272,9 +305,10 @@ Ext.define('Ung.setupWizard.ServerSettings', {
         }
     },
     saveAdminPassword: function (handler) {
-        // New Password
+            // New Password
         var password = this.panel.down('field[name="password"]').getValue();
         var adminEmail = this.panel.down('field[name="adminEmail"]').getValue();
+        var installType = this.panel.down('field[name="installType"]').getValue();
         rpc.setup.setAdminPassword(Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception, i18n._('Unable to save the admin password'))) {
                 return;
@@ -284,7 +318,7 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                 handler();
             }, this, [handler]);
             Ung.Setup.authenticate(password, afterFn);
-        }, this), password, adminEmail);
+        }, this), password, adminEmail, installType);
     }
 });
 
@@ -462,7 +496,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                     }
                     return text;
                 }
-            }]
+                }]
         });
 
         var panel = Ext.create('Ext.container.Container', {
@@ -505,7 +539,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                     interfacesMap[currentRow.get('interfaceId')] = currentRow.get('physicalDev');
                 });
                 var changed = false, i, intf,
-                    interfaceList = this.networkSettings.interfaces.list;
+                interfaceList = this.networkSettings.interfaces.list;
                 for (i = 0; i < interfaceList.length; i += 1) {
                     intf = interfaceList[i];
                     if (!intf.isVlanInterface) {
@@ -558,7 +592,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 return;
             }
             var interfaceList = [], i,
-                allInterfaces = result.interfaces.list;
+            allInterfaces = result.interfaces.list;
             for (i = 0; i < allInterfaces.length; i += 1) {
                 if (!allInterfaces[i].isVlanInterface) {
                     interfaceList.push(allInterfaces[i]);
@@ -575,7 +609,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 }
                 if (result == null) {
                     return;
-                }
+                    }
 
                 var deviceStatusMap = this.createRecordsMap((result == null ? [] : result.list), 'deviceName');
                 //update device connected status
@@ -616,7 +650,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 }
 
                 Ext.MessageBox.hide();
-                var intf, deviceStatus, deviceStatusMap = this.createRecordsMap((result == null ? [] : result.list), 'deviceName');
+                    var intf, deviceStatus, deviceStatusMap = this.createRecordsMap((result == null ? [] : result.list), 'deviceName');
                 for (i = 0; i < interfaceList.length; i += 1) {
                     intf = interfaceList[i];
                     deviceStatus = deviceStatusMap[intf.physicalDev];
@@ -1027,7 +1061,7 @@ Ext.define('Ung.setupWizard.Internet', {
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.INFO
             });
-            return;
+                return;
         }
 
         var message = '';
@@ -1109,7 +1143,7 @@ Ext.define('Ung.setupWizard.Internet', {
     // This does not reload the settings, it just updates what is
     // displayed inside of the User Interface.
     refreshNetworkDisplay: function () {
-        var c = 0;
+            var c = 0;
         var networkSettings, firstWanStatus;
         try {
             networkSettings = rpc.networkManager.getNetworkSettings();
@@ -1330,13 +1364,13 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
 
         complete();
     },
-    onSetRouter: function (isSet) {
-        var i, ar = [this.panel.down('field[name="network"]'), this.panel.down('combo[name="prefix"]'), this.panel.down('checkbox[name="enableDhcpServer"]')];
-        for (i = 0; i < ar.length; i += 1) {
-            ar[i].setDisabled(!isSet);
-        }
-        this.panel.down('field[name="network"]').clearInvalid();
-    },
+        onSetRouter: function (isSet) {
+            var i, ar = [this.panel.down('field[name="network"]'), this.panel.down('combo[name="prefix"]'), this.panel.down('checkbox[name="enableDhcpServer"]')];
+            for (i = 0; i < ar.length; i += 1) {
+                ar[i].setDisabled(!isSet);
+            }
+            this.panel.down('field[name="network"]').clearInvalid();
+        },
 
     getFirstNonWanSettings: function (networkSettings) {
         var c;
@@ -1358,11 +1392,11 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
             }
         }
         return null;
-    },
+        },
 
     validateInternalNetwork: function () {
         var rv = true, nic = false, i,
-            bridgeOrRouterRadio = this.panel.query('radio[name="bridgeOrRouter"]');
+        bridgeOrRouterRadio = this.panel.query('radio[name="bridgeOrRouter"]');
         for (i = 0; i < bridgeOrRouterRadio.length; i += 1) {
             if (bridgeOrRouterRadio[i].getValue()) {
                 nic = bridgeOrRouterRadio[i].inputValue;
@@ -1419,17 +1453,17 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
                             rpc.keepAlive = function () {}; // prevent keep alive
                             Ext.defer(function () {
                                 Ext.MessageBox.confirm(i18n._('Redirect to the new setup address?'),
-                                    Ext.String.format(i18n._('When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}'), firstWanStatus.v4Address) + '<br/><br/>' +
-                                    Ext.String.format(i18n._('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                                    i18n._('Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'),
-                                    function (btn) {
-                                        if (btn == 'yes') {
-                                            window.location.href = newSetupLocation;
-                                        } else {
-                                            rpc.tolerateKeepAliveExceptions = false;
-                                            afterFn();
-                                        }
-                                    }, this);
+                                                       Ext.String.format(i18n._('When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}'), firstWanStatus.v4Address) + '<br/><br/>' +
+                                                       Ext.String.format(i18n._('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
+                                                       i18n._('Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'),
+                                                       function (btn) {
+                                                           if (btn == 'yes') {
+                                                               window.location.href = newSetupLocation;
+                                                           } else {
+                                                               rpc.tolerateKeepAliveExceptions = false;
+                                                               afterFn();
+                                                           }
+                                                       }, this);
                             }, 5000, this);
                         }
                     }
@@ -1472,17 +1506,17 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
                                 rpc.tolerateKeepAliveExceptions = true; // prevent keep alive exceptions
                                 Ext.defer(function () {
                                     Ext.MessageBox.confirm(i18n._('Redirect to the new setup address?'),
-                                        Ext.String.format(i18n._('When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}'), network) + '<br/><br/>' +
-                                        Ext.String.format(i18n._('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'), '<a href="' + newSetupLocationB + '">' + newSetupLocationB + '</a>') + '<br/><br/>' +
-                                        i18n._('Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'),
-                                        function (btn) {
-                                            if (btn == 'yes') {
-                                                window.location.href = newSetupLocationB;
-                                            } else {
-                                                rpc.tolerateKeepAliveExceptions = false;
-                                                afterFn();
-                                            }
-                                        }, this);
+                                                           Ext.String.format(i18n._('When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}'), network) + '<br/><br/>' +
+                                                           Ext.String.format(i18n._('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'), '<a href="' + newSetupLocationB + '">' + newSetupLocationB + '</a>') + '<br/><br/>' +
+                                                           i18n._('Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'),
+                                                           function (btn) {
+                                                               if (btn == 'yes') {
+                                                                   window.location.href = newSetupLocationB;
+                                                               } else {
+                                                                   rpc.tolerateKeepAliveExceptions = false;
+                                                                   afterFn();
+                                                               }
+                                                           }, this);
                                 }, 5000, this);
                             }
                         }
@@ -1492,9 +1526,9 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
                         delegate = function () {}; // no delegate
                         rpc.keepAlive = function () {}; // prevent keep alive
                         Ext.MessageBox.wait(i18n._('Saving Internal Network Settings') + '<br/><br/>' +
-                            Ext.String.format(i18n._('The Internal Address is changed to: {0}'), network) + '<br/>' +
-                            Ext.String.format(i18n._('The changes are applied and you will be redirected to the new setup address: {0}'), '<a href="' + newSetupLocationC + '">' + newSetupLocationC + '</a>') + '<br/><br/>' +
-                            i18n._('If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again.'), i18n._('Please Wait'));
+                                            Ext.String.format(i18n._('The Internal Address is changed to: {0}'), network) + '<br/>' +
+                                            Ext.String.format(i18n._('The changes are applied and you will be redirected to the new setup address: {0}'), '<a href="' + newSetupLocationC + '">' + newSetupLocationC + '</a>') + '<br/><br/>' +
+                                            i18n._('If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again.'), i18n._('Please Wait'));
                         Ext.defer(function () { window.location.href = newSetupLocationC; }, 30000, this);
                     }
                 }
@@ -1596,17 +1630,17 @@ Ext.define('Ung.setupWizard.Wireless', {
                 width: 300,
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.INFO
-            });
+                });
             return false;
         }
         if ( password == "12345678" ) {
-            Ext.MessageBox.show({
-                title: i18n._('Wireless Password'),
-                msg: i18n._('You must choose a new and different wireless password.'),
-                width: 300,
-                buttons: Ext.MessageBox.OK,
-                icon: Ext.MessageBox.INFO
-            });
+                Ext.MessageBox.show({
+                    title: i18n._('Wireless Password'),
+                        msg: i18n._('You must choose a new and different wireless password.'),
+                        width: 300,
+                    buttons: Ext.MessageBox.OK,
+                    icon: Ext.MessageBox.INFO
+                });
             return false;
         }
 
@@ -1661,7 +1695,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                     xtype: 'component',
                     margin: '0 0 0 20',
                     html: i18n._('Automatically install new versions of the software when available.') + '<br/>' +
-                    i18n._('This is the recommended choice for most sites.')
+                        i18n._('This is the recommended choice for most sites.')
                 }]
             }, {
                 xtype: 'container',
@@ -1677,7 +1711,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                     xtype: 'component',
                     margin: '0 0 0 20',
                     html: Ext.String.format(i18n._('Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access.'), rpc.oemName) + '<br/>' +
-                    i18n._('This is the recommended choice for most sites.')
+                        i18n._('This is the recommended choice for most sites.')
                 }]
             }]
         });
@@ -1701,7 +1735,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                     if (!result.cloudEnabled) {
                         var cloudEnabledCheckbox = this.panel.down('checkbox[name="cloudEnabledCheckbox"]');
                         cloudEnabledCheckbox.setValue(false);
-                    }
+                        }
                     Ext.MessageBox.hide();
                 }, this));
             }, this),
@@ -1866,7 +1900,7 @@ Ext.define('Ung.Setup', {
             url: '/auth/login?url=/webui&realm=Administrator',
             params: {
                 username: 'admin',
-                password: password
+                    password: password
             },
             // If it uses the default type then this will not work
             // because the authentication handler does not like utf8
