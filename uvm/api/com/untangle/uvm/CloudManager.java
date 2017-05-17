@@ -31,6 +31,6 @@ public interface CloudManager
      * This method throws Exceptions under many circumstances so the callee must handle this.
      * This can include any network failure, or parse exceptions
      */
-    JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion ) throws Exception;
+    JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType ) throws Exception;
 
 }

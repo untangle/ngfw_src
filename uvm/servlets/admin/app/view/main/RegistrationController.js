@@ -130,7 +130,8 @@ Ext.define('Ung.view.main.RegistrationController', {
                 form.findField('companyName').getValue(),
                 rpc.serverUID,
                 rpc.applianceModel,
-                rpc.version
+                rpc.version,
+                rpc.installType
             );
         }
     }
