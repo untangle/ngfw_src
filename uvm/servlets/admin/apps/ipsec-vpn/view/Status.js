@@ -59,11 +59,11 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             }, {
                 header: 'Local Network'.t(),
                 dataIndex: 'tmplSrc',
-                width: 140
+                width: 200
             }, {
                 header: 'Remote Network'.t(),
                 dataIndex: 'tmplDst',
-                width: 140
+                width: 200
             }, {
                 header: 'Description'.t(),
                 dataIndex: 'proto',

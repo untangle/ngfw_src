@@ -575,7 +575,9 @@ public class IpsecVpnApp extends AppBase
             // using the host/bits format (192.168.2.1/24) in addition to the
             // network/bits format (192.168.2.0/24) we use the IpPalculator to
             // convert the configured subnet values to the actual network/bits
-            // values needed to match the 'ip xfrm policy' output
+            // values needed to match the 'ip xfrm policy' output. With IKEv2
+            // we also support multiple subnets for both sides so we just look
+            // for the first if there is more than one configured.
             String lstr = tunnel.getLeftSubnet();
             String rstr = tunnel.getRightSubnet();
             int lidx = lstr.indexOf(',');
@@ -609,21 +611,8 @@ public class IpsecVpnApp extends AppBase
             finder = findMatchingRecord(MatchMode.FWD, status.getReqid(), null, null, statusList);
             if (finder == null) continue;
 
-/*
-            // we found the correct status record with matching in/out/fwd records which means
-            // the tunnel is active so we update the DISPLAY record with fields from the
-            // POLICY fwd record inverting the src and dst to represent our perspective
-            record.setSrc(finder.getTmplDst());
-            record.setDst(finder.getTmplSrc());
-            record.setTmplSrc(finder.getDst());
-            record.setTmplDst(finder.getSrc());
-*/
-
-            record.setSrc(tunnel.getLeft());
-            record.setDst(tunnel.getRight());
-            record.setTmplSrc(tunnel.getLeftSubnet());
-            record.setTmplDst(tunnel.getRightSubnet());
-
+            // we found the correct status record with matching in/out/fwd
+            // records which means tunnel is active so we update the mode
             record.setMode("active");
             getTrafficStatistics(record);
             break;
