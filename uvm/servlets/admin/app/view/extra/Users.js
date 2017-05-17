@@ -17,35 +17,6 @@ Ext.define('Ung.view.extra.Users', {
             users: {
                 data: '{usersData}'
             }
-        },
-        formulas: {
-            userDetails: function (get) {
-                this.userDetailsGet = get;
-                this.getView().down('#usersgrid').getSelectionModel().select(0);
-                this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
-                    this.getView().down('#usersgrid').getSelectionModel().select(0);
-                    if( !this.userDetailsGet('usersgrid.selection') ){
-                        this.userDetailsSelectTask.delay(100);
-                    }
-                }, this) );
-                this.userDetailsSelectTask.delay(100);
-                if (get('usersgrid.selection')) {
-                    var data = get('usersgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    for( var k in data ){
-                        /*
-                         * Encode objects and arrays for details
-                         */
-                        if( ( typeof( data[k] ) == 'object' ) ||
-                            ( typeof( data[k] ) == 'array' ) ){
-                            data[k] = Ext.encode(data[k]);
-                        }
-                    }
-                    return data;
-                }
-                return;
-            }
         }
     },
 

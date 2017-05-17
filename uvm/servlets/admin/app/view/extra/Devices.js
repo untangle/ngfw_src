@@ -39,20 +39,6 @@ Ext.define('Ung.view.extra.Devices', {
         border: false
     },
 
-    viewModel: {
-        formulas: {
-            deviceDetails: function (get) {
-                if (get('devicesgrid.selection')) {
-                    var data = get('devicesgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    return data;
-                }
-                return;
-            }
-        }
-    },
-
     items: [{
         xtype: 'ungrid',
         region: 'center',
