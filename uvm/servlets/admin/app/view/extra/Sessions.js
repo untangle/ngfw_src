@@ -514,9 +514,10 @@ Ext.define('Ung.view.extra.Sessions', {
         iconCls: 'fa fa-refresh',
         itemId: 'resetBtn',
         handler: 'resetView',
-    }, '-', 'Filter:'.t(), {
-        xtype: 'textfield',
-        checkChangeBuffer: 200
+    },
+    '-',
+    {
+        xtype: 'ungridfilter'
     },{
         xtype: 'ungridstatus'
     }]
