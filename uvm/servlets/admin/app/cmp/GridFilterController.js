@@ -28,5 +28,10 @@ Ext.define('Ung.cmp.GridFilterController', {
             return false;
         });
         field.getTrigger('clear').show();
+
+        var gridStatus = v.up('panel').down('ungridstatus');
+        if( gridStatus ){
+            gridStatus.fireEvent('update');
+        }
     }
 });
