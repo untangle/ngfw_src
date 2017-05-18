@@ -519,6 +519,8 @@ Ext.define('Ung.view.extra.Sessions', {
     {
         xtype: 'ungridfilter'
     },{
-        xtype: 'ungridstatus'
+        xtype: 'ungridstatus',
+        tplFiltered: '{0} filtered, {1} total sessions'.t(),
+        tplUnfiltered: '{0} sessions'.t()
     }]
 });
