@@ -301,7 +301,9 @@ Ext.define('Ung.view.extra.Hosts', {
     '-', {
         xtype: 'ungridfilter'
     },{
-        xtype: 'ungridstatus'
+        xtype: 'ungridstatus',
+        tplFiltered: '{0} filtered, {1} total hosts'.t(),
+        tplUnfiltered: '{0} hosts'.t()
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

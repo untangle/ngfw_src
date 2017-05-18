@@ -4,9 +4,9 @@ Ext.define('Ung.cmp.GridStatus', {
 
     controller: 'ungridstatus',
 
-    tplFiltered: '{0} matched, {1} total entries'.t(),
+    tplFiltered: '{0} filtered, {1} total entries'.t(),
     tplUnfiltered: '{0} entries'.t(),
-                
+
     listeners: {
         update: 'onUpdateGridStatus'
     }
