@@ -46,7 +46,8 @@ Ext.define('Ung.cmp.PropertyGridController', {
         columns.forEach( function(column){
             var displayName = column.text;
             if( column.ownerCt.text ){
-                displayName = column.ownerCt.text + ' &#151 ' + displayName;
+                displayName = column.ownerCt.text + ' ' + displayName;
+                //displayName = column.ownerCt.text + ' &#151 ' + displayName;
             }
             var config = {
                 displayName: displayName
