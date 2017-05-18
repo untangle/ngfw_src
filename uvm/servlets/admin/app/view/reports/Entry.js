@@ -92,6 +92,8 @@ Ext.define('Ung.view.reports.Entry', {
                     change: 'filterEventList',
                     buffer: 100
                 }
+            },{
+                xtype: 'ungridstatus'
             }]
         }, {
             xtype: 'toolbar',

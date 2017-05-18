@@ -18,6 +18,7 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     getDevices: function () {
         var me = this,
+            v = me.getView(),
             grid = me.getView().down('#devicesgrid');
 
         me.getView().setLoading(true);
@@ -25,6 +26,8 @@ Ext.define('Ung.view.extra.DevicesController', {
             .then(function(result) {
                 me.getView().setLoading(false);
                 Ext.getStore('devices').loadData(result.list);
+
+                v.down('ungridstatus').fireEvent('update');
             });
     },
 
