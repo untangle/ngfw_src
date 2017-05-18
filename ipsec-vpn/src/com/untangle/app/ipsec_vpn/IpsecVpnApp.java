@@ -575,9 +575,19 @@ public class IpsecVpnApp extends AppBase
             // using the host/bits format (192.168.2.1/24) in addition to the
             // network/bits format (192.168.2.0/24) we use the IpPalculator to
             // convert the configured subnet values to the actual network/bits
-            // values needed to match the 'ip xfrm policy' output
-            srcCalc = new AddressCalculator(tunnel.getLeftSubnet());
-            dstCalc = new AddressCalculator(tunnel.getRightSubnet());
+            // values needed to match the 'ip xfrm policy' output. With IKEv2
+            // we also support multiple subnets for both sides so we just look
+            // for the first if there is more than one configured.
+            String lstr = tunnel.getLeftSubnet();
+            String rstr = tunnel.getRightSubnet();
+            int lidx = lstr.indexOf(',');
+            int ridx = rstr.indexOf(',');
+
+            if (lidx == -1) srcCalc = new AddressCalculator(tunnel.getLeftSubnet());
+            else srcCalc = new AddressCalculator(tunnel.getLeftSubnet().substring(0,lidx));
+
+            if (ridx == -1) dstCalc = new AddressCalculator(tunnel.getRightSubnet());
+            else dstCalc = new AddressCalculator(tunnel.getRightSubnet().substring(0,ridx));
 
             // look for a POLICY out record with matching reqid that also matches our src and dst networks
             finder = findMatchingRecord(MatchMode.OUT, status.getReqid(), srcCalc.getBaseNetwork(), dstCalc.getBaseNetwork(), statusList);
@@ -601,13 +611,8 @@ public class IpsecVpnApp extends AppBase
             finder = findMatchingRecord(MatchMode.FWD, status.getReqid(), null, null, statusList);
             if (finder == null) continue;
 
-            // we found the correct status record with matching in/out/fwd records which means
-            // the tunnel is active so we update the DISPLAY record with fields from the
-            // POLICY fwd record inverting the src and dst to represent our perspective
-            record.setSrc(finder.getTmplDst());
-            record.setDst(finder.getTmplSrc());
-            record.setTmplSrc(finder.getDst());
-            record.setTmplDst(finder.getSrc());
+            // we found the correct status record with matching in/out/fwd
+            // records which means tunnel is active so we update the mode
             record.setMode("active");
             getTrafficStatistics(record);
             break;

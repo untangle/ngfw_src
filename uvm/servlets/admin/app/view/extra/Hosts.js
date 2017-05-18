@@ -42,17 +42,6 @@ Ext.define('Ung.view.extra.Hosts', {
     viewModel: {
         data: {
             autoRefresh: false
-        },
-        formulas: {
-            hostDetails: function (get) {
-                if (get('hostsgrid.selection')) {
-                    var data = get('hostsgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    return data;
-                }
-                return;
-            }
         }
     },
 
@@ -67,7 +56,7 @@ Ext.define('Ung.view.extra.Hosts', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
@@ -78,7 +67,6 @@ Ext.define('Ung.view.extra.Hosts', {
         columns: [{
             header: 'Address'.t(),
             dataIndex: 'address',
-            resizable: false,
             filter: { type: 'string' }
         },{
             header: 'MAC'.t(),
@@ -309,9 +297,13 @@ Ext.define('Ung.view.extra.Hosts', {
         iconCls: 'fa fa-refresh',
         itemId: 'resetBtn',
         handler: 'resetView',
-    }, '-', 'Filter:'.t(), {
-        xtype: 'textfield',
-        checkChangeBuffer: 200
+    },
+    '-', {
+        xtype: 'ungridfilter'
+    },{
+        xtype: 'ungridstatus',
+        tplFiltered: '{0} filtered, {1} total hosts'.t(),
+        tplUnfiltered: '{0} hosts'.t()
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

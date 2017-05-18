@@ -37,7 +37,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            // forceFit: true,
+
             minHeight: 150,
             maxHeight: 250,
             margin: '0 0 10 0',
@@ -97,7 +97,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            // forceFit: true,
+
             minHeight: 150,
             maxHeight: 250,
             margin: '10 0 10 0',

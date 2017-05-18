@@ -33,63 +33,8 @@ Ext.define('Ung.cmp.PropertyGrid', {
     // }],
 
     listeners: {
-        beforeedit: function () {
-            return false;
-        },
-        beforerender: function(){
-            /*
-             * Build source list from accompanying grid's column definitions
-             */
-            var columns = this.up().down('grid').getColumns();
-            var sourceConfig = {};
-            columns.forEach( function(column){
-                var displayName = column.text;
-                if( column.ownerCt.text ){
-                    displayName = column.ownerCt.text + ' &#151 ' + displayName;
-                }
-                var config = {
-                    displayName: displayName
-                };
-
-                if( column.renderer && 
-                    !column.rtype ){
-                    config.renderer = column.renderer;
-                }else{
-                    if( column.rtype ){
-                        config.rtype = column.rtype;
-                        config.renderer = 'columnRenderer';
-                    }
-                }
-
-                var key = column.dataIndex;
-                sourceConfig[key] = config;
-            });
-            this.sourceConfig = Ext.apply({}, sourceConfig);
-
-            this.configure(sourceConfig);
-            this.reconfigure();
-
-            // this.getStore().sort('group');
-            // this.getStore().group('group');
-
-            // this.getStore().on({
-            //     datachanged: Ext.bind(function( store ){
-            //         var columns = this.up().down('grid').getColumns();
-            //         store.each(function(record){
-            //             var groupName = '';
-            //             var recordName = record.get('name');
-            //             columns.find( function(column){
-            //                 if( column.dataIndex == recordName ){
-            //                     if( column.ownerCt.text ){
-            //                         groupName = column.ownerCt.text;
-            //                     }
-            //                 } 
-            //             });
-            //             record.set('group', groupName);
-            //         });
-            //     },this)
-            // });
-
-        }
+        beforeedit: function () { return false; },
+        beforeexpand: 'onBeforeExpand',
+        beforerender: 'onBeforeRender'
     }
 });

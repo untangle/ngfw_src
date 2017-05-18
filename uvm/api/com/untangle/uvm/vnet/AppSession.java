@@ -112,9 +112,6 @@ public interface AppSession
      * The following are attachment keys used by various apps to
      * share information with other apps.
      */
-    public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
-    public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */
-
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE = "application-control-lite-protocol"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY = "application-control-lite-category"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION = "application-control-lite-description"; /* String */
@@ -129,7 +126,7 @@ public interface AppSession
     public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
     public final String KEY_HTTP_REQUEST_METHOD = "http-request-method"; /* String */
     public final String KEY_HTTP_REQUEST_FILE_PATH = "http-request-file-path"; /* String */
-    public final String KEY_HTTP_REQUEST_FILE_NAME = "htpp-request-file-name"; /* String */
+    public final String KEY_HTTP_REQUEST_FILE_NAME = "http-request-file-name"; /* String */
     public final String KEY_HTTP_REQUEST_FILE_EXTENSION = "http-request-file-extension"; /* String */
     public final String KEY_HTTP_RESPONSE_FILE_NAME = "http-response-file-name"; /* String */
     public final String KEY_HTTP_RESPONSE_FILE_EXTENSION = "http-response-file-extension"; /* String */

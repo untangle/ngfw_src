@@ -5,7 +5,10 @@ Ext.define('Ung.view.reports.EventReport', {
     viewModel: {
         stores: {
             events: {
-                data: '{eventsData}'
+                data: '{eventsData}',
+                listeners: {
+                    datachanged: 'onDataChanged'
+                }
             },
             props: {
                 data: '{propsData}'
@@ -37,21 +40,15 @@ Ext.define('Ung.view.reports.EventReport', {
             select: 'onEventSelect'
         }
     }, {
-        xtype: 'propertygrid',
-        itemId: 'properties',
+        xtype: 'unpropertygrid',
+        itemId: 'eventsProperties',
+        reference: 'eventsProperties',
         region: 'east',
-        width: 400,
-        minWidth: 200,
-        split: true,
-        nameColumnWidth: 150,
+        title: 'Details'.t(),
+        collapsed: true,
+
         bind: {
-            store: '{props}',
-            hidden: '{!eventsGrid.selection}'
-        },
-        listeners: {
-            beforeedit: function () {
-                return false;
-            }
+            source: '{eventProperty}',
         }
     }]
 });

@@ -81,9 +81,13 @@ cite {
     box-sizing: border-box;
 }
 
+.dashboard > .x-autocontainer-outerCt {
+    display: block;
+}
+
 .dashboard .x-autocontainer-innerCt::after {
     content: '';
-    flex-grow: 1000000000;
+    flex-grow: 1000000;
 }
 
 

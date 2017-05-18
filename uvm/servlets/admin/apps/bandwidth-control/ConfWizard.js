@@ -72,7 +72,6 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            forceFit: true,
 
             viewConfig: {
                 emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No WANs..</p>',

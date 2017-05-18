@@ -35,6 +35,7 @@ Ext.define('Ung.view.reports.EventReportController', {
 
                 Ext.Array.each(me.tableConfig.columns, function (col) {
                     col.hidden = Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0;
+                    // !!!
                     if (!col.filter && col.dataIndex !== 'time_stamp' && col.dataIndex !== 'end_time') {
                         col.filter = 'string';
                     }
@@ -55,6 +56,11 @@ Ext.define('Ung.view.reports.EventReportController', {
                 grid.setColumns(me.tableConfig.columns);
                 // Force state processing for this renamed grid
                 grid.mixins.state.constructor.call(grid);
+
+                var propertygrid = me.getView().down('#eventsProperties');
+                vm.set( 'eventProperty', null );
+                propertygrid.fireEvent('beforerender');
+                propertygrid.fireEvent('beforeexpand');
 
                 if (!me.getView().up('reportwidget')) {
                     me.fetchData();
@@ -89,7 +95,8 @@ Ext.define('Ung.view.reports.EventReportController', {
 
     fetchData: function (reset, cb) {
         var me = this,
-            vm = this.getViewModel();
+            v = me.getView(),
+            vm = me.getViewModel();
 
         var limit = 0;
         if( me.getView().up('reports-entry') ){
@@ -103,6 +110,8 @@ Ext.define('Ung.view.reports.EventReportController', {
             startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000);
             endDate = new Date(rpc.systemManager.getMilliseconds());
         }
+
+        var grid = v.down('grid');
 
         me.getViewModel().set('eventsData', []);
         me.getView().setLoading(true);
@@ -125,6 +134,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 });
 
                 me.loadResultSet(result);
+
                 if (cb) { cb(); }
             });
     },
@@ -135,9 +145,13 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     nextChunkCallback: function (result, ex) {
-        var vm = this.getViewModel();
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+
         vm.set('eventsData', result.list);
         this.getView().setLoading(false);
+
     },
 
     onEventSelect: function (el, record) {
@@ -156,6 +170,20 @@ Ext.define('Ung.view.reports.EventReportController', {
         // when selecting an event hide Settings if open
         me.getView().up('reports-entry').lookupReference('settingsBtn').setPressed(false);
 
+    },
+
+    onDataChanged: function(){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+
+        if( vm.get('eventProperty') == null ){
+            v.down('grid').getSelectionModel().select(0);
+        }
+
+        if( v.up().down('ungridstatus') ){
+            v.up().down('ungridstatus').fireEvent('update');
+        }
     }
 
 });

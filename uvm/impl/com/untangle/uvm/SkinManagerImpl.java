@@ -31,7 +31,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 public class SkinManagerImpl implements SkinManager
 {
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
-    private static final String DEFAULT_ADMIN_SKIN = "modern-rack";
+    private static final String DEFAULT_ADMIN_SKIN = "simple-gray";
 
     private final Logger logger = Logger.getLogger(getClass());
 

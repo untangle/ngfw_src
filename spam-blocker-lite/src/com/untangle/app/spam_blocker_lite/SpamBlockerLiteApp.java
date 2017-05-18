@@ -89,6 +89,9 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
         String search = "SPAMD/1.5 0 PONG";
         UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
 
+        // enable CRON job
+        UvmContextFactory.context().execManager().exec("grep -q -F 'CRON=1' /etc/default/spamassassin || sed -i -e 's/^CRON=.*/CRON=1/' /etc/default/spamassassin");
+
         super.preStart( isPermanentTransition);
     }
     
@@ -96,6 +99,10 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "spamassassin" );
+
+        // disable CRON job if permanent and no one else using SA
+        if ( isPermanentTransition && UvmContextFactory.context().daemonManager().getUsageCount("spamassassin") == 0 )
+            UvmContextFactory.context().execManager().exec("sed -i -e 's/^CRON=.*/CRON=0/' /etc/default/spamassassin");
 
         super.postStop( isPermanentTransition );
     }

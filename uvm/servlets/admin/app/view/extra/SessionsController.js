@@ -8,11 +8,7 @@ Ext.define('Ung.view.extra.SessionsController', {
             deactivate: 'onDeactivate'
         },
         '#sessionsgrid': {
-            afterrender: 'getSessions',
-            select: 'onSelect'
-        },
-        'toolbar textfield': {
-            change: 'globalFilter'
+            afterrender: 'getSessions'
         }
     },
 
@@ -46,7 +42,9 @@ Ext.define('Ung.view.extra.SessionsController', {
 
     getSessions: function () {
         var me = this,
-            grid = me.getView().down('#sessionsgrid');
+            v = me.getView(),
+            grid = v.down('#sessionsgrid');
+
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
             .then(function(result) {
@@ -64,49 +62,11 @@ Ext.define('Ung.view.extra.SessionsController', {
                 });
 
                 Ext.getStore('sessions').loadData( sessions );
+
+                v.down('ungridstatus').fireEvent('update');
+
                 grid.getSelectionModel().select(0);
             });
     },
-
-    onSelect: function (grid, record) {
-        var vm = this.getViewModel(),
-            props = record.getData();
-
-        delete props._id;
-        delete props.javaClass;
-        delete props.mark;
-        for(var k in props){
-            /*
-             * Encode objects and arrays for details
-             */
-            if( ( typeof( props[k] ) == 'object' ) || 
-                ( typeof( props[k] ) == 'array' ) ){
-                props[k] = Ext.encode(props[k]);
-            }
-        }
-        vm.set('selectedSession', props);
-    },
-
-    globalFilter: function (field, value) {
-        var list = this.getView().down('#sessionsgrid'),
-            re = new RegExp(value, 'gi');
-        if (value.length > 0) {
-            list.getStore().clearFilter();
-            list.getStore().filterBy(function (record) {
-                return re.test(record.get('protocol')) ||
-                       re.test(record.get('preNatClient')) ||
-                       re.test(record.get('postNatServer')) ||
-                       re.test(record.get('preNatClientPort')) ||
-                       re.test(record.get('postNatServerPort'));
-            });
-
-            // list.getStore().filter([
-            //     { property: 'protocol', value: value }
-            // ]);
-        } else {
-            list.getStore().clearFilter();
-        }
-        list.getSelectionModel().select(0);
-    }
 
 });
