@@ -3,15 +3,18 @@ Ext.define('Ung.cmp.GridRenderers', {
     alternateClassName: 'Renderer',
 
     boolean: function( value ){
-        return '<i class="fa ' + (value ? 'fa-check' : 'fa-minus') + '"></i>';
+        return ( value == true ) ? 'true' : 'false';
     },
 
     timestamp: function( value ){
         if( !value ){
-            return '<i class="fa fa-minus"></i>';
+            return '&mdash;';
+        }
+        if( ( typeof( value ) == 'object' ) &&
+            value.time ){
+            value = value.time;
         }
         return Ext.util.Format.date(new Date( value ), 'timestamp_fmt'.t());
-
     },
 
     interface: function( value ){

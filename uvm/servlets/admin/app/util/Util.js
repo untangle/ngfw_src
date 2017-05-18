@@ -82,12 +82,26 @@ Ext.define('Ung.util.Util', {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     },
 
-    iconTitle: function (text, icon) {
-        var icn = icon.split('-') [0],
-            size = icon.split('-') [1] || 24;
-        return '<i class="material-icons" style="font-size: ' + size + 'px">' +
-                icn + '</i> <span style="vertical-align: middle;">' +
-                text + '</span>';
+    bytesRenderer: function(bytes, perSecond) {
+        var units = (!perSecond) ? ['bytes'.t(), 'Kbytes'.t(), 'Mbytes'.t(), 'Gbytes'.t()] :
+            ['bytes/s'.t(), 'Kbytes/s'.t(), 'Mbytes/s'.t(), 'Gbytes/s'.t()];
+        var units_itr = 0;
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+        bytes = Math.round(bytes*100)/100;
+        return bytes + ' ' + units[units_itr];
+    },
+    bytesRendererCompact: function(bytes) {
+        var units = ['', 'K', 'M', 'G'];
+        var units_itr = 0;
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+        bytes = Math.round(bytes*100)/100;
+        return bytes + ' ' + units[units_itr];
     },
 
     successToast: function (message) {

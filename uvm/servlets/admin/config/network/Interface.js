@@ -752,7 +752,7 @@ Ext.define('Ung.config.network.Interface', {
                 bind: '{intf.wirelessSsid}',
                 allowBlank: false,
                 maxLength: 30,
-                maskRe: /[a-zA-Z0-9\-_=]/
+                maskRe: /[a-zA-Z0-9\-_=. ]/
                 //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/
             }, {
                 // encryption

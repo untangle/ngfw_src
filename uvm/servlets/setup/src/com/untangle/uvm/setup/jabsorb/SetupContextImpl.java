@@ -15,6 +15,7 @@ import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
 
@@ -44,9 +45,10 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         lm.setLanguageSettings( ls );
     }
     
-    public void setAdminPassword( String password, String email ) throws TransactionRolledbackException
+    public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
+        SystemSettings systemSettings = this.context.systemManager().getSettings();
         AdminUserSettings admin = null;
 
         /**
@@ -70,7 +72,10 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             admin.setPassword( password );
         }
 
+        systemSettings.setInstallType( installType );
+
         this.context.adminManager().setSettings( adminSettings );
+        this.context.systemManager().setSettings( systemSettings );
     }
 
     public WizardSettings getWizardSettings()

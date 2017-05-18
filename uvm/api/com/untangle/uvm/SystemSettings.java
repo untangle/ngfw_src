@@ -43,6 +43,8 @@ public class SystemSettings implements Serializable, JSONString
     private String mailCertificate = "apache.pem";
     private String ipsecCertificate = "apache.pem";
 
+    private String installType = "";
+
     public SystemSettings() { }
 
     public String toJSONString()
@@ -111,6 +113,12 @@ public class SystemSettings implements Serializable, JSONString
     */
     public String getTimeSource(){ return timeSource; }
     public void setTimeSource( String newValue) { this.timeSource = newValue; }
+
+    /**
+     * Install Type
+     */
+    public String getInstallType(){ return installType; }
+    public void setInstallType( String newValue) { this.installType = newValue; }
 
     /**
      * These are used to get and set the certificates used by the

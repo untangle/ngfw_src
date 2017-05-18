@@ -215,6 +215,7 @@ public abstract class NetcapHook implements Runnable
             if ( username != null ) {
                 userEntry = UvmContextFactory.context().userTable().getUserTableEntry( username, true );
             }
+            sessionGlobalState.setUser( username );
             /**
              * If user exists
              * Update device entry and also update SessionGlobalState
@@ -231,9 +232,6 @@ public abstract class NetcapHook implements Runnable
                 hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf );
             }
             
-            sessionGlobalState.setUser( username );
-            sessionGlobalState.attach( AppSession.KEY_PLATFORM_USERNAME, username );
-            sessionGlobalState.attach( AppSession.KEY_PLATFORM_HOSTNAME, hostname );
 
             /**
              * Determine the policy to process this session

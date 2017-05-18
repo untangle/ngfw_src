@@ -659,7 +659,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                 title: 'Status'.t(),
                 enableColumnHide: false,
                 enableSorting: false,
-                forceFit: true,
 
                 viewConfig: {
                     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',

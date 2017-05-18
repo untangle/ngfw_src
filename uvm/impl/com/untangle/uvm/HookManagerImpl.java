@@ -125,8 +125,8 @@ public class HookManagerImpl implements HookManager
         while (i.hasNext()) {
             HookCallback cb = i.next();
             if ( callbackName.equals( cb.getName() ) ) {
-                 i.remove();
-                 removed = true;
+                i.remove();
+                removed = true;
             }
         }
 
@@ -135,41 +135,44 @@ public class HookManagerImpl implements HookManager
 
     public int callCallbacks( String hookName, Object o )
     {
-        if ( hookName == null ) {
-            logger.warn( "Invalid argument: " + hookName);
-            return 0;
-        }
+        try {
+            if ( hookName == null ) {
+                logger.warn( "Invalid argument: " + hookName);
+                return 0;
+            }
         
-        LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
-        if ( callbacks == null ) {
-            logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
-            return 0;
-        }
+            if ( registeredCallbacks.get( hookName ) == null ) {
+                logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
+                return 0;
+            }
+            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get( hookName ));
 
-        /**
-         * Call all callbacks sequentially, but in a new thread.
-         * Since callbacks can be arbitrary we can not assume anything about their behavior when called
-         * We should assume they may block for a very long time and return the calling thread to the caller
-         */
-        new Thread( new Runnable() {
-                public void run() {
-                    logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
-                    for ( HookCallback cb : callbacks ) {
-                        try {
-                            logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
-                            cb.callback( o );
-                        } catch (Throwable t) {
-                            logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
-                            logger.warn( "Unregistering callback [" + cb.getName() + "]");
-                            unregisterCallback(hookName, cb);
+            /**
+             * Call all callbacks sequentially, but in a new thread.
+             * Since callbacks can be arbitrary we can not assume anything about their behavior when called
+             * We should assume they may block for a very long time and return the calling thread to the caller
+             */
+            new Thread( new Runnable() {
+                    public void run() {
+                        logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+                        for ( HookCallback cb : callbacks ) {
+                            try {
+                                logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                                cb.callback( o );
+                            } catch (Throwable t) {
+                                logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
+                                logger.warn( "Unregistering callback [" + cb.getName() + "]");
+                                unregisterCallback(hookName, cb);
+                            }
                         }
                     }
-                }
-            }).run();
+                }).run();
 
-        return callbacks.size();
+            return callbacks.size();
+        } catch (Throwable e) {
+            logger.warn("Exception: ",e);
+            return 0;
+        }
+
     }
-
-    
-    
 }

@@ -1,8 +1,6 @@
 Ext.define('Ung.view.extra.Sessions', {
     extend: 'Ext.panel.Panel',
-    // extend: 'Ext.grid.Panel',
     xtype: 'ung.sessions',
-    // layout: 'border',
     /* requires-start */
     requires: [
         'Ung.view.extra.SessionsController'
@@ -57,7 +55,7 @@ Ext.define('Ung.view.extra.Sessions', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
@@ -77,6 +75,24 @@ Ext.define('Ung.view.extra.Sessions', {
             rtype: 'timestamp',
             filter: { type: 'date' },
             width: TableConfig.timestampFieldWidth
+        }, {
+            header: 'Session ID'.t(),
+            dataIndex: 'sessionId',
+            hidden: true,
+            filter: 'number',
+            width: 60
+        }, {
+            header: 'Mark'.t(),
+            dataIndex: 'mark',
+            hidden: true,
+            filter: 'number',
+            width: 60,
+            renderer: function(value) {
+                if (value)
+                    return "0x" + value.toString(16);
+                else
+                    return "";
+            }
         }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
@@ -129,14 +145,6 @@ Ext.define('Ung.view.extra.Sessions', {
             width: TableConfig.booleanFieldWidth,
             hidden: true
         }, {
-            header: 'Hostname'.t(),
-            dataIndex: 'platform-hostname',
-            hidden: true
-        }, {
-            header: 'Username'.t(),
-            dataIndex: 'platform-username',
-            hidden: false
-        }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             rtype: 'tags'
@@ -159,7 +167,7 @@ Ext.define('Ung.view.extra.Sessions', {
             width: TableConfig.ipFieldWidth
         },{
             hidden: true,
-            header: 'Bandwidth Control' + " - " + 'Priority'.t(),
+            header: 'Bandwidth Control ' + 'Priority'.t(),
             dataIndex: "priority",
             renderer: function(value) {
                 if (Ext.isEmpty(value)) {
@@ -179,7 +187,7 @@ Ext.define('Ung.view.extra.Sessions', {
             }
         },{
             hidden: true,
-            header: 'QoS' + " - " + 'Priority'.t(),
+            header: 'QoS ' + 'Priority'.t(),
             dataIndex: "qosPriority",
             renderer: function(value) {
                 if (Ext.isEmpty(value)) {
@@ -210,23 +218,23 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
+                header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth
             }, {
-                header: 'Pre-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClientPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
+                header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth,
@@ -256,24 +264,24 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
+                header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth,
                 hidden: true
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
+                header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServer',
                 width: TableConfig.ipFieldWidth,
                 filter: { type: 'string' }
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth
@@ -411,11 +419,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 }
             },{
                 hidden: true,
-                header: 'Content Type'.t(),
-                dataIndex: "web-filter-content-type",
-                filter: { type: 'string' }
-            },{
-                hidden: true,
                 header: 'Flagged'.t(),
                 dataIndex: "web-filter-flagged",
                 filter: {
@@ -459,8 +462,23 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string'}
             },{
                 hidden: true,
+                header: 'Request File Extension'.t(),
+                dataIndex: "http-request-file-extension",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
                 header: 'Request File Path'.t(),
                 dataIndex: "http-request-file-path",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Response File Name'.t(),
+                dataIndex: "http-response-file-name",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Response File Extension'.t(),
+                dataIndex: "http-response-file-extension",
                 filter: { type: 'string'}
             },{
                 hidden: true,
@@ -511,8 +529,13 @@ Ext.define('Ung.view.extra.Sessions', {
         iconCls: 'fa fa-refresh',
         itemId: 'resetBtn',
         handler: 'resetView',
-    }, '-', 'Filter:'.t(), {
-        xtype: 'textfield',
-        checkChangeBuffer: 200
+    },
+    '-',
+    {
+        xtype: 'ungridfilter'
+    },{
+        xtype: 'ungridstatus',
+        tplFiltered: '{0} filtered, {1} total sessions'.t(),
+        tplUnfiltered: '{0} sessions'.t()
     }]
 });

@@ -41,6 +41,7 @@ Ext.define('Ung.config.events.view.Triggers', {
             tagTarget: 'activeHosts',
             tagLifetimeSec: 300,
             ruleId: -1,
+            thresholdEnabled: false,
             enabled: true
         },
 
@@ -73,8 +74,59 @@ Ext.define('Ung.config.events.view.Triggers', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
-            {
+            Field.conditions,{
+                xtype: 'fieldset',
+                title: 'As well as the following conditions:'.t(),
+                items:[{
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    bind: "{record.thresholdEnabled}",
+                    fieldLabel: 'Enable Thresholds'.t(),
+                    listeners: {
+                        disable: function (ck) {
+                            ck.setValue(false);
+                        }
+                    }
+                },{
+                    xtype:'fieldset',
+                    collapsible: false,
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{record.thresholdEnabled == false}',
+                        disabled: '{record.thresholdEnabled == false}'
+                    },
+                    items: [{
+                        xtype:'numberfield',
+                        fieldLabel: 'Exceeds Threshold Limit'.t(),
+                        labelWidth: 160,
+                        bind: '{record.thresholdLimit}'
+                    },{
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'numberfield',
+                            fieldLabel: 'Over Timeframe'.t(),
+                            labelWidth: 160,
+                            bind: '{record.thresholdTimeframeSec}',
+                            allowDecimals: false,
+                            allowBlank: false,
+                            minValue: 60,
+                            maxValue: 60*24*60*7, // 1 week
+                        }, {
+                            xtype: 'label',
+                            html: '(seconds)'.t(),
+                            cls: 'boxlabel'
+                        }]
+                    },{
+                        xtype:'textfield',
+                        fieldLabel: 'Grouping Field'.t(),
+                        labelWidth: 160,
+                        bind: '{record.thresholdGroupingField}'
+                    }]
+                }]
+            }, {
                 xtype: 'fieldset',
                 title: 'Perform the following action(s):'.t(),
                 items:[{

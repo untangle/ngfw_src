@@ -104,7 +104,6 @@ Ext.define('Ung.config.administration.view.Certificates', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            forceFit: true,
 
             columns: [{
                 header: 'Subject'.t(),

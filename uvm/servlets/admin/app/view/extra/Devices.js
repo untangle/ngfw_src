@@ -39,20 +39,6 @@ Ext.define('Ung.view.extra.Devices', {
         border: false
     },
 
-    viewModel: {
-        formulas: {
-            deviceDetails: function (get) {
-                if (get('devicesgrid.selection')) {
-                    var data = get('devicesgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    return data;
-                }
-                return;
-            }
-        }
-    },
-
     items: [{
         xtype: 'ungrid',
         region: 'center',
@@ -63,7 +49,7 @@ Ext.define('Ung.view.extra.Devices', {
         stateful: true,
 
         enableColumnHide: true,
-        forceFit: false,
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
@@ -223,9 +209,14 @@ Ext.define('Ung.view.extra.Devices', {
         iconCls: 'fa fa-refresh',
         itemId: 'resetBtn',
         handler: 'resetView',
-    }, '-', 'Filter:'.t(), {
-        xtype: 'textfield',
-        checkChangeBuffer: 200
+    },
+    '-',
+    {
+        xtype: 'ungridfilter'
+    },{
+        xtype: 'ungridstatus',
+        tplFiltered: '{0} filtered, {1} total devices'.t(),
+        tplUnfiltered: '{0} devices'.t(),
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

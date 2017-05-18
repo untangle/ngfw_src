@@ -72,23 +72,27 @@ Ext.define('Ung.view.main.RegistrationController', {
 
         if (form.isValid()) {
             me.getView().cloudManager.accountLogin(function(response, exception) {
-                    btn.setDisabled(false);
-                    if (exception) {
-                        vm.set('error', exception);
-                        return;
-                    }
-                    if (!response.success) {
-                        vm.set('error', response.customerMessage.t());
-                        return;
-                    }
-                    if (response.token) {
-                        me.getView().email = form.findField('email').getValue();
-                        me.getView().token = response.token;
-                        me.getView().down('#cards').setActiveItem(3);
-                    }
-                },
+                btn.setDisabled(false);
+                if (exception) {
+                    vm.set('error', exception);
+                    return;
+                }
+                if (!response.success) {
+                    vm.set('error', response.customerMessage.t());
+                    return;
+                }
+                if (response.token) {
+                    me.getView().email = form.findField('email').getValue();
+                    me.getView().token = response.token;
+                    me.getView().down('#cards').setActiveItem(3);
+                }
+            },
                 form.findField('email').getValue(),
-                form.findField('password').getValue()
+                form.findField('password').getValue(),
+                rpc.serverUID,
+                rpc.applianceModel,
+                rpc.version,
+                rpc.installType
             );
         }
     },
@@ -130,7 +134,8 @@ Ext.define('Ung.view.main.RegistrationController', {
                 form.findField('companyName').getValue(),
                 rpc.serverUID,
                 rpc.applianceModel,
-                rpc.version
+                rpc.version,
+                rpc.installType
             );
         }
     }

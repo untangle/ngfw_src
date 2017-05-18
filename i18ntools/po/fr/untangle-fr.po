@@ -1,6 +1,6 @@
 
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ''Untangle, Inc."
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-04 11:26-0700\n"
-"PO-Revision-Date: 2017-04-23 20:13\n"
+"PO-Revision-Date: 2017-05-18 13:36\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -8627,6 +8627,7 @@ msgstr "Vous devez activer la case ci-dessus pour continuer."
 msgid "inspected"
 msgstr "inspecté"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "Top Inspected Sites"
 msgstr "Top sites inspectés"
 
@@ -9371,21 +9372,27 @@ msgstr "Un résumé des actions de filtrage Web."
 msgid "Web Filter Summary"
 msgstr "Filtre Web Résumé"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "The number of inspected sessions grouped by site."
 msgstr "Le nombre de séances inspectés regroupés par site."
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 msgid "The amount of inspected SSL sessions over time."
 msgstr "La quantité de sessions SSL inspectés au fil du temps."
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Inspected Sessions"
 msgstr "Sessions inspectés"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "The number of ignored sessions grouped by site."
 msgstr "Le nombre de séances ignorés regroupés par site."
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "Top Ignored Sites"
 msgstr "Sites Top ignorés"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.js
 msgid "The amount of SSL sessions over time."
 msgstr "La quantité de sessions SSL au fil du temps."
 
@@ -9773,6 +9780,7 @@ msgstr "Affiche toutes les requêtes HTTPS cryptées."
 msgid "All HTTPS Events"
 msgstr "Tous HTTPS Evénements"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
 msgstr ""
 "Evénements où le trafic était pas ou n'a pas pu être inspecté, de sorte que "
@@ -9780,30 +9788,36 @@ msgstr ""
 "services."
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Ignored Sessions"
 msgstr "Sessions ignorés"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
 msgstr ""
 "Evénements où le trafic a été entièrement traitées par l'inspecteur, et tout "
 "le trafic a été adoptée par toutes les autres applications et services."
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
 msgstr ""
 "Evénements où le trafic a été bloqué en raison d'un problème sous-jacent "
 "avec la session SSL."
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Abandoned Sessions"
 msgstr "Sessions abandonnés"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Events where traffic was blocked because the server certificate could not be authenticated."
 msgstr ""
 "Evénements où le trafic a été bloqué parce que le certificat de serveur n'a "
 "pas pu être authentifié."
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Untrusted Sessions"
 msgstr "Sessions non fiables"
 
@@ -11057,10 +11071,12 @@ msgstr ""
 msgid "When the SSL Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked."
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.js
 #: Status: UNVERIFIED
 msgid "All sessions detected by SSL Inspector."
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.js
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
 msgstr ""
@@ -11109,10 +11125,12 @@ msgstr ""
 msgid "Server Connection Protocols"
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "A summary of SSL Inspector actions."
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "SSL Inspector Summary"
 msgstr ""
@@ -12846,6 +12864,7 @@ msgstr ""
 msgid "This will allow client authentication to be tracked by MAC address instead of IP address."
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 #: Status: UNVERIFIED
 msgid "Sessions Inspected"
 msgstr ""
@@ -12911,27 +12930,11 @@ msgid "Host Details"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "(Device)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "(Device Last Known)"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Pre-NAT"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Port (Pre-NAT)"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Post-NAT"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Port (Post-NAT)"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12956,14 +12959,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Session ID"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "State"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Widget"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13128,14 +13123,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Package"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Launching Upgrades..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Upgrades in Progress..."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13399,10 +13386,6 @@ msgid "Untag Device"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Tag Target"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Tag Name"
 msgstr ""
 
@@ -13444,10 +13427,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Remote Client information has been modified.  You must Save before downloading the client."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The Advanced tab is used to configure advanced OpenVPN options."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13852,4 +13831,252 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "No Trusted Certificates"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Downloading Upgrade..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Launching Upgrade..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Processing Upgrade..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "165 - 5.825 GH"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Target"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add Report"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add Email Template"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Email Template"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Application Control Applications allows for simple control over all recognized traffic types."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Site URL is empty"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You must enter the Site URL for category search."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last Search URL is empty"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You must search for a Site URL before you can suggest a different category."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Suggestion Submitted"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unable to submit suggestion."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Lookup the category for websites."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last Search URL"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last Search Category"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Quota Bytes"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag Time (Seconds)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Uploading File..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Changes made on this tab are not officially supported.<br>"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(default = UDP)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(default = 1194)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(default = AES-128-CBC)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(default = checked)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unique ID's"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The recommended default value is Yes unless you have a specific reason to change this setting."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "When enable, IPsec traffic will bypass processing by all Apps and Service Apps"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(The private networks attached to the local side of the tunnel)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(The private networks attached to the remote side of the tunnel)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filter data ..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "PB"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "TB"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "GB"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "MB"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "KB"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "B"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Replace current settings with settings from:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} filtered, {1} total entries"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} entries"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "MAC"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[no MAC Address]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last Hostname"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[no last hostname]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Device Details"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} filtered, {1} total devices"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} devices"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Refill"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter Username]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "User Details"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Request Method"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Request File Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Request File Path"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Content Length"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} filtered, {1} total sessions"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} sessions"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} filtered, {1} total hosts"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} hosts"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unknown Widget"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Select a install type."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Install Type"
 msgstr ""

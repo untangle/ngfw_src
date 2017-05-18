@@ -45,13 +45,22 @@ public class CloudManagerImpl implements CloudManager
     public JSONObject accountLogin( String email, String password )
         throws Exception
     {
+        return accountLogin( email, password, UvmContextImpl.getInstance().getServerUID(), "", "", "" );
+    }
+
+    public JSONObject accountLogin( String email, String password, String uid, String applianceModel, String majorVersion, String installType )
+        throws Exception
+    {
         try {
             CloseableHttpClient httpClient = HttpClients.custom().build();
             HttpClientContext context = HttpClientContext.create();
 
             URIBuilder builder = new URIBuilder(UvmContextImpl.getInstance().getStoreUrl() + "/account/login");
             builder.addParameter( "email" , email );
-            builder.addParameter( "uid" , UvmContextImpl.getInstance().getServerUID() );
+            builder.addParameter( "uid" , uid );
+            builder.addParameter( "applianceModel" , applianceModel );
+            builder.addParameter( "majorVersion" , majorVersion );
+            builder.addParameter( "installType" , installType );
             String url = builder.build().toString();
 
             LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();
@@ -77,7 +86,7 @@ public class CloudManagerImpl implements CloudManager
         }
     }
 
-    public JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion )
+    public JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType )
         throws Exception
     {
         try {
@@ -92,6 +101,7 @@ public class CloudManagerImpl implements CloudManager
             builder.addParameter( "uid" , uid );
             builder.addParameter( "applianceModel" , applianceModel );
             builder.addParameter( "majorVersion" , majorVersion );
+            builder.addParameter( "installType" , installType );
             
             String url = builder.build().toString();
 

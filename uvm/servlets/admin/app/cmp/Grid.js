@@ -119,27 +119,10 @@ Ext.define('Ung.cmp.Grid', {
     layout: 'fit',
     trackMouseOver: false,
     enableColumnHide: false,
-    forceFit: true,
     // columnLines: true,
     scrollable: true,
     selModel: {
         type: 'cellmodel'
-    },
-    viewConfig: {
-        enableTextSelection: true,
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
-        stripeRows: false,
-        getRowClass: function(record) {
-            if (record.get('markedForDelete')) {
-                return 'mark-delete';
-            }
-            if (record.get('markedForNew')) {
-                return 'mark-new';
-            }
-            if (record.get('readOnly')) {
-                return 'mark-readonly';
-            }
-        }
     },
 
     plugins: {
@@ -186,7 +169,30 @@ Ext.define('Ung.cmp.Grid', {
     },
 
     initComponent: function () {
-        // to revisit the way columns are attached
+        /*
+         * Treat viewConfig as an object that inline configuration can override on an
+         * individual field level instead of the entire viewConfig object itself.
+         */
+        var viewConfig = {
+            enableTextSelection: true,
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
+            stripeRows: false,
+            getRowClass: function(record) {
+                if (record.get('markedForDelete')) {
+                    return 'mark-delete';
+                }
+                if (record.get('markedForNew')) {
+                    return 'mark-new';
+                }
+                if (record.get('readOnly')) {
+                    return 'mark-readonly';
+                }
+            }
+        };
+        if( this.viewConfig ){
+            Ext.apply( viewConfig, this.viewConfig );
+        }
+
         var columns = Ext.clone(this.columns), i;
 
         if( this.stateful &&
@@ -202,6 +208,7 @@ Ext.define('Ung.cmp.Grid', {
         if( this.tbarSeparatorIndex == -1 ){
             this.tbarSeparatorIndex = this.tbar.length;
         }
+
         if(columns){
             /*
              * Reports and others can set their columns manually.
@@ -288,7 +295,7 @@ Ext.define('Ung.cmp.Grid', {
 
                 if (action === 'reorder') {
                     this.sortableColumns = false;
-                    Ext.apply(this.viewConfig, {
+                    Ext.apply( viewConfig, {
                         plugins: {
                             ptype: 'gridviewdragdrop',
                             dragText: 'Drag and drop to reorganize'.t(),
@@ -317,8 +324,10 @@ Ext.define('Ung.cmp.Grid', {
                 }
             }
         }
+
         Ext.apply(this, {
-            columns: columns
+            columns: columns,
+            viewConfig: viewConfig
         });
         this.callParent(arguments);
     }

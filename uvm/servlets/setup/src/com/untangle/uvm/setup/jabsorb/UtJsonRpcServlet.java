@@ -104,7 +104,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     {
         public void setLanguage( String language, String source );
 
-        public void setAdminPassword( String password, String email ) throws TransactionRolledbackException;
+        public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException;
 
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
 
