@@ -76,6 +76,24 @@ Ext.define('Ung.view.extra.Sessions', {
             filter: { type: 'date' },
             width: TableConfig.timestampFieldWidth
         }, {
+            header: 'Session ID'.t(),
+            dataIndex: 'sessionId',
+            hidden: true,
+            filter: 'number',
+            width: 60
+        }, {
+            header: 'Mark'.t(),
+            dataIndex: 'mark',
+            hidden: true,
+            filter: 'number',
+            width: 60,
+            renderer: function(value) {
+                if (value)
+                    return "0x" + value.toString(16);
+                else
+                    return "";
+            }
+        }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
             width: 50,
@@ -149,7 +167,7 @@ Ext.define('Ung.view.extra.Sessions', {
             width: TableConfig.ipFieldWidth
         },{
             hidden: true,
-            header: 'Bandwidth Control' + " - " + 'Priority'.t(),
+            header: 'Bandwidth Control ' + 'Priority'.t(),
             dataIndex: "priority",
             renderer: function(value) {
                 if (Ext.isEmpty(value)) {
@@ -169,7 +187,7 @@ Ext.define('Ung.view.extra.Sessions', {
             }
         },{
             hidden: true,
-            header: 'QoS' + " - " + 'Priority'.t(),
+            header: 'QoS ' + 'Priority'.t(),
             dataIndex: "qosPriority",
             renderer: function(value) {
                 if (Ext.isEmpty(value)) {
@@ -200,23 +218,23 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
+                header: 'Address'.t() + '(' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth
             }, {
-                header: 'Pre-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClientPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
+                header: 'Address'.t() + '(' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth,
@@ -246,24 +264,24 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
+                header: 'Address'.t() + '(' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
                 hidden: true
             }, {
-                header: 'Pre-NAT'.t() + ' - ' + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth,
                 hidden: true
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
+                header: 'Address'.t() + '(' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServer',
                 width: TableConfig.ipFieldWidth,
                 filter: { type: 'string' }
             }, {
-                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
+                header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth
