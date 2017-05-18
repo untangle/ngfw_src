@@ -496,6 +496,52 @@ Ext.define('Ung.view.extra.Sessions', {
                 dataIndex: "http-content-length",
                 filter: 'number'
             }]
+        }, {
+            header: 'SSL',
+            hidden: true,
+            columns: [{
+                hidden: true,
+                header: 'Subject DN'.t(),
+                dataIndex: "ssl-subject-dn",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Issuer DN'.t(),
+                dataIndex: "ssl-issuer-dn",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Inspected'.t(),
+                dataIndex: "ssl-session-inspect",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            },{
+                hidden: true,
+                header: 'SNI Hostname'.t(),
+                dataIndex: "ssl-sni-host",
+                filter: { type: 'string'}
+            }]
+        }, {
+            header: 'FTP',
+            hidden: true,
+            columns: [{
+                hidden: true,
+                header: 'Filename'.t(),
+                dataIndex: "ftp-file-name",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Data Session'.t(),
+                dataIndex: "ftp-data-session",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }]
         }]
     }, {
         region: 'east',
