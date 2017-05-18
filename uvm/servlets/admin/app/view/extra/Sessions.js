@@ -462,13 +462,23 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string'}
             },{
                 hidden: true,
-                header: 'Request File Name Extension'.t(),
+                header: 'Request File Extension'.t(),
                 dataIndex: "http-request-file-extension",
                 filter: { type: 'string'}
             },{
                 hidden: true,
                 header: 'Request File Path'.t(),
                 dataIndex: "http-request-file-path",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Response File Name'.t(),
+                dataIndex: "http-response-file-name",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Response File Extension'.t(),
+                dataIndex: "http-response-file-extension",
                 filter: { type: 'string'}
             },{
                 hidden: true,
