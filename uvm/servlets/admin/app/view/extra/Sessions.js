@@ -419,11 +419,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 }
             },{
                 hidden: true,
-                header: 'Content Type'.t(),
-                dataIndex: "web-filter-content-type",
-                filter: { type: 'string' }
-            },{
-                hidden: true,
                 header: 'Flagged'.t(),
                 dataIndex: "web-filter-flagged",
                 filter: {
