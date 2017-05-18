@@ -218,7 +218,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Address'.t() + '(' + 'Pre-NAT'.t() + ')',
+                header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth
@@ -228,7 +228,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'numeric' },
                 width: TableConfig.portFieldWidth
             }, {
-                header: 'Address'.t() + '(' + 'Post-NAT'.t() + ')',
+                header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
@@ -264,7 +264,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Address'.t() + '(' + 'Pre-NAT'.t() + ')',
+                header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
                 width: TableConfig.ipFieldWidth,
@@ -276,7 +276,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 width: TableConfig.portFieldWidth,
                 hidden: true
             }, {
-                header: 'Address'.t() + '(' + 'Post-NAT'.t() + ')',
+                header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServer',
                 width: TableConfig.ipFieldWidth,
                 filter: { type: 'string' }
@@ -459,6 +459,11 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Request File Name'.t(),
                 dataIndex: "http-request-file-name",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Request File Name Extension'.t(),
+                dataIndex: "http-request-file-extension",
                 filter: { type: 'string'}
             },{
                 hidden: true,

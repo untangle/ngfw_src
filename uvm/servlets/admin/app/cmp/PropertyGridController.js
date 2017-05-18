@@ -108,9 +108,12 @@ Ext.define('Ung.cmp.PropertyGridController', {
             vm = me.getViewModel(),
             propertyRecord = record.getData();
 
+        // hide these attributes always
         delete propertyRecord._id;
         delete propertyRecord.javaClass;
-        // delete props.mark;
+        delete propertyRecord.state;
+        delete propertyRecord.attachments;
+
         for( var k in propertyRecord ){
             if( propertyRecord[k] == null ){
                 continue;
