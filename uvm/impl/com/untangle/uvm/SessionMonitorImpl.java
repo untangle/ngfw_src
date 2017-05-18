@@ -119,14 +119,6 @@ public class SessionMonitorImpl implements SessionMonitor
             session.setPolicy("");             
             if (session.getClientIntf() == null || session.getClientIntf() == 0 ) {
                 session.setClientIntf(Integer.valueOf(-1));
-            } else {
-                if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
-                    session.setLocalAddr( session.getPostNatServer() );
-                    session.setRemoteAddr( session.getPreNatClient() );
-                } else {
-                    session.setLocalAddr( session.getPreNatClient() );
-                    session.setRemoteAddr( session.getPostNatServer() );
-                }
             }
             if ( session.getServerIntf() == null || session.getServerIntf() == 0 ) {
                 session.setServerIntf(Integer.valueOf(-1));
@@ -225,6 +217,14 @@ public class SessionMonitorImpl implements SessionMonitor
                 // if its not being scanned by the UVM it must be bypassed
                 // this is set from the mark, setting this manually should not be required
                 // session.setBypassed(Boolean.TRUE);
+            }
+
+            if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
+                session.setLocalAddr( session.getPostNatServer() );
+                session.setRemoteAddr( session.getPreNatClient() );
+            } else {
+                session.setLocalAddr( session.getPreNatClient() );
+                session.setRemoteAddr( session.getPostNatServer() );
             }
 
             /**
