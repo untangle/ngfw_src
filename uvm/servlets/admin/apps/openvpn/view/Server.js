@@ -153,11 +153,20 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         displayField: 'name',
         valueField: 'groupId'
     }, {
-        xtype:'combo',
+        xtype: 'combo',
         fieldLabel: 'Type'.t(),
         editable: false,
         bind: '{record.export}',
-        store: [[false,'Individual Client'.t()],[true,'Network'.t()]],
+        store: [[false,'Individual Client'.t()],[true,'Network'.t()]]
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Remote Networks'.t(),
+        bind: {
+            value: '{record.exportNetwork}',
+            hidden: '{!record.export}'
+        },
+        allowBlank: false,
+        vtype: 'cidrBlockList'
     }]
 
 });
