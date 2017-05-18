@@ -180,6 +180,10 @@ Ext.define('Ung.view.reports.EventReportController', {
         if( vm.get('eventProperty') == null ){
             v.down('grid').getSelectionModel().select(0);
         }
+
+        if( v.up().down('ungridstatus') ){
+            v.up().down('ungridstatus').fireEvent('update');
+        }
     }
 
 });

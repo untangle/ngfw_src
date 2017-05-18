@@ -8,8 +8,7 @@ Ext.define('Ung.view.extra.SessionsController', {
             deactivate: 'onDeactivate'
         },
         '#sessionsgrid': {
-            afterrender: 'getSessions',
-            select: 'onSelect'
+            afterrender: 'getSessions'
         },
         'toolbar textfield': {
             change: 'globalFilter'
@@ -46,7 +45,9 @@ Ext.define('Ung.view.extra.SessionsController', {
 
     getSessions: function () {
         var me = this,
-            grid = me.getView().down('#sessionsgrid');
+            v = me.getView(),
+            grid = v.down('#sessionsgrid');
+
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
             .then(function(result) {
@@ -64,32 +65,17 @@ Ext.define('Ung.view.extra.SessionsController', {
                 });
 
                 Ext.getStore('sessions').loadData( sessions );
+
+                v.down('ungridstatus').fireEvent('update');
+
                 grid.getSelectionModel().select(0);
             });
-    },
-
-    onSelect: function (grid, record) {
-        var vm = this.getViewModel(),
-            props = record.getData();
-
-        delete props._id;
-        delete props.javaClass;
-        delete props.mark;
-        for(var k in props){
-            /*
-             * Encode objects and arrays for details
-             */
-            if( ( typeof( props[k] ) == 'object' ) || 
-                ( typeof( props[k] ) == 'array' ) ){
-                props[k] = Ext.encode(props[k]);
-            }
-        }
-        vm.set('selectedSession', props);
     },
 
     globalFilter: function (field, value) {
         var list = this.getView().down('#sessionsgrid'),
             re = new RegExp(value, 'gi');
+        console.log('globalFilter');
         if (value.length > 0) {
             list.getStore().clearFilter();
             list.getStore().filterBy(function (record) {

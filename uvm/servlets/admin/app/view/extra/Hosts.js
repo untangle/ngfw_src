@@ -300,6 +300,8 @@ Ext.define('Ung.view.extra.Hosts', {
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
+    },{
+        xtype: 'ungridstatus'
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

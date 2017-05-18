@@ -517,5 +517,7 @@ Ext.define('Ung.view.extra.Sessions', {
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
+    },{
+        xtype: 'ungridstatus'
     }]
 });

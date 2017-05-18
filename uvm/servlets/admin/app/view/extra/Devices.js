@@ -212,6 +212,8 @@ Ext.define('Ung.view.extra.Devices', {
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
+    },{
+        xtype: 'ungridstatus'
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

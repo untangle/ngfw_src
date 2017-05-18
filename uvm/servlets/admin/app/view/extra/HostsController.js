@@ -40,12 +40,17 @@ Ext.define('Ung.view.extra.HostsController', {
 
     getHosts: function () {
         var me = this,
+            v = me.getView(),
             grid = me.getView().down('#hostsgrid');
+
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.hostTable.getHosts')
             .then(function(result) {
                 grid.getView().setLoading(false);
                 Ext.getStore('hosts').loadData(result.list);
+
+                v.down('ungridstatus').fireEvent('update');
+
                 grid.getSelectionModel().select(0);
             });
     },
