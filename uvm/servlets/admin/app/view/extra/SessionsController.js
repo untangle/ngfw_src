@@ -9,9 +9,6 @@ Ext.define('Ung.view.extra.SessionsController', {
         },
         '#sessionsgrid': {
             afterrender: 'getSessions'
-        },
-        'toolbar textfield': {
-            change: 'globalFilter'
         }
     },
 
@@ -71,28 +68,5 @@ Ext.define('Ung.view.extra.SessionsController', {
                 grid.getSelectionModel().select(0);
             });
     },
-
-    globalFilter: function (field, value) {
-        var list = this.getView().down('#sessionsgrid'),
-            re = new RegExp(value, 'gi');
-        console.log('globalFilter');
-        if (value.length > 0) {
-            list.getStore().clearFilter();
-            list.getStore().filterBy(function (record) {
-                return re.test(record.get('protocol')) ||
-                       re.test(record.get('preNatClient')) ||
-                       re.test(record.get('postNatServer')) ||
-                       re.test(record.get('preNatClientPort')) ||
-                       re.test(record.get('postNatServerPort'));
-            });
-
-            // list.getStore().filter([
-            //     { property: 'protocol', value: value }
-            // ]);
-        } else {
-            list.getStore().clearFilter();
-        }
-        list.getSelectionModel().select(0);
-    }
 
 });
