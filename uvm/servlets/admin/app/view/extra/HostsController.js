@@ -55,20 +55,6 @@ Ext.define('Ung.view.extra.HostsController', {
             });
     },
 
-    megaByteRenderer: function(bytes) {
-        var units = ['bytes','Kbytes','Mbytes','Gbytes'];
-        var units_itr = 0;
-
-        while ((bytes >= 1024 || bytes <= -1024) && units_itr < 3) {
-            bytes = bytes/1024;
-            units_itr++;
-        }
-
-        bytes = Math.round(bytes*100)/100;
-
-        return '' + bytes + ' ' + units[units_itr];
-    },
-
     refillQuota: function (view, rowIndex, colIndex, item, e, record) {
         var me = this;
         Ext.MessageBox.wait('Refilling...'.t(), 'Please wait'.t());
