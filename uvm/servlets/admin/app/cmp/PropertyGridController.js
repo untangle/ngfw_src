@@ -147,7 +147,18 @@ Ext.define('Ung.cmp.PropertyGridController', {
     columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
         var rtype = view.grid.sourceConfig[record.id].rtype;
         if(rtype != null){
-            return Renderer[rtype](value);
+            if( !Renderer[rtype] ){
+                var gview = this.getView();
+                var parentController = gview.up(gview.parentView).getController();
+                if(parentController[rtype+'Renderer']){
+                    return parentController[rtype+'Renderer'](value);
+                }else{
+                    console.log('Missing renderer for rtype=' + rtype);
+                }
+            }else{
+                return Renderer[rtype](value);
+            }
         }
+        return value;
     }
 });
