@@ -1,6 +1,6 @@
-Ext.define('Ung.util.ColumnRenderer', {
+Ext.define('Ung.cmp.GridRenderers', {
     singleton: true,
-    alternateClassName: 'RendererOld',
+    alternateClassName: 'Renderer',
 
     boolean: function( value ){
         return ( value == true ) ? 'true' : 'false';
