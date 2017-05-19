@@ -46,7 +46,7 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
 
         region: 'center',
         itemId: 'hostsgrid',
@@ -232,12 +232,12 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 filter: 'number',
-                renderer: 'megaByteRenderer'
+                rtype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 filter: 'number',
-                renderer: 'megaByteRenderer'
+                rtype: 'datasize'
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
@@ -255,14 +255,16 @@ Ext.define('Ung.view.extra.Hosts', {
                 align: 'center',
                 header: 'Refill Quota'.t(),
                 iconCls: 'fa fa-refresh fa-green',
-                handler: 'refillQuota'
+                handler: 'externalAction',
+                action: 'refillQuota'
             }, {
                 xtype: 'actioncolumn',
                 width: 80,
                 align: 'center',
                 header: 'Drop Quota'.t(),
                 iconCls: 'fa fa-minus-circle',
-                handler: 'dropQuota'
+                handler: 'externalAction',
+                action: 'dropQuota'
             }]
         }]
     }, {
