@@ -19,12 +19,10 @@ Ext.define('Ung.config.upgrade.MainController', {
             text: 'Checking for upgrades...'.t()
         });
         this.checkUpgrades();
-        console.log(view.getViewModel().get('settings'));
     },
 
     saveSettings: function () {
         var me = this;
-        console.log(me.getViewModel().get('settings'));
         me.getView().setLoading('Saving ...');
         rpc.systemManager.setSettings(function (result, ex) {
             me.getView().setLoading(false);
@@ -37,7 +35,6 @@ Ext.define('Ung.config.upgrade.MainController', {
     checkUpgrades: function () {
         var v = this.getView();
         Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
-            console.log(result);
             if(result) {
                 var upgradeButton = v.down('[name="upgradeButton"]');
                 upgradeButton.show();
