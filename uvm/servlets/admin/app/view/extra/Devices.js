@@ -142,7 +142,15 @@ Ext.define('Ung.view.extra.Devices', {
             filter: { type: 'date' },
             rtype: 'timestamp'
         }, {
-            header: 'Tags',
+            header: 'Tags'.t(),
+            dataIndex: 'tags',
+            flex: 1,
+            filter: {
+                type: 'string'
+            },
+            rtype: 'tags'
+        }, {
+            header: 'Tags String',
             dataIndex: 'tagsString',
             filter: { type: 'string' },
         }],
