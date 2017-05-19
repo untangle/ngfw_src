@@ -207,7 +207,7 @@ Ext.define('Ung.view.extra.Hosts', {
             hidden: true,
             filter: { type: 'string' },
         },{
-            header: 'Username (Captive Porrtal)'.t(),
+            header: 'Username (Captive Portal)'.t(),
             dataIndex: 'usernameCaptivePortal',
             hidden: true,
             filter: { type: 'string' },
