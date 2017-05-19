@@ -75,7 +75,7 @@ Ext.define('Ung.config.upgrade.Main', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 20',
-                    html: 'If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.'.t()
+                    html: 'If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity.'.t()
                 }, {
                     boxLabel: '<strong>' + 'Do Not Automatically Install Upgrades'.t() + '</strong>',
                     inputValue: false
