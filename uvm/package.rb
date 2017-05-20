@@ -128,13 +128,6 @@ end
 
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
 
-## Ad Blocker hack to rename ad-blocker.js to ab.js NGFW-10728
-## Make this copy target and put it in the first servlet after admin
-ms = [ MoveSpec.new("#{uvm.distDirectory}", '/usr/share/untangle/web/admin/script/apps/ad-blocker.js', "#{uvm.distDirectory}/usr/share/untangle/web/admin/script/apps", "ab.js") ]
-ad_blocker_copy = CopyFiles.new(uvm_lib, ms, 'ad-blocker-js-rename', BuildEnv::SRC.filterset)
-uvm_lib.registerTarget('ad-blocker-js-rename', ad_blocker_copy)
-# BuildEnv::SRC.installTarget.register_dependency(cf)
-
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )
   poFiles.each do |f|
