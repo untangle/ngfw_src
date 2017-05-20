@@ -38,10 +38,6 @@ task :kindaclean do
   FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
   info "[rm -rf  ] debian/dirs"
   FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
-  if File.exist?("graphviz.dot")
-    info "[rm -rf  ] graphviz.dot"
-    FileUtils.rm_rf("graphviz.dot")
-  end
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
@@ -125,12 +121,20 @@ end
 task :devel => [:build, :hier, :installuvmcore] do
   Rake::Task[BuildEnv::SRC['install']].invoke
   Rake::Task[BuildEnv::SRC.installTarget].invoke
+  ## Ad Blocker hack to rename ad-blocker.js to ab.js NGFW-10728
+  ## Make this copy target and put it in the first servlet after admin
+  if File.exists?("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+    FileUtils.cp("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ab.js")
+  end
+  if File.exists?("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+    FileUtils.cp("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ab.js")
+  end
 end
 
 task :i18n => [:builduvmcore, :targets ] do
   ## Generate and update po files
-#  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
-#  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
+  #  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
+  #  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
   Rake::Task[BuildEnv::SRC.i18nTarget].invoke
 end
 
