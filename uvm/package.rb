@@ -56,6 +56,11 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", ["./uvm/servlets/w
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps)
 
+## Ad Blocker hack to rename ad-blocker.js to ab.js NGFW-10728
+ms = [ MoveSpec.new("#{uvm.distDirectory}", '/usr/share/untangle/web/admin/script/apps/ad-blocker.js', "#{uvm.distDirectory}/usr/share/untangle/web/admin/script/apps", "ab.js") ]
+cf = CopyFiles.new(uvm, ms, 'ad-blocker-js-rename', BuildEnv::SRC.filterset)
+BuildEnv::SRC.installTarget.register_dependency(cf)
+
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps)
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps, [], [])

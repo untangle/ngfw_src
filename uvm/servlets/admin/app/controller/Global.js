@@ -156,7 +156,10 @@ Ext.define('Ung.controller.Global', {
 
         mainView.setLoading(true);
         Ext.Loader.loadScript({
-            url: 'script/apps/' + app + '.js',
+            //url: 'script/apps/' + app + '.js',
+            // This hack changes the name of ad-blocker to ab.js
+            // NGFW-10728
+            url: 'script/apps/' + (app=='ad-blocker'?'ab':app) + '.js',
             onLoad: function () {
                 Rpc.asyncData('rpc.appManager.app', appInstance.id)
                     .then(function (result) {
