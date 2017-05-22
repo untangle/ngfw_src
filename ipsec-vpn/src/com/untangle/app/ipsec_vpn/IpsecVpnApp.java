@@ -328,36 +328,40 @@ public class IpsecVpnApp extends AppBase
         updateBlingers();
 
         ExecManagerResult result;
+        String script;
 
         /**
          * Need to run iptables rules, they may already be there, but they might
          * not be so this is safe to run anytime and it will insert the rules if
          * not present
          */
-        result = UvmContextFactory.context().execManager().exec(System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/710-ipsec");
+        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/710-ipsec");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/710-ipsec" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/710-ipsec" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
 
-        result = UvmContextFactory.context().execManager().exec(System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/711-xauth");
+        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/711-xauth");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/711-xauth" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/711-xauth" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
 
-        result = UvmContextFactory.context().execManager().exec(System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre");
+        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
     }
