@@ -66,8 +66,7 @@ Ext.define('Ung.view.main.Main', {
             text: 'Apps'.t(),
             iconCls: 'fa fa-th',
             cls: 'upper',
-            href: '#apps',
-            bind: { userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' }
+            bind: { href: '#apps/{policyId}', userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' }
         }, {
             text: 'Config'.t(),
             iconCls: 'fa fa-sliders',

@@ -89,6 +89,9 @@ Ext.define('Ung.cmp.AppState', {
                             this.getViewModel().set( 'runState', result );
                             this.getViewModel().set( 'instance.targetState', this.runStateWantState );
                             this.runStateButton.setDisabled(false);
+                            // force reload Apps after start/stop within App Settings
+                            Ung.app.getGlobalController().getAppsView().getController().getApps();
+
                         }
                     }, this) );
                 }, me) );

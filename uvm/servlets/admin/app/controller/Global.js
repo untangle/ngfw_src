@@ -105,9 +105,9 @@ Ext.define('Ung.controller.Global', {
     onApps: function (policyId, app, view) {
         var me = this;
 
-        if (!policyId) {
-            Ung.app.redirectTo('#apps/1');
-            return;
+        policyId = policyId || 1;
+        if (!app) {
+            Ung.app.redirectTo('#apps/' + policyId);
         }
 
         this.getMainView().getViewModel().set('activeItem', 'apps');
