@@ -67,8 +67,8 @@ fi
 #
 # NAT traffic from L2TP interfaces
 #
-${IPTABLES} -t nat -D nat-rules -m connmark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic" >/dev/null 2>&1
-${IPTABLES} -t nat -I nat-rules -m connmark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic"
+${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic" >/dev/null 2>&1
+${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic"
 
 #
 # Allow L2TP traffic to penetrate NATd networks
