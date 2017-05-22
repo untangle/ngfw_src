@@ -47,7 +47,7 @@ Ext.define('Ung.view.config.Config', {
         ]},
         tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +
-                '<a href="#config/{url}" class="app-item">' +
+                '<a href="#config/{url}" class="app-item" style="margin: 10px;">' +
                 '<img src="' + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +

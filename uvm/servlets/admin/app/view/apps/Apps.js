@@ -3,11 +3,15 @@ Ext.define('Ung.view.apps.Apps', {
     xtype: 'ung.apps',
     itemId: 'apps',
     layout: 'card',
+    // layout: 'border',
     /* requires-start */
     requires: [
         'Ung.view.apps.AppsController'
     ],
     /* requires-end */
+
+    itemType: rpc.skinInfo.appsViewType === 'rack' ? 'rackitem' : 'simpleitem',
+
     controller: 'apps',
     viewModel: {
         data: {
@@ -25,23 +29,31 @@ Ext.define('Ung.view.apps.Apps', {
                 }
             },
             installedApps: {
-                source: '{apps}',
-                filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
-                sorters: [ { property: 'viewPosition', direction: 'ASC' }]
+                // source: '{apps}',
+                // filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
+                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
+                listeners: {
+                    add: 'onAddApp',
+                    remove: 'onRemoveApp'
+                }
             },
             installableApps: {
-                source: '{apps}',
-                filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
-                sorters: [ { property: 'viewPosition', direction: 'ASC' }]
+                // source: '{apps}',
+                // filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
+                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
             },
             installedServices: {
-                source: '{apps}',
-                filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
-                sorters: [ { property: 'viewPosition', direction: 'ASC' }]
+                // source: '{apps}',
+                // filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
+                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
+                listeners: {
+                    add: 'onAddService',
+                    remove: 'onRemoveApp'
+                }
             },
             installableServices: {
-                source: '{apps}',
-                filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
+                // source: '{apps}',
+                // filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
                 sorters: [ { property: 'viewPosition', direction: 'ASC' }]
             }
         }
@@ -111,91 +123,18 @@ Ext.define('Ung.view.apps.Apps', {
 
 
     items: [{
-        scrollable: true,
         itemId: 'installedApps',
-        width: '50%',
-        layout: { type: 'vbox', align: 'stretch' },
-        items: [{
-            xtype: 'component',
-            cls: 'apps-title',
-            hidden: true,
-            bind: {
-                html: 'Apps'.t() + ' ({appsCount})',
-                hidden: '{!policyName}'
-            }
-        }, {
-            xtype: 'dataview',
-            bind: '{installedApps}',
-            tpl: '<tpl for=".">' +
-                    '<tpl if="parentPolicy"><a class="app-item disabled"><tpl elseif="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
-                    '<tpl if="hasPowerButton && runState"><span class="state {runState}"><i class="fa fa-power-off"></i></span></tpl>' +
-                    '<tpl if="licenseMessage"><span class="license">{licenseMessage}</span></tpl>' +
-                    '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                    '<span class="app-name">{displayName}</span>' +
-                    '<tpl if="parentPolicy"><span class="parent-policy">[{parentPolicy}]</span></tpl>' +
-                    '<span class="new">NEW</span>' +
-                    '<span class="loader"></span>' +
-                    '</a>' +
-                '</tpl>',
-            itemSelector: 'a'
-        }, {
-            xtype: 'component',
-            padding: '20 40',
-            html: 'No Apps ...',
-            // items: [{
-            //     xtype: 'button',
-            //     scale: 'large',
-            //     text: 'Install Apps'.t(),
-            //     padding: '0 20 0 0',
-            //     iconCls: 'fa fa-download',
-            //     handler: 'showInstall'
-            // }],
-            hidden: true,
-            // bind: {
-            //     hidden: '{appsCount > 0 || !policyName}'
-            // }
-        }, {
-            xtype: 'component',
-            cls: 'apps-title',
-            hidden: true,
-            bind: {
-                html: 'Service Apps'.t() + ' ({servicesCount})',
-                hidden: '{!policyName}'
-            }
-        }, {
-            xtype: 'dataview',
-            bind: '{installedServices}',
-            tpl: '<tpl for=".">' +
-                    '<tpl if="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
-                    '<tpl if="hasPowerButton && runState"><span class="state {runState}"><i class="fa fa-power-off"></i></span></tpl>' +
-                    '<tpl if="licenseMessage"><span class="license">{licenseMessage}</span></tpl>' +
-                    '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                    '<span class="app-name">{displayName}</span>' +
-                    '<span class="new">NEW</span>' +
-                    '<span class="loader"></span>' +
-                    '</a>' +
-                '</tpl>',
-            itemSelector: 'a'
-        }, {
-            xtype: 'component',
-            padding: '20 40',
-            html: 'No Service Apps ...',
-            // items: [{
-            //     xtype: 'button',
-            //     scale: 'large',
-            //     text: 'Install Apps'.t(),
-            //     padding: '0 20 0 0',
-            //     iconCls: 'fa fa-download',
-            //     handler: 'showInstall'
-            // }],
-            hidden: true,
-            // bind: {
-            //     hidden: '{servicesCount > 0 || !policyName}'
-            // }
-        }]
+        xtype: rpc.skinInfo.appsViewType === 'rack' ? 'apps-rack' : 'apps-simple',
+        // xtype: 'apps-rack',
+        // xtype: 'apps-simple',
+        // region: 'center',
     }, {
         scrollable: true,
-        width: '50%',
+
+        // region: 'east',
+        // width: '55%',
+        // split: true,
+
         itemId: 'installableApps',
         layout: { type: 'vbox', align: 'stretch' },
         items: [{

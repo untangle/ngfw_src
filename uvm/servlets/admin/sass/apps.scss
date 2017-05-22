@@ -27,23 +27,25 @@
     }
 }
 
-/*app install item*/
+/*app simple item*/
 .app-item {
-    display: inline-block;
-    cursor: pointer;
-    position: relative;
     // float: left;
     height: 140px;
     width: 140px;
-    margin: 10px;
+    // margin: 10px;
     border-radius: 5px;
     font-family: $custom-font;
     // background: #EEE;
-    text-decoration: none;
+
     overflow: hidden;
     text-align: center;
     padding: 20px 10px 0;
+    display: inline-block;
+    position: relative;
     transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+
+
+    text-decoration: none;
 
     &.disabled {
         cursor: default;
