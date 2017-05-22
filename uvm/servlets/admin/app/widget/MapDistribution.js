@@ -116,7 +116,7 @@ Ext.define('Ung.widget.MapDistribution', {
             }, {
                 type: 'mapbubble',
                 minSize: 10,
-                maxSize: 50
+                maxSize: 35
             }],
             tooltip: {
                 headerFormat: '',
