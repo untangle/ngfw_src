@@ -134,7 +134,10 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     loadResultSet: function (reader) {
+        var me = this,
+            grid = me.getView().down('grid');
         this.getView().setLoading(true);
+        grid.getStore().setFields( grid.tableConfig.fields );
         reader.getNextChunk(Ext.bind(this.nextChunkCallback, this), 1000);
     },
 
