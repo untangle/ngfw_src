@@ -127,12 +127,6 @@ Ext.define('Ung.view.reports.EventReportController', {
                 }
                 me.getView().setLoading(false);
 
-                // update columns
-                me.defaultColumns = vm.get('widget.displayColumns') || me.entry.get('defaultColumns'); // widget or report columns
-                Ext.Array.each(me.getView().down('grid').getColumns(), function (col) {
-                    col.setHidden(Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0);
-                });
-
                 me.loadResultSet(result);
 
                 if (cb) { cb(); }
