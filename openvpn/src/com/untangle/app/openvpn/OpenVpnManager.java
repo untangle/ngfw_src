@@ -39,7 +39,7 @@ public class OpenVpnManager
     private static final String GENERATE_ZIP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-zip";
     private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
     private static final String GENERATE_ONC_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-onc";
-    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
+    private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/720-openvpn";
 
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
