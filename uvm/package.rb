@@ -126,7 +126,7 @@ end
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
 end
 
-# JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
 
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )

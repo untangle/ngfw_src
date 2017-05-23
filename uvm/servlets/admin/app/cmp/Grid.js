@@ -125,10 +125,12 @@ Ext.define('Ung.cmp.Grid', {
         type: 'cellmodel'
     },
 
-    plugins: {
+    plugins: [{
         ptype: 'cellediting',
         clicksToEdit: 1
-    },
+    }, {
+        ptype: 'responsive'
+    }],
 
     initComponentColumn: function(column){
         if( this.stateful &&
