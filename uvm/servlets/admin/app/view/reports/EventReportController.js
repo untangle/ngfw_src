@@ -16,9 +16,8 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         // remove property grid if in dashboard
         if (me.getView().up('#dashboard')) {
-            me.getView().remove('properties');
+            me.getView().down('unpropertygrid').hide();
         }
-
 
         vm.bind('{entry}', function (entry) {
 
