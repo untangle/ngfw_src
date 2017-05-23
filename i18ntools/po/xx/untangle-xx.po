@@ -1,6 +1,6 @@
 
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR ''Untangle, Inc."
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -9435,68 +9435,52 @@ msgstr "XUpload FailureX"
 msgid "Ignore rules are used to configure traffic which should be ignored by the inspection engine."
 msgstr "XIgnore rules are used to configure traffic which should be ignored by the inspection engine.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "The number of ignored sessions grouped by site."
 msgstr "XThe number of ignored sessions grouped by site.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "Top Ignored Sites"
 msgstr "XTop Ignored SitesX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.js
 msgid "The amount of SSL sessions over time."
 msgstr "XThe amount of SSL sessions over time.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 msgid "The amount of inspected SSL sessions over time."
 msgstr "XThe amount of inspected SSL sessions over time.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Inspected Sessions"
 msgstr "XInspected SessionsX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "The number of inspected sessions grouped by site."
 msgstr "XThe number of inspected sessions grouped by site.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "Top Inspected Sites"
 msgstr "XTop Inspected SitesX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
 msgstr "XEvents where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
 msgstr "XEvents where traffic was blocked due to an underlying problems with the SSL session.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Abandoned Sessions"
 msgstr "XAbandoned SessionsX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.js
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
 msgstr "XEvents where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Events where traffic was blocked because the server certificate could not be authenticated."
 msgstr "XEvents where traffic was blocked because the server certificate could not be authenticated.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Untrusted Sessions"
 msgstr "XUntrusted SessionsX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
 msgstr "XEvents where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Ignored Sessions"
 msgstr "XIgnored SessionsX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.js
 #: Status: UNVERIFIED
 msgid "All sessions detected by SSL Inspector."
 msgstr "XAll sessions detected by SSL Inspector.X"
@@ -10524,12 +10508,10 @@ msgstr "XTLSv1.2X"
 msgid "Server Connection Protocols"
 msgstr "XServer Connection ProtocolsX"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "A summary of SSL Inspector actions."
 msgstr "XA summary of SSL Inspector actions.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "SSL Inspector Summary"
 msgstr "XSSL Inspector SummaryX"
@@ -11767,7 +11749,6 @@ msgstr "XTrack logins using MAC addressX"
 msgid "This will allow client authentication to be tracked by MAC address instead of IP address."
 msgstr "XThis will allow client authentication to be tracked by MAC address instead of IP address.X"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 #: Status: UNVERIFIED
 msgid "Sessions Inspected"
 msgstr "XSessions InspectedX"
@@ -11799,10 +11780,6 @@ msgstr "XHostname (OpenVPN)X"
 #: Status: UNVERIFIED
 msgid "Username (Directory Connector)"
 msgstr "XUsername (Directory Connector)X"
-
-#: Status: UNVERIFIED
-msgid "Username (Captive Porrtal)"
-msgstr "XUsername (Captive Porrtal)X"
 
 #: Status: UNVERIFIED
 msgid "Username (Device)"
@@ -12738,248 +12715,296 @@ msgstr "XNo Trusted CertificatesX"
 
 #: Status: UNVERIFIED
 msgid "Downloading Upgrade..."
-msgstr ""
+msgstr "XDownloading Upgrade...X"
 
 #: Status: UNVERIFIED
 msgid "Launching Upgrade..."
-msgstr ""
+msgstr "XLaunching Upgrade...X"
 
 #: Status: UNVERIFIED
 msgid "Processing Upgrade..."
-msgstr ""
+msgstr "XProcessing Upgrade...X"
 
 #: Status: UNVERIFIED
 msgid "165 - 5.825 GH"
-msgstr ""
+msgstr "X165 - 5.825 GHX"
 
 #: Status: UNVERIFIED
 msgid "Target"
-msgstr ""
+msgstr "XTargetX"
 
 #: Status: UNVERIFIED
 msgid "Add Report"
-msgstr ""
+msgstr "XAdd ReportX"
 
 #: Status: UNVERIFIED
 msgid "Add Email Template"
-msgstr ""
+msgstr "XAdd Email TemplateX"
 
 #: Status: UNVERIFIED
 msgid "Email Template"
-msgstr ""
+msgstr "XEmail TemplateX"
 
 #: Status: UNVERIFIED
 msgid "Application Control Applications allows for simple control over all recognized traffic types."
-msgstr ""
+msgstr "XApplication Control Applications allows for simple control over all recognized traffic types.X"
 
 #: Status: UNVERIFIED
 msgid "Site URL is empty"
-msgstr ""
+msgstr "XSite URL is emptyX"
 
 #: Status: UNVERIFIED
 msgid "You must enter the Site URL for category search."
-msgstr ""
+msgstr "XYou must enter the Site URL for category search.X"
 
 #: Status: UNVERIFIED
 msgid "Last Search URL is empty"
-msgstr ""
+msgstr "XLast Search URL is emptyX"
 
 #: Status: UNVERIFIED
 msgid "You must search for a Site URL before you can suggest a different category."
-msgstr ""
+msgstr "XYou must search for a Site URL before you can suggest a different category.X"
 
 #: Status: UNVERIFIED
 msgid "Suggestion Submitted"
-msgstr ""
+msgstr "XSuggestion SubmittedX"
 
 #: Status: UNVERIFIED
 msgid "Unable to submit suggestion."
-msgstr ""
+msgstr "XUnable to submit suggestion.X"
 
 #: Status: UNVERIFIED
 msgid "Lookup the category for websites."
-msgstr ""
+msgstr "XLookup the category for websites.X"
 
 #: Status: UNVERIFIED
 msgid "Last Search URL"
-msgstr ""
+msgstr "XLast Search URLX"
 
 #: Status: UNVERIFIED
 msgid "Last Search Category"
-msgstr ""
+msgstr "XLast Search CategoryX"
 
 #: Status: UNVERIFIED
 msgid "Quota Bytes"
-msgstr ""
+msgstr "XQuota BytesX"
 
 #: Status: UNVERIFIED
 msgid "Tag Time (Seconds)"
-msgstr ""
+msgstr "XTag Time (Seconds)X"
 
 #: Status: UNVERIFIED
 msgid "Uploading File..."
-msgstr ""
+msgstr "XUploading File...X"
 
 #: Status: UNVERIFIED
 msgid "Changes made on this tab are not officially supported.<br>"
-msgstr ""
+msgstr "XChanges made on this tab are not officially supported.<br>X"
 
 #: Status: UNVERIFIED
 msgid "(default = UDP)"
-msgstr ""
+msgstr "X(default = UDP)X"
 
 #: Status: UNVERIFIED
 msgid "(default = 1194)"
-msgstr ""
+msgstr "X(default = 1194)X"
 
 #: Status: UNVERIFIED
 msgid "(default = AES-128-CBC)"
-msgstr ""
+msgstr "X(default = AES-128-CBC)X"
 
 #: Status: UNVERIFIED
 msgid "(default = checked)"
-msgstr ""
+msgstr "X(default = checked)X"
 
 #: Status: UNVERIFIED
 msgid "Unique ID's"
-msgstr ""
+msgstr "XUnique ID'sX"
 
 #: Status: UNVERIFIED
 msgid "The recommended default value is Yes unless you have a specific reason to change this setting."
-msgstr ""
+msgstr "XThe recommended default value is Yes unless you have a specific reason to change this setting.X"
 
 #: Status: UNVERIFIED
 msgid "When enable, IPsec traffic will bypass processing by all Apps and Service Apps"
-msgstr ""
+msgstr "XWhen enable, IPsec traffic will bypass processing by all Apps and Service AppsX"
 
 #: Status: UNVERIFIED
 msgid "(The private networks attached to the local side of the tunnel)"
-msgstr ""
+msgstr "X(The private networks attached to the local side of the tunnel)X"
 
 #: Status: UNVERIFIED
 msgid "(The private networks attached to the remote side of the tunnel)"
-msgstr ""
+msgstr "X(The private networks attached to the remote side of the tunnel)X"
 
 #: Status: UNVERIFIED
 msgid "Filter data ..."
-msgstr ""
+msgstr "XFilter data ...X"
 
 #: Status: UNVERIFIED
 msgid "PB"
-msgstr ""
+msgstr "XPBX"
 
 #: Status: UNVERIFIED
 msgid "TB"
-msgstr ""
+msgstr "XTBX"
 
 #: Status: UNVERIFIED
 msgid "GB"
-msgstr ""
+msgstr "XGBX"
 
 #: Status: UNVERIFIED
 msgid "MB"
-msgstr ""
+msgstr "XMBX"
 
 #: Status: UNVERIFIED
 msgid "KB"
-msgstr ""
+msgstr "XKBX"
 
 #: Status: UNVERIFIED
 msgid "B"
-msgstr ""
+msgstr "XBX"
 
 #: Status: UNVERIFIED
 msgid "Replace current settings with settings from:"
-msgstr ""
+msgstr "XReplace current settings with settings from:X"
 
 #: Status: UNVERIFIED
 msgid "{0} filtered, {1} total entries"
-msgstr ""
+msgstr "X{0} filtered, {1} total entriesX"
 
 #: Status: UNVERIFIED
 msgid "{0} entries"
-msgstr ""
+msgstr "X{0} entriesX"
 
 #: Status: UNVERIFIED
 msgid "MAC"
-msgstr ""
+msgstr "XMACX"
 
 #: Status: UNVERIFIED
 msgid "[no MAC Address]"
-msgstr ""
+msgstr "X[no MAC Address]X"
 
 #: Status: UNVERIFIED
 msgid "Last Hostname"
-msgstr ""
+msgstr "XLast HostnameX"
 
 #: Status: UNVERIFIED
 msgid "[no last hostname]"
-msgstr ""
+msgstr "X[no last hostname]X"
 
 #: Status: UNVERIFIED
 msgid "Device Details"
-msgstr ""
+msgstr "XDevice DetailsX"
 
 #: Status: UNVERIFIED
 msgid "{0} filtered, {1} total devices"
-msgstr ""
+msgstr "X{0} filtered, {1} total devicesX"
 
 #: Status: UNVERIFIED
 msgid "{0} devices"
-msgstr ""
+msgstr "X{0} devicesX"
 
 #: Status: UNVERIFIED
 msgid "Refill"
-msgstr ""
+msgstr "XRefillX"
 
 #: Status: UNVERIFIED
 msgid "[enter Username]"
-msgstr ""
+msgstr "X[enter Username]X"
 
 #: Status: UNVERIFIED
 msgid "User Details"
-msgstr ""
+msgstr "XUser DetailsX"
 
 #: Status: UNVERIFIED
 msgid "Request Method"
-msgstr ""
+msgstr "XRequest MethodX"
 
 #: Status: UNVERIFIED
 msgid "Request File Name"
-msgstr ""
+msgstr "XRequest File NameX"
 
 #: Status: UNVERIFIED
 msgid "Request File Path"
-msgstr ""
+msgstr "XRequest File PathX"
 
 #: Status: UNVERIFIED
 msgid "Content Length"
-msgstr ""
+msgstr "XContent LengthX"
 
 #: Status: UNVERIFIED
 msgid "{0} filtered, {1} total sessions"
-msgstr ""
+msgstr "X{0} filtered, {1} total sessionsX"
 
 #: Status: UNVERIFIED
 msgid "{0} sessions"
-msgstr ""
+msgstr "X{0} sessionsX"
 
 #: Status: UNVERIFIED
 msgid "{0} filtered, {1} total hosts"
-msgstr ""
+msgstr "X{0} filtered, {1} total hostsX"
 
 #: Status: UNVERIFIED
 msgid "{0} hosts"
-msgstr ""
+msgstr "X{0} hostsX"
 
 #: Status: UNVERIFIED
 msgid "Unknown Widget"
-msgstr ""
+msgstr "XUnknown WidgetX"
 
 #: Status: UNVERIFIED
 msgid "Select a install type."
-msgstr ""
+msgstr "XSelect a install type.X"
 
 #: Status: UNVERIFIED
 msgid "Install Type"
-msgstr ""
+msgstr "XInstall TypeX"
+
+#: Status: UNVERIFIED
+msgid "Username (Captive Portal)"
+msgstr "XUsername (Captive Portal)X"
+
+#: Status: UNVERIFIED
+msgid "Request File Extension"
+msgstr "XRequest File ExtensionX"
+
+#: Status: UNVERIFIED
+msgid "Response File Name"
+msgstr "XResponse File NameX"
+
+#: Status: UNVERIFIED
+msgid "Response File Extension"
+msgstr "XResponse File ExtensionX"
+
+#: Status: UNVERIFIED
+msgid "Issuer DN"
+msgstr "XIssuer DNX"
+
+#: Status: UNVERIFIED
+msgid "Inspected"
+msgstr "XInspectedX"
+
+#: Status: UNVERIFIED
+msgid "SNI Hostname"
+msgstr "XSNI HostnameX"
+
+#: Status: UNVERIFIED
+msgid "Filename"
+msgstr "XFilenameX"
+
+#: Status: UNVERIFIED
+msgid "Data Session"
+msgstr "XData SessionX"
+
+#: Status: UNVERIFIED
+msgid "First name must be at least 2 characters."
+msgstr "XFirst name must be at least 2 characters.X"
+
+#: Status: UNVERIFIED
+msgid "Last name must be at least 2 characters."
+msgstr "XLast name must be at least 2 characters.X"
+
+#: Status: UNVERIFIED
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
+msgstr "XIf new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity.X"
