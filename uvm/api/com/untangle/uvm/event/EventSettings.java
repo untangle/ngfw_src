@@ -24,14 +24,13 @@ public class EventSettings implements Serializable, JSONString
     private Integer version = 1;
 
     private LinkedList<AlertRule> alertRules = null;
+    private LinkedList<SyslogRule> syslogRules = null;
+    private LinkedList<TriggerRule> triggerRules = null;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
-    private LinkedList<SyslogRule> syslogRules = null;
-
-    private LinkedList<TriggerRule> triggerRules = null;
 
     public EventSettings() { }
 

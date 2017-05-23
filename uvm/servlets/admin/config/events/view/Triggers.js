@@ -42,6 +42,8 @@ Ext.define('Ung.config.events.view.Triggers', {
             tagLifetimeSec: 300,
             ruleId: -1,
             thresholdEnabled: false,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
             enabled: true
         },
 
