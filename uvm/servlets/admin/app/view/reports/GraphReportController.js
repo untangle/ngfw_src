@@ -297,7 +297,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000));
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 
@@ -320,7 +320,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
                 if (cb) { cb(); }
                 // if graph rendered inside reports, format and add data in current data grid
-                if (!me.isWidget) {
+                if (!me.isWidget && me.getView().up('reports-entry')) {
                     // vm.set('_currentData', []);
                     var ctrl = me.getView().up('reports-entry').getController();
                     switch (entryType) {

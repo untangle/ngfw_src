@@ -13,6 +13,18 @@ Ext.define('Ung.apps.webfilter.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'tbfill'
+        }, {
+            xtype: 'button',
+            text: 'View Reports'.t(),
+            iconCls: 'fa fa-line-chart',
+            href: '#reports/web-filter',
+            hrefTarget: '_self'
+        }]
+    },
+
     items: [
         { xtype: 'app-web-filter-status' },
         { xtype: 'app-web-filter-categories' },
