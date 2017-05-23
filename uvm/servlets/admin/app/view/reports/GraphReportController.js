@@ -364,7 +364,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             }
 
             if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
-                seriesRenderer = ColumnRenderer[vm.get('entry.seriesRenderer')];
+                seriesRenderer = Renderer[vm.get('entry.seriesRenderer')];
             }
 
         } else {
@@ -430,7 +430,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         if (!me.data) { return; }
 
         if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
-            seriesRenderer = ColumnRenderer[vm.get('entry.seriesRenderer')];
+            seriesRenderer = Renderer[vm.get('entry.seriesRenderer')];
         }
 
         for (i = 0; i < me.data.length; i += 1) {
