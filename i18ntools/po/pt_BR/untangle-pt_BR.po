@@ -1,6 +1,6 @@
 
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR ''Untangle, Inc."
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-02 03:32-0700\n"
-"PO-Revision-Date: 2017-05-18 13:36\n"
+"PO-Revision-Date: 2017-05-22 19:55\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt_BR\n"
@@ -8537,7 +8537,6 @@ msgstr "Você deve habilitar o checkbox acima para continuar."
 msgid "inspected"
 msgstr "inspecionado"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "Top Inspected Sites"
 msgstr "Top Sites inspeccionados"
 
@@ -9282,27 +9281,21 @@ msgstr "Um resumo das ações de filtro web."
 msgid "Web Filter Summary"
 msgstr "Resumo Web Filter"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "The number of inspected sessions grouped by site."
 msgstr "O número de sessões inspecionados agrupadas por site."
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 msgid "The amount of inspected SSL sessions over time."
 msgstr "A quantidade de sessões SSL inspeccionadas em tempo."
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Inspected Sessions"
 msgstr "Sessões inspeccionados"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "The number of ignored sessions grouped by site."
 msgstr "O número de sessões ignorados agrupadas por site."
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "Top Ignored Sites"
 msgstr "Sites Top ignorados"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.js
 msgid "The amount of SSL sessions over time."
 msgstr "A quantidade de sessões SSL ao longo do tempo."
 
@@ -9684,7 +9677,6 @@ msgstr "Mostra todas as solicitações HTTPS criptografadas."
 msgid "All HTTPS Events"
 msgstr "Todos os Eventos HTTPS"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
 msgstr ""
 "Eventos onde o tráfego não foi ou não pôde ser inspecionados, de modo que o "
@@ -9692,36 +9684,30 @@ msgstr ""
 "aplicativos ou serviços."
 
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Ignored Sessions"
 msgstr "Sessões ignorados"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
 msgstr ""
 "Eventos onde o tráfego foi totalmente processadas pelo inspector, e todo o "
 "tráfego foi passado através de todas as outras aplicações e serviços."
 
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
 msgstr ""
 "Eventos onde o tráfego foi bloqueado devido a um problemas subjacentes com a "
 "sessão SSL."
 
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Abandoned Sessions"
 msgstr "Sessões abandonadas"
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Events where traffic was blocked because the server certificate could not be authenticated."
 msgstr ""
 "Eventos onde o tráfego foi bloqueado porque o certificado do servidor não "
 "pôde ser autenticado."
 
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Untrusted Sessions"
 msgstr "Sessões não confiáveis"
 
@@ -10969,12 +10955,10 @@ msgstr ""
 msgid "When the SSL Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked."
 msgstr ""
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.js
 #: Status: UNVERIFIED
 msgid "All sessions detected by SSL Inspector."
 msgstr ""
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.js
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
 msgstr ""
@@ -11023,12 +11007,10 @@ msgstr ""
 msgid "Server Connection Protocols"
 msgstr ""
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "A summary of SSL Inspector actions."
 msgstr ""
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "SSL Inspector Summary"
 msgstr ""
@@ -12762,7 +12744,6 @@ msgstr ""
 msgid "This will allow client authentication to be tracked by MAC address instead of IP address."
 msgstr ""
 
-#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 #: Status: UNVERIFIED
 msgid "Sessions Inspected"
 msgstr ""
@@ -12793,10 +12774,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Username (Directory Connector)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Username (Captive Porrtal)"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13977,4 +13954,52 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Install Type"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (Captive Portal)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Request File Extension"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Response File Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Response File Extension"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Issuer DN"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Inspected"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "SNI Hostname"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filename"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Session"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "First name must be at least 2 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last name must be at least 2 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
 msgstr ""
