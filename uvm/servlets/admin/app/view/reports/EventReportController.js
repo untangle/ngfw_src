@@ -37,19 +37,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                 me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
 
-                Ext.Array.each(me.tableConfig.columns, function (col) {
-                    col.hidden = Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0;
-                    // !!!
-                    if (!col.filter && col.dataIndex !== 'time_stamp' && col.dataIndex !== 'end_time') {
-                        col.filter = 'string';
-                    }
-                });
-
                 me.tableConfig.columns.forEach( function(column){
-                    if( column.dataIndex &&
-                        !column.stateId ){
-                        column.stateId = column.dataIndex;
-                    }
                     if( column.columns ){
                         /*
                          * Grouping
@@ -59,9 +47,19 @@ Ext.define('Ung.view.reports.EventReportController', {
                                 column.filter = 'string';
                             }
                             grid.initComponentColumn( subColumn );
+                            column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                            if (!column.filter && 
+                                ( column.rtype != 'timestamp' ) ){
+                                column.filter = 'string';
+                            }
                         }, this ) );
                     }
                     grid.initComponentColumn( column );
+                    column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                    if (!column.filter && 
+                        (column.rtype != 'timestamp' ) ){
+                        column.filter = 'string';
+                    }
                 });
 
                 grid.tableConfig = me.tableConfig;
