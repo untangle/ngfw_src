@@ -178,6 +178,12 @@ Ext.define('Ung.controller.Global', {
                                     urlName: app,
                                     runState: result.getRunState()
                                 }
+                            },
+                            listeners: {
+                                deactivate: function () {
+                                    // remove the app container
+                                    mainView.remove('appCard');
+                                }
                             }
                         });
                         mainView.getViewModel().set('activeItem', 'appCard');
