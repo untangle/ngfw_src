@@ -14,6 +14,18 @@ Ext.define('Ung.apps.adblocker.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'tbfill'
+        }, {
+            xtype: 'button',
+            text: 'View Reports'.t(),
+            iconCls: 'fa fa-line-chart',
+            href: '#reports/ad-blocker',
+            hrefTarget: '_self'
+        }]
+    },
+
     items: [
         { xtype: 'app-ad-blocker-status' },
         { xtype: 'app-ad-blocker-options' },

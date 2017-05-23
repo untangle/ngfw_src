@@ -89,6 +89,17 @@ Ext.define('Ung.cmp.AppPanel', {
 
             }, 500);
             tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
+
+            // // add reports button in tabbar
+            // console.log(vm.get('props.name'));
+            // var tbar = tabPanel.getTabBar();
+            //     tbar.add([{
+            //         xtype: 'button',
+            //         text: 'View Reports'.t(),
+            //         iconCls: 'fa fa-line-chart',
+            //         // href: '#reports/' + vm.get('props.name'),
+            //         hrefTarget: '_self'
+            //     }]);
         }
     }
 });
