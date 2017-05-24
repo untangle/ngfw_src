@@ -2,17 +2,6 @@ Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
 
-    //Field width constants
-    timestampFieldWidth: 135,
-    ipFieldWidth: 100,
-    macFieldWidth: 100,
-    portFieldWidth: 70,
-    hostnameFieldWidth: 120,
-    uriFieldWidth: 200,
-    usernameFieldWidth: 120,
-    booleanFieldWidth: 60,
-    emailFieldWidth: 150,
-
     getConfig: function(tableName) {
         return this.tableConfig[tableName];
     },
@@ -296,24 +285,24 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'End Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
                 rtype: 'timestamp'
             }, {
                 header: 'Bypassed'.t(),
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'bypassed',
                 filter: {
@@ -330,7 +319,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Entitled'.t(),
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'entitled',
                 filter: {
@@ -347,7 +336,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Protocol'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'protocol',
                 // rtype: 'protocol',
@@ -359,7 +348,7 @@ Ext.define('TableConfig', {
                 // }
             }, {
                 header: 'ICMP Type'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'icmp_type'
             }, {
@@ -374,7 +363,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'policy_rule_id'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
                 // widgetField: {
@@ -385,7 +374,7 @@ Ext.define('TableConfig', {
                 // }
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
@@ -442,22 +431,22 @@ Ext.define('TableConfig', {
                 dataIndex: 'server_longitude'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
                 filter: {
@@ -469,12 +458,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'New Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
                 filter: {
@@ -482,12 +471,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Original Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
                 filter: {
@@ -495,12 +484,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -555,7 +544,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'application_control_category'
             }, {
                 header: 'Blocked'.t() + ' (Application Control)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_blocked',
                 filter: {
@@ -565,7 +554,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Flagged'.t() + ' (Application Control)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_flagged',
                 filter: {
@@ -575,7 +564,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Confidence'.t() + ' (Application Control)',
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_confidence',
                 filter: {
@@ -594,7 +583,7 @@ Ext.define('TableConfig', {
                 rtype: 'protocol'
             }, {
                 header: 'Blocked'.t() + ' (Application Control Lite)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_blocked',
                 filter: {
@@ -622,7 +611,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'ssl_inspector_detail'
             }, {
                 header: 'Blocked'.t() + ' (Firewall)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_blocked',
                 filter: {
@@ -632,7 +621,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Flagged'.t() + ' (Firewall)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_flagged',
                 filter: {
@@ -666,7 +655,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'captive_portal_rule_index'
             }, {
                 header: 'To-Server Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'p2s_bytes',
                 filter: {
@@ -674,7 +663,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'From-Server Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's2p_bytes',
                 filter: {
@@ -682,7 +671,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'To-Client Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'p2c_bytes',
                 filter: {
@@ -690,7 +679,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'From-Client Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c2p_bytes',
                 filter: {
@@ -832,30 +821,30 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Start Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
                 rtype: 'timestamp'
             }, {
                 header: 'End Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
                 rtype: 'timestamp'
             }, {
                 header: 'Bypassed'.t(),
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'bypassed',
                 filter: {
@@ -865,7 +854,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Entitled'.t(),
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'entitled',
                 filter: {
@@ -875,13 +864,13 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Protocol'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'protocol',
                 // rtype: 'protocol'
             }, {
                 header: 'ICMP Type'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'icmp_type'
             }, {
@@ -896,12 +885,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'policy_rule_id'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
@@ -936,22 +925,22 @@ Ext.define('TableConfig', {
                 dataIndex: 'server_longitude'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
                 filter: {
@@ -959,12 +948,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'New Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
                 filter: {
@@ -972,12 +961,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Original Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
                 filter: {
@@ -985,12 +974,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -1045,7 +1034,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'application_control_category'
             }, {
                 header: 'Blocked'.t() + ' (Application Control)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_blocked',
                 filter: {
@@ -1055,7 +1044,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Flagged'.t() + ' (Application Control)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_flagged',
                 filter: {
@@ -1065,7 +1054,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Confidence'.t() + ' (Application Control)',
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_confidence',
                 filter: {
@@ -1084,7 +1073,7 @@ Ext.define('TableConfig', {
                 rtype: 'protocol'
             }, {
                 header: 'Blocked'.t() + ' (Application Control Lite)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_blocked',
                 filter: {
@@ -1112,7 +1101,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'ssl_inspector_detail'
             }, {
                 header: 'Blocked'.t() + ' (Firewall)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_blocked',
                 filter: {
@@ -1122,7 +1111,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Flagged'.t() + ' (Firewall)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_flagged',
                 filter: {
@@ -1156,7 +1145,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'captive_portal_rule_index'
             }, {
                 header: 'From-Server Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's2c_bytes',
                 filter: {
@@ -1164,7 +1153,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'From-Client Bytes'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c2s_bytes',
                 filter: {
@@ -1277,12 +1266,12 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Request Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'request_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -1293,27 +1282,27 @@ Ext.define('TableConfig', {
                 dataIndex: 'policy_id'
             }, {
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
                 filter: {
@@ -1321,12 +1310,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'New Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
                 filter: {
@@ -1334,12 +1323,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Original Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
                 filter: {
@@ -1347,12 +1336,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -1360,33 +1349,33 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Domain'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'domain'
             }, {
                 header: 'Host'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'host'
             }, {
                 header: 'Uri'.t(),
                 flex:1,
-                // width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 sortable: true,
                 dataIndex: 'uri'
             }, {
                 header: 'Method'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'method',
                 renderer: function(value) {
@@ -1406,17 +1395,17 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Referer'.t(),
-                width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 sortable: true,
                 dataIndex: 'referer'
             }, {
                 header: 'Download Content Length'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's2c_content_length'
             }, {
                 header: 'Upload Content Length'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c2s_content_length'
             }, {
@@ -1426,7 +1415,7 @@ Ext.define('TableConfig', {
                 dataIndex: 's2c_content_type'
             }, {
                 header: 'Blocked'.t() + ' (Web Filter)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'web_filter_blocked',
                 filter: {
@@ -1436,7 +1425,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Flagged'.t() + ' (Web Filter)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'web_filter_flagged',
                 filter: {
@@ -1466,7 +1455,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'ad_blocker_cookie_ident'
             }, {
                 header: 'Clean'.t() + ' (Virus Blocker Lite)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_clean',
                 filter: {
@@ -1481,7 +1470,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'virus_blocker_lite_name'
             }, {
                 header: 'Clean'.t() + ' (Virus Blocker)',
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_clean',
                 filter: {
@@ -1579,7 +1568,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -1595,37 +1584,37 @@ Ext.define('TableConfig', {
                 dataIndex: 'request_id'
             }, {
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
                 filter: {
@@ -1633,12 +1622,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'New Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
                 filter: {
@@ -1646,12 +1635,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Original Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
                 filter: {
@@ -1659,12 +1648,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -1672,34 +1661,34 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Host'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'host'
             }, {
                 header: 'Uri'.t(),
                 flex:1,
-                width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 sortable: true,
                 dataIndex: 'uri'
             }, {
                 header: 'Query Term'.t(),
                 flex:1,
-                width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 sortable: true,
                 dataIndex: 'term'
             }, {
                 header: 'Method'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'method'
             }, {
                 header: 'Download Content Length'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's2c_content_length'
             }, {
                 header: 'Upload Content Length'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c2s_content_length'
             }, {
@@ -1709,12 +1698,12 @@ Ext.define('TableConfig', {
                 dataIndex: 's2c_content_type'
             }, {
                 header: 'Server'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -1797,7 +1786,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'spam_blocker_lite_action',
                 type: 'string',
-                convert: this.Converter.emailAction
+                convert: Converter.emailAction
             }, {
                 name: 'spam_blocker_lite_score'
             }, {
@@ -1807,7 +1796,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'spam_blocker_action',
                 type: 'string',
-                convert: this.Converter.emailAction
+                convert: Converter.emailAction
             }, {
                 name: 'spam_blocker_score'
             }, {
@@ -1817,7 +1806,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'phish_blocker_action',
                 type: 'string',
-                convert: this.Converter.emailAction
+                convert: Converter.emailAction
             }, {
                 name: 'phish_blocker_score'
             }, {
@@ -1832,13 +1821,13 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
@@ -1853,32 +1842,32 @@ Ext.define('TableConfig', {
                 dataIndex: 'msg_id'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
                 header: 'Username'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
                 filter: {
@@ -1886,12 +1875,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'New Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
                 filter: {
@@ -1899,12 +1888,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Original Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
                 filter: {
@@ -1912,12 +1901,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Server Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: {
@@ -1925,12 +1914,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Receiver'.t(),
-                width: this.emailFieldWidth,
+                width: Renderer.emailWidth,
                 sortable: true,
                 dataIndex: 'addr'
             }, {
                 header: 'Address Name'.t(),
-                width: this.emailFieldWidth,
+                width: Renderer.emailWidth,
                 sortable: true,
                 dataIndex: 'addr_name'
             }, {
@@ -1940,7 +1929,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'addr_kind'
             }, {
                 header: 'Sender'.t(),
-                width: this.emailFieldWidth,
+                width: Renderer.emailWidth,
                 sortable: true,
                 dataIndex: 'sender'
             }, {
@@ -2055,23 +2044,23 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'client_addr'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'login_name'
             }, {
                 header: 'Domain'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'domain'
             }, {
@@ -2117,7 +2106,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2138,7 +2127,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'local'
             }, {
                 header: 'Client Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'client_addr'
             }, {
@@ -2193,7 +2182,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2339,13 +2328,13 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'address'
             }, {
@@ -2386,13 +2375,13 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'MAC Address'.t(),
-                width: this.macFieldWidth,
+                width: Renderer.macWidth,
                 sortable: true,
                 dataIndex: 'mac_address'
             }, {
@@ -2433,13 +2422,13 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
@@ -2487,7 +2476,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             },{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2531,7 +2520,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             },{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2586,7 +2575,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             },{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2645,7 +2634,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2656,12 +2645,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             },{
                 header: 'Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'client_address'
             },{
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'client_username'
             },{
@@ -2672,13 +2661,13 @@ Ext.define('TableConfig', {
                 // rtype: 'protocol',
             },{
                 header: 'Login Time'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'connect_stamp',
                 rtype: 'timestamp'
             },{
                 header: 'Logout Time'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'goodbye_stamp',
                 rtype: 'timestamp'
@@ -2748,7 +2737,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2791,7 +2780,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2840,7 +2829,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2892,7 +2881,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2972,7 +2961,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -2988,12 +2977,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'client_addr'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'login_name',
                 flex:1
@@ -3083,7 +3072,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -3113,12 +3102,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Source Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'source_addr'
             }, {
                 header: 'Source port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'source_port',
                 filter: {
@@ -3133,12 +3122,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Destination Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'dest_addr'
             }, {
                 header: 'Destination port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'dest_port',
                 filter: {
@@ -3158,7 +3147,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'protocol'
             }, {
                 header: 'Blocked'.t(),
-                width: this.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'blocked',
                 filter: {
@@ -3201,7 +3190,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -3212,17 +3201,17 @@ Ext.define('TableConfig', {
                 dataIndex: 'type'
             }, {
                 header: 'Client Name'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'client_name'
             }, {
                 header: 'Client Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'remote_address'
             }, {
                 header: 'Pool Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'pool_address'
             }]
@@ -3266,19 +3255,19 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Start Time'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
                 rtype: 'timestamp'
             }, {
                 header: 'End Time'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
                 rtype: 'timestamp'
@@ -3289,17 +3278,17 @@ Ext.define('TableConfig', {
                 dataIndex: 'client_name'
             }, {
                 header: 'Client Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'remote_address'
             }, {
                 header: 'Client Port'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'remote_port'
             }, {
                 header: 'Pool Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'pool_address'
             }, {
@@ -3335,7 +3324,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -3370,7 +3359,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -3449,7 +3438,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'event_id'
             }, {
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
@@ -3460,63 +3449,63 @@ Ext.define('TableConfig', {
                 dataIndex: 'policy_id'
             }, {
                 header: 'Session Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
                 header: 'Request Id'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'request_id'
             }, {
                 header: 'Method'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'method'
             }, {
                 header: 'Client Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'server_intf'
             }, {
                 header: 'Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_client_addr'
             }, {
                 header: 'New Client'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_client_addr'
             }, {
                 header: 'Original Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }, {
                 header: 'Server'.t() ,
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'File Name'.t(),
                 flex:1,
-                width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 dataIndex: 'uri'
             }, {
                 header: 'Virus Blocker Lite ' + 'Name'.t(),
@@ -3540,7 +3529,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'virus_blocker_clean'
             }, {
                 header: 'Server'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'c_server_addr'
             }]
@@ -3562,13 +3551,13 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Address'.t(),
-                width: this.ipFieldWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'address'
             }, {
@@ -3587,7 +3576,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Size'.t(),
-                width: this.portFieldWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'size'
             }, {
@@ -3611,24 +3600,24 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Timestamp'.t(),
-                width: this.timestampFieldWidth,
+                width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
                 rtype: 'timestamp'
             }, {
                 header: 'Username'.t(),
-                width: this.usernameFieldWidth,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'username'
             }, {
                 header: 'Hostname'.t(),
-                width: this.hostnameFieldWidth,
+                width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
                 header: 'Settings File'.t(),
                 flex:1,
-                width: this.uriFieldWidth,
+                width: Renderer.uriWidth,
                 dataIndex: 'settings_file',
                 renderer: function( value ){
                     value = value.replace( /^.*\/settings\//, '' );

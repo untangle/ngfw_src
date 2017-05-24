@@ -2,6 +2,19 @@ Ext.define('Ung.util.Renderer', {
     singleton: true,
     alternateClassName: 'Renderer',
 
+    /*
+     * Common column widths
+     */
+    timestampWidth: 135,
+    ipWidth: 100,
+    macWidth: 100,
+    portWidth: 70,
+    hostnameWidth: 120,
+    uriWidth: 200,
+    usernameWidth: 120,
+    booleanWidth: 60,
+    emailWidth: 150,
+
     boolean: function( value ){
         return ( value == true ) ? 'true' : 'false';
     },
@@ -53,14 +66,14 @@ Ext.define('Ung.util.Renderer', {
         return '';
     },
 
-    policy: function ( value ) {
-        var policy = Ext.getStore('policiestree').findRecord('policyId', value);
-        if (policy) {
-            return policy.get('name') + ' [' + value + ']';
-        }else{
-            return 'None'.t();
-        }
-    },
+    // policy: function ( value ) {
+    //     var policy = Ext.getStore('policiestree').findRecord('policyId', value);
+    //     if (policy) {
+    //         return policy.get('name') + ' [' + value + ']';
+    //     }else{
+    //         return 'None'.t();
+    //     }
+    // },
 
     datasizeMap: [
         [ 1125899906842624, 'PB'.t() ],

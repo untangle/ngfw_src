@@ -74,7 +74,7 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             rtype: 'timestamp',
             filter: { type: 'date' },
-            width: TableConfig.timestampFieldWidth
+            width: Renderer.timestampWidth
         }, {
             header: 'Session ID'.t(),
             dataIndex: 'sessionId',
@@ -104,7 +104,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Bypassed'.t(),
             dataIndex: 'bypassed',
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',
@@ -132,7 +132,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             hidden: true
         }, {
             header: 'Port Forwarded'.t(),
@@ -142,7 +142,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             hidden: true
         }, {
             header: 'Tags'.t(),
@@ -158,13 +158,13 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Local Address'.t(),
             dataIndex: "localAddr",
             filter: { type: 'string' },
-            width: TableConfig.ipFieldWidth
+            width: Renderer.ipWidth
         },{
             hidden: true,
             header: 'Remote Address'.t(),
             dataIndex: "remoteAddr",
             filter: { type: 'string' },
-            width: TableConfig.ipFieldWidth
+            width: Renderer.ipWidth
         },{
             hidden: true,
             header: 'Bandwidth Control ' + 'Priority'.t(),
@@ -221,29 +221,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth
+                width: Renderer.ipWidth
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClientPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth
+                width: Renderer.portWidth
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth,
+                width: Renderer.portWidth,
                 hidden: true
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
                 filter: { type: 'string' },
-                width: TableConfig.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
@@ -267,29 +267,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth,
+                width: Renderer.portWidth,
                 hidden: true
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServer',
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 filter: { type: 'string' }
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth
+                width: Renderer.portWidth
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
                 filter: { type: 'string' },
-                width: TableConfig.booleanFieldWidth
+                width: Renderer.booleanWidth
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
