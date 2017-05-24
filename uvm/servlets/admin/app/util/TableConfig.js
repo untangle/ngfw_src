@@ -3229,18 +3229,17 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             },{
                 header: 'Description'.t(),
-                width: 200,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'description'
             },{
                 header: 'Summary Text'.t(),
-                flex: 1,
-                width: 500,
                 sortable: true,
                 dataIndex: 'summary_text'
             },{
                 header: 'JSON'.t(),
-                width: 500,
+                flex: 1,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'json'
             }]
@@ -3264,18 +3263,18 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             },{
                 header: 'Description'.t(),
-                width: 200,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'description'
             },{
                 header: 'Summary Text'.t(),
-                flex: 1,
-                width: 500,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'summary_text'
             },{
                 header: 'JSON'.t(),
-                width: 500,
+                flex: 1,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'json'
             }]
