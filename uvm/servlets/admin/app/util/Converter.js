@@ -631,6 +631,20 @@ Ext.define('Ung.util.Converter', {
             return '';
         }
         return ( value in Converter.authTypeMap ) ? Converter.authTypeMap[value] : Converter.authTypeMap['default'];
-    }
+    },
+
+    directoryConnectorActionMap: {
+        I: 'login'.t(),
+        U: 'update'.t(),
+        O: 'logout'.t(),
+        default: 'unknown'.t()
+
+    },
+    directoryConnectorAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.directoryConnectorActionMap ) ? Converter.directoryConnectorActionMap[value] : Converter.directoryConnectorActionMap['default'];
+    },
 
 });
