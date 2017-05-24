@@ -2891,9 +2891,11 @@ Ext.define('TableConfig', {
             },{
                 name: 'login_name'
             },{
-                name: 'auth_type'
+                name: 'auth_type',
+                convert: Converter.authType
             },{
-                name: 'event_info'
+                name: 'event_info',
+                convert: Converter.captivePortalEventInfo
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -2903,12 +2905,12 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Event Id'.t(),
-                width: 60,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -2924,46 +2926,14 @@ Ext.define('TableConfig', {
                 flex:1
             }, {
                 header: 'Action'.t(),
-                width: 165,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'event_info',
-                renderer: Ext.bind(function( value ) {
-                    switch ( value ) {
-                    case 'LOGIN':
-                        return  'Login Success'.t();
-                    case 'FAILED':
-                        return  'Login Failure'.t();
-                    case 'TIMEOUT':
-                        return  'Session Timeout'.t();
-                    case 'INACTIVE':
-                        return  'Idle Timeout'.t();
-                    case 'USER_LOGOUT':
-                        return  'User Logout'.t();
-                    case 'ADMIN_LOGOUT':
-                        return  'Admin Logout'.t();
-                    }
-                    return '';
-                }, this )
+                dataIndex: 'event_info'
             }, {
                 header: 'Authentication'.t(),
-                width: 165,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'auth_type',
-                renderer: Ext.bind(function( value ) {
-                    switch ( value ) {
-                    case 'NONE':
-                        return  'None'.t();
-                    case 'LOCAL_DIRECTORY':
-                        return  'Local Directory'.t();
-                    case 'ACTIVE_DIRECTORY':
-                        return  'Active Directory'.t();
-                    case 'RADIUS':
-                        return  'RADIUS'.t();
-                    case 'CUSTOM':
-                        return  'Custom'.t();
-                    }
-                    return '';
-                }, this )
+                dataIndex: 'auth_type'
             }]
         },
         intrusion_prevention_events: {

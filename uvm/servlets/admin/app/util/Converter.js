@@ -600,6 +600,37 @@ Ext.define('Ung.util.Converter', {
                 ( value in Converter.quotaActionMap ) ? Converter.quotaActionMap[value] : Converter.quotaActionMap['default'], 
                 value
         );
+    },
+
+    captivePortalEventInfoMap: {
+        LOGIN: 'Login Success'.t(),
+        FAILED: 'Login Failure'.t(),
+        TIMEOUT: 'Session Timeout'.t(),
+        INACTIVE: 'Idle Timeout'.t(),
+        USER_LOGOUT: 'User Logout'.t(),
+        ADMIN_LOGOUT: 'Admin Logout'.t(),
+        default: 'Unknown'.t()
+    },
+    captivePortalEventInfo: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.captivePortalEventInfoMap ) ? Converter.captivePortalEventInfoMap[value] : Converter.captivePortalEventInfoMap['default'];
+    },
+
+    authTypeMap: {
+        NONE: 'None'.t(),
+        LOCAL_DIRECTORY: 'Local Directory'.t(),
+        ACTIVE_DIRECTORY: 'Active Directory'.t(),
+        RADIUS: 'RADIUS'.t(),
+        CUSTOM: 'Custom'.t(),
+        default: 'Unknown'.t()
+    },
+    authType: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.authTypeMap ) ? Converter.authTypeMap[value] : Converter.authTypeMap['default'];
     }
 
 });
