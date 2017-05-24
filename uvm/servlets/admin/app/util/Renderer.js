@@ -6,16 +6,31 @@ Ext.define('Ung.util.Renderer', {
      * Common column widths
      */
     timestampWidth: 135,
+    dataWidth: 100,
     ipWidth: 100,
     macWidth: 100,
     portWidth: 70,
     hostnameWidth: 120,
     uriWidth: 200,
     usernameWidth: 120,
-    booleanWidth: 60,
+    booleanWidth: 40,
     emailWidth: 150,
+    locationWidth: 50,
     // General message
     messageWidth: 120,
+
+    /*
+     * Grid filters
+     */
+    booleanFilter: {
+        type: 'boolean',
+        yesText: 'true'.t(),
+        noText: 'false'.t()
+    },
+
+    numericFilter: {
+        type: 'numeric'
+    },
 
     boolean: function( value ){
         return ( value == true ) ? 'true' : 'false';
@@ -95,7 +110,12 @@ Ext.define('Ung.util.Renderer', {
                 break;
             }
         }
-        return ( value == 0 ? 0 : ( value / size[0] ).toFixed(2) ) + ' ' + size[1];
+        if( ( value == 0 ) ||
+            ( size[0] == 1 ) ){
+            return value + ' ' + size[1];
+        }else{
+            return ( value / size[0] ).toFixed(2) + ' ' + size[1];
+        }
     },
 
     datasizeoptional: function(value){
