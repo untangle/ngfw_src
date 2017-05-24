@@ -2322,18 +2322,18 @@ Ext.define('TableConfig', {
                 dataIndex: 'mac_address'
             }, {
                 header: 'Key'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'key'
             }, {
                 header: 'Value'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'value'
             }, {
                 header: 'Old Value'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'old_value'
