@@ -584,6 +584,22 @@ Ext.define('Ung.util.Converter', {
     settingsFile: function( value ){
         value = value.replace( /^.*\/settings\//, '' );
         return value;
+    },
+
+    quotaActionMap: {
+        1: 'Given'.t(),
+        2: 'Exceeded'.t(),
+        default: 'Unknown'.t()
+    },
+    quotaAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format( 
+                Converter.mapValueFormat, 
+                ( value in Converter.quotaActionMap ) ? Converter.quotaActionMap[value] : Converter.quotaActionMap['default'], 
+                value
+        );
     }
 
 });

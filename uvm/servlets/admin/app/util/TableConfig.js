@@ -285,7 +285,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Session Id'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
@@ -305,11 +305,7 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'bypassed',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                },
+                filter: Renderer.booleanFilter,
                 widgetField: {
                     xtype: 'combo',
                     store: [['true', 'True'.t()], ['false', 'False'.t()]],
@@ -322,11 +318,7 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'entitled',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                },
+                filter: Renderer.booleanFilter,
                 widgetField: {
                     xtype: 'combo',
                     store: [['true', 'True'.t()], ['false', 'False'.t()]],
@@ -339,7 +331,6 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'protocol',
-                // rtype: 'protocol',
                 // widgetField: {
                 //     xtype: 'combo',
                 //     store: ColumnRenderer.protocolStore(),
@@ -353,12 +344,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'icmp_type'
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Policy Rule Id'.t(),
-                width: 60,
+                width: 20,
                 sortable: true,
                 dataIndex: 'policy_rule_id'
             }, {
@@ -379,7 +370,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'server_intf'
             }, {
                 header: 'Client Country'.t() ,
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'client_country',
                 widgetField: {
@@ -391,23 +382,19 @@ Ext.define('TableConfig', {
                     editable: false,
                     queryMode: 'local'
                 }
-                // renderer: function(value) { return Ung.Main.getCountryName(value); }
             }, {
                 header: 'Client Latitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'client_latitude'
-                // widgetField: {
-                //     xtype: 'numberfield',
-                // }
             }, {
                 header: 'Client Longitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'client_longitude'
             }, {
                 header: 'Server Country'.t() ,
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'server_country',
                 widgetField: {
@@ -421,12 +408,12 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Server Latitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'server_latitude'
             }, {
                 header: 'Server Longitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'server_longitude'
             }, {
@@ -449,9 +436,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 widgetField: {
                     xtype: 'numberfield',
                     value: 0
@@ -466,9 +451,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -479,9 +462,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -492,22 +473,20 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Tags'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'tags'
             }, {
                 header: 'Filter Prefix'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'filter_prefix'
             }, {
                 header: 'Rule Id'.t() + ' (Application Control)',
-                width: 70,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_ruleid',
                 filter: {
@@ -515,13 +494,13 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Priority'.t() + ' (Bandwidth Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'bandwidth_control_priority',
                 rtype: 'priority'
             }, {
                 header: 'Rule'.t() + ' (Bandwidth Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'bandwidth_control_rule',
                 renderer: function(value) {
@@ -529,7 +508,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Application'.t() + ' (Application Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_application'
             }, {
@@ -547,29 +526,19 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Flagged'.t() + ' (Application Control)',
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_flagged',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Confidence'.t() + ' (Application Control)',
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_confidence',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Detail'.t() + ' (Application Control)',
                 width: 200,
@@ -586,19 +555,13 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (SSL Inspector)',
                 width: 70,
                 sortable: true,
                 dataIndex: 'ssl_inspector_ruleid',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Status'.t() + ' (SSL Inspector)',
                 width: 100,
@@ -614,40 +577,26 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Flagged'.t() + ' (Firewall)',
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_flagged',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Firewall)',
                 width: 60,
                 sortable: true,
                 flex:1,
                 dataIndex: 'firewall_rule_index',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Captured'.t() + ' (Captive Portal)',
                 width: 100,
                 sortable: true,
                 dataIndex: 'captive_portal_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Captive Portal)',
                 width: 60,
@@ -658,33 +607,29 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'p2s_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }, {
                 header: 'From-Server Bytes'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's2p_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }, {
                 header: 'To-Client Bytes'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'p2c_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }, {
                 header: 'From-Client Bytes'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c2p_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }]
         },
         session_minutes: {
@@ -3533,7 +3478,8 @@ Ext.define('TableConfig', {
                 name: 'address',
                 sortType: 'asIp'
             }, {
-                name: 'action'
+                name: 'action',
+                convert: Converter.quotaAction,
             }, {
                 name: 'size',
                 sortType: 'asInt'
@@ -3553,26 +3499,19 @@ Ext.define('TableConfig', {
                 dataIndex: 'address'
             }, {
                 header: 'Action'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'action',
-                renderer: function(value) {
-                    if ( value === 1 ) {
-                        return '1 (' + 'Given'.t() + ')';
-                    }
-                    if ( value === 2 ) {
-                        return '2 (' + 'Exceeded'.t() + ')';
-                    }
-                    return value;
-                }
+                dataIndex: 'action'
             }, {
                 header: 'Size'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.dataWidth,
                 sortable: true,
-                dataIndex: 'size'
+                dataIndex: 'size',
+                filter: Renderer.numericFilter,
+                rtype: 'datasize'
             }, {
                 header: 'Reason'.t(),
-                width: 200,
+                width: Renderer.messageWidth,
                 sortable: true,
                 flex: 1,
                 dataIndex: 'reason'
