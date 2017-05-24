@@ -136,6 +136,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Client Name'.t(),
+        allowBlank: false,
         bind: {
             value: '{record.name}',
             readOnly: '{record.existing}'
@@ -163,6 +164,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         fieldLabel: 'Remote Networks'.t(),
         bind: {
             value: '{record.exportNetwork}',
+            disabled: '{!record.export}',
             hidden: '{!record.export}'
         },
         allowBlank: false,
@@ -212,6 +214,7 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
 
     editorFields: [{
         xtype: 'textfield',
+        allowBlank: false,
         fieldLabel: 'Group Name'.t(),
         bind: '{record.name}'
     }, {
@@ -311,10 +314,12 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
     }, {
         xtype: 'textfield',
         bind: '{record.name}',
+        allowBlank: false,
         fieldLabel: 'Export Name'.t()
     }, {
         xtype:'textfield',
         vtype: 'cidrBlock',
+        allowBlank: false,
         fieldLabel: 'Network'.t(),
         bind: '{record.network}'
     }]
