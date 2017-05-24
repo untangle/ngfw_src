@@ -2,7 +2,7 @@ Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
 
-        //Field width constants
+    //Field width constants
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
     macFieldWidth: 100,
@@ -14,17 +14,12 @@ Ext.define('TableConfig', {
     emailFieldWidth: 150,
 
     getConfig: function(tableName) {
-        if(!this.tableConfig) {
-            this.buildTableConfig();
-        }
         return this.tableConfig[tableName];
     },
+
     checkHealth: function() {
         if(!rpc.reportsManager) {
             rpc.reportsManager = Ung.Main.getReportsManager();
-        }
-        if(!this.tableConfig) {
-            this.buildTableConfig();
         }
         var i, table, column, systemColumns, systemColumnsMap, tableConfigColumns, tableConfigColumnsMap;
         var systemTables = rpc.reportsManager.getTables();
@@ -100,6 +95,7 @@ Ext.define('TableConfig', {
         }
 
     },
+
     getColumnsForTable: function(table, store) {
         if(table !== null) {
             var tableConfig = this.getConfig(table);
@@ -142,44 +138,6 @@ Ext.define('TableConfig', {
         var readableName = this.columnsHumanReadableNames[columnName];
         return readableName !== null ? readableName : columnName.replace(/_/g,' ');
     },
-    httpEventConvertReason: function(value) {
-        if(Ext.isEmpty(value)) {
-            return null;
-        }
-        switch ( value ) {
-        case 'D': return 'in Categories Block list'.t() + ' (D)';
-        case 'U': return 'in Site Block list'.t() + ' (U)';
-        case 'E': return 'in File Block list'.t() + ' (E)';
-        case 'M': return 'in MIME Types Block list'.t() + ' (M)';
-        case 'H': return 'hostname is an IP address'.t() + ' (H)';
-        case 'I': return 'in Site Pass list'.t() + ' (I)';
-        case 'R': return 'referer in Site Pass list'.t() + ' (R)';
-        case 'C': return 'in Clients Pass list'.t() + ' (C)';
-        case 'B': return 'in Unblocked list'.t() + ' (B)';
-        case 'F': return 'in Rules list'.t() + ' (F)';
-        case 'N': return 'no rule applied'.t() + ' (N)';
-        default:  return 'no rule applied'.t();
-        }
-    },
-    mailEventConvertAction: function(value) {
-        if(Ext.isEmpty(value)) {
-            return '';
-        }
-        switch (value) {
-        case 'P': return 'pass message'.t();
-        case 'M': return 'mark message'.t();
-        case 'D': return 'drop message'.t();
-        case 'B': return 'block message'.t();
-        case 'Q': return 'quarantine message'.t();
-        case 'S': return 'pass safelist message'.t();
-        case 'Z': return 'pass oversize message'.t();
-        case 'O': return 'pass outbound message'.t();
-        case 'F': return 'block message (scan failure)'.t();
-        case 'G': return 'pass message (scan failure)'.t();
-        case 'Y': return 'block message (greylist)'.t();
-        default:  return 'unknown action'.t();
-        }
-    },
 
     // new methods .........
     generate: function (table) {
@@ -221,9 +179,11 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entitled'
             }, {
-                name: 'protocol'
+                name: 'protocol',
+                convert: Converter.protocol
             }, {
-                name: 'icmp_type'
+                name: 'icmp_type',
+                convert: Converter.icmp
             }, {
                 name: 'hostname'
             }, {
@@ -231,7 +191,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'tags'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'policy_rule_id'
             }, {
@@ -259,17 +220,21 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf'
+                name: 'client_intf',
+                convert: Converter.interface
             }, {
-                name: 'server_intf'
+                name: 'server_intf',
+                convert: Converter.interface
             }, {
-                name: 'client_country'
+                name: 'client_country',
+                convert: Converter.country
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country'
+                name: 'server_country',
+                convert: Converter.country
             }, {
                 name: 'server_latitude'
             }, {
@@ -385,7 +350,7 @@ Ext.define('TableConfig', {
                 width: this.portFieldWidth,
                 sortable: true,
                 dataIndex: 'protocol',
-                rtype: 'protocol',
+                // rtype: 'protocol',
                 // widgetField: {
                 //     xtype: 'combo',
                 //     store: ColumnRenderer.protocolStore(),
@@ -401,8 +366,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Policy Rule Id'.t(),
                 width: 60,
@@ -412,8 +376,7 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
                 // widgetField: {
                 //     xtype: 'combo',
                 //     // store: Util.getInterfaceListSystemDev(),
@@ -424,8 +387,7 @@ Ext.define('TableConfig', {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Client Country'.t() ,
                 width: 80,
@@ -753,9 +715,11 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entitled'
             }, {
-                name: 'protocol'
+                name: 'protocol',
+                convert: Converter.protocol
             }, {
-                name: 'icmp_type'
+                name: 'icmp_type',
+                convert: Converter.icmp
             }, {
                 name: 'hostname'
             }, {
@@ -763,7 +727,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'tags'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'policy_rule_id'
             }, {
@@ -791,17 +756,21 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf'
+                name: 'client_intf',
+                convert: Converter.interface
             }, {
-                name: 'server_intf'
+                name: 'server_intf',
+                convert: Converter.interface
             }, {
-                name: 'client_country'
+                name: 'client_country',
+                convert: Converter.country
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country'
+                name: 'server_country',
+                convert: Converter.country
             }, {
                 name: 'server_latitude'
             }, {
@@ -909,7 +878,7 @@ Ext.define('TableConfig', {
                 width: this.portFieldWidth,
                 sortable: true,
                 dataIndex: 'protocol',
-                rtype: 'protocol'
+                // rtype: 'protocol'
             }, {
                 header: 'ICMP Type'.t(),
                 width: this.portFieldWidth,
@@ -919,8 +888,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Policy Rule Id'.t(),
                 width: 60,
@@ -930,20 +898,17 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Client Country'.t() ,
                 width: 80,
                 sortable: true,
                 dataIndex: 'client_country',
-                // renderer: function(value) { return Ung.Main.getCountryName(value); }
             }, {
                 header: 'Client Latitude'.t() ,
                 width: 80,
@@ -959,7 +924,6 @@ Ext.define('TableConfig', {
                 width: 80,
                 sortable: true,
                 dataIndex: 'server_country',
-                // renderer: function(value) { return Ung.Main.getCountryName(value); }
             }, {
                 header: 'Server Latitude'.t() ,
                 width: 80,
@@ -1214,7 +1178,7 @@ Ext.define('TableConfig', {
                 sortType: 'asInt'
             }, {
                 name: 'policy_id',
-                sortType: 'asInt'
+                convert: Converter.policy
             }, {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -1223,10 +1187,10 @@ Ext.define('TableConfig', {
                 sortType: 'asInt'
             }, {
                 name: 'client_intf',
-                sortType: 'asInt'
+                convert: Converter.interface
             }, {
                 name: 'server_intf',
-                sortType: 'asInt'
+                convert: Converter.interface
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1290,7 +1254,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'web_filter_reason',
                 type: 'string',
-                convert: this.httpEventConvertReason
+                convert: Converter.httpReason
             }, {
                 name: 'ad_blocker_action',
                 type: 'string',
@@ -1326,8 +1290,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Session Id'.t(),
                 width: this.portFieldWidth,
@@ -1337,14 +1300,12 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Client'.t(),
                 width: this.ipFieldWidth,
@@ -1420,7 +1381,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Uri'.t(),
                 flex:1,
-                width: this.uriFieldWidth,
+                // width: this.uriFieldWidth,
                 sortable: true,
                 dataIndex: 'uri'
             }, {
@@ -1541,16 +1502,19 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'request_id'
             }, {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'client_intf'
+                name: 'client_intf',
+                convert: Converter.interface
             }, {
-                name: 'server_intf'
+                name: 'server_intf',
+                convert: Converter.interface
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1623,8 +1587,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Request Id'.t(),
                 width: 60,
@@ -1639,14 +1602,12 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Username'.t(),
                 width: this.usernameFieldWidth,
@@ -1772,7 +1733,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'username'
             }, {
@@ -1802,9 +1764,11 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf'
+                name: 'client_intf',
+                convert: Converter.interface
             }, {
-                name: 'server_intf'
+                name: 'server_intf',
+                convert: Converter.interface
             }, {
                 name: 'virus_blocker_name'
             }, {
@@ -1833,7 +1797,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'spam_blocker_lite_action',
                 type: 'string',
-                convert: this.mailEventConvertAction
+                convert: this.Converter.emailAction
             }, {
                 name: 'spam_blocker_lite_score'
             }, {
@@ -1843,7 +1807,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'spam_blocker_action',
                 type: 'string',
-                convert: this.mailEventConvertAction
+                convert: this.Converter.emailAction
             }, {
                 name: 'spam_blocker_score'
             }, {
@@ -1853,7 +1817,7 @@ Ext.define('TableConfig', {
             }, {
                 name:  'phish_blocker_action',
                 type: 'string',
-                convert: this.mailEventConvertAction
+                convert: this.Converter.emailAction
             }, {
                 name: 'phish_blocker_score'
             }, {
@@ -1881,8 +1845,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Message Id'.t(),
                 width: 60,
@@ -1892,14 +1855,12 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Username'.t(),
                 width: this.hostnameFieldWidth,
@@ -2708,7 +2669,7 @@ Ext.define('TableConfig', {
                 width: 120,
                 sortable: true,
                 dataIndex: 'client_protocol',
-                rtype: 'protocol',
+                // rtype: 'protocol',
             },{
                 header: 'Login Time'.t(),
                 width: this.timestampFieldWidth,
@@ -2863,7 +2824,8 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'event_id'
             }, {
@@ -2886,8 +2848,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Event Id'.t(),
                 width: 60,
@@ -2995,7 +2956,8 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'event_id'
             },{
@@ -3018,8 +2980,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Event Id'.t(),
                 width: 60,
@@ -3107,7 +3068,7 @@ Ext.define('TableConfig', {
                 sortType: 'asInt'
             }, {
                 name: 'protocol',
-                sortType: 'asInt'
+                convert: Converter.protocol
             }, {
                 name: 'blocked'
             }, {
@@ -3164,6 +3125,7 @@ Ext.define('TableConfig', {
                     type: 'numeric'
                 },
                 renderer: function(value, metaData, record, row, col, store, gridView){
+                    // !!! converted protocol
                     if( record.get('protocol') === 1 ){
                         return '';
                     }
@@ -3183,6 +3145,7 @@ Ext.define('TableConfig', {
                     type: 'numeric'
                 },
                 renderer: function(value, metaData, record, row, col, store, gridView){
+                    // !!! converted protocol
                     if( record.get('protocol') === 1 ) {
                         return '';
                     }
@@ -3192,8 +3155,7 @@ Ext.define('TableConfig', {
                 header: 'Protocol'.t(),
                 width: 70,
                 sortable: true,
-                dataIndex: 'protocol',
-                rtype: 'protocol'
+                dataIndex: 'protocol'
             }, {
                 header: 'Blocked'.t(),
                 width: this.booleanFieldWidth,
@@ -3438,7 +3400,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id'
+                name: 'policy_id',
+                convert: Converter.policy
             }, {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -3461,9 +3424,11 @@ Ext.define('TableConfig', {
             }, {
                 name: 'username'
             }, {
-                name: 'client_intf'
+                name: 'client_intf',
+                convert: Converter.interface
             }, {
-                name: 'server_intf'
+                name: 'server_intf',
+                convert: Converter.interface
             }, {
                 name: 'uri'
             }, {
@@ -3492,8 +3457,7 @@ Ext.define('TableConfig', {
                 header: 'Policy Id'.t(),
                 width: 60,
                 sortable: true,
-                dataIndex: 'policy_id',
-                rtype: 'policy'
+                dataIndex: 'policy_id'
             }, {
                 header: 'Session Id'.t(),
                 width: this.portFieldWidth,
@@ -3513,14 +3477,12 @@ Ext.define('TableConfig', {
                 header: 'Client Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'client_intf',
-                rtype: 'interface'
+                dataIndex: 'client_intf'
             }, {
                 header: 'Server Interface'.t() ,
                 width: this.portFieldWidth,
                 sortable: true,
-                dataIndex: 'server_intf',
-                rtype: 'interface'
+                dataIndex: 'server_intf'
             }, {
                 header: 'Client'.t(),
                 width: this.ipFieldWidth,
