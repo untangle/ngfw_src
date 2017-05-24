@@ -14,6 +14,8 @@ Ext.define('Ung.util.Renderer', {
     usernameWidth: 120,
     booleanWidth: 60,
     emailWidth: 150,
+    // General message
+    messageWidth: 120,
 
     boolean: function( value ){
         return ( value == true ) ? 'true' : 'false';
