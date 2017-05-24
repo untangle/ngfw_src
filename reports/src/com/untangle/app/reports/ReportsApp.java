@@ -411,9 +411,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
 
         /*
-         * 13.3 conversion
+         * 13.0 conversion
          */
-        if ( settings.getVersion() == 4 ) {
+        if ( settings.getVersion() == null || settings.getVersion() < 5 ) {
             logger.warn("Running v13.0 conversion...");
             conversion_13_0_0();
         }

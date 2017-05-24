@@ -93,9 +93,9 @@ public class Tag implements Serializable, JSONString
         return getName();
     }
     
-    public static long calculateExpirationTime( long lifetimeMillis )
+    public static long calculateExpirationTime( long millis )
     {
-        switch (((int)lifetimeMillis)) {
+        switch (((int)millis)) {
         case EXPIRE_END_OF_HOUR: {
             GregorianCalendar calendar = new GregorianCalendar();
             Date now = calendar.getTime();
@@ -162,7 +162,7 @@ public class Tag implements Serializable, JSONString
             return 0;
             
         default:
-            return System.currentTimeMillis() + lifetimeMillis;
+            return millis;
         }
     }
 
