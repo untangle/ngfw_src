@@ -1982,7 +1982,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'domain'
             }, {
-                name: 'type'
+                name: 'type',
+                convert: Converter.directoryConnectorAction
             }, {
                 name: 'client_addr',
                 sortType: 'asIp'
@@ -2010,17 +2011,9 @@ Ext.define('TableConfig', {
                 dataIndex: 'domain'
             }, {
                 header: 'Action'.t(),
-                width: 100,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'type',
-                renderer: Ext.bind(function(value) {
-                    switch(value) {
-                    case 'I': return 'login'.t();
-                    case 'U': return 'update'.t();
-                    case 'O': return 'logout'.t();
-                    default: return 'unknown'.t();
-                    }
-                }, this)
+                dataIndex: 'type'
             }]
         },
         admin_logins: {
