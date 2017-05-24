@@ -560,4 +560,30 @@ Ext.define('Ung.util.Converter', {
         }
     },
 
+    loginSuccess: function( value ){
+        return value ?  'success'.t() : 'failed'.t();
+    },
+
+    loginFrom: function( value ){
+        return value ?  'local'.t() : 'remote'.t();
+    },
+
+    loginFailureReasonMap : {
+        U:'invalid username'.t(),
+        P: 'invalid password'.t(),
+        default: ''
+
+    },
+    loginFailureReason: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.loginFailureReasonMap ) ? Converter.loginFailureReasonMap[value] : Converter.loginFailureReasonMap['default'];
+    },
+
+    settingsFile: function( value ){
+        value = value.replace( /^.*\/settings\//, '' );
+        return value;
+    }
+
 });

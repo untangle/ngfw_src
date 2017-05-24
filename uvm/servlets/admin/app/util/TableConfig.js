@@ -2088,21 +2088,18 @@ Ext.define('TableConfig', {
             }, {
                 name: 'succeeded',
                 type: 'string',
-                convert: Ext.bind(function(value) {
-                    return value ?  'success'.t(): 'failed'.t();
-                }, this)
+                convert: Converter.loginSuccess
             }, {
                 name: 'local',
                 type: 'string',
-                convert: Ext.bind(function(value) {
-                    return value ?  'local'.t(): 'remote'.t();
-                }, this)
+                convert: Converter.loginFrom
             }, {
                 name: 'client_address',
                 type: 'string'
             }, {
                 name: 'reason',
-                type: 'string'
+                type: 'string',
+                convert: Converter.loginFailureReason
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -2112,17 +2109,17 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Login'.t(),
-                width: 120,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'login'
             }, {
                 header: 'Success'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'succeeded'
             }, {
                 header: 'Local'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'local'
             }, {
@@ -2132,16 +2129,10 @@ Ext.define('TableConfig', {
                 dataIndex: 'client_addr'
             }, {
                 header: 'Reason'.t(),
-                width: 200,
+                flex: 1,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'reason',
-                renderer: Ext.bind(function(value) {
-                    switch(value) {
-                    case 'U': return 'invalid username'.t();
-                    case 'P': return 'invalid password'.t();
-                    default: return '';
-                    }
-                }, this)
+                dataIndex: 'reason'
             }]
         },
         server_events: {
@@ -3596,7 +3587,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'hostname'
             }, {
-                name: 'settings_file'
+                name: 'settings_file',
+                convert: Converter.settingsFile
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -3618,11 +3610,7 @@ Ext.define('TableConfig', {
                 header: 'Settings File'.t(),
                 flex:1,
                 width: Renderer.uriWidth,
-                dataIndex: 'settings_file',
-                renderer: function( value ){
-                    value = value.replace( /^.*\/settings\//, '' );
-                    return value;
-                }
+                dataIndex: 'settings_file'
             }]
         }
     }
