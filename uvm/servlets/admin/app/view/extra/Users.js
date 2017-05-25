@@ -167,12 +167,16 @@ Ext.define('Ung.view.extra.Users', {
             }]
         }, {
             header: 'Tags'.t(),
-            dataIndex: 'tags',
-            flex: 1,
-            filter: {
-                type: 'string'
-            },
-            rtype: 'tags'
+            width: 300,
+            xtype: 'widgetcolumn',
+            tdCls: 'tag-cell',
+            // flex: 1,
+            widget: {
+                xtype: 'tagpicker',
+                bind: {
+                    tags: '{record.tags}'
+                }
+            }
         }, {
             header: 'Tags String'.t(),
             dataIndex: 'tagsString',
