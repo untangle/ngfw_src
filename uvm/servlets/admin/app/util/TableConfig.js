@@ -3010,7 +3010,8 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Type'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'type'
             }, {
@@ -3064,7 +3065,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -3087,7 +3088,7 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Client Name'.t(),
-                width: 120,
+                width: Renderer.usernameWidth,
                 sortable: true,
                 dataIndex: 'client_name'
             }, {
@@ -3107,22 +3108,16 @@ Ext.define('TableConfig', {
                 dataIndex: 'pool_address'
             }, {
                 header: 'RX Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'rx_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize',
             }, {
                 header: 'TX Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'tx_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize',
             }]
         },
         alerts: {
