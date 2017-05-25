@@ -16,13 +16,14 @@ Ext.define('Ung.apps.adblocker.Main', {
 
     tabBar: {
         items: [{
-            xtype: 'tbfill'
-        }, {
-            xtype: 'button',
-            text: 'View Reports'.t(),
-            iconCls: 'fa fa-line-chart',
-            href: '#reports/ad-blocker',
-            hrefTarget: '_self'
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/ad-blocker',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
         }]
     },
 

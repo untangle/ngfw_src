@@ -23,6 +23,19 @@ Ext.define('Ung.apps.virusblockerlite.Main', {
 
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/virus-blocker-lite',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-virus-blocker-lite-status' },
         { xtype: 'app-virus-blocker-lite-scanoptions' },

@@ -9,6 +9,19 @@ Ext.define('Ung.apps.webcache.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/web-cache',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-web-cache-status' },
         { xtype: 'app-web-cache-cachebypass' }
