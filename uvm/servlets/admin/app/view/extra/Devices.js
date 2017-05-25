@@ -52,7 +52,15 @@ Ext.define('Ung.view.extra.Devices', {
 
         viewConfig: {
             stripeRows: true,
-            enableTextSelection: true
+            enableTextSelection: true,
+            listeners: {
+                // to avoid some focusing issues
+                cellclick: function (view, cell, cellIndex, record, line, rowIndex, e) {
+                    if (Ext.Array.contains(cell.getAttribute('class').split(' '), 'tag-cell')) {
+                        return false;
+                    }
+                }
+            }
         },
 
         tbar: ['@add', '->', '@import', '@export'],
@@ -130,7 +138,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
-            flex: 1,
+            // flex: 1,
             filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
@@ -139,17 +147,38 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Last Seen Time'.t(),
             dataIndex: 'lastSessionTime',
+            width: 180,
             filter: { type: 'date' },
             rtype: 'timestamp'
         }, {
             header: 'Tags'.t(),
-            dataIndex: 'tags',
-            flex: 1,
-            filter: {
-                type: 'string'
-            },
-            rtype: 'tags'
-        }, {
+            width: 300,
+            xtype: 'widgetcolumn',
+            tdCls: 'tag-cell',
+            // flex: 1,
+            widget: {
+                xtype: 'tagpicker',
+                bind: {
+                    tags: '{record.tags}'
+                }
+            }
+        },
+        // {
+        //     header: 'Tags values',
+        //     width: 500,
+        //     dataIndex: 'tags',
+        //     renderer: function (val) {
+        //         var str = [];
+        //         if (val.list.length > 0) {
+        //             Ext.Array.each(val.list, function (tag) {
+        //                 str.push(tag.name + ' = ' + tag.expirationTime);
+        //             });
+        //         }
+        //         // console.log(val);
+        //         return str.join(', ');
+        //     }
+        // },
+        {
             header: 'Tags String',
             dataIndex: 'tagsString',
             filter: { type: 'string' },
