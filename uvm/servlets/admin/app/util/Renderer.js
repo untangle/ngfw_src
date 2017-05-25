@@ -5,19 +5,32 @@ Ext.define('Ung.util.Renderer', {
     /*
      * Common column widths
      */
-    timestampWidth: 135,
-    dataWidth: 100,
-    ipWidth: 100,
-    macWidth: 110,
-    portWidth: 70,
-    hostnameWidth: 120,
-    uriWidth: 200,
-    usernameWidth: 120,
+     // Boolean
     booleanWidth: 40,
+    // Email address
     emailWidth: 150,
+    // Hostname
+    hostnameWidth: 120,
+    // Numeric identifier
+    idWidth: 75,
+    // IP Address
+    ipWidth: 100,
+    // Latitude/longtitude
     locationWidth: 50,
-    // General message
+    // MAC address
+    macWidth: 110,
+    // General purpose
     messageWidth: 120,
+    // Port
+    portWidth: 70,
+    // Data size
+    sizeWidth: 50,
+    // Timestamp
+    timestampWidth: 135,
+    // URI
+    uriWidth: 200,
+    // Username
+    usernameWidth: 120,
 
     /*
      * Grid filters

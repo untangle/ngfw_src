@@ -275,7 +275,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule'
+                name: 'bandwidth_control_rule',
+                convert: Converter.bandwidthControlRule
             }, {
                 name: 'ssl_inspector_status'
             }, {
@@ -349,7 +350,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'policy_id'
             }, {
                 header: 'Policy Rule Id'.t(),
-                width: 20,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_rule_id'
             }, {
@@ -489,9 +490,7 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_ruleid',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Priority'.t() + ' (Bandwidth Control)',
                 width: Renderer.messageWidth,
@@ -503,9 +502,6 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'bandwidth_control_rule',
-                renderer: function(value) {
-                    return Ext.isEmpty(value) ? 'none'.t() : value;
-                }
             }, {
                 header: 'Application'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
@@ -513,12 +509,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'application_control_application'
             }, {
                 header: 'ProtoChain'.t() + ' (Application Control)',
-                width: 180,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_protochain'
             }, {
                 header: 'Category'.t() + ' (Application Control)',
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_category'
             }, {
@@ -541,12 +537,12 @@ Ext.define('TableConfig', {
                 filter: Renderer.numericFilter
             }, {
                 header: 'Detail'.t() + ' (Application Control)',
-                width: 200,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_detail'
             },{
                 header: 'Protocol'.t() + ' (Application Control Lite)',
-                width: 120,
+                width: Renderer.protocolWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_protocol',
                 rtype: 'protocol'
@@ -558,18 +554,18 @@ Ext.define('TableConfig', {
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (SSL Inspector)',
-                width: 70,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_ruleid',
                 filter: Renderer.numericFilter
             }, {
                 header: 'Status'.t() + ' (SSL Inspector)',
-                width: 100,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_status'
             }, {
                 header: 'Detail'.t() + ' (SSL Inspector)',
-                width: 250,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_detail'
             }, {
@@ -586,46 +582,46 @@ Ext.define('TableConfig', {
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Firewall)',
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 flex:1,
                 dataIndex: 'firewall_rule_index',
                 filter: Renderer.numericFilter
             }, {
                 header: 'Captured'.t() + ' (Captive Portal)',
-                width: 100,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'captive_portal_blocked',
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Captive Portal)',
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'captive_portal_rule_index'
             }, {
                 header: 'To-Server Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'p2s_bytes',
                 rtype: 'datasize',
                 filter: Renderer.numericFilter
             }, {
                 header: 'From-Server Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 's2p_bytes',
                 rtype: 'datasize',
                 filter: Renderer.numericFilter
             }, {
                 header: 'To-Client Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'p2c_bytes',
                 rtype: 'datasize',
                 filter: Renderer.numericFilter
             }, {
                 header: 'From-Client Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'c2p_bytes',
                 rtype: 'datasize',
@@ -756,7 +752,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule'
+                name: 'bandwidth_control_rule',
+                convert: Converter.bandwidthControlRule
             }, {
                 name: 'ssl_inspector_status'
             }, {
@@ -766,7 +763,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Session Id'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.ipWidth,
                 sortable: true,
                 dataIndex: 'session_id'
             }, {
@@ -792,27 +789,18 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'bypassed',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Entitled'.t(),
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'entitled',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Protocol'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'protocol',
-                // rtype: 'protocol'
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
@@ -840,32 +828,32 @@ Ext.define('TableConfig', {
                 dataIndex: 'server_intf'
             }, {
                 header: 'Client Country'.t() ,
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'client_country',
             }, {
                 header: 'Client Latitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'client_latitude'
             }, {
                 header: 'Client Longitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'client_longitude'
             }, {
                 header: 'Server Country'.t() ,
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'server_country',
             }, {
                 header: 'Server Latitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'server_latitude'
             }, {
                 header: 'Server Longitude'.t() ,
-                width: 80,
+                width: Renderer.locationWidth,
                 sortable: true,
                 dataIndex: 'server_longitude'
             }, {
@@ -888,9 +876,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -901,9 +887,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -914,9 +898,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -927,54 +909,47 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Tags'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'tags'
             }, {
                 header: 'Filter Prefix'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'filter_prefix'
             }, {
                 header: 'Rule Id'.t() + ' (Application Control)',
-                width: 70,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'application_control_ruleid',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Priority'.t() + ' (Bandwidth Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'bandwidth_control_priority',
                 rtype: 'priority'
             }, {
                 header: 'Rule'.t() + ' (Bandwidth Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'bandwidth_control_rule',
-                renderer: function(value) {
-                    return Ext.isEmpty(value) ? 'none'.t() : value;
-                }
+                dataIndex: 'bandwidth_control_rule'
             }, {
                 header: 'Application'.t() + ' (Application Control)',
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_application'
             }, {
                 header: 'ProtoChain'.t() + ' (Application Control)',
-                width: 180,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_protochain'
             }, {
                 header: 'Category'.t() + ' (Application Control)',
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_category'
             }, {
@@ -982,37 +957,27 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Flagged'.t() + ' (Application Control)',
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_flagged',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Confidence'.t() + ' (Application Control)',
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_confidence',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Detail'.t() + ' (Application Control)',
-                width: 200,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'application_control_detail'
             },{
                 header: 'Protocol'.t() + ' (Application Control Lite)',
-                width: 120,
+                width: Renderer.protocolWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_protocol',
                 rtype: 'protocol'
@@ -1021,27 +986,21 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (SSL Inspector)',
-                width: 70,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_ruleid',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Status'.t() + ' (SSL Inspector)',
-                width: 100,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_status'
             }, {
                 header: 'Detail'.t() + ' (SSL Inspector)',
-                width: 250,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ssl_inspector_detail'
             }, {
@@ -1049,61 +1008,45 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Flagged'.t() + ' (Firewall)',
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'firewall_flagged',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Firewall)',
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 flex:1,
                 dataIndex: 'firewall_rule_index',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Captured'.t() + ' (Captive Portal)',
-                width: 100,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'captive_portal_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (Captive Portal)',
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'captive_portal_rule_index'
             }, {
                 header: 'From-Server Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 's2c_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }, {
                 header: 'From-Client Bytes'.t(),
-                width: Renderer.portWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'c2s_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                rtype: 'datasize',
+                filter: Renderer.numericFilter
             }]
         },
         http_events: {
@@ -3438,7 +3381,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'action'
             }, {
                 header: 'Size'.t(),
-                width: Renderer.dataWidth,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'size',
                 filter: Renderer.numericFilter,

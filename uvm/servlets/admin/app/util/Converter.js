@@ -647,4 +647,8 @@ Ext.define('Ung.util.Converter', {
         return ( value in Converter.directoryConnectorActionMap ) ? Converter.directoryConnectorActionMap[value] : Converter.directoryConnectorActionMap['default'];
     },
 
+    bandwidthControlRule: function( value ){
+        return Ext.isEmpty(value) ? 'none'.t() : value;
+    }
+
 });
