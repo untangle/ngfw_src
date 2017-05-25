@@ -2976,28 +2976,22 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Sid'.t(),
-                width: 70,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'sig_id',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Gid'.t(),
-                width: 70,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'gen_id',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Cid'.t(),
-                width: 70,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'class_id',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Source Address'.t(),
                 width: Renderer.ipWidth,
@@ -3008,16 +3002,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'source_port',
-                filter: {
-                    type: 'numeric'
-                },
-                renderer: function(value, metaData, record, row, col, store, gridView){
-                    // !!! converted protocol
-                    if( record.get('protocol') === 1 ){
-                        return '';
-                    }
-                    return value;
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Destination Address'.t(),
                 width: Renderer.ipWidth,
@@ -3028,19 +3013,10 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'dest_port',
-                filter: {
-                    type: 'numeric'
-                },
-                renderer: function(value, metaData, record, row, col, store, gridView){
-                    // !!! converted protocol
-                    if( record.get('protocol') === 1 ) {
-                        return '';
-                    }
-                    return value;
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Protocol'.t(),
-                width: 70,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'protocol'
             }, {
@@ -3048,24 +3024,21 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Category'.t(),
-                width: 200,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'category'
             }, {
                 header: 'Classtype'.t(),
-                width: 200,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'classtype'
             }, {
                 header: 'Msg'.t(),
-                width: 200,
+                width: Renderer.msgWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'msg'
             }]
