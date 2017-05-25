@@ -34,10 +34,16 @@ public class Tag implements Serializable, JSONString
     public Tag()
     {}
 
-    public Tag( String name, long lifetimeMillis )
+    public Tag( String name )
     {
         this.name = name;
-        this.expirationTime = calculateExpirationTime( lifetimeMillis );
+        this.expirationTime = 0;
+    }
+
+    public Tag( String name, long expirationTime )
+    {
+        setName( name );
+        setExpirationTime( expirationTime );
     }
 
     public String getName()
@@ -58,6 +64,14 @@ public class Tag implements Serializable, JSONString
     public void setExpirationTime( long newValue )
     {
         this.expirationTime = calculateExpirationTime( newValue );
+    }
+
+    public void setLifetimeMillis( long millis )
+    {
+        if ( millis > 0 )
+            setExpirationTime( System.currentTimeMillis() + millis );
+        else
+            setExpirationTime( millis );
     }
     
     public boolean isExpired()

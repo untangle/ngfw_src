@@ -277,7 +277,9 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
                 logger.warn( "No HostTableEntry. Failed to tag host: " + address.getHostAddress());
             } else {
                 boolean wasAlreadyTagged = entry.hasTag( this.tagName );
-                entry.addTag(new Tag(this.tagName,this.tagTimeSec*1000L));
+                Tag tag = new Tag( this.tagName );
+                tag.setLifetimeMillis( this.tagTimeSec*1000L );
+                entry.addTag(tag);
 
                 this.app.incrementCount( BandwidthControlApp.STAT_TAGGED, 1 );
                 if (!wasAlreadyTagged)
