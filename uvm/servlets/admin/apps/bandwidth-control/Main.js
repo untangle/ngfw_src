@@ -9,6 +9,19 @@ Ext.define('Ung.apps.bandwidthcontrol.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/bandwidth-control',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-bandwidth-control-status' },
         { xtype: 'app-bandwidth-control-rules' }
