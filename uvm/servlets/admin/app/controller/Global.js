@@ -69,6 +69,12 @@ Ext.define('Ung.controller.Global', {
             'reports/:category': 'onReports',
             'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
+            'sessions/:params': {
+                action: 'onSessions',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
             'hosts': 'onHosts',
             'devices': 'onDevices',
             'users': 'onUsers'
@@ -90,12 +96,16 @@ Ext.define('Ung.controller.Global', {
 
     setExpertMode: function () {
         rpc.isExpertMode = true;
-        this.redirectTo(window.location.hash.replace('|expert', ''));
+        this.getMainView().getViewModel().set('isExpertMode', true);
+        Ung.app.redirectTo('#apps');
+        // Ung.app.redirectTo(window.location.hash.replace('|expert', ''));
     },
 
     setNoExpertMode: function () {
         rpc.isExpertMode = false;
-        this.redirectTo(window.location.hash.replace('|noexpert', ''));
+        this.getMainView().getViewModel().set('isExpertMode', false);
+        Ung.app.redirectTo('#apps');
+        // this.redirectTo(window.location.hash.replace('|noexpert', ''));
     },
 
 
@@ -242,10 +252,18 @@ Ext.define('Ung.controller.Global', {
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
-    onSessions: function () {
+    onSessions: function (params) {
+        var filter = null;
+        if (params) {
+            filter = {
+                property: params.split('=')[0].replace('?', ''),
+                value: params.split('=')[1]
+            };
+        }
         this.getMainView().add({
             xtype: 'ung.sessions',
-            itemId: 'sessions'
+            itemId: 'sessions',
+            routeFilter: filter
         });
         this.getMainView().getViewModel().set('activeItem', 'sessions');
     },
