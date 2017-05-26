@@ -31,8 +31,7 @@ public class Tag implements Serializable, JSONString
     private String name;
     private long expirationTime = 1;
 
-    public Tag()
-    {}
+    public Tag() {}
 
     public Tag( String name )
     {
@@ -119,8 +118,7 @@ public class Tag implements Serializable, JSONString
             calendar.set(Calendar.SECOND, 0);
 
             expireDate = calendar.getTime();
-            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-            return expireTime;
+            return expireDate.getTime();
         }
                 
         case EXPIRE_END_OF_DAY: {
@@ -135,8 +133,7 @@ public class Tag implements Serializable, JSONString
             /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
 
             expireDate = calendar.getTime();
-            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-            return expireTime;
+            return expireDate.getTime();
         }
         case EXPIRE_END_OF_WEEK: {
             GregorianCalendar calendar = new GregorianCalendar();
@@ -151,8 +148,7 @@ public class Tag implements Serializable, JSONString
             /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
 
             expireDate = calendar.getTime();
-            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-            return expireTime;
+            return expireDate.getTime();
         }
 
         case EXPIRE_END_OF_MONTH: {
@@ -168,8 +164,7 @@ public class Tag implements Serializable, JSONString
             /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
 
             expireDate = calendar.getTime();
-            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-            return expireTime;
+            return expireDate.getTime();
         }
 
         case EXPIRE_NEVER:
