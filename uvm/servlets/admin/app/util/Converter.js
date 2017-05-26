@@ -660,6 +660,14 @@ Ext.define('Ung.util.Converter', {
             return '';
         }
         return ( value in Converter.adBlockerActionMap ) ? Converter.adBlockerActionMap[value] : Converter.adBlockerActionMap['default'];
+    },
+
+    configurationBackupSuccessMap:{
+        true: 'success'.t(),
+        default: 'failed'.t()
+    },
+    configurationBackupSuccess: function( value ){
+        return ( value in Converter.configurationBackupSuccessMap ) ? Converter.configurationBackupSuccessMap[value] : Converter.configurationBackupSuccessMap['default'];
     }
 
 });
