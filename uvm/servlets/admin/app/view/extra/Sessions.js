@@ -516,19 +516,19 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Client'.t(),
                 dataIndex: 'clientKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }]
