@@ -21,6 +21,16 @@ Ext.define('Ung.overrides.data.SortTypes', {
             parts[i] = Ext.String.leftPad(parts[i], 3, '0');
         }
         return parts.join('.');
+    },
+
+    // Ext string sorter by default considers null characters as as highest precidence
+    // so if you sort ascending, you see empty values first (e.g.,null, a, b, c)
+    //
+    // However, we almost never want to see empty values first as
+    // they're effectively meaningless.  We'd rather see those values
+    // considered at lowest precidence (e.g., x, y, z, null).
+    asUnString: function(s) {
+        return ( ( s != null ) && !Ext.isEmpty(s) ) ? String(s).toUpperCase() : '~';
     }
 
 });
