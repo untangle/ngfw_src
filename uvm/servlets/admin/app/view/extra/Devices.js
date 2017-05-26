@@ -105,6 +105,8 @@ Ext.define('Ung.view.extra.Devices', {
             sortType: 'asUnString'
         }, {
             name: 'hostname',
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: 'username',
             type: 'string',
