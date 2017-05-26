@@ -486,12 +486,6 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'filter_prefix'
             }, {
-                header: 'Rule Id'.t() + ' (Application Control)',
-                width: Renderer.messageWidth,
-                sortable: true,
-                dataIndex: 'application_control_ruleid',
-                filter: Renderer.numericFilter
-            }, {
                 header: 'Priority'.t() + ' (Bandwidth Control)',
                 width: Renderer.messageWidth,
                 sortable: true,
@@ -502,6 +496,12 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'bandwidth_control_rule',
+            }, {
+                header: 'Rule Id'.t() + ' (Application Control)',
+                width: Renderer.messageWidth,
+                sortable: true,
+                dataIndex: 'application_control_ruleid',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Application'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
