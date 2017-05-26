@@ -15,7 +15,8 @@ Ext.define('Ung.cmp.TagTime', {
             [-2, 'End of Day'.t()],
             [-3, 'End of Week'.t()],
             [-4, 'End of Month'.t()],
-            [0, 'Other'.t()]
+            [0, 'Never'.t()],
+            ['', 'Other'.t()] // just a random value to deal with other not special values
         ],
         editable: false,
         focusable: false,
@@ -63,7 +64,7 @@ Ext.define('Ung.cmp.TagTime', {
         var me = this;
         if (me.rendered) {
             var combo = me.down('combo'), df = me.down('datefield'), tf = me.down('timefield');
-            if (combo.getValue() < 0) {
+            if (combo.getValue() <= 0) {
                 me.publishState('value', combo.getValue());
             } else {
                 var date = null;
@@ -81,14 +82,19 @@ Ext.define('Ung.cmp.TagTime', {
     },
 
     setValue: function (value) {
-        var me = this, combo = me.items.items[0], df = me.items.items[1], tf = me.items.items[2];
+        var me = this, date, combo = me.items.items[0], df = me.items.items[1], tf = me.items.items[2];
 
-        if (value >= 0) {
-            combo.setValue(0);
+        if (value > 0 || value === '') {
+            combo.setValue('');
             df.setHidden(false);
             tf.setHidden(false);
 
-            var date = new Date(value);
+            if (value > 0) {
+                date = new Date(value);
+            } else {
+                date = new Date();
+                date.setHours(23, 59, 0, 0); // set custom end of day
+            }
             if (date) {
                 df.setValue(date);
                 tf.setValue(date);
