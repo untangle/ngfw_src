@@ -464,7 +464,18 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         me.chart.addSeries({
             name: vm.get('entry.units').t(),
-            data: slicesData
+            data: slicesData,
+            tooltip: {
+                pointFormatter: function () {
+                    var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                    if (vm.get('entry.units') === "bytes" || vm.get('entry.units') === "bytes/s") {
+                        str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
+                    } else {
+                        str += ': <b>' + this.y + '</b>';
+                    }
+                    return str + '<br/>';
+                }
+            }
         }, false, false);
 
         me.setStyles();
