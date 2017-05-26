@@ -112,6 +112,20 @@ Ext.define('Ung.widget.MapDistribution', {
                     x: 5
                 }
             },
+            plotOptions: {
+                series: {
+                    allowPointSelect: true,
+                    point: {
+                        events: {
+                            click: function () {
+                                if (this.country) {
+                                    Ung.app.redirectTo('#sessions/?serverCountry=' + this.country);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             series : [{
                 name: 'Countries',
                 color: '#E0E0E0',
