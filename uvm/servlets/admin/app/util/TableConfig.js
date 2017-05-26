@@ -1135,9 +1135,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'ad_blocker_action',
                 type: 'string',
-                convert: function(value) {
-                    return (value === 'B')?'block'.t() : 'pass'.t();
-                }
+                convert: Converter.adBlockerAction
             }, {
                 name: 'ad_blocker_cookie_ident',
                 type: 'string'
@@ -1333,12 +1331,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'web_filter_category'
             }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
-                width: 120,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'ad_blocker_action'
             }, {
                 header: 'Blocked Cookie'.t() + ' (Ad Blocker)',
-                width: 100,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'ad_blocker_cookie_ident'
             }, {

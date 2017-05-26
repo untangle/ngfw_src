@@ -649,6 +649,17 @@ Ext.define('Ung.util.Converter', {
 
     bandwidthControlRule: function( value ){
         return Ext.isEmpty(value) ? 'none'.t() : value;
+    },
+
+    adBlockerActionMap:{
+        B: 'block'.t(),
+        default: 'pass'.t()
+    },
+    adBlockerAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.adBlockerActionMap ) ? Converter.adBlockerActionMap[value] : Converter.adBlockerActionMap['default'];
     }
 
 });
