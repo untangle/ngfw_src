@@ -4,7 +4,7 @@ Ext.define('Ung.config.email.MainController', {
     alias: 'controller.config.email',
 
     control: {
-        '#': { afterrender: 'loadSettings' }
+        '#': { afterrender: 'loadSettings', activate: 'loadSettings' }
         // '#quarantine': { beforerender: 'loadQuarantine' }
     },
 
@@ -18,6 +18,14 @@ Ext.define('Ung.config.email.MainController', {
         var vm = this.getViewModel(), me = this;
         rpc.mailSender = rpc.UvmContext.mailSender();
         rpc.smtpSettings = rpc.appManager.app('smtp');
+
+        if (!rpc.smtpSettings) {
+            Ext.Msg.alert('Warning!'.t(), 'SMTP service not running!'.t(), function() {
+                Ung.app.redirectTo('#config');
+            });
+            return;
+        }
+
         rpc.safelistAdminView = rpc.smtpSettings.getSafelistAdminView();
         rpc.quarantineMaintenenceView = rpc.smtpSettings.getQuarantineMaintenenceView();
 
