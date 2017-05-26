@@ -235,8 +235,6 @@ public class FixedReports
         ReservedReports.add("policy-manager-upl31dqKb1");
         // Top Policy Usage
         ReservedReports.add("policy-manager-hWC6KjOc8Y");
-        // Alerts
-        ReservedReports.add("reporting-498VRSufOw");
         // SSL Inspector Summary
         ReservedReports.add("ssl-inspector-ggDy9pSApA");
         // Scanned Sessions
