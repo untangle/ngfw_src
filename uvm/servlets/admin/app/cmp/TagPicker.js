@@ -30,7 +30,7 @@ Ext.define('Ung.cmp.TagPicker', {
             floating: true,
             minHeight: 150,
             // maxHeight: 300,
-            minWidth: 500,
+            minWidth: 520,
             // height: 200,
             trackMouseOver: false,
             disableSelection: true,
@@ -67,7 +67,7 @@ Ext.define('Ung.cmp.TagPicker', {
                 }
             }, {
                 xtype: 'widgetcolumn',
-                width: 350,
+                width: 380,
                 focusable: false,
                 header: '<i class="fa fa-clock-o"></i> ' + 'Expiration Time'.t(),
                 widget: {

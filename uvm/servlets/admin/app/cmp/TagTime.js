@@ -9,7 +9,7 @@ Ext.define('Ung.cmp.TagTime', {
 
     items: [{
         xtype: 'combo',
-        width: 100,
+        width: 120,
         store: [
             [-1, 'End of Hour'.t()],
             [-2, 'End of Day'.t()],
@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.TagTime', {
         margin: '0 0 0 3',
         minValue: new Date(),
         value: new Date(),
-        width: 100,
+        width: 130,
         format: 'date_fmt'.t(),
         editable: false,
         hidden: true
@@ -35,7 +35,7 @@ Ext.define('Ung.cmp.TagTime', {
         margin: '0 0 0 3',
         // minValue: new Date(rpc.systemManager.getMilliseconds()),
         value: '11:50 pm',
-        width: 90,
+        width: 110,
         format: 'h:i a',
         increment: 10,
         editable: true,
@@ -64,7 +64,7 @@ Ext.define('Ung.cmp.TagTime', {
         var me = this;
         if (me.rendered) {
             var combo = me.down('combo'), df = me.down('datefield'), tf = me.down('timefield');
-            if (combo.getValue() <= 0) {
+            if (combo.getValue() <= 0 && combo.getValue() !== '') {
                 me.publishState('value', combo.getValue());
             } else {
                 var date = null;
