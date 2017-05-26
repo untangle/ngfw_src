@@ -51,7 +51,7 @@ Ext.define('Ung.util.Renderer', {
 
     timestamp: function( value ){
         if( !value ){
-            return '&mdash;';
+            return null;
         }
         if( ( typeof( value ) == 'object' ) &&
             value.time ){
