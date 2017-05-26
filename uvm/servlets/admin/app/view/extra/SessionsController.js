@@ -45,6 +45,13 @@ Ext.define('Ung.view.extra.SessionsController', {
             v = me.getView(),
             grid = v.down('#sessionsgrid');
 
+        // apply route filters if exists
+        if (v.routeFilter) {
+            grid.getStore().getFilters().add(v.routeFilter);
+        } else {
+            grid.getStore().clearFilter();
+        }
+
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
             .then(function(result) {
