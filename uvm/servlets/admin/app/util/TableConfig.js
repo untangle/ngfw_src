@@ -2328,9 +2328,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'success',
                 type: 'string',
-                convert: Ext.bind(function(value) {
-                    return value ?  'success'.t(): 'failed'.t();
-                }, this)
+                convert: Converter.configurationBackupSuccess
             }, {
                 name: 'description',
                 type: 'string'
@@ -2340,7 +2338,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             },{
@@ -2351,18 +2349,18 @@ Ext.define('TableConfig', {
                 rtype: 'timestamp'
             }, {
                 header: 'Result'.t(),
-                width: 120,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'success'
             }, {
                 header: 'Destination'.t(),
-                width: 100,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'destination'
             }, {
                 header: 'Details'.t(),
                 flex:1,
-                width: 200,
+                width: Renderer.msgWidth,
                 sortable: true,
                 dataIndex: 'description'
             }]
