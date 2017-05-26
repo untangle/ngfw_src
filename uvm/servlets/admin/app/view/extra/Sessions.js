@@ -68,6 +68,216 @@ Ext.define('Ung.view.extra.Sessions', {
             ftype: 'grouping'
         }],
 
+        fields: [{
+            name: 'creationTime',
+        }, {
+            name: 'sessionId',
+        }, {
+            name: 'mark',
+        }, {
+            name: 'protocol',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'bypassed',
+        }, {
+            name: 'policy',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'hostname',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'natted',
+        }, {
+            name: 'portForwarded',
+        }, {
+            name: 'tags',
+        }, {
+            name: 'tagsString',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "localAddr",
+        },{
+            name: "remoteAddr",
+        },{
+            name: "priority",
+        },{
+            name: "qosPriority",
+        },{
+            name: "pipeline",
+        }, {
+            name: 'clientIntf',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'preNatClient',
+        }, {
+            name: 'preNatClientPort',
+        }, {
+            name: 'postNatClient',
+        }, {
+            name: 'postNatClientPort',
+        }, {
+            name: 'clientCountry',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'clientLatitude',
+        }, {
+            name: 'clientLongitude',
+        }, {
+            name: 'serverIntf',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'preNatServer',
+        }, {
+            name: 'preNatServerPort',
+        }, {
+            name: 'postNatServer',
+        }, {
+            name: 'postNatServerPort',
+        }, {
+            name: 'serverCountry',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'serverLatitude',
+        }, {
+            name: 'serverLongitude',
+        }, {
+            name: 'clientKBps',
+        }, {
+            name: 'serverKBps',
+        }, {
+            name: 'totalKBps',
+        }, {
+            name: "application-control-lite-protocol",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-category",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-description",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-matched",
+        }, {
+            name: "application-control-protochain",
+        },{
+            name: "application-control-application",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-category",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-detail",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-confidence",
+        },{
+            name: "application-control-productivity",
+        },{
+            name: "application-control-risk",
+        }, {
+            name: "web-filter-best-category-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "web-filter-best-category-description",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "web-filter-best-category-flagged",
+        },{
+            name: "web-filter-best-category-blocked",
+        },{
+            name: "web-filter-flagged",
+        }, {
+            name: "http-hostname",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-url",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-user-agent",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-uri",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-method",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-extension",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-path",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-response-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-response-file-extension",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-content-type",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-referer",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-content-length",
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "ssl-subject-dn",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-issuer-dn",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-session-inspect",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-sni-host",
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "ftp-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ftp-data-session",
+        }],
+
         columns: [{
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
