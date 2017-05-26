@@ -15,7 +15,32 @@ Ext.define('Ung.view.extra.Users', {
         },
         stores: {
             users: {
-                data: '{usersData}'
+                data: '{usersData}',
+                fields: [{
+                    name: 'username',
+                    type: 'string',
+                    sortType: 'asUnString'
+                }, {
+                    name: 'creationTime',
+                }, {
+                    name: 'lastAccessTime',
+                }, {
+                    name: 'lastSessionTime',
+                }, {
+                    name: 'quotaSize',
+                }, {
+                    name: 'quotaRemaining',
+                }, {
+                    name: 'quotaIssueTime',
+                }, {
+                    name: 'quotaExpirationTime',
+                }, {
+                    name: 'tags'
+                }, {
+                    name: 'tagsString',
+                    type: 'string',
+                    sortType: 'asUnString'
+                }]
             }
         }
     },

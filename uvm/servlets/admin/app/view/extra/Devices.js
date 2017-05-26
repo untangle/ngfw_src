@@ -87,6 +87,40 @@ Ext.define('Ung.view.extra.Devices', {
             clicksToEdit: 1
         }],
 
+        fields:[{
+            name: 'macAddress',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'macVendor',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'interfaceId',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'hostnameLastKnown',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'hostname',
+        }, {
+            name: 'username',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'httpUserAgent',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'lastSessionTime',
+        }, {
+            name: 'tags'
+        },{
+            name: 'tagsString'
+        }],
+
         columns: [{
             header: 'MAC'.t(),
             columns:[{
