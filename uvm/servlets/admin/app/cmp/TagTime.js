@@ -9,6 +9,7 @@ Ext.define('Ung.cmp.TagTime', {
 
     items: [{
         xtype: 'combo',
+        margin: '0 0 0 3',
         width: 120,
         store: [
             [-1, 'End of Hour'.t()],
