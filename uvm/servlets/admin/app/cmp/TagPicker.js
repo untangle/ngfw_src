@@ -14,6 +14,7 @@ Ext.define('Ung.cmp.TagPicker', {
     delimiter: ", ",
 
     editable: false,
+    hideTrigger: true,
 
     tags: [],
 
@@ -29,10 +30,7 @@ Ext.define('Ung.cmp.TagPicker', {
             scrollable: true,
             floating: true,
             minHeight: 150,
-            // maxHeight: 300,
             minWidth: 520,
-            // height: 200,
-            trackMouseOver: false,
             disableSelection: true,
             enableColumnHide: false,
             emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Tags!</p>',
@@ -53,7 +51,7 @@ Ext.define('Ung.cmp.TagPicker', {
             }],
             store: {
                 data: me.getTags(),
-                fields: ['name', 'expirationTime'],
+                fields: ['name', 'expirationTime']
                 // sorters: ['expirationTime']
             },
             columns: [{
@@ -68,7 +66,7 @@ Ext.define('Ung.cmp.TagPicker', {
             }, {
                 xtype: 'widgetcolumn',
                 width: 380,
-                focusable: false,
+                menuDisabled: true,
                 header: '<i class="fa fa-clock-o"></i> ' + 'Expiration Time'.t(),
                 widget: {
                     xtype: 'tagtime',
@@ -77,20 +75,6 @@ Ext.define('Ung.cmp.TagPicker', {
                     }
                 }
             }, {
-                // xtype: 'widgetcolumn',
-                // header: '<i class="fa fa-trash-o"></i>',
-                // resizable: false,
-                // sortable: false,
-                // menuDisabled: true,
-                // align: 'center',
-                // width: 30,
-                // widget: {
-                //     xtype: 'button',
-                //     focusable: false,
-                //     iconCls: 'fa fa-times',
-                //     handler: me.removeTag,
-                //     scope: me
-                // }
                 xtype: 'actioncolumn',
                 header: '<i class="fa fa-trash-o"></i>',
                 width: 30,
@@ -100,10 +84,11 @@ Ext.define('Ung.cmp.TagPicker', {
                 align: 'center',
                 iconCls: 'fa fa-times',
                 handler: me.removeTag,
-                focusable: false
+                scope: me
             }],
             bbar: [{
                 xtype: 'button',
+                itemId: 'addbtn',
                 text: 'Add'.t(),
                 iconCls: 'fa fa-plus-circle',
                 handler: me.addTag,
@@ -115,6 +100,11 @@ Ext.define('Ung.cmp.TagPicker', {
                 handler: me.finish,
                 scope: me
             }],
+        });
+
+        // focus on tag name editing when adding new
+        me.grid.getStore().on('add', function (store, records, index) {
+            me.grid.getPlugins()[0].startEditByPosition({ row: index, column: 0 });
         });
 
         return me.grid;
@@ -132,6 +122,7 @@ Ext.define('Ung.cmp.TagPicker', {
     },
 
     removeTag: function (view, rowIndex, colIndex, item, e, record) {
+        view.focus(); // important to move the focus on the grid so the picker does not collapse
         record.drop();
     },
 
