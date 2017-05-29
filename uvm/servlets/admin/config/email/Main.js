@@ -26,7 +26,19 @@ Ext.define('Ung.config.email.Main', {
 
     items: [
         { xtype: 'config-email-outgoingserver' },
-        { xtype: 'config-email-safelist' },
-        { xtype: 'config-email-quarantine' }
+        {
+            xtype: 'config-email-safelist',
+            tabConfig: {
+                hidden: true,
+                bind: { hidden: '{!smtp}' }
+            }
+        },
+        {
+            xtype: 'config-email-quarantine',
+            tabConfig: {
+                hidden: true,
+                bind: { hidden: '{!smtp}' }
+            }
+        }
     ]
 });

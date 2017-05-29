@@ -5,7 +5,6 @@ Ext.define('Ung.config.email.MainController', {
 
     control: {
         '#': { afterrender: 'loadSettings', activate: 'loadSettings' }
-        // '#quarantine': { beforerender: 'loadQuarantine' }
     },
 
     // mailSender: rpc.UvmContext.mailSender(),
@@ -20,9 +19,21 @@ Ext.define('Ung.config.email.MainController', {
         rpc.smtpSettings = rpc.appManager.app('smtp');
 
         if (!rpc.smtpSettings) {
-            Ext.Msg.alert('Warning!'.t(), 'SMTP service not running!'.t(), function() {
-                Ung.app.redirectTo('#config');
-            });
+            me.getView().setLoading(true);
+            Rpc.asyncData('rpc.mailSender.getSettings')
+                .then(function (result) {
+                    me.getView().setLoading(false);
+                    vm.set({
+                        mailSender: result,
+                        smtp: false
+                    });
+                    me.originalMailSender = Ext.clone(result);
+                }, function (ex) {
+                    console.error(ex);
+                    Util.handleException(ex);
+                }).always(function() {
+                    me.getView().setLoading(false);
+                });
             return;
         }
 
@@ -44,7 +55,8 @@ Ext.define('Ung.config.email.MainController', {
                 globalSafeList: result[2],
                 userSafeList: result[3],
                 inboxesList: result[4],
-                inboxesTotalSize: result[5]
+                inboxesTotalSize: result[5],
+                smtp: true
             });
             me.originalMailSender = Ext.clone(result[0]);
         }, function(ex) {
