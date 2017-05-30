@@ -75,6 +75,10 @@ public class Tag implements Serializable, JSONString
     
     public boolean isExpired()
     {
+        /* automatically expired blank tags */
+        if ( this.name == null || "".equals(this.name)) {
+            return true;
+        }
         if ( this.expirationTime < 0 ) {
             logger.warn("Invalid expiration time: " + this.expirationTime );
             return false;
@@ -82,9 +86,6 @@ public class Tag implements Serializable, JSONString
         if ( this.expirationTime == EXPIRE_NEVER ) {
             return false;
         }
-        /* automatically expired blank tags */
-        if ( this.name == null || "".equals(this.name))
-            return true;
 
         long now = System.currentTimeMillis();
         if (now >= this.expirationTime)
