@@ -113,10 +113,10 @@ Ext.define('Ung.cmp.TagPicker', {
     addTag: function () {
         var me = this;
         me.grid.getStore().add({
-            expirationTime: -1,
+            expirationTime: 0,
             expired: false,
             javaClass: 'com.untangle.uvm.Tag',
-            name: 'Tag',
+            name: '',
             valid: true
         });
     },
