@@ -82,6 +82,9 @@ public class Tag implements Serializable, JSONString
         if ( this.expirationTime == EXPIRE_NEVER ) {
             return false;
         }
+        /* automatically expired blank tags */
+        if ( this.name == null || "".equals(this.name))
+            return true;
 
         long now = System.currentTimeMillis();
         if (now >= this.expirationTime)
