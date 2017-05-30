@@ -82,15 +82,20 @@ Ext.define('Ung.util.Renderer', {
         return value ? this.interfaceMap[value] || value.toString() : '';
     },
 
-    tags: function( value ){
-        if( value != null && 
+    tags: function (value, metaData) {
+        if( value != null &&
             value != "" ){
             if( typeof(value) == 'string' ){
                 value = Ext.decode( value );
             }
-            if( value &&
-                 value.list ){
-                return value.list.join(', ');
+            if( value && value.list ) {
+                var str = [], tip = [];
+                Ext.Array.each(value.list, function (tag) {
+                    str.push(tag.name);
+                    tip.push('<strong>' + tag.name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
+                });
+                metaData.tdAttr = 'data-qtip="' + tip.join('<br/>') + '"';
+                return str.join(', ');
             }
         }
         return '';

@@ -451,7 +451,7 @@ Ext.define('Ung.cmp.GridController', {
                     console.log('Missing renderer for rtype=' + rtype);
                 }
             }else{
-                return Renderer[rtype](value);
+                return Renderer[rtype](value, metaData);
             }
         }
         return value;
