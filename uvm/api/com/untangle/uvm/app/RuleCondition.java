@@ -264,186 +264,154 @@ public class RuleCondition implements JSONString, Serializable
     /**
      * This pre-computes any information necessary for fast matching
      */
-    protected void computeMatchers()
+    protected synchronized void computeMatchers()
     {
-        this.initialized = true;
+        if (initialized)
+            return;
         
-        /**
-         * Convert old style conditions
-         */
-        switch (this.matcherType) {
-        case HOST_IN_PENALTY_BOX:
-        case CLIENT_IN_PENALTY_BOX:
-        case SERVER_IN_PENALTY_BOX:
+        try {
             /**
-             * These explicit conditions have been replaced by a condition
-             * to just check if the host is tagged with "penalty box"
+             * Convert old style conditions
              */
-            this.matcherType = ConditionType.TAGGED;
-            this.value = "penalty-box";
-            break;
-        default:
-            break;
-        }
+            switch (this.matcherType) {
+            case HOST_IN_PENALTY_BOX:
+            case CLIENT_IN_PENALTY_BOX:
+            case SERVER_IN_PENALTY_BOX:
+                /**
+                 * These explicit conditions have been replaced by a condition
+                 * to just check if the host is tagged with "penalty box"
+                 */
+                this.matcherType = ConditionType.TAGGED;
+                this.value = "penalty-box";
+                break;
+            default:
+                break;
+            }
         
-        /**
-         * Update cache for quick computation
-         */
-        switch (this.matcherType) {
-        case DST_ADDR:
-        case SRC_ADDR: 
-            try {
+            /**
+             * Update cache for quick computation
+             */
+            switch (this.matcherType) {
+            case DST_ADDR:
+            case SRC_ADDR: 
                 this.ipMatcher = new IPMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid IP Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DST_PORT:
-        case SRC_PORT: 
-            try {
+            case DST_PORT:
+            case SRC_PORT: 
                 this.intMatcher = new IntMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Port Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DST_INTF:
-        case SRC_INTF: 
-            try {
+            case DST_INTF:
+            case SRC_INTF: 
                 this.intfMatcher = new IntfMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Intf Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case PROTOCOL:
-            try {
+            case PROTOCOL:
                 this.protocolMatcher = new ProtocolMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Intf Matcher: " + value, e);
-            }
-            break;
+                break;
             
-        case USERNAME:
-            try {
+            case USERNAME:
                 this.userMatcher = new UserMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid User Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DIRECTORY_CONNECTOR_GROUP:
-            try {
+            case DIRECTORY_CONNECTOR_GROUP:
                 this.groupMatcher = new GroupMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Group Matcher: " + value, e);
-            }
-            break;
+                break;
             
-        case TIME_OF_DAY:
-            try {
+            case TIME_OF_DAY:
                 this.timeOfDayMatcher = new TimeOfDayMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Time Of Day Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DAY_OF_WEEK:
-            try {
+            case DAY_OF_WEEK:
                 this.dayOfWeekMatcher = new DayOfWeekMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Day Of Week Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case WEB_FILTER_FLAGGED:
-        case HOST_HAS_NO_QUOTA:
-        case CLIENT_HAS_NO_QUOTA:
-        case SERVER_HAS_NO_QUOTA:
-        case USER_HAS_NO_QUOTA:
-        case HOST_QUOTA_EXCEEDED:
-        case CLIENT_QUOTA_EXCEEDED:
-        case SERVER_QUOTA_EXCEEDED:
-        case USER_QUOTA_EXCEEDED:
-            // nothing necessary
-            break;
+            case WEB_FILTER_FLAGGED:
+            case HOST_HAS_NO_QUOTA:
+            case CLIENT_HAS_NO_QUOTA:
+            case SERVER_HAS_NO_QUOTA:
+            case USER_HAS_NO_QUOTA:
+            case HOST_QUOTA_EXCEEDED:
+            case CLIENT_QUOTA_EXCEEDED:
+            case SERVER_QUOTA_EXCEEDED:
+            case USER_QUOTA_EXCEEDED:
+                // nothing necessary
+                break;
             
-        case HTTP_URL: 
-            try {
+            case HTTP_URL: 
                 this.urlMatcher = new UrlMatcher( this.value );
-            } catch (Exception e) {
-                logger.warn("Invalid Url Matcher: " + value, e);
-            }
-            break;
+                break;
             
-        case TAGGED:
-        case HOST_MAC:
-        case SRC_MAC:
-        case DST_MAC:
-        case HOST_HOSTNAME:
-        case CLIENT_HOSTNAME:
-        case SERVER_HOSTNAME:
-        case HOST_MAC_VENDOR:
-        case CLIENT_MAC_VENDOR:
-        case SERVER_MAC_VENDOR:
-        case REMOTE_HOST_COUNTRY:
-        case CLIENT_COUNTRY:
-        case SERVER_COUNTRY:
-        case HTTP_HOST:
-        case HTTP_REFERER:
-        case HTTP_CONTENT_TYPE:
-        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
-        case HTTP_REQUEST_METHOD:
-        case WEB_FILTER_REQUEST_METHOD:
-        case HTTP_REQUEST_FILE_PATH:
-        case WEB_FILTER_REQUEST_FILE_PATH:
-        case HTTP_REQUEST_FILE_NAME:
-        case WEB_FILTER_REQUEST_FILE_NAME:
-        case HTTP_REQUEST_FILE_EXTENSION:
-        case WEB_FILTER_REQUEST_FILE_EXTENSION:
-        case HTTP_RESPONSE_FILE_NAME:
-        case WEB_FILTER_RESPONSE_FILE_NAME:
-        case HTTP_RESPONSE_FILE_EXTENSION:
-        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
-        case HTTP_USER_AGENT:
-        case HTTP_USER_AGENT_OS:
-        case PROTOCOL_CONTROL_SIGNATURE:
-        case PROTOCOL_CONTROL_CATEGORY:
-        case PROTOCOL_CONTROL_DESCRIPTION:
-        case WEB_FILTER_CATEGORY:
-        case WEB_FILTER_CATEGORY_DESCRIPTION:
-        case APPLICATION_CONTROL_APPLICATION:
-        case APPLICATION_CONTROL_CATEGORY:
-        case APPLICATION_CONTROL_PROTOCHAIN:
-        case APPLICATION_CONTROL_DETAIL:
-        case SSL_INSPECTOR_SNI_HOSTNAME:
-        case SSL_INSPECTOR_SUBJECT_DN:
-        case SSL_INSPECTOR_ISSUER_DN:
-        case HTTP_URI:
-            this.globMatcher = new GlobMatcher(value);
-            break;
+            case TAGGED:
+            case HOST_MAC:
+            case SRC_MAC:
+            case DST_MAC:
+            case HOST_HOSTNAME:
+            case CLIENT_HOSTNAME:
+            case SERVER_HOSTNAME:
+            case HOST_MAC_VENDOR:
+            case CLIENT_MAC_VENDOR:
+            case SERVER_MAC_VENDOR:
+            case REMOTE_HOST_COUNTRY:
+            case CLIENT_COUNTRY:
+            case SERVER_COUNTRY:
+            case HTTP_HOST:
+            case HTTP_REFERER:
+            case HTTP_CONTENT_TYPE:
+            case WEB_FILTER_RESPONSE_CONTENT_TYPE:
+            case HTTP_REQUEST_METHOD:
+            case WEB_FILTER_REQUEST_METHOD:
+            case HTTP_REQUEST_FILE_PATH:
+            case WEB_FILTER_REQUEST_FILE_PATH:
+            case HTTP_REQUEST_FILE_NAME:
+            case WEB_FILTER_REQUEST_FILE_NAME:
+            case HTTP_REQUEST_FILE_EXTENSION:
+            case WEB_FILTER_REQUEST_FILE_EXTENSION:
+            case HTTP_RESPONSE_FILE_NAME:
+            case WEB_FILTER_RESPONSE_FILE_NAME:
+            case HTTP_RESPONSE_FILE_EXTENSION:
+            case WEB_FILTER_RESPONSE_FILE_EXTENSION:
+            case HTTP_USER_AGENT:
+            case HTTP_USER_AGENT_OS:
+            case PROTOCOL_CONTROL_SIGNATURE:
+            case PROTOCOL_CONTROL_CATEGORY:
+            case PROTOCOL_CONTROL_DESCRIPTION:
+            case WEB_FILTER_CATEGORY:
+            case WEB_FILTER_CATEGORY_DESCRIPTION:
+            case APPLICATION_CONTROL_APPLICATION:
+            case APPLICATION_CONTROL_CATEGORY:
+            case APPLICATION_CONTROL_PROTOCHAIN:
+            case APPLICATION_CONTROL_DETAIL:
+            case SSL_INSPECTOR_SNI_HOSTNAME:
+            case SSL_INSPECTOR_SUBJECT_DN:
+            case SSL_INSPECTOR_ISSUER_DN:
+            case HTTP_URI:
+                this.globMatcher = new GlobMatcher(value);
+                break;
 
-        case APPLICATION_CONTROL_CONFIDENCE:
-        case APPLICATION_CONTROL_PRODUCTIVITY:
-        case APPLICATION_CONTROL_RISK:
-        case HTTP_CONTENT_LENGTH:
-        case HOST_QUOTA_ATTAINMENT:
-        case CLIENT_QUOTA_ATTAINMENT:
-        case SERVER_QUOTA_ATTAINMENT:
-        case USER_QUOTA_ATTAINMENT:
-            try {
+            case APPLICATION_CONTROL_CONFIDENCE:
+            case APPLICATION_CONTROL_PRODUCTIVITY:
+            case APPLICATION_CONTROL_RISK:
+            case HTTP_CONTENT_LENGTH:
+            case HOST_QUOTA_ATTAINMENT:
+            case CLIENT_QUOTA_ATTAINMENT:
+            case SERVER_QUOTA_ATTAINMENT:
+            case USER_QUOTA_ATTAINMENT:
                 this.intMatcher = new IntMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Int Matcher: " + value, e);
+                break;
+            
+            case DST_LOCAL:
+                break;
+            
+            default:
+                logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
             }
-            break;
-            
-        case DST_LOCAL:
-            break;
-            
-        default:
-            logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
+
+        } catch (Exception e) {
+            logger.warn("Exception computing matcher: " + this.matcherType + " " + value, e);
+        } finally {
+            this.initialized = true;
         }
     }
 

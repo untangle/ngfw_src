@@ -547,7 +547,7 @@ public class EventManagerImpl implements EventManager
             switch( rule.getAction() ) {
             case TAG_HOST:
                 logger.debug("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
-                host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                host.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ));
                 break;
             case UNTAG_HOST:
                 logger.debug("Untagging host " + target + " with tag \"" + rule.getTagName() + "\"");
@@ -562,7 +562,7 @@ public class EventManagerImpl implements EventManager
                 break;
             case TAG_USER:
                 logger.debug("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
-                user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                user.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ) );
                 break;
             case UNTAG_USER:
                 logger.debug("Untagging user " + target + " with tag \"" + rule.getTagName() + "\"");
@@ -577,7 +577,7 @@ public class EventManagerImpl implements EventManager
                 break;
             case TAG_DEVICE:
                 logger.debug("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
-                device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                device.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ) );
                 break;
             case UNTAG_DEVICE:
                 logger.debug("Untagging device " + target + " with tag \"" + rule.getTagName() + "\"");

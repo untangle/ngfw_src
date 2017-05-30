@@ -41,32 +41,23 @@ Ext.define('Ung.view.extra.HostsController', {
     getHosts: function () {
         var me = this,
             v = me.getView(),
-            grid = me.getView().down('#hostsgrid');
+            grid = me.getView().down('#hostsgrid'),
+            store = grid.getStore('hosts');
+
+        if( !store.getFields() ){
+            store.setFields(grid.fields);
+        }
 
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.hostTable.getHosts')
             .then(function(result) {
                 grid.getView().setLoading(false);
-                Ext.getStore('hosts').loadData(result.list);
+                store.loadData(result.list);
 
                 v.down('ungridstatus').fireEvent('update');
 
                 grid.getSelectionModel().select(0);
             });
-    },
-
-    megaByteRenderer: function(bytes) {
-        var units = ['bytes','Kbytes','Mbytes','Gbytes'];
-        var units_itr = 0;
-
-        while ((bytes >= 1024 || bytes <= -1024) && units_itr < 3) {
-            bytes = bytes/1024;
-            units_itr++;
-        }
-
-        bytes = Math.round(bytes*100)/100;
-
-        return '' + bytes + ' ' + units[units_itr];
     },
 
     refillQuota: function (view, rowIndex, colIndex, item, e, record) {

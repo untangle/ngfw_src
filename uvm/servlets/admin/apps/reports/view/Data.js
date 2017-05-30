@@ -24,7 +24,7 @@ Ext.define('Ung.apps.reports.view.Data', {
             bind: '{settings.dbRetention}',
             toValidate: true,
             labelWidth: 150,
-            width: 200,
+            width: 220,
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,

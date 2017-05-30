@@ -20,7 +20,7 @@ Ext.define('Ung.cmp.AppRemove', {
         var vm = this.getViewModel(),
             mainView = btn.up('#appCard'),
             // settingsView = this.getView();
-            message = Ext.String.format('{0} will be uninstalled from this policy.'.t(), vm.get('appName')) + '<br/>' +
+            message = Ext.String.format('{0} will be uninstalled from this policy.'.t(), vm.get('props.displayName')) + '<br/>' +
             'All of its settings will be lost.'.t() + '\n' + '<br/>' + '<br/>' +
             'Would you like to continue?'.t();
 
@@ -71,6 +71,7 @@ Ext.define('Ung.cmp.AppRemove', {
                         //     });
 
                         // todo: fire global event
+                        Ext.fireEvent('appremove');
                         // Ext.GlobalEvents.fireEvent('appinstall', 'remove', appItem.app);
                     }, function (ex) {
                         Util.handleException(ex);

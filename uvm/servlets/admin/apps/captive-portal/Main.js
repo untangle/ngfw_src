@@ -11,6 +11,19 @@ Ext.define('Ung.apps.captiveportal.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/captive-portal',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-captive-portal-status' },
         { xtype: 'app-captive-portal-capturerules' },

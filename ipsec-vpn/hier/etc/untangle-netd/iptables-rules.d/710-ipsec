@@ -49,8 +49,8 @@ ${IPTABLES} -t filter -I nat-reverse-filter -m policy --pol ipsec --dir out -j R
 #
 # Do not NAT ipsec traffic even if its leaving a WAN
 #
-${IPTABLES} -t nat -D nat-rules -m policy --pol ipsec --dir out -j RETURN -m comment --comment "dont NAT IPsec traffic" >/dev/null 2>&1
-${IPTABLES} -t nat -I nat-rules -m policy --pol ipsec --dir out -j RETURN -m comment --comment "dont NAT IPsec traffic"
+${IPTABLES} -t nat -D POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment "do not NAT IPsec traffic" >/dev/null 2>&1
+${IPTABLES} -t nat -I POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment "do not NAT IPsec traffic"
 
 #
 # Bypass all IPsec traffic if the bypass flag is set
@@ -67,8 +67,8 @@ fi
 #
 # NAT traffic from L2TP interfaces
 #
-${IPTABLES} -t nat -D nat-rules -m connmark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic" >/dev/null 2>&1
-${IPTABLES} -t nat -I nat-rules -m connmark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic"
+${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic" >/dev/null 2>&1
+${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfb/0xff -j MASQUERADE -m comment --comment "NAT l2tp traffic"
 
 #
 # Allow L2TP traffic to penetrate NATd networks

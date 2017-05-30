@@ -46,7 +46,7 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
 
         region: 'center',
         itemId: 'hostsgrid',
@@ -63,6 +63,110 @@ Ext.define('Ung.view.extra.Hosts', {
         },
 
         plugins: ['gridfilters'],
+
+        fields: [{
+            name: 'address',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'macAddress',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'macVendor',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'interfaceId',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'creationTime',
+        },{
+            name: 'lastAccessTime',
+        },{
+            name: 'lastSessionTime',
+        },{
+            name: 'lastCompletedTcpSessionTime',
+        },{
+            name: 'entitled',
+        },{
+            name: 'active',
+        },{
+            name: 'httpUserAgent',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'captivePortalAuthenticated',
+        },{
+            name: 'tags',
+        },{
+            name: 'tagsString',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostname',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameSource',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameDhcp',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameDns',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameDevice',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameDeviceLastKnown',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameOpenVpn',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameReports',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'hostnameDirectoryConnector',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'username',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'usernameSource',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'usernameDirectoryConnector',
+        },{
+            name: 'usernameCaptivePortal',
+        },{
+            name: 'usernameDevice',
+        },{
+            name: 'usernameOpenVpn',
+        },{
+            name: 'usernameIpsecVpn',
+        },{
+            name: 'quotaSize',
+        },{
+            name: 'quotaRemaining',
+        },{
+            name: 'quotaIssueTime',
+        },{
+            name: 'quotaExpirationTime',
+        }],
 
         columns: [{
             header: 'Address'.t(),
@@ -232,12 +336,12 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 filter: 'number',
-                renderer: 'megaByteRenderer'
+                rtype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 filter: 'number',
-                renderer: 'megaByteRenderer'
+                rtype: 'datasize'
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
@@ -255,14 +359,16 @@ Ext.define('Ung.view.extra.Hosts', {
                 align: 'center',
                 header: 'Refill Quota'.t(),
                 iconCls: 'fa fa-refresh fa-green',
-                handler: 'refillQuota'
+                handler: 'externalAction',
+                action: 'refillQuota'
             }, {
                 xtype: 'actioncolumn',
                 width: 80,
                 align: 'center',
                 header: 'Drop Quota'.t(),
                 iconCls: 'fa fa-minus-circle',
-                handler: 'dropQuota'
+                handler: 'externalAction',
+                action: 'dropQuota'
             }]
         }]
     }, {

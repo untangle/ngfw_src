@@ -33,7 +33,7 @@ public class IpsecVpnManager
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
-    private static final String IPTABLES_GRE_SCRIPT = "/etc/untangle-netd/iptables-rules.d/712-gre";
+    private static final String IPTABLES_GRE_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre";
 
     private static final String IPSEC_UNTANGLE_FILE = "/etc/ipsec.untangle";
     private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";

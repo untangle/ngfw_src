@@ -37,6 +37,8 @@ Ext.define('Ung.config.events.view.Alerts', {
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
             email: true,
             emailLimitFrequency: false,
             emailLimitFrequencyMinutes: 0,

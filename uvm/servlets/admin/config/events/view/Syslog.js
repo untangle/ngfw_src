@@ -95,7 +95,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
 
         emptyRow: {
-            javaClass: 'com.untangle.uvm.event.AlertRule',
+            javaClass: 'com.untangle.uvm.event.SyslogRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
                 list: [{
@@ -108,6 +108,8 @@ Ext.define('Ung.config.events.view.Syslog', {
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
             syslog: true
         },
 
