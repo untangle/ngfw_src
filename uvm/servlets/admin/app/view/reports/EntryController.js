@@ -202,7 +202,7 @@ Ext.define('Ung.view.reports.EntryController', {
         }];
         var seriesRenderer = null, title;
         if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-            seriesRenderer = ColumnRenderer[entry.get('seriesRenderer')];
+            seriesRenderer = Renderer[entry.get('seriesRenderer')];
         }
 
         for (i = 0; i < timeDataColumns.length; i += 1) {

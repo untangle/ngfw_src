@@ -4,8 +4,7 @@ Ext.define('Ung.config.email.MainController', {
     alias: 'controller.config.email',
 
     control: {
-        '#': { afterrender: 'loadSettings' }
-        // '#quarantine': { beforerender: 'loadQuarantine' }
+        '#': { afterrender: 'loadSettings', activate: 'loadSettings' }
     },
 
     // mailSender: rpc.UvmContext.mailSender(),
@@ -14,14 +13,34 @@ Ext.define('Ung.config.email.MainController', {
     // smtpApp: rpc.appManager.app('smtp'),
     // safelistAdminView: null,
 
-    loadSettings: function (view) {
+    loadSettings: function () {
         var vm = this.getViewModel(), me = this;
         rpc.mailSender = rpc.UvmContext.mailSender();
         rpc.smtpSettings = rpc.appManager.app('smtp');
+
+        if (!rpc.smtpSettings) {
+            me.getView().setLoading(true);
+            Rpc.asyncData('rpc.mailSender.getSettings')
+                .then(function (result) {
+                    me.getView().setLoading(false);
+                    vm.set({
+                        mailSender: result,
+                        smtp: false
+                    });
+                    me.originalMailSender = Ext.clone(result);
+                }, function (ex) {
+                    console.error(ex);
+                    Util.handleException(ex);
+                }).always(function() {
+                    me.getView().setLoading(false);
+                });
+            return;
+        }
+
         rpc.safelistAdminView = rpc.smtpSettings.getSafelistAdminView();
         rpc.quarantineMaintenenceView = rpc.smtpSettings.getQuarantineMaintenenceView();
 
-        view.setLoading(true);
+        me.getView().setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise ('rpc.mailSender.getSettings'),
             Rpc.asyncPromise ('rpc.smtpSettings.getSmtpSettings'),
@@ -36,14 +55,15 @@ Ext.define('Ung.config.email.MainController', {
                 globalSafeList: result[2],
                 userSafeList: result[3],
                 inboxesList: result[4],
-                inboxesTotalSize: result[5]
+                inboxesTotalSize: result[5],
+                smtp: true
             });
             me.originalMailSender = Ext.clone(result[0]);
         }, function(ex) {
             console.error(ex);
             Util.handleException(ex);
         }).always(function() {
-            view.setLoading(false);
+            me.getView().setLoading(false);
         });
     },
 
@@ -177,7 +197,7 @@ Ext.define('Ung.config.email.MainController', {
         Ext.MessageBox.wait('Purging...'.t(), 'Please wait'.t());
         Rpc.asyncData('rpc.quarantineMaintenenceView.deleteInboxes', accounts)
             .then(function() {
-                me.loadSettings();
+                me.refreshUserQuarantines();
             }).always(function () {
                 Ext.MessageBox.hide();
             });
@@ -200,7 +220,7 @@ Ext.define('Ung.config.email.MainController', {
         Ext.MessageBox.wait('Releasing...'.t(), 'Please wait'.t());
         Rpc.asyncData('rpc.quarantineMaintenenceView.rescueInboxes', accounts)
             .then(function() {
-                me.loadSettings();
+                me.refreshUserQuarantines();
             }).always(function () {
                 Ext.MessageBox.hide();
             });
@@ -252,6 +272,7 @@ Ext.define('Ung.config.email.MainController', {
                     width: 140,
                     dataIndex: 'quarantinedDate',
                     renderer: function(value) {
+                        if (!value) { return ''; }
                         var date = new Date();
                         date.setTime(value);
                         return Util.timestampFormat(value);
@@ -316,8 +337,8 @@ Ext.define('Ung.config.email.MainController', {
                 }],
             }],
             fbar: [{
-                text: 'Cancel'.t(),
-                iconCls: 'fa fa-ban fa-gray',
+                text: 'Done'.t(),
+                iconCls: 'fa fa-check',
                 handler: function (btn) {
                     btn.up('window').close();
                 }
@@ -325,11 +346,34 @@ Ext.define('Ung.config.email.MainController', {
             listeners: {
                 afterrender: function (win) {
                     me.getAccountEmails();
+                },
+                close: function () {
+                    me.refreshUserQuarantines();
                 }
             }
         });
         me.dialog.show();
     },
+
+    refreshUserQuarantines: function () {
+        var me = this, vm = me.getViewModel();
+        me.lookup('inboxesGrid').setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise ('rpc.quarantineMaintenenceView.listInboxes'),
+            Rpc.directPromise('rpc.quarantineMaintenenceView.getInboxesTotalSize')
+        ], this).then(function(result) {
+            vm.set({
+                inboxesList: result[0],
+                inboxesTotalSize: result[1]
+            });
+        }, function(ex) {
+            console.error(ex);
+            Util.handleException(ex);
+        }).always(function() {
+            me.lookup('inboxesGrid').setLoading(false);
+        });
+    },
+
 
     getAccountEmails: function () {
         var me = this;

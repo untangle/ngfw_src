@@ -95,7 +95,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             }
         }],
 
-        plugins: 'responsive',
+        // responsive plugin is added inside ungrid
         responsiveConfig: {
             wide: {
                 region: 'east',
@@ -103,7 +103,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             },
             tall: {
                 region: 'south',
-                height: '50%',
+                height: '50%'
             }
         }
     }]

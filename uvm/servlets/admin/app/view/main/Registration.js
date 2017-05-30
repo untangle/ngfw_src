@@ -375,6 +375,12 @@ Ext.define('Ung.view.main.Registration', {
                                 if (!fname) {
                                     return 'Please specify your first name.'.t();
                                 }
+                                if (fname.length < 2) {
+                                    return 'First name must be at least 2 characters.'.t();
+                                }
+                                if (fname.length > 24) {
+                                    return 'First name must be less than 24 characters.'.t();
+                                }
                                 return true;
                             }
                         }, {
@@ -384,6 +390,12 @@ Ext.define('Ung.view.main.Registration', {
                             validator: function (lname) {
                                 if (!lname) {
                                     return 'Please specify your last name.'.t();
+                                }
+                                if (lname.length < 2) {
+                                    return 'Last name must be at least 2 characters.'.t();
+                                }
+                                if (lname.length > 24) {
+                                    return 'Last name must be less than 24 characters.'.t();
                                 }
                                 return true;
                             }

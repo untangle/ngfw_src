@@ -10,6 +10,19 @@ Ext.define('Ung.apps.applicationcontrol.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/application-control',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-application-control-status' },
         { xtype: 'app-application-control-applications' },

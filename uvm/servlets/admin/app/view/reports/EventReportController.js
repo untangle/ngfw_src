@@ -16,9 +16,8 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         // remove property grid if in dashboard
         if (me.getView().up('#dashboard')) {
-            me.getView().remove('properties');
+            me.getView().down('unpropertygrid').hide();
         }
-
 
         vm.bind('{entry}', function (entry) {
 
@@ -30,29 +29,40 @@ Ext.define('Ung.view.reports.EventReportController', {
                     defaultColumns: entry.get('defaultColumns')
                 };
 
+                var grid = me.getView().down('grid');
+                var identifier = 'eventsGrid-' + entry.get('uniqueId');
+                grid.itemId = identifier;
+                grid.stateId = identifier;
+
                 me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                 me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
 
-                Ext.Array.each(me.tableConfig.columns, function (col) {
-                    col.hidden = Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0;
-                    // !!!
-                    if (!col.filter && col.dataIndex !== 'time_stamp' && col.dataIndex !== 'end_time') {
-                        col.filter = 'string';
-                    }
-                });
-
                 me.tableConfig.columns.forEach( function(column){
-                    if( column.dataIndex &&
-                        !column.stateId ){
-                        column.stateId = column.dataIndex;
+                    if( column.columns ){
+                        /*
+                         * Grouping
+                         */
+                        column.columns.forEach( Ext.bind( function( subColumn ){
+                            if (!column.filter ){
+                                column.filter = 'string';
+                            }
+                            grid.initComponentColumn( subColumn );
+                            column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                            if (!column.filter && 
+                                ( column.rtype != 'timestamp' ) ){
+                                column.filter = 'string';
+                            }
+                        }, this ) );
+                    }
+                    grid.initComponentColumn( column );
+                    column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                    if (!column.filter && 
+                        (column.rtype != 'timestamp' ) ){
+                        column.filter = 'string';
                     }
                 });
 
-                var identifier = 'eventsGrid-' + entry.get('uniqueId');
-                var grid = me.getView().down('grid');
                 grid.tableConfig = me.tableConfig;
-                grid.itemId = identifier;
-                grid.stateId = identifier;
                 grid.setColumns(me.tableConfig.columns);
                 // Force state processing for this renamed grid
                 grid.mixins.state.constructor.call(grid);
@@ -127,12 +137,6 @@ Ext.define('Ung.view.reports.EventReportController', {
                 }
                 me.getView().setLoading(false);
 
-                // update columns
-                me.defaultColumns = vm.get('widget.displayColumns') || me.entry.get('defaultColumns'); // widget or report columns
-                Ext.Array.each(me.getView().down('grid').getColumns(), function (col) {
-                    col.setHidden(Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0);
-                });
-
                 me.loadResultSet(result);
 
                 if (cb) { cb(); }
@@ -140,7 +144,10 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     loadResultSet: function (reader) {
+        var me = this,
+            grid = me.getView().down('grid');
         this.getView().setLoading(true);
+        grid.getStore().setFields( grid.tableConfig.fields );
         reader.getNextChunk(Ext.bind(this.nextChunkCallback, this), 1000);
     },
 

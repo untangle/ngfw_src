@@ -43,10 +43,13 @@ Ext.define('Ung.widget.MapDistribution', {
                 cb();
                 if (ex) { Util.handleException(ex); return; }
                 for (i = 0; i < result.length; i += 1) {
+                    var bubbleSize = 0;
+                    if (result[i].kbps)
+                        bubbleSize = Math.round(result[i].kbps * 100) / 100;
                     data.push({
                         lat: result[i].latitude,
                         lon: result[i].longitude,
-                        z: Math.round(result[i].kbps * 100) / 100,
+                        z: bubbleSize,
                         country: result[i].country,
                         sessionCount: result[i].sessionCount
                     });
@@ -109,6 +112,20 @@ Ext.define('Ung.widget.MapDistribution', {
                     x: 5
                 }
             },
+            plotOptions: {
+                series: {
+                    allowPointSelect: true,
+                    point: {
+                        events: {
+                            click: function () {
+                                if (this.country) {
+                                    Ung.app.redirectTo('#sessions/?serverCountry=' + this.country);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             series : [{
                 name: 'Countries',
                 color: '#E0E0E0',
@@ -116,7 +133,8 @@ Ext.define('Ung.widget.MapDistribution', {
             }, {
                 type: 'mapbubble',
                 minSize: 10,
-                maxSize: 50
+                maxSize: 50,
+                zMax: 500
             }],
             tooltip: {
                 headerFormat: '',

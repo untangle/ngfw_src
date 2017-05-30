@@ -145,6 +145,19 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
         }
     },
 
+    tabBar: {
+        items: [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            cls: 'view-reports',
+            autoEl: {
+                tag: 'a',
+                href: '#reports/ipsec-vpn',
+                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            }
+        }]
+    },
+
     items: [
         { xtype: 'app-ipsec-vpn-status' },
         { xtype: 'app-ipsec-vpn-ipsecoptions' },

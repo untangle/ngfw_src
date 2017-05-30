@@ -43,7 +43,19 @@ Ext.define('Ung.view.extra.SessionsController', {
     getSessions: function () {
         var me = this,
             v = me.getView(),
-            grid = v.down('#sessionsgrid');
+            grid = v.down('#sessionsgrid'),
+            store = Ext.getStore('sessions');
+
+        // apply route filters if exists
+        if (v.routeFilter) {
+            grid.getStore().getFilters().add(v.routeFilter);
+        } else {
+            grid.getStore().clearFilter();
+        }
+
+        if( !store.getFields() ){
+            store.setFields(grid.fields);
+        }
 
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
@@ -61,7 +73,7 @@ Ext.define('Ung.view.extra.SessionsController', {
                     }
                 });
 
-                Ext.getStore('sessions').loadData( sessions );
+                store.loadData( sessions );
 
                 v.down('ungridstatus').fireEvent('update');
 

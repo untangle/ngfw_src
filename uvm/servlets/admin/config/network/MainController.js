@@ -27,23 +27,25 @@ Ext.define('Ung.config.network.MainController', {
             var intfStatus, devStatus;
 
             result[0].interfaces.list.forEach(function (intf) {
-                // Ext.apply(intf, me.additionalInterfaceProps);
-                intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
-                    return intfSt.interfaceId === intf.interfaceId;
-                });
 
-
-                if(intfStatus != null){
-                    delete intfStatus.javaClass;
+                if (result[1] && result[1].list.length > 0) {
+                    intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
+                        return intfSt.interfaceId === intf.interfaceId;
+                    });
+                    if (intfStatus != null){
+                        delete intfStatus.javaClass;
+                    }
+                    Ext.apply(intf, intfStatus);
                 }
-                Ext.apply(intf, intfStatus);
 
-                devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
-                    return devSt.deviceName === intf.physicalDev;
-                });
+                if (result[2] && result[2].list.length > 0) {
+                    devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
+                        return devSt.deviceName === intf.physicalDev;
+                    });
+                    delete devStatus.javaClass;
+                    Ext.apply(intf, devStatus);
+                }
 
-                delete devStatus.javaClass;
-                Ext.apply(intf, devStatus);
             });
             vm.set('settings', result[0]);
 

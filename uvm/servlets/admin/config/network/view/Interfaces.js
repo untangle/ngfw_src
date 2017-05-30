@@ -199,15 +199,22 @@ Ext.define('Ung.config.network.view.Interfaces', {
             widget: {
                 xtype: 'button',
                 width: 40,
+                hidden: true,
                 // text: 'Delete'.t(),
                 bind: {
-                    disabled: '{!record.isVlanInterface}',
-                    iconCls: 'fa fa-trash' + '{record.isVlanInterface ? " fa-red" : ""}',
+                    hidden: '{!(record.isVlanInterface || record.connected === "MISSING")}',
+                    iconCls: 'fa fa-trash fa-red'
                 },
                 handler: function (btn) {
-                    var intf = btn.getWidgetRecord();
-                    Ext.Msg.confirm('Delete VLAN Interface',
-                        'Are you sure you want to delete <strong>' + intf.get('name') + '</strong> VLAN Interface?',
+                    var intf = btn.getWidgetRecord(), msg = '';
+                    if (intf.get('isVlanInterface')) {
+                        msg = 'Delete VLAN Interface'.t();
+                    }
+                    if (intf.get('connected') === 'MISSING') {
+                        msg = 'Delete missing Interface'.t();
+                    }
+                    Ext.Msg.confirm(msg,
+                        'Are you sure you want to delete <strong>' + intf.get('name') + '</strong> Interface?',
                         function (button) {
                             if (button === 'yes') { intf.drop(); }
                         });

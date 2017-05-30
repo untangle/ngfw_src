@@ -68,13 +68,223 @@ Ext.define('Ung.view.extra.Sessions', {
             ftype: 'grouping'
         }],
 
+        fields: [{
+            name: 'creationTime',
+        }, {
+            name: 'sessionId',
+        }, {
+            name: 'mark',
+        }, {
+            name: 'protocol',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'bypassed',
+        }, {
+            name: 'policy',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'hostname',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'natted',
+        }, {
+            name: 'portForwarded',
+        }, {
+            name: 'tags',
+        }, {
+            name: 'tagsString',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "localAddr",
+        },{
+            name: "remoteAddr",
+        },{
+            name: "priority",
+        },{
+            name: "qosPriority",
+        },{
+            name: "pipeline",
+        }, {
+            name: 'clientIntf',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'preNatClient',
+        }, {
+            name: 'preNatClientPort',
+        }, {
+            name: 'postNatClient',
+        }, {
+            name: 'postNatClientPort',
+        }, {
+            name: 'clientCountry',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'clientLatitude',
+        }, {
+            name: 'clientLongitude',
+        }, {
+            name: 'serverIntf',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'preNatServer',
+        }, {
+            name: 'preNatServerPort',
+        }, {
+            name: 'postNatServer',
+        }, {
+            name: 'postNatServerPort',
+        }, {
+            name: 'serverCountry',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'serverLatitude',
+        }, {
+            name: 'serverLongitude',
+        }, {
+            name: 'clientKBps',
+        }, {
+            name: 'serverKBps',
+        }, {
+            name: 'totalKBps',
+        }, {
+            name: "application-control-lite-protocol",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-category",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-description",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-lite-matched",
+        }, {
+            name: "application-control-protochain",
+        },{
+            name: "application-control-application",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-category",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-detail",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "application-control-confidence",
+        },{
+            name: "application-control-productivity",
+        },{
+            name: "application-control-risk",
+        }, {
+            name: "web-filter-best-category-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "web-filter-best-category-description",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "web-filter-best-category-flagged",
+        },{
+            name: "web-filter-best-category-blocked",
+        },{
+            name: "web-filter-flagged",
+        }, {
+            name: "http-hostname",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-url",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-user-agent",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-uri",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-method",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-extension",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-request-file-path",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-response-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-response-file-extension",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-content-type",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-referer",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "http-content-length",
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "ssl-subject-dn",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-issuer-dn",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-session-inspect",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ssl-sni-host",
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: "ftp-file-name",
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: "ftp-data-session",
+        }],
+
         columns: [{
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
             hidden: true,
             rtype: 'timestamp',
             filter: { type: 'date' },
-            width: TableConfig.timestampFieldWidth
+            width: Renderer.timestampWidth
         }, {
             header: 'Session ID'.t(),
             dataIndex: 'sessionId',
@@ -104,7 +314,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Bypassed'.t(),
             dataIndex: 'bypassed',
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',
@@ -132,7 +342,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             hidden: true
         }, {
             header: 'Port Forwarded'.t(),
@@ -142,7 +352,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 yesText: 'true',
                 noText: 'false'
             },
-            width: TableConfig.booleanFieldWidth,
+            width: Renderer.booleanWidth,
             hidden: true
         }, {
             header: 'Tags'.t(),
@@ -158,13 +368,13 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Local Address'.t(),
             dataIndex: "localAddr",
             filter: { type: 'string' },
-            width: TableConfig.ipFieldWidth
+            width: Renderer.ipWidth
         },{
             hidden: true,
             header: 'Remote Address'.t(),
             dataIndex: "remoteAddr",
             filter: { type: 'string' },
-            width: TableConfig.ipFieldWidth
+            width: Renderer.ipWidth
         },{
             hidden: true,
             header: 'Bandwidth Control ' + 'Priority'.t(),
@@ -221,29 +431,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth
+                width: Renderer.ipWidth
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClientPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth
+                width: Renderer.portWidth
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth,
+                width: Renderer.portWidth,
                 hidden: true
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
                 filter: { type: 'string' },
-                width: TableConfig.booleanFieldWidth,
+                width: Renderer.booleanWidth,
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
@@ -267,29 +477,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth,
+                width: Renderer.portWidth,
                 hidden: true
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServer',
-                width: TableConfig.ipFieldWidth,
+                width: Renderer.ipWidth,
                 filter: { type: 'string' }
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
                 filter: { type: 'numeric' },
-                width: TableConfig.portFieldWidth
+                width: Renderer.portWidth
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
                 filter: { type: 'string' },
-                width: TableConfig.booleanFieldWidth
+                width: Renderer.booleanWidth
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
@@ -306,19 +516,19 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Client'.t(),
                 dataIndex: 'clientKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
-                filter: 'number',
+                filter: { type: 'numeric' },
                 align: 'right',
                 width: 60
             }]

@@ -21,7 +21,7 @@ Ext.define('Ung.store.Conditions', {
         {name:'HOST_MAC_VENDOR',displayName: 'Host MAC Vendor'.t(), editorType: 'textfield', visible: true},
         {name:'CLIENT_MAC_VENDOR',displayName: 'Client MAC Vendor'.t(), editorType: 'textfield', visible: false},
         {name:'SERVER_MAC_VENDOR',displayName: 'Server MAC Vendor'.t(), editorType: 'textfield', visible: false},
-        {name:'HOST_IN_PENALTY_BOX',displayName: 'Host in Penalty Box'.t(), editorType: 'boolean', visible: true},
+        {name:'HOST_IN_PENALTY_BOX',displayName: 'Host in Penalty Box'.t(), editorType: 'boolean', visible: false},
         {name:'CLIENT_IN_PENALTY_BOX',displayName: 'Client in Penalty Box'.t(), editorType: 'boolean', visible: false},
         {name:'SERVER_IN_PENALTY_BOX',displayName: 'Server in Penalty Box'.t(), editorType: 'boolean', visible: false},
         {name:'HOST_HAS_NO_QUOTA',displayName: 'Host has no Quota'.t(), editorType: 'boolean', visible: true},

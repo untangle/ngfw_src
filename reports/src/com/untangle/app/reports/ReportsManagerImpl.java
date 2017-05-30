@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -623,6 +624,22 @@ public class ReportsManagerImpl implements ReportsManager
                     logger.warn( "Failed to read report entry from: " + line, e );
                 }
             }
+
+            /**
+             * Remove any obsolete entries
+             */
+            for (Iterator<ReportEntry> i = existingEntries.iterator(); i.hasNext(); ) {
+                ReportEntry entry = i.next();
+                if ( entry.getUniqueId().startsWith("reporting-") ) {
+                    i.remove();
+                    updates = true;
+                }
+                if ( "Web Filter Lite".equals(entry.getCategory()) ) {
+                    i.remove();
+                    updates = true;
+                }
+            }
+
         } catch (Exception e) {
             logger.warn( "Failed to check for new entries.", e );
         }

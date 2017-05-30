@@ -19,13 +19,18 @@ Ext.define('Ung.view.extra.DevicesController', {
     getDevices: function () {
         var me = this,
             v = me.getView(),
-            grid = me.getView().down('#devicesgrid');
+            grid = me.getView().down('#devicesgrid'),
+            store = Ext.getStore('devices');
+
+        if( !store.getFields() ){
+            store.setFields(grid.fields);
+        }
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.deviceTable.getDevices')
-            .then(function(result) {
+            .then(function(result) { 
                 me.getView().setLoading(false);
-                Ext.getStore('devices').loadData(result.list);
+                store.loadData(result.list);
 
                 v.down('ungridstatus').fireEvent('update');
             });

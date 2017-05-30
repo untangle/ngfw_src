@@ -15,7 +15,32 @@ Ext.define('Ung.view.extra.Users', {
         },
         stores: {
             users: {
-                data: '{usersData}'
+                data: '{usersData}',
+                fields: [{
+                    name: 'username',
+                    type: 'string',
+                    sortType: 'asUnString'
+                }, {
+                    name: 'creationTime',
+                }, {
+                    name: 'lastAccessTime',
+                }, {
+                    name: 'lastSessionTime',
+                }, {
+                    name: 'quotaSize',
+                }, {
+                    name: 'quotaRemaining',
+                }, {
+                    name: 'quotaIssueTime',
+                }, {
+                    name: 'quotaExpirationTime',
+                }, {
+                    name: 'tags'
+                }, {
+                    name: 'tagsString',
+                    type: 'string',
+                    sortType: 'asUnString'
+                }]
             }
         }
     },
@@ -167,12 +192,16 @@ Ext.define('Ung.view.extra.Users', {
             }]
         }, {
             header: 'Tags'.t(),
-            dataIndex: 'tags',
-            flex: 1,
-            filter: {
-                type: 'string'
-            },
-            rtype: 'tags'
+            width: 300,
+            xtype: 'widgetcolumn',
+            tdCls: 'tag-cell',
+            // flex: 1,
+            widget: {
+                xtype: 'tagpicker',
+                bind: {
+                    tags: '{record.tags}'
+                }
+            }
         }, {
             header: 'Tags String'.t(),
             dataIndex: 'tagsString',
