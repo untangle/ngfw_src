@@ -52,7 +52,6 @@ Ext.define('Ung.config.system.MainController', {
     },
 
     syncTime: function () {
-        var me = this;
         Ext.MessageBox.confirm(
             'Force Time Synchronization'.t(),
             'Forced time synchronization can cause problems if the current date is far in the future.'.t() + '<br/>' +
@@ -67,7 +66,6 @@ Ext.define('Ung.config.system.MainController', {
                         if (result !== 0) {
                             Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
-                            me.getTime();
                             Util.successToast('Time was synchronized!');
                         }
                     });
@@ -236,7 +234,9 @@ Ext.define('Ung.config.system.MainController', {
     getHttpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('httpSettings', rpc.appManager.app('http').getHttpSettings());
+            if (rpc.appManager.app('http')) {
+                vm.set('httpSettings', rpc.appManager.app('http').getHttpSettings());
+            }
         } catch (ex) {
             if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
@@ -244,7 +244,9 @@ Ext.define('Ung.config.system.MainController', {
     getFtpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('ftpSettings', rpc.appManager.app('ftp').getFtpSettings());
+            if (rpc.appManager.app('ftp')) {
+                vm.set('ftpSettings', rpc.appManager.app('ftp').getFtpSettings());
+            }
         } catch (ex) {
             if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
@@ -253,7 +255,9 @@ Ext.define('Ung.config.system.MainController', {
     getSmtpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('smtpSettings', rpc.appManager.app('smtp').getSmtpSettings());
+            if (rpc.appManager.app('smtp')) {
+                vm.set('smtpSettings', rpc.appManager.app('smtp').getSmtpSettings());
+            }
         } catch (ex) {
             if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
