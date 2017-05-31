@@ -100,10 +100,6 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'tags',
         }, {
-            name: 'tagsString',
-            type: 'string',
-            sortType: 'asUnString'
-        }, {
             name: "localAddr",
         },{
             name: "remoteAddr",
@@ -369,11 +365,6 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             rtype: 'tags'
-        }, {
-            header: 'Tags String'.t(),
-            dataIndex: 'tagsString',
-            filter: { type: 'string' },
-            hidden: true
         }, {
             hidden: true,
             header: 'Local Address'.t(),

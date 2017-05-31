@@ -101,10 +101,6 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'tags',
         },{
-            name: 'tagsString',
-            type: 'string',
-            sortType: 'asUnString'
-        },{
             name: 'hostname',
             type: 'string',
             sortType: 'asUnString'
@@ -249,9 +245,6 @@ Ext.define('Ung.view.extra.Hosts', {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             rtype: 'tags'
-        },{
-            header: 'Tags String'.t(),
-            dataIndex: 'tagsString'
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
