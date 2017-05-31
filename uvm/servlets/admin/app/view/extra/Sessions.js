@@ -89,6 +89,10 @@ Ext.define('Ung.view.extra.Sessions', {
             type: 'string',
             sortType: 'asUnString'
         }, {
+            name: 'username',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
             name: 'natted',
         }, {
             name: 'portForwarded',
@@ -332,6 +336,11 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
+            width: 100,
+            filter: { type: 'string' }
+        }, {
+            header: 'Username'.t(),
+            dataIndex: 'username',
             width: 100,
             filter: { type: 'string' }
         }, {
