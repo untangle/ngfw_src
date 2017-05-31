@@ -194,7 +194,7 @@ Ext.define('Ung.cmp.TagPicker', {
         me.inputElCt.insertHtml('beforeBegin', value.join(''));
 
         if (tags.length === 0) {
-            me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + 'click to add ...'.t() + '</em></li>');
+            me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + '</em></li>');
         }
     },
 
