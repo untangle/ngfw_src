@@ -91,11 +91,14 @@ Ext.define('Ung.util.Renderer', {
             if( value && value.list ) {
                 var str = [], tip = [];
                 Ext.Array.each(value.list, function (tag) {
-                    str.push(tag.name);
+                    str.push('<div class="tag-item">' + tag.name + '</div>');
                     tip.push('<strong>' + tag.name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
                 });
-                metaData.tdAttr = 'data-qtip="' + tip.join('<br/>') + '"';
-                return str.join(', ');
+                if (metaData) {
+                    metaData.tdAttr = 'data-qtip="' + tip.join('<br/>') + '"';
+                    metaData.tdCls = 'tag-cell';
+                }
+                return '<div class="tagpicker">' + str.join('') + '</div>';
             }
         }
         return '';

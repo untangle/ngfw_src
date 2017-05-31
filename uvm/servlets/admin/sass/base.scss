@@ -806,3 +806,54 @@ a.view-reports {
         color: #000;
     }
 }
+
+
+.tagpicker {
+    .x-tagfield {
+        padding: 1px 2px;
+    }
+    .x-tagfield-list {
+        list-style-type: none;
+    }
+    .x-form-text-wrap {
+        border: 0;
+    }
+    .x-form-text-default {
+        background: none;
+    }
+    .x-tagfield-input {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        input {
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .tag-item {
+        float: left;
+        font-size: 11px;
+        border: 1px #CCC solid;
+        border-radius: 3px;
+        background: #EEE;
+        padding: 0 4px;
+        line-height: 1.3;
+        cursor: pointer;
+        margin: 1px;
+        i { color: #777; font-size: 10px;}
+    }
+    .no-tags {
+        font-size: 11px;
+        color: #999;
+    }
+    &:hover {
+        .tag-item {
+            background: #DDD;
+        }
+    }
+}
+.tag-cell .x-grid-cell-inner {
+    padding: 1px;
+}
