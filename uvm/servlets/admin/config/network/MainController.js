@@ -786,6 +786,18 @@ Ext.define('Ung.config.network.MainController', {
         }));
     },
 
+    // used to set available parent interfaces
+    onParentInterface: function (combo) {
+        var data = [];
+        var record = combo.up('window').getViewModel().get('intf');
+        Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
+            if ((intf.configType === 'ADDRESSED' || intf.configType === 'BRIDGED') && intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
+                data.push([intf.interfaceId, intf.name]);
+            }
+        });
+        combo.setStore(data);
+    },
+
     onRenewDhcpLease: function () {
         var me = this, interfaceId = me.editIntf.get('interfaceId');
         // Ext.MessageBox.wait('Renewing DHCP Lease...'.t(), 'Please wait'.t());
