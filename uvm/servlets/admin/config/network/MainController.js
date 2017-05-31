@@ -483,13 +483,15 @@ Ext.define('Ung.config.network.MainController', {
                         continue;
                     }
                     lineparts = lines[i].split(/\s+/);
-                    leases.push({
-                        date: lineparts[0],
-                        macAddress: lineparts[1],
-                        address: lineparts[2],
-                        hostname: lineparts[3],
-                        clientId: lineparts[4]
-                    });
+                    if (lineparts.length == 5 ) {
+                        leases.push({
+                            date: lineparts[0],
+                            macAddress: lineparts[1],
+                            address: lineparts[2],
+                            hostname: lineparts[3],
+                            clientId: lineparts[4]
+                        });
+                    }
                 }
                 view.getStore().loadData(leases);
             }).always(function () {
