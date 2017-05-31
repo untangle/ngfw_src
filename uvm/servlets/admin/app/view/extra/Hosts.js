@@ -416,5 +416,10 @@ Ext.define('Ung.view.extra.Hosts', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/hosts',
         hrefTarget: '_self'
+    }, {
+        xtype: 'button',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?source=hosts&' + Util.getAbout()
     }]
 });

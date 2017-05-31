@@ -261,6 +261,11 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
         hrefTarget: '_self'
+    }, {
+        xtype: 'button',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?source=users&' + Util.getAbout()
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',

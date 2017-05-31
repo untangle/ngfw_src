@@ -802,5 +802,10 @@ Ext.define('Ung.view.extra.Sessions', {
         xtype: 'ungridstatus',
         tplFiltered: '{0} filtered, {1} total sessions'.t(),
         tplUnfiltered: '{0} sessions'.t()
+    }, '->', {
+        xtype: 'button',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?source=sessions&' + Util.getAbout()
     }]
 });
