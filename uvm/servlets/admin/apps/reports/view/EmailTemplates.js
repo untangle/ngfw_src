@@ -10,6 +10,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     recordActions: ['edit', 'copy', 'delete'],
 
     emptyRow: {
+        javaClass: 'com.untangle.app.reports.EmailTemplate',
         title: '',
         description: '',
         interval: 86400,
