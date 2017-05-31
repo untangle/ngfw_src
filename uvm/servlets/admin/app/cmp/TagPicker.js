@@ -4,6 +4,8 @@ Ext.define('Ung.cmp.TagPicker', {
     // extend: 'Ext.form.field.ComboBox',
     alias: 'widget.tagpicker',
 
+    baseCls: 'tagpicker',
+
     twoWayBindable: ['tags', 'value'],
     publishes: ['tags', 'value'],
 
@@ -17,6 +19,39 @@ Ext.define('Ung.cmp.TagPicker', {
     hideTrigger: true,
 
     tags: [],
+
+    fieldSubTpl: [
+        // listWrapper div is tabbable in Firefox, for some unfathomable reason
+        '<div id="{cmpId}-listWrapper" data-ref="listWrapper"' + (Ext.isGecko ? ' tabindex="-1"' : ''),
+            '<tpl foreach="ariaElAttributes"> {$}="{.}"</tpl>',
+            ' class="' + Ext.baseCSSPrefix + 'tagfield {fieldCls} {typeCls} {typeCls}-{ui}"<tpl if="wrapperStyle"> style="{wrapperStyle}"</tpl>>',
+            '<span id="{cmpId}-selectedText" data-ref="selectedText" aria-hidden="true" class="' + Ext.baseCSSPrefix + 'hidden-clip"></span>',
+            '<ul id="{cmpId}-itemList" data-ref="itemList" role="presentation" class="' + Ext.baseCSSPrefix + 'tagfield-list{itemListCls}">',
+                '<li id="{cmpId}-inputElCt" data-ref="inputElCt" role="presentation" class="' + Ext.baseCSSPrefix + 'tagfield-input">',
+                    '<input id="{cmpId}-inputEl" data-ref="inputEl" type="{type}" ',
+                    '<tpl if="name">name="{name}" </tpl>',
+                    '<tpl if="value"> value="{[Ext.util.Format.htmlEncode(values.value)]}"</tpl>',
+                    '<tpl if="size">size="{size}" </tpl>',
+                    '<tpl if="tabIdx != null">tabindex="{tabIdx}" </tpl>',
+                    '<tpl if="disabled"> disabled="disabled"</tpl>',
+                    '<tpl foreach="inputElAriaAttributes"> {$}="{.}"</tpl>',
+                    'class="' + Ext.baseCSSPrefix + 'tagfield-input-field {inputElCls} {emptyCls}" autocomplete="off">',
+                '</li>',
+            '</ul>',
+            '<ul id="{cmpId}-ariaList" data-ref="ariaList" role="listbox"',
+                '<tpl if="ariaSelectedListLabel"> aria-label="{ariaSelectedListLabel}"</tpl>',
+                '<tpl if="multiSelect"> aria-multiselectable="true"</tpl>',
+                ' class="' + Ext.baseCSSPrefix + 'tagfield-arialist">',
+            '</ul>',
+          '</div>',
+        {
+            disableFormats: true
+        }
+    ],
+
+    childEls: [
+        'listWrapper', 'itemList', 'inputEl', 'inputElCt', 'selectedText', 'ariaList'
+    ],
 
     initComponent: function() {
         this.callParent(arguments);
@@ -149,11 +184,18 @@ Ext.define('Ung.cmp.TagPicker', {
     },
 
     setValue: function (tags) {
-        var value = [];
+        var me = this, value = [];
         Ext.Array.each(tags, function(tag) {
-            value.push(tag.name);
+            // value.push(tag.name);
+            value.push('<li class="tag-item"><i class="fa fa-tag"></i> ' + tag.name + '</li>');
         });
-        this.setRawValue(value.join(', '));
+        me.itemList.select('.tag-item').destroy();
+        me.itemList.select('.no-tags').destroy();
+        me.inputElCt.insertHtml('beforeBegin', value.join(''));
+
+        if (tags.length === 0) {
+            me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + 'click to add ...'.t() + '</em></li>');
+        }
     },
 
     publishValue: function () {
