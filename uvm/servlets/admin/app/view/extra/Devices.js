@@ -119,8 +119,6 @@ Ext.define('Ung.view.extra.Devices', {
             name: 'lastSessionTime',
         }, {
             name: 'tags'
-        },{
-            name: 'tagsString'
         }],
 
         columns: [{
@@ -198,26 +196,6 @@ Ext.define('Ung.view.extra.Devices', {
                     tags: '{record.tags}'
                 }
             }
-        },
-        // {
-        //     header: 'Tags values',
-        //     width: 500,
-        //     dataIndex: 'tags',
-        //     renderer: function (val) {
-        //         var str = [];
-        //         if (val.list.length > 0) {
-        //             Ext.Array.each(val.list, function (tag) {
-        //                 str.push(tag.name + ' = ' + tag.expirationTime);
-        //             });
-        //         }
-        //         // console.log(val);
-        //         return str.join(', ');
-        //     }
-        // },
-        {
-            header: 'Tags String',
-            dataIndex: 'tagsString',
-            filter: { type: 'string' },
         }],
         editorFields: [{
             xtype: 'textfield',

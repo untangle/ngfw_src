@@ -36,10 +36,6 @@ Ext.define('Ung.view.extra.Users', {
                     name: 'quotaExpirationTime',
                 }, {
                     name: 'tags'
-                }, {
-                    name: 'tagsString',
-                    type: 'string',
-                    sortType: 'asUnString'
                 }]
             }
         }
@@ -201,13 +197,6 @@ Ext.define('Ung.view.extra.Users', {
                 bind: {
                     tags: '{record.tags}'
                 }
-            }
-        }, {
-            header: 'Tags String'.t(),
-            dataIndex: 'tagsString',
-            hidden: true,
-            filter: {
-                type: 'string'
             }
         }],
         editorFields: [{
