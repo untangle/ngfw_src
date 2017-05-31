@@ -690,7 +690,7 @@ Ext.define('Ung.view.reports.Entry', {
                     // hideHeaders: true,
                     disableSelection: true,
                     viewConfig: {
-                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Conditions!</p>',
+                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> ' + 'No Conditions'.t() + '</p>',
                         stripeRows: false,
                     },
                     fields: ['column', 'operator', 'value'],
@@ -828,7 +828,7 @@ Ext.define('Ung.view.reports.Entry', {
         },
 
         viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Filters!</p>',
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> ' + 'No Conditions'.t() + '</p>',
             stripeRows: false,
         },
 
