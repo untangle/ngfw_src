@@ -83,7 +83,8 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'policy',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.policy
         }, {
             name: 'hostname',
             type: 'string',
@@ -115,7 +116,8 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'clientIntf',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.interface
         }, {
             name: 'preNatClient',
         }, {
@@ -135,7 +137,8 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverIntf',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.interface
         }, {
             name: 'preNatServer',
         }, {
@@ -331,8 +334,7 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             filter: {
                 type: 'string' // should be list
-            },
-            rtype: 'policy'
+            }
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
@@ -435,7 +437,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
                 filter: { type: 'string' },
-                rtype: 'interface'
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
@@ -481,7 +482,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
                 filter: { type: 'string' },
-                rtype: 'interface'
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
