@@ -196,9 +196,11 @@ Ext.define('Ung.config.network.MainController', {
 
         if( vm.get('settings').qosSettings.qosEnabled === true ){
             var bandwidthFound = false;
-            vm.get('wanInterfaces').each( function(interface){
-                if( interface.get('downloadBandwidthKbps') != null &&
-                    interface.get('uploadBandwidthKbps') != null){
+            vm.get('wanInterfaces').each( function(intf){
+                if( intf.get('downloadBandwidthKbps') != null &&
+                    intf.get('downloadBandwidthKbps') != 0 &&
+                    intf.get('uploadBandwidthKbps') != null &&
+                    intf.get('uploadBandwidthKbps') != 0) {
                     bandwidthFound = true;
                 }
             });
