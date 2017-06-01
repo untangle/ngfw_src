@@ -161,6 +161,7 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
     procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
     procset('/proc/sys/net/ipv4/ip_local_reserved_ports',"4500,8009,8123",False); # charon, tomcat, classd
+    # Check for old location, if its not there assume new location (4.9+)
     if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose'):
         procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
     else:
@@ -185,10 +186,15 @@ def prepareSystem():
     procset('/proc/sys/net/netfilter/nf_conntrack_acct','1',True); # enable nfconntrack accounting for bypassed byte accounting
     procset('/proc/sys/net/netfilter/nf_conntrack_timestamp','1',True); # enable nfconntrack timestamping tracking (start and end session times)
 
+    # The following settings check for the old location, if the old location does not exist, assume new location
     if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_max'):
         procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
     else:
-        procset('/proc/sys/net/netfilter/nf_conntrack_max',"131072",True)
+        # DO NOT set  /proc/sys/net/netfilter/nf_conntrack_max
+        # instead set /proc/sys/net/nf_conntrack_max
+        # in the 4.9 kernel the former seems to cause major problems
+        # and sets the max size of the conntrack table at 0
+        procset('/proc/sys/net/nf_conntrack_max',"131072",True)
     # need to stay around for at least 60 seconds for conntrack monitor
     if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait'):
         procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"60",True);
