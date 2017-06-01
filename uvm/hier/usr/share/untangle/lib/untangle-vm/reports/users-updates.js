@@ -4,7 +4,7 @@
     "type": "EVENT_LIST",
     "category": "Users",
     "conditions": [],
-    "defaultColumns": ["time_stamp","address","key","value"],
+    "defaultColumns": ["time_stamp","username","key","value"],
     "description": "All updates to users in the user table.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
