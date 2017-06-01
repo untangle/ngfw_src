@@ -219,7 +219,7 @@ public class EventManagerImpl implements EventManager
         matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
         matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "SServerPort", "=", "22" );
+        matcher2 = new EventRuleCondition( "sServerPort", "=", "22" );
         matchers.add( matcher2 );
         eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
@@ -227,7 +227,7 @@ public class EventManagerImpl implements EventManager
         matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
         matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "SServerPort", "=", "3389" );
+        matcher2 = new EventRuleCondition( "sServerPort", "=", "3389" );
         matchers.add( matcher2 );
         eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
