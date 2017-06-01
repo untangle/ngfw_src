@@ -146,6 +146,14 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
         if (problem != 0) return(false);
 
+        // we must not allow port 443 or Apache will get very upset
+        var pfield = Ext.ComponentQuery.query('textfield[fieldIndex=listenPort]')[0];
+        var pvalue = pfield.getValue();
+        if (pvalue === '443') {
+            Ext.MessageBox.alert("Invalid Port".t(), "The configured port value is reserved. Please enter a different value.".t());
+            return(false);
+        }
+
         return(true);
     },
 
