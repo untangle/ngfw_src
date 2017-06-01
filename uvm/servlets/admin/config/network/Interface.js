@@ -58,8 +58,10 @@ Ext.define('Ung.config.network.Interface', {
                     bind: {
                         value: '{intf.vlanParent}',
                     },
-                    store: Util.getInterfaceAddressedList(),
-                    queryMode: 'local'
+                    queryMode: 'local',
+                    listeners: {
+                        afterrender: 'onParentInterface'
+                    }
                 }, {
                     // VLAN Tag
                     xtype: 'numberfield',

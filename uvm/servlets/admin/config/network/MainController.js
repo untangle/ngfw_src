@@ -196,9 +196,11 @@ Ext.define('Ung.config.network.MainController', {
 
         if( vm.get('settings').qosSettings.qosEnabled === true ){
             var bandwidthFound = false;
-            vm.get('wanInterfaces').each( function(interface){
-                if( interface.get('downloadBandwidthKbps') != null &&
-                    interface.get('uploadBandwidthKbps') != null){
+            vm.get('wanInterfaces').each( function(intf){
+                if( intf.get('downloadBandwidthKbps') != null &&
+                    intf.get('downloadBandwidthKbps') != 0 &&
+                    intf.get('uploadBandwidthKbps') != null &&
+                    intf.get('uploadBandwidthKbps') != 0) {
                     bandwidthFound = true;
                 }
             });
@@ -483,13 +485,15 @@ Ext.define('Ung.config.network.MainController', {
                         continue;
                     }
                     lineparts = lines[i].split(/\s+/);
-                    leases.push({
-                        date: lineparts[0],
-                        macAddress: lineparts[1],
-                        address: lineparts[2],
-                        hostname: lineparts[3],
-                        clientId: lineparts[4]
-                    });
+                    if (lineparts.length == 5 ) {
+                        leases.push({
+                            date: lineparts[0],
+                            macAddress: lineparts[1],
+                            address: lineparts[2],
+                            hostname: lineparts[3],
+                            clientId: lineparts[4]
+                        });
+                    }
                 }
                 view.getStore().loadData(leases);
             }).always(function () {
@@ -782,6 +786,18 @@ Ext.define('Ung.config.network.MainController', {
             }],
             data: fields
         }));
+    },
+
+    // used to set available parent interfaces
+    onParentInterface: function (combo) {
+        var data = [];
+        var record = combo.up('window').getViewModel().get('intf');
+        Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
+            if ((intf.configType === 'ADDRESSED' || intf.configType === 'BRIDGED') && intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
+                data.push([intf.interfaceId, intf.name]);
+            }
+        });
+        combo.setStore(data);
     },
 
     onRenewDhcpLease: function () {

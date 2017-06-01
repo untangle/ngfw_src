@@ -407,7 +407,10 @@ public class UserTableImpl implements UserTable
                             if ( entry.getQuotaSize() > 0 ) {
                                 continue;
                             }
-                            
+                            if ( entry.getTags() != null && entry.getTags().size() > 0 ) {
+                                continue;
+                            }
+
                             /**
                              * Otherwise just delete the entire entry
                              */

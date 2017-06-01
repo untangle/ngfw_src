@@ -108,7 +108,7 @@ Ext.define('Ung.view.reports.EventReportController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        var limit = 0;
+        var limit = 1000;
         if( me.getView().up('reports-entry') ){
             limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
         }
@@ -145,20 +145,27 @@ Ext.define('Ung.view.reports.EventReportController', {
 
     loadResultSet: function (reader) {
         var me = this,
+            v = me.getView(),
+            vm = me.getViewModel(),
             grid = me.getView().down('grid');
+
         this.getView().setLoading(true);
         grid.getStore().setFields( grid.tableConfig.fields );
-        reader.getNextChunk(Ext.bind(this.nextChunkCallback, this), 1000);
-    },
-
-    nextChunkCallback: function (result, ex) {
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
-
-        vm.set('eventsData', result.list);
+        var eventData = [];
+        var result = [];
+        while( true ){
+            result = reader.getNextChunk(1000);
+            if(result && result.list && result.list.length){
+                result.list.forEach(function(value){
+                    eventData.push(value);
+                });
+                continue;
+            }
+            break;
+        }
+        reader.closeConnection();
+        vm.set('eventsData', eventData);
         this.getView().setLoading(false);
-
     },
 
     onEventSelect: function (el, record) {

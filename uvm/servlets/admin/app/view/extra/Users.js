@@ -36,10 +36,6 @@ Ext.define('Ung.view.extra.Users', {
                     name: 'quotaExpirationTime',
                 }, {
                     name: 'tags'
-                }, {
-                    name: 'tagsString',
-                    type: 'string',
-                    sortType: 'asUnString'
                 }]
             }
         }
@@ -202,13 +198,6 @@ Ext.define('Ung.view.extra.Users', {
                     tags: '{record.tags}'
                 }
             }
-        }, {
-            header: 'Tags String'.t(),
-            dataIndex: 'tagsString',
-            hidden: true,
-            filter: {
-                type: 'string'
-            }
         }],
         editorFields: [{
             xtype: 'textfield',
@@ -261,6 +250,11 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
         hrefTarget: '_self'
+    }, {
+        xtype: 'button',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?source=users&' + Util.getAbout()
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',
