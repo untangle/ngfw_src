@@ -170,14 +170,9 @@ def prepareSystem():
     if platform.machine() == 'x86_64':
         procset('/proc/sys/kernel/pid_max',"131072",True);
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
     procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
     procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"60",True); # need to stay around for at least 60 seconds for conntrack monitor
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close',"60",True); # need to stay around for at least 60 seconds for conntrack monitor
     procset('/proc/sys/net/core/rmem_max','1048576',True); # needed for larger buffers for classd 
     procset('/proc/sys/net/core/wmem_max','1048576',True); # needed for larger buffers for classd 
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh1','4096',True); # adjust max arp entry (bug #10327)
@@ -186,6 +181,29 @@ def prepareSystem():
     procset('/proc/sys/net/core/xfrm_larval_drop','1',True); # make sure nonblock-sockets do not block on IPsec  (bug #10890)
     procset('/proc/sys/net/netfilter/nf_conntrack_acct','1',True); # enable nfconntrack accounting for bypassed byte accounting
     procset('/proc/sys/net/netfilter/nf_conntrack_timestamp','1',True); # enable nfconntrack timestamping tracking (start and end session times)
+
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_max'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_max',"131072",True)
+    # need to stay around for at least 60 seconds for conntrack monitor
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"60",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_timeout_time_wait',"60",True);
+    # need to stay around for at least 60 seconds for conntrack monitor
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close',"60",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_timeout_close',"60",True);
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
 
     # setup environment variables
 
@@ -256,6 +274,8 @@ def procset(procfile, value, optional):
     #debug("procset(%s,%s,%s)" % (procfile, value, optional));
     if not os.path.exists(procfile):
         debug("ERROR: procfile %s not found" % procfile);
+        if not optional:
+            sys.exit(1);
         return;
 
     try:
@@ -263,8 +283,8 @@ def procset(procfile, value, optional):
         file.write(value);
         file.close();
     except IOError:
+        debug("ERROR: setting procfile %s to %s" % (procfile, value));
         if not optional:
-            debug("ERROR: setting procfile %s to %s" % (procfile, value));
             sys.exit(1);
 
 # 
