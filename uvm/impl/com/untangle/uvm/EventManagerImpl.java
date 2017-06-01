@@ -321,14 +321,6 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*PenaltyBoxEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "action", "=", "1" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
         matchers.add( matcher1 );
         matcher2 = new EventRuleCondition( "protochain", "=", "*BITTORRE*" );

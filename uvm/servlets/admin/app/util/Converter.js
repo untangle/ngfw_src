@@ -548,16 +548,12 @@ Ext.define('Ung.util.Converter', {
                     interfacesList[i].interfaceId);
             }
         }
-        return value ? this.interfaceMap[value] || value.toString() : '';
+        return ( value && value != -1 ) ? this.interfaceMap[value] || value.toString() : '';
     },
 
     policy: function ( value ) {
         var policy = Ext.getStore('policiestree').findRecord('policyId', value);
-        if (policy) {
-            return policy.get('name') + ' [' + value + ']';
-        }else{
-            return 'None'.t();
-        }
+        return policy ? policy.get('name') + ' [' + value + ']' : '';
     },
 
     loginSuccess: function( value ){

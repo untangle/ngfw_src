@@ -167,6 +167,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setClientIntf(new Integer(sessionState.getClientIntf()));
                     session.setServerIntf(new Integer(sessionState.getServerIntf()));
                     session.setHostname(sessionState.getSessionEvent().getHostname());
+                    session.setUsername(sessionState.getSessionEvent().getUsername());
 
                     session.setClientCountry(sessionState.getSessionEvent().getClientCountry());
                     session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());                    

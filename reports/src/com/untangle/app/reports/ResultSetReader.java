@@ -77,8 +77,9 @@ public class ResultSetReader implements Runnable
         ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
 
         try {
-            if ( resultSet.isClosed() || !resultSet.isBeforeFirst() /*isEmpty*/ )
+            if ( resultSet.isClosed()  ){
                 return newList;
+            }
 
             ResultSetMetaData metadata = this.resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();

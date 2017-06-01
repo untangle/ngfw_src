@@ -408,16 +408,6 @@ Ext.define('Ung.util.Util', {
         return Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
     },
 
-    getInterfaceAddressedList: function() {
-        var data = [];
-        Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
-            if (intf.configType === 'ADDRESSED') {
-                data.push([intf.interfaceId, intf.name]);
-            }
-        });
-        return data;
-    },
-
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
     },

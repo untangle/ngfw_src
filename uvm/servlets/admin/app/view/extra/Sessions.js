@@ -83,9 +83,14 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'policy',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.policy
         }, {
             name: 'hostname',
+            type: 'string',
+            sortType: 'asUnString'
+        }, {
+            name: 'username',
             type: 'string',
             sortType: 'asUnString'
         }, {
@@ -94,10 +99,6 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'portForwarded',
         }, {
             name: 'tags',
-        }, {
-            name: 'tagsString',
-            type: 'string',
-            sortType: 'asUnString'
         }, {
             name: "localAddr",
         },{
@@ -111,7 +112,8 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'clientIntf',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.interface
         }, {
             name: 'preNatClient',
         }, {
@@ -131,7 +133,8 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverIntf',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.interface
         }, {
             name: 'preNatServer',
         }, {
@@ -327,11 +330,15 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             filter: {
                 type: 'string' // should be list
-            },
-            rtype: 'policy'
+            }
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
+            width: 100,
+            filter: { type: 'string' }
+        }, {
+            header: 'Username'.t(),
+            dataIndex: 'username',
             width: 100,
             filter: { type: 'string' }
         }, {
@@ -358,11 +365,6 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             rtype: 'tags'
-        }, {
-            header: 'Tags String'.t(),
-            dataIndex: 'tagsString',
-            filter: { type: 'string' },
-            hidden: true
         }, {
             hidden: true,
             header: 'Local Address'.t(),
@@ -426,7 +428,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
                 filter: { type: 'string' },
-                rtype: 'interface'
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
@@ -472,7 +473,6 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
                 filter: { type: 'string' },
-                rtype: 'interface'
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
@@ -793,5 +793,10 @@ Ext.define('Ung.view.extra.Sessions', {
         xtype: 'ungridstatus',
         tplFiltered: '{0} filtered, {1} total sessions'.t(),
         tplUnfiltered: '{0} sessions'.t()
+    }, '->', {
+        xtype: 'button',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?source=sessions&' + Util.getAbout()
     }]
 });
