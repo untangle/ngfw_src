@@ -27,12 +27,6 @@
 #define MAX_MB_SIZE    16
 
 /**
- * Returns IP_TRANSPARENT constant (varies by kernel version)
- * Returns 0 if the kernel does not support IP_TRANSPARENT
- */
-int IP_TRANSPARENT_VALUE ( );
-
-/**
  * Returns IP_SADDR constant (varies by kernel version)
  */
 int IP_SADDR_VALUE ( );

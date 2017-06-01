@@ -161,7 +161,10 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
     procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
     procset('/proc/sys/net/ipv4/ip_local_reserved_ports',"4500,8009,8123",False); # charon, tomcat, classd
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_loose',"0",False);
     procset('/proc/sys/vm/max_map_count',"262144",False);
     # procset('/proc/sys/kernel/threads-max',"1048576",False); # default is pages/4 which is ideal - do not override
     # procset('/proc/sys/fs/file-max',"1642108",False); # default is 10% of memory which is ideal - do not override

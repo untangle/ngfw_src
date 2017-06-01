@@ -63,10 +63,6 @@ int  netcap_udp_init ()
     if (setsockopt(_udp_send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
         return perrlog ( "setsockopt" );
     }
-    if ( IP_TRANSPARENT_VALUE() != 0 ) {
-        if (setsockopt(_udp_send_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one)) < 0) 
-            return perrlog ( "setsockopt" );
-    }
     
     return 0;
 }

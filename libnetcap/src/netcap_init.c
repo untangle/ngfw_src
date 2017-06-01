@@ -53,7 +53,6 @@ static struct {
 static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
-static int ip_transparent = 19;
 static int ip_saddr = 22; 
 static int ip_sendnfmark = 24;
 static int is_new_kernel = 0;
@@ -96,40 +95,38 @@ static int _netcap_init()
         return perrlog( "Unsupported kernel: 2.6.26\n" );
     }
     else if ( strstr(utsn.release,"2.6.32") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 22;
         ip_sendnfmark = 24;
     }
     else if ( strstr(utsn.release,"3.0") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
     }
     else if ( strstr(utsn.release,"3.2") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
     }
     else if ( strstr(utsn.release,"3.10") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
         is_new_kernel = 310;
     }
     else if ( strstr(utsn.release,"3.16") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
         is_new_kernel = 316;
     }
     else if ( strstr(utsn.release,"3.18") != NULL ) {
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
         is_new_kernel = 318;
     }
     else if ( strstr(utsn.release,"4.4.3") != NULL ) {
-        ip_transparent = 19;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
+        is_new_kernel = 443;
+    }
+    else if ( strstr(utsn.release,"4.9.28") != NULL ) {
         ip_saddr = 24;
         ip_sendnfmark = 25;
         is_new_kernel = 443;
@@ -138,10 +135,9 @@ static int _netcap_init()
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
         errlog( ERR_WARNING, "Assuming 4.0.0\n" );
         /* unknown kernel */ 
-        ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
-        is_new_kernel = 400;
+        is_new_kernel = 492;
     }
     
     if (netcap_sesstable_init()<0)
@@ -253,11 +249,6 @@ netcap_tls_t* netcap_tls_get( void )
     }
     
     return tls;
-}
-
-int IP_TRANSPARENT_VALUE ( )
-{
-    return ip_transparent;
 }
 
 int IP_SADDR_VALUE ( )
