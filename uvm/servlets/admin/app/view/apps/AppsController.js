@@ -425,12 +425,16 @@ Ext.define('Ung.view.apps.AppsController', {
                         }
                     } catch (e) {}
 
+                    // only install these if enough memory
+		    // or if its arm still install virus blocker (in clientless mode)
                     try {
                         var memTotal = Util.bytesToMBs(Ext.getStore('stats').first().get('MemTotal'));
                         if (memTotal && memTotal > 900) {
                             apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
                             apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
                             apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
+                            apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
+                        } else if (rpc.architecture == "arm") {
                             apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
                         }
                     } catch (e) {}
