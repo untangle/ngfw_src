@@ -92,7 +92,10 @@ Ext.define('Ung.util.Renderer', {
                 var str = [], tip = [];
                 Ext.Array.each(value.list, function (tag) {
                     str.push('<div class="tag-item">' + tag.name + '</div>');
-                    tip.push('<strong>' + tag.name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
+                    if ( tag.expirationTime == 0 )
+                        tip.push('<strong>' + tag.name + '</strong> - ' + 'Never'.t());
+                    else
+                        tip.push('<strong>' + tag.name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
                 });
                 if (metaData) {
                     metaData.tdAttr = 'data-qtip="' + tip.join('<br/>') + '"';
