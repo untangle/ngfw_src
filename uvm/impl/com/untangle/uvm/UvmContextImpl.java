@@ -705,6 +705,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
             json.put("languageSettings", this.languageManager().getLanguageSettings());
             json.put("version", this.version());
+            json.put("architecture", System.getProperty("os.arch"));
             json.put("applianceModel", this.getApplianceModel());
             json.put("translations", this.languageManager().getTranslations("untangle"));
             json.put("skinSettings", this.skinManager().getSettings());
