@@ -482,6 +482,13 @@ public class SessionMonitorImpl implements SessionMonitor
                     String[] parts = line.split("\\s+");
                     SessionMonitorEntry newEntry = new SessionMonitorEntry();
 
+                    // if using the new nf_conntrack, remove first two fields
+                    if ( conntrackFilename == "/proc/net/nf_conntrack" ) {
+                        String[] newArray=new String[parts.length];
+                        System.arraycopy(parts,2,newArray,0,parts.length-2);
+                        parts = newArray;
+                    }
+
                     if ( parts.length < 10 ) {
                         logger.warn("Too few parts: " + line);
                         continue;
