@@ -535,10 +535,6 @@ Ext.define('Ung.util.Converter', {
             } catch (ex) {
                 console.log(ex);
             }
-            interfacesList.push({ interfaceId: 250, name: 'OpenVPN' }); // 0xfa
-            interfacesList.push({ interfaceId: 251, name: 'L2TP' }); // 0xfb
-            interfacesList.push({ interfaceId: 252, name: 'Xauth' }); // 0xfc
-            interfacesList.push({ interfaceId: 253, name: 'GRE' }); // 0xfd
 
             this.interfaceMap = {};
             for (i = 0; i < interfacesList.length; i += 1) {

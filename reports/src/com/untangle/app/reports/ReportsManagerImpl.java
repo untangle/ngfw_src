@@ -532,6 +532,16 @@ public class ReportsManagerImpl implements ReportsManager
                 logger.warn("Error generating interfaces list",e);
             }
         }
+        for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getVirtualInterfaces() ){
+            try {
+                JSONObject json = new org.json.JSONObject();
+                json.put("interfaceId", interfaceSettings.getInterfaceId());
+                json.put("name", interfaceSettings.getName() );
+                interfacesInfo.add(json);
+            } catch (Exception e) {
+                logger.warn("Error generating interfaces list",e);
+            }
+        }
         return interfacesInfo;
     }
 

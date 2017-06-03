@@ -16,7 +16,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.HookCallback;

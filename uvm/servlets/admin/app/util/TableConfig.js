@@ -358,12 +358,6 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
-                // widgetField: {
-                //     xtype: 'combo',
-                //     // store: Util.getInterfaceListSystemDev(),
-                //     editable: false,
-                //     queryMode: 'local'
-                // }
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,

@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
@@ -174,7 +173,7 @@ public class WanBalancerApp extends AppBase
      */
     protected void incrementDstInterfaceMetric( int serverIntf )
     {
-        if (( serverIntf < IntfConstants.MIN_INTF ) || ( serverIntf >= IntfConstants.MAX_INTF )) {
+        if (( serverIntf < InterfaceSettings.MIN_INTERFACE_ID ) || ( serverIntf >= InterfaceSettings.MAX_INTERFACE_ID )) {
             logger.warn("Invalid interface: " + serverIntf);
             return;
         }
@@ -217,8 +216,6 @@ public class WanBalancerApp extends AppBase
     private void updateAppMetrics(  )
     {
         try {
-            String uplinkName[] = new String[1 + IntfConstants.MAX_INTF];
-
             Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
             I18nUtil.marktr( "Sessions on {0}" );

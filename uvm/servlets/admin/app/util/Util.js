@@ -376,7 +376,7 @@ Ext.define('Ung.util.Util', {
     },
 
 
-    getInterfaceListSystemDev: function (wanMatchers, anyMatcher, systemDev) {
+    getInterfaceList: function (wanMatchers, anyMatcher) {
         var networkSettings = rpc.networkSettings,
             data = [], intf, i;
 
@@ -384,17 +384,13 @@ Ext.define('Ung.util.Util', {
 
         for (i = 0; i < networkSettings.interfaces.list.length; i += 1) {
             intf = networkSettings.interfaces.list[i];
-            data.push([systemDev ? intf.systemDev.toString() : intf.interfaceId.toString(), intf.name]);
+            data.push([intf.interfaceId.toString(), intf.name]);
+        }
+        for (i = 0; i < networkSettings.virtualInterfaces.list.length; i += 1) {
+            intf = networkSettings.virtualInterfaces.list[i];
+            data.push([intf.interfaceId.toString(), intf.name]);
         }
 
-        if (systemDev) {
-            data.push(['tun0', 'OpenVPN']);
-        } else {
-            data.push(['250', 'OpenVPN']); // 0xfa
-            data.push(['251', 'L2TP']); // 0xfb
-            data.push(['252', 'Xauth']); // 0xfc
-            data.push(['253', 'GRE']); // 0xfd
-        }
         if (wanMatchers) {
             data.unshift(['wan', 'Any WAN'.t()]);
             data.unshift(['non_wan', 'Any Non-WAN'.t()]);
@@ -403,9 +399,6 @@ Ext.define('Ung.util.Util', {
             data.unshift(['any', 'Any'.t()]);
         }
         return data;
-    },
-    getInterfaceList: function (wanMatchers, anyMatcher) {
-        return Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
     },
 
     bytesToMBs: function(value) {
@@ -418,16 +411,16 @@ Ext.define('Ung.util.Util', {
             'wan': 'Any WAN'.t(),
             'non_wan': 'Any Non-WAN'.t(),
             'any': 'Any'.t(),
-            '250': 'OpenVPN',
-            '251': 'L2TP',
-            '252': 'Xauth',
-            '253': 'GRE'
         };
         var i, intf;
 
         for (i = 0; i < rpc.networkSettings.interfaces.list.length; i += 1) {
             intf = rpc.networkSettings.interfaces.list[i];
             map[intf.systemDev] = intf.name;
+            map[intf.interfaceId] = intf.name;
+        }
+        for (i = 0; i < rpc.networkSettings.virtualInterfaces.list.length; i += 1) {
+            intf = rpc.networkSettings.virtualInterfaces.list[i];
             map[intf.interfaceId] = intf.name;
         }
         return map;
