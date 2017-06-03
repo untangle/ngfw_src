@@ -8,7 +8,7 @@
             "autoFormatValue": "false",
             "column": "c_server_addr",
             "operator": "!=",
-            "value": "c_client_addr"
+            "value": "s_server_addr"
         }
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_addr","protocol","c_client_port","c_server_addr","s_server_addr","s_server_port"],
