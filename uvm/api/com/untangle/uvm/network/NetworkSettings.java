@@ -29,6 +29,7 @@ public class NetworkSettings implements Serializable, JSONString
     private Integer version;
 
     private List<InterfaceSettings> interfaces = null;
+    private List<InterfaceSettings> virtualInterfaces = null;
     private List<DeviceSettings> devices = null;
     private List<PortForwardRule> portForwardRules = null;
     private List<NatRule> natRules = null;
@@ -82,6 +83,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
     public void setInterfaces( List<InterfaceSettings> newValue ) { this.interfaces = newValue; }
+
+    public List<InterfaceSettings> getVirtualInterfaces() { return this.virtualInterfaces; }
+    public void setVirtualInterfaces( List<InterfaceSettings> newValue ) { this.virtualInterfaces = newValue; }
 
     public List<DeviceSettings> getDevices() { return this.devices; }
     public void setDevices( List<DeviceSettings> newValue ) { this.devices = newValue; }

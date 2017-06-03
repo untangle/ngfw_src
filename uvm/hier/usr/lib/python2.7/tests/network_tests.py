@@ -451,6 +451,7 @@ class NetworkTests(unittest2.TestCase):
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        print wan_IP
         device_in_office = global_functions.is_in_office_network(wan_IP)
 
         if run_ftp_inbound_tests == None:
@@ -851,7 +852,7 @@ class NetworkTests(unittest2.TestCase):
         wan_count = 0
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
-            if interface['isWan'] and interface['disabled'] == False:
+            if interface['isWan'] and not interface.get('disabled') == False:
                 wan_count += 1
         
         if (wan_count > 1):
@@ -917,7 +918,7 @@ class NetworkTests(unittest2.TestCase):
         i=0
         interfaceNotFound = True
         for interface in netsettings['interfaces']['list']:
-            if (interface['v4ConfigType'] == "STATIC" and not netsettings['interfaces']['list'][i]['disabled']):
+            if (interface['v4ConfigType'] == "STATIC" and not netsettings['interfaces']['list'][i].get('disabled')):
                 interfaceNotFound = False
                 break
             i += 1
