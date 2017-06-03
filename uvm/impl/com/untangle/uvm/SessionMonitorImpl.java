@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMonitor;
@@ -465,9 +467,14 @@ public class SessionMonitorImpl implements SessionMonitor
         BufferedReader br = null;
         String line;
         LinkedList<SessionMonitorEntry> list = new LinkedList<SessionMonitorEntry>();
+        String conntrackFilename;
+        if ( Files.exists(Paths.get("/proc/net/ip_conntrack")) )
+            conntrackFilename = "/proc/net/ip_conntrack";
+        else
+            conntrackFilename = "/proc/net/nf_conntrack";
         
         try {
-            br = new BufferedReader(new FileReader("/proc/net/ip_conntrack"));
+            br = new BufferedReader(new FileReader(conntrackFilename));
             while ((line = br.readLine()) != null) {
                 try {
                     if ( logger.isDebugEnabled() )

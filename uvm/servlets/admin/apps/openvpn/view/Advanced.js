@@ -46,6 +46,7 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Port'.t(),
+            fieldIndex: 'listenPort',
             labelWidth: 180,
             bind: '{settings.port}'
         }, {
