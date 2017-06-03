@@ -729,7 +729,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                int interfaceId = nextFreeInterfaceId( netSettings, 1 );
+                int interfaceId = getNextFreeInterfaceId( netSettings, 1 );
                 interfaceSettings.setInterfaceId( interfaceId );
                 try {
                     interfaceSettings.setName("Interface " + GREEK_NAMES[interfaceId-1]);
@@ -1333,7 +1333,7 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("VLAN parent missing on VLAN interface");
 
             if ( intf.getInterfaceId() < 0 )
-                intf.setInterfaceId( nextFreeInterfaceId( networkSettings, 100 ) );
+                intf.setInterfaceId( getNextFreeInterfaceId( networkSettings, 100 ) );
             
             InterfaceSettings parent = null;
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
@@ -2015,18 +2015,6 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
-    {
-        if (netSettings == null)
-            return min;
-        int free = min;
-        for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
-            if ( free <= intfSettings.getInterfaceId() )
-                free = intfSettings.getInterfaceId() + 1;
-        }
-        return free;
-    }
-
     private LinkedList<String> getEthernetDeviceNames()
     {
         ExecManagerResult result;
@@ -2411,6 +2399,40 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         return primaryAddressStr + ":" + httpsPortStr;
+    }
+
+    /**
+     * Provide the first free interface ID higher than the specified minimum
+     *
+     * @param netSettings - the network settings to use to check for a free ID
+     * @param minimum - the minimum ID. It will start looking for a free ID at this minimum
+     * @return the next available ID greater than or equal to minimum, or -1 if not found.
+     */
+    public int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum)
+    {
+        if (netSettings == null)
+            return minimum;
+        int freeId;
+        for (freeId = minimum ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
+            boolean found = false;
+            for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
+                if ( freeId == intfSettings.getInterfaceId() ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) continue;
+            for (InterfaceSettings intfSettings : netSettings.getVirtualInterfaces()) {
+                if ( freeId == intfSettings.getInterfaceId() ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) continue;
+            return freeId;
+        }
+        logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
+        return -1;
     }
 
     private void convertSettingsV6()
