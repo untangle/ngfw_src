@@ -413,6 +413,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         { displayName: 'Directory Connector', name: 'directory-connector'},
                         { displayName: 'IPsec VPN', name: 'ipsec-vpn'},
                         { displayName: 'OpenVPN', name: 'openvpn'},
+                        { displayName: 'Tunnel VPN', name: 'tunnel-vpn'},
                         { displayName: 'Configuration Backup', name: 'configuration-backup'},
                         { displayName: 'Branding Manager', name: 'branding-manager'},
                         { displayName: 'Live Support', name: 'live-support'}];
