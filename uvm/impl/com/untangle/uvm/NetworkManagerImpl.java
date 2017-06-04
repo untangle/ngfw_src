@@ -426,6 +426,9 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public boolean isWanInterface( int interfaceId )
     {
+        if ( interfaceId < 0 )
+            return false;
+
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
         if ( intfSettings == null ) {
             logger.warn("Unknown interface: " + interfaceId, new Exception());

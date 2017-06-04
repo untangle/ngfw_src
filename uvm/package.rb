@@ -118,7 +118,7 @@ end
 [ 'ad-blocker', 'application-control', 'application-control-lite',
   'bandwidth-control', 'branding-manager', 'captive-portal',
   'configuration-backup', 'directory-connector', 'firewall',
-  'intrusion-prevention', 'ipsec-vpn', 'live-support', 'openvpn',
+  'intrusion-prevention', 'ipsec-vpn', 'live-support', 'openvpn', 'tunnel-vpn',
   'phish-blocker', 'policy-manager', 'reports', 'spam-blocker',
   'spam-blocker-lite', 'ssl-inspector', 'virus-blocker',
   'virus-blocker-lite', 'wan-balancer', 'wan-failover', 'web-cache',
