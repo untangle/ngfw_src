@@ -327,7 +327,6 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
-            hidden: true,
             filter: {
                 type: 'string' // should be list
             }
