@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-intrusion-prevention-variables',
-    // itemId: 'variables',
+    itemId: 'variables',
 
     controller: 'unintrusionvariablesgrid',
 
