@@ -277,17 +277,12 @@ Ext.define('Ung.view.apps.AppsController', {
 
 
         var appVm = vm.getView().down('#app_' + record.get('name')).getViewModel();
-        appVm.set('installing', true);
+        appVm.set({
+            installing: true,
+            parentPolicy: null
+        });
 
         record.set('extraCls', 'progress');
-
-        // if (record.get('type') === 'FILTER' && !me.getView().down('#app_' + record.get('name'))) {
-        //     vm.getStore('installedApps').add(record);
-        // }
-
-        // if (record.get('type') === 'SERVICE') {
-        //     vm.getStore('installedServices').add(record);
-        // }
 
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
