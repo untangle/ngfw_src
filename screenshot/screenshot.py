@@ -99,36 +99,71 @@ class WebBrowser:
         # print url
         self.driver.get(url)
 
-    def wait_for_progressbar(self):
+    def wait_for_load(self):
         """
-        Wait for all progress bars to be hidden
+        Wait for everything to be loaded
         """
         last_progressbar_count = 0
         max_sleep = 20
         while max_sleep > 0:
-            elements = self.driver.find_elements_by_css_selector("div[id^=loadmask][role=progressbar]")
-            if len(elements) != last_progressbar_count:
-                last_progressbar_count = len(elements)
+            progressbars = self.driver.find_elements_by_css_selector("div[id^=loadmask][role=progressbar]")
+            if len(progressbars) != last_progressbar_count:
+                last_progressbar_count = len(progressbars)
                 continue
 
             all_none_displayed = True
-            for element in elements:
+            for progressbar in progressbars:
                 try:
-                    style = element.get_attribute("style")
+                    style = progressbar.get_attribute("style")
                     if not "display: none;" in style:
                         all_none_displayed = False
                 except Exception:
+                    if Debug:
+                        print "Problem getting progressbar attribute"
+                    all_none_displayed = False
                     pass
+
+            images = self.driver.find_elements_by_css_selector("img")
+            for image in images:
+                try:
+                    if image.get_attribute("complete") is None:
+                        if Debug:
+                            print "Waiting for image " + image_get_attribute("name")
+                        all_none_displayed = False
+                except Exception:
+                    if Debug:
+                        print "Problem getting image attribute"
+                    all_none_displayed = False
+                    pass
+
             if all_none_displayed is True:
+                return True
                 break
             time.sleep(.5)
             max_sleep -= 1
+        return False
 
     def crop(self, screen, searches, matches):
 
-        if len(searches) != len(matches):
-            print "searches length != matches length"
-            return False
+        # /html[@class='x-viewport']/body[@id='ext-element-1']/div[@id='ext-comp-1009-bodyWrap']/div[@id='ext-comp-1009-body']/div[@id='ung-sessions-1237']
+        # /div[@id='ung-sessions-1237-bodyWrap']/div[@id='toolbar-1334']/div[@id='toolbar-1334-innerCt']
+        # elements = self.driver.find_elements_by_xpath("html/body/div/div/div/div/div[contains(.,'toolbar-')]")
+        # elements = self.driver.find_elements_by_xpath("html/body/div/div/div/div/div")
+        # print len(elements)
+        # for element in elements:
+        #     # print element
+        #     if "toolbar-" in element.get_attribute("id"):
+        #         print self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', element)
+        #         print "width=" + str(element.size['width']) + ", height=" + str(element.size['height'])
+
+        #         # print element.get_attribute("id")
+        #         # print element.get_attribute("role")
+        #         # print element.get_attribute("class")
+        #         # print
+        # return
+        # if len(searches) != len(matches):
+        #     print "searches length != matches length"
+        #     return False
 
         url = screen["url"]
         replacements = {}
@@ -143,9 +178,13 @@ class WebBrowser:
             images[index] = None
 
             for key in value.keys():
+                if key == "height":
+                    continue
+
                 for rkey in replacements.keys():
                     if rkey in value[key]:
                         value[key] = value[key].replace(rkey, replacements[rkey]) 
+
                 if type(value[key]) in [str, unicode]:
                     value[key] = re.compile( ur''+value[key].replace("\\\\", "\\"), re.UNICODE )
 
@@ -169,6 +208,7 @@ class WebBrowser:
 
                     for index, value in enumerate(matches):
                         if not images[index] is None:
+                            # Already found it
                             continue
 
                         match = True
@@ -177,13 +217,23 @@ class WebBrowser:
                                 if value[key].search( element.get_attribute(key[1:]) ) is not None:
                                     match = False
                                     break
+                            elif key == "height":
+                                if height != value[key]:
+                                    match = False
+                                    break
                             else:
                                 if value[key].search( element.get_attribute(key) ) is None:
                                     match = False
                                     break
 
                         if match is True:
-                            # print "cropping " + element.get_attribute("id")
+                            if Debug:
+                                print "matched element="
+                                for key in value.keys():
+                                    if key[0] == "!":
+                                        print key[1:] + "=" + str(element.get_attribute(key[1:]))
+                                    else:
+                                        print key + "=" + str(element.get_attribute(key))
                             x = int( element.location['x'] )
                             y = int( element.location['y'] )
                             # print ( x, y, x + width, y + height )
@@ -209,7 +259,9 @@ class WebBrowser:
         if all_cropped_exists is False:
             return False
 
-        # print images
+        if Debug:
+            print "images="
+            print images
         # print max_width
         # print max_height
 
@@ -246,6 +298,7 @@ def usage():
     print "usage"
 
 def main(argv):
+    global Debug
     want_screen_name = None
     want_resolution = None
 
@@ -278,7 +331,8 @@ def main(argv):
     total_screens_created = 0
     for resolution in settings["resolutions"]:
         if ( want_resolution is not None ) and ( resolution != want_resolution ):
-            print "Skipping resolution: "+resolution
+            if Debug is True:
+                print "Skipping resolution: "+resolution
             continue
         print "Using resolution: "+resolution
 
@@ -292,7 +346,8 @@ def main(argv):
         for screen in settings["screens"]:
             total_screens += 1
             if want_screen_name is not None and want_screen_name not in screen["name"]:
-                print "Skipping screen: " + screen["name"] 
+                # if Debug is True:
+                #     print "Skipping screen: " + screen["name"] 
                 continue
 
             start = timer()
@@ -300,7 +355,9 @@ def main(argv):
             sys.stdout.flush()
 
             web_browser.go(base_url + screen["url"])
-            web_browser.wait_for_progressbar()
+            if web_browser.wait_for_load() is False:
+                print "Could not load"
+                continue
 
             start = timer()
             success = True
