@@ -91,6 +91,13 @@ public interface UvmContext
     DaemonManager daemonManager();
 
     /**
+     * Get the PlatformManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    PlatformManager platformManager();
+
+    /**
      * The LocalDirectory for managing/authenticating users
      *
      * @return the local directory
