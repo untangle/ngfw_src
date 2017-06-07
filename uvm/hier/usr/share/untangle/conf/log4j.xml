@@ -110,7 +110,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.PlatformManagerImpl">
+  <category name="com.untangle.uvm.HostsFileManagerImpl">
     <priority value="INFO"/>
   </category>
 

@@ -91,11 +91,11 @@ public interface UvmContext
     DaemonManager daemonManager();
 
     /**
-     * Get the PlatformManager singleton for this instance
+     * Get the HostsFileManager singleton for this instance
      *
      * @return the singleton
      */
-    PlatformManager platformManager();
+    HostsFileManager hostsFileManager();
 
     /**
      * The LocalDirectory for managing/authenticating users
