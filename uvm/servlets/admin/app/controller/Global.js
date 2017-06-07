@@ -186,7 +186,8 @@ Ext.define('Ung.controller.Global', {
                                     props: appProps,
                                     license: policy.get('licenseMap').map[app],
                                     urlName: app,
-                                    runState: result.getRunState()
+                                    runState: result.getRunState(),
+                                    targetState: result.getAppSettings().targetState
                                 }
                             },
                             listeners: {

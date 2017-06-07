@@ -18,39 +18,39 @@ Ext.define('Ung.cmp.AppState', {
         formulas: {
             appState: function (get) {
                 var me = this;
-                var expectedState = get('instance.targetState');
-                var actualState = get('runState');
+                var targetState = get('targetState');
+                var runState = get('runState');
 
-                if ( ( expectedState === 'RUNNING' ) &&
-                     ( actualState == 'RUNNING' ) ) {
+                if ( ( targetState === 'RUNNING' ) &&
+                     ( runState == 'RUNNING' ) ) {
                     return Ext.String.format('{0} is enabled.'.t(), get('props.displayName'));
-                }else if( ( expectedState == 'RUNNING' ) &&
-                    ( actualState != expectedState ) ){
+                }else if( ( targetState == 'RUNNING' ) &&
+                    ( runState != targetState ) ){
                     return Ext.String.format('{0} should be enabled but is not active.'.t(), get('props.displayName'));
                 }
                 return Ext.String.format('{0} is disabled.'.t(), get('props.displayName'));
             },
             appStateIcon: function (get) {
-                var expectedState = get('instance.targetState');
-                var actualState = get('runState');
-                if( !expectedState ||
-                    ( actualState != expectedState ) ){
+                var targetState = get('targetState');
+                var runState = get('runState');
+                if( !targetState ||
+                    ( runState != targetState ) ){
                     return 'fa-orange';
                 }
-                if ( actualState === 'RUNNING') {
+                if ( runState === 'RUNNING') {
                     return 'fa-green';
                 }
                 return 'fa-flip-horizontal fa-gray';
             },
             appStateTitle: function (get) {
-                var expectedState = get('instance.targetState');
-                var actualState = get('runState');
+                var targetState = get('targetState');
+                var runState = get('runState');
                 var icon = '<i class="fa fa-power-off fa-gray"></i>';
-                if (!expectedState) {
+                if (!targetState) {
                     icon =  '<i class="fa fa-power-off fa-orange"></i>';
                 }
-                if ( ( actualState === 'RUNNING' ) &&
-                     ( expectedState === 'RUNNING' ) ) {
+                if ( ( runState === 'RUNNING' ) &&
+                     ( targetState === 'RUNNING' ) ) {
                     icon = '<i class="fa fa-power-off fa-green"></i>';
                 }
                 return icon + ' ' + 'Power'.t();
@@ -70,8 +70,8 @@ Ext.define('Ung.cmp.AppState', {
             var me = this,
                 appManager = me.getView().up('#appCard').appManager,
                 vm = me.getViewModel(),
-                expectedState = vm.get('instance.targetState'),
-                actualState = vm.get('runState');
+                targetState = vm.get('targetState'),
+                runState = vm.get('runState');
 
             btn.setDisabled(true);
 
@@ -87,7 +87,7 @@ Ext.define('Ung.cmp.AppState', {
                             this.runStateTask.delay( this.runStateDelay );
                         }else{
                             this.getViewModel().set( 'runState', result );
-                            this.getViewModel().set( 'instance.targetState', this.runStateWantState );
+                            this.getViewModel().set( 'targetState', this.runStateWantState );
                             this.runStateButton.setDisabled(false);
                             // force reload Apps after start/stop within App Settings
                             Ung.app.getGlobalController().getAppsView().getController().getApps();
@@ -99,8 +99,8 @@ Ext.define('Ung.cmp.AppState', {
             me.runStateWait = me.runStateMaxWait;
             me.runStateButton = btn;
 
-            if ( ( expectedState === 'RUNNING' ) &&
-                 ( actualState === 'RUNNING' ) ) {
+            if ( ( targetState === 'RUNNING' ) &&
+                 ( runState === 'RUNNING' ) ) {
                 // stop app
                 me.runStateWantState = 'INITIALIZED';
                 appManager.stop(function (result, ex) {
@@ -147,7 +147,7 @@ Ext.define('Ung.cmp.AppState', {
         html: '<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>',
         hidden: true,
         bind: {
-            hidden: '{instance.targetState}'
+            hidden: '{targetState}'
         }
     }]
 });
