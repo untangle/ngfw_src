@@ -25,7 +25,6 @@ Ext.define('Ung.view.apps.AppsController', {
         // maybe there is a better way to get all the available apps regardless of policy
         var initPolicy = rpc.appsViews[0]; // take the first policy (default)
         // build add all the apps containers (rack items) and only update them when based on selected policy
-        // console.log(rpc.appsViews);
 
         var apps = [], appCmps = [], srvCmps = [];
 
@@ -45,7 +44,6 @@ Ext.define('Ung.view.apps.AppsController', {
         });
 
         Ext.Array.each(apps, function (app) {
-            app.helpSource = rpc.helpUrl + '?source=' + app.displayName.toLowerCase().replace(/ /g, '_') + '&' + Util.getAbout();
             if (app.type === 'FILTER') {
                 appCmps.push({
                     xtype: me.getView().itemType,
@@ -93,8 +91,10 @@ Ext.define('Ung.view.apps.AppsController', {
                     targetState: instance.targetState,
                     parentPolicy: parentPolicy,
                     metrics: metrics,
-                    route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
+                    route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name'),
+                    helpSource: rpc.helpUrl + '?fragment=apps/' + policy.policyId + '/' + appVm.get('app.name').replace(/ /g, '-') + '&' + Util.getAbout()
                 });
+                // console.log(appVm.get('helpSource'));
                 // appVm.instanceId =  instance.id;
                 // appVm.targetState =  instance.targetState;
             } else {
@@ -122,7 +122,6 @@ Ext.define('Ung.view.apps.AppsController', {
             app.desc = Util.appDescription[app.name];
             app.route = (app.type === 'FILTER') ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name;
             // app.parentPolicy = null;
-            app.helpSource = rpc.helpUrl + '?source=' + app.name.replace(/-/g, '_') + '&' + Util.getAbout();
             if (app.type === 'FILTER') {
                 installableApps.push(app);
             } else {

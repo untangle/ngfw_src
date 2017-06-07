@@ -3,7 +3,7 @@ Ext.define('Ung.config.events.view.Triggers', {
     alias: 'widget.config-events-triggers',
     itemId: 'triggers',
     title: 'Triggers'.t(),
-    helpSource: 'events_triggers',
+
     bodyPadding: 10,
     layout: { type: 'vbox', align: 'stretch' },
 

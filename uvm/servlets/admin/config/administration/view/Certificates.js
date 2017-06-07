@@ -2,7 +2,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-administration-certificates',
     itemId: 'certificates',
-    helpSource: 'administration_certificates',
+
     viewModel: {
         formulas: {
             rootCertValidStarting: function (get) {

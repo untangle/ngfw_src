@@ -87,7 +87,7 @@ Ext.define('Ung.view.apps.RackItem', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    href: '{app.helpSource}',
+                    href: '{helpSource}',
                     hidden: '{parentPolicy}',
                     disabled: '{installing}'
                 }

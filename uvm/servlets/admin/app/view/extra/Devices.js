@@ -274,11 +274,6 @@ Ext.define('Ung.view.extra.Devices', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/devices',
         hrefTarget: '_self'
-    }, {
-        xtype: 'button',
-        text: 'Help'.t(),
-        iconCls: 'fa fa-question-circle',
-        href: rpc.helpUrl + '?source=devices&' + Util.getAbout()
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',

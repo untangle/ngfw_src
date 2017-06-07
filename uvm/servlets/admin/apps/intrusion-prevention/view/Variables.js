@@ -8,7 +8,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     name: 'variables',
 
     region: 'center',
-    // helpSource: 'intrusion_prevention_variables',
+
     title: "Variables".t(),
     sortableColumns: true,
 

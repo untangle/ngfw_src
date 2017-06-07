@@ -1,7 +1,7 @@
 Ext.define('Ung.config.upgrade.Main', {
     extend: 'Ung.cmp.ConfigPanel',
     alias: 'widget.config-upgrade',
-    helpSource: 'upgrade',
+
     /* requires-start */
     requires: [
         'Ung.config.upgrade.MainController',
