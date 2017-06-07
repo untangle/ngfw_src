@@ -150,5 +150,32 @@
     cursor: pointer;
     position: relative !important;
     margin: 10px;
+    &.installing {
+        .state {
+            display: none;
+        }
+        .loader {
+            display: block;
+        }
+        img {
+            opacity: 0.1;
+        }
+        .x-mask {
+            opacity: 0;
+        }
+    }
+    &.from-parent {
+        .state {
+            opacity: 0.5;
+        }
+        img {
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+            opacity: 0.2;
+        }
+        .x-mask {
+            opacity: 0;
+        }
+    }
 }
 
