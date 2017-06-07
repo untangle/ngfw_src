@@ -1,9 +1,14 @@
 {
+    "lauthentication": {
+        "url": "https://192.168.252.50/",
+        "user": "admin",
+        "password": "Passwd123!"
+    },
     "authentication": {
         "url": "https://demo.untangle.com/"
     },
     "resolutions": [
-        "1600x900"
+        "1280x800"
     ],
     "types": {
         "monitor-nosave": [{
@@ -14,7 +19,9 @@
             ],
             "matches": [{
                 "id": "^toolbar-\\d+$",
-                "class": "x-toolbar-docked-top"
+                "class": "x-toolbar-docked-top",
+                "!class": "x-toolbar-navigation",
+                "height": 27
             },{
                 "id": "^%path%-\\d+-body$",
                 "class": "x-panel-body"
@@ -29,7 +36,9 @@
             ],
             "matches": [{
                 "id": "^toolbar-\\d+$",
-                "class": "x-toolbar-docked-top"
+                "class": "x-toolbar-docked-top",
+                "!class": "x-toolbar-navigation",
+                "height": 27
             },{
                 "id": "^%path%-\\d+-body$",
                 "class": "x-panel-body"
@@ -87,14 +96,17 @@
         }]
     },
     "screens": [{
-        "name": "dashboard",
+        "name": "main_dashboard",
         "url": "admin/index.do#"
     },{
-        "name": "config",
+        "name": "main_config",
         "url": "admin/index.do#config"
     },{
-        "name": "apps",
+        "name": "main_apps",
         "url": "admin/index.do#apps/1"
+    },{
+        "name": "main_reports",
+        "url": "admin/index.do#reports"
     },{
         "name": "config_network_interfaces",
         "url": "/admin/index.do#config/network/interfaces",
