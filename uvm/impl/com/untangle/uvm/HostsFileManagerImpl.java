@@ -14,40 +14,45 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.PlatformManager;
+import com.untangle.uvm.HostsFileManager;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
 
 /**
- * This class provides a common place and mechanisms for performing periodic
- * tasks, and setting callback hooks for managing resources that are shared with
- * all the applications and services on the platform.
+ * This class uses a Timer and a NetworkSettings HookCallback to watch for
+ * changes to any of the interface status files. When changes are detected, we
+ * refresh /etc/hosts.untangle which is loaded by dnsmasq. This file contains
+ * an IP to our configured hostname entry for every interface on the server.
+ * It was originally created to suppor the Captive Portal redirect using
+ * hostname instead of IP feature. The dnsmasq daemon is configured to
+ * give the best matching IP in response to a client query based on the interface
+ * on which the query was received.
  * 
  * @author mahotz
  * 
  */
 
-public class PlatformManagerImpl extends TimerTask implements PlatformManager
+public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final Timer timer = new Timer("PlatformManager", true);
+    private final Timer timer = new Timer("HostsFileManager", true);
 
-    private static final String PLATFORM_HOSTS_UPDATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-update-platform-hosts";
-    private static final String PLATFORM_HOSTS_RELOAD_COMMAND = "killall -HUP dnsmasq";
+    private static final String HOSTS_FILE_UPDATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-update-hosts-file";
+    private static final String HOSTS_FILE_RELOAD_COMMAND = "killall -HUP dnsmasq";
 
-    private PlatformManagerHookCallback platformManagerHookCallback;
-    private long platformHostsFileTimestamp = 0;
+    private HostsFileManagerHookCallback hostsFileManagerHookCallback;
+    private long latestTimestamp = 0;
 
-    public PlatformManagerImpl()
+    public HostsFileManagerImpl()
     {
-        platformManagerHookCallback = new PlatformManagerHookCallback(this);
+        hostsFileManagerHookCallback = new HostsFileManagerHookCallback(this);
 
         // schedule our fixed timer to handle periodic tasks
         timer.schedule(this, 1000, 60000);
-        logger.info("The PlatformManager has been initialized.");
+        logger.info("The HostsFileManager has been initialized.");
 
         // install a callback for network settings changes
-        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, platformManagerHookCallback);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, hostsFileManagerHookCallback);
     }
 
     /**
@@ -58,30 +63,30 @@ public class PlatformManagerImpl extends TimerTask implements PlatformManager
 
     public synchronized void run()
     {
-        if (logger.isDebugEnabled()) logger.debug("The PlatformManager timer task is starting");
+        if (logger.isDebugEnabled()) logger.debug("The HostsFileManager timer task is starting");
 
-        refreshPlatformHostsFile();
+        refreshHostsFile();
 
-        if (logger.isDebugEnabled()) logger.debug("The PlatformManager timer task has finished");
+        if (logger.isDebugEnabled()) logger.debug("The HostsFileManager timer task has finished");
     }
 
     /**
      * This class implements our network settings change hook callback. It will
      * be called whenever network settings are changed. In response we will call
-     * the run function of our main platform manager.
+     * the same run function called by the Timer.
      */
-    private class PlatformManagerHookCallback implements HookCallback
+    private class HostsFileManagerHookCallback implements HookCallback
     {
-        private PlatformManagerImpl owner;
+        private HostsFileManagerImpl owner;
 
-        PlatformManagerHookCallback(PlatformManagerImpl app)
+        HostsFileManagerHookCallback(HostsFileManagerImpl app)
         {
             this.owner = app;
         }
 
         public String getName()
         {
-            return "platform-manager-network-settings-change-hook";
+            return "hosts-file-manager-network-settings-change-hook";
         }
 
         public void callback(Object o)
@@ -92,7 +97,7 @@ public class PlatformManagerImpl extends TimerTask implements PlatformManager
             }
 
             NetworkSettings settings = (NetworkSettings) o;
-            if (logger.isDebugEnabled()) logger.debug("Network settings changed. Running platform tasks.");
+            if (logger.isDebugEnabled()) logger.debug("Network settings changed. Calling update function.");
 
             // call our timer run function to execute everything immediately
             owner.run();
@@ -107,9 +112,9 @@ public class PlatformManagerImpl extends TimerTask implements PlatformManager
      * hostname resolves to an appropriate IP address based on the interface
      * where the client traffic was received.
      */
-    public void refreshPlatformHostsFile()
+    public void refreshHostsFile()
     {
-        long mostRecentTimestamp = 0;
+        long workingTimestamp = 0;
         int changeCounter = 0;
 
         if (logger.isDebugEnabled()) logger.debug("Scanning interface status files");
@@ -119,30 +124,30 @@ public class PlatformManagerImpl extends TimerTask implements PlatformManager
             File[] devFileList = devFilePath.listFiles();
 
             for (int i = 0; i < devFileList.length; i++) {
-                if (devFileList[i].lastModified() > platformHostsFileTimestamp) {
+                if (devFileList[i].lastModified() > latestTimestamp) {
                     if (logger.isDebugEnabled()) logger.debug("New or updated file detected: " + devFileList[i].getAbsolutePath());
                     changeCounter += 1;
-                    if (devFileList[i].lastModified() > mostRecentTimestamp) mostRecentTimestamp = devFileList[i].lastModified();
+                    if (devFileList[i].lastModified() > workingTimestamp) workingTimestamp = devFileList[i].lastModified();
                 }
             }
         } catch (Exception exn) {
             logger.warn("Exception reading interface status files", exn);
-            platformHostsFileTimestamp = 0;
+            latestTimestamp = 0;
             return;
         }
 
         // if no status files have been added or changed we are finished
         if (changeCounter == 0) return;
 
-        if (logger.isDebugEnabled()) logger.debug("Detected " + Integer.toString(changeCounter) + " new or modified interface status files. Updating platform hosts file");
+        if (logger.isDebugEnabled()) logger.debug("Detected " + Integer.toString(changeCounter) + " new or modified interface status files. Updating hosts file");
 
         // changes detected so use the timestamp from the newest
-        platformHostsFileTimestamp = mostRecentTimestamp;
+        latestTimestamp = workingTimestamp;
 
-        // call the script to update the platform hosts file
-        UvmContextFactory.context().execManager().exec(PLATFORM_HOSTS_UPDATE_SCRIPT);
+        // call the script to update the hosts file
+        UvmContextFactory.context().execManager().exec(HOSTS_FILE_UPDATE_SCRIPT);
 
-        // execute the command to activate the updated platform hosts file
-        UvmContextFactory.context().execManager().exec(PLATFORM_HOSTS_RELOAD_COMMAND);
+        // execute the command to activate the updated hosts file
+        UvmContextFactory.context().execManager().exec(HOSTS_FILE_RELOAD_COMMAND);
     }
 }
