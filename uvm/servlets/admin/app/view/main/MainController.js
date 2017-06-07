@@ -123,5 +123,11 @@ Ext.define('Ung.view.main.MainController', {
             vm.set('reportsRunning', rpc.appManager.app('reports').getRunState() === 'RUNNING');
         }
         vm.notify();
+    },
+
+    helpHandler: function (btn) {
+        var helpUrl = rpc.helpUrl + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout();
+        window.open(helpUrl);
     }
+
 });

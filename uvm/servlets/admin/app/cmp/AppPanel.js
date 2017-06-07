@@ -37,12 +37,7 @@ Ext.define('Ung.cmp.AppPanel', {
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
-        // border: false,
-        items: [{
-            text: '<strong>' + 'Help'.t() + '</strong>',
-            itemId: 'helpBtn',
-            iconCls: 'fa fa-question-circle fa-lg'
-        },  '->', {
+        items: ['->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'setSettings'
@@ -62,21 +57,8 @@ Ext.define('Ung.cmp.AppPanel', {
             }
         },
 
-        tabchange: function (tabPanel, newCard) {
-            var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
-            if (newCard.getItemId() !== 'status') {
-                helpSource += '_' + newCard.getItemId();
-            }
-            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
-        },
-
         afterrender: function (tabPanel) {
             var vm = tabPanel.getViewModel();
-            var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
-            var currentCard = tabPanel.getActiveTab();
-            if (currentCard.getItemId() !== 'status') {
-                helpSource += '_' + currentCard.getItemId();
-            }
 
             // add policy name in the tabbar, needs a small delay for policiestree to be available
             Ext.defer(function () {
@@ -88,7 +70,6 @@ Ext.define('Ung.cmp.AppPanel', {
                 }
 
             }, 500);
-            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
         }
     }
 });

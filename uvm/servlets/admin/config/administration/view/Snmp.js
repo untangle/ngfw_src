@@ -3,7 +3,7 @@ Ext.define('Ung.config.administration.view.Snmp', {
     alias: 'widget.config-administration-snmp',
     withValidation: true, // requires validation on save
     itemId: 'snmp',
-    helpSource: 'administration_snmp',
+
     viewModel: {
         formulas: {
             snmpEnabled: {

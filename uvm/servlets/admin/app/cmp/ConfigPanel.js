@@ -31,14 +31,8 @@ Ext.define('Ung.cmp.ConfigPanel', {
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
-        // border: false,
-        items: [{
-            text: '<strong>' + 'Help'.t() + '</strong>',
-            itemId: 'helpBtn',
-            iconCls: 'fa fa-question-circle fa-lg'
-        }, '->', {
+        items: ['->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
-            // scale: 'large',
             iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
         }]
@@ -48,14 +42,6 @@ Ext.define('Ung.cmp.ConfigPanel', {
         // generic listener for all tabs in Apps, redirection
         beforetabchange: function (tabPanel, newCard, oldCard) {
             Ung.app.redirectTo('#config/' + tabPanel.name + '/' + newCard.getItemId());
-        },
-
-        tabchange: function (tabPanel, newCard) {
-            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + newCard.helpSource + '&' + Util.getAbout());
-        },
-
-        afterrender: function (tabPanel) {
-            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + (tabPanel.getActiveTab().helpSource || tabPanel.helpSource) + '&' + Util.getAbout());
         }
     }
 

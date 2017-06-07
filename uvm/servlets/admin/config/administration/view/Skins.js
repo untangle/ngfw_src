@@ -2,7 +2,7 @@ Ext.define('Ung.config.administration.view.Skins', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-administration-skins',
     itemId: 'skins',
-    helpSource: 'administration_skins',
+
     viewModel: true,
     title: 'Skins'.t(),
 
