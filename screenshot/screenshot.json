@@ -274,8 +274,8 @@
         "url": "/admin/index.do#apps/1/web-filter/categories",
         "type": "app-tab"
     },{
-        "name": "apps_web_filter_sitelookup",
-        "url": "/admin/index.do#apps/1/web-filter/sitelookup",
+        "name": "apps_web_filter_site_lookup",
+        "url": "/admin/index.do#apps/1/web-filter/site_lookup",
         "type": "app-tab"
     },{
         "name": "apps_web_filter_block_sites",
