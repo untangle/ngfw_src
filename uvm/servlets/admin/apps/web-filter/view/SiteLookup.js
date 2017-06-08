@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.webfilter.view.SiteLookup', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-web-filter-sitelookup',
-    itemId: 'sitelookup',
+    itemId: 'site_lookup',
     title: 'Site Lookup'.t(),
     viewModel: true,
     bodyPadding: 10,
