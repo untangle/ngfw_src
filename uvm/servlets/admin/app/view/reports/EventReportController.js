@@ -61,6 +61,11 @@ Ext.define('Ung.view.reports.EventReportController', {
                         column.filter = 'string';
                     }
                 });
+                me.tableConfig.fields.forEach( function(field){
+                    if (!field.sortType ){
+                        field.sortType = 'asUnString';
+                    }
+                });
 
                 grid.tableConfig = me.tableConfig;
                 grid.setColumns(me.tableConfig.columns);
