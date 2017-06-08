@@ -13,22 +13,16 @@
 
 .rackitem {
     background: transparent url('/skins/modern-rack/images/admin/background_app.png') no-repeat;
-    // border-radius: 3px;
-    // box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
     .ttl {
         color: #F8F8F8;
-        img {
-            box-shadow: 1px 1px 1px 1px #333;
-        }
+        img { box-shadow: 1px 1px 1px 1px #333; }
         p {
             font-family: $custom-font-condensed;
             margin: 0;
             padding: 3px 10px;
             line-height: 0.8;
-            span {
-                text-shadow: none;
-            }
-            color: #CCC;
+            span { text-shadow: none; }
+            color: #999;
             font-weight: 100;
         }
         .name {
@@ -93,7 +87,7 @@
         background: #777;
         text-align: center;
         cursor: pointer;
-        margin-top: 20px;
+        margin-top: 24px;
         position: absolute;
         i {
             font-size: 16px;
@@ -121,8 +115,29 @@
             color: orange;
         }
     }
+}
 
-    &.dsbl {
+
+.rackitem {
+    .x-mask { opacity: 0; }
+    .loader {
+        left: auto;
+        right: 180px;
+    }
+    &.installing {
+        .ttl {
+            .name p {
+                color: #999;
+                text-shadow: none;
+            }
+            img {
+                -webkit-filter: grayscale(1);
+                filter: grayscale(1);
+                opacity: 0.5;
+            }
+        }
+    }
+    &.from-parent {
         .ttl {
             .name p {
                 color: #999;
@@ -142,14 +157,12 @@
 
 
 
-
-
-
 .simpleitem {
     display: inline-block;
     cursor: pointer;
     position: relative !important;
     margin: 10px;
+    .x-mask { opacity: 0; }
     &.installing {
         .state {
             display: none;
@@ -160,9 +173,6 @@
         img {
             opacity: 0.1;
         }
-        .x-mask {
-            opacity: 0;
-        }
     }
     &.from-parent {
         .state {
@@ -172,9 +182,6 @@
             -webkit-filter: grayscale(1);
             filter: grayscale(1);
             opacity: 0.2;
-        }
-        .x-mask {
-            opacity: 0;
         }
     }
 }
