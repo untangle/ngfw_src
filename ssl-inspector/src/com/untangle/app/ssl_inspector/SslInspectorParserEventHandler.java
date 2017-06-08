@@ -241,7 +241,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // no success result means something went haywire so we kill the session
         if (success == false) {
             // put something in the event log starting with any ssl message we extracted above
-            logDetail = sslProblem;
+            if (sslProblem != null) {
+                logDetail = ((clientSide ? "Client" : "Server") + " SSL decrypt exception: " + sslProblem);
+            }
             if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
