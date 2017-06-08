@@ -9,6 +9,8 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
 
+    copyAppendField: 'title',
+
     emptyRow: {
         javaClass: 'com.untangle.app.reports.EmailTemplate',
         title: '',
@@ -32,7 +34,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     columns: [{
         header: 'Id'.t(),
         width: 50,
-        dataIndex: 'templateId'
+        dataIndex: 'templateId',
+        renderer: function(value) {
+            return value < 0 ? 'new'.t() : value;
+        }
     }, {
         header: 'Title'.t(),
         dataIndex: 'title',
