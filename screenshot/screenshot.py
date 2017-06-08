@@ -21,6 +21,9 @@ from PIL import Image
 Debug = False
 
 class WebBrowser:
+    """ 
+    Start X, the chrome driver, and chromium
+    """
     service = None
     driver = None
 
@@ -53,30 +56,42 @@ class WebBrowser:
         )
         self.service.start()
 
+#                    "--ash-host-window-bounds=" + resolution,
         self.capabilities = {
             'chrome.binary': self.chrome_browser,
             'chromeOptions': {
                 "args" : [
                     "--no-sandbox",
-                    "--ash-host-window-bounds=" + resolution,
+                    "--kiosk",
                     "--user-data-dir=" + self.temp_directory
                 ]
             }
         }
         self.driver = webdriver.Remote( self.service.service_url, self.capabilities)
+        r = resolution.split("x")
+        self.driver.set_window_size( int(r[0]), int(r[1]) )
 
     def __del__(self):
+        """
+        Shut down chromium, chrome driver, and X.
+        """
         self.driver.quit()
         self.service.stop()
         os.system("/usr/bin/pkill -f \"" + self.xvfb_command + "\"")
 
     def auth_cookie_exists(self):
+        """
+        Check that authentication cookie exists
+        """
         for cookie in self.driver.get_cookies():
             if "auth-" in cookie["name"]:
                 return cookie
         return None
 
     def authenticate(self, url, username, password):
+        """
+        Authenticate
+        """
         self.go(url)
         usernameInput = self.driver.find_element_by_id("username")
         passwordInput = self.driver.find_element_by_id("password")
@@ -96,12 +111,16 @@ class WebBrowser:
             print "Unable to obtain authentication cookie"
 
     def go(self, url):
-        # print url
+        """
+        Open the specified URL
+        """
         self.driver.get(url)
 
     def wait_for_load(self):
         """
-        Wait for everything to be loaded
+        Wait for everything to be available:
+        -   Progressbars hidden
+        -   Image loads completed
         """
         last_progressbar_count = 0
         max_sleep = 20
@@ -143,28 +162,29 @@ class WebBrowser:
             max_sleep -= 1
         return False
 
-    def crop(self, screen, searches, matches):
+    def crop_by_dimension(self, x, y, height, width):
+        """
+        Crop an image by dimensions.
+        If height and/or width are "auto", use the image's resolution
+        """
+        self.driver.get_screenshot_as_file(self.temp_directory + "/temp_crop.png")
+        img = Image.open(self.temp_directory + "/temp_crop.png")
 
-        # /html[@class='x-viewport']/body[@id='ext-element-1']/div[@id='ext-comp-1009-bodyWrap']/div[@id='ext-comp-1009-body']/div[@id='ung-sessions-1237']
-        # /div[@id='ung-sessions-1237-bodyWrap']/div[@id='toolbar-1334']/div[@id='toolbar-1334-innerCt']
-        # elements = self.driver.find_elements_by_xpath("html/body/div/div/div/div/div[contains(.,'toolbar-')]")
-        # elements = self.driver.find_elements_by_xpath("html/body/div/div/div/div/div")
-        # print len(elements)
-        # for element in elements:
-        #     # print element
-        #     if "toolbar-" in element.get_attribute("id"):
-        #         print self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', element)
-        #         print "width=" + str(element.size['width']) + ", height=" + str(element.size['height'])
+        if height == "auto":
+            height = img.size[1]
 
-        #         # print element.get_attribute("id")
-        #         # print element.get_attribute("role")
-        #         # print element.get_attribute("class")
-        #         # print
-        # return
-        # if len(searches) != len(matches):
-        #     print "searches length != matches length"
-        #     return False
+        if width == "auto":
+            width = img.size[0]
 
+        self.cropped_image = img.crop( ( x, y, width, height ) )
+        return True
+
+    def crop_by_elements(self, searches, matches):
+        """
+        Crop by:
+        -   Searching for elements and pulling thsoe from screen shot.
+        -   Pasting together a new image from the cropped images.
+        """
         url = screen["url"]
         replacements = {}
         if "path" in screen:
@@ -279,12 +299,20 @@ class WebBrowser:
             self.cropped_image.paste(images[id], ( x, y, x + images[id].size[0], y + images[id].size[1]) )
             y = y + images[id].size[1]
 
+        del img
+
         return True
 
     def build_file_name_path(self, name):
+        """
+        Create a filename based on the specified name and resolution
+        """
         return self.temp_directory + "/" + self.resolution + "_" + name + ".png"
 
     def screenshot(self, name):
+        """
+        Create named image from current screenshot or cropped image if it exists.
+        """
         if self.cropped_image != None:
             self.cropped_image.save( self.build_file_name_path(name) )
             self.cropped_image = None
@@ -329,6 +357,7 @@ def main(argv):
     total_screens = 0
     total_screens_failed = 0
     total_screens_created = 0
+    total_time = 0
     for resolution in settings["resolutions"]:
         if ( want_resolution is not None ) and ( resolution != want_resolution ):
             if Debug is True:
@@ -363,8 +392,11 @@ def main(argv):
             success = True
             if "type" in screen:
                 for operation in settings["types"][screen["type"]]:
-                    if operation["action"] == "crop":
+                    if operation["action"] == "crop_by_elements":
                         success = web_browser.crop( screen, copy.deepcopy( operation["searches"] ), copy.deepcopy( operation["matches"] ) )
+                    elif operation["action"] == "crop_by_dimension":
+                        success = web_browser.crop_by_dimension( operation["x"], operation["y"], operation["height"], operation["width"] )
+
                     if success is False:
                         break
 
@@ -375,11 +407,12 @@ def main(argv):
                 total_screens_failed += 1
                 print "Cannot capture screen",
 
-            print str(timer() - start)
+            total_time += timer() - start
+            print str(timer() - start) + " (" + str(total_time) + ")"
 
         del web_browser
 
-    print "Total screens available: %d, failed: %d, created: %d" % ( total_screens, total_screens_failed, total_screens_created)
+    print "Total screens available: %d, failed: %d, created: %d, %ds" % ( total_screens, total_screens_failed, total_screens_created, total_time)
 
 if __name__ == "__main__":
     main( sys.argv[1:] )
