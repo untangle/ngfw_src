@@ -211,7 +211,7 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
             if( template.title == newValue){
                 conflict = true;
             }
-        })
+        });
         if( conflict ){
             control.setValidation("Another Email Template has this title".t());
             return false;
