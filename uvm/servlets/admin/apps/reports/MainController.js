@@ -167,7 +167,7 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
     alias: 'controller.unreportsemailtemplatesgrid',
 
     reportRenderer: function( value, metaData ){
-         var me = this,
+        var me = this,
             vm = me.getViewModel(),
             reportNames = [],
             allAdded = false,
@@ -194,7 +194,29 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
         metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( value ) + '"';
 
         return value;
-    }
+    },
+
+    editorTitleChange: function( control, newValue, oldValue, eOpts ){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel(),
+            templates = vm.get('settings.emailTemplates.list');
+
+        var currentRecord = v.getSelectionModel().getSelection()[0];
+        var conflict = false;
+        templates.forEach( function(template){
+            if( template.templateId == currentRecord.get('templateId')){
+                return;
+            }
+            if( template.title == newValue){
+                conflict = true;
+            }
+        })
+        if( conflict ){
+            control.setValidation("Another Email Template has this title".t());
+            return false;
+        }
+    },
 
 });
 
@@ -474,6 +496,7 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
         metaData.tdAttr = 'data-qtip="' + this.getTooltip( record ) + '"';
         return this.getView().up('app-reports').getController().reportTypeRenderer( record.get('type') );
     }
+
 });
 
 
@@ -563,6 +586,10 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesRecordEditorController', {
             this.mainGrid.getStore().add(v.record);
         }
         v.close();
+    },
+
+    editorTitleChange: function( me, newValue, oldValue, eOpts ){
+        return this.getView().up('grid').getController().editorTitleChange( me, newValue, oldValue, eOpts );
     }
 
 });

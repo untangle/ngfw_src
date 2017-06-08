@@ -41,7 +41,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
             xtype: 'textfield',
             emptyText: '[no title]'.t(),
             allowBlank: false,
-            blankText: 'The title cannot be blank.'.t()
+            blankText: 'The title cannot be blank.'.t(),
+            listeners: {
+                change: 'editorTitleChange'
+            }
         }
     }, {
         header: 'Description'.t(),
@@ -94,7 +97,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         bind: '{record.title}',
         fieldLabel: 'Title'.t(),
         emptyText: '[no title]'.t(),
-        width: 500
+        width: 500,
+        listeners: {
+            change: 'editorTitleChange'
+        }
     },{
         xtype: 'textfield',
         bind: '{record.description}',
