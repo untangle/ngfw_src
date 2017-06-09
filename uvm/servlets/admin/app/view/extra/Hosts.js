@@ -173,22 +173,22 @@ Ext.define('Ung.view.extra.Hosts', {
         columns: [{
             header: 'Address'.t(),
             dataIndex: 'address',
-            filter: { type: 'string' }
+            filter: Renderer.stringFilter
         },{
             header: 'MAC'.t(),
             columns:[{
                 header: 'Address'.t(),
                 dataIndex: 'macAddress',
-                filter: { type: 'string' }
+                filter: Renderer.stringFilter
             },{
                 header: 'Vendor'.t(),
                 dataIndex: 'macVendor',
-                filter: { type: 'string' }
+                filter: Renderer.stringFilter
             }]
         },{
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             rtype: 'interface'
         },{
             header: 'Creation Time'.t(),
@@ -223,34 +223,22 @@ Ext.define('Ung.view.extra.Hosts', {
             dataIndex: 'entitled',
             hidden: true,
             rtype: 'boolean',
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
+            filter: Renderer.booleanFilter
         },{
             header: 'Active'.t(),
             dataIndex: 'active',
             width: 80,
             rtype: 'boolean',
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
+            filter: Renderer.booleanFilter
         },{
             header: 'HTTP User Agent'.t(),
             dataIndex: 'httpUserAgent',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Captive Portal Authenticated'.t(),
             dataIndex: 'captivePortalAuthenticated',
             rtype: 'boolean',
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
+            filter: Renderer.booleanFilter
         },{
             header: 'Tags'.t(),
             dataIndex: 'tags',
@@ -258,92 +246,92 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname Source'.t(),
             dataIndex: 'hostnameSource',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (DHCP)'.t(),
             dataIndex: 'hostnameDhcp',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (DNS)'.t(),
             dataIndex: 'hostnameDns',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (Device)'.t(),
             dataIndex: 'hostnameDevice',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (Device Last Known)'.t(),
             dataIndex: 'hostnameDeviceLastKnown',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (OpenVPN)'.t(),
             dataIndex: 'hostnameOpenVpn',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (Reports)'.t(),
             dataIndex: 'hostnameReports',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Hostname (Directory Connector)'.t(),
             dataIndex: 'hostnameDirectoryConnector',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username'.t(),
             dataIndex: 'username',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username Source'.t(),
             dataIndex: 'usernameSource',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username (Directory Connector)'.t(),
             dataIndex: 'usernameDirectoryConnector',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username (Captive Portal)'.t(),
             dataIndex: 'usernameCaptivePortal',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username (Device)'.t(),
             dataIndex: 'usernameDevice',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username (OpenVPN)'.t(),
             dataIndex: 'usernameOpenVpn',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Username (IPsec VPN)'.t(),
             dataIndex: 'usernameIpsecVpn',
             hidden: true,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter
         },{
             header: 'Quota'.t(),
             columns: [{
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
-                filter: 'number',
+                filter: Renderer.numericFilter,
                 rtype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
-                filter: 'number',
+                filter: Renderer.numericFilter,
                 rtype: 'datasize'
             },{
                 header: 'Issue Time'.t(),

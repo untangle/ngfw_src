@@ -117,9 +117,7 @@ Ext.define('Ung.view.extra.Users', {
         columns: [{
             header: 'Username'.t(),
             dataIndex: 'username',
-            filter: {
-                type: 'string'
-            }
+            filter: Renderer.stringFilter
         }, {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
@@ -153,9 +151,7 @@ Ext.define('Ung.view.extra.Users', {
             }, {
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 rtype: 'datasize'
             }, {
                 header: 'Issue Time'.t(),

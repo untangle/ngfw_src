@@ -127,7 +127,7 @@ Ext.define('Ung.view.extra.Devices', {
             columns:[{
                 header: 'Address'.t(),
                 dataIndex: 'macAddress',
-                filter: { type: 'string' },
+                filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
                     emptyText: '[no MAC Address]'.t()
@@ -135,7 +135,7 @@ Ext.define('Ung.view.extra.Devices', {
             }, {
                 header: 'Vendor'.t(),
                 dataIndex: 'macVendor',
-                filter: { type: 'string' },
+                filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
                     emptyText: '[no MAC Vendor]'.t()
@@ -144,12 +144,12 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             rtype: 'interface'
         }, {
             header: 'Last Hostname'.t(),
             dataIndex: 'hostnameLastKnown',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: ''.t()
@@ -157,7 +157,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no hostname]'.t()
@@ -165,7 +165,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no device username]'.t()
@@ -174,7 +174,7 @@ Ext.define('Ung.view.extra.Devices', {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
             // flex: 1,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no HTTP user agent]'.t()
