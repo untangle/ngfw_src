@@ -93,6 +93,7 @@ class SslInspectorManager
     private final SslInspectorApp app;
 
     private X509Certificate peerCertificate;
+    private String peerThumbprint;
     private ByteBuffer casingBuffer;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
@@ -193,8 +194,8 @@ class SslInspectorManager
             // certs are now stored in files named with the SHA-1 thumbprint
             // instead of the old method of using the host name contained in the
             // server certificate which could cause us to load the wrong one
-            String certThumbprint = generateThumbPrint(baseCert);
-            String certFileName = (certThumbprint + ".p12");
+            peerThumbprint = generateThumbPrint(baseCert);
+            String certFileName = (peerThumbprint + ".p12");
             String certPathFile = keyStorePath + "/" + certFileName;
             String certHostName = new String();
 
@@ -443,6 +444,11 @@ class SslInspectorManager
     public X509Certificate getPeerCertificate()
     {
         return (peerCertificate);
+    }
+
+    public String getPeerThumbprint()
+    {
+        return (peerThumbprint);
     }
 
     public void setPeerCertificate(String peerAddress, X509Certificate peerCertificate)
