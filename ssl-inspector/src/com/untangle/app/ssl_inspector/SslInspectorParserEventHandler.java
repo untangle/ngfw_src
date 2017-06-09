@@ -243,6 +243,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // put something in the event log starting with any ssl message we extracted above
             if (sslProblem != null) {
                 logDetail = ((clientSide ? "Client" : "Server") + " SSL decrypt exception: " + sslProblem);
+                if (manager.getPeerThumbprint() != null) logDetail += (" CERT: " + manager.getPeerThumbprint());
             }
             if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
