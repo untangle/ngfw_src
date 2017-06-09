@@ -201,24 +201,25 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
+        var qosOK = true;
         if( vm.get('settings').qosSettings.qosEnabled === true ){
-            var bandwidthFound = false;
             vm.get('wanInterfaces').each( function(intf){
-                if( intf.get('downloadBandwidthKbps') != null &&
-                    intf.get('downloadBandwidthKbps') != 0 &&
-                    intf.get('uploadBandwidthKbps') != null &&
-                    intf.get('uploadBandwidthKbps') != 0) {
-                    bandwidthFound = true;
+                if( intf.get('downloadBandwidthKbps') == null ||
+                    intf.get('downloadBandwidthKbps') == 0 ||
+                    intf.get('uploadBandwidthKbps') == null ||
+                    intf.get('uploadBandwidthKbps') == 0) {
+                    qosOK = false;
                 }
             });
-            if(bandwidthFound === false){
+            if(!qosOK){
                 Ext.MessageBox.alert(
-                        "Failed".t(),
-                        "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
+                    "Failed".t(),
+                    "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
                 );
                 view.setLoading(false);
                 return;
             }
+
         }
 
         me.setNetworkSettings();
