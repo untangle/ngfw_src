@@ -5,6 +5,32 @@ Ext.define('Ung.util.Rpc', {
     alternateClassName: 'Rpc',
     singleton: true,
 
+    evalExp: function(ns, context, expression) {
+        if ( ns == null || context == null || expression == null ) {
+            console.error('Error: Invalid RPC expression: \'' + expression + '\'.');
+            Util.handleException('Invalid RPC expression: \'' + expression + '\'.');
+            return null;
+        }
+
+        var lastPart = null;
+        var len = ns.length;
+
+        for (var i = 0; i < len ; i++) {
+            if (context == null )
+                break;
+            var part = ns[i];
+            context = context[part];
+            lastPart = part;
+        }
+        if (context == null ) {
+            console.error('Error: Invalid RPC expression: \'' + expression + '\'. Attribute \'' + lastPart + '\' is null');
+            Util.handleException('Invalid RPC expression: \'' + expression + '\'. Attribute \'' + lastPart + '\' is null');
+            return null;
+        }
+
+        return context;
+    },
+
     asyncData: function(expression /*, args */) {
         var args = [].slice.call(arguments).splice(1),
             ns = expression.split('.'),
@@ -12,12 +38,13 @@ Ext.define('Ung.util.Rpc', {
             context = window,
             dfrd = new Ext.Deferred();
 
-        ns.forEach(function(part) { context = context[part]; });
+        context = Ung.util.Rpc.evalExp(ns, context, expression);
+        if (!context) return null;
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
             Util.handleException('No such RPC method: \'' + expression + '\'');
-            return;
+            return null;
         }
 
         args.unshift(function (result, ex) {
@@ -37,14 +64,16 @@ Ext.define('Ung.util.Rpc', {
     directData: function(expression /*, args */) {
         var ns = expression.split('.'),
             method = ns.pop(),
-            context = window;
+            context = window,
+            lastPart = null;
 
-        ns.forEach(function(part) { context = context[part]; });
+        context = Ung.util.Rpc.evalExp(ns, context, expression);
+        if (!context) return null;
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.handleException('No such RPC method: \'' + expression + '\'');
-            return;
+            console.error('Error: No such RPC method: \'' + expression + '\' on attribute \'' + lastPart + '\'');
+            Util.handleException('No such RPC method: \'' + expression + '\' on attribute \'' + lastPart + '\'');
+            return null;
         }
 
         try {
@@ -52,6 +81,7 @@ Ext.define('Ung.util.Rpc', {
         } catch (ex) {
             Util.handleException(ex);
         }
+        return null;
     },
 
     asyncPromise: function(expression /*, args */) {
@@ -60,12 +90,13 @@ Ext.define('Ung.util.Rpc', {
             method = ns.pop(),
             context = window;
 
-        ns.forEach(function(part) { context = context[part]; });
+        context = Ung.util.Rpc.evalExp(ns, context, expression);
+        if (!context) return null;
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
             Util.handleException('No such RPC method: \'' + expression + '\'');
-            return;
+            return null;
         }
 
         return function() {
@@ -85,12 +116,13 @@ Ext.define('Ung.util.Rpc', {
             method = ns.pop(),
             context = window;
 
-        ns.forEach(function(part) { context = context[part]; });
+        context = Ung.util.Rpc.evalExp(ns, context, expression);
+        if (!context) return null;
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
             Util.handleException('No such RPC method: \'' + expression + '\'');
-            return;
+            return null;
         }
 
         return function() {

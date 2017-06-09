@@ -227,8 +227,10 @@ Ext.define('Ung.util.Util', {
         var details = "";
 
         if ( !exception ) {
-            console.log("Null Exception!");
+            console.error("Null Exception!");
             return;
+        } else {
+            console.error(exception);
         }
 
         if ( exception.javaStack )
@@ -263,10 +265,10 @@ Ext.define('Ung.util.Util', {
             /* handle connection lost (this happens on windows only for some reason) */
             (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
             /* special text for "method not found" and "Service Temporarily Unavailable" */
-            exception.message.indexOf("method not found") != -1 ||
-            exception.message.indexOf("Service Unavailable") != -1 ||
-            exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
-            exception.message.indexOf("This application is not currently available") != -1) {
+            (exception.message && exception.message.indexOf("method not found") != -1) ||
+            (exception.message && exception.message.indexOf("Service Unavailable") != -1) ||
+            (exception.message && exception.message.indexOf("Service Temporarily Unavailable") != -1) ||
+            (exception.message && exception.message.indexOf("This application is not currently available") != -1)) {
             message  = "The connection to the server has been lost.".t() + "<br/>";
             message += "Press OK to return to the login page.".t() + "<br/>";
             Util.ignoreExceptions = true;

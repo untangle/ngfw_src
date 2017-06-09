@@ -16,9 +16,9 @@ Ext.define('Ung.config.email.MainController', {
     loadSettings: function () {
         var vm = this.getViewModel(), me = this;
         rpc.mailSender = rpc.UvmContext.mailSender();
-        rpc.smtpSettings = rpc.appManager.app('smtp');
+        rpc.smtpApp = rpc.appManager.app('smtp');
 
-        if (!rpc.smtpSettings) {
+        if (!rpc.smtpApp) {
             me.getView().setLoading(true);
             Rpc.asyncData('rpc.mailSender.getSettings')
                 .then(function (result) {
@@ -37,13 +37,13 @@ Ext.define('Ung.config.email.MainController', {
             return;
         }
 
-        rpc.safelistAdminView = rpc.smtpSettings.getSafelistAdminView();
-        rpc.quarantineMaintenenceView = rpc.smtpSettings.getQuarantineMaintenenceView();
+        rpc.safelistAdminView = rpc.smtpApp.getSafelistAdminView();
+        rpc.quarantineMaintenenceView = rpc.smtpApp.getQuarantineMaintenenceView();
 
         me.getView().setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise ('rpc.mailSender.getSettings'),
-            Rpc.asyncPromise ('rpc.smtpSettings.getSmtpSettings'),
+            Rpc.asyncPromise ('rpc.smtpApp.getSmtpSettings'),
             Rpc.asyncPromise ('rpc.safelistAdminView.getSafelistContents', 'GLOBAL'),
             Rpc.directPromise('rpc.safelistAdminView.getUserSafelistCounts'),
             Rpc.asyncPromise ('rpc.quarantineMaintenenceView.listInboxes'),
@@ -74,15 +74,15 @@ Ext.define('Ung.config.email.MainController', {
         var me = this, view = this.getView(), vm = this.getViewModel();
 
         if (!Util.validateForms(this.getView())) {
-            return;
-        }
+            return null;
+         }
 
         var fromAddressCmp = view.down('textfield[name="FromAddress"]');
         if (fromAddressCmp.rendered && !fromAddressCmp.isValid()) {
             Ung.app.redirectTo('#config/email/outgoing_server');
             Ext.MessageBox.alert('Warning'.t(), 'A From Address must be specified.'.t());
             fromAddressCmp.focus(true);
-            return;
+            return null;
         }
 
         view.setLoading('Saving ...');
@@ -116,18 +116,20 @@ Ext.define('Ung.config.email.MainController', {
             }
         });
 
-
-        Ext.Deferred.sequence([
+        var promises =  [
             Rpc.asyncPromise('rpc.mailSender.setSettings', me.getViewModel().get('mailSender')),
-            Rpc.asyncPromise('rpc.smtpSettings.setSmtpSettingsWithoutSafelists', vm.get('smtpSettings')),
-            Rpc.asyncPromise('rpc.safelistAdminView.replaceSafelist', 'GLOBAL', vm.get('globalSafeList'))
-        ], this)
+        ];
+        if (rpc.smtpApp) {
+            promises.push(Rpc.asyncPromise('rpc.smtpApp.setSmtpSettingsWithoutSafelists', vm.get('smtpSettings')));
+            promises.push(Rpc.asyncPromise('rpc.safelistAdminView.replaceSafelist', 'GLOBAL', vm.get('globalSafeList')));
+        }
+        Ext.Deferred.sequence(promises, this)
         .then(function() {
             Util.successToast('Email'.t() + ' settings saved!');
             // me.loadSettings();
             deferred.resolve();
         }, function(ex) {
-            console.error(ex);
+            console.log(ex);
             Util.handleException(ex);
         }).always(function () {
             view.setLoading(false);
