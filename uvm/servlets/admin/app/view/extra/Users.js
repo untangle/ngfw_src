@@ -117,6 +117,7 @@ Ext.define('Ung.view.extra.Users', {
         columns: [{
             header: 'Username'.t(),
             dataIndex: 'username',
+            width: Renderer.usernameWidth,
             filter: Renderer.stringFilter
         }, {
             header: 'Creation Time'.t(),
@@ -141,6 +142,7 @@ Ext.define('Ung.view.extra.Users', {
             columns: [{
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
+                width: Renderer.sizeWidth,
                 renderer: function (value) {
                     return value === 0 || value === '' ? '' : value;
                 },
@@ -151,6 +153,7 @@ Ext.define('Ung.view.extra.Users', {
             }, {
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 rtype: 'datasize'
             }, {
@@ -167,7 +170,7 @@ Ext.define('Ung.view.extra.Users', {
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',
-                width: 50,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Refill'.t(),
                 iconCls: 'fa fa-refresh fa-green',
@@ -175,7 +178,7 @@ Ext.define('Ung.view.extra.Users', {
                 action: 'refillQuota'
             }, {
                 xtype: 'actioncolumn',
-                width: 50,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Drop'.t(),
                 iconCls: 'fa fa-minus-circle',
@@ -184,7 +187,7 @@ Ext.define('Ung.view.extra.Users', {
             }]
         }, {
             header: 'Tags'.t(),
-            width: 300,
+            width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
             // flex: 1,

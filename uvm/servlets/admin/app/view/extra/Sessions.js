@@ -323,6 +323,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
+            width: Renderer.messageWidth,
             // Look into list on policy
             filter: Renderer.stringFilter
         }, {
@@ -350,6 +351,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
+            width: Renderer.tagsWidth,
             rtype: 'tags'
         }, {
             hidden: true,
@@ -379,12 +381,14 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             header: 'Pipeline'.t(),
             dataIndex: "pipeline",
+            width: Renderer.messageWidth,
             filter: Renderer.stringFilter
         }, {
             header: 'Client'.t(),
             columns: [{
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
@@ -411,12 +415,13 @@ Ext.define('Ung.view.extra.Sessions', {
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
-                filter: Renderer.stringFilter,
                 width: Renderer.booleanWidth,
+                filter: Renderer.stringFilter,
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'clientLatitude',
+                width: Renderer.locationWidth,
                 filter: Renderer.numericFilter,
                 hidden: true
             }, {
@@ -430,42 +435,45 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
-                filter: { type: 'string' },
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
-                filter: Renderer.stringFilter,
                 width: Renderer.ipWidth,
+                filter: Renderer.stringFilter,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
-                filter: Renderer.numericFilter,
                 width: Renderer.portWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
-                dataIndex: 'postNatServer',
                 width: Renderer.ipWidth,
+                dataIndex: 'postNatServer',
                 filter: Renderer.stringFilter
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
-                filter: Renderer.numericFilter,
-                width: Renderer.portWidth
+                width: Renderer.portWidth,
+                filter: Renderer.numericFilter
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
-                filter: Renderer.stringFilter,
-                width: Renderer.booleanWidth
+                width: Renderer.booleanWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
+                width: Renderer.locationWidth,
                 filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
                 dataIndex: 'serverLongitude',
+                width: Renderer.locationWidth,
                 filter: Renderer.numericFilter,
                 hidden: true
             }]
@@ -474,21 +482,21 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Client'.t(),
                 dataIndex: 'clientKBps',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right',
-                width: 60
+                align: 'right'
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right',
-                width: 60
+                align: 'right'
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right',
-                width: 60
+                align: 'right'
             }]
         }, {
             header: 'Application Control Lite',
@@ -497,21 +505,25 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Protocol'.t(),
                 dataIndex: "application-control-lite-protocol",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-lite-category",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Description'.t(),
                 dataIndex: "application-control-lite-description",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Matched?'.t(),
                 dataIndex: "application-control-lite-matched",
+                width: Renderer.messageWidth,
                 filter: Renderer.booleanFilter
             }]
         }, {
@@ -519,35 +531,42 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Protochain'.t(),
                 dataIndex: "application-control-protochain",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 header: 'Application'.t(),
                 dataIndex: "application-control-application",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-category",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Detail'.t(),
                 dataIndex: "application-control-detail",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Confidence'.t(),
                 dataIndex: "application-control-confidence",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Productivity'.t(),
                 dataIndex: "application-control-productivity",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Risk'.t(),
                 dataIndex: "application-control-risk",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             }]
         }, {
@@ -557,26 +576,31 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Category Name'.t(),
                 dataIndex: "web-filter-best-category-name",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category Description'.t(),
                 dataIndex: "web-filter-best-category-description",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category Flagged'.t(),
                 dataIndex: "web-filter-best-category-flagged",
+                width: Renderer.messageWidth,
                 filter: Renderer.booleanFilter
             },{
                 hidden: true,
                 header: 'Category Blocked'.t(),
                 dataIndex: "web-filter-best-category-blocked",
+                width: Renderer.booleanWidth,
                 filter: Renderer.booleanFilter,
             },{
                 hidden: true,
                 header: 'Flagged'.t(),
                 dataIndex: "web-filter-flagged",
+                width: Renderer.booleanWidth,
                 filter: Renderer.booleanFilter,
             }]
         }, {
@@ -586,66 +610,79 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Hostname'.t(),
                 dataIndex: "http-hostname",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'URL'.t(),
                 dataIndex: "http-url",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'User Agent'.t(),
                 dataIndex: "http-user-agent",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'URI'.t(),
                 dataIndex: "http-uri",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request Method'.t(),
                 dataIndex: "http-request-method",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Name'.t(),
                 dataIndex: "http-request-file-name",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Extension'.t(),
                 dataIndex: "http-request-file-extension",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Path'.t(),
                 dataIndex: "http-request-file-path",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Response File Name'.t(),
                 dataIndex: "http-response-file-name",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Response File Extension'.t(),
                 dataIndex: "http-response-file-extension",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Content Type'.t(),
                 dataIndex: "http-content-type",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Referer'.t(),
                 dataIndex: "http-referer",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Content Length'.t(),
                 dataIndex: "http-content-length",
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter
             }]
         }, {
@@ -655,21 +692,25 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Subject DN'.t(),
                 dataIndex: "ssl-subject-dn",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Issuer DN'.t(),
                 dataIndex: "ssl-issuer-dn",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Inspected'.t(),
                 dataIndex: "ssl-session-inspect",
+                width: Renderer.booleanWidth,
                 filter: Renderer.booleanFilter
             },{
                 hidden: true,
                 header: 'SNI Hostname'.t(),
                 dataIndex: "ssl-sni-host",
+                width: Renderer.hostnameWidth,
                 filter: Renderer.stringFilter
             }]
         }, {
@@ -679,11 +720,13 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Filename'.t(),
                 dataIndex: "ftp-file-name",
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Data Session'.t(),
                 dataIndex: "ftp-data-session",
+                width: Renderer.booleanWidth,
                 filter: Renderer.booleanFilter,
             }]
         }]

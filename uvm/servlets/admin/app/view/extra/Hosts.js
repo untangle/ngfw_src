@@ -179,15 +179,18 @@ Ext.define('Ung.view.extra.Hosts', {
             columns:[{
                 header: 'Address'.t(),
                 dataIndex: 'macAddress',
+                width: Renderer.macWidth,
                 filter: Renderer.stringFilter
             },{
                 header: 'Vendor'.t(),
                 dataIndex: 'macVendor',
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
             }]
         },{
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
+            width: Renderer.messageWidth,
             filter: Renderer.stringFilter,
             rtype: 'interface'
         },{
@@ -221,104 +224,124 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             header: 'Entitled Status'.t(),
             dataIndex: 'entitled',
+            width: Renderer.booleanWidth,
             hidden: true,
             rtype: 'boolean',
             filter: Renderer.booleanFilter
         },{
             header: 'Active'.t(),
             dataIndex: 'active',
-            width: 80,
+            width: Renderer.booleanWidth,
             rtype: 'boolean',
             filter: Renderer.booleanFilter
         },{
             header: 'HTTP User Agent'.t(),
             dataIndex: 'httpUserAgent',
+            width: Renderer.messageWidth,
             filter: Renderer.stringFilter
         },{
             header: 'Captive Portal Authenticated'.t(),
             dataIndex: 'captivePortalAuthenticated',
+            width: Renderer.booleanWidth,
             rtype: 'boolean',
             filter: Renderer.booleanFilter
         },{
             header: 'Tags'.t(),
             dataIndex: 'tags',
+            width: Renderer.tagsWidth,
             rtype: 'tags'
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
+            width: Renderer.hostnameWidth,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname Source'.t(),
             dataIndex: 'hostnameSource',
+            width: Renderer.messageWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (DHCP)'.t(),
             dataIndex: 'hostnameDhcp',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (DNS)'.t(),
             dataIndex: 'hostnameDns',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (Device)'.t(),
             dataIndex: 'hostnameDevice',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (Device Last Known)'.t(),
             dataIndex: 'hostnameDeviceLastKnown',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (OpenVPN)'.t(),
             dataIndex: 'hostnameOpenVpn',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (Reports)'.t(),
             dataIndex: 'hostnameReports',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Hostname (Directory Connector)'.t(),
             dataIndex: 'hostnameDirectoryConnector',
+            width: Renderer.hostnameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username'.t(),
             dataIndex: 'username',
+            width: Renderer.usernameWidth,
             filter: Renderer.stringFilter
         },{
             header: 'Username Source'.t(),
             dataIndex: 'usernameSource',
+            width: Renderer.messageWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username (Directory Connector)'.t(),
             dataIndex: 'usernameDirectoryConnector',
+            width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username (Captive Portal)'.t(),
             dataIndex: 'usernameCaptivePortal',
+            width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username (Device)'.t(),
             dataIndex: 'usernameDevice',
+            width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username (OpenVPN)'.t(),
             dataIndex: 'usernameOpenVpn',
+            width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
             header: 'Username (IPsec VPN)'.t(),
             dataIndex: 'usernameIpsecVpn',
+            width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
         },{
@@ -326,11 +349,13 @@ Ext.define('Ung.view.extra.Hosts', {
             columns: [{
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 rtype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
+                width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 rtype: 'datasize'
             },{
@@ -349,7 +374,7 @@ Ext.define('Ung.view.extra.Hosts', {
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',
-                width: 80,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Refill Quota'.t(),
                 iconCls: 'fa fa-refresh fa-green',
@@ -357,7 +382,7 @@ Ext.define('Ung.view.extra.Hosts', {
                 action: 'refillQuota'
             }, {
                 xtype: 'actioncolumn',
-                width: 80,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Drop Quota'.t(),
                 iconCls: 'fa fa-minus-circle',

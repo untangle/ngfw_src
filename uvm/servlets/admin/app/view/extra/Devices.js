@@ -127,6 +127,7 @@ Ext.define('Ung.view.extra.Devices', {
             columns:[{
                 header: 'Address'.t(),
                 dataIndex: 'macAddress',
+                width: Renderer.macWidth,
                 filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
@@ -135,6 +136,7 @@ Ext.define('Ung.view.extra.Devices', {
             }, {
                 header: 'Vendor'.t(),
                 dataIndex: 'macVendor',
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
@@ -144,11 +146,13 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
+            width: Renderer.messageWidth,
             filter: Renderer.stringFilter,
             rtype: 'interface'
         }, {
             header: 'Last Hostname'.t(),
             dataIndex: 'hostnameLastKnown',
+            width: Renderer.hostnameWidth,
             filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
@@ -157,6 +161,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
+            width: Renderer.hostnameWidth,
             filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
@@ -165,6 +170,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
+            width: Renderer.usernameidth,
             filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
@@ -173,6 +179,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
+            width: Renderer.messageWidth,
             // flex: 1,
             filter: Renderer.stringFilter,
             editor: {
@@ -187,7 +194,7 @@ Ext.define('Ung.view.extra.Devices', {
             filter: Renderer.timestampFilter
         }, {
             header: 'Tags'.t(),
-            width: 300,
+            width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
             // flex: 1,
