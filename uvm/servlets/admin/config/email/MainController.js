@@ -71,14 +71,21 @@ Ext.define('Ung.config.email.MainController', {
     // using promise because of the testEmail need
     saveSettings: function () {
         var deferred = new Ext.Deferred();
+        var me = this, view = this.getView(), vm = this.getViewModel();
 
         if (!Util.validateForms(this.getView())) {
             return;
         }
 
-        var me = this, view = this.getView(), vm = this.getViewModel();
-        view.setLoading('Saving ...');
+        var fromAddressCmp = view.down('textfield[name="FromAddress"]');
+        if (fromAddressCmp.rendered && !fromAddressCmp.isValid()) {
+            Ung.app.redirectTo('#config/email/outgoing_server');
+            Ext.MessageBox.alert('Warning'.t(), 'A From Address must be specified.'.t());
+            fromAddressCmp.focus(true);
+            return;
+        }
 
+        view.setLoading('Saving ...');
 
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();

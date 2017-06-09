@@ -92,6 +92,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             emptyText: '[enter email]'.t(),
             vtype: 'email',
             allowBlank: false,
+            name: 'FromAddress',
             bind: '{mailSender.fromAddress}'
         }]
     }, {
