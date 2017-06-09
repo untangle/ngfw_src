@@ -45,6 +45,10 @@ Ext.define('Ung.util.Renderer', {
         type: 'numeric'
     },
 
+    timestampFilter: {
+        type: 'date'
+    },
+
     boolean: function( value ){
         return ( value == true ) ? 'true' : 'false';
     },
