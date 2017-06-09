@@ -536,6 +536,7 @@ Ext.define('Ung.config.network.Interface', {
                 recordActions: ['delete'],
                 bind: '{v4Aliases}',
                 listProperty: 'v4Aliases',
+                maxHeight: 140,
                 emptyRow: {
                     staticAddress: '1.2.3.4',
                     staticPrefix: '24',
@@ -696,6 +697,7 @@ Ext.define('Ung.config.network.Interface', {
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
                 disabled: true,
+                maxHeight: 160,
                 bind: {
                     store: '{v6Aliases}',
                     disabled: '{intf.v6ConfigType === "DISABLED"}'
@@ -1045,7 +1047,7 @@ Ext.define('Ung.config.network.Interface', {
                 border: false,
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
-
+                maxHeight: 200,
                 disabled: true,
                 bind: {
                     store: '{vrrpAliases}',
