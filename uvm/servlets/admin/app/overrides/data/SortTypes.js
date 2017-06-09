@@ -2,7 +2,8 @@ Ext.define('Ung.overrides.data.SortTypes', {
     override: 'Ext.data.SortTypes',
 
     asTimestamp: function(value) {
-        if( ( typeof( value ) == 'object' ) &&
+        if( value &&
+            ( typeof( value ) == 'object' ) &&
             value.time ){
             value = value.time;
         }
