@@ -126,10 +126,11 @@ Ext.define('Ung.cmp.GridController', {
     // },
 
     conditionsRenderer: function (value) {
+        if (!value) { return ''; } // if conditions are null return empty string
+
         var view = this.getView(),
             conds = value.list,
             resp = [], i, valueRenderer = [];
-
 
         for (i = 0; i < conds.length; i += 1) {
             valueRenderer = [];
