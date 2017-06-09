@@ -5,7 +5,9 @@ Ext.define('Ung.util.Renderer', {
     /*
      * Common column widths
      */
-     // Boolean
+    // Action
+    actionWidth: 80,
+    // Boolean
     booleanWidth: 40,
     // Email address
     emailWidth: 150,
@@ -25,6 +27,8 @@ Ext.define('Ung.util.Renderer', {
     portWidth: 70,
     // Data size
     sizeWidth: 50,
+    // Tags
+    tagsWidth: 200,
     // Timestamp
     timestampWidth: 135,
     // URI
