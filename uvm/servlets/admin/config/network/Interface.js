@@ -104,6 +104,7 @@ Ext.define('Ung.config.network.Interface', {
                 xtype: 'checkbox',
                 fieldLabel: 'Is WAN Interface'.t(),
                 hidden: true,
+                initializing: true,
                 bind: {
                     value: '{intf.isWan}',
                     hidden: '{!isAddressed}'
@@ -117,6 +118,13 @@ Ext.define('Ung.config.network.Interface', {
                             win.down('#ipv6ConfigType').setValue('STATIC');
                         } else {
                             // WAN
+                            // hack to avoid forcing v4NatEgressTraffic to true, after initial rendering/binding in interface editor
+                            if (!ck.initializing) {
+                                win.down('#v4NatEgressTraffic').setValue(true);
+                            } else {
+                                ck.initializing = false;
+                            }
+
                             win.down('#dhcpEnabled').setValue(false);
                             win.down('tabpanel').setActiveItem(0);
                         }
@@ -508,6 +516,7 @@ Ext.define('Ung.config.network.Interface', {
                 items: [{
                     xtype: 'checkbox',
                     hidden: true,
+                    itemId: 'v4NatEgressTraffic',
                     bind: {
                         value: '{intf.v4NatEgressTraffic}',
                         hidden: '{!intf.isWan}'
