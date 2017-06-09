@@ -22,18 +22,23 @@ Ext.define('Ung.view.extra.Users', {
                     sortType: 'asUnString'
                 }, {
                     name: 'creationTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'lastAccessTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'lastSessionTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'quotaSize',
                 }, {
                     name: 'quotaRemaining',
                 }, {
                     name: 'quotaIssueTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'quotaExpirationTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'tags'
                 }]
@@ -118,24 +123,21 @@ Ext.define('Ung.view.extra.Users', {
         }, {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Quota'.t(),
             columns: [{
@@ -158,17 +160,15 @@ Ext.define('Ung.view.extra.Users', {
             }, {
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
+                width: Renderer.timestampWidth,
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
+                width: Renderer.timestampWidth,
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',
                 width: 50,
