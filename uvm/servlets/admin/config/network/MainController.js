@@ -104,6 +104,13 @@ Ext.define('Ung.config.network.MainController', {
         });
 
         // extra validations
+        var hostNameCmp = view.down('textfield[name="HostName"]');
+        if (hostNameCmp.rendered && !hostNameCmp.isValid()) {
+            Ung.app.redirectTo('#config/network/hostname');
+            Ext.MessageBox.alert('Warning'.t(), 'A Host Name must be specified.'.t());
+            hostNameCmp.focus(true);
+            return;
+        }
         var domainNameCmp = view.down('textfield[name="DomainName"]');
         if (domainNameCmp.rendered && !domainNameCmp.isValid()) {
             Ung.app.redirectTo('#config/network/hostname');

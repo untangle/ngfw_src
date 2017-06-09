@@ -22,7 +22,8 @@ Ext.define('Ung.config.network.view.Hostname', {
                 xtype: 'textfield',
                 fieldLabel: 'Hostname'.t(),
                 labelAlign: 'right',
-                emptyText: 'untangle',
+                emptyText: 'hostname',
+                allowBlank: false,
                 name: 'HostName',
                 bind: '{settings.hostName}',
                 maskRe: /[a-zA-Z0-9\-]/
