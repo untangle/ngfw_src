@@ -45,6 +45,10 @@ Ext.define('Ung.util.Renderer', {
         type: 'numeric'
     },
 
+    stringFilter: {
+        type: 'string'
+    },
+
     timestampFilter: {
         type: 'date'
     },
