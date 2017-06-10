@@ -124,7 +124,6 @@ Ext.define('Ung.config.network.Interface', {
                             if (ck.initialized) {
                                 win.down('#v4NatEgressTraffic').setValue(true);
                             }
-                            win.down('#dhcpEnabled').setValue(false);
                             win.down('tabpanel').setActiveItem(0);
                         }
                         ck.initialized = true;
