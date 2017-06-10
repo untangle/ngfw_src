@@ -119,6 +119,15 @@ Ext.define('Ung.config.system.view.Regional', {
                 store: '{timeZones}',
                 value: '{timeZone.ID}'
             },
+            listeners: {
+                change: function (ck, newValue) {
+                    // warn if changing timezone but dont warn on initial render
+                    if (ck.initialized) {
+                        Ext.MessageBox.alert('Timezone changed'.t(),"A reboot is required after changing the timezone!".t());
+                    }
+                    ck.initialized = true;
+                }
+            },
             displayField: 'name',
             valueField: 'value',
             editable: false,
