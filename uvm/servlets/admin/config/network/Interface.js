@@ -118,16 +118,16 @@ Ext.define('Ung.config.network.Interface', {
                             win.down('#ipv6ConfigType').setValue('STATIC');
                         } else {
                             // WAN
-                            // hack to avoid forcing v4NatEgressTraffic to true, after initial rendering/binding in interface editor
-                            if (!ck.initializing) {
+                            // automatically turn on NAT egress if its a WAN
+                            // but only if manually changed, not the first time this is called
+                            // during render
+                            if (ck.initialized) {
                                 win.down('#v4NatEgressTraffic').setValue(true);
-                            } else {
-                                ck.initializing = false;
                             }
-
                             win.down('#dhcpEnabled').setValue(false);
                             win.down('tabpanel').setActiveItem(0);
                         }
+                        ck.initialized = true;
                     }
                 }
             }, {
