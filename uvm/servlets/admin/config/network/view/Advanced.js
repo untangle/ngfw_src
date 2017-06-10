@@ -51,7 +51,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.blockDuringRestarts}'
             }, {
                 boxLabel: 'Block replay packets'.t(),
-                bind: '{settings.blockReplayPackets}'
+                bind: '{settings.blockReplayPackets}',
+                hidden: !rpc.isExpertMode,
             }, {
                 boxLabel: 'Log bypassed sessions'.t(),
                 bind: '{settings.logBypassedSessions}'
