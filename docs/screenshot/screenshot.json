@@ -104,7 +104,8 @@
     },
     "screens": [{
         "name": "main_dashboard",
-        "url": "/admin/index.do#dashboard"
+        "url": "/admin/index.do#dashboard",
+	"extra_delay": 10
     },{
         "name": "main_config",
         "url": "/admin/index.do#config"

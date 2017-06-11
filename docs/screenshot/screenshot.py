@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import time
+import traceback
 from selenium import webdriver
 import selenium.webdriver.chrome.service as ChromeDriverService
 import selenium.webdriver.chrome.options as ChromeDriverOptions
@@ -34,17 +35,18 @@ class WebBrowser:
 
     cropped_image = None
 
-    def __init__(self, resolution="1024x768", sequence="1", screen="5"):
+    def __init__(self, resolution="1024x768", sequence="1", screen="5", temp_directory="/tmp/webbrowser"):
         self.resolution = resolution
         self.sequence = sequence
         self.screen = screen
+        self.temp_directory = temp_directory
 
         self.xvfb_command = "Xvfb" + " :" + self.sequence + " -screen " + self.screen + " " + resolution + "x8"
         # print self.xvfb_command
 
         os.system("/usr/bin/pkill -f \"" + self.xvfb_command + "\"")
         os.system("nohup " + self.xvfb_command + " >/dev/null 2>&1 &")
-        try: os.makedirs(temp_directory)
+        try: os.makedirs(self.temp_directory)
         except: pass
 
         self.service = ChromeDriverService.Service( 
@@ -331,9 +333,9 @@ def main(argv):
     want_screen_name = None
     want_resolution = None
     auto_names = False
-    
+    tmp_dir = "/tmp/webbrowser"
     try:
-        opts, args = getopt.getopt(argv, "has:d", ["help", "autonames", "screen=", "resolution=", "debug"] )
+        opts, args = getopt.getopt(argv, "hadr:s:t:", ["help", "autonames", "debug", "resolution=", "screen=", "tmpdir="] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -348,8 +350,10 @@ def main(argv):
             Debug = True
         if opt in ( "-s", "--screen"):
             want_screen_name = arg
-        if opt in ( "-resolution", "--resolution"):
+        if opt in ( "-r", "--resolution"):
             want_resolution = arg
+        if opt in ( "-t", "--tmpdir"):
+            tmp_dir = arg
 
     settings_file = open( "screenshot.json" )
     settings = json.load( settings_file)
@@ -369,7 +373,7 @@ def main(argv):
             continue
         print "Using resolution: "+resolution
 
-        web_browser = WebBrowser(resolution=resolution)
+        web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
 
         base_url = settings["authentication"]["url"]
 
@@ -388,14 +392,22 @@ def main(argv):
                 #     print "Skipping screen: " + screen["name"] 
                 continue
 
+            fname = web_browser.build_file_name_path(screen['name'])
+            if os.path.exists(fname):
+                print "File exists: " + fname + " Skipping ..."
+                continue
+
             start = timer()
-            print "Capturing screen: " + screen['url'] + " -> " + screen["name"] + " ...",
+            print "Capturing: " + screen['url'] + " -> " + screen["name"] + ".png ...",
             sys.stdout.flush()
 
             web_browser.go(base_url + screen["url"])
             if web_browser.wait_for_load() is False:
                 print "Could not load"
                 continue
+
+            if screen.get('extra_delay') != None:
+                time.sleep(screen.get('extra_delay'))
 
             start = timer()
             success = True
