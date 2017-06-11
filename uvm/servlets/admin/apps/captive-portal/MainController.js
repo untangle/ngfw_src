@@ -89,7 +89,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
 
         switch (authType) {
             case 'LOCAL_DIRECTORY':
-                Ung.app.redirectTo('#config/localdirectory');
+                Ung.app.redirectTo('#config/local-directory');
                 break;
             case 'GOOGLE':
                 if (dircon == null) this.showMissingServiceWarning();

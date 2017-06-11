@@ -166,7 +166,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             policyId = vm.get('policyId');
 
         switch (this.getViewModel().get('settings.authenticationType')) {
-        case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/localdirectory'); break;
+        case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/local-directory'); break;
         case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius'); break;
         default: return;
         }
