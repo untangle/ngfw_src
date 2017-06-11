@@ -7,7 +7,6 @@ import os
 import re
 import sys
 import time
-
 from selenium import webdriver
 import selenium.webdriver.chrome.service as ChromeDriverService
 import selenium.webdriver.chrome.options as ChromeDriverOptions
@@ -45,6 +44,8 @@ class WebBrowser:
 
         os.system("/usr/bin/pkill -f \"" + self.xvfb_command + "\"")
         os.system("nohup " + self.xvfb_command + " >/dev/null 2>&1 &")
+        try: os.makedirs(temp_directory)
+        except: pass
 
         self.service = ChromeDriverService.Service( 
             executable_path=self.chrome_driver, 
@@ -329,9 +330,10 @@ def main(argv):
     global Debug
     want_screen_name = None
     want_resolution = None
-
+    auto_names = False
+    
     try:
-        opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "debug"] )
+        opts, args = getopt.getopt(argv, "has:d", ["help", "autonames", "screen=", "resolution=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -340,6 +342,8 @@ def main(argv):
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
+        if opt in ( "-a", "--autonames"):
+            auto_names = True
         if opt in ( "-d", "--debug"):
             Debug = True
         if opt in ( "-s", "--screen"):
@@ -373,6 +377,11 @@ def main(argv):
             web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
 
         for screen in settings["screens"]:
+            if auto_names:
+                screen['name'] = screen['url'].replace("/admin/index.do#","")
+                screen['name'] = screen['name'].replace("/","_")
+                screen['name'] = screen['name'].replace("_1_","_")
+
             total_screens += 1
             if want_screen_name is not None and want_screen_name not in screen["name"]:
                 # if Debug is True:
@@ -380,7 +389,7 @@ def main(argv):
                 continue
 
             start = timer()
-            print "Capturing screen: " + screen["name"] + "...",
+            print "Capturing screen: " + screen['url'] + " -> " + screen["name"] + " ...",
             sys.stdout.flush()
 
             web_browser.go(base_url + screen["url"])

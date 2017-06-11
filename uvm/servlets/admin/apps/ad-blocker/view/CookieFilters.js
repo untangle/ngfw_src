@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ad-blocker-cookiefilters',
-    itemId: 'cookie_filters',
+    itemId: 'cookie-filters',
     title: 'Cookie Filters'.t(),
 
     layout: 'border',

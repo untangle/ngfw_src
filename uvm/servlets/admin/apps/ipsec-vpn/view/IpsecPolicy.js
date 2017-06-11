@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ipsecvpn.view.IpsecPolicy', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ipsec-vpn-ipsecpolicy',
-    itemId: 'ipsec_policy',
+    itemId: 'ipsec-policy',
     title: 'IPsec Policy'.t(),
     layout: 'fit',
 

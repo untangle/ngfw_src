@@ -7,7 +7,7 @@ Ext.define('Ung.apps.reports.MainController', {
             afterrender: 'getSettings',
             activate: 'checkGoogleDrive'
         },
-        '#email_templates': {
+        '#email-templates': {
             afterrender: 'emailTemplatesAfterRender'
         }
     },

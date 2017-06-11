@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-passedhosts',
-    itemId: 'passed_hosts',
+    itemId: 'passed-hosts',
     title: 'Passed Hosts'.t(),
 
     tbar: [{

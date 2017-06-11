@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.webmonitor.view.FlagSites', {
     extend: 'Ung.cmp.Grid',
     alias:  'widget.app-web-monitor-flagsites',
-    itemId: 'flag_sites',
+    itemId: 'flag-sites',
     title:  'Flag Sites'.t(),
 
     dockedItems: [{

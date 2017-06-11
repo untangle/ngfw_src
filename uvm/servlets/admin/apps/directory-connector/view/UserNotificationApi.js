@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-directory-connector-usernotificationapi',
-    itemId: 'user_notification_api',
+    itemId: 'user-notification-api',
     title: 'User Notification API'.t(),
 
     viewModel: true,
