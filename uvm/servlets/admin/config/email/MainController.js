@@ -79,7 +79,7 @@ Ext.define('Ung.config.email.MainController', {
 
         var fromAddressCmp = view.down('textfield[name="FromAddress"]');
         if (fromAddressCmp.rendered && !fromAddressCmp.isValid()) {
-            Ung.app.redirectTo('#config/email/outgoing_server');
+            Ung.app.redirectTo('#config/email/outgoing-server');
             Ext.MessageBox.alert('Warning'.t(), 'A From Address must be specified.'.t());
             fromAddressCmp.focus(true);
             return null;

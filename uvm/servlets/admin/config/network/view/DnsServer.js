@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.view.DnsServer', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-dnsserver',
-    itemId: 'dns_server',
+    itemId: 'dns-server',
 
     viewModel: true,
 

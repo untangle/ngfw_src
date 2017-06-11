@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.wanbalancer.view.TrafficAllocation', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-balancer-trafficallocation',
-    itemId: 'traffic_allocation',
+    itemId: 'traffic-allocation',
     title: 'Traffic Allocation'.t(),
     viewModel: true,
 

@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.reports.view.EmailTemplates', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-reports-emailtemplates',
-    itemId: 'email_templates',
+    itemId: 'email-templates',
     title: 'Email Templates'.t(),
 
     controller: 'unreportsemailtemplatesgrid',

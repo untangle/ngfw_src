@@ -104,16 +104,16 @@
     },
     "screens": [{
         "name": "main_dashboard",
-        "url": "admin/index.do#"
+        "url": "/admin/index.do#dashboard"
     },{
         "name": "main_config",
-        "url": "admin/index.do#config"
+        "url": "/admin/index.do#config"
     },{
         "name": "main_apps",
-        "url": "admin/index.do#apps/1"
+        "url": "/admin/index.do#apps"
     },{
         "name": "main_reports",
-        "url": "admin/index.do#reports"
+        "url": "/admin/index.do#reports"
     },{
         "name": "config_network_interfaces",
         "url": "/admin/index.do#config/network/interfaces",
@@ -128,7 +128,7 @@
         "type": "remove_nav"
     },{
         "name": "config_network_port_forward_rules",
-        "url": "/admin/index.do#config/network/port_forward_rules",
+        "url": "/admin/index.do#config/network/port-forward-rules",
         "type": "remove_nav"
     },{
         "name": "config_network_nat_rules",
@@ -137,7 +137,7 @@
         "path": "config-network-natrules"
     },{
         "name": "config_network_bypass_rules",
-        "url": "/admin/index.do#config/network/bypass_rules",
+        "url": "/admin/index.do#config/network/bypass-rules",
         "type": "remove_nav"
     },{
         "name": "config_network_routes",
@@ -145,11 +145,11 @@
         "type": "remove_nav"
     },{
         "name": "config_network_dns_server",
-        "url": "/admin/index.do#config/network/dns_server",
+        "url": "/admin/index.do#config/network/dns-server",
         "type": "remove_nav"
     },{
         "name": "config_network_dhcp_server",
-        "url": "/admin/index.do#config/network/dhcp_server",
+        "url": "/admin/index.do#config/network/dhcp-server",
         "type": "remove_nav"
     },{
         "name": "config_network_advanced",
@@ -192,11 +192,11 @@
 
     },{
         "name": "config_email_outgoing_server",
-        "url": "/admin/index.do#config/email/outgoing_server",
+        "url": "/admin/index.do#config/email/outgoing-server",
         "type": "remove_nav"
     },{
         "name": "config_email_safe_list",
-        "url": "/admin/index.do#config/email/safe_list",
+        "url": "/admin/index.do#config/email/safe-list",
         "type": "remove_nav"
     },{
         "name": "config_email_quarantine",
@@ -282,19 +282,19 @@
         "type": "remove_nav"
     },{
         "name": "apps_web_filter_site_lookup",
-        "url": "/admin/index.do#apps/1/web-filter/site_lookup",
+        "url": "/admin/index.do#apps/1/web-filter/site-lookup",
         "type": "remove_nav"
     },{
         "name": "apps_web_filter_block_sites",
-        "url": "/admin/index.do#apps/1/web-filter/block_sites",
+        "url": "/admin/index.do#apps/1/web-filter/block-sites",
         "type": "remove_nav"
     },{
         "name": "apps_web_filter_pass_sites",
-        "url": "/admin/index.do#apps/1/web-filter/pass_sites",
+        "url": "/admin/index.do#apps/1/web-filter/pass-sites",
         "type": "remove_nav"
     },{
         "name": "apps_web_filter_pass_clients",
-        "url": "/admin/index.do#apps/1/web-filter/pass_clients",
+        "url": "/admin/index.do#apps/1/web-filter/pass-clients",
         "type": "remove_nav"
     },{
         "name": "apps_web_filter_rules",
@@ -311,11 +311,11 @@
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_scan_options",
-        "url": "/admin/index.do#apps/1/virus-blocker/scan_options",
+        "url": "/admin/index.do#apps/1/virus-blocker/scan-options",
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_pass_sites",
-        "url": "/admin/index.do#apps/1/virus-blocker/pass_sites",
+        "url": "/admin/index.do#apps/1/virus-blocker/pass-sites",
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_advanced",
@@ -328,11 +328,11 @@
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_lite_scan_options",
-        "url": "/admin/index.do#apps/1/virus-blocker-lite/scan_options",
+        "url": "/admin/index.do#apps/1/virus-blocker-lite/scan-options",
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_lite_pass_sites",
-        "url": "/admin/index.do#apps/1/virus-blocker-lite/pass_sites",
+        "url": "/admin/index.do#apps/1/virus-blocker-lite/pass-sites",
         "type": "remove_nav"
     },{
         "name": "apps_virus_blocker_lite_advanced",
@@ -363,7 +363,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_web_cache_bypass",
-        "url": "/admin/index.do#apps/1/web-cache/cache_bypass",
+        "url": "/admin/index.do#apps/1/web-cache/cache-bypass",
         "type": "remove_nav"
 
     },{
@@ -415,19 +415,19 @@
         "type": "remove_nav"
     },{
         "name": "apps_captive_portal_capture_rules",
-        "url": "/admin/index.do#apps/1/captive-portal/capture_rules",
+        "url": "/admin/index.do#apps/1/captive-portal/capture-rules",
         "type": "remove_nav"
     },{
         "name": "apps_captive_portal_passed_hosts",
-        "url": "/admin/index.do#apps/1/captive-portal/passed_hosts",
+        "url": "/admin/index.do#apps/1/captive-portal/passed-hosts",
         "type": "remove_nav"
     },{
         "name": "apps_captive_portal_captive_page",
-        "url": "/admin/index.do#apps/1/captive-portal/captive_page",
+        "url": "/admin/index.do#apps/1/captive-portal/captive-page",
         "type": "remove_nav"
     },{
         "name": "apps_captive_portal_user_authentication",
-        "url": "/admin/index.do#apps/1/captive-portal/user_authentication",
+        "url": "/admin/index.do#apps/1/captive-portal/user-authentication",
         "type": "remove_nav"
 
     },{
@@ -449,15 +449,15 @@
         "type": "remove_nav"
     },{
         "name": "apps_ad_blocker_ad_filters",
-        "url": "/admin/index.do#apps/1/ad-blocker/ad_filters",
+        "url": "/admin/index.do#apps/1/ad-blocker/ad-filters",
         "type": "remove_nav"
     },{
         "name": "apps_ad_blocker_cookie_filters",
-        "url": "/admin/index.do#apps/1/ad-blocker/cookie_filters",
+        "url": "/admin/index.do#apps/1/ad-blocker/cookie-filters",
         "type": "remove_nav"
     },{
         "name": "apps_ad_blocker_cookie_pass_lists",
-        "url": "/admin/index.do#apps/1/ad-blocker/pass_lists",
+        "url": "/admin/index.do#apps/1/ad-blocker/pass-lists",
         "type": "remove_nav"
 
     },{
@@ -466,7 +466,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_reports_all_reports",
-        "url": "/admin/index.do#apps/1/reports/all_reports",
+        "url": "/admin/index.do#apps/1/reports/all-reports",
         "type": "remove_nav"
     },{
         "name": "apps_reports_data",
@@ -474,7 +474,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_reports_email_templates",
-        "url": "/admin/index.do#apps/1/reports/email_templates",
+        "url": "/admin/index.do#apps/1/reports/email-templates",
         "type": "remove_nav"
     },{
         "name": "apps_reports_users",
@@ -482,7 +482,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_reports_name_map",
-        "url": "/admin/index.do#apps/1/reports/name_map",
+        "url": "/admin/index.do#apps/1/reports/name-map",
         "type": "remove_nav"
 
     },{
@@ -504,11 +504,11 @@
         "type": "remove_nav"
     },{
         "name": "apps_directory_connector_user_notification_api",
-        "url": "/admin/index.do#apps/1/directory-connector/user_notification_api",
+        "url": "/admin/index.do#apps/1/directory-connector/user-notification-api",
         "type": "remove_nav"
     },{
         "name": "apps_directory_connector_active_directory",
-        "url": "/admin/index.do#apps/1/directory-connector/active_directory",
+        "url": "/admin/index.do#apps/1/directory-connector/active-directory",
         "type": "remove_nav"
     },{
         "name": "apps_directory_connector_radius",
@@ -538,11 +538,11 @@
         "type": "remove_nav"
     },{
         "name": "apps_wan_balancer_traffic_allocation",
-        "url": "/admin/index.do#apps/1/wan-balancer/traffic_allocation",
+        "url": "/admin/index.do#apps/1/wan-balancer/traffic-allocation",
         "type": "remove_nav"
     },{
         "name": "apps_wan_balancer_route_rules",
-        "url": "/admin/index.do#apps/1/wan-balancer/route_rules",
+        "url": "/admin/index.do#apps/1/wan-balancer/route-rules",
         "type": "remove_nav"
 
     },{
@@ -551,35 +551,35 @@
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_options",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec_options",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec-options",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_tunnels",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec_tunnels",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec-tunnels",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_config",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/vpn_config",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/vpn-config",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_gre_networks",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/gre_networks",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/gre-networks",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_state",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec_state",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec-state",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_policy",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec_policy",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec-policy",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_ipsec_log",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec_log",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/ipsec-log",
         "type": "remove_nav"
     },{
         "name": "apps_ipsec_vpn_l2tp_log",
-        "url": "/admin/index.do#apps/1/ipsec-vpn/l2tp_log",
+        "url": "/admin/index.do#apps/1/ipsec-vpn/l2tp-log",
         "type": "remove_nav"
 
     },{
@@ -619,7 +619,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_configuration_backup_google_connector",
-        "url": "/admin/index.do#apps/1/configuration-backup/google_connector",
+        "url": "/admin/index.do#apps/1/configuration-backup/google-connector",
         "type": "remove_nav"
 
     },{
@@ -658,7 +658,7 @@
         "type": "remove_nav"
     },{
         "name": "reports_ad_blocker_blocked_cookie_events",
-        "url": "/admin/index.do#reports/ad-blocker/blocked_cookie-events",
+        "url": "/admin/index.do#reports/ad-blocker/blocked-cookie-events",
         "type": "remove_nav"
 
     },{
@@ -906,7 +906,7 @@
         "type": "remove_nav"
     },{
         "name": "reports_bandwidth_control_quota_events",
-        "url": "/admin/index.do#reports/bandwidth-control/quota_events",
+        "url": "/admin/index.do#reports/bandwidth-control/quota-events",
         "type": "remove_nav"
     },{
         "name": "reports_bandwidth_control_prioritized_sessions",
@@ -1328,7 +1328,7 @@
         "type": "remove_nav"
      },{
         "name": "reports_network_all_session_minutes",
-        "url": "/admin/index.do#reports/network/all-session_minutes",
+        "url": "/admin/index.do#reports/network/all-session-minutes",
         "type": "remove_nav"
 
      },{
