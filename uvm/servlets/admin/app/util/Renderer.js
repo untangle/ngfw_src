@@ -73,7 +73,7 @@ Ext.define('Ung.util.Renderer', {
     },
 
     interface: function (value) {
-        if (!this.interfaceMap) {
+        if (!Ung.util.Renderer.interfaceMap) {
             // this.buildInterfaceMap();
             var interfacesList = [], i;
             try {
@@ -86,12 +86,12 @@ Ext.define('Ung.util.Renderer', {
             interfacesList.push({ interfaceId: 252, name: 'Xauth' }); // 0xfc
             interfacesList.push({ interfaceId: 253, name: 'GRE' }); // 0xfd
 
-            this.interfaceMap = {};
+            Ung.util.Renderer.interfaceMap = {};
             for (i = 0; i < interfacesList.length; i += 1) {
-                this.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name + " [" + interfacesList[i].interfaceId + "]";
+                Ung.util.Renderer.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name + " [" + interfacesList[i].interfaceId + "]";
             }
         }
-        return value ? this.interfaceMap[value] || value.toString() : '';
+        return value ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
     },
 
     tags: function (value, metaData) {
@@ -140,8 +140,8 @@ Ext.define('Ung.util.Renderer', {
         // walk map looking at key.  If larger then divide and use units
         value = parseInt( value, 10 );
         var size;
-        for( var i = 0; i < this.datasizeMap.length; i++){
-            size = this.datasizeMap[i];
+        for( var i = 0; i < Ung.util.Renderer.datasizeMap.length; i++){
+            size = Ung.util.Renderer.datasizeMap[i];
             if( value >= size[0] ){
                 break;
             }
@@ -164,8 +164,8 @@ Ext.define('Ung.util.Renderer', {
         2419200: 'Monthly'.t()
     },
     timeInterval: function ( value ){
-        if( value in this.timeIntervalMap ){
-            return this.timeIntervalMap[value];
+        if( value in Ung.util.Renderer.timeIntervalMap ){
+            return Ung.util.Renderer.timeIntervalMap[value];
         }
         return value;
     },
@@ -180,8 +180,8 @@ Ext.define('Ung.util.Renderer', {
         6: 'Saturday'.t()
     },
     dayOfWeek: function( value ){
-        if( value in this.dayOfWeeklMap ){
-            return this.dayOfWeekMap[value];
+        if( value in Ung.util.Renderer.dayOfWeeklMap ){
+            return Ung.util.Renderer.dayOfWeekMap[value];
         }
         return value;
     },
@@ -200,8 +200,8 @@ Ext.define('Ung.util.Renderer', {
         if (Ext.isEmpty(value)) {
             value = 0;
         }
-        if( value in this.priorityMap ){
-            return this.priorityMap[value];
+        if( value in Ung.util.Renderer.priorityMap ){
+            return Ung.util.Renderer.priorityMap[value];
         }
         return Ext.String.format('Unknown Priority: {0}'.t(), value);
     },
@@ -354,7 +354,7 @@ Ext.define('Ung.util.Renderer', {
         142: 'ROHC [142]'
     },
     protocol: function (value) {
-        return value ? this.protocolsMap[value] || value.toString() : '';
+        return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
     },
 
 });
