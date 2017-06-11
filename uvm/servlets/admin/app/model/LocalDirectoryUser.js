@@ -1,7 +1,7 @@
 Ext.define('Ung.model.LocalDirectoryUser', {
     extend: 'Ext.data.Model' ,
 
-    alias: 'model.localdirectoryuser',
+    alias: 'model.local-directoryuser',
 
     fields: [
         { name: 'username' },

@@ -1,6 +1,6 @@
-Ext.define('Ung.config.localdirectory.MainController', {
+Ext.define('Ung.config.local-directory.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.config-localdirectory',
+    alias: 'controller.config-local-directory',
 
     control: {
         '#': {
