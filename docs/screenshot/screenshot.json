@@ -206,12 +206,12 @@
 
     },{
         "name": "config_local_directory",
-        "url": "/admin/index.do#config/local-directory/local-users",
+        "url": "/admin/index.do#config/local-directory",
         "type": "remove_nav"
 
     },{
         "name": "config_upgrade",
-        "url": "/admin/index.do#config/upgrade/upgrade-settings",
+        "url": "/admin/index.do#config/upgrade",
         "type": "remove_nav"
     },{
         "name": "config_system_regional",
