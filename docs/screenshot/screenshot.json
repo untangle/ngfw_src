@@ -206,7 +206,7 @@
 
     },{
         "name": "config_local_directory",
-        "url": "/admin/index.do#config/local-directory",
+        "url": "/admin/index.do#config/local-directory/local-users",
         "type": "remove_nav"
 
     },{
