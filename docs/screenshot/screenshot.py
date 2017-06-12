@@ -332,10 +332,9 @@ def main(argv):
     global Debug
     want_screen_name = None
     want_resolution = None
-    auto_names = False
     tmp_dir = "/tmp/webbrowser"
     try:
-        opts, args = getopt.getopt(argv, "hadr:s:t:", ["help", "autonames", "debug", "resolution=", "screen=", "tmpdir="] )
+        opts, args = getopt.getopt(argv, "hdr:s:t:", ["help", "debug", "resolution=", "screen=", "tmpdir="] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -344,8 +343,6 @@ def main(argv):
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
-        if opt in ( "-a", "--autonames"):
-            auto_names = True
         if opt in ( "-d", "--debug"):
             Debug = True
         if opt in ( "-s", "--screen"):
@@ -381,10 +378,9 @@ def main(argv):
             web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
 
         for screen in settings["screens"]:
-            if auto_names:
-                screen['name'] = screen['url'].replace("/admin/index.do#","")
-                screen['name'] = screen['name'].replace("/","_")
-                screen['name'] = screen['name'].replace("_1_","_")
+            screen['name'] = screen['url'].replace("/admin/index.do#","")
+            screen['name'] = screen['name'].replace("/","_")
+            screen['name'] = screen['name'].replace("_1_","_")
 
             total_screens += 1
             if want_screen_name is not None and want_screen_name not in screen["name"]:
