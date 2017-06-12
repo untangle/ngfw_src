@@ -479,7 +479,7 @@
         "type": "remove_nav"
     },{
         "name": "apps_reports_users",
-        "url": "/admin/index.do#apps/1/reports/users",
+        "url": "/admin/index.do#apps/1/reports/reports-users",
         "type": "remove_nav"
     },{
         "name": "apps_reports_name_map",
