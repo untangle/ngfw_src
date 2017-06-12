@@ -250,7 +250,7 @@
         "name": "config_about_license-agreement",
         "url": "/admin/index.do#config/about/license-agreement",
         "type": "remove_nav",
-        "path": "config-about-licenseagreement"
+        "path": "config-about-license-agreement"
 
     },{
         "name": "monitor_sessions",
@@ -593,9 +593,8 @@
         "type": "remove_nav"
     },{
         "name": "apps_openvpn_client",
-        "url": "/admin/index.do#apps/1/openvpn/openvpn-client",
-        "type": "remove_nav",
-        "path": "app-openvpn-client"
+        "url": "/admin/index.do#apps/1/openvpn/client",
+        "type": "remove_nav"
     },{
         "name": "apps_openvpn_advanced",
         "url": "/admin/index.do#apps/1/openvpn/advanced",
