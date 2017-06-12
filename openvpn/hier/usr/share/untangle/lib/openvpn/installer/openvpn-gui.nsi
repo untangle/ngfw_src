@@ -429,7 +429,7 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
         File "${OPENVPN_ROOT}\bin-win32\openvpn-gui.exe"
         ${EndIf}
 
-	!insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
+	# !insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
 
 	${If} ${SectionIsSelected} ${SecAddShortcutsWorkaround}
 		CreateDirectory "$SMPROGRAMS\${PACKAGE_NAME}"
