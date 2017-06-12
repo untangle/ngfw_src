@@ -211,7 +211,7 @@
 
     },{
         "name": "config_upgrade",
-        "url": "/admin/index.do#config/upgrade",
+        "url": "/admin/index.do#config/upgrade/upgrade-settings",
         "type": "remove_nav"
     },{
         "name": "config_system_regional",
