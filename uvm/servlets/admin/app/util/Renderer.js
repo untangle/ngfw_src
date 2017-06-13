@@ -357,4 +357,11 @@ Ext.define('Ung.util.Renderer', {
         return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
     },
 
+    settingsFile: function( value ){
+        value = value.replace( /^.*\/settings\//, '' );
+        value = value.replace( /^.*\/conf\//, '' );
+        return value;
+    },
+
+
 });
