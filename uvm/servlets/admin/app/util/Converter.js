@@ -577,11 +577,6 @@ Ext.define('Ung.util.Converter', {
         return ( value in Converter.loginFailureReasonMap ) ? Converter.loginFailureReasonMap[value] : Converter.loginFailureReasonMap['default'];
     },
 
-    settingsFile: function( value ){
-        value = value.replace( /^.*\/settings\//, '' );
-        return value;
-    },
-
     quotaActionMap: {
         1: 'Given'.t(),
         2: 'Exceeded'.t(),
