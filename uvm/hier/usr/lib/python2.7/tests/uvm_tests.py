@@ -93,7 +93,7 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         },
         "ruleId": 1
     }
-    
+
 class UvmTests(unittest2.TestCase):
 
     @staticmethod
@@ -156,7 +156,7 @@ class UvmTests(unittest2.TestCase):
 
                     url = "http://wiki.untangle.com/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=11.0.0&webui=true&lang=en"
                     print "Checking %s = %s " % (helpSource, url)
-                    req = urllib2.Request( url, headers=hdr) 
+                    req = urllib2.Request( url, headers=hdr)
                     ret = urllib2.urlopen( req, context=ctx )
                     time.sleep(.1) # dont flood wiki
                     assert(ret)
@@ -239,7 +239,7 @@ class UvmTests(unittest2.TestCase):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') != None )
         assert( "test-tag" in entry.get('tagsString') )
-        
+
         uvmContext.eventManager().setSettings( orig_settings )
 
     def test_041_trigger_rule_untag_host(self):
@@ -283,7 +283,7 @@ class UvmTests(unittest2.TestCase):
         assert( "test-tag-2" in entry.get('tagsString') )
 
         uvmContext.eventManager().setSettings( orig_settings )
-        
+
     def test_050_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
@@ -301,7 +301,7 @@ class UvmTests(unittest2.TestCase):
         assert ( found )
 
         uvmContext.eventManager().setSettings( orig_settings )
-        
+
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
@@ -313,5 +313,39 @@ class UvmTests(unittest2.TestCase):
     def test_101_account_login_invalid(self):
         result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
+
+    # Make sure the HostsFileManager is working as expected
+    def test_110_hosts_file_manager(self):
+        hostName = ""
+        domainName = ""
+        fullName = ""
+
+        # build the hostname just like we do in the ut-update-hosts-file script
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        if 'hostName' in netsettings:
+            hostName = netsettings['hostName']
+        if 'domainName' in netsettings:
+            domainName = netsettings['domainName']
+
+        if len(hostName) > 0 and len(domainName) > 0:
+            fullName = (hostName + "." + domainName)
+        elif len(hostName) > 0:
+            fullName = hostName
+        else:
+            fullName = 'server.ngfw'
+
+        print "Checking HostsFileManager records for " + fullName
+
+        # perform a DNS lookup for our hostname against every non-WAN interface
+        # and make sure the value returned matches the address of the interface
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan'] == False:
+                if 'v4StaticAddress' in interface:
+                    netaddr = interface['v4StaticAddress']
+                    if len(netaddr) > 0:
+                        print "Checking hostname resolution for %s" % netaddr
+                        output = subprocess.check_output("dig +short @" + netaddr + " " + fullName, shell=True)
+                        result = output.strip()
+                        assert(result == netaddr)
 
 test_registry.registerApp("uvm", UvmTests)
