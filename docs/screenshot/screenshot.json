@@ -259,6 +259,31 @@
         "type": "remove_nav"
 
     },{
+        "url": "/admin/index.do#apps/1/web-monitor/status",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/categories",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/site-lookup",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/flag-sites",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/pass-sites",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/pass-clients",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/rules",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/web-monitor/advanced",
+        "type": "remove_nav"
+	
+    },{
         "url": "/admin/index.do#apps/1/virus-blocker/status",
         "type": "remove_nav"
     },{
@@ -291,6 +316,13 @@
         "url": "/admin/index.do#apps/1/spam-blocker/email",
         "type": "remove_nav"
 
+    },{
+        "url": "/admin/index.do#apps/1/spam-blocker-lite/status",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/spam-blocker-lite/email",
+        "type": "remove_nav"
+	
     },{
         "url": "/admin/index.do#apps/1/phish-blocker/status",
         "type": "remove_nav"
@@ -1198,6 +1230,41 @@
         "url": "/admin/index.do#reports/spam-blocker/tarpit-events",
         "type": "remove_nav"
 
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/spam-blocker-lite-summary",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-all",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-scanned",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-clean",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/spam-ratio",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/top-spam-recipients",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/top-spam-sender-addresses",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/all-email-events",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/all-spam-events",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/quarantined-events",
+        "type": "remove_nav"
+     },{
+        "url": "/admin/index.do#reports/spam-blocker-lite/tarpit-events",
+        "type": "remove_nav"
+
+	 
       },{
         "url": "/admin/index.do#reports/system/cpu-load",
         "type": "remove_nav"
@@ -1571,5 +1638,102 @@
       },{
         "url": "/admin/index.do#reports/web-filter/all-query-events",
         "type": "remove_nav"
-    }]
+
+      },{
+        "url": "/admin/index.do#reports/web-monitor/web-monitor-summary",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/web-usage",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/web-usage-scanned",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/web-usage-flagged",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-requests-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-requests-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-categories",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-sites-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-sites-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-sites",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-domains-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-domains-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-domains",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-domains-usage",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-hostnames-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-hostnames-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-hostnames",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-clients-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-clients-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-clients",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-usernames-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-usernames-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-flagged-usernames",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-content-by-request",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/top-content-by-size",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/all-web-events",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/flagged-web-events",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/all-http-events",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/all-https-events",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/unblocked-web-events",
+        "type": "remove_nav"
+      },{
+        "url": "/admin/index.do#reports/web-monitor/all-query-events",
+        "type": "remove_nav"
+      }
+
+		
+	       ]
 }
