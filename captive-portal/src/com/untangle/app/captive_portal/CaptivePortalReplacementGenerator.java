@@ -89,6 +89,8 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         retval = (retval + "&appid=" + appSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
+
+        logger.debug("CLIENT REPLY = " + retval);
         return (retval);
     }
 }
