@@ -11,6 +11,7 @@ dict = {}
 # read the report entries and put in dictionary
 p = subprocess.Popen(["sh","-c","/usr/bin/find /usr/share/untangle/lib -path '*/reports/*.js' -print"], stdout=subprocess.PIPE)
 for line in iter(p.stdout.readline, ''):
+    if 'appProperties.js' in line: continue
     filename = line.strip()
 
     try:
