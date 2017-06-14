@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.reports.view.NameMap', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-reports-namemap',
-    itemId: 'name_map',
+    itemId: 'name-map',
     title: 'Name Map'.t(),
 
     dockedItems: [{

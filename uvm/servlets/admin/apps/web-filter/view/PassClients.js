@@ -1,9 +1,9 @@
 Ext.define('Ung.apps.webfilter.view.PassClients', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-web-filter-passclients',
-    itemId: 'pass_clients',
+    itemId: 'pass-clients',
     title: 'Pass Clients'.t(),
-    helpSource: 'pass_clients',
+
 
     dockedItems: [{
         xtype: 'toolbar',

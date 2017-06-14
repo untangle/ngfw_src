@@ -62,35 +62,36 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
                 columns: [{
                     header: 'IP Address'.t(),
                     dataIndex: 'userNetAddress',
-                    width: 150
+                    width: Renderer.ipWidth
                 }, {
                     header: 'MAC Address'.t(),
                     dataIndex: 'userMacAddress',
-                    width: 200
+                    width: Renderer.macWidth
                 }, {
                     header: 'Login Key'.t(),
                     dataIndex: 'macLogin',
-                    width: 120,
+                    width: Renderer.messageWidth,
                     renderer: function(value) {
                         return value ? 'MAC Address'.t() : 'IP Address'.t();
                     }
                 }, {
                     header: 'User Name'.t(),
                     dataIndex: 'userName',
-                    width: 200
+                    width: Renderer.usernameWidth,
+                    flex: 1
                 }, {
                     header: 'Login Time'.t(),
                     dataIndex: 'sessionCreation',
-                    width: 180,
+                    width: Renderer.timestampWidth,
                     renderer: function(value) { return Util.timestampFormat(value); }
                 }, {
                     header: 'Session Count'.t(),
                     dataIndex: 'sessionCounter',
-                    width: 120,
+                    width: Renderer.idWidth,
                 }, {
                     header: 'Logout'.t(),
                     xtype: 'actioncolumn',
-                    width: 80,
+                    width: Renderer.actionWidth,
                     align: 'center',
                     iconCls: 'fa fa-minus-circle',
                     handler: 'logoutUser',

@@ -117,6 +117,7 @@ Ext.define('Ung.view.extra.Devices', {
             sortType: 'asUnString'
         }, {
             name: 'lastSessionTime',
+            sortType: 'asTimestamp'
         }, {
             name: 'tags'
         }],
@@ -126,7 +127,8 @@ Ext.define('Ung.view.extra.Devices', {
             columns:[{
                 header: 'Address'.t(),
                 dataIndex: 'macAddress',
-                filter: { type: 'string' },
+                width: Renderer.macWidth,
+                filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
                     emptyText: '[no MAC Address]'.t()
@@ -134,7 +136,8 @@ Ext.define('Ung.view.extra.Devices', {
             }, {
                 header: 'Vendor'.t(),
                 dataIndex: 'macVendor',
-                filter: { type: 'string' },
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter,
                 editor: {
                     xtype: 'textfield',
                     emptyText: '[no MAC Vendor]'.t()
@@ -143,12 +146,14 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
-            filter: { type: 'string' },
+            width: Renderer.messageWidth,
+            filter: Renderer.stringFilter,
             rtype: 'interface'
         }, {
             header: 'Last Hostname'.t(),
             dataIndex: 'hostnameLastKnown',
-            filter: { type: 'string' },
+            width: Renderer.hostnameWidth,
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: ''.t()
@@ -156,7 +161,8 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            filter: { type: 'string' },
+            width: Renderer.hostnameWidth,
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no hostname]'.t()
@@ -164,7 +170,8 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
-            filter: { type: 'string' },
+            width: Renderer.usernameidth,
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no device username]'.t()
@@ -172,8 +179,9 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
+            width: Renderer.messageWidth,
             // flex: 1,
-            filter: { type: 'string' },
+            filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no HTTP user agent]'.t()
@@ -181,12 +189,12 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Last Seen Time'.t(),
             dataIndex: 'lastSessionTime',
-            width: 180,
-            filter: { type: 'date' },
-            rtype: 'timestamp'
+            width: Renderer.timestampWidth,
+            rtype: 'timestamp',
+            filter: Renderer.timestampFilter
         }, {
             header: 'Tags'.t(),
-            width: 300,
+            width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
             // flex: 1,
@@ -274,11 +282,6 @@ Ext.define('Ung.view.extra.Devices', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/devices',
         hrefTarget: '_self'
-    }, {
-        xtype: 'button',
-        text: 'Help'.t(),
-        iconCls: 'fa fa-question-circle',
-        href: rpc.helpUrl + '?source=devices&' + Util.getAbout()
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',

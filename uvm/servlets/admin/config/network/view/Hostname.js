@@ -2,7 +2,7 @@ Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config-network-hostname',
     itemId: 'hostname',
-    helpSource: 'network_hostname',
+
     withValidation: true, // requires validation on save
     viewModel: true,
 
@@ -22,7 +22,8 @@ Ext.define('Ung.config.network.view.Hostname', {
                 xtype: 'textfield',
                 fieldLabel: 'Hostname'.t(),
                 labelAlign: 'right',
-                emptyText: 'untangle',
+                emptyText: 'hostname',
+                allowBlank: false,
                 name: 'HostName',
                 bind: '{settings.hostName}',
                 maskRe: /[a-zA-Z0-9\-]/
@@ -78,7 +79,9 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['dnspark','DNSPark'],
                     ['no-ip','No-IP'],
                     ['dnsomatic','DNS-O-Matic'],
-                    ['cloudflare','Cloudflare']]
+                    ['google','Google'],
+                    //['cloudflare','Cloudflare'] // does not work - needs ddclient 3.8.3
+                   ]
         }, {
             xtype: 'textfield',
             fieldLabel: 'Username'.t(),

@@ -4,11 +4,6 @@ Ext.define('Ung.view.apps.Apps', {
     itemId: 'apps',
     layout: 'card',
     // layout: 'border',
-    /* requires-start */
-    requires: [
-        'Ung.view.apps.AppsController'
-    ],
-    /* requires-end */
 
     itemType: rpc.skinInfo.appsViewType === 'rack' ? 'rackitem' : 'simpleitem',
 
@@ -21,39 +16,10 @@ Ext.define('Ung.view.apps.Apps', {
             servicesCount: 0
         },
         stores: {
-            apps: {
-                // data: '{appsData}',
-                fields: ['name', 'displayName', 'url', 'type', 'status'],
-                listeners: {
-                    datachanged: 'updateCounters'
-                }
-            },
-            installedApps: {
-                // source: '{apps}',
-                // filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
-                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
-                listeners: {
-                    add: 'onAddApp',
-                    remove: 'onRemoveApp'
-                }
-            },
             installableApps: {
-                // source: '{apps}',
-                // filters: [ { property: 'type', value: 'FILTER' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
                 sorters: [ { property: 'viewPosition', direction: 'ASC' }],
-            },
-            installedServices: {
-                // source: '{apps}',
-                // filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installed', 'progress', 'finish'], item.get('extraCls')); } ],
-                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
-                listeners: {
-                    add: 'onAddService',
-                    remove: 'onRemoveApp'
-                }
             },
             installableServices: {
-                // source: '{apps}',
-                // filters: [ { property: 'type', value: 'SERVICE' }, function (item) { return Ext.Array.contains(['installable', 'progress', 'finish'], item.get('extraCls')); } ],
                 sorters: [ { property: 'viewPosition', direction: 'ASC' }]
             }
         }
@@ -125,8 +91,6 @@ Ext.define('Ung.view.apps.Apps', {
     items: [{
         itemId: 'installedApps',
         xtype: rpc.skinInfo.appsViewType === 'rack' ? 'apps-rack' : 'apps-simple',
-        // xtype: 'apps-rack',
-        // xtype: 'apps-simple',
         // region: 'center',
     }, {
         scrollable: true,

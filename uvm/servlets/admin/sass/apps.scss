@@ -29,14 +29,10 @@
 
 /*app simple item*/
 .app-item {
-    // float: left;
     height: 140px;
     width: 140px;
-    // margin: 10px;
     border-radius: 5px;
     font-family: $custom-font;
-    // background: #EEE;
-
     overflow: hidden;
     text-align: center;
     padding: 20px 10px 0;
@@ -44,26 +40,7 @@
     position: relative;
     transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
 
-
     text-decoration: none;
-
-    &.disabled {
-        cursor: default;
-        img {
-            -webkit-filter: grayscale(1);
-            filter: grayscale(1);
-            opacity: 0.5;
-        }
-        &:hover {
-            box-shadow: none;
-            background: none;
-        }
-    }
-
-    .parent-policy {
-        color: #777;
-        font-size: 10px;
-    }
 
     .state {
         position: absolute;
@@ -98,9 +75,6 @@
     &:hover {
         box-shadow: 0 1px 3px rgba(0,0,0,0.4);
         background: #EEE;
-        img {
-            // transform: translate3d( 0, 0, 0) scale(1);
-        }
         .app-install {
             opacity: 1;
             bottom: 3px;
@@ -109,46 +83,11 @@
             opacity: 1;
         }
     }
-    &.install {
-        &:hover {
-            .app-icon {
-                transform-origin: top;
-                transform: scale(0.9);
-            }
-        }
-    }
-    &.remove {
-        background: rgba(255, 0, 0, 0.32);
-        /*
-        animation: shakeremoval 0.8s infinite;
-        transform-origin: 50% 50%;
-        animation-timing-function: linear;
-        transform: translate3d(0, 0, 0);
-        backface-visibility: hidden;
-        perspective: 1000px;
-        */
-    }
-    &.insert {
-        transform: scale(0)
-    }
 
     .loader {
         display: none;
         left: 50%;
         top: 60px;
-    }
-
-    &.progress {
-        box-shadow: none;
-        background: none;
-        cursor: default;
-        img {
-            filter: grayscale(100%);
-            opacity: 0.2;
-        }
-        .loader {
-            display: block;
-        }
     }
 
     .new {
@@ -162,11 +101,6 @@
         line-height: 1.2;
     }
 
-    &.finish {
-        .new {
-            display: inline-block;
-        }
-    }
     .app-icon {
         display: block;
         position: relative;
@@ -191,38 +125,6 @@
         // transform: translate3d( 0, 0, 0) scale(0.9);
         transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
-    .app-install, {
-        opacity: 0;
-        color: #67bd4a;
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 11px;
-        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-    .app-done {
-        opacity: 0;
-        color: #333;
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        //border-radius: 50%;
-        bottom: 5px;
-        left: 58px;
-        right: 0;
-        text-align: center;
-        font-size: 11px;
-        z-index: 10;
-        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
-        //background: #FFF;
-        //box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-        i {
-            color: green;
-            font-size: 24px;
-        }
-    }
     .app-state {
         position: absolute;
         right: 24px;
@@ -241,14 +143,6 @@
             color: #FFF;
             font-size: 14px;
         }
-    }
-    .spinner {
-        display: none;
-        position: absolute;
-        bottom: 10px;
-        left: 0px;
-        width: 100%;
-        transform: scale(0.7);
     }
 }
 

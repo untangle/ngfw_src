@@ -573,11 +573,6 @@ Ext.define('Ung.util.Converter', {
         return ( value in Converter.loginFailureReasonMap ) ? Converter.loginFailureReasonMap[value] : Converter.loginFailureReasonMap['default'];
     },
 
-    settingsFile: function( value ){
-        value = value.replace( /^.*\/settings\//, '' );
-        return value;
-    },
-
     quotaActionMap: {
         1: 'Given'.t(),
         2: 'Exceeded'.t(),
@@ -660,6 +655,23 @@ Ext.define('Ung.util.Converter', {
     },
     configurationBackupSuccess: function( value ){
         return ( value in Converter.configurationBackupSuccessMap ) ? Converter.configurationBackupSuccessMap[value] : Converter.configurationBackupSuccessMap['default'];
-    }
+    },
+
+    priorityMap: {
+        0: '',
+        1: 'Very High'.t(),
+        2: 'High'.t(),
+        3: 'Medium'.t(),
+        4: 'Low'.t(),
+        5: 'Limited'.t(),
+        6: 'Limited More'.t(),
+        7: 'Limited Severely'.t()
+    },
+    priority: function( value ){
+        if (Ext.isEmpty(value)) {
+            value = 0;
+        }
+        return ( value in Converter.priorityMap ) ? Converter.priorityMap[value] : Converter.priorityMap['default'];
+    },
 
 });

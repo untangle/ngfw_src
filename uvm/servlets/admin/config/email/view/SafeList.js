@@ -1,8 +1,8 @@
 Ext.define('Ung.config.email.view.SafeList', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-email-safelist',
-    itemId: 'safe_list',
-    helpSource: 'email_safe_list',
+    itemId: 'safe-list',
+
     title: 'Safe List'.t(),
 
     viewModel: {

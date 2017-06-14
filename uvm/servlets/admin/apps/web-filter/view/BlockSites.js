@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.webfilter.view.BlockSites', {
     extend: 'Ung.cmp.Grid',
     alias:  'widget.app-web-filter-blocksites',
-    itemId: 'block_sites',
+    itemId: 'block-sites',
     title:  'Block Sites'.t(),
 
     dockedItems: [{

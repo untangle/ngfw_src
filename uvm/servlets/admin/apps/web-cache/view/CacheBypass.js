@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.webcache.view.CacheBypass', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-web-cache-cachebypass',
-    itemId: 'cache_bypass',
+    itemId: 'cache-bypass',
     title: 'Cache Bypass'.t(),
 
 

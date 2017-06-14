@@ -1,14 +1,14 @@
 Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-intrusion-prevention-variables',
-    // itemId: 'variables',
+    itemId: 'variables',
 
     controller: 'unintrusionvariablesgrid',
 
     name: 'variables',
 
     region: 'center',
-    // helpSource: 'intrusion_prevention_variables',
+
     title: "Variables".t(),
     sortableColumns: true,
 

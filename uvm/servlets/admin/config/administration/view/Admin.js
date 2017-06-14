@@ -2,7 +2,7 @@ Ext.define('Ung.config.administration.view.Admin', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-administration-admin',
     itemId: 'admin',
-    helpSource: 'administration_admin',
+
     viewModel: true,
 
     title: 'Admin'.t(),

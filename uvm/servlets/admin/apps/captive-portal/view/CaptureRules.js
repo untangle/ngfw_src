@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.captiveportal.view.CaptureRules', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-captive-portal-capturerules',
-    itemId: 'capture_rules',
+    itemId: 'capture-rules',
     title: 'Capture Rules'.t(),
 
     dockedItems: [{

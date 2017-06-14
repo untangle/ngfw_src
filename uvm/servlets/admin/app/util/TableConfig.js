@@ -294,13 +294,15 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'End Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Bypassed'.t(),
                 width: Renderer.booleanWidth,
@@ -765,19 +767,22 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Start Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'End Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Bypassed'.t(),
                 width: Renderer.booleanWidth,
@@ -1154,7 +1159,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
                 width: 60,
@@ -1451,7 +1457,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
                 width: 60,
@@ -1704,7 +1711,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Session Id'.t(),
                 width: Renderer.portWidth,
@@ -1928,7 +1936,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
@@ -1979,7 +1988,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Login'.t(),
                 width: Renderer.usernameWidth,
@@ -2049,7 +2059,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Load (1-minute)'.t(),
                 width: 120,
@@ -2195,7 +2206,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Address'.t(),
                 width: Renderer.ipWidth,
@@ -2241,7 +2253,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'MAC Address'.t(),
                 width: Renderer.macWidth,
@@ -2288,7 +2301,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -2340,7 +2354,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Result'.t(),
                 width: Renderer.msgWidth,
@@ -2384,7 +2399,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
                 width: 120,
@@ -2439,7 +2455,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
                 width: 120,
@@ -2498,7 +2515,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Event Id'.t(),
                 width: 100,
@@ -2525,13 +2543,15 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'connect_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Logout Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'goodbye_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Elapsed'.t(),
                 width: 120,
@@ -2601,7 +2621,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Tunnel Name'.t(),
                 width: 120,
@@ -2644,7 +2665,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Interface Id'.t(),
                 width: 120,
@@ -2693,7 +2715,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
                 width: 60,
@@ -2745,7 +2768,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Event Id'.t(),
                 width: 60,
@@ -2827,7 +2851,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
                 width: Renderer.messageWidth,
@@ -2906,7 +2931,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Sid'.t(),
                 width: Renderer.portWidth,
@@ -2997,7 +3023,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Type'.t(),
                 width: Renderer.messageWidth,
@@ -3063,19 +3090,22 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Start Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'End Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Client Name'.t(),
                 width: Renderer.usernameWidth,
@@ -3126,7 +3156,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Description'.t(),
                 width: Renderer.messageWidth,
@@ -3160,7 +3191,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             },{
                 header: 'Description'.t(),
                 width: Renderer.messageWidth,
@@ -3239,7 +3271,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
                 width: 60,
@@ -3353,7 +3386,8 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Address'.t(),
                 width: Renderer.ipWidth,
@@ -3388,15 +3422,15 @@ Ext.define('TableConfig', {
             }, {
                 name: 'hostname'
             }, {
-                name: 'settings_file',
-                convert: Converter.settingsFile
+                name: 'settings_file'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -3411,7 +3445,144 @@ Ext.define('TableConfig', {
                 header: 'Settings File'.t(),
                 flex:1,
                 width: Renderer.uriWidth,
-                dataIndex: 'settings_file'
+                dataIndex: 'settings_file',
+                rtype: 'settingsFile'
+            },{
+                header: "Differences".t(),
+                width: Renderer.actionWidth,
+                xtype: 'actioncolumn',
+                align: 'center',
+                // hideable: false,
+                tdCls: 'action-cell',
+                iconCls: 'fa fa-search fa-black',
+                tooltip: "Show difference between previous version".t(),
+                handler: function(view, rowIndex, colIndex, item, e, record) {
+                    if( !this.diffWindow ) {
+                        var columnRenderer = function(value, meta, record) {
+                            var action = record.get("action");
+                            if( action == 3){
+                                meta.style = "background-color:#ffff99";
+                            }else if(action == 2) {
+                                meta.style = "background-color:#ffdfd9";
+                            }else if(action == 1) {
+                                meta.style = "background-color:#d9f5cb";
+                            }
+                            return value;
+                        };
+                        this.diffWindow = Ext.create('Ext.window.Window',{
+                            name: 'diffWindow',
+                            title: 'Settings Difference'.t(),
+                            closeAction: 'hide',
+                            width: Ext.getBody().getViewSize().width - 20,
+                            height:Ext.getBody().getViewSize().height - 20,
+                            layout: 'fit',
+                            items: [{
+                                xtype: 'ungrid',
+                                name: 'gridDiffs',
+                                initialLoad: function() {},
+                                cls: 'diff-grid',
+                                reload: function(handler) {
+                                    this.getStore().getProxy().setData([]);
+                                    this.getStore().load();
+                                    rpc.settingsManager.getDiff(Ext.bind(function(result,exception) {
+                                        var diffWindow = this.up("window[name=diffWindow]");
+                                        if (diffWindow ==null || !diffWindow.isVisible()) {
+                                            return;
+                                        }
+                                        if(exception) {
+                                            this.getView().setLoading(false);
+                                            Util.handleException(exception);
+                                            return;
+                                        }
+                                        var diffData = [];
+                                        var diffLines = result.split("\n");
+                                        var action;
+                                        for( var i = 0; i < diffLines.length; i++) {
+                                            previousAction = diffLines[i].substr(0,1);
+                                            previousLine = diffLines[i].substr(1,510);
+                                            currentAction = diffLines[i].substr(511,1);
+                                            currentLine = diffLines[i].substr(512);
+
+                                            if( previousAction != "<" && previousAction != ">") {
+                                                previousLine = previousAction + previousLine;
+                                                previousAction = -1;
+                                            }
+                                            if( currentAction != "<" && currentAction != ">" && currentAction != "|"){
+                                                currentLine = currentAction + currentLine;
+                                                currentAction = -1;
+                                            }
+
+                                            if( currentAction == "|" ) {
+                                                action = 3;
+                                            } else if(currentAction == "<") {
+                                                action = 2;
+                                            } else if(currentAction == ">") {
+                                                action = 1;
+                                            } else {
+                                                action = 0;
+                                            }
+
+                                            diffData.push({
+                                                line: (i + 1),
+                                                previous: previousLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                current: currentLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                action: action
+                                            });
+                                        }
+                                        this.getStore().loadRawData(diffData);
+                                    },this), this.fileName);
+                                },
+                                fields: [{
+                                    name: "line"
+                                }, {
+                                    name: "previous"
+                                }, {
+                                    name: "current"
+                                }, {
+                                    name: "action"
+                                }],
+                                columnsDefaultSortable: false,
+                                columns:[{
+                                    text: "Line".t(),
+                                    dataIndex: "line",
+                                    renderer: columnRenderer
+                                },{
+                                    text: "Previous".t(),
+                                    flex: 1,
+                                    dataIndex: "previous",
+                                    renderer: columnRenderer
+                                },{
+                                    text: "Current".t(),
+                                    flex: 1,
+                                    dataIndex: "current",
+                                    renderer: columnRenderer
+                                }]
+                            }],
+                            buttons: [{
+                                text: "Close".t(),
+                                handler: Ext.bind(function() {
+                                    this.diffWindow.hide();
+                                }, this)
+                            }],
+                            update: function(fileName) {
+                                var grid = this.down("grid[name=gridDiffs]");
+                                grid.fileName = fileName;
+                                grid.reload();
+                            },
+                            doSize : function() {
+                                this.maximize();
+                            }
+                        });
+                        this.on("beforedestroy", Ext.bind(function() {
+                            if(this.diffWindow) {
+                                Ext.destroy(this.diffWindow);
+                                this.diffWindow = null;
+                            }
+                        }, this));
+                    }
+                    this.diffWindow.show();
+                    this.diffWindow.update(record.get("settings_file"));
+                }
             }]
         }
     }

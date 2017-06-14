@@ -19,13 +19,12 @@ Ext.define('Ung.view.apps.AppsController', {
         }
     },
 
-
+    // build the apps components and add them to the view
     onInit: function () {
         var me = this;
         // maybe there is a better way to get all the available apps regardless of policy
         var initPolicy = rpc.appsViews[0]; // take the first policy (default)
         // build add all the apps containers (rack items) and only update them when based on selected policy
-        // console.log(rpc.appsViews);
 
         var apps = [], appCmps = [], srvCmps = [];
 
@@ -45,7 +44,6 @@ Ext.define('Ung.view.apps.AppsController', {
         });
 
         Ext.Array.each(apps, function (app) {
-            app.helpSource = rpc.helpUrl + '?source=' + app.displayName.toLowerCase().replace(/ /g, '_') + '&' + Util.getAbout();
             if (app.type === 'FILTER') {
                 appCmps.push({
                     xtype: me.getView().itemType,
@@ -70,9 +68,8 @@ Ext.define('Ung.view.apps.AppsController', {
         // me.applyPolicy(initPolicy);
     },
 
-
+    // when policy changes the apps components are updated based on this policy app instances/props
     applyPolicy: function(policy) {
-
         var me = this, vm = me.getViewModel(), appVm, instance;
 
         me.getView().query(me.getView().itemType).forEach(function (app) {
@@ -93,10 +90,9 @@ Ext.define('Ung.view.apps.AppsController', {
                     targetState: instance.targetState,
                     parentPolicy: parentPolicy,
                     metrics: metrics,
-                    route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
+                    route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name'),
+                    helpSource: rpc.helpUrl + '?fragment=apps/' + policy.policyId + '/' + appVm.get('app.name').replace(/ /g, '-') + '&' + Util.getAbout()
                 });
-                // appVm.instanceId =  instance.id;
-                // appVm.targetState =  instance.targetState;
             } else {
                 appVm.set({
                     instanceId: null,
@@ -112,8 +108,6 @@ Ext.define('Ung.view.apps.AppsController', {
                 license: license,
                 licenseMessage: Util.getLicenseMessage(license)
             });
-
-            // console.log(appVm);
         });
 
         // deal with installable apps
@@ -122,7 +116,6 @@ Ext.define('Ung.view.apps.AppsController', {
             app.desc = Util.appDescription[app.name];
             app.route = (app.type === 'FILTER') ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name;
             // app.parentPolicy = null;
-            app.helpSource = rpc.helpUrl + '?source=' + app.name.replace(/-/g, '_') + '&' + Util.getAbout();
             if (app.type === 'FILTER') {
                 installableApps.push(app);
             } else {
@@ -131,20 +124,14 @@ Ext.define('Ung.view.apps.AppsController', {
         });
         vm.getStore('installableApps').loadData(installableApps);
         vm.getStore('installableServices').loadData(installableServices);
-
-        // me.getView().down('#_apps').getEl().scrollTo(0, 0);
     },
 
-
-
-
+    // check policy manager when activating apps view
     onActivate: function () {
         this.getViewModel().set('policyManagerInstalled', rpc.appManager.app('policy-manager') ? true : false);
-        // if (this.loadApps) {
-        // this.getApps();
-        // }
     },
 
+    // after rendering, get the apps of the selected policy ID
     onAfterRender: function () {
         var me = this, vm = this.getViewModel();
         // when policy changes get the apps, this is needed because
@@ -162,27 +149,7 @@ Ext.define('Ung.view.apps.AppsController', {
         });
     },
 
-    updateCounters: function (store) {
-        var me = this, vm = this.getViewModel();
-        vm.set({
-            appsCount: vm.getStore('installedApps').getCount(),
-            servicesCount: vm.getStore('installedServices').getCount()
-        });
-
-
-        // me.getView().down('#_apps').removeAll();
-        // vm.getStore('installedApps').each(function (app) {
-        //     me.getView().down('#_apps').add({
-        //         xtype: 'rackitem',
-        //         viewModel: {
-        //             data: {
-        //                 app: app
-        //             }
-        //         }
-        //     });
-        // });
-    },
-
+    // when policy id changes by selecting another policy from the tree, get the apps
     onRootChange: function () {
         var me = this, menuItems = [], vm = me.getViewModel();
 
@@ -227,11 +194,7 @@ Ext.define('Ung.view.apps.AppsController', {
         me.getApps(); // set when route changed
     },
 
-    refs: {
-        installedApps: '#installedApps',
-        installableApps: '#installableApps'
-    },
-
+    // actual method which fetches apps for a specific policy, then updates the components
     getApps: function () {
         var me = this, vm = this.getViewModel(), instance, license;
 
@@ -244,23 +207,20 @@ Ext.define('Ung.view.apps.AppsController', {
             });
     },
 
+    // show installable apps card
     showInstall: function () {
         var me = this, vm = this.getViewModel();
         me.getView().setActiveItem('installableApps');
         vm.set('onInstalledApps', false);
     },
 
+    // back to Apps from installable view
     backToApps: function () {
         var me = this, vm = this.getViewModel();
         me.getView().setActiveItem('installedApps');
         vm.set('onInstalledApps', true);
     },
 
-    setPolicy: function (combo, newValue, oldValue) {
-        if (oldValue !== null) {
-            this.redirectTo('#apps/' + newValue, false);
-        }
-    },
 
     /**
      * method which initialize the app installation
@@ -272,28 +232,24 @@ Ext.define('Ung.view.apps.AppsController', {
             return;
         }
 
+        // used for installable components
         if (record.get('extraCls') === 'progress') {
             return;
         }
 
-
         var appVm = vm.getView().down('#app_' + record.get('name')).getViewModel();
-        appVm.set('installing', true);
+        appVm.set({
+            installing: true,
+            parentPolicy: null
+        });
 
+        // used for installable components
         record.set('extraCls', 'progress');
-
-        // if (record.get('type') === 'FILTER' && !me.getView().down('#app_' + record.get('name'))) {
-        //     vm.getStore('installedApps').add(record);
-        // }
-
-        // if (record.get('type') === 'SERVICE') {
-        //     vm.getStore('installedServices').add(record);
-        // }
 
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
             var instance = result.getAppSettings();
-            // var appVm = me.getView().down('#app_' + record.get('name')).getViewModel().get('app'); // .set('app.instance', result.getAppSettings());
+
             appVm.set({
                 installing: false,
                 instanceId: instance.id,
@@ -321,10 +277,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     Ext.getStore('policies').loadData(policies);
                 });
 
-
-            // me.updateCounters();
             Ext.fireEvent('appinstall');
-            // // me.getApps();
         });
     },
 
@@ -333,7 +286,7 @@ Ext.define('Ung.view.apps.AppsController', {
         this.getApps();
     },
 
-
+    // basic power handler for the rack item
     powerHandler: function (btn) {
         var me = this, appVm = btn.up(me.getView().itemType).getViewModel(),
             appInstanceId = appVm.get('instanceId'), appManager;
@@ -378,20 +331,8 @@ Ext.define('Ung.view.apps.AppsController', {
         }
     },
 
-    // startApp: function (cb) {
-    //     manager.start(function (result, ex) {
-    //         if (ex) { Util.handleException(ex); return; }
-    //         console.log(result);
-    //     });
-    // },
 
-    // stopApp: function (manager, app) {
-    //     manager.stop(function (result, ex) {
-    //         console.log(result);
-    //     });
-    // },
-
-
+    // used for installing recommended apps after registering
     onPostRegistration: function () {
         var me = this;
         Ung.app.redirectTo('#apps');
@@ -479,11 +420,6 @@ Ext.define('Ung.view.apps.AppsController', {
                 metrics: result.getMetrics().list,
                 route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
             });
-
-            // record.set('extraCls', 'finish');
-            // record.set('targetState', result.getRunState());
-            // record.set('route', record.get('type') === 'FILTER' ? '#apps/' + vm.get('policyId') + '/' + record.get('name') : '#service/' + record.get('name'));
-            // // me.updateCounters();
             cb();
         });
     },

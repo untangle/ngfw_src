@@ -1,17 +1,17 @@
-Ext.define('Ung.config.localdirectory.Main', {
+Ext.define('Ung.config.local-directory.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config-localdirectory',
-    helpSource: 'local_directory',
+    alias: 'widget.config-local-directory',
+
     /* requires-start */
     requires: [
-        'Ung.config.localdirectory.MainController',
-        'Ung.config.localdirectory.MainModel'
+        'Ung.config.local-directory.MainController',
+        'Ung.config.local-directory.MainModel'
     ],
     /* requires-end */
-    controller: 'config-localdirectory',
+    controller: 'config-local-directory',
 
     viewModel: {
-        type: 'config-localdirectory'
+        type: 'config-local-directory'
     },
 
     layout: 'fit',

@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ad-blocker.view.PassLists', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ad-blocker-passlists',
-    itemId: 'pass_lists',
+    itemId: 'pass-lists',
     title: 'Pass Lists'.t(),
 
     layout: 'border',
