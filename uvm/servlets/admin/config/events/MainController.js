@@ -672,11 +672,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             var fields = [];
             switch(storeName){
               case 'numeric':
-                fields.push([ '>', 'Less (<)'.t() ]);
-                fields.push([ '>=', 'Less or equal (<=)'.t() ]);
+                fields.push([ '<', 'Less (<)'.t() ]);
+                fields.push([ '<=', 'Less or equal (<=)'.t() ]);
                 fields.push([ '=', 'Equals (=)'.t() ]);
-                fields.push([ '<=', 'Greater or equal (>=)'.t() ]);
-                fields.push([ '<', 'Greater (>)'.t() ]);
+                fields.push([ '>=', 'Greater or equal (>=)'.t() ]);
+                fields.push([ '>', 'Greater (>)'.t() ]);
                 fields.push([ '!=', 'Does not equal (!=)'.t() ]);
                 break;
 
