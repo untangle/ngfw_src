@@ -573,7 +573,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
                     referenceFields[1] = referenceFields[1].substr(1,referenceFields[1].length - 2);
                 }
                 url = prefix + referenceFields[1];
-                references.push('<a href="'+ url + '" class="icon-detail-row href-icon" target="_reference"></a>');
+                references.push('<a href="'+ url + '" class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
             }
         }
         return references.join("");
