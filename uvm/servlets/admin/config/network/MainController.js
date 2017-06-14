@@ -104,6 +104,13 @@ Ext.define('Ung.config.network.MainController', {
         });
 
         // extra validations
+        var hostNameCmp = view.down('textfield[name="HostName"]');
+        if (hostNameCmp.rendered && !hostNameCmp.isValid()) {
+            Ung.app.redirectTo('#config/network/hostname');
+            Ext.MessageBox.alert('Warning'.t(), 'A Host Name must be specified.'.t());
+            hostNameCmp.focus(true);
+            return;
+        }
         var domainNameCmp = view.down('textfield[name="DomainName"]');
         if (domainNameCmp.rendered && !domainNameCmp.isValid()) {
             Ung.app.redirectTo('#config/network/hostname');
@@ -194,24 +201,25 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
+        var qosOK = true;
         if( vm.get('settings').qosSettings.qosEnabled === true ){
-            var bandwidthFound = false;
             vm.get('wanInterfaces').each( function(intf){
-                if( intf.get('downloadBandwidthKbps') != null &&
-                    intf.get('downloadBandwidthKbps') != 0 &&
-                    intf.get('uploadBandwidthKbps') != null &&
-                    intf.get('uploadBandwidthKbps') != 0) {
-                    bandwidthFound = true;
+                if( intf.get('downloadBandwidthKbps') == null ||
+                    intf.get('downloadBandwidthKbps') == 0 ||
+                    intf.get('uploadBandwidthKbps') == null ||
+                    intf.get('uploadBandwidthKbps') == 0) {
+                    qosOK = false;
                 }
             });
-            if(bandwidthFound === false){
+            if(!qosOK){
                 Ext.MessageBox.alert(
-                        "Failed".t(),
-                        "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
+                    "Failed".t(),
+                    "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
                 );
                 view.setLoading(false);
                 return;
             }
+
         }
 
         me.setNetworkSettings();

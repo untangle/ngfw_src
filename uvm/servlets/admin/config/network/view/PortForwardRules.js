@@ -1,8 +1,8 @@
 Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-portforwardrules',
-    itemId: 'port_forward_rules',
-    helpSource: 'network_port_forward_rules',
+    itemId: 'port-forward-rules',
+
     viewModel: true,
 
     title: 'Port Forward Rules'.t(),

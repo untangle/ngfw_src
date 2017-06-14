@@ -37,20 +37,21 @@ Ext.define('Ung.apps.sslinspector.MainController', {
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
-
         v.query('ungrid').forEach(function (grid) {
-            var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0 ||
-                store.getNewRecords().length > 0 ||
-                store.getRemovedRecords().length > 0 ||
-                store.isReordered) {
-                store.each(function (record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+            if (grid.listProperty) {
+                var store = grid.getStore();
+                if (store.getModifiedRecords().length > 0 ||
+                    store.getNewRecords().length > 0 ||
+                    store.getRemovedRecords().length > 0 ||
+                    store.isReordered) {
+                    store.each(function (record) {
+                        if (record.get('markedForDelete')) {
+                            record.drop();
+                        }
+                    });
+                    store.isReordered = undefined;
+                    vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                }
             }
         });
 

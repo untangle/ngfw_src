@@ -94,8 +94,9 @@ Ext.define('Ung.view.main.Main', {
         }, {
             text: 'Help'.t(),
             iconCls: 'fa fa-question-circle',
-            href: rpc.helpUrl + '?' + Util.getAbout(),
-            hrefTarget: '_blank'
+            // href: rpc.helpUrl + '?' + Util.getAbout() + window.location.href,
+            // hrefTarget: '_blank',
+            handler: 'helpHandler'
         }, {
             text: 'Account'.t() + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
             iconCls: 'fa fa-user-circle',

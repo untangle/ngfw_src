@@ -2,7 +2,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-interfaces',
     itemId: 'interfaces',
-    helpSource: 'network_interfaces',
+
     title: 'Interfaces'.t(),
     layout: 'border',
 

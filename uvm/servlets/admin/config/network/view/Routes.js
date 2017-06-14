@@ -2,7 +2,7 @@ Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-routes',
     itemId: 'routes',
-    helpSource: 'network_routes',
+
     viewModel: true,
 
     title: 'Routes'.t(),

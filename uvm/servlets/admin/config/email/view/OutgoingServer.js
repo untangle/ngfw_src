@@ -1,8 +1,8 @@
 Ext.define('Ung.config.email.view.OutgoingServer', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config-email-outgoingserver',
-    itemId: 'outgoing_server',
-    helpSource: 'email_outgoing_server',
+    itemId: 'outgoing-server',
+
     viewModel: true,
     title: 'Outgoing Server'.t(),
 
@@ -92,6 +92,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             emptyText: '[enter email]'.t(),
             vtype: 'email',
             allowBlank: false,
+            name: 'FromAddress',
             bind: '{mailSender.fromAddress}'
         }]
     }, {

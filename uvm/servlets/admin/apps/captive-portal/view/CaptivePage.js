@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-captivepage',
-    itemId: 'captive_page',
+    itemId: 'captive-page',
     title: 'Captive Page'.t(),
 
     viewModel: {

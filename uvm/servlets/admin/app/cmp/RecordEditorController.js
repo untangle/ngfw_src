@@ -124,6 +124,16 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
     onAfterRender: function (view) {
         var fields = this.mainGrid.editorFields, form = view.down('form');
+
+        // if conditions are null, create empty conditions list so they can be edited
+        var vm = this.getViewModel();
+        if (!vm.get('record.conditions')) {
+            vm.set('record.conditions', {
+                javaClass: 'java.util.LinkedList',
+                list: []
+            });
+        }
+
         // add editable column fields into the form
         for (var i = 0; i < fields.length; i++) {
             if (fields[i].dataIndex !== 'conditions') {

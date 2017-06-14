@@ -26,7 +26,6 @@ Ext.define('Ung.cmp.GridController', {
 
     addRecordInline: function () {
         var v = this.getView(),
-//            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
             newRecord = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(v.emptyRow));
         newRecord.set('markedForNew', true);
         if (v.topInsert) {
@@ -36,10 +35,29 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
+    regexId :  /^([^_]).*(id|Id)$/,
     copyRecord: function (view, rowIndex, colIndex, item, e, record) {
-        var v = this.getView(),
+        var me = this,
+            v = me.getView(),
+            grid = v.down('grid'),
             newRecord = record.copy(null);
         newRecord.set('markedForNew', true);
+
+        var id = null;
+        for( var key in record.data){
+            var idMatches = me.regexId.exec( key );
+            if( idMatches ) {
+                var value = record.get(key);
+                if( isNaN(value) == false ){
+                    newRecord.set(key, -1);
+                }
+                break;
+            }
+        }
+
+        if( v.copyAppendField ){
+            newRecord.set( v.copyAppendField, newRecord.get(v.copyAppendField) + ' ' + '(copy)'.t() );
+        }
 
         if( newRecord.get('readOnly') == true){
             delete newRecord.data['readOnly'];
@@ -108,10 +126,11 @@ Ext.define('Ung.cmp.GridController', {
     // },
 
     conditionsRenderer: function (value) {
+        if (!value) { return ''; } // if conditions are null return empty string
+
         var view = this.getView(),
             conds = value.list,
             resp = [], i, valueRenderer = [];
-
 
         for (i = 0; i < conds.length; i += 1) {
             valueRenderer = [];

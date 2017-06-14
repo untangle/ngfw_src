@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.reports.view.Users', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-reports-users',
-    itemId: 'users',
+    itemId: 'reports-users',
     title: 'Reports Users'.t(),
 
     controller: 'unreportsusersgrid',

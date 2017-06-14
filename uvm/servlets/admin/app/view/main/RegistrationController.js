@@ -113,8 +113,8 @@ Ext.define('Ung.view.main.RegistrationController', {
             me.getView().cloudManager.accountCreate(function(response, exception) {
                     btn.setDisabled(false);
                     if (exception) {
-                        console.log(ex);
-                        vm.set('error', ex);
+                        console.log(exception);
+                        vm.set('error', exception);
                         return;
                     }
                     if (!response.success) {

@@ -1,13 +1,15 @@
 Ext.define('Ung.apps.reports.view.EmailTemplates', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-reports-emailtemplates',
-    itemId: 'email_templates',
+    itemId: 'email-templates',
     title: 'Email Templates'.t(),
 
     controller: 'unreportsemailtemplatesgrid',
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
+
+    copyAppendField: 'title',
 
     emptyRow: {
         javaClass: 'com.untangle.app.reports.EmailTemplate',
@@ -32,7 +34,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     columns: [{
         header: 'Id'.t(),
         width: 50,
-        dataIndex: 'templateId'
+        dataIndex: 'templateId',
+        renderer: function(value) {
+            return value < 0 ? 'new'.t() : value;
+        }
     }, {
         header: 'Title'.t(),
         dataIndex: 'title',
@@ -41,7 +46,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
             xtype: 'textfield',
             emptyText: '[no title]'.t(),
             allowBlank: false,
-            blankText: 'The title cannot be blank.'.t()
+            blankText: 'The title cannot be blank.'.t(),
+            listeners: {
+                change: 'editorTitleChange'
+            }
         }
     }, {
         header: 'Description'.t(),
@@ -94,7 +102,10 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         bind: '{record.title}',
         fieldLabel: 'Title'.t(),
         emptyText: '[no title]'.t(),
-        width: 500
+        width: 500,
+        listeners: {
+            change: 'editorTitleChange'
+        }
     },{
         xtype: 'textfield',
         bind: '{record.description}',

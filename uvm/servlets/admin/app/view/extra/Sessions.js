@@ -70,6 +70,7 @@ Ext.define('Ung.view.extra.Sessions', {
 
         fields: [{
             name: 'creationTime',
+            sortType: 'asTimestamp'
         }, {
             name: 'sessionId',
         }, {
@@ -105,8 +106,10 @@ Ext.define('Ung.view.extra.Sessions', {
             name: "remoteAddr",
         },{
             name: "priority",
+            convert: Converter.priority
         },{
             name: "qosPriority",
+            convert: Converter.priority
         },{
             name: "pipeline",
         }, {
@@ -284,22 +287,22 @@ Ext.define('Ung.view.extra.Sessions', {
         columns: [{
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
+            width: Renderer.timestampWidth,
             hidden: true,
             rtype: 'timestamp',
-            filter: { type: 'date' },
-            width: Renderer.timestampWidth
+            filter: Renderer.timestampFilter
         }, {
             header: 'Session ID'.t(),
             dataIndex: 'sessionId',
+            width: Renderer.idWidth,
             hidden: true,
-            filter: 'number',
-            width: 60
+            filter: Renderer.numeric
         }, {
             header: 'Mark'.t(),
             dataIndex: 'mark',
+            width: Renderer.idWidth,
             hidden: true,
-            filter: 'number',
-            width: 60,
+            filter: Renderer.numeric,
             renderer: function(value) {
                 if (value)
                     return "0x" + value.toString(16);
@@ -309,162 +312,122 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
-            width: 50,
-            filter: {
-                type: 'list',
-                options: ['TCP', 'UDP']
-            }
+            width: Renderer.portWidth,
+            filter: Renderer.stringFilter
         }, {
             header: 'Bypassed'.t(),
             dataIndex: 'bypassed',
             width: Renderer.booleanWidth,
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
+            filter: Renderer.booleanFilter,
             rtype: 'boolean'
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
-            hidden: true,
-            filter: {
-                type: 'string' // should be list
-            }
+            width: Renderer.messageWidth,
+            // Look into list on policy
+            filter: Renderer.stringFilter
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            width: 100,
-            filter: { type: 'string' }
+            width: Renderer.hostnameWidth,
+            filter: Renderer.stringFilter
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
-            width: 100,
-            filter: { type: 'string' }
+            width: Renderer.usernameWidth,
+            filter: Renderer.stringFilter
         }, {
             header: 'NATd'.t(),
             dataIndex: 'natted',
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
             width: Renderer.booleanWidth,
+            filter: Renderer.booleanFilter,
             hidden: true
         }, {
             header: 'Port Forwarded'.t(),
             dataIndex: 'portForwarded',
-            filter: {
-                type: 'boolean',
-                yesText: 'true',
-                noText: 'false'
-            },
             width: Renderer.booleanWidth,
+            filter: Renderer.booleanFilter,
             hidden: true
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
+            width: Renderer.tagsWidth,
             rtype: 'tags'
         }, {
             hidden: true,
             header: 'Local Address'.t(),
             dataIndex: "localAddr",
-            filter: { type: 'string' },
-            width: Renderer.ipWidth
+            width: Renderer.ipWidth,
+            filter: Renderer.stringFilter
         },{
             hidden: true,
             header: 'Remote Address'.t(),
             dataIndex: "remoteAddr",
-            filter: { type: 'string' },
-            width: Renderer.ipWidth
+            width: Renderer.ipWidth,
+            filter: Renderer.stringFilter
         },{
             hidden: true,
             header: 'Bandwidth Control ' + 'Priority'.t(),
             dataIndex: "priority",
-            renderer: function(value) {
-                if (Ext.isEmpty(value)) {
-                    return '';
-                }
-                switch(value) {
-                  case 0: return '';
-                  case 1: return 'Very High'.t();
-                  case 2: return 'High'.t();
-                  case 3: return 'Medium'.t();
-                  case 4: return 'Low'.t();
-                  case 5: return 'Limited'.t();
-                  case 6: return 'Limited More'.t();
-                  case 7: return 'Limited Severely'.t();
-                default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
-                }
-            }
+            width: Renderer.messageWidth,
+            filter: Renderer.stringFilter
         },{
             hidden: true,
             header: 'QoS ' + 'Priority'.t(),
             dataIndex: "qosPriority",
-            renderer: function(value) {
-                if (Ext.isEmpty(value)) {
-                    return '';
-                }
-                switch(value) {
-                  case 0: return '';
-                  case 1: return 'Very High'.t();
-                  case 2: return 'High'.t();
-                  case 3: return 'Medium'.t();
-                  case 4: return 'Low'.t();
-                  case 5: return 'Limited'.t();
-                  case 6: return 'Limited More'.t();
-                  case 7: return 'Limited Severely'.t();
-                default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
-                }
-            }
+            width: Renderer.messageWidth,
+            filter: Renderer.stringFilter
         },{
             hidden: true,
             header: 'Pipeline'.t(),
             dataIndex: "pipeline",
-            filter: { type: 'string' }
+            width: Renderer.messageWidth,
+            filter: Renderer.stringFilter
         }, {
             header: 'Client'.t(),
             columns: [{
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
-                filter: { type: 'string' },
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
-                filter: { type: 'string' },
-                width: Renderer.ipWidth
+                width: Renderer.ipWidth,
+                filter: Renderer.stringFilter,
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClientPort',
-                filter: { type: 'numeric' },
-                width: Renderer.portWidth
+                width: Renderer.portWidth,
+                filter: Renderer.numericFilter
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClient',
-                filter: { type: 'string' },
                 width: Renderer.ipWidth,
+                filter: Renderer.stringFilter,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatClientPort',
-                filter: { type: 'numeric' },
                 width: Renderer.portWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
-                filter: { type: 'string' },
                 width: Renderer.booleanWidth,
+                filter: Renderer.stringFilter,
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'clientLatitude',
-                filter: { type: 'numeric' },
+                width: Renderer.locationWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
                 dataIndex: 'clientLongitude',
-                filter: { type: 'numeric' },
+                filter: Renderer.numericFilter,
                 hidden: true
             }]
         }, {
@@ -472,43 +435,46 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
-                filter: { type: 'string' },
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',
-                filter: { type: 'string' },
                 width: Renderer.ipWidth,
+                filter: Renderer.stringFilter,
                 hidden: true
             }, {
                 header: 'Port'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServerPort',
-                filter: { type: 'numeric' },
                 width: Renderer.portWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Address'.t() + ' (' + 'Post-NAT'.t() + ')',
-                dataIndex: 'postNatServer',
                 width: Renderer.ipWidth,
-                filter: { type: 'string' }
+                dataIndex: 'postNatServer',
+                filter: Renderer.stringFilter
             }, {
                 header: 'Port'.t() + ' (' + 'Post-NAT'.t() + ')',
                 dataIndex: 'postNatServerPort',
-                filter: { type: 'numeric' },
-                width: Renderer.portWidth
+                width: Renderer.portWidth,
+                filter: Renderer.numericFilter
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
-                filter: { type: 'string' },
-                width: Renderer.booleanWidth
+                width: Renderer.booleanWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
-                filter: { type: 'numeric' },
+                width: Renderer.locationWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
                 dataIndex: 'serverLongitude',
-                filter: { type: 'numeric' },
+                width: Renderer.locationWidth,
+                filter: Renderer.numericFilter,
                 hidden: true
             }]
         }, {
@@ -516,21 +482,21 @@ Ext.define('Ung.view.extra.Sessions', {
             columns: [{
                 header: 'Client'.t(),
                 dataIndex: 'clientKBps',
-                filter: { type: 'numeric' },
-                align: 'right',
-                width: 60
+                width: Renderer.sizeWidth,
+                filter: Renderer.numericFilter,
+                align: 'right'
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
-                filter: { type: 'numeric' },
-                align: 'right',
-                width: 60
+                width: Renderer.sizeWidth,
+                filter: Renderer.numericFilter,
+                align: 'right'
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
-                filter: { type: 'numeric' },
-                align: 'right',
-                width: 60
+                width: Renderer.sizeWidth,
+                filter: Renderer.numericFilter,
+                align: 'right'
             }]
         }, {
             header: 'Application Control Lite',
@@ -539,62 +505,69 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Protocol'.t(),
                 dataIndex: "application-control-lite-protocol",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-lite-category",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Description'.t(),
                 dataIndex: "application-control-lite-description",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Matched?'.t(),
                 dataIndex: "application-control-lite-matched",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.messageWidth,
+                filter: Renderer.booleanFilter
             }]
         }, {
             header: 'Application Control',
             columns: [{
                 header: 'Protochain'.t(),
                 dataIndex: "application-control-protochain",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 header: 'Application'.t(),
                 dataIndex: "application-control-application",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-category",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Detail'.t(),
                 dataIndex: "application-control-detail",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Confidence'.t(),
                 dataIndex: "application-control-confidence",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Productivity'.t(),
                 dataIndex: "application-control-productivity",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Risk'.t(),
                 dataIndex: "application-control-risk",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             }]
         }, {
             header: 'Web Filter',
@@ -603,39 +576,32 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Category Name'.t(),
                 dataIndex: "web-filter-best-category-name",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category Description'.t(),
                 dataIndex: "web-filter-best-category-description",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Category Flagged'.t(),
                 dataIndex: "web-filter-best-category-flagged",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.messageWidth,
+                filter: Renderer.booleanFilter
             },{
                 hidden: true,
                 header: 'Category Blocked'.t(),
                 dataIndex: "web-filter-best-category-blocked",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.booleanWidth,
+                filter: Renderer.booleanFilter,
             },{
                 hidden: true,
                 header: 'Flagged'.t(),
                 dataIndex: "web-filter-flagged",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.booleanWidth,
+                filter: Renderer.booleanFilter,
             }]
         }, {
             header: 'HTTP',
@@ -644,67 +610,80 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Hostname'.t(),
                 dataIndex: "http-hostname",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'URL'.t(),
                 dataIndex: "http-url",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'User Agent'.t(),
                 dataIndex: "http-user-agent",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'URI'.t(),
                 dataIndex: "http-uri",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request Method'.t(),
                 dataIndex: "http-request-method",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Name'.t(),
                 dataIndex: "http-request-file-name",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Extension'.t(),
                 dataIndex: "http-request-file-extension",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Request File Path'.t(),
                 dataIndex: "http-request-file-path",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Response File Name'.t(),
                 dataIndex: "http-response-file-name",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Response File Extension'.t(),
                 dataIndex: "http-response-file-extension",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Content Type'.t(),
                 dataIndex: "http-content-type",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Referer'.t(),
                 dataIndex: "http-referer",
-                filter: { type: 'string'}
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Content Length'.t(),
                 dataIndex: "http-content-length",
-                filter: 'number'
+                width: Renderer.sizeWidth,
+                filter: Renderer.numericFilter
             }]
         }, {
             header: 'SSL',
@@ -713,26 +692,26 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Subject DN'.t(),
                 dataIndex: "ssl-subject-dn",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Issuer DN'.t(),
                 dataIndex: "ssl-issuer-dn",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Inspected'.t(),
                 dataIndex: "ssl-session-inspect",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.booleanWidth,
+                filter: Renderer.booleanFilter
             },{
                 hidden: true,
                 header: 'SNI Hostname'.t(),
                 dataIndex: "ssl-sni-host",
-                filter: { type: 'string'}
+                width: Renderer.hostnameWidth,
+                filter: Renderer.stringFilter
             }]
         }, {
             header: 'FTP',
@@ -741,16 +720,14 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true,
                 header: 'Filename'.t(),
                 dataIndex: "ftp-file-name",
-                filter: { type: 'string' }
+                width: Renderer.messageWidth,
+                filter: Renderer.stringFilter
             },{
                 hidden: true,
                 header: 'Data Session'.t(),
                 dataIndex: "ftp-data-session",
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
-                }
+                width: Renderer.booleanWidth,
+                filter: Renderer.booleanFilter,
             }]
         }]
     }, {
@@ -793,10 +770,5 @@ Ext.define('Ung.view.extra.Sessions', {
         xtype: 'ungridstatus',
         tplFiltered: '{0} filtered, {1} total sessions'.t(),
         tplUnfiltered: '{0} sessions'.t()
-    }, '->', {
-        xtype: 'button',
-        text: 'Help'.t(),
-        iconCls: 'fa fa-question-circle',
-        href: rpc.helpUrl + '?source=sessions&' + Util.getAbout()
     }]
 });

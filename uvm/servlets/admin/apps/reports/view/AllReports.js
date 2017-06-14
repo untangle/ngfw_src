@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.reports.view.AllReports', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.app-reports-allreports',
-    itemId: 'all_reports',
+    itemId: 'all-reports',
     title: 'All Reports'.t(),
 
     store: 'reports',

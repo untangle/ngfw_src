@@ -43,22 +43,34 @@ Ext.define('Ung.view.reports.EventReportController', {
                          * Grouping
                          */
                         column.columns.forEach( Ext.bind( function( subColumn ){
-                            if (!column.filter ){
-                                column.filter = 'string';
-                            }
                             grid.initComponentColumn( subColumn );
-                            column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                            if( column.xtype == 'actioncolumn'){
+                                column.hidden = false;
+                            }else{
+                                column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                            }
                             if (!column.filter && 
+                                ( column.xtype != 'actioncolumn' ) &&
                                 ( column.rtype != 'timestamp' ) ){
                                 column.filter = 'string';
                             }
                         }, this ) );
                     }
                     grid.initComponentColumn( column );
-                    column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                    if( column.xtype == 'actioncolumn'){
+                        column.hidden = false;
+                    }else{
+                        column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
+                    }
                     if (!column.filter && 
-                        (column.rtype != 'timestamp' ) ){
+                        ( column.xtype != 'actioncolumn' ) &&
+                        ( column.rtype != 'timestamp' ) ){
                         column.filter = 'string';
+                    }
+                });
+                me.tableConfig.fields.forEach( function(field){
+                    if (!field.sortType ){
+                        field.sortType = 'asUnString';
                     }
                 });
 

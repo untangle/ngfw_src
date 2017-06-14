@@ -22,18 +22,23 @@ Ext.define('Ung.view.extra.Users', {
                     sortType: 'asUnString'
                 }, {
                     name: 'creationTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'lastAccessTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'lastSessionTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'quotaSize',
                 }, {
                     name: 'quotaRemaining',
                 }, {
                     name: 'quotaIssueTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'quotaExpirationTime',
+                    sortType: 'asTimestamp'
                 }, {
                     name: 'tags'
                 }]
@@ -112,35 +117,32 @@ Ext.define('Ung.view.extra.Users', {
         columns: [{
             header: 'Username'.t(),
             dataIndex: 'username',
-            filter: {
-                type: 'string'
-            }
+            width: Renderer.usernameWidth,
+            filter: Renderer.stringFilter
         }, {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
+            width: Renderer.timestampWidth,
             rtype: 'timestamp',
-            filter: {
-                type: 'date'
-            }
+            filter: Renderer.timestampFilter
         }, {
             header: 'Quota'.t(),
             columns: [{
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
+                width: Renderer.sizeWidth,
                 renderer: function (value) {
                     return value === 0 || value === '' ? '' : value;
                 },
@@ -151,27 +153,24 @@ Ext.define('Ung.view.extra.Users', {
             }, {
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
-                filter: {
-                    type: 'numeric'
-                },
+                width: Renderer.sizeWidth,
+                filter: Renderer.numericFilter,
                 rtype: 'datasize'
             }, {
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
+                width: Renderer.timestampWidth,
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
+                width: Renderer.timestampWidth,
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',
-                width: 50,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Refill'.t(),
                 iconCls: 'fa fa-refresh fa-green',
@@ -179,7 +178,7 @@ Ext.define('Ung.view.extra.Users', {
                 action: 'refillQuota'
             }, {
                 xtype: 'actioncolumn',
-                width: 50,
+                width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Drop'.t(),
                 iconCls: 'fa fa-minus-circle',
@@ -188,7 +187,7 @@ Ext.define('Ung.view.extra.Users', {
             }]
         }, {
             header: 'Tags'.t(),
-            width: 300,
+            width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
             // flex: 1,
@@ -250,11 +249,6 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
         hrefTarget: '_self'
-    }, {
-        xtype: 'button',
-        text: 'Help'.t(),
-        iconCls: 'fa fa-question-circle',
-        href: rpc.helpUrl + '?source=users&' + Util.getAbout()
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',

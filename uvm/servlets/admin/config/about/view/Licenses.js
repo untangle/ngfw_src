@@ -2,7 +2,7 @@ Ext.define('Ung.config.about.view.Licenses', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-about-licenses',
     itemId: 'licenses',
-    helpSource: 'about_licenses',
+
     title: 'Licenses'.t(),
     layout: 'fit',
     tbar: [{

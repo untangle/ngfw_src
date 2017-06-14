@@ -10,7 +10,7 @@ Ext.define('Ung.apps.wanfailover.MainController', {
             afterrender: 'getWanStatus'
         },
         '#tests': {
-            beforerender: 'getWanStatus'
+            afterrender: 'getWanStatus'
         }
     },
 
@@ -91,7 +91,7 @@ Ext.define('Ung.apps.wanfailover.MainController', {
             var test;
 
             // first build a map of all enabled tests
-            for (var i = 0 ; i < testList.length;i++) {
+            if (testList) for (var i = 0 ; i < testList.length;i++) {
                 test = testList[i];
                 if (test.enabled) testMap[test.interfaceId] = true;
             }

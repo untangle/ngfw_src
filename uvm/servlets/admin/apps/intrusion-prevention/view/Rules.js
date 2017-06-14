@@ -9,7 +9,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     name: 'rules',
 
     region: 'center',
-    // helpSource: 'intrusion_prevention_rules',
+
     sortableColumns: true,
     plugins: [
         'gridfilters'
@@ -71,7 +71,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     columns: [{
         header: "Sid".t(),
         dataIndex: 'sid',
-        width: 70, 
+        width: 70,
         renderer: 'sidRenderer'
     },{
         header: "Classtype".t(),

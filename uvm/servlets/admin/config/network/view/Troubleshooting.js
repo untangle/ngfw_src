@@ -3,7 +3,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
     alias: 'widget.config-network-troubleshooting',
     itemId: 'troubleshooting',
     title: 'Troubleshooting'.t(),
-    helpSource: 'network_troubleshooting',
+
     layout: 'fit',
 
     tbar: [{
@@ -249,6 +249,11 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                     value: '{interface}',
                     disabled: '{mode === "advanced"}',
                     hidden: '{mode === "advanced" }'
+                },
+                listeners:{
+                    show: function(combo){
+                        combo.setValue(combo.getStore().first().get("field1"));
+                    }
                 }
             }, {
                 xtype: 'textfield',
@@ -339,9 +344,6 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                         }
                         data.push(['tun0', 'OpenVPN']);
                         return data;
-                    },
-                    interface: function (get) {
-                        return get('interfacesListSystemDev')[0][0];
                     }
                 }
             }

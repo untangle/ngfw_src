@@ -110,7 +110,7 @@ ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
-['about', 'administration', 'events', 'email', 'localdirectory', 'network',
+['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
 end

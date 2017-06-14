@@ -11,11 +11,12 @@ Ext.define('Ung.view.apps.RackItem', {
 
     layout: { type: 'column' },
 
-    // disabled: true,
+    disabled: true,
     hidden: true,
     bind: {
         hidden: '{!instanceId && !installing}',
-        userCls: '{(parentPolicy || installing) ? "dsbl" : ""}'
+        disabled: '{parentPolicy || installing}',
+        userCls: '{parentPolicy ? "from-parent" : (installing ? "installing" : "")}',
     },
 
     items: [{
@@ -47,7 +48,7 @@ Ext.define('Ung.view.apps.RackItem', {
                     hidden: true,
                     bind: {
                         hidden: '{!parentPolicy}',
-                        html: '<p><i class="fa fa-file-text-o"></i> {parentPolicy}</p>'
+                        html: '<p><i class="fa fa-file-text-o"></i>&nbsp; {parentPolicy}</p>'
                     }
                 }, {
                     xtype: 'component',
@@ -74,22 +75,18 @@ Ext.define('Ung.view.apps.RackItem', {
                 text: 'Settings'.t(),
                 hrefTarget: '_self',
                 hidden: true,
-                disabled: true,
                 bind: {
                     href: '{route}',
-                    hidden: '{parentPolicy}',
-                    disabled: '{installing}'
+                    hidden: '{parentPolicy || installing}'
                 }
             }, {
                 xtype: 'button',
                 margin: '0 0 0 5',
                 iconCls: 'fa fa-question-circle',
                 hidden: true,
-                disabled: true,
                 bind: {
-                    href: '{app.helpSource}',
-                    hidden: '{parentPolicy}',
-                    disabled: '{installing}'
+                    href: '{helpSource}',
+                    hidden: '{parentPolicy || installing}',
                 }
                 // text: 'Help'.t()
             }, {
@@ -98,11 +95,9 @@ Ext.define('Ung.view.apps.RackItem', {
                 html: 'Buy Now'.t(),
                 iconCls: 'fa fa-shopping-cart',
                 hidden: true,
-                disabled: true,
                 bind: {
                     href: Util.getStoreUrl() + '?action=buy&libitem=untangle-libitem-{app.name}&' + Util.getAbout(),
                     hidden: '{!license || !license.trial || parentPolicy || installing }',
-                    disabled: '{installing}'
                 }
             }]
         }]
@@ -156,12 +151,13 @@ Ext.define('Ung.view.apps.RackItem', {
         },
         renderTpl: '<i class="fa fa-power-off"></i>',
         handler: 'powerHandler'
+    }, {
+        xtype: 'component',
+        cls: 'loader',
+        autoEl: { tag: 'span' },
+        hidden: true,
+        bind: {
+            hidden: '{!installing}'
+        }
     }]
-
-    // initComponent: function () {
-    //     me = this;
-
-    // }
-
-
 });

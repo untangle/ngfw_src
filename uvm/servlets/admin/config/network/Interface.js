@@ -104,6 +104,7 @@ Ext.define('Ung.config.network.Interface', {
                 xtype: 'checkbox',
                 fieldLabel: 'Is WAN Interface'.t(),
                 hidden: true,
+                initializing: true,
                 bind: {
                     value: '{intf.isWan}',
                     hidden: '{!isAddressed}'
@@ -117,9 +118,15 @@ Ext.define('Ung.config.network.Interface', {
                             win.down('#ipv6ConfigType').setValue('STATIC');
                         } else {
                             // WAN
-                            win.down('#dhcpEnabled').setValue(false);
+                            // automatically turn on NAT egress if its a WAN
+                            // but only if manually changed, not the first time this is called
+                            // during render
+                            if (ck.initialized) {
+                                win.down('#v4NatEgressTraffic').setValue(true);
+                            }
                             win.down('tabpanel').setActiveItem(0);
                         }
+                        ck.initialized = true;
                     }
                 }
             }, {
@@ -508,6 +515,7 @@ Ext.define('Ung.config.network.Interface', {
                 items: [{
                     xtype: 'checkbox',
                     hidden: true,
+                    itemId: 'v4NatEgressTraffic',
                     bind: {
                         value: '{intf.v4NatEgressTraffic}',
                         hidden: '{!intf.isWan}'
@@ -536,6 +544,7 @@ Ext.define('Ung.config.network.Interface', {
                 recordActions: ['delete'],
                 bind: '{v4Aliases}',
                 listProperty: 'v4Aliases',
+                maxHeight: 140,
                 emptyRow: {
                     staticAddress: '1.2.3.4',
                     staticPrefix: '24',
@@ -696,6 +705,7 @@ Ext.define('Ung.config.network.Interface', {
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
                 disabled: true,
+                maxHeight: 160,
                 bind: {
                     store: '{v6Aliases}',
                     disabled: '{intf.v6ConfigType === "DISABLED"}'
@@ -1045,7 +1055,7 @@ Ext.define('Ung.config.network.Interface', {
                 border: false,
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
-
+                maxHeight: 200,
                 disabled: true,
                 bind: {
                     store: '{vrrpAliases}',
