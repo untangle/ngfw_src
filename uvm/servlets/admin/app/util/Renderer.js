@@ -26,7 +26,7 @@ Ext.define('Ung.util.Renderer', {
     // Port
     portWidth: 70,
     // Data size
-    sizeWidth: 50,
+    sizeWidth: 70,
     // Tags
     tagsWidth: 200,
     // Timestamp
@@ -155,7 +155,10 @@ Ext.define('Ung.util.Renderer', {
     },
 
     datasizeoptional: function(value){
-
+        if( value === 0 || value === '' ){
+            return '';
+        }
+        return Renderer.datasize(value);
     },
 
     timeIntervalMap: {
