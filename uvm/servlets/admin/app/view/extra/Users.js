@@ -143,19 +143,14 @@ Ext.define('Ung.view.extra.Users', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 width: Renderer.sizeWidth,
-                renderer: function (value) {
-                    return value === 0 || value === '' ? '' : value;
-                },
-                filter: {
-                    type: 'numeric'
-                },
-                rtype: 'datasize'
+                filter: Renderer.numericFilter,
+                rtype: 'datasizeoptional'
             }, {
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                rtype: 'datasizeoptional'
             }, {
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',

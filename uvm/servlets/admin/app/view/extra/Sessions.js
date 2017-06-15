@@ -102,9 +102,13 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'tags',
         }, {
             name: "localAddr",
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: "remoteAddr",
-        },{
+            type: 'string',
+            sortType: 'asUnString'
+       },{
             name: "priority",
             convert: Converter.priority
         },{
@@ -119,10 +123,14 @@ Ext.define('Ung.view.extra.Sessions', {
             convert: Converter.interface
         }, {
             name: 'preNatClient',
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: 'preNatClientPort',
         }, {
             name: 'postNatClient',
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: 'postNatClientPort',
         }, {
@@ -140,10 +148,14 @@ Ext.define('Ung.view.extra.Sessions', {
             convert: Converter.interface
         }, {
             name: 'preNatServer',
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: 'preNatServerPort',
         }, {
             name: 'postNatServer',
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: 'postNatServerPort',
         }, {
@@ -176,6 +188,8 @@ Ext.define('Ung.view.extra.Sessions', {
             name: "application-control-lite-matched",
         }, {
             name: "application-control-protochain",
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: "application-control-application",
             type: 'string',
@@ -192,8 +206,12 @@ Ext.define('Ung.view.extra.Sessions', {
             name: "application-control-confidence",
         },{
             name: "application-control-productivity",
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: "application-control-risk",
+            type: 'string',
+            sortType: 'asUnString'
         }, {
             name: "web-filter-best-category-name",
             type: 'string',
@@ -204,8 +222,12 @@ Ext.define('Ung.view.extra.Sessions', {
             sortType: 'asUnString'
         },{
             name: "web-filter-best-category-flagged",
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: "web-filter-best-category-blocked",
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: "web-filter-flagged",
         }, {

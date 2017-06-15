@@ -150,14 +150,24 @@ Ext.define('Ung.view.extra.Hosts', {
             sortType: 'asUnString'
         },{
             name: 'usernameDirectoryConnector',
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: 'usernameCaptivePortal',
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: 'usernameDevice',
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: 'usernameOpenVpn',
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: 'usernameIpsecVpn',
+            type: 'string',
+            sortType: 'asUnString'
         },{
             name: 'quotaSize',
         },{
@@ -351,13 +361,13 @@ Ext.define('Ung.view.extra.Hosts', {
                 dataIndex: 'quotaSize',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                rtype: 'datasizeoptional'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                rtype: 'datasizeoptional'
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
