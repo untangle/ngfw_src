@@ -801,7 +801,7 @@ Ext.define('Ung.config.network.MainController', {
         var data = [];
         var record = combo.up('window').getViewModel().get('intf');
         Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
-            if ((intf.configType === 'ADDRESSED' || intf.configType === 'BRIDGED') && intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
+            if (intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
                 data.push([intf.interfaceId, intf.name]);
             }
         });
