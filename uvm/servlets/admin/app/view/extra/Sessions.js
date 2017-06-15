@@ -124,13 +124,13 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'preNatClient',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asIp'
         }, {
             name: 'preNatClientPort',
         }, {
             name: 'postNatClient',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asIp'
         }, {
             name: 'postNatClientPort',
         }, {
@@ -149,13 +149,13 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'preNatServer',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asIp'
         }, {
             name: 'preNatServerPort',
         }, {
             name: 'postNatServer',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asIp'
         }, {
             name: 'postNatServerPort',
         }, {
