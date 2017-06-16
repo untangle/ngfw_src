@@ -740,6 +740,14 @@ public class AppManagerImpl implements AppManager
         while ( unloadedAppsMap.size() > 0 || appsBeingLoaded > 0 ) {
             passCount++;
             List<AppSettings> loadable = getLoadable();
+            logger.info("Loading pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded + " loadable.size(): " + loadable.size());
+
+            if ( appsBeingLoaded < 1 && loadable.size() == 0 && unloadedAppsMap.size() > 0 ) {
+                // if nothing is being loaded and nothing is loadeable but there is more to be loaded
+                // then something is wrong. This should never happen
+                logger.error("No apps loadable but not finished! Continuing...");
+                break;
+            }
 
             if ( loadable.size() > 0 ) {
                 for (AppSettings ns : loadable)
@@ -747,12 +755,9 @@ public class AppManagerImpl implements AppManager
                 startUnloaded( loadable );
             }
 
-            logger.debug("Completing pass[" + passCount + "]");
-            do {
-                try { startSemaphore.acquire(); } catch (InterruptedException e) { continue; }
-                break;
-            } while (true);
+            try { startSemaphore.tryAcquire(300,java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) { continue; }
         }
+        logger.info("Loaded! pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded);
 
         long t1 = System.currentTimeMillis();
         logger.info("Time to restart apps: " + (t1 - t0) + " millis");

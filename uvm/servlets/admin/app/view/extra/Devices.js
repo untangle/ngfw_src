@@ -180,7 +180,6 @@ Ext.define('Ung.view.extra.Devices', {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
             width: Renderer.messageWidth,
-            // flex: 1,
             filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
@@ -197,7 +196,6 @@ Ext.define('Ung.view.extra.Devices', {
             width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
-            // flex: 1,
             widget: {
                 xtype: 'tagpicker',
                 bind: {
