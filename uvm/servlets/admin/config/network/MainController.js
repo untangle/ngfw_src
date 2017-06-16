@@ -634,13 +634,11 @@ Ext.define('Ung.config.network.MainController', {
         '165': [165, '165 - 5.825 GH'.t()]
     },
 
-    editInterface: function (btn) {
+    editInterface: function (cmp, rowIndex, colIndex, item, e, record) {
         var me = this;
-        if (Ext.isFunction(btn.getWidgetRecord)) {
-            // editing existing interface from the grid
-            me.editIntf = btn.getWidgetRecord();
-        } else {
-            // adding a VLAN Interface
+
+        if (cmp.getXType() === 'button') {
+            // means adding a VLAN interface
             me.editIntf = Ext.create('Ung.model.Interface', {
                 isVlanInterface: true,
                 isWirelessInterface: false,
@@ -649,6 +647,9 @@ Ext.define('Ung.config.network.MainController', {
                 v4ConfigType: 'STATIC',
                 v6ConfigType: 'DISABLED'
             });
+        } else {
+            // otherwise means editing existing interface
+            me.editIntf = record;
         }
 
         var configTypesArr,
@@ -801,7 +802,7 @@ Ext.define('Ung.config.network.MainController', {
         var data = [];
         var record = combo.up('window').getViewModel().get('intf');
         Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
-            if ((intf.configType === 'ADDRESSED' || intf.configType === 'BRIDGED') && intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
+            if (intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
                 data.push([intf.interfaceId, intf.name]);
             }
         });

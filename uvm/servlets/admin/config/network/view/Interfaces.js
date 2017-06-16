@@ -174,51 +174,42 @@ Ext.define('Ung.config.network.view.Interfaces', {
             width: 160,
             dataIndex: 'vendor'
         }, {
-            xtype: 'widgetcolumn',
+            xtype: 'actioncolumn',
+            width: 60,
             header: 'Edit'.t(),
-            width: 80,
-            resizable: false,
-            sortable: false,
-            menuEnabled: false,
             align: 'center',
-            widget: {
-                xtype: 'button',
-                width: 40,
-                // text: 'Edit'.t(),
-                iconCls: 'fa fa-pencil',
-                handler: 'editInterface'
-            }
+            resizable: false,
+            tdCls: 'action-cell',
+            iconCls: 'fa fa-pencil',
+            handler: 'editInterface',
+            menuDisabled: true,
+            hideable: false
         }, {
-            xtype: 'widgetcolumn',
+            xtype: 'actioncolumn',
+            width: 60,
             header: 'Delete'.t(),
-            width: 80,
-            resizable: false,
-            sortable: false,
-            menuEnabled: false,
             align: 'center',
-            widget: {
-                xtype: 'button',
-                width: 40,
-                hidden: true,
-                // text: 'Delete'.t(),
-                bind: {
-                    hidden: '{!(record.isVlanInterface || record.connected === "MISSING")}',
-                    iconCls: 'fa fa-trash fa-red'
-                },
-                handler: function (btn) {
-                    var intf = btn.getWidgetRecord(), msg = '';
-                    if (intf.get('isVlanInterface')) {
-                        msg = 'Delete VLAN Interface'.t();
-                    }
-                    if (intf.get('connected') === 'MISSING') {
-                        msg = 'Delete missing Interface'.t();
-                    }
-                    Ext.Msg.confirm(msg,
-                        'Are you sure you want to delete <strong>' + intf.get('name') + '</strong> Interface?',
-                        function (button) {
-                            if (button === 'yes') { intf.drop(); }
-                        });
+            resizable: false,
+            tdCls: 'action-cell',
+            iconCls: 'fa fa-trash-o fa-red',
+            menuDisabled: true,
+            hideable: false,
+            isDisabled: function (table, rowIndex, colIndex, item, record) {
+                return !(record.get('isVlanInterface') || record.get('connected') === 'MISSING');
+            },
+            handler: function (table, rowIndex, colIndex, item, e, record) {
+                var msg = '';
+                if (record.get('isVlanInterface')) {
+                    msg = 'Delete VLAN Interface'.t();
                 }
+                if (record.get('connected') === 'MISSING') {
+                    msg = 'Delete missing Interface'.t();
+                }
+                Ext.Msg.confirm(msg,
+                    'Are you sure you want to delete <strong>' + record.get('name') + '</strong> Interface?',
+                    function (button) {
+                        if (button === 'yes') { record.drop(); }
+                    });
             }
         }]
     }, {

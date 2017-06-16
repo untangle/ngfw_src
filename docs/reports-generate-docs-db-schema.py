@@ -64,6 +64,7 @@ human_names = {
 'elapsed_time': 'Elapsed Time',
 'end_time': 'End Time',
 'entitled': 'Entitled',
+'entity': 'Entity',
 'event_id': 'Event ID',
 'event_info': 'Event Type',
 'filter_prefix': 'Filter Block',
@@ -102,6 +103,7 @@ human_names = {
 'name': 'Interface Name',
 'net_interface': 'Net Interface',
 'net_process': 'Net Process',
+'old_value': 'Old Value',
 'os_name': 'Interface O/S Name',
 'out_bytes': 'Out Bytes',
 'p2c_bytes': 'To-Client Bytes',
@@ -161,6 +163,7 @@ human_names = {
 'swap_free': 'Swap Free',
 'swap_total': 'Swap Size',
 'systems': 'System bypasses',
+'tags': 'Tags',
 'term': 'Search Term',
 'time_stamp': 'Timestamp',
 'tunnel_name': 'Tunnel Name',
@@ -442,7 +445,15 @@ dict['intrusion_prevention_events'].update({
 
 dict['alerts'] = copy.deepcopy(generic)
 dict['alerts'].update({
-    'table_description' : 'This table stores Reports Alert events.',
+    'table_description' : 'This table stores Alert events.',
+    'description' : 'The description from the alert rule.',
+    'summary_text' : 'The summary text of the alert',
+    'json' : 'The summary JSON representation of the event causing the alert',
+})
+
+dict['syslog'] = copy.deepcopy(generic)
+dict['syslog'].update({
+    'table_description' : 'This table stores Syslog events.',
     'description' : 'The description from the alert rule.',
     'summary_text' : 'The summary text of the alert',
     'json' : 'The summary JSON representation of the event causing the alert',
@@ -453,6 +464,7 @@ dict['host_table_updates'].update({
     'table_description' : 'This table stores Host Table metadata updates',
     'address' : 'The IP address of the host',
     'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
     'value' : 'The new value for the key',
 })
 
@@ -461,13 +473,23 @@ dict['device_table_updates'].update({
     'table_description' : 'This table stores Device Table metadata updates',
     'mac_address' : 'The MAC address of the device',
     'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
+    'value' : 'The new value for the key',
+})
+
+dict['user_table_updates'] = copy.deepcopy(generic)
+dict['user_table_updates'].update({
+    'table_description' : 'This table stores Device Table metadata updates',
+    'username' : 'The username',
+    'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
     'value' : 'The new value for the key',
 })
 
 dict['quotas'] = copy.deepcopy(generic)
 dict['quotas'].update({
     'table_description' : 'This table stores Quota events',
-    'address' : 'The IP address of the host',
+    'entity' : 'The IP entity given the quota (address/username)',
     'action' : 'The action (1=Quota Given, 2=Quota Exceeded)',
     'size' : 'The size of the quota',
     'reason' : 'The reason for the action',
@@ -508,6 +530,7 @@ dict['sessions'].update({
     'ssl_inspector_ruleid' : 'The matching rule in SSL Inspector rule (if any)',
     'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED,IGNORED,BLOCKED,UNTRUSTED,ABANDONED)',
     'ssl_inspector_detail' : 'Additional text detail about the SSL connection (SNI, IP Address)',
+    'tags' : 'The tags on this session'
 })
 
 dict['session_minutes'] = copy.deepcopy(dict['sessions'])

@@ -9,13 +9,16 @@ class I18N:
         if not str[0].isupper():
             print "Invalid string: " + str
             sys.exit(1)
-        return 'i18n._(\'' + str + '\')'
+        return '\'' + str + '\'.t()'
 
 i18n = I18N()
 
 dict = {
     'event_id' : i18n._('Event ID'),
     'time_stamp' : i18n._('Timestamp'),
+    'tags' : i18n._('Tags'),
+    'entity' : i18n._('Entity'),
+    'old_value' : i18n._('Old Value'),
     'entitled' : i18n._('Entitled'),
     'session_id' : i18n._('Session ID'),
     'client_intf' : i18n._('Client Interface'),
