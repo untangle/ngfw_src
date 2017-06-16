@@ -316,7 +316,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Session ID'.t(),
             dataIndex: 'sessionId',
-            width: Renderer.idWidth,
+            width: Renderer.messageWidth,
             hidden: true,
             filter: Renderer.numericFilter
         }, {
