@@ -12,9 +12,10 @@ import urllib
 import os.path
 import sys
 import traceback
+import uvm
+import threading
 
 from mod_python import apache, Session, util
-from psycopg2 import connect
 
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':
@@ -282,28 +283,20 @@ def get_uvm_language():
 
     return lang
 
+def send_login_event(client_addr, login, local, succeeded, reason):
+    # localadmin is used for local machine API calls
+    # these are not logged
+    if login == "localadmin":
+        return
+    try:
+        uvmContext = uvm.Uvm().getUvmContext()
+        uvmContext.adminManager().logAdminLoginEvent( str(login), local, str(client_addr), succeeded, reason )
+    except Exception, e:
+        apache.log_error('error: %s' % str(e))
+
 def log_login(req, login, local, succeeded, reason):
     (client_addr, client_port) = req.connection.remote_addr
-    conn = None
-    try:
-        conn = connect("dbname=uvm user=postgres")
-        curs = conn.cursor()
-        sql = ""
-        if reason != None and succeeded == False:
-            sql = "INSERT INTO reports.admin_logins (client_addr, login, local, succeeded, reason, time_stamp) VALUES ('%s', '%s', '%s', '%s', '%s', now())" % (client_addr, login, local, succeeded, reason)
-        else:
-            sql = "INSERT INTO reports.admin_logins (client_addr, login, local, succeeded, time_stamp) VALUES ('%s', '%s', '%s', '%s', now())" % (client_addr, login, local, succeeded)
-        curs.execute(sql);
-        conn.commit()
-    except Exception, e:
-        apache.log_error('Log Exception %s' % e)
-        pass
-    finally:
-        try:
-            if (conn != None):
-                conn.close()
-        except:
-            pass
+    threading.Thread(target=lambda: send_login_event(client_addr, login, local, succeeded, reason)).start()
 
 def write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
