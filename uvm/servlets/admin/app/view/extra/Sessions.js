@@ -371,11 +371,6 @@ Ext.define('Ung.view.extra.Sessions', {
             filter: Renderer.booleanFilter,
             hidden: true
         }, {
-            header: 'Tags'.t(),
-            dataIndex: 'tags',
-            width: Renderer.tagsWidth,
-            rtype: 'tags'
-        }, {
             hidden: true,
             header: 'Local Address'.t(),
             dataIndex: "localAddr",
@@ -751,6 +746,11 @@ Ext.define('Ung.view.extra.Sessions', {
                 width: Renderer.booleanWidth,
                 filter: Renderer.booleanFilter,
             }]
+        }, {
+            header: 'Tags'.t(),
+            dataIndex: 'tags',
+            width: Renderer.tagsWidth,
+            rtype: 'tags'
         }]
     }, {
         region: 'east',
