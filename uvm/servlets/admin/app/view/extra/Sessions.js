@@ -318,13 +318,13 @@ Ext.define('Ung.view.extra.Sessions', {
             dataIndex: 'sessionId',
             width: Renderer.idWidth,
             hidden: true,
-            filter: Renderer.numeric
+            filter: Renderer.numericFilter
         }, {
             header: 'Mark'.t(),
             dataIndex: 'mark',
             width: Renderer.idWidth,
             hidden: true,
-            filter: Renderer.numeric,
+            filter: Renderer.numericFilter,
             renderer: function(value) {
                 if (value)
                     return "0x" + value.toString(16);
