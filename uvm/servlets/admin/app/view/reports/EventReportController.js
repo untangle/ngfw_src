@@ -52,7 +52,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                             if (!column.filter && 
                                 ( column.xtype != 'actioncolumn' ) &&
                                 ( column.rtype != 'timestamp' ) ){
-                                column.filter = 'string';
+                                column.filter = Renderer.stringFilter;
                             }
                         }, this ) );
                     }
@@ -65,7 +65,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                     if (!column.filter && 
                         ( column.xtype != 'actioncolumn' ) &&
                         ( column.rtype != 'timestamp' ) ){
-                        column.filter = 'string';
+                        column.filter = Renderer.stringFilter;
                     }
                 });
                 me.tableConfig.fields.forEach( function(field){
