@@ -159,6 +159,11 @@ Ext.define('Ung.cmp.GridController', {
                     valueRenderer = [];
                 }
             }
+            // for boolean conditions just add 'True' string as value
+            if (view.conditionsMap[conds[i].conditionType].type === 'boolean') {
+                valueRenderer = ['True'.t()];
+            }
+
             resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
         }
         return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
