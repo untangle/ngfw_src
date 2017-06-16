@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm;
 
+import java.net.InetAddress;
+
 /**
  * Describe interface <code>AdminManager</code> here.
  */
@@ -22,4 +24,5 @@ public interface AdminManager
     
     String getAdminEmail();
 
+    void logAdminLoginEvent( String login, boolean local, InetAddress clientAddress, boolean succeeded, String reason );
 }

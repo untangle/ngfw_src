@@ -120,6 +120,7 @@ class UvmTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_help_links(self):
+        raise unittest2.SkipTest('FIXME - need to rewrite this test to support new admin UI')
         output, error = subprocess.Popen(['find',
                                           '%s/usr/share/untangle/web/webui/script/' % global_functions.get_prefix(),
                                           '-name',
@@ -313,6 +314,20 @@ class UvmTests(unittest2.TestCase):
     def test_101_account_login_invalid(self):
         result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
+
+    def test_102_admin_login_event(self):
+        uvmContext.adminManager().logAdminLoginEvent( "admin", True, "127.0.1.1", True, 'X' )
+        events = global_functions.get_events('Administration','Admin Login Events',None,10)
+        assert(events != None)
+        for i in events.get('list'):
+            print i
+        found = global_functions.check_events( events.get('list'), 10,
+                                               'client_addr', "127.0.1.1",
+                                               'reason', 'X',
+                                               'local', True,
+                                               'succeeded', True,
+                                               'login', 'admin' )
+        assert( found )
 
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
