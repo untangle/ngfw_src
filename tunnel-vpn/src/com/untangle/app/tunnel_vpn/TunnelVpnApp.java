@@ -3,11 +3,15 @@
  */
 package com.untangle.app.tunnel_vpn;
 
+import java.util.Random;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
@@ -23,10 +27,14 @@ public class TunnelVpnApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String IMPORT_CLIENT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import-config";
+    
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
     private TunnelVpnSettings settings = null;
 
+    private boolean isWebAppDeployed = false;
+    
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -81,6 +89,12 @@ public class TunnelVpnApp extends AppBase
     }
 
     @Override
+    protected void postDestroy()
+    {
+        unDeployWebApp();
+    }
+        
+    @Override
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -111,6 +125,9 @@ public class TunnelVpnApp extends AppBase
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
+        /* Deploy the web app on init so its available for configuration when off */
+        deployWebApp();
+
         this.reconfigure();
     }
 
@@ -123,6 +140,56 @@ public class TunnelVpnApp extends AppBase
         setSettings(settings);
     }
 
+    public void importClientConfig( String filename )
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\"");
+
+        String sitename = "siteName-" + (new Random().nextInt(10000));
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( IMPORT_CLIENT_SCRIPT + ": ");
+            for ( String line : lines ) {
+                logger.info( IMPORT_CLIENT_SCRIPT + ": " + line);
+
+                if (line.contains("SiteName: ")) {
+                    String[] tokens = line.split(" ");
+                    if (tokens.length > 1)
+                        sitename = tokens[1];
+                }
+            }
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to import client config");
+        }
+
+        /**
+         * Add a new server in settings, if it does not exist
+         */
+        TunnelVpnSettings settings = getSettings();
+        List<TunnelVpnServerSettings> servers = settings.getServers();
+        for ( TunnelVpnServerSettings server : servers ) {
+            if (sitename.equals(server.getName()))
+                return;
+        }
+        TunnelVpnServerSettings server = new TunnelVpnServerSettings();
+        server.setName( sitename );
+        server.setEnabled( true );
+        servers.add( server );
+        settings.setServers( servers );
+        setSettings( settings );
+
+        logger.warn("FIXME");
+        // /**
+        //  * Restart the daemon
+        //  */
+        // this.openVpnManager.configure( this.settings );
+        // this.openVpnManager.restart();
+        
+        return;
+    }
+    
     private TunnelVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
@@ -136,6 +203,26 @@ public class TunnelVpnApp extends AppBase
     {
         logger.info("Reconfigure()");
     }
-    
+
+    private synchronized void deployWebApp()
+    {
+        if ( !isWebAppDeployed ) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet( "/tunnel-vpn", "tunnel-vpn", true)) {
+                logger.debug( "Deployed tunnel-vpn web app" );
+            }
+            else logger.warn( "Unable to deploy tunnel-vpn web app" );
+        }
+        isWebAppDeployed = true;
+    }
+
+    private synchronized void unDeployWebApp()
+    {
+        if ( isWebAppDeployed ) {
+            if( UvmContextFactory.context().tomcatManager().unloadServlet( "/tunnel-vpn" )) {
+                logger.debug( "Unloaded tunnel-vpn web app" );
+            } else logger.warn( "Unable to unload tunnel-vpn web app" );
+        }
+        isWebAppDeployed = false;
+    }
     
 }

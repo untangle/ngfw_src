@@ -4,33 +4,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
 
-  <display-name>OpenVPN</display-name>
+  <display-name>Tunnel VPN</display-name>
 
   <description>
-    OpenVPN Servlet
+    Tunnel VPN Servlet
   </description>
-
-  <!-- Download the windows setup or configuration file -->
-  <servlet>
-    <servlet-name>Downloader</servlet-name>
-    <servlet-class>com.untangle.app.openvpn.servlet.Downloader</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>Downloader</servlet-name>
-    <url-pattern>/setup.exe</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Downloader</servlet-name>
-    <url-pattern>/config.zip</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Downloader</servlet-name>
-    <url-pattern>/chrome.onc</url-pattern>
-  </servlet-mapping>
 
   <!-- Upload server zip config -->
   <servlet>
