@@ -5,8 +5,8 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
 
     viewModel: {
         stores: {
-            servers: {
-                data: '{settings.servers.list}'
+            tunnels: {
+                data: '{settings.tunnels.list}'
             },
         },
     },
