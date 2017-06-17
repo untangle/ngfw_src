@@ -52,7 +52,7 @@ public class TunnelVpnApp extends AppBase
          */
         String appID = this.getAppSettings().getId().toString();
         try {
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + appID + ".js", newSettings );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
