@@ -168,16 +168,16 @@ public class TunnelVpnApp extends AppBase
          * Add a new server in settings, if it does not exist
          */
         TunnelVpnSettings settings = getSettings();
-        List<TunnelVpnServerSettings> servers = settings.getServers();
-        for ( TunnelVpnServerSettings server : servers ) {
-            if (sitename.equals(server.getName()))
+        List<TunnelVpnTunnelSettings> tunnels = settings.getTunnels();
+        for ( TunnelVpnTunnelSettings tunnelSettings : tunnels ) {
+            if (sitename.equals(tunnelSettings.getName()))
                 return;
         }
-        TunnelVpnServerSettings server = new TunnelVpnServerSettings();
-        server.setName( sitename );
-        server.setEnabled( true );
-        servers.add( server );
-        settings.setServers( servers );
+        TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
+        tunnelSettings.setName( sitename );
+        tunnelSettings.setEnabled( true );
+        tunnels.add( tunnelSettings );
+        settings.setTunnels( tunnels );
         setSettings( settings );
 
         logger.warn("FIXME");
@@ -207,7 +207,7 @@ public class TunnelVpnApp extends AppBase
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if (null != UvmContextFactory.context().tomcatManager().loadServlet( "/tunnel-vpn", "tunnel-vpn", true)) {
+            if (UvmContextFactory.context().tomcatManager().loadServlet( "/tunnel-vpn", "tunnel-vpn", true) != null) {
                 logger.debug( "Deployed tunnel-vpn web app" );
             }
             else logger.warn( "Unable to deploy tunnel-vpn web app" );

@@ -6,12 +6,12 @@ package com.untangle.app.tunnel_vpn;
 import java.net.InetAddress;
     
 @SuppressWarnings("serial")
-public class TunnelVpnServerSettings implements java.io.Serializable
+public class TunnelVpnTunnelSettings implements java.io.Serializable
 {
     private boolean enabled = true;
     private String name;
     
-    public TunnelVpnServerSettings() {}
+    public TunnelVpnTunnelSettings() {}
 
     public boolean getEnabled() { return this.enabled; }
     public void setEnabled( boolean newValue ) { this.enabled = newValue; }

@@ -10,10 +10,10 @@
     Tunnel VPN Servlet
   </description>
 
-  <!-- Upload server zip config -->
+  <!-- Upload tunnel zip config -->
   <servlet>
     <servlet-name>UploadConfig</servlet-name>
-    <servlet-class>com.untangle.app.openvpn.servlet.UploadConfig</servlet-class>
+    <servlet-class>com.untangle.app.tunnel_vpn.servlet.UploadConfig</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
