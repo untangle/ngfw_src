@@ -97,7 +97,7 @@ public class UploadConfig extends HttpServlet
         File temp = null;
         OutputStream outputStream = null;
         try {
-            temp = File.createTempFile( "openvpn-newconfig-", ".zip" );
+            temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
             temp.deleteOnExit();
             outputStream = new FileOutputStream( temp );
             
