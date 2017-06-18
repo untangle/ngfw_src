@@ -1,11 +1,10 @@
-Ext.define('Ung.config.network.view.NatRules', {
+Ext.define('Ung.config.network.view.FilterRules', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config-network-nat-rules',
-    itemId: 'nat-rules',
-
+    alias: 'widget.config-network-filter-rules',
+    itemId: 'filter-rules',
     viewModel: true,
 
-    title: 'NAT Rules'.t(),
+    title: 'Filter Rules'.t(),
 
     layout: 'fit',
 
@@ -13,23 +12,25 @@ Ext.define('Ung.config.network.view.NatRules', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
-        html: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
+        html: 'Filter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order.'.t()
     }],
 
     items: [{
         xtype: 'ungrid',
-        flex: 3,
+        region: 'center',
+        title: 'Filter Rules'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
-        listProperty: 'settings.natRules.list',
-        ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
+        listProperty: 'settings.filterRules.list',
+        ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
         conditions: [
             {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
             {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: 'textfield', visible: true},
             {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
             {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
             {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
@@ -39,16 +40,17 @@ Ext.define('Ung.config.network.view.NatRules', {
         emptyRow: {
             ruleId: -1,
             enabled: true,
-            auto: true,
-            javaClass: 'com.untangle.uvm.network.NatRule',
+            ipvsEnabled: false,
+            description: '',
+            javaClass: 'com.untangle.uvm.network.FilterRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
                 list: []
             },
-            description: ''
+            blocked: false
         },
 
-        bind: '{natRules}',
+        bind: '{filterRules}',
 
         columns: [{
             header: 'Rule Id'.t(),
@@ -56,13 +58,19 @@ Ext.define('Ung.config.network.view.NatRules', {
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
-            renderer: function(value) {
+            renderer: function (value) {
                 return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
+            resizable: false,
+            width: 70
+        }, {
+            xtype: 'checkcolumn',
+            header: 'IPv6'.t(),
+            dataIndex: 'ipv6Enabled',
             resizable: false,
             width: 70
         }, {
@@ -78,26 +86,18 @@ Ext.define('Ung.config.network.view.NatRules', {
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
         }, {
-            header: 'NAT Type'.t(),
-            dataIndex: 'auto',
-            width: 100,
-            renderer: function (val) {
-                return val ? 'Auto'.t() : 'Custom'.t();
-            }
-        }, {
-            header: 'New Source'.t(),
-            dataIndex: 'newSource',
-            width: 120,
-            renderer: function (value, metaData, record) {
-                return record.get('auto') ? '' : value;
-            }
+            xtype: 'checkcolumn',
+            header: 'Block'.t(),
+            dataIndex: 'blocked',
+            resizable: false,
+            width: 70
         }],
         editorFields: [
-            Field.enableRule('Enable NAT Rule'.t()),
+            Field.enableRule('Enable Filter Rule'.t()),
+            Field.enableIpv6,
             Field.description,
             Field.conditions,
-            Field.natType,
-            Field.natSource
+            Field.blockedCombo
         ]
     }]
 });

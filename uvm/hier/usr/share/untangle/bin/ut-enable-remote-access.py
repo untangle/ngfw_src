@@ -9,9 +9,9 @@ networkManager = uvm.networkManager()
 network_settings =  networkManager.getNetworkSettings()
 
 found = False
-input_rules = network_settings["inputFilterRules"]["list"]
-if input_rules != None:
-    for rule in input_rules:
+access_rules = network_settings["accessRules"]["list"]
+if access_rules != None:
+    for rule in access_rules:
         if rule.get("description") == "Allow HTTPS on WANs":
             if rule.get("enabled") != None:
                 print('remote administration is currently : %s' % rule.get("enabled"))
@@ -26,9 +26,9 @@ networkManager.setNetworkSettings( network_settings )
 
 network_settings =  networkManager.getNetworkSettings()
 
-input_rules = network_settings["inputFilterRules"]["list"]
-if input_rules != None:
-    for rule in input_rules:
+access_rules = network_settings["accessRules"]["list"]
+if access_rules != None:
+    for rule in access_rules:
         if rule.get("description") == "Allow HTTPS on WANs":
             if rule.get("enabled") != None:
                 print('remote administration is now       : %s' % rule.get("enabled"))
