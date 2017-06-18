@@ -357,7 +357,7 @@ class UvmTests(unittest2.TestCase):
             if interface['isWan'] == False:
                 if 'v4StaticAddress' in interface:
                     netaddr = interface['v4StaticAddress']
-                    if len(netaddr) > 0:
+                    if netaddr:
                         print "Checking hostname resolution for %s" % netaddr
                         output = subprocess.check_output("dig +short @" + netaddr + " " + fullName, shell=True)
                         result = output.strip()
