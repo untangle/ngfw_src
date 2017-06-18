@@ -28,8 +28,8 @@ Ext.define('Ung.config.network.MainModel', {
         // si: null,
         siStatus: null,
         siArp: null,
-        inputFilterRulesSshEnabled: null,
-        inputFilterRulesCount: 0,
+        accessRulesSshEnabled: null,
+        accessRulesCount: 0,
 
         qosPriorityStore: [
             [0, 'Default'.t()],
@@ -71,8 +71,8 @@ Ext.define('Ung.config.network.MainModel', {
         devices:            { data: '{settings.devices.list}' },
         qosPriorities:      { data: '{settings.qosSettings.qosPriorities.list}' },
         qosRules:           { data: '{settings.qosSettings.qosRules.list}' },
-        forwardFilterRules: { data: '{settings.forwardFilterRules.list}' },
-        inputFilterRules:   { data: '{settings.inputFilterRules.list}' },
+        filterRules:        { data: '{settings.filterRules.list}' },
+        accessRules:        { data: '{settings.accessRules.list}' },
         upnpRules:          { data: '{settings.upnpSettings.upnpRules.list}' },
         wanInterfaces: {
             source: '{interfaces}',

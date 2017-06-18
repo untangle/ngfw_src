@@ -34,10 +34,10 @@ public class NetworkSettings implements Serializable, JSONString
     private List<PortForwardRule> portForwardRules = null;
     private List<NatRule> natRules = null;
     private List<BypassRule> bypassRules = null;
-    private List<FilterRule> inputFilterRules = null;
-    private List<FilterRule> forwardFilterRules = null;
     private List<StaticRoute> staticRoutes = null;
     private List<DhcpStaticEntry> staticDhcpEntries = null;
+    private List<FilterRule> accessRules = null;
+    private List<FilterRule> filterRules = null;
     
     private String hostName;
     private String domainName;
@@ -75,6 +75,11 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlMethod;
     private String  publicUrlAddress;
     private Integer publicUrlPort;
+
+    /* DEPRECATED */
+    private List<FilterRule> inputFilterRules = null;
+    /* DEPRECATED */
+    private List<FilterRule> forwardFilterRules = null;
     
     public NetworkSettings() { }
 
@@ -99,11 +104,11 @@ public class NetworkSettings implements Serializable, JSONString
     public List<BypassRule> getBypassRules() { return this.bypassRules; }
     public void setBypassRules( List<BypassRule> newValue ) { this.bypassRules = newValue; }
 
-    public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
-    public void setInputFilterRules( List<FilterRule> newValue ) { this.inputFilterRules = newValue; }
+    public List<FilterRule> getFilterRules() { return this.filterRules; }
+    public void setFilterRules( List<FilterRule> newValue ) { this.filterRules = newValue; }
 
-    public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
-    public void setForwardFilterRules( List<FilterRule> newValue ) { this.forwardFilterRules = newValue; }
+    public List<FilterRule> getAccessRules() { return this.accessRules; }
+    public void setAccessRules( List<FilterRule> newValue ) { this.accessRules = newValue; }
     
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> newValue ) { this.staticRoutes = newValue; }
@@ -191,6 +196,20 @@ public class NetworkSettings implements Serializable, JSONString
 
     public int getLxcInterfaceId() { return this.lxcInterfaceId; }
     public void setLxcInterfaceId( int newValue ) { this.lxcInterfaceId = newValue; }
+
+    /**
+     * DEPRECATED
+     * replaced by getAccessRules
+     */
+    public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
+    public void setInputFilterRules( List<FilterRule> newValue ) { this.inputFilterRules = newValue; }
+
+    /**
+     * DEPRECATED
+     * replaced by getFilterRules
+     */
+    public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
+    public void setForwardFilterRules( List<FilterRule> newValue ) { this.forwardFilterRules = newValue; }
     
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources

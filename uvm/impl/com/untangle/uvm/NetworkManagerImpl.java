@@ -138,9 +138,7 @@ public class NetworkManagerImpl implements NetworkManager
             configureInterfaceSettingsArray();
 
             /* 13.1 conversion */
-            if ( this.networkSettings.getVersion() < 6 ) {
-                convertSettingsV6();
-            }
+            convertSettingsV6();
 
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -941,8 +939,8 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setQosSettings( defaultQosSettings() );
             newSettings.setUpnpSettings( defaultUpnpSettings() );
             newSettings.setDnsSettings( new DnsSettings() );
-            newSettings.setForwardFilterRules( new LinkedList<FilterRule>() );
-            newSettings.setInputFilterRules( defaultInputFilterRules() );
+            newSettings.setFilterRules( new LinkedList<FilterRule>() );
+            newSettings.setAccessRules( defaultAccessRules() );
             newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
 
             /**
@@ -1177,7 +1175,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getForwardFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getFilterRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1185,7 +1183,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getInputFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getAccessRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1280,11 +1278,11 @@ public class NetworkManagerImpl implements NetworkManager
             rule.setRuleId(++idx);
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getInputFilterRules()) {
+        for (FilterRule rule : networkSettings.getAccessRules()) {
             rule.setRuleId(++idx);
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getForwardFilterRules()) {
+        for (FilterRule rule : networkSettings.getFilterRules()) {
             rule.setRuleId(++idx);
         }
         idx = 0;
@@ -1628,7 +1626,7 @@ public class NetworkManagerImpl implements NetworkManager
         return upnpSettings;
     }
 
-    private List<FilterRule> defaultInputFilterRules()
+    private List<FilterRule> defaultAccessRules()
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
         List<FilterRuleCondition> conditions;
@@ -2438,63 +2436,94 @@ public class NetworkManagerImpl implements NetworkManager
         return -1;
     }
 
+    private boolean convertVirtualInterfaces()
+    {
+        if (this.networkSettings.getVirtualInterfaces() != null)
+            return false;
+
+        logger.warn("Conversion: Adding virtual interfaces...");
+        InterfaceSettings virtualIntf;
+        LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.L2TP_INTERFACE_ID,"L2TP");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.XAUTH_INTERFACE_ID,"XAUTH");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.GRE_INTERFACE_ID,"GRE");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        this.networkSettings.setVirtualInterfaces(virtualInterfaces);
+
+        return true;
+    }
+    
+    private boolean convertAccessRules()
+    {
+        if (this.networkSettings.getInputFilterRules() == null && this.networkSettings.getForwardFilterRules() == null)
+            return false;
+
+        logger.warn("Conversion: rename accessRules...");
+        logger.warn("Conversion: rename filterRules...");
+        this.networkSettings.setAccessRules( this.networkSettings.getInputFilterRules() );
+        this.networkSettings.setFilterRules( this.networkSettings.getForwardFilterRules() );
+        this.networkSettings.setInputFilterRules( null );
+        this.networkSettings.setForwardFilterRules( null );
+
+        return true;
+    }
+
     private void convertSettingsV6()
     {
         try {
-            InterfaceSettings virtualIntf;
-            LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+            boolean converted = false;
 
-            virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
-            virtualIntf.setIsVirtualInterface(true);
-            virtualIntf.setIsWan(false);
-            virtualIntf.setConfigType(null);
-            virtualIntf.setV4ConfigType(null);
-            virtualIntf.setV4Aliases(null);
-            virtualIntf.setV6ConfigType(null);
-            virtualIntf.setV6Aliases(null);
-            virtualIntf.setVrrpAliases(null);
-            virtualInterfaces.add(virtualIntf);
+            converted |= convertAccessRules();
+            converted |= convertVirtualInterfaces();
 
-            virtualIntf = new InterfaceSettings(InterfaceSettings.L2TP_INTERFACE_ID,"L2TP");
-            virtualIntf.setIsVirtualInterface(true);
-            virtualIntf.setIsWan(false);
-            virtualIntf.setConfigType(null);
-            virtualIntf.setV4ConfigType(null);
-            virtualIntf.setV4Aliases(null);
-            virtualIntf.setV6ConfigType(null);
-            virtualIntf.setV6Aliases(null);
-            virtualIntf.setVrrpAliases(null);
-            virtualInterfaces.add(virtualIntf);
-
-            virtualIntf = new InterfaceSettings(InterfaceSettings.XAUTH_INTERFACE_ID,"XAUTH");
-            virtualIntf.setIsVirtualInterface(true);
-            virtualIntf.setIsWan(false);
-            virtualIntf.setConfigType(null);
-            virtualIntf.setV4ConfigType(null);
-            virtualIntf.setV4Aliases(null);
-            virtualIntf.setV6ConfigType(null);
-            virtualIntf.setV6Aliases(null);
-            virtualIntf.setVrrpAliases(null);
-            virtualInterfaces.add(virtualIntf);
-
-            virtualIntf = new InterfaceSettings(InterfaceSettings.GRE_INTERFACE_ID,"GRE");
-            virtualIntf.setIsVirtualInterface(true);
-            virtualIntf.setIsWan(false);
-            virtualIntf.setConfigType(null);
-            virtualIntf.setV4ConfigType(null);
-            virtualIntf.setV4Aliases(null);
-            virtualIntf.setV6ConfigType(null);
-            virtualIntf.setV6Aliases(null);
-            virtualIntf.setVrrpAliases(null);
-            virtualInterfaces.add(virtualIntf);
-
-            this.networkSettings.setVirtualInterfaces(virtualInterfaces);
+            if (converted) {
+                this.networkSettings.setVersion( 6 );
+                this.setNetworkSettings( this.networkSettings, false );
+            }
         } catch (Exception e) {
             logger.warn("Exception converting Networking Settings",e);
         }
-
-        this.networkSettings.setVersion( 6 );
-        this.setNetworkSettings( this.networkSettings, false );
     }
     
     private class NetworkTestDownloadHandler implements DownloadHandler

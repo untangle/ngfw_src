@@ -751,7 +751,7 @@ class NetworkTests(unittest2.TestCase):
     def test_073_ftpModesBypassedFiltered(self):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ createBypassConditionRule("DST_PORT","21") ]
-        netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
+        netsettings['filterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
@@ -1237,7 +1237,7 @@ class NetworkTests(unittest2.TestCase):
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","80","PROTOCOL","TCP",True) ]
+        netsettings['filterRules']['list'] = [ createFilterRule("DST_PORT","80","PROTOCOL","TCP",True) ]
         netsettings['logBlockedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
