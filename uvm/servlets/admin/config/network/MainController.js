@@ -672,6 +672,24 @@ Ext.define('Ung.config.network.MainController', {
             me.editIntf.set('v6ConfigType', 'STATIC');
         }
 
+        // fix if missing or null lists (e.g. dhcpOptions)
+        if (!me.editIntf.get('dhcpOptions')) {
+            me.editIntf.set('dhcpOptions', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('v4Aliases')) {
+            me.editIntf.set('v4Aliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('v6Aliases')) {
+            me.editIntf.set('v6Aliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('vrrpAliases')) {
+            me.editIntf.set('vrrpAliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+
         me.dialog = me.getView().add({
             xtype: 'config.interface',
             configTypesRadios: configTypes, // holds the radio buttons based on interface supported config types
