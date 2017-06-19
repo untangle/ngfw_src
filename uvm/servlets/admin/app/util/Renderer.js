@@ -61,6 +61,7 @@ Ext.define('Ung.util.Renderer', {
         return ( value == true ) ? 'true' : 'false';
     },
 
+    timestampOffset: rpc.timeZoneOffset,
     timestamp: function( value ){
         if( !value ){
             return null;
@@ -69,7 +70,9 @@ Ext.define('Ung.util.Renderer', {
             value.time ){
             value = value.time;
         }
-        return Ext.util.Format.date(new Date( value ), 'timestamp_fmt'.t());
+        var date = new Date( value );
+        date.setTime( value + this.timestampOffset);
+        return Ext.util.Format.date( date, 'timestamp_fmt'.t());
     },
 
     interface: function (value) {
