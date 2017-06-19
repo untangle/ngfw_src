@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.AlertEvent;
-import com.untangle.uvm.event.SyslogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
@@ -590,8 +589,6 @@ public class EventManagerImpl implements EventManager
     {
         if ( event == null )
             return;
-        if ( event instanceof SyslogEvent )
-            return;
         if ( ! settings.getSyslogEnabled() )
             return;
 
@@ -609,11 +606,7 @@ public class EventManagerImpl implements EventManager
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
             event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-            if(rule.getLog()){
-                SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                UvmContextFactory.context().logEvent( eventEvent );
-            }
-            if ( rule.getSyslog() ){
+            if ( rule.getSyslog() ) {
                 try {
                     SyslogManagerImpl.sendSyslog( event );
                 } catch (Exception exn) {

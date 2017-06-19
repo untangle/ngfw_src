@@ -121,11 +121,6 @@ Ext.define('Ung.config.events.view.Syslog', {
             EventColumn.conditionFields,
         {
             xtype:'checkcolumn',
-            header: 'Log'.t(),
-            dataIndex: 'log',
-            width:55
-        }, {
-            xtype:'checkcolumn',
             header: 'Remote Syslog'.t(),
             dataIndex: 'syslog',
             width:55
@@ -195,11 +190,6 @@ Ext.define('Ung.config.events.view.Syslog', {
             xtype: 'fieldset',
             title: 'Perform the following action(s):'.t(),
             items:[{
-                xtype:'checkbox',
-                fieldLabel: 'Log'.t(),
-                labelWidth: 160,
-                bind: '{record.log}'
-            }, {
                 xtype:'checkbox',
                 fieldLabel: 'Remote Syslog'.t(),
                 labelWidth: 160,
