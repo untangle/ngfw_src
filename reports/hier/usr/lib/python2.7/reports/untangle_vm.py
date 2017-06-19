@@ -10,11 +10,12 @@ def generate_tables():
     __create_device_table_updates_table()
     __create_user_table_updates_table()
     __create_alerts_events_table()
-    __create_syslog_events_table()
     __create_settings_changes_table()
     # 13.0 conversion
     if sql_helper.table_exists( "penaltybox" ):
         sql_helper.drop_table("penaltybox") 
+    if sql_helper.table_exists( "syslog" ):
+        sql_helper.drop_table("syslog")
 
 @sql_helper.print_timing
 def cleanup_tables(cutoff):
@@ -26,7 +27,6 @@ def cleanup_tables(cutoff):
     sql_helper.clean_table("device_table_updates", cutoff)
     sql_helper.clean_table("user_table_updates", cutoff)
     sql_helper.clean_table("alerts", cutoff)
-    sql_helper.clean_table("syslog", cutoff)
 
 @sql_helper.print_timing
 def __create_admin_logins_table():
@@ -204,15 +204,6 @@ CREATE TABLE reports.session_minutes (
 def __create_alerts_events_table(  ):
     sql_helper.create_table("""\
 CREATE TABLE reports.alerts (
-        time_stamp timestamp NOT NULL,
-        description text NOT NULL,
-        summary_text text NOT NULL,
-        json text NOT NULL)""")
-
-@sql_helper.print_timing
-def __create_syslog_events_table(  ):
-    sql_helper.create_table("""\
-CREATE TABLE reports.syslog (
         time_stamp timestamp NOT NULL,
         description text NOT NULL,
         summary_text text NOT NULL,
