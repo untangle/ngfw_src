@@ -9,6 +9,8 @@ Ext.define('Ung.util.Renderer', {
     actionWidth: 80,
     // Boolean
     booleanWidth: 40,
+    // Counter
+    counterWidth: 80,
     // Email address
     emailWidth: 150,
     // Hostname
@@ -17,6 +19,8 @@ Ext.define('Ung.util.Renderer', {
     idWidth: 75,
     // IP Address
     ipWidth: 100,
+    // Load measurement
+    loadWidth: 50,
     // Latitude/longtitude
     locationWidth: 50,
     // MAC address
@@ -26,7 +30,7 @@ Ext.define('Ung.util.Renderer', {
     // Port
     portWidth: 70,
     // Data size
-    sizeWidth: 70,
+    sizeWidth: 90,
     // Tags
     tagsWidth: 200,
     // Timestamp
