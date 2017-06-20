@@ -410,6 +410,16 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'hostname'
             }, {
+                header: 'Local Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                dataIndex: 'local_addr'
+            }, {
+                header: 'Remote Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                dataIndex: 'remote_addr'
+            }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
                 sortable: true,
@@ -645,12 +655,20 @@ Ext.define('TableConfig', {
             }, {
                 name: 'username'
             }, {
+		name: 'local_addr',
+            }, {
+		name: 'remote_addr',
+            }, {
                 name: 'tags'
             }, {
                 name: 'policy_id',
                 convert: Converter.policy
             }, {
                 name: 'policy_rule_id'
+            }, {
+                name: 'local_addr'
+            }, {
+                name: 'remote_addr'
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -859,6 +877,16 @@ Ext.define('TableConfig', {
                 width: Renderer.hostnameWidth,
                 sortable: true,
                 dataIndex: 'hostname'
+            }, {
+                header: 'Local Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                dataIndex: 'local_addr'
+            }, {
+                header: 'Remote Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                dataIndex: 'remote_addr'
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
@@ -3080,42 +3108,6 @@ Ext.define('TableConfig', {
                 header: 'Summary Text'.t(),
                 sortable: true,
                 width: Renderer.messageWidth,
-                dataIndex: 'summary_text'
-            },{
-                header: 'JSON'.t(),
-                flex: 1,
-                width: Renderer.messageWidth,
-                sortable: true,
-                dataIndex: 'json'
-            }]
-        },
-        syslog: {
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            },{
-                name: 'description'
-            },{
-                name: 'summary_text'
-            },{
-                name: 'json'
-            }],
-            columns: [{
-                header: 'Timestamp'.t(),
-                width: Renderer.timestampWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                rtype: 'timestamp',
-                filter: Renderer.timestampFilter
-            },{
-                header: 'Description'.t(),
-                width: Renderer.messageWidth,
-                sortable: true,
-                dataIndex: 'description'
-            },{
-                header: 'Summary Text'.t(),
-                width: Renderer.messageWidth,
-                sortable: true,
                 dataIndex: 'summary_text'
             },{
                 header: 'JSON'.t(),
