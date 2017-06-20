@@ -164,9 +164,11 @@ Ext.define('TableConfig', {
                 name: 'end_time',
                 sortType: 'asTimestamp'
             }, {
-                name: 'bypassed'
+                name: 'bypassed',
+                type: 'boolean'
             }, {
-                name: 'entitled'
+                name: 'entitled',
+                type: 'boolean'
             }, {
                 name: 'protocol',
                 convert: Converter.protocol
@@ -452,6 +454,8 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Server Port'.t(),
                 width: Renderer.portWidth,
+                // Ugh.  Don't like this...
+                flex: 1,
                 sortable: true,
                 dataIndex: 's_server_port',
                 filter: Renderer.numericFilter
@@ -463,6 +467,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Filter Prefix'.t(),
                 width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'filter_prefix'
             }, {
@@ -549,6 +554,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Detail'.t() + ' (SSL Inspector)',
                 width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'ssl_inspector_detail'
             }, {
@@ -1765,6 +1771,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Sender'.t(),
                 width: Renderer.emailWidth,
+                flex:1,
                 sortable: true,
                 dataIndex: 'sender'
             }, {
@@ -2394,6 +2401,7 @@ Ext.define('TableConfig', {
             },{
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'action'
             }]
@@ -2654,6 +2662,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'DNSBL Server'.t(),
                 width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'hostname'
             }]
@@ -2722,6 +2731,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Miss Bytes'.t(),
                 width: Renderer.sizeWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'miss_bytes',
                 filter: Renderer.numericFilter
@@ -3037,6 +3047,7 @@ Ext.define('TableConfig', {
             }, {
                 header: 'TX Bytes'.t(),
                 width: Renderer.sizeWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'tx_bytes',
                 rtype: 'datasize',
