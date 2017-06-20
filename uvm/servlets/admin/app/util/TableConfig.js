@@ -174,9 +174,12 @@ Ext.define('TableConfig', {
                 name: 'icmp_type',
                 convert: Converter.icmp
             }, {
-                name: 'hostname'
+                name: 'hostname',
+                type: 'string'
             }, {
-                name: 'username'
+                name: 'username',
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'tags'
             }, {
@@ -237,7 +240,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'p2s_bytes'
             }, {
-                name: 'filter_prefix'
+                name: 'filter_prefix',
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'firewall_blocked'
             }, {
@@ -248,20 +253,24 @@ Ext.define('TableConfig', {
                 name: 'application_control_lite_blocked'
             }, {
                 name: 'application_control_lite_protocol',
-                type: 'string'
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'captive_portal_rule_index'
             }, {
                 name: 'captive_portal_blocked'
             }, {
                 name: 'application_control_application',
-                type: 'string'
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'application_control_protochain',
-                type: 'string'
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'application_control_category',
-                type: 'string'
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'application_control_flagged'
             }, {
@@ -269,7 +278,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'application_control_confidence'
             }, {
-                name: 'application_control_detail'
+                name: 'application_control_detail',
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'application_control_ruleid'
             }, {
@@ -278,68 +289,55 @@ Ext.define('TableConfig', {
                 name: 'bandwidth_control_rule',
                 convert: Converter.bandwidthControlRule
             }, {
-                name: 'ssl_inspector_status'
+                name: 'ssl_inspector_status',
+                type: 'string',
+                sortType: 'asUnString'
             }, {
-                name: 'ssl_inspector_detail'
+                name: 'ssl_inspector_detail',
+                type: 'string',
+                sortType: 'asUnString'
             }, {
                 name: 'ssl_inspector_ruleid'
             }],
             columns: [{
                 header: 'Session Id'.t(),
-                width: Renderer.ipWidth,
+                dataIndex: 'session_id',
+                width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'session_id'
+                filter: Renderer.numericFilter
             }, {
                 header: 'Timestamp'.t(),
+                dataIndex: 'time_stamp',
                 width: Renderer.timestampWidth,
                 sortable: true,
-                dataIndex: 'time_stamp',
                 rtype: 'timestamp',
                 filter: Renderer.timestampFilter
             }, {
                 header: 'End Timestamp'.t(),
+                dataIndex: 'end_time',
                 width: Renderer.timestampWidth,
                 sortable: true,
-                dataIndex: 'end_time',
                 rtype: 'timestamp',
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Bypassed'.t(),
+                dataIndex: 'bypassed',
                 width: Renderer.booleanWidth,
                 sortable: true,
-                dataIndex: 'bypassed',
-                filter: Renderer.booleanFilter,
-                widgetField: {
-                    xtype: 'combo',
-                    store: [['true', 'True'.t()], ['false', 'False'.t()]],
-                    value: 'true',
-                    editable: false,
-                    queryMode: 'local'
-                }
+                rtype: 'boolean',
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Entitled'.t(),
+                dataIndex: 'entitled',
                 width: Renderer.booleanWidth,
                 sortable: true,
-                dataIndex: 'entitled',
+                rtype: 'boolean',
                 filter: Renderer.booleanFilter,
-                widgetField: {
-                    xtype: 'combo',
-                    store: [['true', 'True'.t()], ['false', 'False'.t()]],
-                    value: 'true',
-                    editable: false,
-                    queryMode: 'local'
-                }
             }, {
                 header: 'Protocol'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
-                dataIndex: 'protocol',
-                // widgetField: {
-                //     xtype: 'combo',
-                //     store: ColumnRenderer.protocolStore(),
-                //     editable: false,
-                //     queryMode: 'local'
-                // }
+                dataIndex: 'protocol'
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
@@ -360,12 +358,6 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_intf'
-                // widgetField: {
-                //     xtype: 'combo',
-                //     // store: Util.getInterfaceListSystemDev(),
-                //     editable: false,
-                //     queryMode: 'local'
-                // }
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
@@ -375,50 +367,36 @@ Ext.define('TableConfig', {
                 header: 'Client Country'.t() ,
                 width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'client_country',
-                widgetField: {
-                    xtype: 'combo',
-                    width: 300,
-                    store: 'countries',
-                    valueField: 'code',
-                    displayField: 'name',
-                    editable: false,
-                    queryMode: 'local'
-                }
+                dataIndex: 'client_country'
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
                 sortable: true,
-                dataIndex: 'client_latitude'
+                dataIndex: 'client_latitude',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Client Longitude'.t() ,
                 width: Renderer.locationWidth,
                 sortable: true,
-                dataIndex: 'client_longitude'
+                dataIndex: 'client_longitude',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server Country'.t() ,
                 width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'server_country',
-                widgetField: {
-                    xtype: 'combo',
-                    width: 300,
-                    store: 'countries',
-                    valueField: 'code',
-                    displayField: 'name',
-                    editable: false,
-                    queryMode: 'local'
-                }
+                dataIndex: 'server_country'
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
                 sortable: true,
-                dataIndex: 'server_latitude'
+                dataIndex: 'server_latitude',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server Longitude'.t() ,
                 width: Renderer.locationWidth,
                 sortable: true,
-                dataIndex: 'server_longitude'
+                dataIndex: 'server_longitude',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -497,6 +475,7 @@ Ext.define('TableConfig', {
                 header: 'Rule'.t() + ' (Bandwidth Control)',
                 width: Renderer.messageWidth,
                 sortable: true,
+                flex: 1,
                 dataIndex: 'bandwidth_control_rule',
             }, {
                 header: 'Rule Id'.t() + ' (Application Control)',
@@ -541,10 +520,11 @@ Ext.define('TableConfig', {
                 header: 'Detail'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
                 sortable: true,
+                flex: 1,
                 dataIndex: 'application_control_detail'
             },{
                 header: 'Protocol'.t() + ' (Application Control Lite)',
-                width: Renderer.protocolWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_protocol',
                 rtype: 'protocol'
@@ -553,6 +533,7 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_blocked',
+                flex: 1,
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Rule Id'.t() + ' (SSL Inspector)',
@@ -599,6 +580,7 @@ Ext.define('TableConfig', {
                 header: 'Rule Id'.t() + ' (Captive Portal)',
                 width: Renderer.idWidth,
                 sortable: true,
+                flex: 1,
                 dataIndex: 'captive_portal_rule_index'
             }, {
                 header: 'To-Server Bytes'.t(),
@@ -813,12 +795,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'icmp_type'
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Policy Rule Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_rule_id'
             }, {
@@ -982,7 +964,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'application_control_detail'
             },{
                 header: 'Protocol'.t() + ' (Application Control Lite)',
-                width: Renderer.protocolWidth,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'application_control_lite_protocol',
                 rtype: 'protocol'
@@ -1169,7 +1151,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
@@ -1197,9 +1179,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -1210,9 +1190,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1223,9 +1201,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1236,9 +1212,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -1302,7 +1276,8 @@ Ext.define('TableConfig', {
                 dataIndex: 'c2s_content_length'
             }, {
                 header: 'Content Type'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 's2c_content_type'
             }, {
@@ -1310,39 +1285,31 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'web_filter_blocked',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Flagged'.t() + ' (Web Filter)',
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'web_filter_flagged',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Reason For Action'.t() +  ' (Web Filter)',
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'web_filter_reason'
             }, {
                 header: 'Web Category'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'web_filter_category'
             }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ad_blocker_action'
             }, {
                 header: 'Blocked Cookie'.t() + ' (Ad Blocker)',
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ad_blocker_cookie_ident'
             }, {
@@ -1350,14 +1317,10 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_clean',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Virus Name'.t() + ' (Virus Blocker Lite)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_name'
             }, {
@@ -1365,14 +1328,10 @@ Ext.define('TableConfig', {
                 width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_clean',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Virus Name'.t() + ' (Virus Blocker)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_name'
             }]
@@ -1455,7 +1414,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -1467,12 +1426,12 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Request Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'request_id'
             }, {
@@ -1510,9 +1469,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -1523,9 +1480,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1536,9 +1491,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1549,9 +1502,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Host'.t(),
                 width: Renderer.hostnameWidth,
@@ -1586,7 +1537,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'c2s_content_length'
             }, {
                 header: 'Content Type'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 's2c_content_type'
             }, {
@@ -1599,9 +1550,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }]
         },
         mail_addrs: {
@@ -1709,7 +1658,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -1726,12 +1675,12 @@ Ext.define('TableConfig', {
                 dataIndex: 'session_id'
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Message Id'.t(),
-                width: 60,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'msg_id'
             }, {
@@ -1764,9 +1713,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -1777,9 +1724,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_client_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1790,9 +1735,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'c_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1803,9 +1746,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 's_server_port',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Receiver'.t(),
                 width: Renderer.emailWidth,
@@ -1818,7 +1759,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'addr_name'
             }, {
                 header: 'Address Kind'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'addr_kind'
             }, {
@@ -1829,93 +1770,92 @@ Ext.define('TableConfig', {
             }, {
                 header: 'Subject'.t(),
                 flex:1,
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'subject'
             }, {
                 header: 'Name'.t() + ' (Virus Blocker Lite)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_name'
             }, {
                 header: 'Clean'.t() + ' (Virus Blocker Lite)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_clean'
             }, {
                 header: 'Name'.t() + ' (Virus Blocker)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_name'
             }, {
                 header: 'Clean'.t() + ' (Virus Blocker)',
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_clean'
             }, {
                 header: 'Action'.t() + ' (Spam Blocker Lite)',
-                width: 125,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_lite_action'
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker Lite)',
-                width: 70,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_lite_score',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Is Spam'.t() + ' (Spam Blocker Lite)',
-                width: 70,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_lite_is_spam'
             }, {
                 header: 'Detail'.t() + ' (Spam Blocker Lite)',
-                width: 125,
+                width: Renderer.messageWidth,
                 sortable: true,
+                flex: 1,
                 dataIndex: 'spam_blocker_lite_tests_string'
             }, {
                 header: 'Action'.t() + ' (Spam Blocker)',
-                width: 125,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_action'
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker)',
-                width: 70,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_score',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Is Spam'.t() + ' (Spam Blocker)',
-                width: 70,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'spam_blocker_is_spam'
             }, {
                 header: 'Detail'.t() + ' (Spam Blocker)',
-                width: 125,
+                width: Renderer.messageWidth,
                 sortable: true,
+                flex: 1,
                 dataIndex: 'spam_blocker_tests_string'
             }, {
                 header: 'Action'.t() + ' (Phish Blocker)',
-                width: 125,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'phish_blocker_action'
             }, {
                 header: 'Score'.t() + ' (Phish Blocker)',
-                width: 70,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'phish_blocker_score'
             }, {
                 header: 'Is Phish'.t() + ' (Phish Blocker)',
-                width: 70,
+                width: Renderer.booleanWidth,
                 sortable: true,
                 dataIndex: 'phish_blocker_is_spam'
             }, {
                 header: 'Detail'.t() + ' (Phish Blocker)',
-                width: 125,
+                width: Renderer.messageWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'phish_blocker_tests_string'
             }]
@@ -1963,7 +1903,8 @@ Ext.define('TableConfig', {
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'type'
+                dataIndex: 'type',
+                flex: 1
             }]
         },
         admin_logins: {
@@ -2069,52 +2010,40 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Load (1-minute)'.t(),
-                width: 120,
+                width: Renderer.loadWidth,
                 sortable: true,
                 dataIndex: 'load_1',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Load (5-minute)'.t(),
-                width: 120,
+                width: Renderer.loadWidth,
                 sortable: true,
                 dataIndex: 'load_5',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Load (15-minute)'.t(),
-                width: 120,
+                width: Renderer.loadWidth,
                 sortable: true,
                 dataIndex: 'load_15',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'CPU User Utilization'.t(),
-                width: 120,
+                width: Renderer.loadWidth,
                 sortable: true,
                 dataIndex: 'cpu_user',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'CPU System Utilization'.t(),
-                width: 120,
+                width: Renderer.loadWidth,
                 sortable: true,
                 dataIndex: 'cpu_system',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Memory Total'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'mem_total',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var meg = value/1024/1024;
                     return (Math.round( meg*10 )/10).toString() + ' MB';
@@ -2122,72 +2051,61 @@ Ext.define('TableConfig', {
 
             }, {
                 header: 'Memory Free'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'mem_free',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var meg = value/1024/1024;
                     return (Math.round( meg*10 )/10).toString() + ' MB';
                 }
             }, {
                 header: 'Disk Total'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'disk_total',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var gig = value/1024/1024/1024;
                     return (Math.round( gig*10 )/10).toString() + ' GB';
                 }
             }, {
                 header: 'Disk Free'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
+                flex: 1,
                 sortable: true,
                 dataIndex: 'disk_free',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var gig = value/1024/1024/1024;
                     return (Math.round( gig*10 )/10).toString() + ' GB';
                 }
             }, {
                 header: 'Swap Total'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'swap_total',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var meg = value/1024/1024;
                     return (Math.round( meg*10 )/10).toString() + ' MB';
                 }
             }, {
                 header: 'Swap Free'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'swap_free',
-                filter: {
-                    type: 'numeric'
-                },
+                filter: Renderer.numericFilter,
                 renderer: function(value) {
                     var meg = value/1024/1024;
                     return (Math.round( meg*10 )/10).toString() + ' MB';
                 }
             }, {
                 header: 'Active Hosts'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'active_hosts',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }]
         },
         host_table_updates: {
@@ -2225,16 +2143,16 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'key'
             }, {
+                header: 'Old Value'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                dataIndex: 'old_value'
+            }, {
                 header: 'Value'.t(),
                 width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'value'
-            }, {
-                header: 'Old Value'.t(),
-                width: Renderer.messageWidth,
-                sortable: true,
-                dataIndex: 'old_value'
             }]
         },
         device_table_updates: {
@@ -2272,17 +2190,16 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'key'
             }, {
+                header: 'Old Value'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                dataIndex: 'old_value'
+            }, {
                 header: 'Value'.t(),
                 width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'value'
-            }, {
-                header: 'Old Value'.t(),
-                width: Renderer.messageWidth,
-                flex: 1,
-                sortable: true,
-                dataIndex: 'old_value'
             }]
         },
         user_table_updates: {
@@ -2316,21 +2233,20 @@ Ext.define('TableConfig', {
                 dataIndex: 'username'
             }, {
                 header: 'Key'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'key'
             }, {
+                header: 'Old Value'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                dataIndex: 'old_value'
+            }, {
                 header: 'Value'.t(),
-                width: 150,
+                width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'value'
-            }, {
-                header: 'Old Value'.t(),
-                width: 150,
-                flex: 1,
-                sortable: true,
-                dataIndex: 'old_value'
             }]
         },
         configuration_backup_events: {
@@ -2364,18 +2280,18 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Result'.t(),
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'success'
             }, {
                 header: 'Destination'.t(),
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'destination'
             }, {
                 header: 'Details'.t(),
                 flex:1,
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'description'
             }]
@@ -2397,7 +2313,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             },{
@@ -2409,28 +2325,24 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'name'
             },{
                 header: 'Interface Id'.t(),
-                width: 120,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'interface_id',
                 rtype: 'interface'
             },{
                 header: 'Success'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'success',
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true'.t(),
-                    noText: 'false'.t()
-                }
+                filter: Renderer.booleanFilter
             },{
                 header: 'Test Description'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'description',
                 flex:1
@@ -2453,7 +2365,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             },{
@@ -2465,23 +2377,23 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'name'
             },{
                 header: 'Interface Id'.t(),
-                width: 120,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'interface_id',
                 rtype: 'interface'
             },{
                 header: 'Interface OS'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'os_name'
             },{
                 header: 'Action'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'action'
             }]
@@ -2525,7 +2437,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             },{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             },{
@@ -2540,7 +2452,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'client_username'
             },{
                 header: 'Protocol'.t(),
-                width: 120,
+                width: Renderer.portWidth,
                 sortable: true,
                 dataIndex: 'client_protocol',
                 // rtype: 'protocol',
@@ -2560,18 +2472,18 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             },{
                 header: 'Elapsed'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'elapsed_time'
             },{
                 header: 'Interface'.t(),
-                width: 80,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'net_interface',
                 rtype: 'interface'
             },{
                 header: 'RX Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'rx_bytes',
                 renderer: function(value) {
@@ -2583,7 +2495,7 @@ Ext.define('TableConfig', {
                 }
             },{
                 header: 'TX Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'tx_bytes',
                 renderer: function(value) {
@@ -2595,7 +2507,7 @@ Ext.define('TableConfig', {
                 }
             },{
                 header: 'Process'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'net_process'
             }]
@@ -2619,7 +2531,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -2631,12 +2543,12 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Tunnel Name'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'tunnel_name'
             }, {
                 header: 'In Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'in_bytes',
                 renderer: function(value) {
@@ -2645,7 +2557,7 @@ Ext.define('TableConfig', {
                 }
             }, {
                 header: 'Out Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'out_bytes',
                 renderer: function(value) {
@@ -2675,26 +2587,22 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Id'.t(),
-                width: 120,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'interface_id',
                 rtype: 'interface'
             }, {
                 header: 'RX Rate'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'rx_rate',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'TX Rate'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'tx_rate',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }]
         },
         smtp_tarpit_events: {
@@ -2725,27 +2633,27 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
                 header: 'Event Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
                 header: 'Vendor Name'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'vendor_name'
             }, {
                 header: 'Sender'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'ipaddr'
             }, {
                 header: 'DNSBL Server'.t(),
-                width: 120,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'hostname'
             }]
@@ -2778,57 +2686,45 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Event Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
                 header: 'Hit Count'.t(),
-                width: 120,
+                width: Renderer.counterWidth,
                 sortable: false,
                 dataIndex: 'hits',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Miss Count'.t(),
-                width: 120,
+                width: Renderer.counterWidth,
                 sortable: false,
                 dataIndex: 'misses',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Bypass Count'.t(),
-                width: 120,
+                width: Renderer.counterWidth,
                 sortable: false,
                 dataIndex: 'bypasses',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'System Count'.t(),
-                width: 120,
+                width: Renderer.counterWidth,
                 sortable: false,
                 dataIndex: 'systems',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Hit Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'hit_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }, {
                 header: 'Miss Bytes'.t(),
-                width: 120,
+                width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'miss_bytes',
-                filter: {
-                    type: 'numeric'
-                }
+                filter: Renderer.numericFilter
             }]
         },
         captive_portal_user_events: {
@@ -2878,8 +2774,7 @@ Ext.define('TableConfig', {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
                 sortable: true,
-                dataIndex: 'login_name',
-                flex:1
+                dataIndex: 'login_name'
             }, {
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
@@ -2889,7 +2784,8 @@ Ext.define('TableConfig', {
                 header: 'Authentication'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
-                dataIndex: 'auth_type'
+                dataIndex: 'auth_type',
+                flex: 1
             }]
         },
         intrusion_prevention_events: {
@@ -2992,17 +2888,17 @@ Ext.define('TableConfig', {
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Category'.t(),
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'category'
             }, {
                 header: 'Classtype'.t(),
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'classtype'
             }, {
                 header: 'Msg'.t(),
-                width: Renderer.msgWidth,
+                width: Renderer.messageWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'msg'
@@ -3172,6 +3068,7 @@ Ext.define('TableConfig', {
             },{
                 header: 'Summary Text'.t(),
                 sortable: true,
+                width: Renderer.messageWidth,
                 dataIndex: 'summary_text'
             },{
                 header: 'JSON'.t(),
@@ -3269,7 +3166,7 @@ Ext.define('TableConfig', {
             }],
             columns: [{
                 header: 'Event Id'.t(),
-                width: 100,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'event_id'
             }, {
@@ -3281,7 +3178,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: 60,
+                width: Renderer.idWidth,
                 sortable: true,
                 dataIndex: 'policy_id'
             }, {
@@ -3346,22 +3243,22 @@ Ext.define('TableConfig', {
                 dataIndex: 'uri'
             }, {
                 header: 'Virus Blocker Lite ' + 'Name'.t(),
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_name'
             }, {
                 header: 'Virus Blocker Lite ' + 'clean'.t(),
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_lite_clean'
             }, {
                 header: 'Virus Blocker ' + 'Name'.t(),
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_name'
             }, {
                 header: 'Virus Blocker ' + 'Clean'.t(),
-                width: 140,
+                width: Renderer.messageWidth,
                 sortable: true,
                 dataIndex: 'virus_blocker_clean'
             }, {
@@ -3458,8 +3355,8 @@ Ext.define('TableConfig', {
                 width: Renderer.actionWidth,
                 xtype: 'actioncolumn',
                 align: 'center',
-                // hideable: false,
                 tdCls: 'action-cell',
+                hideable: false,
                 iconCls: 'fa fa-search fa-black',
                 tooltip: "Show difference between previous version".t(),
                 handler: function(view, rowIndex, colIndex, item, e, record) {
