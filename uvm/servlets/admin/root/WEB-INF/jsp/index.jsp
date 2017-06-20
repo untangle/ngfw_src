@@ -57,12 +57,6 @@
         </style>
 
         <script>
-            Highcharts.setOptions({
-                global: {
-                    useUTC: false
-                }
-            });
-
             var rpc = {};
             if (Ext.supports.LocalStorage) {
                 Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
@@ -142,6 +136,14 @@
 	                throw ex;
                     });
                 };
+
+                // use server timezone for graphs
+                Highcharts.setOptions({
+                    global: {
+                        timezoneOffset: -(rpc.timeZoneOffset / 60000)
+                    }
+                });
+
 
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({
