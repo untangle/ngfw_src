@@ -148,11 +148,24 @@ end
 task :install => [:devel, :i18n, :debian_init_files]
 
 task :javadoc do
-  dirs = 'uvm/api'
+  sourcepaths = []
+  javaDirs = FileList["./**/*.java"].exclude(/^\.\/(dist|downloads|staging)/)
+  if ( javaDirs.length > 0 )
+    javaDirs.each do |d|
+      sourcepath=d.split("/")[1] + "/" + d.split("/")[2]
+      if sourcepaths.index(sourcepath) == nil
+        sourcepaths.push(sourcepath)
+      end
+    end
+  end
+  puts sourcepaths
+
+  sourcepath = sourcepaths.join(':')
+  subpackages = 'com.untangle'
   cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
   css = "./buildtools/javadoc.css"
 
-  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', dirs, '-classpath', cpath,
+  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', sourcepath, '-classpath', cpath,
               '-d', "#{BuildEnv::SRC.staging}/javadoc",
-              '-subpackages', 'com.untangle', '-J-Xmx512m')
+              '-subpackages', subpackages, '-J-Xmx512m')
 end
