@@ -165,7 +165,10 @@ task :javadoc do
   cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
   css = "./buildtools/javadoc.css"
 
-  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', sourcepath, '-classpath', cpath,
-              '-d', "#{BuildEnv::SRC.staging}/javadoc",
-              '-subpackages', subpackages, '-J-Xmx512m')
+  Kernel.exec('javadoc',
+            '-docletpath', './downloads/wikidoclet.1.0.4.jar',
+            '-doclet', 'wikidoclet.WikiDoclet',
+            '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', sourcepath, '-classpath', cpath,
+            '-d', "#{BuildEnv::SRC.staging}/javadoc",
+            '-subpackages', subpackages, '-J-Xmx512m')
 end
