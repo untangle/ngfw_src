@@ -210,10 +210,10 @@ FunctionEnd
 Function RestoreServiceState
 
 	${If} $iservice_was_running == 4
-	${OrIf} $iservice_existed != 0
-		DetailPrint "Starting OpenVPN Interactive Service"
-		SimpleSC::StartService "OpenVPNServiceInteractive" "" 5
-	${EndIf}
+	; ${OrIf} $iservice_existed != 0
+	DetailPrint "Starting OpenVPN Interactive Service"
+	SimpleSC::StartService "OpenVPNServiceInteractive" "" 5
+	; ${EndIf}
 
 	${If} $legacy_service_was_running == 4
 		DetailPrint "Restarting OpenVPN Legacy Service"
