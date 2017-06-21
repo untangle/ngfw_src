@@ -55,34 +55,19 @@ Ext.define('Ung.view.reports.EventReportController', {
                          */
                         column.columns.forEach( Ext.bind( function( subColumn ){
                             grid.initComponentColumn( subColumn );
-                            if( subColumn.xtype == 'actioncolumn'){
-                                subColumn.hidden = false;
-                            }
-                            if (!subColumn.filter &&
-                                ( subColumn.xtype != 'actioncolumn' ) &&
-                                ( subColumn.rtype != 'timestamp' ) ){
-                                subColumn.filter = Renderer.stringFilter;
-                            }
                         }, this ) );
                     }
                     grid.initComponentColumn( column );
-                    if( column.xtype == 'actioncolumn'){
-                        column.hidden = false;
-                    }
-                    if (!column.filter && 
-                        ( column.xtype != 'actioncolumn' ) &&
-                        ( column.rtype != 'timestamp' ) ){
-                        column.filter = Renderer.stringFilter;
-                    }
                 });
                 me.tableConfig.fields.forEach( function(field){
-                    if (!field.sortType ){
+                    if( !field.sortType ){
                         field.sortType = 'asUnString';
                     }
                 });
 
                 grid.tableConfig = me.tableConfig;
                 grid.setColumns(me.tableConfig.columns);
+
                 grid.getColumns().forEach( function(column){
                     if( column.xtype == 'actioncolumn'){
                         return;
