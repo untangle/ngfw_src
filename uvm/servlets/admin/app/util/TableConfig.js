@@ -1591,8 +1591,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'c_client_port',
-                filter: Renderer.numericFilter
+                dataIndex: 'c_client_port'
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -1604,8 +1603,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 's_client_port',
-                filter: Renderer.numericFilter
+                dataIndex: 's_client_port'
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1617,8 +1615,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'c_server_port',
-                filter: Renderer.numericFilter
+                dataIndex: 'c_server_port'
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1630,8 +1627,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 's_server_port',
-                filter: Renderer.numericFilter
+                dataIndex: 's_server_port'
             }, {
                 header: 'Host'.t(),
                 width: Renderer.hostnameWidth,
@@ -1687,8 +1683,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 's_server_port',
-                filter: Renderer.numericFilter
+                dataIndex: 's_server_port'
             }]
         },
         mail_addrs: {
@@ -1860,8 +1855,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'c_client_port',
-                filter: Renderer.numericFilter
+                dataIndex: 'c_client_port'
             }, {
                 header: 'New Client'.t(),
                 width: Renderer.ipWidth,
@@ -1873,8 +1867,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 's_client_port',
-                filter: Renderer.numericFilter
+                dataIndex: 's_client_port'
             }, {
                 header: 'Original Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1886,8 +1879,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'c_server_port',
-                filter: Renderer.numericFilter
+                dataIndex: 'c_server_port'
             }, {
                 header: 'Server'.t() ,
                 width: Renderer.ipWidth,
@@ -1899,8 +1891,7 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 's_server_port',
-                filter: Renderer.numericFilter
+                dataIndex: 's_server_port'
             }, {
                 header: 'Receiver'.t(),
                 width: Renderer.emailWidth,
@@ -1968,8 +1959,7 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'spam_blocker_lite_score',
-                filter: Renderer.numericFilter
+                dataIndex: 'spam_blocker_lite_score'
             }, {
                 header: 'Is Spam'.t() + ' (Spam Blocker Lite)',
                 width: Renderer.booleanWidth,
@@ -1994,8 +1984,7 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
-                dataIndex: 'spam_blocker_score',
-                filter: Renderer.numericFilter
+                dataIndex: 'spam_blocker_score'
             }, {
                 header: 'Is Spam'.t() + ' (Spam Blocker)',
                 width: Renderer.booleanWidth,
