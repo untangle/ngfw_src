@@ -1,15 +1,7 @@
 Ext.define('Ung.widget.Report', {
     extend: 'Ext.container.Container',
     alias: 'widget.reportwidget',
-    /* requires-start */
-    requires: [
-        //'Ung.widget.report.ReportController',
-        'Ung.widget.ReportModel',
-        'Ung.chart.TimeChart',
-        'Ung.chart.PieChart',
-        'Ung.chart.EventChart'
-    ],
-    /* requires-end */
+
     controller: 'widget',
     viewModel: {
         type: 'reportwidget'
@@ -18,6 +10,8 @@ Ext.define('Ung.widget.Report', {
         widget: null,
         entry: null
     },
+
+    lastFetchTime: null,
 
     hidden: true,
     bind: {
@@ -29,7 +23,9 @@ Ext.define('Ung.widget.Report', {
         align: 'stretch'
     },
     border: false,
-    baseCls: 'widget adding',
+    baseCls: 'widget',
+
+    visible: false,
 
     items: [{
         xtype: 'component',

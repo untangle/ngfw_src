@@ -13,7 +13,7 @@ Ext.define('Ung.widget.CpuLoad', {
     hidden: true,
     border: false,
     baseCls: 'widget',
-    cls: 'small adding',
+    cls: 'small',
 
     bind: {
         hidden: '{!widget.enabled}'

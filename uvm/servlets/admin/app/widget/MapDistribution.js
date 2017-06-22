@@ -7,7 +7,7 @@ Ext.define('Ung.widget.MapDistribution', {
     hidden: true,
     border: false,
     baseCls: 'widget',
-    cls: 'adding',
+    visible: false,
 
     layout: 'fit',
 
@@ -39,7 +39,9 @@ Ext.define('Ung.widget.MapDistribution', {
         var me = this, data = [];
 
         if (me.chart && me.geographyManager) {
+            me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
             me.geographyManager.getGeoSessionStats(function (result, ex) {
+                me.chart.hideLoading();
                 cb();
                 if (ex) { Util.handleException(ex); return; }
                 for (i = 0; i < result.length; i += 1) {
@@ -63,12 +65,12 @@ Ext.define('Ung.widget.MapDistribution', {
 
     listeners: {
         afterrender: function (view) {
-            view.setLoading(true);
+            // view.setLoading(true);
             if (!Highcharts.map['custom/world']) {
                 Ext.Loader.loadScript({
                     url: '/highcharts-5.0.9/world.js',
                     onLoad: function () {
-                        view.setLoading(false);
+                        // view.setLoading(false);
                         view.renderMap(view);
                     }
                 });

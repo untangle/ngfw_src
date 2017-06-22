@@ -110,40 +110,23 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             }]
         }],
 
-        // tools: [{
-        //     type: 'close',
-        //     callback: 'toggleManager'
-        // }],
-
         itemId: 'dashboardManager',
         reference: 'dashboardManager',
-        // weight: 30,
         width: 250,
         minWidth: 250,
         maxWidth: 350,
-        // collapsible: true,
         bodyBorder: false,
-        // shadow: false,
         animCollapse: false,
-        // collapsed: true,
-        // collapseMode: 'mini',
-        // titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
         split: true,
         xtype: 'grid',
         hideHeaders: true,
-        // disableSelection: true,
-        // trackMouseOver: false,
         hidden: true,
         bind: {
             hidden: '{!managerVisible}'
         },
         store: 'widgets',
-
-        // bodyStyle: {
-        //     border: 0
-        // },
         viewConfig: {
             plugins: {
                 ptype: 'gridviewdragdrop',
@@ -201,24 +184,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             isDisabled: function (view, rowIndex, colIndex, item, record) {
                 return record.get('type') !== 'ReportEntry';
             }
-            // renderer: function (value, meta, record) {
-            //     return '<i class="fa fa-times" style="color: #999;"></i>';
-            // }
-        }/*, {
-            xtype: 'actioncolumn',
-            align: 'center',
-            width: 25,
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            renderer: function (value, meta, record) {
-                if (record.get('type') !== 'ReportEntry') {
-                    return '';
-                }
-                return '<i style="font-size: 16px; color: #777; padding-top: 4px;" class="material-icons">settings</i>';
-            }
-        }*/],
+        }],
         listeners: {
             itemmouseleave : 'onItemLeave',
             cellclick: 'onItemClick'
@@ -242,9 +208,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         border: false,
         bodyBorder: false,
         scrollable: true,
+        listeners: {
+            afterrender: 'onAfterRender'
+        }
     }],
     listeners: {
-        //afterrender: 'onAfterRender',
         showwidgeteditor: 'showWidgetEditor'
     }
 });
