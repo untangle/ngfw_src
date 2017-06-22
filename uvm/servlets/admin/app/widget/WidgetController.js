@@ -23,7 +23,7 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     headerRender: function (cmp) {
-        var me = this, wg = me.getView(), vm = me.getViewModel();;
+        var me = this, wg = me.getView(), vm = me.getViewModel();
         cmp.getEl().on({
             click: function (e) {
                 // on refresh
@@ -33,11 +33,20 @@ Ext.define('Ung.widget.WidgetController', {
                 }
                 // on settings
                 if (e.target.dataset.action === 'settings') {
-                    if (wg.up('#dashboard').down('window')) {
-                        wg.up('#dashboard').down('window').close();
-                    }
+                    // if (wg.up('#dashboard').down('window')) {
+                    //     wg.up('#dashboard').down('window').close();
+                    // }
                     wg.up('#dashboard').getController().showWidgetEditor(vm.get('widget'), vm.get('entry'));
                 }
+
+                // on download
+                if (e.target.dataset.action === 'download') {
+                    var chart = wg.down('graphreport').getController().chart;
+                    if (chart) {
+                        chart.exportChart();
+                    }
+                }
+
             }
         });
     },
