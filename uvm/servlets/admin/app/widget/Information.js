@@ -6,7 +6,7 @@ Ext.define('Ung.widget.Information', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small info-widget adding',
+    baseCls: 'widget small info-widget',
 
     bind: {
         hidden: '{!widget.enabled}'

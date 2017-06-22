@@ -1,18 +1,13 @@
 Ext.define('Ung.view.dashboard.Queue', {
     alternateClassName: 'DashboardQueue',
-    mixins: ['Ext.mixin.Observable'],
-
     singleton: true,
-    // processing: false,
-    // paused: false,
     queue: [],
     processing: false,
-    // queueMap: {},
-    // tout: null,
+
+    paused: false,
 
     add: function (widget) {
         this.queue.push(widget);
-        // console.log(this.queue);
         this.process();
     },
 
@@ -21,16 +16,34 @@ Ext.define('Ung.view.dashboard.Queue', {
         this.process();
     },
 
-    remove: function () {
-
+    isVisible: function (widget) {
+        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
+        widget.visible = (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
+        if (widget.visible) {
+            DashboardQueue.add(widget);
+        }
     },
 
     process: function () {
         me = this;
         if (this.queue.length > 0 && !me.processing) {
-            var wg = this.queue[0]; // this is the controller of the report
-            // console.log(wg);
-            // console.log(wg.getView().down('#report-widget'));
+            var wg = this.queue[0], seconds;
+
+            /**
+             * if queue is paused (e.g. not in Dashboard view) or
+             * widget is not in visible area of the screen or
+             * it hasn't passed the timeout to be refreshed
+             * just remove it from queue and skip fetching
+             */
+            if (me.paused || !wg.visible ||
+                wg.lastFetchTime && ((new Date()).getTime() - wg.lastFetchTime)/1000 <= wg.getViewModel().get('widget.refreshIntervalSec')
+            ) {
+                Ext.Array.removeAt(me.queue, 0);
+                me.processing = false;
+                me.process();
+                return;
+            }
+
             me.processing = true;
             if (wg.tout) {clearTimeout(wg.tout); }
 
@@ -48,6 +61,7 @@ Ext.define('Ung.view.dashboard.Queue', {
                             DashboardQueue.add(wg);
                         }, seconds * 1000);
                     }
+                    wg.lastFetchTime = new Date().getTime();
                 });
             } else {
                 wg.fetchData(function () {
@@ -60,6 +74,7 @@ Ext.define('Ung.view.dashboard.Queue', {
                             DashboardQueue.add(wg);
                         }, seconds * 1000);
                     }
+                    wg.lastFetchTime = new Date().getTime();
                 });
             }
         }
