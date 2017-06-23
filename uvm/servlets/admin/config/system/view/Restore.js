@@ -32,6 +32,7 @@ Ext.define('Ung.config.system.view.Restore', {
             },
             items: [{
                 xtype: 'combo',
+                name: 'argument',
                 fieldLabel: 'Restore Options'.t(),
                 width: 500,
                 store: [['', 'Restore all settings.'.t()], ['.*/network.*', 'Restore all except keep current network settings.'.t()]],
