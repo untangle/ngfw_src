@@ -65,7 +65,7 @@ Ext.define('Ung.util.Renderer', {
         return ( value == true ) ? 'true' : 'false';
     },
 
-    timestampOffset: rpc.timeZoneOffset,
+    timestampOffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
     timestamp: function( value ){
         if( !value ){
             return null;
