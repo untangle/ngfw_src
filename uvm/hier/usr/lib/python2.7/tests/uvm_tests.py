@@ -354,7 +354,7 @@ class UvmTests(unittest2.TestCase):
         # perform a DNS lookup for our hostname against every non-WAN interface
         # and make sure the value returned matches the address of the interface
         for interface in netsettings['interfaces']['list']:
-            if interface['isWan'] == False:
+            if interface['isWan'] == False and interface['configType'] == "Addressed":
                 if 'v4StaticAddress' in interface:
                     netaddr = interface['v4StaticAddress']
                     if netaddr:
