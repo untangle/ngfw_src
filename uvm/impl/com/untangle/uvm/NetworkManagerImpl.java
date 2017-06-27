@@ -108,14 +108,6 @@ public class NetworkManagerImpl implements NetworkManager
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
-                if (readSettings == null) {
-                    // check for "backup" settings in /usr/share/untangle/settings.backup/
-                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network.js";
-                    logger.info("Reading Network Settings from " + rootLocation);
-                    readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
-                    logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
-                }
-                    
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
                     
@@ -1258,40 +1250,57 @@ public class NetworkManagerImpl implements NetworkManager
     
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
+        
         /**
          * Fix rule IDs
          */
         int idx = 0;
-        for (NatRule rule : networkSettings.getNatRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getNatRules() != null) {
+            for (NatRule rule : networkSettings.getNatRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getPortForwardRules() != null) {
+            for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (BypassRule rule : networkSettings.getBypassRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getBypassRules() != null) {
+            for (BypassRule rule : networkSettings.getBypassRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (StaticRoute rule : networkSettings.getStaticRoutes()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getStaticRoutes() != null) {
+            for (StaticRoute rule : networkSettings.getStaticRoutes()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getAccessRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getAccessRules() != null) {
+            for (FilterRule rule : networkSettings.getAccessRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getFilterRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getFilterRules() != null) {
+            for (FilterRule rule : networkSettings.getFilterRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getQosSettings() != null && networkSettings.getQosSettings().getQosRules() != null) {
+            for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getUpnpSettings() != null && networkSettings.getUpnpSettings().getUpnpRules() != null) {
+            for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         /**
          * Reset all symbolic devs to system devs
@@ -2365,6 +2374,23 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Return the FQDN according to the settings
+     *
+     * If domain name is null it just returns the hostname
+     * @returns String of the FQDN name of this server, never null
+     */
+    public String getFullyQualifiedHostname()
+    {
+        String primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if ( primaryAddressStr == null )
+            primaryAddressStr = "hostname";
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        if ( domainName != null )
+            primaryAddressStr = primaryAddressStr + "." + domainName;
+        return primaryAddressStr;
+    }
+    
+    /**
      * @return the public url for the box, this is the address (may be hostname or ip address)
      */
     public String getPublicUrl()
@@ -2383,10 +2409,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
                 logger.warn("No hostname is configured");
             } else {
-                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-                if ( domainName != null )
-                    primaryAddressStr = primaryAddressStr + "." + domainName;
+                primaryAddressStr = getFullyQualifiedHostname();
             }
         } else if ( NetworkSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.networkSettings.getPublicUrlMethod() ) ) {
             if ( this.networkSettings.getPublicUrlAddress() == null ) {

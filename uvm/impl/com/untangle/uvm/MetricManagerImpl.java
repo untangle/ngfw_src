@@ -363,18 +363,9 @@ public class MetricManagerImpl implements MetricManager
                         // accumulate old values
                         totalRxBytesOldValue += rxBytesOld;
                         totalTxBytesOldValue += txBytesOld;
-                        if (intfSettings.getIsWan()) {
-                            wansRxBytesOldValue += rxBytesOld;
-                            wansTxBytesOldValue += txBytesOld;
-                        }
 
                         // accumulate new values
                         totalRxBytesNewValue += rxBytesNew;
-                        totalTxBytesNewValue += txBytesNew;
-                        if (intfSettings.getIsWan()) {
-                            wansRxBytesNewValue += rxBytesNew;
-                            wansTxBytesNewValue += txBytesNew;
-                        }
 
                         // update stored old values
                         rxtxBytesStore.put("rx"+intfId, rxBytesNew);
@@ -386,6 +377,8 @@ public class MetricManagerImpl implements MetricManager
                         if (Math.abs(dt) < 5.0e-5) {
                             m.put(key + "rxBps", 0.0);
                             m.put(key + "txBps", 0.0);
+                            m.put(key + "rxBytes", 0);
+                            m.put(key + "txBytes", 0);
                         } else {
                             double rd = (( rxBytesNew - rxBytesOld ) / dt );
                             double td = (( txBytesNew - txBytesOld ) / dt );
@@ -398,6 +391,8 @@ public class MetricManagerImpl implements MetricManager
                             }
                             m.put(key + "rxBps", rd);
                             m.put(key + "txBps", td);
+                            m.put(key + "rxBytes", rxBytesNew - rxBytesOld);
+                            m.put(key + "txBytes", txBytesNew - txBytesOld);
                         }
                     } catch (NumberFormatException exn) {
                         logger.warn("could not add interface info for: " + iface, exn);
@@ -410,21 +405,6 @@ public class MetricManagerImpl implements MetricManager
             }
         }
 
-        double dt = (currentTime - lastNetDevUpdate) / 1000.0;
-        if (Math.abs(dt) < 5.0e-5) {
-            m.put("interface_wans_rxBps", 0.0);
-            m.put("interface_wans_txBps", 0.0);
-        } else {
-            m.put("interface_wans_rxBps", (wansRxBytesNewValue - wansRxBytesOldValue) / dt);
-            m.put("interface_wans_txBps", (wansTxBytesNewValue - wansTxBytesOldValue) / dt);
-        }
-        if (Math.abs(dt) < 5.0e-5) {
-            m.put("interface_total_rxBps", 0.0);
-            m.put("interface_total_txBps", 0.0);
-        } else {
-            m.put("interface_total_rxBps", (totalRxBytesNewValue - totalRxBytesOldValue) / dt);
-            m.put("interface_total_txBps", (totalTxBytesNewValue - totalTxBytesOldValue) / dt);
-        }
         lastNetDevUpdate = currentTime;
     }
 
@@ -565,14 +545,20 @@ public class MetricManagerImpl implements MetricManager
                     String key = "interface_" + intfSettings.getInterfaceId() + "_";
                     Object rxBps_o = m.get(key + "rxBps");
                     Object txBps_o = m.get(key + "txBps");
-                    if ( rxBps_o == null || txBps_o == null )
+                    Object rxBytes_o = m.get(key + "rxBytes");
+                    Object txBytes_o = m.get(key + "txBytes");
+                    if ( rxBps_o == null || txBps_o == null || rxBytes_o == null || txBytes_o == null)
                         continue;
                     double rxBps = Double.parseDouble( rxBps_o.toString() );
                     double txBps = Double.parseDouble( txBps_o.toString() );
+                    long rxBytes = Long.parseLong( rxBytes_o.toString() );
+                    long txBytes = Long.parseLong( txBytes_o.toString() );
                     InterfaceStatEvent event = new InterfaceStatEvent();
                     event.setInterfaceId( intfSettings.getInterfaceId() );
                     event.setRxRate( rxBps );
                     event.setTxRate( txBps );
+                    event.setRxBytes( rxBytes );
+                    event.setTxBytes( txBytes );
                     UvmContextFactory.context().logEvent(event);
                 }
             } catch (Exception e) {
