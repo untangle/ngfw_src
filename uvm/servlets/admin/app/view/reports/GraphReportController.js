@@ -281,6 +281,11 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm = this.getViewModel(),
             entryType = vm.get('entry.type');
 
+        var treeNav;
+        if (me.getView().up('#reports')) {
+            treeNav = me.getView().up('#reports').down('treepanel');
+        }
+
         if (reset) {
             // if report entry changed, reset the chart first
             while(me.chart.series.length > 0) {
@@ -294,6 +299,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             me.chart.zoomOut();
         }
 
+        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
@@ -307,6 +313,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.get('tillNow') ? null : vm.get('endDate'), // end date
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function (result) {
+                if (treeNav) { treeNav.setDisabled(false); }
                 me.chart.hideLoading();
                 me.data = result.list;
 

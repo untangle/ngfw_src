@@ -116,6 +116,11 @@ Ext.define('Ung.view.reports.EventReportController', {
             v = me.getView(),
             vm = me.getViewModel();
 
+        var treeNav;
+        if (me.getView().up('#reports')) {
+            treeNav = me.getView().up('#reports').down('treepanel');
+        }
+
         var limit = 1000;
         if( me.getView().up('reports-entry') ){
             limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
@@ -132,6 +137,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         var grid = v.down('grid');
 
         me.getViewModel().set('eventsData', []);
+        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
@@ -144,6 +150,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
                 }
                 me.getView().setLoading(false);
+                if (treeNav) { treeNav.setDisabled(false); }
 
                 me.loadResultSet(result);
 
