@@ -8,26 +8,48 @@ Ext.define('Ung.config.upgrade.MainController', {
         }
     },
 
-    loadSettings: function (view) {
-
-        // view.getViewModel().bind('{settings.autoUpgradeHour}', function (value) {
-        //     console.log(value);
-        // });
+    settingsValueMap: {
+        "settings.autoUpgradeDays": {
+            "any": "1,2,3,4,5,6,7"
+        }
+    },
+    loadSettings: function () {
+        var me = this,
+            view = me.getView(),
+            vm = me.getViewModel();
 
         view.down('progressbar').wait({
             interval: 500,
             text: 'Checking for upgrades...'.t()
         });
         this.checkUpgrades();
+
+        for( var key in this.settingsValueMap){
+            for( var settingsKey in this.settingsValueMap[key]){
+                if( vm.get(key) == settingsKey){
+                    vm.set(key, this.settingsValueMap[key][settingsKey]);
+                }
+            }
+        }
     },
 
     saveSettings: function () {
-        var me = this;
+        var me = this,
+            vm = me.getViewModel();
         me.getView().setLoading('Saving ...');
+
+        for( var key in this.settingsValueMap){
+            for( var settingsKey in this.settingsValueMap[key]){
+                if( vm.get(key) == this.settingsValueMap[key][settingsKey]){
+                    vm.set(key, settingsKey);
+                }
+            }
+        }
         rpc.systemManager.setSettings(function (result, ex) {
             me.getView().setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             Util.successToast('Upgrade Settings'.t() + ' saved!');
+            me.loadSettings();
         }, me.getViewModel().get('settings'));
 
     },
