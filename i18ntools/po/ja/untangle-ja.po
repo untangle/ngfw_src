@@ -1,6 +1,6 @@
 
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ''Untangle, Inc."
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-04 11:26-0700\n"
-"PO-Revision-Date: 2017-05-22 19:55\n"
+"PO-Revision-Date: 2017-06-27 10:41\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
@@ -7779,6 +7779,7 @@ msgstr "続行するには、上記のチェックボックスを有効にする
 msgid "inspected"
 msgstr "検査"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "Top Inspected Sites"
 msgstr "上位の検査サイト"
 
@@ -8499,21 +8500,27 @@ msgstr "Webフィルタアクションの概要。"
 msgid "Web Filter Summary"
 msgstr "ウェブフィルタ概要"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.js
 msgid "The number of inspected sessions grouped by site."
 msgstr "サイトによってグループ化された検査セッションの数。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 msgid "The amount of inspected SSL sessions over time."
 msgstr "時間をかけて検査さSSLセッションの量。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Inspected Sessions"
 msgstr "検査セッション"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "The number of ignored sessions grouped by site."
 msgstr "サイトごとにグループ化され無視されたセッションの数。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.js
 msgid "Top Ignored Sites"
 msgstr "上位の無視されたサイト"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.js
 msgid "The amount of SSL sessions over time."
 msgstr "経時SSLセッションの量。"
 
@@ -8877,27 +8884,34 @@ msgstr "全て暗号化されたHTTPS要求を表示します。"
 msgid "All HTTPS Events"
 msgstr "全てのHTTPSイベント"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
 msgstr ""
 "トラフィックがなかったか、トラフィックが完全に無視され、任意のアプリケーションやサービスによって分析されていなかったので、検査することができませんでしたイ"
 "ベント。"
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.js
 msgid "Ignored Sessions"
 msgstr "閉じたセッション"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.js
 msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
 msgstr "トラフィックは完全に検査官によって処理された、全てのトラフィックは、他の全てのアプリケーションとサービスを通したイベント。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
 msgstr "トラフィックがSSLセッションでの根本的な問題が原因でブロックされたイベント。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.js
 msgid "Abandoned Sessions"
 msgstr "放棄されたセッション"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Events where traffic was blocked because the server certificate could not be authenticated."
 msgstr "サーバ証明書が認証されなかったため、トラフィックがブロックされたイベント。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.js
 msgid "Untrusted Sessions"
 msgstr "信頼されていないセッション"
 
@@ -10172,10 +10186,12 @@ msgstr ""
 "。このチェックボックスを有効にした場合、非HTTPSトラフィックが代わりにブロックされます。"
 
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.js
 #: Status: UNVERIFIED
 msgid "All sessions detected by SSL Inspector."
 msgstr "SSL Inspectorによって検出された全てのセッション。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.js
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
 msgstr "有効なSSL要求が含まれていなかったため、トラフィックがブロックされたイベント、およびブロック無効なトラフィックオプションが有効になっていました。"
@@ -10227,10 +10243,12 @@ msgstr "TLSv1.2"
 msgid "Server Connection Protocols"
 msgstr "サーバ接続プロトコル"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "A summary of SSL Inspector actions."
 msgstr "SSL Inspector操作の概要。"
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.js
 #: Status: UNVERIFIED
 msgid "SSL Inspector Summary"
 msgstr "SSLインスペクタの概要"
@@ -11828,26 +11846,6 @@ msgid "Swap Usage Bytes"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "The top syslog events."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Top Syslog Events"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Syslog events over time."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Log of all events created by syslog rules."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Syslog Events"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "The swap utilization over time as a percent of total swap size ."
 msgstr ""
 
@@ -11983,6 +11981,7 @@ msgstr ""
 msgid "This will allow client authentication to be tracked by MAC address instead of IP address."
 msgstr ""
 
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.js
 #: Status: UNVERIFIED
 msgid "Sessions Inspected"
 msgstr ""
@@ -11993,10 +11992,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Captive Portal Authenticated"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Tags String"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12172,10 +12167,6 @@ msgid "Url missing or in wrong format!"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "False"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "[enter MAC name]"
 msgstr ""
 
@@ -12245,10 +12236,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Auto Upgrade Time"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Driver Defaults"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13241,4 +13228,184 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "A Host Name must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Delete VLAN Interface"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Delete missing Interface"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "A reboot is required after changing the timezone!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Another Email Template has this title"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid Port"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The configured port value is reserved. Please enter a different value."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} [{1}]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Echo Reply"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unassigned"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Destination Unreachable"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Source Quench (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Redirect"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Alternate Host Address (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Echo"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Router Advertisement"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Router Solicitation"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Time Exceeded"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Parameter Problem"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Timestamp Reply"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Information Request (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Information Reply (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Address Mask Request (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Address Mask Reply (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Reserved (for Security)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Reserved (for Robustness Experiment)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Traceroute (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Datagram Conversion Error (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Mobile Host Redirect (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "IPv6 Where-Are-You (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "IPv6 I-Am-Here (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Mobile Registration Request (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Mobile Registration Reply (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Domain Name Request (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Domain Name Reply (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "SKIP (Deprecated)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Photuris"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "ICMP messages utilized by experimental mobility protocols"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "RFC3692-style Experiment 1"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "RFC3692-style Experiment 2"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Reserved"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(copy)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No Conditions"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "First name must be less than 24 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Last name must be less than 24 characters."
 msgstr ""
