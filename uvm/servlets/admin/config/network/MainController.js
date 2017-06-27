@@ -467,7 +467,6 @@ Ext.define('Ung.config.network.MainController', {
 
     refreshUpnpStatus: function (cmp) {
         var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
-        view.setLoading(true);
         var vm = this.getViewModel();
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
             .then(function(result) {
@@ -487,6 +486,14 @@ Ext.define('Ung.config.network.MainController', {
                 }) );
             }).always(function () {
                 view.setLoading(false);
+            });
+    },
+
+    deleteUpnp: function(view, u1, u2, u3, u4, record){
+        var me = this;
+        Rpc.asyncData('rpc.networkManager.getUpnpManager', '--delete', "'" + Ext.encode(record.data) + "'")
+            .then(function(result) {
+                me.refreshUpnpStatus(view);
             });
     },
 
