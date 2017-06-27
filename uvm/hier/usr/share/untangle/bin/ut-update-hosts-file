@@ -15,23 +15,20 @@
 # and the network on which they are located.
 
 import os
+import sys
 import json
-from uvm.settings_reader import get_uvm_settings_item
 
 statpath = '/var/lib/untangle-netd'
+fullname = None
 facelist = {}
 
-# get the host and domain names from the uvm network settings
-hostName = get_uvm_settings_item("network", "hostName")
-domainName = get_uvm_settings_item("network", "domainName")
+# use the argumented host + domain name
+if (len(sys.argv) > 1):
+    fullname = str(sys.argv[1])
 
-# use host+domain, host, or static default if settings values not defined
-if (hostName and domainName):
-    fullName = (hostName + "." + domainName)
-elif (hostName):
-    fullName = hostName
-else:
-    fullName = 'server.ngfw'
+# if argument is missing use a known default
+if (fullname == None):
+    fullname = 'server.ngfw'
 
 # build the list of interface addresses
 for file in os.listdir(statpath):
@@ -42,7 +39,7 @@ for file in os.listdir(statpath):
         facedata = json.loads(rawdata);
         if ('v4Address' in facedata):
             idx = facedata['v4Address']
-            facelist[idx] = fullName
+            facelist[idx] = fullname
 
 # write all the interface addresses to the special hosts file
 outfile = open("/etc/hosts.untangle","w")

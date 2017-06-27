@@ -331,23 +331,9 @@ class UvmTests(unittest2.TestCase):
 
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
-        hostName = ""
-        domainName = ""
-        fullName = ""
-
-        # build the hostname just like we do in the ut-update-hosts-file script
+        # get the hostname and settings from the network manager
+        fullName = uvmContext.networkManager().getFullyQualifiedHostname()
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        if 'hostName' in netsettings:
-            hostName = netsettings['hostName']
-        if 'domainName' in netsettings:
-            domainName = netsettings['domainName']
-
-        if len(hostName) > 0 and len(domainName) > 0:
-            fullName = (hostName + "." + domainName)
-        elif len(hostName) > 0:
-            fullName = hostName
-        else:
-            fullName = 'server.ngfw'
 
         print "Checking HostsFileManager records for " + fullName
 

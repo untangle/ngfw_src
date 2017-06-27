@@ -139,13 +139,15 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
         // if no status files have been added or changed we are finished
         if (changeCounter == 0) return;
 
-        if (logger.isDebugEnabled()) logger.debug("Detected " + Integer.toString(changeCounter) + " new or modified interface status files. Updating hosts file");
+        logger.info("Detected " + Integer.toString(changeCounter) + " new or modified interface status files. Updating hosts file");
 
         // changes detected so use the timestamp from the newest
         latestTimestamp = workingTimestamp;
+        
+        String fullName = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
 
         // call the script to update the hosts file
-        UvmContextFactory.context().execManager().exec(HOSTS_FILE_UPDATE_SCRIPT);
+        UvmContextFactory.context().execManager().exec(HOSTS_FILE_UPDATE_SCRIPT + " " + fullName);
 
         // execute the command to activate the updated hosts file
         UvmContextFactory.context().execManager().exec(HOSTS_FILE_RELOAD_COMMAND);

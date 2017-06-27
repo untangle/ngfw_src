@@ -56,5 +56,7 @@ public interface NetworkManager
 
     String getPublicUrl();
 
+    String getFullyQualifiedHostname();
+
     int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum);
 }
