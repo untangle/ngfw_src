@@ -644,6 +644,10 @@ public class ReportsManagerImpl implements ReportsManager
                     i.remove();
                     updates = true;
                 }
+                if ( entry.getUniqueId().startsWith("syslog-") ) {
+                    i.remove();
+                    updates = true;
+                }
                 if ( "Web Filter Lite".equals(entry.getCategory()) ) {
                     i.remove();
                     updates = true;

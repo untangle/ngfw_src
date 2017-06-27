@@ -383,8 +383,15 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     me.data[j][column] || 0
                 ]);
             }
+            var renderedName = column;
+            if( seriesRenderer ){
+                renderedName = seriesRenderer(column);
+                if(renderedName.substr(-1) != ']'){
+                    renderedName += " [" + column + "]";
+                }
+            }
             series.push({
-                name: seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column,
+                name: renderedName,
                 data: seriesData,
                 fillColor: {
                     linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },

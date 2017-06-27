@@ -37,6 +37,17 @@ Ext.define('Ung.view.reports.EventReportController', {
                 me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                 me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
 
+                var visibleColumns = Ext.clone(me.defaultColumns);
+                var currentStorage = Ext.state.Manager.provider.get(identifier);
+                if( currentStorage ){
+                    currentStorage.columns.forEach( function( column ){
+                        if( ( column.hidden !== undefined ) &&
+                            ( column.hidden === false ) ){
+                            visibleColumns.push(column.id);
+                        }
+                    });
+                }
+
                 me.tableConfig.columns.forEach( function(column){
                     if( column.columns ){
                         /*
@@ -44,38 +55,30 @@ Ext.define('Ung.view.reports.EventReportController', {
                          */
                         column.columns.forEach( Ext.bind( function( subColumn ){
                             grid.initComponentColumn( subColumn );
-                            if( column.xtype == 'actioncolumn'){
-                                column.hidden = false;
-                            }else{
-                                column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
-                            }
-                            if (!column.filter && 
-                                ( column.xtype != 'actioncolumn' ) &&
-                                ( column.rtype != 'timestamp' ) ){
-                                column.filter = Renderer.stringFilter;
-                            }
                         }, this ) );
                     }
                     grid.initComponentColumn( column );
-                    if( column.xtype == 'actioncolumn'){
-                        column.hidden = false;
-                    }else{
-                        column.hidden = Ext.Array.indexOf(me.defaultColumns, column.dataIndex) < 0;
-                    }
-                    if (!column.filter && 
-                        ( column.xtype != 'actioncolumn' ) &&
-                        ( column.rtype != 'timestamp' ) ){
-                        column.filter = Renderer.stringFilter;
-                    }
                 });
                 me.tableConfig.fields.forEach( function(field){
-                    if (!field.sortType ){
+                    if( !field.sortType ){
                         field.sortType = 'asUnString';
                     }
                 });
 
                 grid.tableConfig = me.tableConfig;
                 grid.setColumns(me.tableConfig.columns);
+
+                grid.getColumns().forEach( function(column){
+                    if( column.xtype == 'actioncolumn'){
+                        return;
+                    }
+                    column.setHidden( Ext.Array.indexOf(visibleColumns, column.dataIndex) < 0 );
+                    if( column.columns ){
+                        column.columns.forEach( Ext.bind( function( subColumn ){
+                            subColumn.setHidden( Ext.Array.indexOf(visibleColumns, column.dataIndex) < 0 );
+                        }, this ) );
+                    }
+                });
                 // Force state processing for this renamed grid
                 grid.mixins.state.constructor.call(grid);
 
@@ -90,13 +93,6 @@ Ext.define('Ung.view.reports.EventReportController', {
                     me.isWidget = true;
                 }
                 return;
-            }
-
-            if (!Ext.Array.equals(me.modFields.defaultColumns, entry.get('defaultColumns'))) {
-                me.modFields.defaultColumns = entry.get('defaultColumns');
-                Ext.Array.each(me.getView().down('grid').getColumns(), function (col) {
-                    col.setHidden(Ext.Array.indexOf(entry.get('defaultColumns'), col.dataIndex) < 0);
-                });
             }
 
         }, me, { deep: true });

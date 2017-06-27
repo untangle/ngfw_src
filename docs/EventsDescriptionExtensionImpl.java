@@ -48,7 +48,6 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
         classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
         classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.");
-        classDescriptions.put("SyslogEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#syslog|syslog]] table when a syslog event occurs.");
         classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Database_Schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
         classDescriptions.put("WebCacheEvent","These events are created by [[Web Cache]] and inserted to the [[Database_Schema#web_cache_stats|web_cache_stats]] table periodically.");
         classDescriptions.put("HttpResponseEvent","These events are created by HTTP subsystem and update the [[Database_Schema#http_events|http_events]] table when a web response happens.");

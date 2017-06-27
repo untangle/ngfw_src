@@ -12,7 +12,9 @@ Ext.define('Ung.widget.NetworkLayout', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget adding',
+    baseCls: 'widget',
+
+    visible: false,
 
     layout: {
         type: 'vbox',

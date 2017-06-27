@@ -14,7 +14,7 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
 {
     private int version = 1;
 
-    private boolean apiEnabled = true;
+    private boolean apiEnabled = false;
     private String apiSecretKey = null;
     
     private ActiveDirectorySettings activeDirectorySettings;

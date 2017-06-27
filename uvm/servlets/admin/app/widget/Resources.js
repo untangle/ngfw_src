@@ -7,7 +7,7 @@ Ext.define('Ung.widget.Resources', {
     hidden: true,
     border: false,
     baseCls: 'widget',
-    cls: 'small adding',
+    cls: 'small',
 
     bind: {
         hidden: '{!widget.enabled}'

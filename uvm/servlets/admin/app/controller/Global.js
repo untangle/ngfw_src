@@ -69,16 +69,15 @@ Ext.define('Ung.controller.Global', {
             'reports/:category': 'onReports',
             'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
-            'sessions/:params': {
-                action: 'onSessions',
-                conditions: {
-                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
-                }
-            },
+            // 'sessions/:params': {
+            //     action: 'onSessions',
+            //     conditions: {
+            //         ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+            //     }
+            // },
             'hosts': 'onHosts',
             'devices': 'onDevices',
             'users': 'onUsers'
-
         },
 
         reportsEnabled: true
@@ -254,17 +253,18 @@ Ext.define('Ung.controller.Global', {
     },
 
     onSessions: function (params) {
-        var filter = null;
-        if (params) {
-            filter = {
-                property: params.split('=')[0].replace('?', ''),
-                value: params.split('=')[1]
-            };
-        }
+        // var filter = null;
+        // if (params) {
+        //     filter = {
+        //         property: params.split('=')[0].replace('?', ''),
+        //         value: params.split('=')[1],
+        //         source: 'route'
+        //     };
+        // }
         this.getMainView().add({
             xtype: 'ung.sessions',
-            itemId: 'sessions',
-            routeFilter: filter
+            itemId: 'sessions'
+            // routeFilter: filter
         });
         this.getMainView().getViewModel().set('activeItem', 'sessions');
     },

@@ -21,7 +21,9 @@ Ext.define('Ung.view.apps.Simple', {
         }]
     }, {
         xtype: 'container',
-        cls: 'simple',
+        layout: {
+            type: 'column'
+        },
         itemId: '_apps'
     }, {
         xtype: 'container',
