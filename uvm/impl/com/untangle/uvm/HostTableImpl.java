@@ -627,6 +627,12 @@ public class HostTableImpl implements HostTable
                         if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {
 
                             /**
+                             * If host is still active, don't delete it.
+                             */
+                            if ( entry.getActive() )
+                                continue;
+
+                            /**
                              * If this host table entry is storing vital information, don't delete it
                              */
                             if ( entry.getQuotaSize() > 0 ||

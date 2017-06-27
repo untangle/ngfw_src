@@ -587,11 +587,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 disabled: true,
                 bind: {
+                    store: '{upnpStatus}',
                     disabled: '{!settings.upnpSettings.upnpEnabled}'
-                },
-
-                store: {
-                    data: [] // todo: to set data
                 },
 
                 columns: [{

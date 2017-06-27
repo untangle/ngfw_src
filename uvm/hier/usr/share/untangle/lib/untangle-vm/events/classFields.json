@@ -804,51 +804,6 @@
         },
     ]
     },
-    SyslogEvent: {
-    description: "These events are created by [[Reports]] and inserted to the [[Database_Schema#syslog|syslog]] table when a syslog event occurs.",
-    fields: [
-        {
-        name: "causalRule",
-        type: "EventRule",
-        description: "The causal rule",
-        },
-        {
-        name: "cause",
-        type: "LogEvent",
-        description: "The cause",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "description",
-        type: "String",
-        description: "The description",
-        },
-        {
-        name: "eventSent",
-        type: "Boolean",
-        description: "True if the event was sent, false otherwise",
-        },
-        {
-        name: "json",
-        type: "String",
-        description: "The JSON string",
-        },
-        {
-        name: "summaryText",
-        type: "String",
-        description: "The summary text",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
     LogEvent: {
     description: "These base class for all events.",
     fields: [

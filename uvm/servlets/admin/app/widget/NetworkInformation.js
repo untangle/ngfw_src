@@ -6,7 +6,7 @@ Ext.define('Ung.widget.NetworkInformation', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small adding',
+    baseCls: 'widget small',
 
     layout: {
         type: 'vbox',

@@ -9,6 +9,8 @@ Ext.define('Ung.util.Renderer', {
     actionWidth: 80,
     // Boolean
     booleanWidth: 40,
+    // Counter
+    counterWidth: 80,
     // Email address
     emailWidth: 150,
     // Hostname
@@ -17,6 +19,8 @@ Ext.define('Ung.util.Renderer', {
     idWidth: 75,
     // IP Address
     ipWidth: 100,
+    // Load measurement
+    loadWidth: 50,
     // Latitude/longtitude
     locationWidth: 50,
     // MAC address
@@ -26,7 +30,7 @@ Ext.define('Ung.util.Renderer', {
     // Port
     portWidth: 70,
     // Data size
-    sizeWidth: 70,
+    sizeWidth: 90,
     // Tags
     tagsWidth: 200,
     // Timestamp
@@ -61,6 +65,7 @@ Ext.define('Ung.util.Renderer', {
         return ( value == true ) ? 'true' : 'false';
     },
 
+    timestampOffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
     timestamp: function( value ){
         if( !value ){
             return null;
@@ -69,7 +74,9 @@ Ext.define('Ung.util.Renderer', {
             value.time ){
             value = value.time;
         }
-        return Ext.util.Format.date(new Date( value ), 'timestamp_fmt'.t());
+        var date = new Date( value );
+        date.setTime( value + this.timestampOffset);
+        return Ext.util.Format.date( date, 'timestamp_fmt'.t());
     },
 
     interface: function (value) {

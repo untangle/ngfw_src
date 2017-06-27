@@ -274,9 +274,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 if( !r.success) {
                     Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
                 } else {
-                    v.setLoading(false);
-                    Util.successToast('Settings saved...');
-                    me.getSettings();
+                    rpc.appManager.app('intrusion-prevention').reconfigure(Ext.bind(function(result, exception) {
+                        if (exception) { Util.handleException(ex); return; }
+
+                        v.setLoading(false);
+                        me.getSettings();
+                        Util.successToast('Settings saved...');
+                    }, this));
                 }
             },
             failure: function(response){

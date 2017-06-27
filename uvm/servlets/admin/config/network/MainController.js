@@ -467,15 +467,24 @@ Ext.define('Ung.config.network.MainController', {
 
     refreshUpnpStatus: function (cmp) {
         var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
-        if (view.isDisabled()) {
-            return;
-        }
         view.setLoading(true);
         var vm = this.getViewModel();
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
             .then(function(result) {
-                console.log(result);
-                vm.set('upnpStatus', Ext.decode(result).active);
+                vm.set('upnpStatus', Ext.create('Ext.data.Store', {
+                    fields: [
+                        'upnp_client_ip_address',
+                        'upnp_destination_port',
+                        'upnp_protocol',
+                        'upnp_client_port',
+                        'bytes'
+                    ],
+                    sorters: [{
+                        property: 'upnp_client_ip_address',
+                        direction: 'ASC'
+                    }],
+                    data: Ext.decode(result)["active"]
+                }) );
             }).always(function () {
                 view.setLoading(false);
             });
@@ -671,6 +680,24 @@ Ext.define('Ung.config.network.MainController', {
             me.editIntf.set('v4ConfigType', 'STATIC');
             me.editIntf.set('v6ConfigType', 'STATIC');
         }
+
+        // fix if missing or null lists (e.g. dhcpOptions)
+        if (!me.editIntf.get('dhcpOptions')) {
+            me.editIntf.set('dhcpOptions', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('v4Aliases')) {
+            me.editIntf.set('v4Aliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('v6Aliases')) {
+            me.editIntf.set('v6Aliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
+        if (!me.editIntf.get('vrrpAliases')) {
+            me.editIntf.set('vrrpAliases', { javaClass: 'java.util.LinkedList', list: [] });
+        }
+
 
         me.dialog = me.getView().add({
             xtype: 'config.interface',
