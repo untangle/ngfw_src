@@ -31,13 +31,19 @@ Ext.define('Ung.view.reports.TextReportController', {
     fetchData: function (reset, cb) {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
-        me.getView().setLoading(true);
+
+        var treeNav;
+        if (me.getView().up('#reports')) {
+            treeNav = me.getView().up('#reports').down('treepanel');
+        }
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
             vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 
+        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
+        me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             vm.get('entry').getData(), // entry
             vm.get('startDate'), // start date
@@ -45,6 +51,7 @@ Ext.define('Ung.view.reports.TextReportController', {
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function(result) {
                 me.getView().setLoading(false);
+                if (treeNav) { treeNav.setDisabled(false); }
                 me.processData(result.list);
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').getController().formatTextData(result.list);
