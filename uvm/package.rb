@@ -97,14 +97,6 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-# jsFiles = FileList["./uvm/servlets/**/*.js"].exclude(/admin/)
-# if ( jsFiles.length > 0 )
-#   jsFiles.each do |f|
-#     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
-#     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
-#   end
-# end
-
 ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
                'cmp', 'widget', 'view', 'Application.js' ]
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
@@ -113,17 +105,6 @@ JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
-end
-
-[ 'ad-blocker', 'application-control', 'application-control-lite',
-  'bandwidth-control', 'branding-manager', 'captive-portal',
-  'configuration-backup', 'directory-connector', 'firewall',
-  'intrusion-prevention', 'ipsec-vpn', 'live-support', 'openvpn', 'tunnel-vpn',
-  'phish-blocker', 'policy-manager', 'reports', 'spam-blocker',
-  'spam-blocker-lite', 'ssl-inspector', 'virus-blocker',
-  'virus-blocker-lite', 'wan-balancer', 'wan-failover', 'web-cache',
-  'web-filter', 'web-monitor' ].each do |n|
-  JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
 end
 
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
