@@ -29,6 +29,7 @@ while true; do
         /bin/rm -f $pidfile
         echo "`date -Iseconds` $0: starting untangle-vm"
         /etc/init.d/untangle-vm start
+        if [ -f /var/run/ut-pyconnector.pid ] ; then /usr/sbin/service untangle-pyconnector restart ; fi
         exit
     fi
 done
