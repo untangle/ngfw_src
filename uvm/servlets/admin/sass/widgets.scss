@@ -118,29 +118,10 @@
         .action-btn {
             opacity: 1;
         }
-        .timer {
-            opacity: 1
-        }
     }
 
     &.adding {
         opacity: 0;
-    }
-
-    .timer {
-        opacity: 0;
-        // width: 100%;
-        height: 2px;
-        // background: #EEE;
-        border-radius: 0 0 3px 3px;
-        overflow: hidden;
-        // transition: width 10s linear;
-        .inner {
-            // background: rgba(0, 0, 0, 0.5);
-            background: #777;
-            height: 2px;
-            // box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-        }
     }
 }
 

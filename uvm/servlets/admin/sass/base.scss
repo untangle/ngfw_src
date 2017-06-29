@@ -6,13 +6,11 @@ cite {
     font-style: normal;
 }
 
-// .fa {
-//     // line-height: 1.3;
-// }
+// to avoid GPU load
+.x-autocontainer-outerCt {
+    transform: none !important;
+}
 
-// .fa-lg {
-//     line-height: 1;
-// }
 
 // fix for Mac Safari buttons issue
 .x-btn-icon-right > .x-btn-inner-default-small,
