@@ -85,7 +85,7 @@ class BuildEnv
 
   SERVLET_COMMON = "./servlet/common"
 
-  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget, :i18nTarget, :hierTarget, :jsLintTarget, :i18ntools
+  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget, :i18nTarget, :hierTarget, :i18ntools
   attr_writer :prefix, :target, :isDevel
 
   def initialize(home, name)
@@ -126,7 +126,6 @@ class BuildEnv
 
     @installTarget = InstallTarget.new(self['install'], [], "#{name}-install")
     @i18nTarget = InstallTarget.new(self['i18n'], [], "#{name}-i18n")
-    @jsLintTarget = InstallTarget.new(self['jslint'], [], "#{name}-jslint")
     @hierTarget = InstallTarget.new(self['hier'], [], "#{name}-hier")
   end
 
