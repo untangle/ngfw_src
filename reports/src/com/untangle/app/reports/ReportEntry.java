@@ -263,7 +263,7 @@ public class ReportEntry implements Serializable, JSONString
             allConditions.addAll( Arrays.asList(getConditions()) );
         if ( extraConditions != null )
             allConditions.addAll( Arrays.asList(extraConditions) );
-        
+
         switch ( this.type ) {
 
         case PIE_GRAPH:
