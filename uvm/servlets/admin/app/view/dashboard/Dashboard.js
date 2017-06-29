@@ -158,7 +158,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         //     // tdCls: 'drag-handle'
         // },
         {
-            width: 25,
+            width: 28,
             align: 'center',
             sortable: false,
             hideable: false,
@@ -173,7 +173,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             flex: 1
         }, {
             xtype: 'actioncolumn',
-            iconCls: 'fa fa-minus-circle',
+            iconCls: 'fa fa-close',
             width: 30,
             align: 'center',
             sortable: false,
@@ -199,7 +199,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             handler: 'applyChanges'
         }]
     }, {
-        // xtype: 'container',
         region: 'center',
         reference: 'dashboard',
         itemId: 'widgetsCmp',

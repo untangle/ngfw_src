@@ -27,6 +27,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     process: function () {
         me = this;
         if (this.queue.length > 0 && !me.processing) {
+            // console.info('processing', me.processing);
             var wg = this.queue[0], seconds;
 
             /**
@@ -48,26 +49,21 @@ Ext.define('Ung.view.dashboard.Queue', {
             if (wg.tout) {clearTimeout(wg.tout); }
 
             if (wg.down('#report-widget')) {
-                if (wg.down('#timer')) { wg.remove('timer'); }
                 wg.down('#report-widget').getController().fetchData(null, function () {
-                    Ext.Array.removeAt(me.queue, 0);
-                    me.processing = false;
-                    me.process();
-
                     var seconds = wg.getViewModel().get('widget.refreshIntervalSec');
                     if (seconds > 0) {
-                        wg.add({ xtype: 'component', itemId: 'timer', cls: 'timer', html: '<div class="inner" style="animation: test ' + seconds + 's linear;"></div>' });
+                        // wg.add({ xtype: 'component', itemId: 'timer', cls: 'timer', html: '<div class="inner" style="animation: test ' + seconds + 's linear;"></div>' });
                         wg.tout = setTimeout(function () {
                             DashboardQueue.add(wg);
                         }, seconds * 1000);
                     }
                     wg.lastFetchTime = new Date().getTime();
-                });
-            } else {
-                wg.fetchData(function () {
                     Ext.Array.removeAt(me.queue, 0);
                     me.processing = false;
                     me.process();
+                });
+            } else {
+                wg.fetchData(function () {
                     var seconds = wg.refreshIntervalSec;
                     if (seconds > 0) {
                         wg.tout = setTimeout(function () {
@@ -75,6 +71,9 @@ Ext.define('Ung.view.dashboard.Queue', {
                         }, seconds * 1000);
                     }
                     wg.lastFetchTime = new Date().getTime();
+                    Ext.Array.removeAt(me.queue, 0);
+                    me.processing = false;
+                    me.process();
                 });
             }
         }

@@ -5,7 +5,6 @@ Ext.define('Ung.widget.WidgetController', {
     control: {
         '#': {
             afterrender: 'onAfterRender',
-            afterdata: 'onAfterData',
             beforedestroy: 'onBeforeRemove'
         },
         '#header': {
@@ -81,16 +80,6 @@ Ext.define('Ung.widget.WidgetController', {
             }
         });
         widget.getViewModel().notify();
-    },
-
-    onAfterData: function () {
-        var widget = this.getView();
-        Ung.view.dashboard.Queue.next();
-        if (widget.refreshIntervalSec && widget.refreshIntervalSec > 0) {
-            widget.refreshTimeoutId = setTimeout(function () {
-                DashboardQueue.add(widget);
-            }, widget.refreshIntervalSec * 1000);
-        }
     },
 
     onBeforeRemove: function (widget) {
