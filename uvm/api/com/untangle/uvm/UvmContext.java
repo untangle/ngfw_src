@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jabsorb.JSONSerializer;
+import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
@@ -167,7 +168,7 @@ public interface UvmContext
      *
      * @return the SessionMonitor
      */
-    SessionMonitor sessionMonitor();
+    SessionMonitor sessionMonitor();b
 
     /**
      * Get the <code>OemManager</code> singleton.
@@ -434,6 +435,11 @@ public interface UvmContext
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
+
+    /**
+     * Appeand a javascript excception to uvm.log
+     */
+    void logJavascriptException(JSONObject o);
 
     /**
      * Convenience method to load all the object the webUI needs in one object to avoid
