@@ -56,6 +56,15 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{!entry || entry.type === "EVENT_LIST"}'
                 }
             }, {
+                itemId: 'exportBtn',
+                text: 'Export'.t(),
+                iconCls: 'fa fa-external-link-square',
+                handler: 'exportEventsHandler',
+                hidden: true,
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                }
+            }, {
                 text: 'Settings'.t(),
                 reference: 'settingsBtn',
                 enableToggle: true,
@@ -191,15 +200,6 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{entry.type !== "EVENT_LIST"}'
                 }
             }, {
-                itemId: 'exportBtn',
-                text: 'Export'.t(),
-                iconCls: 'fa fa-sign-out',
-                handler: 'exportEventsHandler',
-                hidden: true,
-                bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}'
-                }
-            }, {
                 itemId: 'downloadBtn',
                 text: 'Download'.t(),
                 iconCls: 'fa fa-download',
@@ -267,6 +267,10 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'component',
                     html: '<h2>' + 'Current Data'.t() + '</h2><p>&nbsp;</p>'
                 }, '->', {
+                    iconCls: 'fa fa-external-link-square',
+                    text: 'Export'.t(),
+                    handler: 'exportGraphData'
+                }, {
                     iconCls: 'fa fa-close',
                     handler: 'closeSide'
                 }]

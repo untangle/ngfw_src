@@ -638,7 +638,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                     align: 'center',
                     resizable: false,
                     tdCls: 'action-cell',
-                    iconCls: 'fa fa-trash-o fa-red'
+                    iconCls: 'fa fa-trash-o fa-red',
+                    handler: 'deleteUpnp'
                 }]
             }, {
                 xtype: 'ungrid',

@@ -73,7 +73,7 @@ Ext.define('Ung.widget.NetworkLayout', {
                 me.down('#externalInterface').removeAll();
                 me.down('#internalInterface').removeAll();
                 Ext.each(result.interfaces.list, function (iface) {
-                    if (!iface.disabled) {
+                    if (iface.configType !== 'DISABLED') {
                         if (iface.isWan) {
                             me.down('#externalInterface').add({
                                 xtype: 'interfaceitem',

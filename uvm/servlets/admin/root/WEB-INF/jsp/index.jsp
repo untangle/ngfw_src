@@ -19,7 +19,7 @@
         <script src="/highcharts-5.0.9/proj4.js"></script>
 
         <!-- ExtJS lib & theme -->
-        <script src="/ext6.2/ext-all-debug.js"></script>
+        <script src="/ext6.2/ext-all.js"></script>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
 
