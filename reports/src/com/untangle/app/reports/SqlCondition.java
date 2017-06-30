@@ -22,7 +22,7 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
-    private boolean autoFormatValue = false;
+    private boolean autoFormatValue = true;
     
     public SqlCondition() {}
     
