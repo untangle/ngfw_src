@@ -505,26 +505,6 @@ public class CaptivePortalApp extends AppBase
             }
             break;
 
-        case GOOGLE:
-            try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
-                if (directoryConnector != null) isAuthenticated = directoryConnector.googleAuthenticate(username, password);
-            } catch (Exception e) {
-                logger.warn("Google authentication failure", e);
-                isAuthenticated = false;
-            }
-            break;
-
-        case FACEBOOK:
-            try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
-                if (directoryConnector != null) isAuthenticated = directoryConnector.facebookAuthenticate(username, password);
-            } catch (Exception e) {
-                logger.warn("Facebook authentication failure", e);
-                isAuthenticated = false;
-            }
-            break;
-
         case ANY:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
@@ -573,10 +553,6 @@ public class CaptivePortalApp extends AppBase
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Activate success " + address.getHostAddress().toString());
 
-        if (captureSettings.getSessionCookiesEnabled()) {
-            captureUserCookieTable.removeActiveUser(address);
-        }
-
         return (0);
     }
 
@@ -593,6 +569,11 @@ public class CaptivePortalApp extends AppBase
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Login success " + address.getHostAddress().toString());
+
+        if (captureSettings.getSessionCookiesEnabled()) {
+            captureUserCookieTable.removeActiveUser(address);
+        }
+
         return (0);
     }
 

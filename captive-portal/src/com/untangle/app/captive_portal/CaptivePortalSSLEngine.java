@@ -26,6 +26,7 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 public class CaptivePortalSSLEngine
@@ -36,7 +37,14 @@ public class CaptivePortalSSLEngine
     private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
+    private String sniHostname;
     private String appStr;
+
+    // these are used while extracting the SNI from the SSL ClientHello packet
+    private static int TLS_HANDSHAKE = 0x16;
+    private static int CLIENT_HELLO = 0x01;
+    private static int SERVER_NAME = 0x0000;
+    private static int HOST_NAME = 0x00;
 
     protected CaptivePortalSSLEngine(String appStr, CaptivePortalApp appPtr)
     {
@@ -45,7 +53,7 @@ public class CaptivePortalSSLEngine
         this.captureApp = appPtr;
 
         try {
-            // use the argumented certfile and password to init our keystore
+            // use the web server certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(new FileInputStream(webCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -77,7 +85,7 @@ public class CaptivePortalSSLEngine
 
         // pass the data to the client data worker function
         try {
-            success = clientDataWorker(buff);
+            success = clientDataWorker(session, buff);
         }
 
         // catch any exceptions
@@ -98,13 +106,28 @@ public class CaptivePortalSSLEngine
 
     // ------------------------------------------------------------------------
 
-    private boolean clientDataWorker(ByteBuffer data) throws Exception
+    private boolean clientDataWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
         ByteBuffer target = ByteBuffer.allocate(32768);
+        boolean allowed = false;
         boolean done = false;
         HandshakeStatus status;
 
         logger.debug("PARAM_BUFFER = " + data.toString());
+
+        if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
+
+        if (sniHostname != null) {
+            if (sniHostname.toLowerCase().equals("openidc-relay.untangle.com")) allowed = true;
+            if (sniHostname.toLowerCase().equals("accounts.google.com")) allowed = true;
+            if (sniHostname.toLowerCase().equals("ssl.gstatic.com")) allowed = true;
+            if (allowed) {
+                logger.debug("Releasing session: " + sniHostname);
+                session.sendDataToServer(data);
+                session.release();
+                return true;
+            }
+        }
 
         while (!done) {
             status = sslEngine.getHandshakeStatus();
@@ -239,10 +262,10 @@ public class CaptivePortalSSLEngine
     private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result = null;
-        String vector = new String();
         String methodStr = null;
         String hostStr = null;
         String uriStr = null;
+        String vector = null;
         int top, end;
 
         // we call unwrap for all data we receive from the client 
@@ -287,41 +310,64 @@ public class CaptivePortalSSLEngine
         }
 
         // now that we've parsed the client request we create the redirect
+
+        URIBuilder output = new URIBuilder();
+        URIBuilder exauth = new URIBuilder();
         InetAddress hostAddr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
         int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
         int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-        String targetPort = "";
-        String urlPrefix = "";
 
-        // start with hostname but prefer hostName + domainName if both are defined
-        String fullName = hostName;
-        if ((domainName != null) && (domainName.length() > 0)) fullName = (hostName + "." + domainName);
-
-        // start with the client interface IP address but prefer hostname when enabled
-        String captureHost = hostAddr.getHostAddress().toString();
+        // if the redirectUsingHostname flag is set we use the configured
+        // hostname otherwise we use the address of the client interface 
         if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
-            captureHost = fullName;
-        }
-
-        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
-            // set the urlPrefix and target port if secure capture is enabled
-            urlPrefix = "https://";
-            if (httpsPort != 443) targetPort = (":" + Integer.toString(httpsPort));
+            output.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
         } else {
-            // set the urlPrefix and target port if secure capture is NOT enabled
-            urlPrefix = "http://";
-            if (httpPort != 80) targetPort = (":" + Integer.toString(httpPort));
+            output.setHost(hostAddr.getHostAddress().toString());
         }
 
+        // set the path of the capture handler
+        output.setPath("/capture/handler.py/index");
+
+        // set the scheme and port appropriately
+        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
+            output.setScheme("https");
+            if (httpsPort != 443) output.setPort(httpsPort);
+        } else {
+            output.setScheme("http");
+            if (httpPort != 80) output.setPort(httpPort);
+        }
+
+        // add all off the parameters needed by the capture handler
         // VERY IMPORTANT - the NONCE value must be a1b2c3d4e5f6 because the
         // handler.py script looks for this special value and uses it to
         // decide between http and https when redirecting to the originally
         // requested page after login.  Yes it's a hack but I didn't want to
         // add an additional form field and risk breaking existing custom pages
-        vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: " + urlPrefix + captureHost + targetPort + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + appStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
+        output.addParameter("nonce", "a1b2c3d4e5f6");
+        output.addParameter("method", methodStr);
+        output.addParameter("appid", appStr);
+        output.addParameter("host", hostStr);
+        output.addParameter("uri", uriStr);
+
+        vector = "HTTP/1.1 307 Temporary Redirect\r\n";
+
+        // if using Google authentication build the authentication redirect
+        // and pass the output as the OAuth state, otherwise use directly
+        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
+            exauth.setScheme("https");
+            exauth.setHost(CaptivePortalReplacementGenerator.GOOGLE_AUTH_HOST);
+            exauth.setPath(CaptivePortalReplacementGenerator.GOOGLE_AUTH_PATH);
+            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.GOOGLE_CLIENT_ID);
+            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
+            exauth.addParameter("response_type", "code");
+            exauth.addParameter("scope", "email");
+            exauth.addParameter("state", output.toString());
+            exauth.addParameter("response_mode", "form_post");
+            vector += "Location: " + exauth.toString() + "\r\n";
+        } else {
+            vector += "Location: " + output.toString() + "\r\n";
+        }
+
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
@@ -347,6 +393,118 @@ public class CaptivePortalSSLEngine
         array[0] = obuff;
         session.sendDataToClient(array);
         return true;
+    }
+
+    public String extractSNIhostname(ByteBuffer data) throws Exception
+    {
+        int counter = 0;
+        int pos;
+
+        logger.debug("Searching for SNI in " + data.toString());
+
+        // make sure we have a TLS handshake message
+        int recordType = Math.abs(data.get());
+
+        if (recordType != TLS_HANDSHAKE) {
+            logger.debug("First byte is not TLS Handshake signature");
+            return (null);
+        }
+
+        int sslVersion = data.getShort();
+        int recLength = Math.abs(data.getShort());
+
+        // make sure we have a ClientHello message
+        int shakeType = Math.abs(data.get());
+
+        if (shakeType != CLIENT_HELLO) {
+            logger.debug("Handshake type is not ClientHello");
+            return (null);
+        }
+
+        // extract all the handshake data so we can get to the extensions
+        int messHilen = data.get();
+        int messLolen = data.getShort();
+        int clientVersion = data.getShort();
+        int clientTime = data.getInt();
+
+        // skip over the fixed size client random data 
+        if (data.remaining() < 28) throw new BufferUnderflowException();
+        pos = data.position();
+        data.position(pos + 28);
+
+        // skip over the variable size session id data
+        int sessionLength = Math.abs(data.get());
+        if (sessionLength > 0) {
+            if (data.remaining() < sessionLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + sessionLength);
+        }
+
+        // skip over the variable size cipher suites data
+        int cipherLength = Math.abs(data.getShort());
+        if (cipherLength > 0) {
+            if (data.remaining() < cipherLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + cipherLength);
+        }
+
+        // skip over the variable size compression methods data
+        int compLength = Math.abs(data.get());
+        if (compLength > 0) {
+            if (data.remaining() < compLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + compLength);
+        }
+
+        // if the position equals recLength plus 5 we know this is the end
+        // of the packet and thus there are no extensions - will normally
+        // be equal but we include the greater than just to be safe
+        if (data.position() >= (recLength + 5)) {
+            logger.debug("No extensions found in TLS handshake message");
+            return (null);
+        }
+
+        // get the total size of extension data block
+        int extensionLength = Math.abs(data.getShort());
+
+        while (counter < extensionLength) {
+            int extType = Math.abs(data.getShort());
+            int extSize = Math.abs(data.getShort());
+
+            // if not server name extension adjust the offset to the next
+            // extension record and continue
+            if (extType != SERVER_NAME) {
+                data.position(data.position() + extSize);
+                counter += (extSize + 4);
+                continue;
+            }
+
+            // we read the name list info by passing the offset location so we
+            // don't modify the position which makes it easier to skip over the
+            // whole extension if we bail out during name extraction
+            int listLength = Math.abs(data.getShort(data.position()));
+            int nameType = Math.abs(data.get(data.position() + 2));
+            int nameLength = Math.abs(data.getShort(data.position() + 3));
+
+            // if we find a name type we don't understand we just abandon
+            // processing the rest of the extension
+            if (nameType != HOST_NAME) {
+                data.position(data.position() + extSize);
+                counter += (extSize + 4);
+                continue;
+            }
+
+            // found a valid host name so adjust the position to skip over
+            // the list length and name type info we directly accessed above
+            data.position(data.position() + 5);
+            byte[] hostData = new byte[nameLength];
+            data.get(hostData, 0, nameLength);
+            String hostName = new String(hostData);
+            logger.debug("Extracted SNI hostname = " + hostName);
+            return hostName.toLowerCase();
+        }
+
+        return (null);
     }
 
     private TrustManager trust_all_certificates = new X509TrustManager()

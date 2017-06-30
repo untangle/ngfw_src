@@ -33,13 +33,22 @@ Ext.define('Ung.apps.captiveportal.view.UserAuthentication', {
             _btnConfigureDirectory: function (get) {
                 switch (get('settings.authenticationType')) {
                 case 'LOCAL_DIRECTORY': return 'Configure Local Directory'.t();
-                case 'GOOGLE': return 'Configure Google'.t();
-                case 'FACEBOOK': return 'Configure Facebook'.t();
                 case 'RADIUS': return 'Configure RADIUS'.t();
                 case 'ACTIVE_DIRECTORY': return 'Configure Active Directory'.t();
+                case 'ANY': return 'Configure Directory Connector'.t();
                 default: return '';
                 }
+            },
+            _btnConfigureDisabled: function (get) {
+                switch (get('settings.authenticationType')) {
+                case 'LOCAL_DIRECTORY': return false;
+                case 'RADIUS': return  false;
+                case 'ACTIVE_DIRECTORY': return false;
+                case 'ANY': return false;
+                default: return true;
+                }
             }
+
         }
     },
 
@@ -66,11 +75,12 @@ Ext.define('Ung.apps.captiveportal.view.UserAuthentication', {
             items: [
                 { boxLabel: '<strong>' + 'None'.t() + '</strong>', inputValue: 'NONE' },
                 { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
-                { boxLabel: '<strong>' + 'Any Method'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY' },
-                { boxLabel: '<strong>' + 'Google'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'GOOGLE' },
-                { boxLabel: '<strong>' + 'Facebook'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'FACEBOOK' },
+                { boxLabel: '<strong>' + 'Google Account'.t() + '</strong>', inputValue: 'GOOGLE' },
+                { boxLabel: '<strong>' + 'Facebook Account'.t() + '</strong>', inputValue: 'FACEBOOK' },
+                { boxLabel: '<strong>' + 'Microsoft Account'.t() + '</strong>', inputValue: 'MICROSOFT' },
                 { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' },
                 { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
+                { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY' },
             ]
         }, {
             // todo: update this button later
@@ -80,10 +90,10 @@ Ext.define('Ung.apps.captiveportal.view.UserAuthentication', {
             hidden: true,
             bind: {
                 text: '{_btnConfigureDirectory}',
-                disabled: '{settings.authenticationType === "NONE" || settings.authenticationType === "ANY"}',
-                hidden: '{settings.authenticationType === "NONE" || settings.authenticationType === "ANY"}'
+                disabled: '{_btnConfigureDisabled}',
+                hidden: '{_btnConfigureDisabled}'
             },
-            handler: 'configureLocalDirectory'
+            handler: 'configureAuthenticationMethod'
         }]
     }, {
         title: 'Session Settings'.t(),
