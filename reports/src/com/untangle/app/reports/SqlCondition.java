@@ -22,6 +22,7 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
+    private boolean autoFormatValue = false;
     
     public SqlCondition() {}
     
@@ -72,7 +73,7 @@ public class SqlCondition implements Serializable, JSONString
      *
      * @returns true if auto-format supported, false otherwise
      */
-    public boolean autoFormatValue()
+    public Boolean getAutoFormatValue()
     {
         /**
          * Some operators require special handling
@@ -90,7 +91,12 @@ public class SqlCondition implements Serializable, JSONString
             return false;
         }
 
-        return true;
+        return this.autoFormatValue;
+    }
+
+    public void setAutoFormatValue( boolean newValue )
+    {
+        this.autoFormatValue = newValue;
     }
 
     public String toJSONString()
@@ -103,7 +109,7 @@ public class SqlCondition implements Serializable, JSONString
     {
         // these operators are not supported with prepareStatement
         // as such there are hardcoded in the SQL query
-        if ( !autoFormatValue() ) {
+        if ( !getAutoFormatValue() ) {
             return getColumn() + " " + getOperator() + " " + getValue() + " ";
         }
         // otherwise use the PreparedStatement '?'
@@ -127,7 +133,7 @@ public class SqlCondition implements Serializable, JSONString
             for ( SqlCondition condition : conditions ) {
                     
                 // these operators are not supported with Statement
-                if ( !condition.autoFormatValue() ) {
+                if ( !condition.getAutoFormatValue() ) {
                     continue;
                 }
                     
