@@ -250,6 +250,8 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
                 if( users.size() > 0){
                     fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
+                } else {
+                    logger.warn("Skipping report " + emailTemplate.getTitle() + " because no users (emails) receive it.");
                 }
             }
         }        
@@ -478,12 +480,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         enabledConfigIds.add("_recommended");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_recommended");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
+        emailTemplate.setReadOnly(true);
+        templates.add( emailTemplate );
+
+        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds.add("network-aGUe5wYZ1x");
+        enabledAppIds = new LinkedList<String>();
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Data Usage"), I18nUtil.marktr("Month to date data usage"), 2, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
         return templates;
-
     }
 
     private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)

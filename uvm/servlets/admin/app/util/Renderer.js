@@ -167,7 +167,9 @@ Ext.define('Ung.util.Renderer', {
     timeIntervalMap: {
         86400: 'Daily'.t(),
         604800: 'Weekly'.t(),
-        2419200: 'Monthly'.t()
+        1: 'Week to Date'.t(),
+        2419200: 'Monthly'.t(),
+        2: 'Month to Date'.t()
     },
     timeInterval: function ( value ){
         if( value in Ung.util.Renderer.timeIntervalMap ){
