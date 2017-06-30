@@ -217,6 +217,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         {name:"USER_QUOTA_ATTAINMENT",displayName: "User Quota Attainment".t(), type: "textfield", visible: true},
         {name:"CLIENT_QUOTA_ATTAINMENT",displayName: "Client Quota Attainment".t(), type: "textfield", visible: false},
         {name:"SERVER_QUOTA_ATTAINMENT",displayName: "Server Quota Attainment".t(), type: "textfield", visible: false},
+        {name:'HOST_ENTITLED',displayName: 'Host Entitled'.t(), type: 'boolean', visible: true},
         {name:"HTTP_HOST",displayName: "HTTP: Hostname".t(), type: "textfield", visible: true},
         {name:"HTTP_REFERER",displayName: "HTTP: Referer".t(), type: "textfield", visible: true},
         {name:"HTTP_URI",displayName: "HTTP: URI".t(), type: "textfield", visible: true},
