@@ -202,20 +202,21 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
             vm = me.getViewModel(),
             templates = vm.get('settings.emailTemplates.list');
 
-        var currentRecord = v.getSelectionModel().getSelection()[0];
-        var conflict = false;
-        templates.forEach( function(template){
-            if( template.templateId == currentRecord.get('templateId')){
-                return;
-            }
-            if( template.title == newValue){
-                conflict = true;
-            }
-        });
-        if( conflict ){
-            control.setValidation("Another Email Template has this title".t());
-            return false;
-        }
+        // FIXME NGFW-10863
+        // var currentRecord = v.getSelectionModel().getSelection()[0];
+        // var conflict = false;
+        // templates.forEach( function(template){
+        //     if( template.templateId == currentRecord.get('templateId')){
+        //         return;
+        //     }
+        //     if( template.title == newValue){
+        //         conflict = true;
+        //     }
+        // });
+        // if( conflict ){
+        //     control.setValidation("Another Email Template has this title".t());
+        //     return false;
+        // }
     },
 
 });
