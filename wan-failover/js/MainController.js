@@ -77,7 +77,7 @@ Ext.define('Ung.apps.wanfailover.MainController', {
         var vm = this.getViewModel();
         var grid;
 
-        if (cmp) grid = (cmp.getXType() === 'gridpanel') ? cmp : cmp.up('grid');
+        if (cmp) grid = (cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
         if (grid) grid.setLoading(true);
 
         this.getView().appManager.getWanStatus(function (result, ex) {
