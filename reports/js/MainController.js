@@ -196,27 +196,27 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
         return value;
     },
 
-    editorTitleChange: function( control, newValue, oldValue, eOpts ){
+    editorTitleChange: function( control, newValue, oldValue, eOpts, record ){
         var me = this,
             v = me.getView(),
             vm = me.getViewModel(),
             templates = vm.get('settings.emailTemplates.list');
 
-        // FIXME NGFW-10863
-        // var currentRecord = v.getSelectionModel().getSelection()[0];
-        // var conflict = false;
-        // templates.forEach( function(template){
-        //     if( template.templateId == currentRecord.get('templateId')){
-        //         return;
-        //     }
-        //     if( template.title == newValue){
-        //         conflict = true;
-        //     }
-        // });
-        // if( conflict ){
-        //     control.setValidation("Another Email Template has this title".t());
-        //     return false;
-        // }
+        var currentRecord = (record === undefined) ? v.getSelectionModel().getSelection()[0] : record;
+        var conflict = false;
+        templates.forEach( function(template){
+            if( template.templateId == currentRecord.get('templateId')){
+                return;
+            }
+            if( template.title == newValue){
+                conflict = true;
+            }
+        });
+        if( conflict ){
+            control.setValidation("Another Email Template has this title".t());
+            return false;
+        }
+        control.setValidation(true);
     },
 
 });
@@ -590,7 +590,9 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesRecordEditorController', {
     },
 
     editorTitleChange: function( me, newValue, oldValue, eOpts ){
-        return this.getView().up('grid').getController().editorTitleChange( me, newValue, oldValue, eOpts );
+        var vm = this.getViewModel();
+
+        return this.getView().up('grid').getController().editorTitleChange( me, newValue, oldValue, eOpts, vm.get('record') );
     }
 
 });
