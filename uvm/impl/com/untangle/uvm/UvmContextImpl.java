@@ -656,6 +656,26 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.eventManager.logEvent(evt);
     }
 
+    public void logJavascriptException(JSONObject json)
+    {
+        logger.warn("Javascript Exception");
+        if (json == null)
+            return;
+
+        String[] names = JSONObject.getNames(json);
+        if (names == null)
+            return;
+
+        for ( String name : names ) {
+            try {
+                Object o = json.get(name);
+                if (o == null)
+                    continue;
+                logger.warn("Javascript Exception [" + name + "]: " + o.toString());
+            } catch(Exception e) {}
+        }
+    }
+
     public String getServerUID()
     {
         if (UvmContextImpl.uid == null) {

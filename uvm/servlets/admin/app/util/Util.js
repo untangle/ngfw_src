@@ -231,6 +231,7 @@ Ext.define('Ung.util.Util', {
             return;
         } else {
             console.error(exception);
+            rpc.UvmContext.logJavascriptException(function (result, ex) {}, exception);
         }
 
         if ( exception.javaStack )
