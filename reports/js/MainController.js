@@ -284,25 +284,32 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
         var emailRecommendedReportIds = vm.get('emailRecommendedReportIds');
         var categories = vm.get(v.group + 'Categories' );
 
-        var onlyRecommended = true;
-        var ids = [];
-        store.each( function(record){
+        var recommendedIds = [];
+        vm.get('reportEntries').each(function(record ){
             var uniqueId = record.get('uniqueId');
-            if( categories.indexOf( record.get('category') ) == -1 ||
-                emailRecommendedReportIds.indexOf( uniqueId ) == -1 ){
-                onlyRecommended = false;
+            if( ( emailRecommendedReportIds.indexOf( uniqueId ) > -1 &&
+                ( categories.indexOf(record.get('category') ) > -1 ) ) ){
+                recommendedIds.push(uniqueId);
             }
-            ids.push( uniqueId );
+        }, this, { filtered: true } );
+
+        selectedIds = [];
+        store.each( function(record){
+            selectedIds.push(record.get('uniqueId'));
         });
+        var onlyRecommended = ( Ext.Array.intersect(selectedIds, recommendedIds).length == recommendedIds.length ) &&
+                              ( Ext.Array.merge(selectedIds, recommendedIds).length == recommendedIds.length );
+
         if( onlyRecommended ){
-            ids = ['_recommended'];
+            selectedIds = ['_recommended'];
         }
 
-        if( !Ext.Array.equals(me.originalValues, ids) ){
+        if( ( Ext.Array.intersect(selectedIds, me.originalValues).length != me.originalValues.length ) ||
+            ( Ext.Array.merge(selectedIds, me.originalValues).length != me.originalValues.length ) ){
             /* Only update if fields changed */
             var fieldValue = {
                 javaClass: 'java.util.LinkedList',
-                list: ids
+                list: selectedIds
             };
             var bindPath = v.initialConfig.bind.split('.');
             var fieldName = bindPath[1];
