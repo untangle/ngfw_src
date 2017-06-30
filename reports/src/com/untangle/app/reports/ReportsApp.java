@@ -488,7 +488,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         enabledConfigIds.add("network-aGUe5wYZ1x");
         enabledAppIds = new LinkedList<String>();
         emailTemplate = new EmailTemplate( I18nUtil.marktr("Data Usage"), I18nUtil.marktr("Month to date data usage"), 2, false, enabledConfigIds, enabledAppIds);
-        emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
         return templates;
