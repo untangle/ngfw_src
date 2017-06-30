@@ -16,7 +16,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         title: '',
         description: '',
         interval: 86400,
-        intervalWeekStart: 1,
+        intervalWeekStart: 0,
         mobile: false,
         enabledConfigIds : {
             "javaClass": "java.util.LinkedList",
@@ -139,8 +139,8 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
             bind: {
                 value: '{record.intervalWeekStart}',
                 store: '{dayOfWeekList}',
-                hidden: '{record.interval != 604800}',
-                disabled: '{record.interval != 604800}'
+                hidden: '{record.interval != 604800 && record.interval != 1}',
+                disabled: '{record.interval != 604800 && record.interval != 1}'
             }
         }]
     },{
