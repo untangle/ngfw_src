@@ -81,7 +81,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         window.open('/capture/handler.py/index?appid=' + vm.get('instance.id') , '_blank');
     },
 
-    configureLocalDirectory: function (btn) {
+    configureAuthenticationMethod: function (btn) {
         var vm = this.getViewModel();
         var policyId = vm.get('policyId');
         var authType = this.getViewModel().get('settings.authenticationType');
@@ -91,14 +91,6 @@ Ext.define('Ung.apps.captiveportal.MainController', {
             case 'LOCAL_DIRECTORY':
                 Ung.app.redirectTo('#config/local-directory');
                 break;
-            case 'GOOGLE':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google');
-                break;
-            case 'FACEBOOK':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/facebook');
-                break;
             case 'RADIUS':
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
@@ -106,6 +98,10 @@ Ext.define('Ung.apps.captiveportal.MainController', {
             case 'ACTIVE_DIRECTORY':
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory');
+                break;
+            case 'ANY':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
                 break;
             default: return;
         }
