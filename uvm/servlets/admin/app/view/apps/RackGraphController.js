@@ -146,6 +146,7 @@ Ext.define('Ung.view.apps.RackGraphController', {
                 // }())
             }]
         });
+
         // this.onAddPoint();
     },
 
@@ -153,11 +154,13 @@ Ext.define('Ung.view.apps.RackGraphController', {
         var me = this, metricsCmps = [], stats = [], i;
             metrics = me.getViewModel().get('metrics');
 
-        if (!metrics || metrics.length <= 3) { return; }
+        if (!metrics || metrics.length == 0){
+            return;
+        }
 
         // add metrics labels if not added
         if (me.getView().down('#metrics').items.length === 0) {
-            for (i = 0; i <= 3; i += 1) {
+            for (i = 0; i < metrics.length; i += 1) {
                 metricsCmps.push({
                     bind: {
                         html: '<p>' + metrics[i].displayName + ': <span>{stats.'+ i +'}</span></p>'
@@ -168,7 +171,7 @@ Ext.define('Ung.view.apps.RackGraphController', {
         }
 
         // just update the stats values
-        for (i = 0; i <= 3; i += 1) {
+        for (i = 0; i < metrics.length; i += 1) {
             stats.push(metrics[i].value < 0 ? 0 : metrics[i].value);
         }
         me.getViewModel().set('stats', stats);
@@ -193,6 +196,11 @@ Ext.define('Ung.view.apps.RackGraphController', {
             return metric.name === 'live-sessions';
         });
 
+        if( graphValArr == false ){
+            this.chart = null;
+            return;
+        }
+
         if (graphValArr && graphValArr[0]) {
             data.push({
                 x: time,
@@ -212,9 +220,11 @@ Ext.define('Ung.view.apps.RackGraphController', {
             return;
         }
         var metrics = appInstanceMetrics.get('metrics').list, stats = [];
-        if (!metrics || metrics.length < 4) { return; }
+        if (!metrics || metrics.length == 0) {
+            return;
+        }
 
-        for (var i = 0; i <= 3; i += 1) {
+        for (var i = 0; i < metrics.length; i += 1) {
             stats.push(metrics[i].value < 0 ? 0 : metrics[i].value);
         }
         vm.set('stats', stats);
@@ -222,6 +232,11 @@ Ext.define('Ung.view.apps.RackGraphController', {
         var graphValArr = metrics.filter(function (metric) {
             return metric.name === 'live-sessions';
         });
+
+        if( graphValArr == false ){
+            this.chart = null;
+            return;
+        }
 
         if (graphValArr && graphValArr[0]) {
             me.chart.series[0].addPoint({
