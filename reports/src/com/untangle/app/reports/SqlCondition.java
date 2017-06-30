@@ -22,7 +22,6 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
-    private Boolean autoFormatValue = null;
     
     public SqlCondition() {}
     
@@ -70,8 +69,10 @@ public class SqlCondition implements Serializable, JSONString
      * If true, then the "value" will be handled in the Sql Statement with a "?"
      * If false, the value will be hardcoded verbatim inside the sql string.
      * This is necessary because not all values/operators are correctly supported by Statement
+     *
+     * @returns true if auto-format supported, false otherwise
      */
-    public Boolean getAutoFormatValue()
+    public boolean getAutoFormatValue()
     {
         /**
          * Some operators require special handling
@@ -89,14 +90,9 @@ public class SqlCondition implements Serializable, JSONString
             return false;
         }
 
-        return this.autoFormatValue;
+        return true;
     }
 
-    public void setAutoFormatValue( Boolean newValue )
-    {
-        this.autoFormatValue = newValue;
-    }
-    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

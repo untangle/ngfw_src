@@ -664,6 +664,78 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.MessageBox.hide();
     },
 
+    exportGraphData: function (btn) {
+        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], headers = [];
+        if (!entry) { return; }
+
+        var grid = btn.up('grid'), csv = [];
+
+        if (!grid) {
+            console.log('Grid not found');
+            return;
+        }
+
+        var processRow = function (row) {
+            var data = [], j, innerValue;
+            for (j = 0; j < row.length; j += 1) {
+                innerValue = !row[j] ? '' : row[j].toString();
+                data.push('"' + innerValue.replace(/"/g, '""') + '"');
+            }
+            return data.join(',') + '\r\n';
+        };
+
+        Ext.Array.each(grid.getColumns(), function (col) {
+            if (col.dataIndex && !col.hidden) {
+                columns.push(col.dataIndex);
+                headers.push(col.text);
+            }
+        });
+        csv.push(processRow(headers));
+
+        grid.getStore().each(function (row, idx) {
+            var r = [];
+            for (j = 0; j < columns.length; j += 1) {
+                if (columns[j] === 'time_trunc') {
+                    r.push(Util.timestampFormat(row.get('time_trunc')));
+                } else {
+                    r.push(row.get(columns[j]));
+                }
+            }
+            csv.push(processRow(r));
+        });
+
+        me.download(csv.join(''), (entry.category + '-' + entry.title + '-' + Ext.Date.format(new Date(), 'd.m.Y-Hi')).replace(/ /g, '_') + '.csv', 'text/csv');
+
+    },
+
+    download: function(content, fileName, mimeType) {
+        var a = document.createElement('a');
+        mimeType = mimeType || 'application/octet-stream';
+
+        if (navigator.msSaveBlob) { // IE10
+            return navigator.msSaveBlob(new Blob([ content ], {
+                type : mimeType
+            }), fileName);
+        } else if ('download' in a) { // html5 A[download]
+            a.href = 'data:' + mimeType + ',' + encodeURIComponent(content);
+            a.setAttribute('download', fileName);
+            document.body.appendChild(a);
+            setTimeout(function() {
+                a.click();
+                document.body.removeChild(a);
+            }, 100);
+            return true;
+        } else { //do iframe dataURL download (old ch+FF):
+            var f = document.createElement('iframe');
+            document.body.appendChild(f);
+            f.src = 'data:' + mimeType + ',' + encodeURIComponent(content);
+            setTimeout(function() {
+                document.body.removeChild(f);
+            }, 400);
+            return true;
+        }
+    },
+
     setAutoRefresh: function (btn) {
         var me = this,
             vm = this.getViewModel();
