@@ -168,7 +168,7 @@ public interface UvmContext
      *
      * @return the SessionMonitor
      */
-    SessionMonitor sessionMonitor();b
+    SessionMonitor sessionMonitor();
 
     /**
      * Get the <code>OemManager</code> singleton.
