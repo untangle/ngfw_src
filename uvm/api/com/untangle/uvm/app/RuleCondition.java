@@ -60,6 +60,7 @@ public class RuleCondition implements JSONString, Serializable
         PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
         USERNAME, /* "dmorris" or "none" or "*" */
         TAGGED, /* glob */
+        HOST_ENTITLED, /* none */
         HOST_HOSTNAME, /* glob */
         CLIENT_HOSTNAME, /* glob */
         SERVER_HOSTNAME, /* glob */
@@ -327,6 +328,7 @@ public class RuleCondition implements JSONString, Serializable
                 this.dayOfWeekMatcher = new DayOfWeekMatcher(this.value);
                 break;
 
+            case HOST_ENTITLED:
             case WEB_FILTER_FLAGGED:
             case HOST_HAS_NO_QUOTA:
             case CLIENT_HAS_NO_QUOTA:
@@ -752,6 +754,12 @@ public class RuleCondition implements JSONString, Serializable
             }
             return false;
 
+        case HOST_ENTITLED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (hostEntry == null)
+                return true;
+            return hostEntry.getEntitled();
+            
         case USERNAME:
             tmpStr = sess.user();
             if (this.userMatcher.isMatch(tmpStr))
@@ -971,6 +979,12 @@ public class RuleCondition implements JSONString, Serializable
                 }
             }
             return false;
+
+        case HOST_ENTITLED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (hostEntry == null)
+                return true;
+            return hostEntry.getEntitled();
 
         case USERNAME:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
