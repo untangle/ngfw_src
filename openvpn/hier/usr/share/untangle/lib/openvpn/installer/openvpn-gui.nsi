@@ -209,11 +209,11 @@ FunctionEnd
 
 Function RestoreServiceState
 
-	; ${If} $iservice_was_running == 4
-	; ${OrIf} $iservice_existed != 0
-	DetailPrint "Starting OpenVPN Interactive Service"
-	SimpleSC::StartService "OpenVPNServiceInteractive" "" 5
-	; ${EndIf}
+	${If} $iservice_was_running == 4
+	${OrIf} $iservice_existed != 0
+		DetailPrint "Starting OpenVPN Interactive Service"
+		SimpleSC::StartService "OpenVPNServiceInteractive" "" 5
+	${EndIf}
 
 	${If} $legacy_service_was_running == 4
 		DetailPrint "Restarting OpenVPN Legacy Service"
@@ -627,7 +627,9 @@ Section -post
 	WriteRegExpandStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayIcon" "$INSTDIR\icon.ico"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayVersion" "${OPENVPN_VERSION}"
-
+	
+	DetailPrint "Starting OpenVPN Interactive Service"
+	SimpleSC::StartService "OpenVPNServiceInteractive" "" 10
 SectionEnd
 
 ;--------------------------------
