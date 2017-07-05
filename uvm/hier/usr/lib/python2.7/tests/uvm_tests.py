@@ -14,6 +14,7 @@ import subprocess
 import ipaddr
 import time
 import ssl
+import json
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
