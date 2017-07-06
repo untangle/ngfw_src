@@ -4,6 +4,7 @@
 package com.untangle.app.directory_connector;
 
 import java.lang.String;
+import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
@@ -129,13 +130,17 @@ public class ActiveDirectoryManagerImpl
         ActiveDirectorySettings testSettings = newSettings.getActiveDirectorySettings();
 
         try {
+            String ouFiltersString = "";
+            for(String ouFilter : testSettings.getOUFilters()){
+                ouFiltersString += (ouFiltersString.length() > 0 ? "," : "") + ouFilter;
+            }
             logger.info("Testing Active Directory settings for (" +
                         "server='" + testSettings.getLDAPHost() + "', " +
                         "secure='" + testSettings.getLDAPSecure() + "', " +
                         "port='" + testSettings.getLDAPPort() + "', " + 
                         "superuser='" + testSettings.getSuperuser() + "', " + 
                         "domain='" + testSettings.getDomain() + "', " + 
-                        "ou_filter='" + testSettings.getOUFilter() + "')");
+                        "ou_filters='" + ouFiltersString + "')");
 
             ActiveDirectoryLdapAdapter temp_adAdapter = new ActiveDirectoryLdapAdapter(testSettings);
             List<UserEntry> adRet = temp_adAdapter.listAll();
