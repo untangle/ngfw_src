@@ -193,5 +193,24 @@ Ext.define('Ung.overrides.form.field.VTypes', {
             maxValue = 65535;
         return (minValue <= val && val <= maxValue);
     },
-    portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535)
+    portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535),
+
+    x500attributes: function(val){
+        if(val == ""){
+            return false;
+        }
+        var valid = true;
+        val.split(",").forEach(function(attribute){
+            /*
+             * Various LDAP implementations may have attribute keys beyond 
+             * what's defined in RFC 2253.  Instead of hunting them all
+             * down, verify they are of a <key>=<value> format.
+             */
+            if(attribute.split('=').length != 2 ){
+                valid = false;
+            }
+        });
+        return valid;
+    },
+    x500attributesText: 'Invalid x500 attribute found'.t()
 });
