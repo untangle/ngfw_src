@@ -1,0 +1,89 @@
+#!/usr/bin/python
+
+import urlparse
+import requests
+import json
+import sys
+import os
+
+development = False
+qstring = None
+
+print "Content-type: text\n"
+
+if ("QUERY_STRING" in os.environ):
+	qstring = os.environ['QUERY_STRING']
+
+if (development):
+	qstring = "authType=GOOGLE&authCode=DevelopmentTestCode"
+
+if (qstring == None):
+	print "ERROR: missing query string"
+	sys.exit()
+
+qparams = urlparse.parse_qs(qstring)
+
+if ('authType' in qparams):
+	authtype = qparams['authType'][0]
+else:
+	print "ERROR: missing auth type"
+	sys.exit()
+
+if ('authCode' in qparams):
+	authcode = qparams['authCode'][0]
+else:
+	print "ERROR: missing auth code"
+	sys.exit()
+
+logfile = open("/tmp/token.log","a")
+logfile.write("%s\n" % ("--------------------"));
+logfile.write("QSTR: %s\n" % (qstring));
+logfile.write("TYPE: %s\n" % (authtype));
+logfile.write("CODE: %s\n" % (authcode));
+
+if development:
+	authfile = open("/var/cache/apache2/login.txt","r")
+	authtext = authfile.read()
+	authfile.close()
+else:
+	authdata = {}
+	authdata['code'] = authcode
+	authdata['client_id'] = '271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com'
+	authdata['client_secret'] = 'GMbC0PUZe2qCw_sq98_-SE5l'
+	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['grant_type'] = 'authorization_code'
+	authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
+	authtext = authresp.text;
+
+logfile.write("AUTH: %s\n" % (authtext));
+authjson = json.loads(authtext)
+
+if (not "access_token" in authjson):
+	print "ERROR: missing access"
+	sys.exit()
+
+if development:
+	tokefile = open("/var/cache/apache2/token.txt","r")
+	toketext = tokefile.read()
+	tokefile.close()
+else:
+	tokeresp = requests.get("https://www.googleapis.com/plus/v1/people/me?access_token=%s" % (authjson['access_token']))
+	toketext = tokeresp.text
+
+logfile.write("TOKE: %s\n" % (toketext));
+tokejson = json.loads(toketext)
+
+if (not "emails" in tokejson):
+	print("ERROR: missing emails")
+	sys.exit()
+
+useraddr = "ERROR: missing address"
+
+for item in tokejson['emails']:
+	if (item['type'] == 'account'):
+		useraddr = item['value']
+
+logfile.write("USER: %s\n" % (useraddr));
+logfile.close()
+
+sys.stdout.write(useraddr)

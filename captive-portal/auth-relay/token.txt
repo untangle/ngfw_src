@@ -1,0 +1,47 @@
+{
+ "kind": "plus#person",
+ "etag": "\"Sh4n9u6EtD24TM0RmWv7jTXojqc/GYJ7i5LUqqe82qff9-YYl56YU9c\"",
+ "gender": "male",
+ "emails": [
+  {
+   "value": "mahotz@untangle.com",
+   "type": "account"
+  }
+ ],
+ "objectType": "person",
+ "id": "106681666034075093483",
+ "displayName": "Michael Hotz",
+ "name": {
+  "familyName": "Hotz",
+  "givenName": "Michael"
+ },
+ "url": "https://plus.google.com/106681666034075093483",
+ "image": {
+  "url": "https://lh3.googleusercontent.com/-K2bz9L5-Tv4/AAAAAAAAAAI/AAAAAAAAADQ/vXrJokU61zA/photo.jpg?sz=50",
+  "isDefault": false
+ },
+ "organizations": [
+  {
+   "name": "Untangle",
+   "title": "Geek",
+   "type": "work",
+   "primary": false
+  }
+ ],
+ "isPlusUser": true,
+ "circledByCount": 13,
+ "verified": false,
+ "cover": {
+  "layout": "banner",
+  "coverPhoto": {
+   "url": "https://lh3.googleusercontent.com/pjBm_rlZsN4eHDtqUTW-Nq9zbFwSGmknxpagozTR2-3hl8YwwbfWsiYInt9uzavYnxK8FnQ=s630",
+   "height": 180,
+   "width": 940
+  },
+  "coverInfo": {
+   "topImageOffset": 0,
+   "leftImageOffset": 0
+  }
+ },
+ "domain": "untangle.com"
+}

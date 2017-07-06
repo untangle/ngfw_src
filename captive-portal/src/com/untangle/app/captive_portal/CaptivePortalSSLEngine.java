@@ -118,7 +118,7 @@ public class CaptivePortalSSLEngine
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
         if (sniHostname != null) {
-            if (sniHostname.toLowerCase().equals("openidc-relay.untangle.com")) allowed = true;
+            if (sniHostname.toLowerCase().equals("auth-relay.untangle.com")) allowed = true;
             if (sniHostname.toLowerCase().equals("accounts.google.com")) allowed = true;
             if (sniHostname.toLowerCase().equals("ssl.gstatic.com")) allowed = true;
             if (allowed) {
