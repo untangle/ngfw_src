@@ -89,7 +89,7 @@ def index(req):
         if (captureSettings.get("authenticationType") == "GOOGLE"):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen("https://openidc-relay.untangle.com/cgi-bin/getAccessToken?authCode=%s" % authcode)
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=GOOGLE&authCode=%s" % authcode)
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
