@@ -127,6 +127,16 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 readSettings.setFacebookSettings( new FacebookSettings() );
                 setSettings( readSettings );
             }
+
+            /* 13.1 - convert ouFilter to array */
+            String ouFilter = readSettings.getActiveDirectorySettings().getOUFilter();
+            if(!ouFilter.equals("") ){
+                LinkedList<String> ouFilters = new LinkedList<String>();
+                ouFilters.add(ouFilter);
+                readSettings.getActiveDirectorySettings().setOUFilters(ouFilters);
+                readSettings.getActiveDirectorySettings().setOUFilter("");
+                setSettings( readSettings );
+            }
             
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
