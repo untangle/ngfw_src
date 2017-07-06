@@ -5,6 +5,8 @@ package com.untangle.app.directory_connector;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Settings for the Active Directory (really a bunch of LDAP settings).
@@ -17,7 +19,8 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     private String domain;
     private String ldapHost;
     private boolean ldapSecure;
-    private String ouFilter;
+    private String ouFilter = "";
+    private List<String> ouFilters = null;
     private int ldapPort;
     private boolean isEnabled = false;
 
@@ -31,7 +34,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
         this.ldapHost = ldapHost;
         this.ldapPort = ldapPort;
         this.ldapSecure = ldapSecure;
-        this.ouFilter = "";
+        this.ouFilters = new LinkedList<String>();
     }
 
     public boolean getEnabled() { return isEnabled; }
@@ -55,8 +58,12 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     public boolean getLDAPSecure() { return ldapSecure; }
     public void setLDAPSecure(boolean secure) { this.ldapSecure = secure; }
 
+    /* Remove after 13.1 release */
     public String getOUFilter() { return ouFilter; }
     public void setOUFilter(String ouFilter) { this.ouFilter = ouFilter; }
+
+    public List<String> getOUFilters() { return ouFilters; }
+    public void setOUFilters(List<String> ouFilters) { this.ouFilters = ouFilters; }
 
     public String toJSONString()
     {
