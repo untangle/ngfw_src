@@ -30,7 +30,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         + "<P><H3>Please contact %s for assistance.</H3></P>"
         + "</BODY></HTML>";
 
-    protected static final String AUTH_REDIRECT_URI = "https://openidc-relay.untangle.com/callback.php";
+    protected static final String AUTH_REDIRECT_URI = "https://auth-relay.untangle.com/callback.php";
     
     protected static final String GOOGLE_AUTH_HOST = "accounts.google.com";
     protected static final String GOOGLE_AUTH_PATH = "/o/oauth2/v2/auth";
