@@ -19,7 +19,15 @@
         <script src="/highcharts-5.0.9/proj4.js"></script>
 
         <!-- ExtJS lib & theme -->
+        <c:set var="debug" value="${param['debug']}"/>
+        <c:choose>
+            <c:when test="${debug == '1'}">
+        <script src="/ext6.2/ext-all-debug.js"></script>
+            </c:when>
+            <c:otherwise>
         <script src="/ext6.2/ext-all.js"></script>
+            </c:otherwise>
+        </c:choose>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
 
