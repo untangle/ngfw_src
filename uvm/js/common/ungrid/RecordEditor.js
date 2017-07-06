@@ -5,14 +5,7 @@ Ext.define('Ung.cmp.RecordEditor', {
     maxHeight: Ext.getBody().getViewSize().height - 20,
 
     xtype: 'ung.cmp.recordeditor',
-    /* requires-start */
-    requires: [
-        'Ung.cmp.RecordEditorController',
-        'Ung.overrides.form.CheckboxGroup',
-        'Ung.overrides.form.field.VTypes',
-        'Ung.cmp.DateTime'
-    ],
-    /* requires-end */
+
     controller: 'recordeditor',
     closeAction: 'destroy',
     closable: false,

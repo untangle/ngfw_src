@@ -5,13 +5,6 @@ Ext.define('Ung.view.reports.Reports', {
 
     layout: 'border',
 
-    /* requires-start */
-    requires: [
-        'Ung.view.reports.ReportsController',
-        'Ung.view.reports.ReportsModel',
-        'Ung.model.Category'
-    ],
-    /* requires-end */
     controller: 'reports',
 
     viewModel: true,
@@ -28,6 +21,10 @@ Ext.define('Ung.view.reports.Reports', {
         ui: 'navigation',
         dock: 'top',
         border: false,
+        hidden: true,
+        bind: {
+            hidden: '{ servlet !== "ADMIN" }'
+        },
         style: {
             background: '#333435',
             zIndex: 9997
@@ -121,7 +118,11 @@ Ext.define('Ung.view.reports.Reports', {
 
         listeners: {
             select: function (el, node) {
-                Ung.app.redirectTo('#reports/' + node.get('url'));
+                if (Ung.app.servletContext === 'reports') {
+                    Ung.app.redirectTo('#' + node.get('url'));
+                } else {
+                    Ung.app.redirectTo('#reports/' + node.get('url'));
+                }
             }
         }
     }, {
