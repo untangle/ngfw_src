@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -126,13 +128,23 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     }
 
     @Override
-    public String getSearchBase()
+    public List<String> getSearchBases()
     {
-        String ouFilter = settings.getOUFilter();
-        if (ouFilter != null && !("".equals(ouFilter)))
-            return ouFilter + "," + domainComponents(settings.getDomain());
+        ArrayList<String> bases = new ArrayList<String>();
 
-        return domainComponents(settings.getDomain());
+        List<String> ouFilters = settings.getOUFilters();
+
+        for( String ouFilter: ouFilters ){
+            logger.warn("getSearchBases: ouFilter=" + ouFilter );
+            if (ouFilter != null && !("".equals(ouFilter))){
+                bases.add(ouFilter + "," + domainComponents(settings.getDomain()));
+            }
+        }
+
+        if( bases.isEmpty()){
+            bases.add(domainComponents(settings.getDomain()));
+        }
+        return bases;
     }
 
     @Override
@@ -187,7 +199,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     {
         try {           
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  getListAllGroupsSearchString(),
                                  getGroupEntrySearchControls(fetchMembersOf));
 
@@ -240,7 +252,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         /* Next retrieve all of the groups that the user belongs to, this doesn't recurse */
         try {
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  getListGroupsSearchString(userEntry),
                                  getGroupEntrySearchControls(false));
 
@@ -280,7 +292,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         
         try {
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  getListUsersSearchString(groupEntry, getUserClassType()),
                                  getUserEntrySearchControls());
 
@@ -414,7 +426,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         try {
 
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  searchStr,
                                  getGroupEntrySearchControls(fetchMembersOf));
 
@@ -482,7 +494,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             String searchStr = "(&"
                     + orStrings("objectClass=", getUserClassType()) + "(mail="
                     + email + "))";
-            SearchResult result = queryFirstAsSuperuser(getSearchBase(),
+            SearchResult result = queryFirstAsSuperuser(getSearchBases(),
                     searchStr);
             if (result != null)
                 return result.getNameInNamespace();
@@ -502,7 +514,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             String searchStr = "(&"
                     + orStrings("objectClass=", getUserClassType())
                     + "(sAMAccountName=" + uid + "))";
-            SearchResult result = queryFirstAsSuperuser(getSearchBase(),
+            SearchResult result = queryFirstAsSuperuser(getSearchBases(),
                     searchStr);
             if (result != null)
                 return result.getNameInNamespace();
@@ -515,7 +527,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
     // Unfortunately the existing query mechanism is focused on attributes, but
     // we need the first SearchResult itself, so that we can extract its DN.
-    private SearchResult queryFirstAsSuperuser(String searchBase, String searchFilter)
+    private SearchResult queryFirstAsSuperuser(List<String> searchBases, String searchFilter)
         throws NamingException, ServiceUnavailableException
     {
         SearchResult result = null;
@@ -535,10 +547,12 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
                 // something but not everything.
                 SearchControls ctls = createSimpleSearchControls("cn");
                 ctls.setCountLimit(0);
-                NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter,
-                        ctls);
-                if (answer.hasMoreElements())
-                    result = answer.next();
+                for( String searchBase : searchBases ){
+                    NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
+                    if (answer.hasMoreElements()){
+                        result = answer.next();
+                    }
+                }
                 returnSuperuserContext(ctx, false);
                 return result;
             } catch (NamingException ex) {
