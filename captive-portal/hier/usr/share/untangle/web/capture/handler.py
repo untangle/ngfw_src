@@ -84,20 +84,24 @@ def index(req):
     captureApp = load_rpc_manager(appid)
 
     authcode = args['AUTHCODE']
+
     if (authcode != "Empty"):
         if (captureSettings.get("authenticationType") == "GOOGLE"):
+            # Here we call the relay server with the authcode that was returned to the client
+            # This will confirm the user is actually authenticated and return the email address
+            altres = urllib.urlopen("https://openidc-relay.untangle.com/cgi-bin/getAccessToken?authCode=%s" % authcode)
+            altraw = altres.read()
 
-# Here we need to call the relay server with the authcode to get an access token
-# This will confirm that the user actually authenticated and hopefully give us a username
-#            altres = urllib.urlopen("https://openidc-relay.untangle.com/cgi-bin/getAuthDetail?authCode=%s" % authcode)
-#            alttok = altres.read()
+            if ("ERROR:" in altraw):
+                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+                return(page)
 
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-            captureApp.userLogin(address,authcode)
+            captureApp.userLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
                 target = str(redirectUrl)
