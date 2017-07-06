@@ -17,7 +17,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
-
          });
 
         var googleDrive = new Ung.cmp.GoogleDrive();
@@ -28,13 +27,40 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     setSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel();
 
         if (!Util.validateForms(v)) {
             return;
         }
 
         v.setLoading(true);
+        v.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            if( grid.listProperty &&
+                ( store.getModifiedRecords().length > 0 ) ||
+                store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                store.commitChanges();
+                var listValues = [];
+                Ext.Array.pluck(store.getRange(), 'data').forEach( function(recordData){
+                    if( !grid.emptyRow ||
+                        !grid.emptyRow.gridjavaClass){
+                        listValues.push(recordData['field1']);
+                    }else{
+                        listValues.push(recordData);
+                    }
+                });
+                vm.set(grid.listProperty, listValues );
+                store.remove(store.getRange());
+            }
+        });
 
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
