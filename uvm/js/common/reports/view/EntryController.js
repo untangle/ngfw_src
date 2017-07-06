@@ -61,9 +61,12 @@ Ext.define('Ung.view.reports.EntryController', {
                 me.getView().down('#tableColumns').setValue({});
             }
 
-            // check if widget
-            // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
-            vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
+            // check if widget in admin context
+            if (Ung.app.servletContext === 'admin') {
+                widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
+                vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
+            }
+
 
 
 
