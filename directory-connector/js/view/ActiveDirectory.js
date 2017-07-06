@@ -87,17 +87,41 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 margin: '0 0 5 0',
                 width: 800,
                 items: [{
-                    xtype: 'textfield',
-                    fieldLabel: 'Active Directory Organization'.t(),
-                    labelWidth:190,
-                    width: 500,
-                    bind: '{settings.activeDirectorySettings.OUFilter}'
-                }, {
+                },{
+                    xtype: 'label',
+                    html: 'Active Directory Organizations'.t(),
+                    width: 190,
+                },{
+                    xtype: 'ungrid',
+                    width: 305,
+                    border: false,
+                    titleCollapse: true,
+                    tbar: ['@addInline'],
+                    recordActions: ['delete'],
+                    bind: '{settings.activeDirectorySettings.OUFilters.list}',
+                    listProperty: 'settings.activeDirectorySettings.OUFilters.list',
+                    maxHeight: 140,
+                    emptyRow: {
+                        field1: ''
+                    },
+                    columns: [{
+                        header: 'Organizational Unit'.t(),
+                        dataIndex: 'field1',
+                        width: 200,
+                        flex: 1,
+                        editor : {
+                            xtype: 'textfield',
+                            vtype: 'x500attributes',
+                            emptyText: '[enter OU]'.t(),
+                            allowBlank: false
+                        }
+                    }]
+                },{
                     xtype: 'label',
                     html: '(optional)'.t(),
                     cls: 'boxlabel'
                 }]
-            }],
+            }]
         },{
             xtype: 'fieldset',
             title: 'Active Directory Test'.t(),
