@@ -2,14 +2,6 @@ Ext.define('Ung.cmp.Grid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.ungrid',
 
-    /* requires-start */
-    requires: [
-        'Ung.cmp.GridController',
-        'Ung.cmp.RecordEditor',
-        'Ung.cmp.DataImporter',
-        'Ung.model.Condition'
-    ],
-    /* requires-end */
     controller: 'ungrid',
 
     actions: {
