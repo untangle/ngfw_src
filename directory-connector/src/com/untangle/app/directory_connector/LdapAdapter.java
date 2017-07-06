@@ -87,7 +87,7 @@ abstract class LdapAdapter
     /**
      * Gets search base from repository settings in dependent way.
      */
-    protected abstract String getSearchBase();
+    protected abstract List<String> getSearchBases();
 
     protected abstract String getSuperuserDN();
 
@@ -119,7 +119,7 @@ abstract class LdapAdapter
     {
 
         try {
-            List<Map<String, String[]>> list = queryAsSuperuser(getSearchBase(),
+            List<Map<String, String[]>> list = queryAsSuperuser(getSearchBases(),
                                                                 getListAllUsersSearchString(),
                                                                 getUserEntrySearchControls());
 
@@ -554,10 +554,16 @@ abstract class LdapAdapter
      *
      * @return all returned data
      */
-    protected final List<Map<String, String[]>> queryAsSuperuser(String searchBase, String searchFilter, SearchControls ctls)
+    protected final List<Map<String, String[]>> queryAsSuperuser(List<String> searchBases, String searchFilter, SearchControls ctls)
         throws NamingException, ServiceUnavailableException
     {
-        return queryAsSuperuserImpl(searchBase, searchFilter, ctls, true);
+        List<Map<String, String[]>> results = new ArrayList<Map<String, String[]>>();
+
+        for( String searchBase : searchBases){
+            results.addAll(queryAsSuperuserImpl(searchBase, searchFilter, ctls, true));
+        }
+
+        return results;
     }
 
     /**
@@ -635,7 +641,7 @@ abstract class LdapAdapter
         try {
 
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  searchStr,
                                  getUserEntrySearchControls());
 
