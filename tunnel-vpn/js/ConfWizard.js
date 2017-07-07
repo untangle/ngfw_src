@@ -74,19 +74,23 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             xtype: 'form',
             name: 'upload_form',
             border: false,
-            margin: '10 10 10 10',
+            margin: '0 0 0 0',
             items: [{
                 xtype: 'fileuploadfield',
-                name: 'uploadConfigFileName',
-                anchor: '100%',
+                name: 'upload_file',
+                buttonText: 'Upload Config File'.t(),
                 buttonOnly: true,
-                buttonConfig: {
-                    iconCls: 'fa fa-upload',
-                    width: 300,
-                    height: 40,
-                    text: 'Upload Tunnel Configuration File'.t(),
-                },
                 listeners: { 'change': 'uploadFile' }
+            },{
+                xtype: 'hidden',
+                name: 'type',
+                value: 'tunnel_vpn'
+            },{
+                xtype: 'hidden',
+                name: 'argument',
+                bind: {
+                    value: '{provider}',
+                },
             }]
         }]
     }, {
