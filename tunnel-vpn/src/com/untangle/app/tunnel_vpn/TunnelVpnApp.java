@@ -41,8 +41,7 @@ public class TunnelVpnApp extends AppBase
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
     private TunnelVpnSettings settings = null;
-
-    private boolean isWebAppDeployed = false;
+    private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager();
     
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
@@ -102,7 +101,6 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void postDestroy()
     {
-        unDeployWebApp();
     }
         
     @Override
@@ -136,9 +134,6 @@ public class TunnelVpnApp extends AppBase
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
-        /* Deploy the web app on init so its available for configuration when off */
-        deployWebApp();
-
         this.reconfigure();
     }
 
@@ -151,9 +146,21 @@ public class TunnelVpnApp extends AppBase
         setSettings(settings);
     }
 
-    public void importTunnelConfig( String filename )
+    public synchronized void importTunnelConfig( String filename, String provider )
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\"");
+        if (filename==null || provider==null) {
+            logger.warn("Invalid arguments");
+            throw new RuntimeException("Invalid Arguments");
+        }
+        
+        int tunnelId = findLowestAvailableTunnelId( settings );
+
+        if (tunnelId < 1) {
+            logger.warn("Failed to find available tunnel ID");
+            throw new RuntimeException("Failed to find available tunnel ID");
+        }
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\" " + provider + " " + tunnelId);
 
         String tunnelName = "tunnelName-" + (new Random().nextInt(10000));
         try {
@@ -192,17 +199,14 @@ public class TunnelVpnApp extends AppBase
         tunnelSettings.setAllTraffic( false );
         tunnelSettings.setHosts( new LinkedList<IPMatcher>() );
         tunnelSettings.setTags( new LinkedList<String>() );
+        tunnelSettings.setTunnelId( tunnelId );
         
         tunnels.add( tunnelSettings );
         settings.setTunnels( tunnels );
         setSettings( settings );
 
-        logger.warn("FIXME");
-        // /**
-        //  * Restart the daemon
-        //  */
-        // this.openVpnManager.configure( this.settings );
-        // this.openVpnManager.restart();
+        this.tunnelVpnManager.configure( this.settings );
+        this.tunnelVpnManager.restart();
         
         return;
     }
@@ -221,27 +225,27 @@ public class TunnelVpnApp extends AppBase
         logger.info("Reconfigure()");
     }
 
-    private synchronized void deployWebApp()
+    private int findLowestAvailableTunnelId( TunnelVpnSettings settings )
     {
-        if ( !isWebAppDeployed ) {
-            if (UvmContextFactory.context().tomcatManager().loadServlet( "/tunnel-vpn", "tunnel-vpn", true) != null) {
-                logger.debug( "Deployed tunnel-vpn web app" );
+        if ( settings.getTunnels() == null )
+            return 1;
+
+        for (int i=1; i<100; i++) {
+            boolean found = false;
+            for (TunnelVpnTunnelSettings tunnelSettings: settings.getTunnels()) {
+                if ( tunnelSettings.getTunnelId() != null && i == tunnelSettings.getTunnelId() ) {
+                    found = true;
+                    break;
+                }
             }
-            else logger.warn( "Unable to deploy tunnel-vpn web app" );
+            if (!found)
+                return i;
         }
-        isWebAppDeployed = true;
-    }
 
-    private synchronized void unDeployWebApp()
-    {
-        if ( isWebAppDeployed ) {
-            if( UvmContextFactory.context().tomcatManager().unloadServlet( "/tunnel-vpn" )) {
-                logger.debug( "Unloaded tunnel-vpn web app" );
-            } else logger.warn( "Unable to unload tunnel-vpn web app" );
-        }
-        isWebAppDeployed = false;
+        logger.error("Failed to find available tunnel ID");
+        return -1;
     }
-
+    
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override
@@ -294,7 +298,7 @@ public class TunnelVpnApp extends AppBase
             }
 
             try {
-                importTunnelConfig( temp.getPath() );
+                importTunnelConfig( temp.getPath(), argument );
             } catch ( Exception e ) {
                 logger.warn( "Unable to install the client configuration", e );
                 return new ExecManagerResult(1, e.getMessage());

@@ -12,6 +12,7 @@ import com.untangle.uvm.app.IPMatcher;
 @SuppressWarnings("serial")
 public class TunnelVpnTunnelSettings implements java.io.Serializable
 {
+    private Integer tunnelId = null;
     private boolean enabled = true;
     private String name;
 
@@ -20,6 +21,9 @@ public class TunnelVpnTunnelSettings implements java.io.Serializable
     private List<IPMatcher> hosts = new LinkedList<IPMatcher>();
     
     public TunnelVpnTunnelSettings() {}
+
+    public Integer getTunnelId() { return this.tunnelId; }
+    public void setTunnelId( Integer newValue ) { this.tunnelId = newValue; }
 
     public boolean getEnabled() { return this.enabled; }
     public void setEnabled( boolean newValue ) { this.enabled = newValue; }
