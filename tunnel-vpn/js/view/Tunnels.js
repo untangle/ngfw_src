@@ -21,24 +21,12 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     items: [{
         xtype: 'app-tunnel-vpn-tunnel-tab-panel',
         padding: '20 20 0 20',
-    },{
-        xtype: 'form',
-        name: 'upload_form',
-        border: false,
-        margin: '10 10 10 10',
-        items: [{
-            xtype: 'fileuploadfield',
-            name: 'uploadConfigFileName',
-            anchor: '100%',
-            buttonOnly: true,
-            buttonConfig: {
-                iconCls: 'fa fa-upload',
-                width: 300,
-                height: 40,
-                text: 'Upload Tunnel Configuration File'.t(),
-            },
-            listeners: { 'change': 'uploadFile' }
-        }]
+    }, {
+        xtype: 'button',
+        anchor: '100%',
+        text: 'Configured New Tunnel VPN Connection'.t(),
+        iconCls: 'fa fa-magic',
+        handler: 'runWizard'
     }]
 });
 
