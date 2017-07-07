@@ -164,6 +164,11 @@ Ext.define('Ung.controller.Global', {
             return prop.name === app;
         });
 
+        if (!appInstance || !appProps) {
+            Util.handleException("Unable to find app: " + app);
+            return;
+        }
+        
         mainView.setLoading(true);
         Ext.Loader.loadScript({
             //url: 'script/apps/' + app + '.js',
