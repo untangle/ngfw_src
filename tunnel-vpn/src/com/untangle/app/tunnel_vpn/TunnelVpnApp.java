@@ -5,8 +5,15 @@ package com.untangle.app.tunnel_vpn;
 
 import java.util.Random;
 import java.util.List;
+import java.util.LinkedList;
+import java.io.InputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -17,11 +24,13 @@ import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.servlet.UploadHandler;
 
 public class TunnelVpnApp extends AppBase
 {
@@ -38,6 +47,8 @@ public class TunnelVpnApp extends AppBase
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
+
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new TunnelUploadHandler());
     }
 
     public TunnelVpnSettings getSettings()
@@ -140,21 +151,23 @@ public class TunnelVpnApp extends AppBase
         setSettings(settings);
     }
 
-    public void importClientConfig( String filename )
+    public void importTunnelConfig( String filename )
     {
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\"");
 
-        String sitename = "siteName-" + (new Random().nextInt(10000));
+        String tunnelName = "tunnelName-" + (new Random().nextInt(10000));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info( IMPORT_CLIENT_SCRIPT + ": ");
             for ( String line : lines ) {
                 logger.info( IMPORT_CLIENT_SCRIPT + ": " + line);
 
-                if (line.contains("SiteName: ")) {
+                // FIXME this should output JSON or something
+                // FIXME
+                if (line.contains("TunnelName: ")) {
                     String[] tokens = line.split(" ");
                     if (tokens.length > 1)
-                        sitename = tokens[1];
+                        tunnelName = tokens[1];
                 }
             }
         } catch (Exception e) {}
@@ -170,12 +183,16 @@ public class TunnelVpnApp extends AppBase
         TunnelVpnSettings settings = getSettings();
         List<TunnelVpnTunnelSettings> tunnels = settings.getTunnels();
         for ( TunnelVpnTunnelSettings tunnelSettings : tunnels ) {
-            if (sitename.equals(tunnelSettings.getName()))
+            if (tunnelName.equals(tunnelSettings.getName()))
                 return;
         }
         TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
-        tunnelSettings.setName( sitename );
+        tunnelSettings.setName( tunnelName );
         tunnelSettings.setEnabled( true );
+        tunnelSettings.setAllTraffic( false );
+        tunnelSettings.setHosts( new LinkedList<IPMatcher>() );
+        tunnelSettings.setTags( new LinkedList<String>() );
+        
         tunnels.add( tunnelSettings );
         settings.setTunnels( tunnels );
         setSettings( settings );
@@ -223,6 +240,68 @@ public class TunnelVpnApp extends AppBase
             } else logger.warn( "Unable to unload tunnel-vpn web app" );
         }
         isWebAppDeployed = false;
+    }
+
+    private class TunnelUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "tunnel_vpn";
+        }
+
+        @Override
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            if (fileItem == null) {
+                logger.info( "UploadTunnel is missing the file." );
+                return new ExecManagerResult(1, "UploadTunnel is missing the file.");
+            }
+            InputStream inputStream = fileItem.getInputStream();
+            if ( inputStream == null ) {
+                logger.info( "UploadTunnel is missing the file." );
+                return new ExecManagerResult(1, "UploadTunnel is missing the file.");
+            }
+
+            logger.info("Uploaded new tunnel config: " + fileItem.getName() + " " + argument );
+            
+            /* Write out the file. */
+            File temp = null;
+            OutputStream outputStream = null;
+            try {
+                temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
+                temp.deleteOnExit();
+                outputStream = new FileOutputStream( temp );
+            
+                byte[] data = new byte[1024];
+                int len = 0;
+                while (( len = inputStream.read( data )) > 0 ) outputStream.write( data, 0, len );
+            } catch ( IOException e ) {
+                logger.warn( "Unable to validate client file.", e  );
+                return new ExecManagerResult(1, e.getMessage());
+            } finally {
+                try {
+                    if ( outputStream != null ) outputStream.close();
+                } catch ( Exception e ) {
+                    logger.warn( "Error closing output stream", e );
+                }
+
+                try {
+                    if ( inputStream != null ) inputStream.close();
+                } catch ( Exception e ) {
+                    logger.warn( "Error closing input stream", e );
+                }
+            }
+
+            try {
+                importTunnelConfig( temp.getPath() );
+            } catch ( Exception e ) {
+                logger.warn( "Unable to install the client configuration", e );
+                return new ExecManagerResult(1, e.getMessage());
+            }
+            
+            return new ExecManagerResult(0, fileItem.getName());
+        }
     }
     
 }
