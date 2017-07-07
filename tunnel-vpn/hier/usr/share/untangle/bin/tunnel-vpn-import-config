@@ -2,75 +2,45 @@
 
 # 
 # This script imports a config file containing the necessary configuration to connect to a remote server
-# It stores the files in settings, TunnelVpnManager will later copy them into place
+# It stores the files in settings
 #
 
 filename="${1}"
+provider="${2}"
+tunnel_id="${3}"
 destination=`mktemp || -3`
 
 cleanup()
 {
-    if [ ! -z ${TMPDIR} ] ; then
-        rm -rf ${TMPDIR};  
-    fi
-    exit -1
+#    if [ -d ${TMPDIR} ] ; then
+#        rm -rf ${TMPDIR};  
+#    fi
+    exit $1
 }
 
 if [ ! -f "${filename}" ]; then
     echo "Unable to find the file: ${filename}"
-    exit -1
+    cleanup 1
 fi
 
 TMPDIR=`mktemp -d || exit -3`
-
 unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
 
-CONFNAME="`ls ${TMPDIR}/untangle-vpn/*.conf`"
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
 
-if [ -z "$CONFNAME" ] ; then
-    echo "Missing conf file"
-    exit -1
+if [ "$provider" == "Untangle" ] ; then
+    CONF_FILE="`ls ${TMPDIR}/untangle-vpn/*.conf`"
+    if [ ! -f $CONF_FILE ] ; then
+        echo "Unknown format: Missing conf file"
+        cleanup 1
+    fi
+
+    cp -Pf $CONF_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    cp -Pf ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
+else     
+    echo "Unknown provider: $provider"
+    cleanup 1
 fi
 
-TUNNELNAME="`basename $CONFNAME | sed -e 's/.conf//'`"
-
-# echo sitename to stdout
-# This is important because the java code launching this script
-# will use this to determine the site name. Do not remove.
-echo "TunnelName: ${TUNNELNAME}" 
-
-if [ -z "$TUNNELNAME" ] ; then
-    echo "Missing site name"
-    exit -1
-fi
-
-## Copy in the necessary files
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/keys/
-
-CONF_FILE="@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/${TUNNELNAME}.conf"
-
-cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
-
-if [ $? != 0 ] ; then
-    echo "Copy failed"
-    cleanup
-fi
-
-if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
-    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/keys/
-fi
-
-if [ $? != 0 ] ; then
-    echo "Key Copy failed"
-    echo ${TMPDIR}
-    exit
-    cleanup
-fi
-
-## Cleanup
-rm -rf ${TMPDIR}
-
-echo "New configuration imported: ${CONF_FILE}"
-
-true
+cleanup 0
