@@ -238,13 +238,24 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     massageRecordIn: function(record){
         // breakout class record
+        var me = this;
         var conditions = record.get('conditions');
+        var classCondition = null;
         conditions.list.forEach( function(condition){
             if(condition.field == 'class'){
                 record.set( 'class', condition.fieldValue.substring(1, condition.fieldValue.length - 1) );
-                record.set( '_classCondition', conditions.list.splice(conditions.list.indexOf(condition), 1)[0] );
+                classCondition = condition;
+            }
+            if( me.getClassFieldType(record.get('class'), condition.field) == 'boolean') {
+                if (condition.fieldValue == 'false' ){
+                    condition.comparator = '!=';
+                    condition.fieldValue = 'true';
+                }
             }
         });
+        if(classCondition != null){
+            record.set( '_classCondition', conditions.list.splice(conditions.list.indexOf(classCondition), 1)[0] );
+        }
         if(!record.get('class')){
             record.set('class', 'All');
         }
@@ -252,6 +263,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     },
 
     massageRecordOut: function(record, store){
+        var me = this;
         var conditionsList = Ext.Array.pluck( store.getRange(), 'data' );
         if(record.get('class') == 'All'){
             conditionsList = [];
@@ -264,6 +276,14 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         conditionsList.forEach( function(condition){
             if( typeof(condition.fieldValue) != 'string' ){
                 condition.fieldValue = condition.fieldValue.toString();
+            }
+            if(me.getClassFieldType(record.get('class'), condition.field) == 'boolean') {
+                if( condition.comparator == '!=' ) {
+                    condition.comparator = '=';
+                    condition.fieldValue = 'false';
+                }else{
+                    condition.fieldValue = 'true';                    
+                }
             }
         });
 
@@ -661,6 +681,28 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         return fieldType;
     },
 
+    getClassFieldType: function(className, fieldName){
+        var me = this,
+            vm = this.getViewModel(),
+            type = null,
+            classes = vm.get('classFields');
+
+        for( var classesClassName in  classes ){
+            if( classesClassName == className ){
+                classes[classesClassName].fields.forEach( function(field){
+                    if(field.name == fieldName){
+                        if( field.values ){
+                            type = 'enum';
+                        }else{
+                            type = field.type;
+                        }
+                    }
+                });
+            }
+        }
+        return type;
+    },
+
     comparatorFieldStores: {},
     buildComperatorFieldStore: function( type ){
 
@@ -704,19 +746,19 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var classes = vm.get('classFields');
 
         var type = null;
-            for( var classesClassName in  classes ){
-                if( classesClassName == className ){
-                    classes[classesClassName].fields.forEach( function(field){
-                        if(field.name == record.get('field')){
-                            if( field.values ){
-                                type = 'enum';
-                            }else{
-                                type = field.type;
-                            }
+        for( var classesClassName in  classes ){
+            if( classesClassName == className ){
+                classes[classesClassName].fields.forEach( function(field){
+                    if(field.name == record.get('field')){
+                        if( field.values ){
+                            type = 'enum';
+                        }else{
+                            type = field.type;
                         }
-                    });
-                }
+                    }
+                });
             }
+        }
 
         container.setStore( this.buildComperatorFieldStore( type ) );
     },
