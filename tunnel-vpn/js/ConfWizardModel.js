@@ -10,6 +10,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
             set: function (val) {
                 var details = this.get('providerConfigs')[val];
 
+                this.set('provider', val);
                 this.set('providerName', details.providerName);
                 this.set('providerTitle', details.providerTitle);
                 this.set('providerInstructions', details.providerInstructions);
@@ -18,7 +19,10 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
     },
     
     data: {
-        selectedConf: null,
+        provider: null,
+        providerName: null,
+        providerTitle: null,
+        providerInstructions: null,
 
         providerConfigs: {
             Untangle: {

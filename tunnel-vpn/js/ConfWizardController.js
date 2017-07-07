@@ -59,28 +59,24 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
     },
 
     uploadFile: function(cmp) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
-        var file = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
+        var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
         if ( file == null || file.length === 0 ) {
             Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
             return;
-        }
-        Ext.MessageBox.wait("Uploading File...".t(), "Please Wait".t());
+            }
         form.submit({
-            url: "/tunnel-vpn/uploadConfig",
+            url: "upload",
             success: Ext.bind(function( form, action ) {
-                Ext.MessageBox.hide();
-                Ext.MessageBox.alert('Success'.t(), 'The configuration has been imported.'.t());
-                me.getSettings();
+                Ext.MessageBox.alert('Custom Page Upload Success'.t(), action.result.msg);
+                this.getViewModel().set('settings.customFilename', action.result.msg);
+                this.setSettings();
             }, this),
             failure: Ext.bind(function( form, action ) {
-                Ext.MessageBox.hide();
-                Ext.MessageBox.alert('Failure'.t(), 'Import failure'.t() + ": " + action.result.code);
+                Ext.MessageBox.alert('Custom Page Upload Failure'.t(), action.result.msg);
             }, this)
         });
     },
-
     
     onFinish: function () {
         // fire finish event to reload settings ant try to start app
