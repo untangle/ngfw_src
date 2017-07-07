@@ -32,23 +32,23 @@ if [ -z "$CONFNAME" ] ; then
     exit -1
 fi
 
-SITENAME="`basename $CONFNAME | sed -e 's/.conf//'`"
+TUNNELNAME="`basename $CONFNAME | sed -e 's/.conf//'`"
 
 # echo sitename to stdout
 # This is important because the java code launching this script
 # will use this to determine the site name. Do not remove.
-echo "SiteName: ${SITENAME}" 
+echo "TunnelName: ${TUNNELNAME}" 
 
-if [ -z "$SITENAME" ] ; then
+if [ -z "$TUNNELNAME" ] ; then
     echo "Missing site name"
     exit -1
 fi
 
 ## Copy in the necessary files
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/keys/
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/keys/
 
-CONF_FILE="@PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/${SITENAME}.conf"
+CONF_FILE="@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/${TUNNELNAME}.conf"
 
 cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
 
@@ -57,17 +57,8 @@ if [ $? != 0 ] ; then
     cleanup
 fi
 
-# copy keys 
-# "untangle-vpn" was the key directory name in 9.4 and prior
-# keep this to maintain backwards compatibility with 9.4 and prior
-if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
-    echo "${TMPDIR}/untangle-vpn/untangle-vpn exists"
-    mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/untangle-vpn/
-    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/untangle-vpn/
-fi
-
 if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
-    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/keys/
+    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnels/keys/
 fi
 
 if [ $? != 0 ] ; then
