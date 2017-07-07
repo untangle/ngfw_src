@@ -9,8 +9,9 @@ var rpc = {}; // global rpc object
 
     initRpc: function () {
         // initialize rpc;
+        var startUpInfo;
         rpc = new JSONRpcClient('/admin/JSON-RPC');
-        try { var startUpInfo = rpc.UvmContext.getWebuiStartupInfo(); } catch (ex) { alert(ex); }
+        try { startUpInfo = rpc.UvmContext.getWebuiStartupInfo(); } catch (ex) { alert(ex); }
         Ext.apply(rpc, startUpInfo);
     },
 
@@ -63,6 +64,39 @@ var rpc = {}; // global rpc object
 
         // IMPORTANT! override the default models ext idProperty so it does not interfere with backend 'id'
         Ext.data.Model.prototype.idProperty = '_id';
+
+        // add default onRejected handler to then function of promises
+        Ext.promise.Promise.prototype.then = function (onFulfilled, onRejected, onProgress, scope) {
+            var ref;
+
+            if (arguments.length === 1 && Ext.isObject(arguments[0])) {
+                ref = arguments[0];
+                onFulfilled = ref.success;
+                onRejected = ref.failure;
+                onProgress = ref.progress;
+                scope = ref.scope;
+            }
+
+            if (scope) {
+                if (onFulfilled) {
+                    onFulfilled = Ext.Function.bind(onFulfilled, scope);
+                }
+
+                if (onRejected) {
+                    onRejected = Ext.Function.bind(onRejected, scope);
+                }
+
+                if (onProgress) {
+                    onProgress = Ext.Function.bind(onProgress, scope);
+                }
+            }
+
+            return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex) {
+                console.log(ex);
+                Util.handleException(ex);
+            throw ex;
+            });
+        };
 
         // load script dependencies after all initializations
         var fns = [];
