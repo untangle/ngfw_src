@@ -31,6 +31,7 @@ public class UrlRewriter
         safeSearchRewrites.put(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "adt=0");
         safeSearchRewrites.put(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "adlt=strict");
         safeSearchRewrites.put(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/.+p=.*"), "vm=r");
+        safeSearchRewrites.put(Pattern.compile(".*duckduckgo\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "kp=1"); // strict // https://duck.co/help/features/safe-search
     };
 
     private static final Map<Pattern, String> youtubeForSchoolsRewrites;
