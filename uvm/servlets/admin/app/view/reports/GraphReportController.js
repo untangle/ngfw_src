@@ -657,7 +657,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     formatter: function() {
                         var finalVal = this.value;
 
-                        if (entry.get('units') === 'bytes/s') {
+                        if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
                             finalVal = Util.bytesToHumanReadable(this.value, true);
                             /*
                             if (this.isLast) {

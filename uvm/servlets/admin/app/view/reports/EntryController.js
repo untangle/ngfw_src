@@ -231,11 +231,19 @@ Ext.define('Ung.view.reports.EntryController', {
         dataGrid.setColumns([{
             dataIndex: entry.get('pieGroupColumn'),
             header: me.sqlColumnRenderer(entry.get('pieGroupColumn')),
-            flex: 1
+            flex: 1,
+            renderer: Renderer[entry.get('pieGroupColumn')] || null
         }, {
             dataIndex: 'value',
             header: 'value'.t(),
-            width: 200
+            width: 200,
+            renderer: function (value) {
+                if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
+                    return Util.bytesToHumanReadable(value, true);
+                } else {
+                    return value;
+                }
+            }
         }, {
             xtype: 'actioncolumn',
             menuDisabled: true,
