@@ -83,7 +83,24 @@ public class TunnelVpnManager
 
     private void writeIptablesFiles( TunnelVpnSettings settings )
     {
-        logger.warn("FIXME");
+        try {
+            logger.info( "Writing File: " + IPTABLES_SCRIPT );
+
+            FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
+
+            iptablesScript.write("#!/bin/dash" + "\n");
+            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
+            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
+            iptablesScript.write("\n\n");
+            iptablesScript.close();
+
+            UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
+
+            return;
+
+        } catch ( java.io.IOException exc ) {
+            logger.error( "Error writing iptables script", exc );
+        }
     }
 
     private void writeTunnelConfig( TunnelVpnTunnelSettings settings )
