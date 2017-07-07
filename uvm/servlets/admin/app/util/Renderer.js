@@ -79,7 +79,7 @@ Ext.define('Ung.util.Renderer', {
         return Ext.util.Format.date( date, 'timestamp_fmt'.t());
     },
 
-    interface: function (value) {
+    interface_id: function (value) {
         if (!Ung.util.Renderer.interfaceMap) {
             // this.buildInterfaceMap();
             var interfacesList = [], i;
