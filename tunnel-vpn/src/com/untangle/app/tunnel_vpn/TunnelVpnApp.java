@@ -3,7 +3,6 @@
  */
 package com.untangle.app.tunnel_vpn;
 
-import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.InputStream;
@@ -24,7 +23,6 @@ import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Protocol;
@@ -36,12 +34,10 @@ public class TunnelVpnApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String IMPORT_CLIENT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import-config";
-    
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
     private TunnelVpnSettings settings = null;
-    private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager();
+    private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager(this);
     
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
@@ -91,6 +87,13 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
+        this.tunnelVpnManager.launchProcesses();
+    }
+
+    @Override
+    protected void preStop( boolean isPermanentTransition )
+    {
+        this.tunnelVpnManager.killProcesses();
     }
 
     @Override
@@ -145,71 +148,6 @@ public class TunnelVpnApp extends AppBase
 
         setSettings(settings);
     }
-
-    public synchronized void importTunnelConfig( String filename, String provider )
-    {
-        if (filename==null || provider==null) {
-            logger.warn("Invalid arguments");
-            throw new RuntimeException("Invalid Arguments");
-        }
-        
-        int tunnelId = findLowestAvailableTunnelId( settings );
-
-        if (tunnelId < 1) {
-            logger.warn("Failed to find available tunnel ID");
-            throw new RuntimeException("Failed to find available tunnel ID");
-        }
-        
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\" " + provider + " " + tunnelId);
-
-        String tunnelName = "tunnelName-" + (new Random().nextInt(10000));
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info( IMPORT_CLIENT_SCRIPT + ": ");
-            for ( String line : lines ) {
-                logger.info( IMPORT_CLIENT_SCRIPT + ": " + line);
-
-                // FIXME this should output JSON or something
-                // FIXME
-                if (line.contains("TunnelName: ")) {
-                    String[] tokens = line.split(" ");
-                    if (tokens.length > 1)
-                        tunnelName = tokens[1];
-                }
-            }
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to import client config");
-        }
-
-        /**
-         * Add a new server in settings, if it does not exist
-         */
-        TunnelVpnSettings settings = getSettings();
-        List<TunnelVpnTunnelSettings> tunnels = settings.getTunnels();
-        for ( TunnelVpnTunnelSettings tunnelSettings : tunnels ) {
-            if (tunnelName.equals(tunnelSettings.getName()))
-                return;
-        }
-        TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
-        tunnelSettings.setName( tunnelName );
-        tunnelSettings.setEnabled( true );
-        tunnelSettings.setAllTraffic( false );
-        tunnelSettings.setHosts( new LinkedList<IPMatcher>() );
-        tunnelSettings.setTags( new LinkedList<String>() );
-        tunnelSettings.setTunnelId( tunnelId );
-        
-        tunnels.add( tunnelSettings );
-        settings.setTunnels( tunnels );
-        setSettings( settings );
-
-        this.tunnelVpnManager.configure( this.settings );
-        this.tunnelVpnManager.restart();
-        
-        return;
-    }
     
     private TunnelVpnSettings getDefaultSettings()
     {
@@ -225,27 +163,6 @@ public class TunnelVpnApp extends AppBase
         logger.info("Reconfigure()");
     }
 
-    private int findLowestAvailableTunnelId( TunnelVpnSettings settings )
-    {
-        if ( settings.getTunnels() == null )
-            return 1;
-
-        for (int i=1; i<100; i++) {
-            boolean found = false;
-            for (TunnelVpnTunnelSettings tunnelSettings: settings.getTunnels()) {
-                if ( tunnelSettings.getTunnelId() != null && i == tunnelSettings.getTunnelId() ) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                return i;
-        }
-
-        logger.error("Failed to find available tunnel ID");
-        return -1;
-    }
-    
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override
@@ -298,7 +215,7 @@ public class TunnelVpnApp extends AppBase
             }
 
             try {
-                importTunnelConfig( temp.getPath(), argument );
+                tunnelVpnManager.importTunnelConfig( temp.getPath(), argument );
             } catch ( Exception e ) {
                 logger.warn( "Unable to install the client configuration", e );
                 return new ExecManagerResult(1, e.getMessage());
@@ -307,5 +224,4 @@ public class TunnelVpnApp extends AppBase
             return new ExecManagerResult(0, fileItem.getName());
         }
     }
-    
 }

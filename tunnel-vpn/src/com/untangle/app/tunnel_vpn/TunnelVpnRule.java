@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.network;
+package com.untangle.app.tunnel_vpn;
 
 import java.util.List;
 import java.io.Serializable;
@@ -12,38 +12,37 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 /**
- * This in the implementation of a Filter Rule
+ * This in the implementation of a TunnelVpn Rule
  *
- * A rule is basically a collection of FilterRuleConditions (conditions)
- * and what to do if the conditions match (block, log, etc)
+ * A rule is basically a collection of TunnelVpnRuleConditions
+ * and what to do if the conditions match
  */
 @SuppressWarnings("serial")
-public class FilterRule implements JSONString, Serializable
+public class TunnelVpnRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<FilterRuleCondition> conditions;
+    private List<TunnelVpnRuleCondition> conditions;
 
     private Integer ruleId;
     private boolean enabled = true;
     private boolean ipv6Enabled = true;
-    private boolean blocked = false;
-    private Boolean readOnly = null;
+    private int tunnelId = -1;
     private String description;
     
-    public FilterRule() { }
+    public TunnelVpnRule() { }
 
-    public FilterRule(boolean enabled, boolean ipv6Enabled, List<FilterRuleCondition> conditions, boolean blocked, String description)
+    public TunnelVpnRule(boolean enabled, boolean ipv6Enabled, List<TunnelVpnRuleCondition> conditions, int tunnelId, String description)
     {
         this.setConditions(conditions);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setIpv6Enabled(Boolean.valueOf(ipv6Enabled));
-        this.setBlocked(blocked);
+        this.setTunnelId(tunnelId);
         this.setDescription(description);
     }
     
-    public List<FilterRuleCondition> getConditions() { return this.conditions; }
-    public void setConditions( List<FilterRuleCondition> conditions ) { this.conditions = conditions; }
+    public List<TunnelVpnRuleCondition> getConditions() { return this.conditions; }
+    public void setConditions( List<TunnelVpnRuleCondition> conditions ) { this.conditions = conditions; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }
@@ -57,12 +56,9 @@ public class FilterRule implements JSONString, Serializable
     public String getDescription() { return description; }
     public void setDescription( String description ) { this.description = description; }
 
-    public boolean getBlocked() { return blocked; }
-    public void setBlocked( boolean newDestination ) { this.blocked = newDestination; }
+    public int getTunnelId() { return tunnelId; }
+    public void setTunnelId( int newDestination ) { this.tunnelId = newDestination; }
 
-    public Boolean getReadOnly() { return this.readOnly; }
-    public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
-    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

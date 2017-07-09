@@ -4,12 +4,11 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
 
-    requires: [
-        'Ung.cmp.LicenseLoader'
-    ],
+    viewModel: true,
 
+    layout: 'border',
     items: [{
-        title: 'Status'.t(),
+        region: 'center',
         border: false,
         bodyPadding: 10,
         scrollable: 'y',
@@ -26,8 +25,24 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                 hidden: '{!license || !license.trial}'
             }
         }, {
-            xtype: 'appremove'
+            xtype: 'appstate',
+        }, {
+            xtype: 'appreports'
+        }]
+    }, {
+        region: 'west',
+        border: false,
+        width: 350,
+        minWidth: 300,
+        split: true,
+        layout: 'border',
+        items: [{
+            xtype: 'appmetrics',
+            region: 'center'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
-
 });
