@@ -18,7 +18,6 @@ public class TunnelVpnTunnelSettings implements java.io.Serializable
 
     private boolean allTraffic = false;
     private List<String> tags = new LinkedList<String>();
-    private List<IPMatcher> hosts = new LinkedList<IPMatcher>();
     
     public TunnelVpnTunnelSettings() {}
 
@@ -36,7 +35,4 @@ public class TunnelVpnTunnelSettings implements java.io.Serializable
 
     public List<String> getTags() { return tags; }
     public void setTags(List<String> newValue) { tags = newValue; }
-
-    public List<IPMatcher> getHosts() { return hosts; }
-    public void setHosts(List<IPMatcher> newValue) { hosts = newValue; }
 }
