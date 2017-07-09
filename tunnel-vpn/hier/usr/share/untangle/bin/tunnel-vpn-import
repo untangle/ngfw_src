@@ -12,10 +12,19 @@ destination=`mktemp || -3`
 
 cleanup()
 {
-#    if [ -d ${TMPDIR} ] ; then
-#        rm -rf ${TMPDIR};  
-#    fi
+    if [ -d ${TMPDIR} ] ; then
+        rm -rf ${TMPDIR};  
+    fi
     exit $1
+}
+
+setOption()
+{
+    if [ -z "`/bin/egrep \"^$1\" $3`" ] ; then
+        echo "$1 $2" >> $3
+    else
+        sed -e "s/^$1[[:space:]]*.*/$1 $2/" -i $3
+    fi
 }
 
 if [ ! -f "${filename}" ]; then
@@ -36,8 +45,12 @@ if [ "$provider" == "Untangle" ] ; then
         cleanup 1
     fi
 
+    # Copy file into place
     cp -Pf $CONF_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
     cp -Pf ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
+
+    # Specify device explicitly
+    setOption "dev" "tun${tunnel_id}" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
 else     
     echo "Unknown provider: $provider"
     cleanup 1
