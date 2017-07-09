@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
+import java.io.FilenameFilter;
+import java.io.File;
+import java.nio.file.Files;
 
 import org.apache.log4j.Logger;
 
@@ -36,14 +40,52 @@ public class TunnelVpnManager
     private static final String TUNNEL_START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/tunnel-start";
     private static final String TUNNEL_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/tunnel-stop";
     private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/730-tunnelvpn";
+    private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
+    private static final String LAUNCH_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-launch";
 
-    protected TunnelVpnManager() { }
-
-    protected void restart()
+    private final TunnelVpnApp app;
+    
+    protected TunnelVpnManager(TunnelVpnApp app)
     {
-        logger.warn("FIXME");
+        this.app = app;
+    }
 
-        insertIptablesRules();
+    protected synchronized void restartProcesses()
+    {
+        killProcesses();
+        launchProcesses();
+    }
+
+    protected synchronized void killProcesses()
+    {
+        logger.info("Killing OpenVPN processes...");
+        try {
+            File dir = new File("/run/openvpn/");
+            File[] matchingFiles = dir.listFiles(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return name.startsWith("tunnel-") && name.endsWith("pid");
+                    }
+                });        
+            for(File f: matchingFiles) {
+                String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)","");
+                logger.info("Killing OpenVPN process: " + pid);
+                UvmContextFactory.context().execManager().execOutput("kill " + pid);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to kill processes",e);
+        }
+        
+        //FIXME check that the PID files are gone
+        //FIXME check that the processes are dead
+    }
+    
+    protected synchronized void launchProcesses()
+    {
+        for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
+            int tunnelId = tunnelSettings.getTunnelId();
+            String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec( LAUNCH_SCRIPT + " " + tunnelSettings.getTunnelId() + " " + directory);
+        }
     }
 
     protected void stop()
@@ -53,11 +95,91 @@ public class TunnelVpnManager
         removeIptablesRules();
     }
 
-    protected void configure( TunnelVpnSettings settings )
+    
+    protected synchronized void importTunnelConfig( String filename, String provider )
     {
+        if (filename==null || provider==null) {
+            logger.warn("Invalid arguments");
+            throw new RuntimeException("Invalid Arguments");
+        }
+        
+        TunnelVpnSettings settings = app.getSettings();
+        int tunnelId = findLowestAvailableTunnelId( settings );
+        String tunnelName = "tunnel-" + provider + "-" + tunnelId;
+        
+        if (tunnelId < 1) {
+            logger.warn("Failed to find available tunnel ID");
+            throw new RuntimeException("Failed to find available tunnel ID");
+        }
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_SCRIPT + " \""  + filename + "\" " + provider + " " + tunnelId);
+
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( IMPORT_SCRIPT + ": ");
+            for ( String line : lines ) {
+                logger.info( IMPORT_SCRIPT + ": " + line);
+            }
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to import client config");
+        }
+
+        List<TunnelVpnTunnelSettings> tunnels = settings.getTunnels();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
+
+        /**
+         * Sanity checks
+         */
+        for ( TunnelVpnTunnelSettings tunnelSettings : tunnels ) {
+            if (tunnelId == tunnelSettings.getTunnelId()) {
+                logger.error("Tunnel ID conflict: " + tunnelId);
+                throw new RuntimeException("Tunnel ID conflict: " + tunnelId);
+            }
+        }
+        for ( InterfaceSettings virtualInterfaceSettings : virtualInterfaces ) {
+            if (tunnelId == virtualInterfaceSettings.getInterfaceId()) {
+                logger.error("Tunnel ID conflict: " + tunnelId);
+                throw new RuntimeException("Tunnel ID conflict: " + tunnelId);
+            }
+        }
+
+        /**
+         * Set TunnelVPN settings
+         */
+        TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
+        tunnelSettings.setName( tunnelName );
+        tunnelSettings.setEnabled( true );
+        tunnelSettings.setAllTraffic( false );
+        tunnelSettings.setTags( new LinkedList<String>() );
+        tunnelSettings.setTunnelId( tunnelId );
+        tunnels.add( tunnelSettings );
+        settings.setTunnels( tunnels );
+        app.setSettings( settings );
+
         writeIptablesFiles( settings );
-        for ( TunnelVpnTunnelSettings tunnelSettings : settings.getTunnels() )
-            writeTunnelConfig( tunnelSettings );
+
+        /**
+         * Set Network Settings (add new virtual interface)
+         */
+        InterfaceSettings virtualIntf = new InterfaceSettings(tunnelId,tunnelName);
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(true);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+        
+        restartProcesses();
+        
+        return;
     }
 
     private void writeFile( String fileName, StringBuilder sb )
@@ -103,11 +225,6 @@ public class TunnelVpnManager
         }
     }
 
-    private void writeTunnelConfig( TunnelVpnTunnelSettings settings )
-    {
-        logger.warn("FIXME");
-    }
-    
     /**
      * Inserts iptables rules
      */
@@ -133,5 +250,26 @@ public class TunnelVpnManager
     private synchronized void removeIptablesRules()
     {
         logger.warn("FIXME");
+    }
+
+    private int findLowestAvailableTunnelId( TunnelVpnSettings settings )
+    {
+        if ( settings.getTunnels() == null )
+            return 1;
+
+        for (int i=200; i<240; i++) {
+            boolean found = false;
+            for (TunnelVpnTunnelSettings tunnelSettings: settings.getTunnels()) {
+                if ( tunnelSettings.getTunnelId() != null && i == tunnelSettings.getTunnelId() ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return i;
+        }
+
+        logger.error("Failed to find available tunnel ID");
+        return -1;
     }
 }
