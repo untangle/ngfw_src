@@ -5,6 +5,9 @@ package com.untangle.app.tunnel_vpn;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +32,8 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 
 public class TunnelVpnApp extends AppBase
 {
@@ -69,7 +74,56 @@ public class TunnelVpnApp extends AppBase
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-        this.reconfigure();
+
+        /**
+         * Synchronize settings with NetworkSettings
+         * 1) Any tunnel interfaces that exists that aren't in network settings should be added
+         * 2) Any tunnel interfaces that exist in network settings but not in tunnel VPN
+         *    because they have been removed should be removed from network settins
+         */
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
+
+        List<TunnelVpnTunnelSettings> missing = findTunnelsMissingFromNetworkSettings();
+        if (missing.size() > 0) {
+            for( TunnelVpnTunnelSettings tunnelSettings : missing ) {
+                /**
+                 * Set Network Settings (add new virtual interface)
+                 */
+                InterfaceSettings virtualIntf = new InterfaceSettings(tunnelSettings.getTunnelId(),tunnelSettings.getName());
+                virtualIntf.setIsVirtualInterface(true);
+                virtualIntf.setIsWan(true);
+                virtualIntf.setConfigType(null);
+                virtualIntf.setV4ConfigType(null);
+                virtualIntf.setV4Aliases(null);
+                virtualIntf.setV6ConfigType(null);
+                virtualIntf.setV6Aliases(null);
+                virtualIntf.setVrrpAliases(null);
+                virtualInterfaces.add(virtualIntf);
+                logger.info("Adding new virtual interface: " + tunnelSettings.getTunnelId() + " " + tunnelSettings.getName());
+
+            }
+            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+        }
+        List<InterfaceSettings> extra = findExtraVirtualInterfaces();
+        if (extra.size() > 0) {
+            for (Iterator<InterfaceSettings> i = virtualInterfaces.iterator(); i.hasNext();) {
+                InterfaceSettings virtualIntf = i.next();
+                Optional<InterfaceSettings> is = extra.stream().filter(x -> x.getInterfaceId() == virtualIntf.getInterfaceId()).findFirst();
+                if(is.isPresent()) {
+                    logger.info("Removing unused virtual interface: " + virtualIntf.getInterfaceId() + " " + virtualIntf.getName());
+                    i.remove();
+                }
+            }
+            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+        }
+
+        /**
+         * Write the external resources & scripts
+         */
+        this.tunnelVpnManager.writeIptablesFiles( settings );
+        if(this.getRunState() == AppSettings.AppState.RUNNING)
+            this.tunnelVpnManager.restartProcesses();
     }
 
     @Override
@@ -81,7 +135,6 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        this.reconfigure();
     }
 
     @Override
@@ -136,8 +189,6 @@ public class TunnelVpnApp extends AppBase
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-
-        this.reconfigure();
     }
 
     public void initializeSettings()
@@ -158,11 +209,53 @@ public class TunnelVpnApp extends AppBase
         return settings;
     }
 
-    private void reconfigure() 
+    /**
+     * This finds all the tunnels that do not have corresponding virtual interfaces
+     * in the current network settings.
+     *
+     * @returns a list of the tunnels missing virtual interfaces (never null)
+     */
+    private List<TunnelVpnTunnelSettings> findTunnelsMissingFromNetworkSettings()
     {
-        logger.info("Reconfigure()");
+        List<TunnelVpnTunnelSettings> missing = new LinkedList<TunnelVpnTunnelSettings>();
+
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
+
+        for(TunnelVpnTunnelSettings tunnelSettings : settings.getTunnels()) {
+            Optional<InterfaceSettings> is = virtualInterfaces.stream().filter(x -> x.getInterfaceId() == tunnelSettings.getTunnelId()).findFirst();
+            if(!is.isPresent()) {
+                missing.add(tunnelSettings);
+            }
+        }
+        return missing;
     }
 
+    /**
+     * This finds all the tunnel virtual interfaces in the current network settings
+     * That do not have corresponding tunnel settings in the tunnel VPN settings
+     *
+     * @returns a list of the extra virtual interfaces (never null)
+     */
+    private List<InterfaceSettings> findExtraVirtualInterfaces()
+    {
+        List<InterfaceSettings> extra = new LinkedList<InterfaceSettings>();
+
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
+
+        for(InterfaceSettings interfaceSetings : virtualInterfaces) {
+            if ( !interfaceSetings.getIsWan() ) //ignore all the non-wan virtual interfaces (openvpn, ipsec, etc)
+                continue;
+            Optional<TunnelVpnTunnelSettings> is = settings.getTunnels().stream().filter(x -> x.getTunnelId() == interfaceSetings.getInterfaceId()).findFirst();
+            if(!is.isPresent()) {
+                extra.add(interfaceSetings);
+            }
+        }
+        
+        return extra;
+    }
+        
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override

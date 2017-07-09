@@ -69,7 +69,7 @@ public class TunnelVpnManager
             for(File f: matchingFiles) {
                 String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)","");
                 logger.info("Killing OpenVPN process: " + pid);
-                UvmContextFactory.context().execManager().execOutput("kill " + pid);
+                UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
             }
         } catch (Exception e) {
             logger.warn("Failed to kill processes",e);
@@ -77,10 +77,14 @@ public class TunnelVpnManager
         
         //FIXME check that the PID files are gone
         //FIXME check that the processes are dead
+
+        removeIptablesRules();
     }
     
     protected synchronized void launchProcesses()
     {
+        insertIptablesRules();        
+
         for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
             int tunnelId = tunnelSettings.getTunnelId();
             String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
@@ -88,13 +92,27 @@ public class TunnelVpnManager
         }
     }
 
-    protected void stop()
+    protected void writeIptablesFiles( TunnelVpnSettings settings )
     {
-        logger.warn("FIXME");
+        try {
+            logger.info( "Writing File: " + IPTABLES_SCRIPT );
 
-        removeIptablesRules();
+            FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
+
+            iptablesScript.write("#!/bin/dash" + "\n");
+            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
+            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
+            iptablesScript.write("\n\n");
+            iptablesScript.close();
+
+            UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
+
+            return;
+
+        } catch ( java.io.IOException exc ) {
+            logger.error( "Error writing iptables script", exc );
+        }
     }
-
     
     protected synchronized void importTunnelConfig( String filename, String provider )
     {
@@ -160,25 +178,6 @@ public class TunnelVpnManager
         settings.setTunnels( tunnels );
         app.setSettings( settings );
 
-        writeIptablesFiles( settings );
-
-        /**
-         * Set Network Settings (add new virtual interface)
-         */
-        InterfaceSettings virtualIntf = new InterfaceSettings(tunnelId,tunnelName);
-        virtualIntf.setIsVirtualInterface(true);
-        virtualIntf.setIsWan(true);
-        virtualIntf.setConfigType(null);
-        virtualIntf.setV4ConfigType(null);
-        virtualIntf.setV4Aliases(null);
-        virtualIntf.setV6ConfigType(null);
-        virtualIntf.setV6Aliases(null);
-        virtualIntf.setVrrpAliases(null);
-        virtualInterfaces.add(virtualIntf);
-        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
-        
-        restartProcesses();
-        
         return;
     }
 
@@ -201,28 +200,6 @@ public class TunnelVpnManager
             logger.error( "Unable to close file", ex );
         }
 
-    }
-
-    private void writeIptablesFiles( TunnelVpnSettings settings )
-    {
-        try {
-            logger.info( "Writing File: " + IPTABLES_SCRIPT );
-
-            FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
-
-            iptablesScript.write("#!/bin/dash" + "\n");
-            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
-            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
-            iptablesScript.write("\n\n");
-            iptablesScript.close();
-
-            UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
-
-            return;
-
-        } catch ( java.io.IOException exc ) {
-            logger.error( "Error writing iptables script", exc );
-        }
     }
 
     /**
