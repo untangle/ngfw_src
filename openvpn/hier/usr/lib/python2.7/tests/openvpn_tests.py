@@ -278,18 +278,18 @@ class OpenVpnTests(unittest2.TestCase):
                 print "vpn pool address: " + vpnPoolAddressIP
                 result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
         if result1 == 0:        
-            result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+            result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=vpnPoolAddressIP)
 
             # run a web request to internet and make sure it goes through web filter
             # webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
-            webresult = remote_control.run_command("wget -q --timeout=4 -O - http://www.playboy.com | grep -q blockpage", host=global_functions.vpnClientVpnIP)
+            webresult = remote_control.run_command("wget -q --timeout=4 -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
 
             print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
         else:
             print "No VPN IP address found"
         # Shutdown VPN on both sides.
         # remote_control.run_command("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=vpnPoolAddressIP)
         time.sleep(3) # openvpn takes time to shut down
 
         appData['remoteClients']['list'][:] = []  
