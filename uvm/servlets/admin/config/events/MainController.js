@@ -247,7 +247,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 classCondition = condition;
             }
             if( me.getClassFieldType(record.get('class'), condition.field) == 'boolean') {
-                if (condition.fieldValue == 'false' ){
+                if (condition.fieldValue == 'false' || condition.fieldValue == "False" ){
                     condition.comparator = '!=';
                     condition.fieldValue = 'true';
                 }
@@ -280,9 +280,9 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             if(me.getClassFieldType(record.get('class'), condition.field) == 'boolean') {
                 if( condition.comparator == '!=' ) {
                     condition.comparator = '=';
-                    condition.fieldValue = 'false';
+                    condition.fieldValue = 'False';
                 }else{
-                    condition.fieldValue = 'true';                    
+                    condition.fieldValue = 'True';
                 }
             }
         });
@@ -700,7 +700,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 });
             }
         }
-        return type;
+        return type ? type.toLowerCase() : null;
     },
 
     comparatorFieldStores: {},
@@ -877,7 +877,13 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
             var condition;
             for(var i = 1; i < conditions.length; i++){
                 condition = conditions[i];
-                fieldSummary.push( condition.field + ' ' + '<strong>' + condition.comparator + ' <span class="cond-val">' + condition.fieldValue + '<span></strong>' );
+                var comparator = condition.comparator;
+                var fieldValue = condition.fieldValue;
+                if((fieldValue == "False" || fieldValue == "false") && comparator == "="){
+                    comparator = "!=";
+                    fieldValue = "True";
+                }
+                fieldSummary.push( condition.field + ' ' + '<strong>' + comparator + ' <span class="cond-val">' + fieldValue + '<span></strong>' );
             }
         }
 
