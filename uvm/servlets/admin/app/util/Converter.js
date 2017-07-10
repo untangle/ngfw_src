@@ -678,4 +678,8 @@ Ext.define('Ung.util.Converter', {
         return ( value in Converter.priorityMap ) ? Converter.priorityMap[value] : Converter.priorityMap['default'];
     },
 
+    sessionSpeed: function(value){
+        return Math.round(value * 10 )/ 10;
+    }
+
 });
