@@ -168,10 +168,19 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'serverLongitude',
         }, {
             name: 'clientKBps',
+            convert: Converter.sessionSpeed
         }, {
             name: 'serverKBps',
+            convert: Converter.sessionSpeed
         }, {
             name: 'totalKBps',
+            convert: function(value, record){
+                if ( record.data.serverKBps == null ||
+                     record.data.clientKBps == null ){
+                        return null;
+                }
+                return Converter.sessionSpeed(value);
+            }
         }, {
             name: "application-control-lite-protocol",
             type: 'string',
