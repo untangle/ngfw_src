@@ -114,6 +114,12 @@ insert_iptables_rules()
     # Queue all of the UDP packets.
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE --queue-num 1982 -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
+    # DROP all packets exiting the server with the source address of TUN_ADDR
+    # This happens whenever conntrack does not properly remap the reply packet from the redirect
+    # I have not been able to figure out the conditions in which this happens, but regardless its pointless to send a packet with this source address
+    # as the destination will simply ignore it
+    ${IPTABLES} -I queue-to-uvm -t tune -s ${TUN_ADDR} -j DROP -m comment --comment 'Drop unmapped packets leaving server'
+
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p icmp --icmp-type 3/4 -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route ICMP Unreachable Frag needed traffic to local"
