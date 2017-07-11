@@ -20,7 +20,6 @@ Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
         tbar: ['@addInline', '->', '@import', '@export'],
 
         recordActions: ['delete'],
-        listProperty: 'settings.passedClients.list',
 
         emptyRow: {
             enabled: true,
@@ -63,6 +62,7 @@ Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
         region: 'center',
         title: 'Pass Listed Client Addresses'.t(),
         bind: '{passedClients}',
+        listProperty: 'settings.passedClients.list',
         bbar: [{
             xtype: 'component',
             padding: 5,
@@ -77,6 +77,7 @@ Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
         height: '50%',
         title: 'Pass Listed Server Addresses'.t(),
         bind: '{passedServers}',
+        listProperty: 'settings.passedServers.list',
         bbar: [{
             xtype: 'component',
             padding: 5,
