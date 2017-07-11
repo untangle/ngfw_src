@@ -37,7 +37,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     protected static final String GOOGLE_CLIENT_ID = "271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com";
 
     protected static final String FACEBOOK_AUTH_HOST = "www.facebook.com";
-    protected static final String FACEBOOK_AUTH_PATH = "/dialog/oauth";
+    protected static final String FACEBOOK_AUTH_PATH = "/v2.9/dialog/oauth";
     protected static final String FACEBOOK_CLIENT_ID = "1840471182948119";
 
     protected static final String MICROSOFT_AUTH_HOST = "login.windows.net";
@@ -112,7 +112,21 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
             exauth.addParameter("response_type", "code");
             exauth.addParameter("scope", "email");
             exauth.addParameter("state", target.toString());
-            exauth.addParameter("response_mode", "form_post");
+            logger.debug("CLIENT REPLY = " + exauth.toString());
+            return (exauth.toString());
+        }
+
+        // if using Google authentication setup the authentication redirect
+        // and pass the target as the OAuth state
+        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
+            exauth.setScheme("https");
+            exauth.setHost(FACEBOOK_AUTH_HOST);
+            exauth.setPath(FACEBOOK_AUTH_PATH);
+            exauth.addParameter("client_id", FACEBOOK_CLIENT_ID);
+            exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
+            exauth.addParameter("response_type", "code");
+            exauth.addParameter("scope", "email");
+            exauth.addParameter("state", target.toString());
             logger.debug("CLIENT REPLY = " + exauth.toString());
             return (exauth.toString());
         }
