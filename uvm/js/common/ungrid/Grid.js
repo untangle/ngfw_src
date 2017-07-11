@@ -169,7 +169,7 @@ Ext.define('Ung.cmp.Grid', {
          */
         var viewConfig = {
             enableTextSelection: true,
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
+            // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
             stripeRows: false,
             getRowClass: function(record) {
                 if (record.get('markedForDelete')) {

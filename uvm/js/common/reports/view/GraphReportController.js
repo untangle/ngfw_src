@@ -95,7 +95,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 text: null
             },
 
-            lang: { noData: '<i class="fa fa-info-circle fa-lg"></i><br/>No data!' },
+            lang: { noData: '' },
             noData: {
                 position: {
                     verticalAlign: 'top',
