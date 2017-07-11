@@ -72,13 +72,7 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
         header: 'Interface'.t(),
         width: 100,
         dataIndex: 'interfaceId',
-        renderer: function(value, meta, record, row, col, store, grid) {
-            var parent = this.getView().up('#tests');
-            var wanlist = parent.getViewModel().get('wanStatusStore');
-            var ifname = 'Unknown'.t();
-            wanlist.each(function(record) { if (record.get('interfaceId') == value) ifname = record.get('interfaceName'); });
-            return(ifname);
-            }
+        renderer: Ung.util.Renderer.interface
     }, {
         header: 'Test Type'.t(),
         width: 100,

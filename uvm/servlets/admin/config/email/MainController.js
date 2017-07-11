@@ -240,8 +240,9 @@ Ext.define('Ung.config.email.MainController', {
         me.dialog = me.getView().add({
             xtype: 'window',
             title: 'Email Quarantine Details for:'.t() + ' ' + record.get('address'),
-            width: 1200,
-            height: 600,
+            width: Ext.getBody().getViewSize().width - 20,
+            minHeight: 600,
+            maxHeight: Ext.getBody().getViewSize().height - 20,
             modal: true,
             layout: 'fit',
             items: [{
@@ -264,7 +265,6 @@ Ext.define('Ung.config.email.MainController', {
                     name: 'mailID'
                 }, {
                     name: 'quarantinedDate',
-                    mapping: 'internDate'
                 }, {
                     name: 'size'
                 }, {
@@ -399,6 +399,7 @@ Ext.define('Ung.config.email.MainController', {
                         /* copy values from mailSummary to object */
                         result.list[i].subject = result.list[i].mailSummary.subject;
                         result.list[i].sender = result.list[i].mailSummary.sender;
+                        result.list[i].quarantinedDate = result.list[i].internDate;
                         result.list[i].quarantineCategory = result.list[i].mailSummary.quarantineCategory;
                         result.list[i].quarantineDetail = result.list[i].mailSummary.quarantineDetail;
                         result.list[i].size = result.list[i].mailSummary.quarantineSize;
