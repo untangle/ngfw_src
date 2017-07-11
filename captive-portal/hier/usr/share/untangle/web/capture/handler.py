@@ -101,7 +101,38 @@ def index(req):
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-            captureApp.userLogin(address,altraw)
+            captureApp.googleLogin(address,altraw)
+            redirectUrl = captureSettings.get('redirectUrl')
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
+            else:
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                raw = urllib.unquote(uri).decode('utf8')
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + raw)
+                else:
+                    target = str("http://" + host + raw)
+            util.redirect(req, target)
+            return
+
+        if (captureSettings.get("authenticationType") == "FACEBOOK"):
+            # Here we call the relay server with the authcode that was returned to the client
+            # This will confirm the user is actually authenticated and return the email address
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=FACEBOOK&authCode=%s" % authcode)
+            altraw = altres.read()
+
+            if ("ERROR:" in altraw):
+                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+                return(page)
+
+            nonce = args['NONCE']
+            host = args['HOST']
+            uri = args['URI']
+            raw = urllib.unquote(uri).decode('utf8')
+            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            captureApp.facebookLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
                 target = str(redirectUrl)

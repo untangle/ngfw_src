@@ -119,8 +119,15 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname != null) {
             if (sniHostname.toLowerCase().equals("auth-relay.untangle.com")) allowed = true;
+
+            // hosts we must allow for Google OAuth
             if (sniHostname.toLowerCase().equals("accounts.google.com")) allowed = true;
             if (sniHostname.toLowerCase().equals("ssl.gstatic.com")) allowed = true;
+
+            // hosts we must allow for Facebook OAuth
+            if (sniHostname.toLowerCase().equals("www.facebook.com")) allowed = true;
+            if (sniHostname.toLowerCase().equals("graph.facebook.com")) allowed = true;
+
             if (allowed) {
                 logger.debug("Releasing session: " + sniHostname);
                 session.sendDataToServer(data);
@@ -362,7 +369,16 @@ public class CaptivePortalSSLEngine
             exauth.addParameter("response_type", "code");
             exauth.addParameter("scope", "email");
             exauth.addParameter("state", output.toString());
-            exauth.addParameter("response_mode", "form_post");
+            vector += "Location: " + exauth.toString() + "\r\n";
+        } else if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
+            exauth.setScheme("https");
+            exauth.setHost(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_HOST);
+            exauth.setPath(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_PATH);
+            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.FACEBOOK_CLIENT_ID);
+            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
+            exauth.addParameter("response_type", "code");
+            exauth.addParameter("scope", "email");
+            exauth.addParameter("state", output.toString());
             vector += "Location: " + exauth.toString() + "\r\n";
         } else {
             vector += "Location: " + output.toString() + "\r\n";
