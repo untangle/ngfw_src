@@ -1,3 +1,10 @@
+span.fa:before {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+}
+
 .reports-all {
     .charts-bar {
         text-align: center;
