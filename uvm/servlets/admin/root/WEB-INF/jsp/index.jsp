@@ -64,104 +64,23 @@
             }
         </style>
 
+        <script src="/script/common/bootstrap.js"></script>
         <script>
-            var rpc = {};
-            if (Ext.supports.LocalStorage) {
-                Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
-            }
-
-            Ext.QuickTips.init();
-
-            // Disable Ext Area to avoid unwanted debug messages
-            Ext.enableAria = false;
-            Ext.enableAriaButtons = false;
-            Ext.enableAriaPanels = false;
-            Ext.supports.MouseWheel = false;
-
-            // IMPORTANT! override the default models ext idProperty so it does not interfere with backend 'id'
-            Ext.data.Model.prototype.idProperty = '_id';
-
             Ext.onReady(function () {
-                // JSON Rpc client
-	        var oldrpc = rpc
-                rpc = new JSONRpcClient('/admin/JSON-RPC');
-                Ext.apply(rpc, oldrpc);
-
-                try {
-                    var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
-                } catch (ex) {
-                    alert(ex);
-                    // Ext.get('app-loader').destroy();
-                }
-                Ext.apply(rpc, startUpInfo);
-
-                if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-                if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-                if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-                if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
-
-                var lang = rpc.languageSettings.language;
-                String.prototype.t = function() {
-                    // special case formatters needed for all languages
-                    if (Ext.Array.contains(['decimal_sep', 'thousand_sep', 'date_fmt', 'timestamp_fmt'], this.valueOf())) {
-                        return rpc.translations[this.valueOf()];
-                    }
-                    if (lang !== 'en') {
-                        return rpc.translations[this.valueOf()] || (lang === 'xx' ? '<cite>' + this.valueOf() + '</cite>' : this.valueOf());
-                    }
-                    return this.valueOf();
-                };
-
-                // add default onRejected handler to then function of promises
-                Ext.promise.Promise.prototype.then = function (onFulfilled, onRejected, onProgress, scope) {
-                    var ref;
-
-                    if (arguments.length === 1 && Ext.isObject(arguments[0])) {
-                        ref = arguments[0];
-                        onFulfilled = ref.success;
-                        onRejected = ref.failure;
-                        onProgress = ref.progress;
-                        scope = ref.scope;
-                    }
-
-                    if (scope) {
-                        if (onFulfilled) {
-                            onFulfilled = Ext.Function.bind(onFulfilled, scope);
-                        }
-
-                        if (onRejected) {
-                            onRejected = Ext.Function.bind(onRejected, scope);
-                        }
-
-                        if (onProgress) {
-                            onProgress = Ext.Function.bind(onProgress, scope);
-                        }
-                    }
-
-                    return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex) {
-                        console.log(ex);
-                        Util.handleException(ex);
-	                throw ex;
+                // setups all initializations and load required scrips
+                Bootstrap.load([
+                    '/script/common/util-all.js', // include custom grid module
+                    '/script/common/reports-all.js', // include reports module
+                    '/script/common/ungrid-all.js', // include custom grid module
+                    'script/ung-all.js'
+                ], function (ex) {
+                    if (ex) { console.error(ex); return; };
+                    // if everything is initialized just launch the application
+                    Ext.application({
+                        extend: 'Ung.Application',
+                        namespace: 'Ung',
+                        servletContext: 'admin'
                     });
-                };
-
-                // use server timezone for graphs
-                Highcharts.setOptions({
-                    global: {
-                        timezoneOffset: -(rpc.timeZoneOffset / 60000)
-                    }
-                });
-
-
-                // load the untangle app only after the rpc is in place and translations set
-                Ext.Loader.loadScript({
-                    url: 'script/ung-all.js',
-                    onLoad: function () {
-                        Ext.application({
-                            name: 'Ung',
-                            extend: 'Ung.Application'
-                        });
-                    }
                 });
             });
         </script>

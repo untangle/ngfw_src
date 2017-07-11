@@ -261,9 +261,9 @@ Ext.define('Ung.util.Converter', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.countryMap ) ? Converter.countryMap[value] : Converter.countryMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.countryMap ) ? Converter.countryMap[value] : Converter.countryMap['default'],
                 value
         );
     },
@@ -286,9 +286,9 @@ Ext.define('Ung.util.Converter', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.httpReasonMap ) ? Converter.httpReasonMap[value] : Converter.httpReasonMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.httpReasonMap ) ? Converter.httpReasonMap[value] : Converter.httpReasonMap['default'],
                 value
         );
     },
@@ -311,9 +311,9 @@ Ext.define('Ung.util.Converter', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.emailActionMap ) ? Converter.emailActionMap[value] : Converter.emailActionMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.emailActionMap ) ? Converter.emailActionMap[value] : Converter.emailActionMap['default'],
                 value
         );
     },
@@ -460,9 +460,9 @@ Ext.define('Ung.util.Converter', {
         default: 'Unknown'.t()
     },
     protocol: function( value ){
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.protocolMap ) ? Converter.protocolMap[value] : Converter.protocolMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.protocolMap ) ? Converter.protocolMap[value] : Converter.protocolMap['default'],
                 value
         );
     },
@@ -470,7 +470,7 @@ Ext.define('Ung.util.Converter', {
     icmpMap: {
         0: 'Echo Reply'.t(),
         1: 'Unassigned'.t(),
-        2: 'Unassigned'.t(),  
+        2: 'Unassigned'.t(),
         3: 'Destination Unreachable'.t(),
         4: 'Source Quench (Deprecated)'.t(),
         5: 'Redirect'.t(),
@@ -519,9 +519,9 @@ Ext.define('Ung.util.Converter', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.icmpMap ) ? Converter.icmpMap[value] : Converter.icmpMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.icmpMap ) ? Converter.icmpMap[value] : Converter.icmpMap['default'],
                 value
         );
     },
@@ -538,9 +538,9 @@ Ext.define('Ung.util.Converter', {
 
             this.interfaceMap = {};
             for (i = 0; i < interfacesList.length; i += 1) {
-                this.interfaceMap[interfacesList[i].interfaceId] = Ext.String.format( 
-                    Converter.mapValueFormat, 
-                    interfacesList[i].name, 
+                this.interfaceMap[interfacesList[i].interfaceId] = Ext.String.format(
+                    Converter.mapValueFormat,
+                    interfacesList[i].name,
                     interfacesList[i].interfaceId);
             }
         }
@@ -548,8 +548,12 @@ Ext.define('Ung.util.Converter', {
     },
 
     policy: function ( value ) {
-        var policy = Ext.getStore('policiestree').findRecord('policyId', value);
-        return policy ? policy.get('name') + ' [' + value + ']' : '';
+        if (Ext.getStore('policiestree')) { // existing in ADMIN servlet only
+            var policy = Ext.getStore('policiestree').findRecord('policyId', value);
+            return policy ? policy.get('name') + ' [' + value + ']' : '';
+        } else {
+            return '';
+        }
     },
 
     loginSuccess: function( value ){
@@ -582,9 +586,9 @@ Ext.define('Ung.util.Converter', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format( 
-                Converter.mapValueFormat, 
-                ( value in Converter.quotaActionMap ) ? Converter.quotaActionMap[value] : Converter.quotaActionMap['default'], 
+        return Ext.String.format(
+                Converter.mapValueFormat,
+                ( value in Converter.quotaActionMap ) ? Converter.quotaActionMap[value] : Converter.quotaActionMap['default'],
                 value
         );
     },

@@ -17,13 +17,19 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     onInit: function () {
-        var me = this, vm = me.getViewModel();
+        var me = this, vm = me.getViewModel(), path = '';
         me.getView().setLoading(false);
 
         vm.bind('{hash}', function (hash) {
             if (!hash) { me.resetView(); return; }
+
+            if (Ung.app.servletContext === 'reports') {
+                path = '/reports/' + window.location.hash.replace('#', '');
+            } else {
+                path = window.location.hash.replace('#', '');
+            }
             me.lookup('tree').collapseAll();
-            me.lookup('tree').selectPath(window.location.hash.replace('#', '/'), 'slug', '/', me.selectPath, me);
+            me.lookup('tree').selectPath(path, 'slug', '/', me.selectPath, me);
         });
         me.buildStats();
     },
@@ -39,7 +45,7 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         if (node.isLeaf()) {
             // report node
-            record = Ext.getStore('reports').findRecord('url', window.location.hash.replace('#reports/', ''));
+            record = Ext.getStore('reports').findRecord('url', node.get('url'));
             if (record) {
                 vm.set({
                     report: record, // main reference from the store
