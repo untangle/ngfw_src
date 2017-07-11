@@ -577,6 +577,42 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    public int googleLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.GOOGLE, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Google OAuth success " + address.getHostAddress().toString());
+
+        return (0);
+    }
+
+    public int facebookLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.FACEBOOK, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Facebook OAuth success " + address.getHostAddress().toString());
+
+        return (0);
+    }
+
+    public int microsoftLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.MICROSOFT, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Microsoft OAuth success " + address.getHostAddress().toString());
+
+        return (0);
+    }
+
     public int userLogout(InetAddress address)
     {
         return (userLogout(address, CaptivePortalUserEvent.EventType.USER_LOGOUT));
