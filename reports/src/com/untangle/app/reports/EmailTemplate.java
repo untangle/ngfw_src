@@ -30,7 +30,7 @@ public class EmailTemplate implements JSONString, Serializable
     private String title;
     private String description;
     private Integer interval;
-    private Integer intervalWeekStart = 1;
+    private Integer intervalWeekStart = 0;
     private Boolean mobile;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
     private List<String> enabledConfigIds = null;

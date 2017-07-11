@@ -22,6 +22,13 @@ public class InterfaceSettings implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger( InterfaceSettings.class );
 
+    public static final int   MIN_INTERFACE_ID      = 0x01;
+    public static final int   OPENVPN_INTERFACE_ID  = 0xfa;
+    public static final int   L2TP_INTERFACE_ID     = 0xfb;
+    public static final int   XAUTH_INTERFACE_ID    = 0xfc;
+    public static final int   GRE_INTERFACE_ID      = 0xfd;
+    public static final int   MAX_INTERFACE_ID      = 0xfd;
+
     private static InetAddress V4_PREFIX_NETMASKS[];
 
     private int     interfaceId; /* the ID of the physical interface (1-254) */
@@ -32,10 +39,13 @@ public class InterfaceSettings implements Serializable, JSONString
     private String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, br.eth0 etc */
     private String  imqDev; /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
 
-    private boolean isWan = false; /* is a WAN interface? */
     private Boolean hidden = null; /* Is this interface hidden? null means false */
     
+    private boolean isWan = false; /* is a WAN interface? */
     private boolean isVlanInterface = false; /* is it an 802.1q alias interface */
+    private boolean isVirtualInterface = false; /* is it an virtual interface */
+    private boolean isWirelessInterface = false; /* is it a wireless interface */
+
     private Integer vlanTag = null; /* vlan 802.1q tag */
     private Integer vlanParent = null; /* The parent interface of this vlan alias */
 
@@ -100,7 +110,6 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
     private List<InterfaceAlias> vrrpAliases = new LinkedList<InterfaceAlias>();
 
-    private boolean isWirelessInterface = false;
     private String wirelessSsid = null;
     public static enum WirelessEncryption { NONE, WPA1, WPA12, WPA2 };
     private WirelessEncryption wirelessEncryption = null;
@@ -110,6 +119,12 @@ public class InterfaceSettings implements Serializable, JSONString
     private WirelessRadioMode wirelessRadioMode = null;
     
     public InterfaceSettings() { }
+
+    public InterfaceSettings( int interfaceId, String name )
+    {
+        setInterfaceId(interfaceId);
+        setName(name);
+    }
 
     public String toJSONString()
     {
@@ -135,15 +150,21 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getImqDev( ) { return this.imqDev; }
     public void setImqDev( String newValue ) { this.imqDev = newValue; }
     
+    public Boolean getHidden( ) { return this.hidden; }
+    public void setHidden( Boolean newValue ) { this.hidden = newValue; }
+
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean newValue ) { this.isWan = newValue; }
 
-    public Boolean getHidden( ) { return this.hidden; }
-    public void setHidden( Boolean newValue ) { this.hidden = newValue; }
-    
     public boolean getIsVlanInterface( ) { return this.isVlanInterface; }
     public void setIsVlanInterface( boolean newValue ) { this.isVlanInterface = newValue; }
+
+    public boolean getIsVirtualInterface( ) { return this.isVirtualInterface; }
+    public void setIsVirtualInterface( boolean newValue ) { this.isVirtualInterface = newValue; }
     
+    public boolean getIsWirelessInterface( ) { return this.isWirelessInterface; }
+    public void setIsWirelessInterface( boolean newValue ) { this.isWirelessInterface = newValue; }
+
     public Integer getVlanTag( ) { return this.vlanTag; }
     public void setVlanTag( Integer newValue ) { this.vlanTag = newValue; }
 
@@ -285,9 +306,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public List<InterfaceAlias> getVrrpAliases( ) { return this.vrrpAliases; }
     public void setVrrpAliases( List<InterfaceAlias> newValue ) { this.vrrpAliases = newValue; }
     
-    public boolean getIsWirelessInterface( ) { return this.isWirelessInterface; }
-    public void setIsWirelessInterface( boolean newValue ) { this.isWirelessInterface = newValue; }
-
     public String getWirelessSsid( ) { return this.wirelessSsid; }
     public void setWirelessSsid( String newValue ) { this.wirelessSsid = newValue; }
 
@@ -325,22 +343,40 @@ public class InterfaceSettings implements Serializable, JSONString
     }
 
     /**
-     * Below is a collection of convenience methods
-     * These are getters without setters so they can be used, and they will be in the JSON equivalent of this object.
-     * However, there are not actually settings - they are derived from other settings.
+     * Provides the "disabled" state of this interface
+     * 
+     * Convenience method
+     * This is named igetDisabled instead of getDisabled so that it does not appear in the JSON settings
+     * 
+     * @return true if the interface is DISABLED, false otherwise
      */
-
-    public boolean getDisabled()
+    public boolean igetDisabled()
     {
-        return getConfigType() == ConfigType.DISABLED;
+        return (getConfigType() == null || getConfigType() == ConfigType.DISABLED);
     }
 
-    public boolean getBridged()
+    /**
+     * Provides the "bridged" state of this interface
+     * 
+     * Convenience method
+     * This is named igetBridged instead of getBridged so that it does not appear in the JSON settings
+     * 
+     * @return true if the interface is BRIDGED, false otherwise
+     */
+    public boolean igetBridged()
     {
         return getConfigType() == ConfigType.BRIDGED;
     }
 
-    public boolean getAddressed()
+    /**
+     * Provides the "addressed" state of this interface
+     * 
+     * Convenience method
+     * This is named igetAddressed instead of getAddressed so that it does not appear in the JSON settings
+     * 
+     * @return true if the interface is ADDRESSED, false otherwise
+     */
+    public boolean igetAddressed()
     {
         return getConfigType() == ConfigType.ADDRESSED;
     }

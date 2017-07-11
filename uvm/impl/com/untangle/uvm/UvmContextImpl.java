@@ -83,6 +83,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetcapManagerImpl netcapManager;
     private EventManagerImpl eventManager;
     private DaemonManagerImpl daemonManager;
+    private HostsFileManagerImpl hostsFileManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
     private MetricManagerImpl metricManager;
@@ -170,6 +171,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public DaemonManager daemonManager()
     {
         return this.daemonManager;
+    }
+
+    public HostsFileManager hostsFileManager()
+    {
+        return this.hostsFileManager;
     }
 
     public AppManager appManager()
@@ -921,6 +927,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.geographyManager = new GeographyManagerImpl();
 
         this.daemonManager = new DaemonManagerImpl();
+
+        this.hostsFileManager = new HostsFileManagerImpl();
 
         this.notificationManager = new NotificationManagerImpl();
 

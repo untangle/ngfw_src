@@ -20,7 +20,6 @@ import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.GeographyManager;
@@ -32,8 +31,9 @@ import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionNatEvent;
 import com.untangle.uvm.app.SessionStatsEvent;
 import com.untangle.uvm.app.PolicyManager;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.HostnameLookup;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * Helper class for the IP session hooks.
@@ -115,7 +115,7 @@ public abstract class NetcapHook implements Runnable
                 logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
             }
 
-            if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
+            if (serverIntf < InterfaceSettings.MIN_INTERFACE_ID || serverIntf > InterfaceSettings.MAX_INTERFACE_ID) {
                 logger.warn( "Unknown destination interface: " + netcapSession + ". Killing session." );
                 raze();
                 return;
@@ -154,13 +154,6 @@ public abstract class NetcapHook implements Runnable
             if ( hostEntry == null ) {
                 /* If the client is a non-wan, use the client's host */
                 if ( ! UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
-                    hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
-                }
-                /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
-                if ( netcapSession.clientSide().interfaceId() == 0xfa ||
-                     netcapSession.clientSide().interfaceId() == 0xfb ||
-                     netcapSession.clientSide().interfaceId() == 0xfc ||
-                     netcapSession.clientSide().interfaceId() == 0xfd ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
                 /* Lastly if use the server's host if there is still no host and the server is local */

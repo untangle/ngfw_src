@@ -842,6 +842,49 @@ class CaptivePortalTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)
 
+    def test_070_loginRedirectUsingHostname(self):
+        global app, appData
+
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        appData['redirectUsingHostname'] = True
+        app.setSettings(appData)
+
+        # check that basic captive page is shown using HTTP
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_070a.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'username and password' /tmp/capture_test_070a.out")
+        assert (search == 0)
+
+        # check that basic captive page is shown using HTTPS
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_070b.out --insecure https://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'username and password' /tmp/capture_test_070b.out")
+        assert (search == 0)
+
+        # check if local directory login and password
+        appid = str(app.getAppSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = remote_control.run_command("wget -O /tmp/capture_test_070c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_070c.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername)
+
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_070d.out " + global_functions.get_http_url() + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_070d.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(not foundUsername)
+
     @staticmethod
     def finalTearDown(self):
         global app, appAD, appWeb

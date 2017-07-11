@@ -14,6 +14,7 @@ import subprocess
 import ipaddr
 import time
 import ssl
+import json
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -93,7 +94,7 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         },
         "ruleId": 1
     }
-    
+
 class UvmTests(unittest2.TestCase):
 
     @staticmethod
@@ -120,19 +121,21 @@ class UvmTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_help_links(self):
-        output, error = subprocess.Popen(['find',
-                                          '%s/usr/share/untangle/web/webui/script/' % global_functions.get_prefix(),
-                                          '-name',
-                                          '*.js',
-                                          '-type',
-                                          'f'], stdout=subprocess.PIPE).communicate()
-        assert(output)
-        for line in output.splitlines():
-            print "Checking file %s..." % line
-            assert (line)
-            if line == "":
-                continue
-
+        helpLinkFile = "/tmp/helpLinks.json"
+        subprocess.call("wget -q -4 -t 2 --timeout=5 http://test.untangle.com/test/help_links.json -O " + helpLinkFile, shell=True)
+        # if the links file was not found skip this test
+        if not os.path.isfile(helpLinkFile):
+            raise unittest2.SkipTest("Skipping test since " + helpLinkFile + " is missing")
+        # read file as JSON object and delete the temp file.
+        with open(helpLinkFile) as dataFile:    
+            helpLinks = json.load(dataFile)    
+        if os.path.isfile(helpLinkFile):
+            os.remove(helpLinkFile)
+        
+        # Check all the links in JSON
+        testResults = True
+        for link in helpLinks["links"]:
+            subLinks = [""]
             hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
@@ -144,31 +147,33 @@ class UvmTests(unittest2.TestCase):
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
 
-            webUiFile = open( line )
-            assert( webUiFile )
-            pat  = re.compile(r'''^.*helpSource:\s*['"]+([a-zA-Z_]*)['"]+[\s,]*$''')
-            pat2 = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
-            for line in webUiFile.readlines():
-                match = pat.match(line)
-                if match != None:
-                    helpSource = match.group(1)
-                    assert(helpSource)
-
-                    url = "http://wiki.untangle.com/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=11.0.0&webui=true&lang=en"
-                    print "Checking %s = %s " % (helpSource, url)
-                    req = urllib2.Request( url, headers=hdr) 
-                    ret = urllib2.urlopen( req, context=ctx )
-                    time.sleep(.1) # dont flood wiki
-                    assert(ret)
-                    result = ret.read()
-                    assert(result)
-                    match2 = pat2.match( result )
-                    assert(match2)
-                    # Check that it redirects somewhere other than /
-                    print "Result: \"%s\"" % match2.group(1)
-                    assert(match2.group(1))
-
-        assert(True)
+            pat = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
+            version = uvmContext.getFullVersion()
+            if ('subcat' in link):
+                subLinks.extend(link['subcat'])
+            for subLink in subLinks:
+                if (subLink != ""):
+                    subLink = link['fragment'] + "/" + subLink
+                else:
+                    subLink = link['fragment']
+                url = "http://wiki.untangle.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
+                print "Checking %s = %s " % (subLink, url)
+                req = urllib2.Request( url, headers=hdr) 
+                ret = urllib2.urlopen( req, context=ctx )
+                time.sleep(.1) # dont flood wiki
+                assert(ret)
+                result = ret.read()
+                assert(result)
+                patmatch = pat.match( result )
+                assert(patmatch)
+                if (patmatch.group(1)):
+                    print "Result: \"%s\"" % patmatch.group(1)
+                else:
+                    print "Failed to get result for %s.  Expecting: %s" % (subLink,link['title'])
+                    # check all help links before failing the test
+                    testResults = False
+                    
+        assert(testResults)
 
     def test_020_about_info(self):
         uid =  uvmContext.getServerUID()
@@ -239,7 +244,7 @@ class UvmTests(unittest2.TestCase):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') != None )
         assert( "test-tag" in entry.get('tagsString') )
-        
+
         uvmContext.eventManager().setSettings( orig_settings )
 
     def test_041_trigger_rule_untag_host(self):
@@ -283,7 +288,7 @@ class UvmTests(unittest2.TestCase):
         assert( "test-tag-2" in entry.get('tagsString') )
 
         uvmContext.eventManager().setSettings( orig_settings )
-        
+
     def test_050_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
@@ -301,7 +306,7 @@ class UvmTests(unittest2.TestCase):
         assert ( found )
 
         uvmContext.eventManager().setSettings( orig_settings )
-        
+
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
@@ -313,5 +318,39 @@ class UvmTests(unittest2.TestCase):
     def test_101_account_login_invalid(self):
         result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
+
+    def test_102_admin_login_event(self):
+        uvmContext.adminManager().logAdminLoginEvent( "admin", True, "127.0.1.1", True, 'X' )
+        events = global_functions.get_events('Administration','Admin Login Events',None,10)
+        assert(events != None)
+        for i in events.get('list'):
+            print i
+        found = global_functions.check_events( events.get('list'), 10,
+                                               'client_addr', "127.0.1.1",
+                                               'reason', 'X',
+                                               'local', True,
+                                               'succeeded', True,
+                                               'login', 'admin' )
+        assert( found )
+
+    # Make sure the HostsFileManager is working as expected
+    def test_110_hosts_file_manager(self):
+        # get the hostname and settings from the network manager
+        fullName = uvmContext.networkManager().getFullyQualifiedHostname()
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+
+        print "Checking HostsFileManager records for " + fullName
+
+        # perform a DNS lookup for our hostname against every non-WAN interface
+        # and make sure the value returned matches the address of the interface
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan'] == False and interface['configType'] == "Addressed":
+                if 'v4StaticAddress' in interface:
+                    netaddr = interface['v4StaticAddress']
+                    if netaddr:
+                        print "Checking hostname resolution for %s" % netaddr
+                        output = subprocess.check_output("dig +short @" + netaddr + " " + fullName, shell=True)
+                        result = output.strip()
+                        assert(result == netaddr)
 
 test_registry.registerApp("uvm", UvmTests)

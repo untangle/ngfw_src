@@ -49,12 +49,12 @@ Ext.define('Ung.config.network.MainController', {
             });
             vm.set('settings', result[0]);
 
-            // check if Allow SSH input filter rule is enabled
-            var inputFilterRulesSshEnabled = me.isSshInputFilterRuleEnabled(vm.get('settings'));
-            vm.set('inputFilterRulesSshEnabled', inputFilterRulesSshEnabled);
+            // check if Allow SSH access rule is enabled
+            var accessRulesSshEnabled = me.isSshAccessRuleEnabled(vm.get('settings'));
+            vm.set('accessRulesSshEnabled', accessRulesSshEnabled);
 
-            var inputFilterRulesLength = me.getInputFilterRulesCount(vm.get('settings'));
-            vm.set('inputFilterRulesLength', inputFilterRulesLength);
+            var accessRulesLength = me.getAccessRulesCount(vm.get('settings'));
+            vm.set('accessRulesLength', accessRulesLength);
 
             me.setPortForwardWarnings();
 
@@ -134,31 +134,31 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
-        // check if Block All input filter rule exists and is enabled
-        var blockAllRule = me.isBlockAllInputFilterRuleEnabled(vm.get('settings'));
+        // check if Block All access rule exists and is enabled
+        var blockAllRule = me.isBlockAllAccessRuleEnabled(vm.get('settings'));
         if (!blockAllRule) {
-            Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation.".t());
+            Ext.MessageBox.alert("Failed".t(), "The Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation.".t());
             return;
         } else {
             if (!blockAllRule.enabled) {
-                Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.".t());
+                Ext.MessageBox.alert("Failed".t(), "The Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation.".t());
                 return;
             }
         }
 
-        // check to see if any input filter rules have been added/removed
-        var inputFilterRulesLength = me.getInputFilterRulesCount(vm.get('settings'));
-        if ( inputFilterRulesLength != vm.get('inputFilterRulesLength') ) {
+        // check to see if any access rules have been added/removed
+        var accessRulesLength = me.getAccessRulesCount(vm.get('settings'));
+        if ( accessRulesLength != vm.get('accessRulesLength') ) {
             Ext.Msg.show({
-                title: 'Input Filter Rules changed!'.t(),
-                msg: "The Input Filter Rules have been changed!".t() + "<br/><br/>" +
-                    "Improperly configuring the Input Filter Rules can be very dangerous.".t() + "<br/>" +
+                title: 'Access Rules changed!'.t(),
+                msg: "The Access Rules have been changed!".t() + "<br/><br/>" +
+                    "Improperly configuring the Access Rules can be very dangerous.".t() + "<br/>" +
                     "Read the documentation for more details.".t() + "<br/><br/>" +
                     "Do you want to continue?".t(),
                 buttons: Ext.Msg.YESNO,
                 fn: function(btnId) {
                     if (btnId === 'yes') {
-                        vm.set('inputFilterRulesLength', inputFilterRulesLength); // set this so it doesnt warning again
+                        vm.set('accessRulesLength', accessRulesLength); // set this so it doesnt warning again
                         me.saveSettings(); // start over
                         return;
                     }
@@ -173,12 +173,12 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
-        // check if Allow SSH input filter rule has been enabled
-        var inputFilterRulesSshEnabled = me.isSshInputFilterRuleEnabled(vm.get('settings'));
-        if ( inputFilterRulesSshEnabled && !vm.get('inputFilterRulesSshEnabled') ) {
+        // check if Allow SSH access rule has been enabled
+        var accessRulesSshEnabled = me.isSshAccessRuleEnabled(vm.get('settings'));
+        if ( accessRulesSshEnabled && !vm.get('accessRulesSshEnabled') ) {
             Ext.Msg.show({
                 title: 'SSH Access Enabled!'.t(),
-                msg: "The 'Allow SSH' rule in Input Filter Rules has been enabled!".t() + "<br/><br/>" +
+                msg: "The 'Allow SSH' rule in Access Rules has been enabled!".t() + "<br/><br/>" +
                     "If the admin/root password is poorly chosen, enabling SSH is very dangerous.".t() + "<br/><br/>" +
                     "Any changes made via the command line can be dangerous and destructive.".t() + "<br/>" +
                     "Any changes made via the command line are not supported and can limit your support options.".t() + "<br/><br/>" +
@@ -186,7 +186,7 @@ Ext.define('Ung.config.network.MainController', {
                 buttons: Ext.Msg.YESNO,
                 fn: function(btnId) {
                     if (btnId === 'yes') {
-                        vm.set('inputFilterRulesSshEnabled', true); // set this so it doesnt warning again
+                        vm.set('accessRulesSshEnabled', true); // set this so it doesnt warning again
                         me.saveSettings(); // start over
                         return;
                     }
@@ -240,34 +240,34 @@ Ext.define('Ung.config.network.MainController', {
         });
     },
 
-    isSshInputFilterRuleEnabled: function(networkSettings) {
-        var inputFilterRulesSshEnabled = false;
-        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
+    isSshAccessRuleEnabled: function(networkSettings) {
+        var accessRulesSshEnabled = false;
+        if(networkSettings.accessRules && networkSettings.accessRules.list) {
             var i;
-            for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
-                var rule = networkSettings.inputFilterRules.list[i];
+            for( i=0; i<networkSettings.accessRules.list.length ; i++ ) {
+                var rule = networkSettings.accessRules.list[i];
                 if ( rule.description == "Allow SSH" ) {
-                    inputFilterRulesSshEnabled = rule.enabled;
+                    accessRulesSshEnabled = rule.enabled;
                     break;
                 }
             }
         }
-        return inputFilterRulesSshEnabled;
+        return accessRulesSshEnabled;
     },
 
-    getInputFilterRulesCount: function(networkSettings) {
-        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
-            return networkSettings.inputFilterRules.list.length;
+    getAccessRulesCount: function(networkSettings) {
+        if(networkSettings.accessRules && networkSettings.accessRules.list) {
+            return networkSettings.accessRules.list.length;
         }
         return 0;
     },
 
-    isBlockAllInputFilterRuleEnabled: function(networkSettings) {
+    isBlockAllAccessRuleEnabled: function(networkSettings) {
         var rule, blockAllRule = null;
-        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
+        if(networkSettings.accessRules && networkSettings.accessRules.list) {
             var i;
-            for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
-                rule = networkSettings.inputFilterRules.list[i];
+            for( i=0; i<networkSettings.accessRules.list.length ; i++ ) {
+                rule = networkSettings.accessRules.list[i];
                 if ( rule.description === "Block All" ) {
                     blockAllRule = rule;
                 }

@@ -27,6 +27,7 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.event.AdminLoginEvent;
 
 /**
  * Remote interface for administrative user management.
@@ -213,6 +214,12 @@ public class AdminManagerImpl implements AdminManager
             logger.warn("Failed to find admin email", e);
         }
         return null;
+    }
+
+    public void logAdminLoginEvent( String login, boolean local, InetAddress clientAddress, boolean succeeded, String reason )
+    {
+        AdminLoginEvent loginEvent = new AdminLoginEvent( login, local, clientAddress, succeeded, reason );
+        UvmContextImpl.context().logEvent( loginEvent );
     }
     
     /**

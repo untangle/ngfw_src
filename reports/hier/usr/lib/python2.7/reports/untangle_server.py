@@ -35,5 +35,9 @@ CREATE TABLE reports.interface_stat_events (
     time_stamp  TIMESTAMP,
     interface_id INT,
     rx_rate 	float8,
-    tx_rate 	float8)""")
+    rx_bytes 	int8,
+    tx_rate 	float8,
+    tx_bytes 	int8)""")
+    sql_helper.add_column('interface_stat_events','rx_bytes','int8') # 13.1
+    sql_helper.add_column('interface_stat_events','tx_bytes','int8') # 13.1
 

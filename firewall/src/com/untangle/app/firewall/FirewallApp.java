@@ -98,9 +98,41 @@ public class FirewallApp extends AppBase
         return settings;
     }
 
-    public void setSettings(final FirewallSettings settings)
+    public void setSettings(final FirewallSettings newSettings)
     {
-        this._setSettings(settings);
+        /**
+         * set the new ID of each rule
+         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other firewall
+         *
+         * Also set flag to true if rule is blocked
+         */
+        int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
+        for (FirewallRule rule : newSettings.getRules()) {
+            rule.setRuleId(++idx);
+
+            if (rule.getBlock())
+                rule.setFlag(true);
+        }
+
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
 
     public List<FirewallRule> getRules()
@@ -206,7 +238,7 @@ public class FirewallApp extends AppBase
         this.reconfigure();
     }
 
-    FirewallSettings getDefaultSettings()
+    private FirewallSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
 
@@ -262,42 +294,5 @@ public class FirewallApp extends AppBase
         }
 
         logger.info("Update Settings Complete");
-    }
-
-    private void _setSettings( FirewallSettings newSettings )
-    {
-        /**
-         * set the new ID of each rule
-         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other firewall
-         *
-         * Also set flag to true if rule is blocked
-         */
-        int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
-        for (FirewallRule rule : newSettings.getRules()) {
-            rule.setRuleId(++idx);
-
-            if (rule.getBlock())
-                rule.setFlag(true);
-        }
-        
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
-        try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + appID + ".js", newSettings );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
     }
 }

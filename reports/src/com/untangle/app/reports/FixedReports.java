@@ -219,6 +219,8 @@ public class FixedReports
         ReservedReports.add("intrusion-prevention-pYviv7Cg");
         // Network Summary
         ReservedReports.add("network-tn9iaE74pK");
+        // Network Data Usage
+        ReservedReports.add("network-aGUe5wYZ1x");
         // Sessions
         ReservedReports.add("network-8bTqxKxxUK");
         // Bandwidth Usage
@@ -557,13 +559,14 @@ public class FixedReports
         i18nUtil = new I18nUtil(i18nMap);
 
         String interval = "";
+        String intervalDescription = "";
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         Date currentDate = c.getTime();
-        if(emailTemplate.getInterval() == 2419200){
+        if (emailTemplate.getInterval() == 2419200) {
             // Monthly
             interval = i18nUtil.tr("Monthly");
             c.set(Calendar.DAY_OF_MONTH, 1);
@@ -571,28 +574,54 @@ public class FixedReports
             c.add(Calendar.DATE, -1);
             c.set(Calendar.DAY_OF_MONTH, 1);
             startDate = c.getTime();
-        }else if(emailTemplate.getInterval() == 604800){
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if (emailTemplate.getInterval() == 2) {
+            // Month to Date
+            interval = i18nUtil.tr("Month to Date");
+            endDate = c.getTime();
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            startDate = c.getTime();
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 604800) {
             // Weekly, Sunday through Sunday
             interval = i18nUtil.tr("Weekly");
             c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
             endDate = c.getTime();
             c.add(Calendar.DATE, -7);
             startDate = c.getTime();
-        }else{
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 1) {
+            // Week to Date
+            interval = i18nUtil.tr("Week to Date");
+            endDate = c.getTime();
+            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
+            startDate = c.getTime();
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 86400) {
             // Daily
             interval = i18nUtil.tr("Daily");
             c.add(Calendar.DATE, - 1);
             startDate = c.getTime();
             c.add(Calendar.DAY_OF_MONTH, 1);
             endDate = c.getTime();
+            intervalDescription = dateFormatter.format(startDate);
+        } else {
+            // Daily
+            interval = i18nUtil.tr("Daily");
+            c.add(Calendar.DATE, - 1);
+            startDate = c.getTime();
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            endDate = c.getTime();
+            intervalDescription = dateFormatter.format(startDate);
         }
 
-        if(currentDate.compareTo(endDate) != 0){
+        if (currentDate.compareTo(endDate) != 0) {
+            logger.warn("Skipping report " + emailTemplate.getTitle() + " because its not its end date: " + endDate);
             return;
         }
 
         String title = emailTemplate.getTitle() + 
-            ": " + interval + " (" + dateFormatter.format(startDate) + ")" + 
+            ": " + interval + " (" + intervalDescription + ")" + 
             (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
 
         // Determine users lists with/without online access for url inclusion

@@ -108,14 +108,6 @@ public class NetworkManagerImpl implements NetworkManager
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
-                if (readSettings == null) {
-                    // check for "backup" settings in /usr/share/untangle/settings.backup/
-                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network.js";
-                    logger.info("Reading Network Settings from " + rootLocation);
-                    readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
-                    logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
-                }
-                    
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
                     
@@ -137,18 +129,8 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
 
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 3 ) {
-                convertSettingsV3();
-            }
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 4 ) {
-                convertSettingsV4();
-            }
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 5 ) {
-                convertSettingsV5();
-            }
+            /* 13.1 conversion */
+            convertSettingsV6();
 
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -333,7 +315,7 @@ public class NetworkManagerImpl implements NetworkManager
             return newList;
         
         for ( InterfaceSettings intf: this.networkSettings.getInterfaces() ) {
-            if ( ! intf.getDisabled() )
+            if (!intf.igetDisabled())
                 newList.add(intf);
         }
 
@@ -350,7 +332,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
+            if ( !intfSettings.igetDisabled() && intfSettings.getIsWan() ) {
                 return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
@@ -368,7 +350,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( !intfSettings.getDisabled() && !intfSettings.getIsWan() ) {
+            if ( !intfSettings.igetDisabled() && !intfSettings.getIsWan() ) {
                 return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
@@ -419,24 +401,22 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if ( !intf.getDisabled() && intf.getIsWan() )
+            if ( !intf.igetDisabled() && intf.getIsWan() )
                 return intf;
         }
 
         return null;
     }
 
+    /**
+     * determines the WAN status of the specified interface
+     *
+     * @param the interface ID
+     * @return true if the interface is a WAN, false if not found or not a WAN
+     */
     public boolean isWanInterface( int interfaceId )
     {
-        if ( interfaceId <= 0 )
-            return false;
-        /**
-         * 250 - openvpn
-         * 251 - l2tp
-         * 252 - xauth
-         * 253 - gre
-         */
-        if ( interfaceId >= 250 && interfaceId <= 253 )
+        if ( interfaceId < 0 )
             return false;
 
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
@@ -445,10 +425,7 @@ public class NetworkManagerImpl implements NetworkManager
             return false;
         }
 
-        if ( intfSettings.getIsWan() )
-            return true;
-        else
-            return false;
+        return intfSettings.getIsWan();
     }
 
     /**
@@ -537,39 +514,6 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         }
 
-        /**
-         * Special handling for OpenVPN
-         */
-        if ( intfId == 250 ) { // 0xfa
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-        
-        /**
-         * Special handling for L2TP
-         */
-        if ( intfId == 251 ) { // 0xfb
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-
-        /**
-         * Xauth doesn't get an interface but there are port forwards in place
-         * for L2TP clients so we'll just have Xauth clients use the same address
-         */
-        if ( intfId == 252 ) { // 0xfc
-            InetAddress address = getInterfaceStatus( 251 ).getV4Address();
-            return address;
-        }
-
-        /**
-         * Special handling for GRE
-         */
-        if ( intfId == 253 ) { // 0xfd
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-        
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
             logger.warn("Failed to find interface " + intfId);
@@ -578,8 +522,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* WAN ports never have HTTP open */
         InterfaceSettings.ConfigType configType = intfSettings.getConfigType();
-        boolean isWan = intfSettings.getIsWan();
-        if ( configType == InterfaceSettings.ConfigType.ADDRESSED && isWan ) {
+        if ( configType == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
             //this is normal no error logged
             return null;
         }
@@ -745,9 +688,17 @@ public class NetworkManagerImpl implements NetworkManager
         for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
             interfaceSettingsById[i] = null;
         }
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            interfaceSettingsById[intf.getInterfaceId()] = intf;
+        if ( this.networkSettings.getInterfaces() != null ) {
+            for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
         }
+        if ( this.networkSettings.getVirtualInterfaces() != null ) {
+            for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
+        }
+
     }
 
     private void checkForNewDevices( NetworkSettings netSettings )
@@ -771,7 +722,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                int interfaceId = nextFreeInterfaceId( netSettings, 1 );
+                int interfaceId = getNextFreeInterfaceId( netSettings, 1 );
                 interfaceSettings.setInterfaceId( interfaceId );
                 try {
                     interfaceSettings.setName("Interface " + GREEK_NAMES[interfaceId-1]);
@@ -787,6 +738,8 @@ public class NetworkManagerImpl implements NetworkManager
                 // Check for wireless interfaces
                 if (deviceName.startsWith("wlan")) {
                     interfaceSettings.setIsWirelessInterface(true);
+                } else {
+                    interfaceSettings.setIsWirelessInterface(false);
                 }
 
                 List<InterfaceSettings> currentList = netSettings.getInterfaces();
@@ -828,7 +781,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 5 ); // Currently on v5 (as of v12.2)
+            newSettings.setVersion( 6 ); // Currently on v6 (as of v13.1)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -926,6 +879,51 @@ public class NetworkManagerImpl implements NetworkManager
 
             newSettings.setInterfaces(interfaces);
 
+            InterfaceSettings virtualIntf;
+            LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.L2TP_INTERFACE_ID,"L2TP");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.XAUTH_INTERFACE_ID,"XAUTH");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.GRE_INTERFACE_ID,"GRE");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+            
+            newSettings.setVirtualInterfaces(virtualInterfaces);
+            
             newSettings.setPortForwardRules( new LinkedList<PortForwardRule>() );
             newSettings.setNatRules( new LinkedList<NatRule>() );
             newSettings.setBypassRules( defaultBypassRules() );
@@ -933,8 +931,8 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setQosSettings( defaultQosSettings() );
             newSettings.setUpnpSettings( defaultUpnpSettings() );
             newSettings.setDnsSettings( new DnsSettings() );
-            newSettings.setForwardFilterRules( new LinkedList<FilterRule>() );
-            newSettings.setInputFilterRules( defaultInputFilterRules() );
+            newSettings.setFilterRules( new LinkedList<FilterRule>() );
+            newSettings.setAccessRules( defaultAccessRules() );
             newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
 
             /**
@@ -1169,7 +1167,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getForwardFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getFilterRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1177,7 +1175,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getInputFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getAccessRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1252,44 +1250,57 @@ public class NetworkManagerImpl implements NetworkManager
     
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
+        
         /**
          * Fix rule IDs
          */
         int idx = 0;
-        for (NatRule rule : networkSettings.getNatRules()) {
-            rule.setRuleId(++idx);
-        }
-        idx = 0;
-        for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
-            rule.setRuleId(++idx);
-        }
-        idx = 0;
-        for (BypassRule rule : networkSettings.getBypassRules()) {
-            rule.setRuleId(++idx);
-        }
-        idx = 0;
-        for (StaticRoute rule : networkSettings.getStaticRoutes()) {
-            rule.setRuleId(++idx);
-        }
-        idx = 0;
-        if ( networkSettings.getInputFilterRules() != null ) {
-            for (FilterRule rule : networkSettings.getInputFilterRules()) {
+        if (networkSettings.getNatRules() != null) {
+            for (NatRule rule : networkSettings.getNatRules()) {
                 rule.setRuleId(++idx);
             }
         }
         idx = 0;
-        if ( networkSettings.getForwardFilterRules() != null ) {
-            for (FilterRule rule : networkSettings.getForwardFilterRules()) {
+        if (networkSettings.getPortForwardRules() != null) {
+            for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
                 rule.setRuleId(++idx);
             }
         }
         idx = 0;
-        for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getBypassRules() != null) {
+            for (BypassRule rule : networkSettings.getBypassRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getStaticRoutes() != null) {
+            for (StaticRoute rule : networkSettings.getStaticRoutes()) {
+                rule.setRuleId(++idx);
+            }
+        }
+        idx = 0;
+        if (networkSettings.getAccessRules() != null) {
+            for (FilterRule rule : networkSettings.getAccessRules()) {
+                rule.setRuleId(++idx);
+            }
+        }
+        idx = 0;
+        if (networkSettings.getFilterRules() != null) {
+            for (FilterRule rule : networkSettings.getFilterRules()) {
+                rule.setRuleId(++idx);
+            }
+        }
+        idx = 0;
+        if (networkSettings.getQosSettings() != null && networkSettings.getQosSettings().getQosRules() != null) {
+            for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
+                rule.setRuleId(++idx);
+            }
+        }
+        idx = 0;
+        if (networkSettings.getUpnpSettings() != null && networkSettings.getUpnpSettings().getUpnpRules() != null) {
+            for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         /**
          * Reset all symbolic devs to system devs
@@ -1324,16 +1335,15 @@ public class NetworkManagerImpl implements NetworkManager
          * Handle VLAN interfaces
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( ! intf.getIsVlanInterface() )
+            if (!intf.getIsVlanInterface())
                 continue;
-            
-            if ( intf.getInterfaceId() < 0 )
-                intf.setInterfaceId( nextFreeInterfaceId( networkSettings, 100 ) );
-            
             if ( intf.getVlanTag() == null )
                 throw new RuntimeException("VLAN tag missing on VLAN interface");
             if ( intf.getVlanParent() == null )
                 throw new RuntimeException("VLAN parent missing on VLAN interface");
+
+            if ( intf.getInterfaceId() < 0 )
+                intf.setInterfaceId( getNextFreeInterfaceId( networkSettings, 100 ) );
             
             InterfaceSettings parent = null;
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
@@ -1625,7 +1635,7 @@ public class NetworkManagerImpl implements NetworkManager
         return upnpSettings;
     }
 
-    private List<FilterRule> defaultInputFilterRules()
+    private List<FilterRule> defaultAccessRules()
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
         List<FilterRuleCondition> conditions;
@@ -2015,18 +2025,6 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
-    {
-        if (netSettings == null)
-            return min;
-        int free = min;
-        for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
-            if ( free <= intfSettings.getInterfaceId() )
-                free = intfSettings.getInterfaceId() + 1;
-        }
-        return free;
-    }
-
     private LinkedList<String> getEthernetDeviceNames()
     {
         ExecManagerResult result;
@@ -2293,7 +2291,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if (! intf.getIsWirelessInterface() )
+            if (!intf.getIsWirelessInterface())
                 continue;
 
             if (! ssid.equals( intf.getWirelessSsid() ) ) {
@@ -2320,14 +2318,14 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Get the first wireless interface.
-     * If no wireless interface exists, return null
-     * Used by the setup wizard
+     * Find the first (lowest ID) wireless interface.
+     * 
+     * @return the first wireless interface settings, or null if not found
      */
     public InterfaceSettings getFirstWirelessInterface()
     {
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if ( intf.getIsWirelessInterface() )
+        for (InterfaceSettings intf : this.networkSettings.getInterfaces()) {
+            if (intf.getIsWirelessInterface())
                 return intf;
         }
         return null;
@@ -2376,6 +2374,23 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Return the FQDN according to the settings
+     *
+     * If domain name is null it just returns the hostname
+     * @returns String of the FQDN name of this server, never null
+     */
+    public String getFullyQualifiedHostname()
+    {
+        String primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if ( primaryAddressStr == null )
+            primaryAddressStr = "hostname";
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        if ( domainName != null )
+            primaryAddressStr = primaryAddressStr + "." + domainName;
+        return primaryAddressStr;
+    }
+    
+    /**
      * @return the public url for the box, this is the address (may be hostname or ip address)
      */
     public String getPublicUrl()
@@ -2394,10 +2409,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
                 logger.warn("No hostname is configured");
             } else {
-                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-                if ( domainName != null )
-                    primaryAddressStr = primaryAddressStr + "." + domainName;
+                primaryAddressStr = getFullyQualifiedHostname();
             }
         } else if ( NetworkSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.networkSettings.getPublicUrlMethod() ) ) {
             if ( this.networkSettings.getPublicUrlAddress() == null ) {
@@ -2413,147 +2425,128 @@ public class NetworkManagerImpl implements NetworkManager
         return primaryAddressStr + ":" + httpsPortStr;
     }
 
-    private void convertSettingsV3()
+    /**
+     * Provide the first free interface ID higher than the specified minimum
+     *
+     * @param netSettings - the network settings to use to check for a free ID
+     * @param minimum - the minimum ID. It will start looking for a free ID at this minimum
+     * @return the next available ID greater than or equal to minimum, or -1 if not found.
+     */
+    public int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum)
     {
-        try {
-            this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
-            this.networkSettings.setPublicUrlMethod( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlMethod() );
-            if ( this.networkSettings.getPublicUrlMethod() == null )
-                this.networkSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
-            this.networkSettings.setPublicUrlAddress( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlAddress() );
-            if ( this.networkSettings.getPublicUrlAddress() == null )
-                this.networkSettings.setPublicUrlAddress( "hostname.example.com" );
-            this.networkSettings.setPublicUrlPort( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlPort() );
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
-        }
-
-        this.networkSettings.setVersion( 3 );
-
-        //we are about to upgrade to v4 and then save settings
-        //do not do this here
-        //this.setNetworkSettings( this.networkSettings, false );
-    }
-
-    private void convertSettingsV4()
-    {
-        try {
-            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
-            int pos = 1;
-            for( FilterRule rule : inputFilterRules ) {
-                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleUpnp;
-                    List<FilterRuleCondition> ruleUpnpConditions;
-                    FilterRuleCondition ruleUpnpMatcher1;
-                    FilterRuleCondition ruleUpnpMatcher2;
-                    FilterRuleCondition ruleUpnpMatcher3;
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("5000");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("TCP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("1900");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("UDP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
+        if (netSettings == null)
+            return minimum;
+        int freeId;
+        for (freeId = minimum ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
+            boolean found = false;
+            for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
+                if ( freeId == intfSettings.getInterfaceId() ) {
+                    found = true;
                     break;
                 }
-                pos++;
+            }
+            if (found) continue;
+            for (InterfaceSettings intfSettings : netSettings.getVirtualInterfaces()) {
+                if ( freeId == intfSettings.getInterfaceId() ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) continue;
+            return freeId;
+        }
+        logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
+        return -1;
+    }
+
+    private boolean convertVirtualInterfaces()
+    {
+        if (this.networkSettings.getVirtualInterfaces() != null)
+            return false;
+
+        logger.warn("Conversion: Adding virtual interfaces...");
+        InterfaceSettings virtualIntf;
+        LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.L2TP_INTERFACE_ID,"L2TP");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.XAUTH_INTERFACE_ID,"XAUTH");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        virtualIntf = new InterfaceSettings(InterfaceSettings.GRE_INTERFACE_ID,"GRE");
+        virtualIntf.setIsVirtualInterface(true);
+        virtualIntf.setIsWan(false);
+        virtualIntf.setConfigType(null);
+        virtualIntf.setV4ConfigType(null);
+        virtualIntf.setV4Aliases(null);
+        virtualIntf.setV6ConfigType(null);
+        virtualIntf.setV6Aliases(null);
+        virtualIntf.setVrrpAliases(null);
+        virtualInterfaces.add(virtualIntf);
+
+        this.networkSettings.setVirtualInterfaces(virtualInterfaces);
+
+        return true;
+    }
+    
+    private boolean convertAccessRules()
+    {
+        if (this.networkSettings.getInputFilterRules() == null && this.networkSettings.getForwardFilterRules() == null)
+            return false;
+
+        logger.warn("Conversion: rename accessRules...");
+        logger.warn("Conversion: rename filterRules...");
+        this.networkSettings.setAccessRules( this.networkSettings.getInputFilterRules() );
+        this.networkSettings.setFilterRules( this.networkSettings.getForwardFilterRules() );
+        this.networkSettings.setInputFilterRules( null );
+        this.networkSettings.setForwardFilterRules( null );
+
+        return true;
+    }
+
+    private void convertSettingsV6()
+    {
+        try {
+            boolean converted = false;
+
+            converted |= convertAccessRules();
+            converted |= convertVirtualInterfaces();
+
+            if (converted) {
+                this.networkSettings.setVersion( 6 );
+                this.setNetworkSettings( this.networkSettings, false );
             }
         } catch (Exception e) {
             logger.warn("Exception converting Networking Settings",e);
         }
-
-        this.networkSettings.setVersion( 4 );
-        this.setNetworkSettings( this.networkSettings, false );
-    }
-
-    private void convertSettingsV5()
-    {
-        try {
-            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
-            int pos = 1;
-            for( FilterRule rule : inputFilterRules ) {
-                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleUpnp;
-                    List<FilterRuleCondition> ruleUpnpConditions;
-                    FilterRuleCondition ruleUpnpMatcher1;
-                    FilterRuleCondition ruleUpnpMatcher2;
-                    FilterRuleCondition ruleUpnpMatcher3;
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("5351");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("UDP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
-
-                    break;
-                }
-                pos++;
-            }
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
-        }
-
-        this.networkSettings.setVersion( 5 );
-        this.setNetworkSettings( this.networkSettings, false );
     }
     
     private class NetworkTestDownloadHandler implements DownloadHandler

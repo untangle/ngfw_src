@@ -1,0 +1,85 @@
+#! /bin/bash
+
+# 
+# This script imports a config file containing the necessary configuration to connect to a remote server
+# It stores the files in settings, TunnelVpnManager will later copy them into place
+#
+
+filename="${1}"
+destination=`mktemp || -3`
+
+cleanup()
+{
+    if [ ! -z ${TMPDIR} ] ; then
+        rm -rf ${TMPDIR};  
+    fi
+    exit -1
+}
+
+if [ ! -f "${filename}" ]; then
+    echo "Unable to find the file: ${filename}"
+    exit -1
+fi
+
+TMPDIR=`mktemp -d || exit -3`
+
+unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
+
+CONFNAME="`ls ${TMPDIR}/untangle-vpn/*.conf`"
+
+if [ -z "$CONFNAME" ] ; then
+    echo "Missing conf file"
+    exit -1
+fi
+
+SITENAME="`basename $CONFNAME | sed -e 's/.conf//'`"
+
+# echo sitename to stdout
+# This is important because the java code launching this script
+# will use this to determine the site name. Do not remove.
+echo "SiteName: ${SITENAME}" 
+
+if [ -z "$SITENAME" ] ; then
+    echo "Missing site name"
+    exit -1
+fi
+
+## Copy in the necessary files
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/keys/
+
+CONF_FILE="@PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/${SITENAME}.conf"
+
+cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
+
+if [ $? != 0 ] ; then
+    echo "Copy failed"
+    cleanup
+fi
+
+# copy keys 
+# "untangle-vpn" was the key directory name in 9.4 and prior
+# keep this to maintain backwards compatibility with 9.4 and prior
+if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
+    echo "${TMPDIR}/untangle-vpn/untangle-vpn exists"
+    mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/untangle-vpn/
+    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/untangle-vpn/
+fi
+
+if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
+    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/remote-servers/keys/
+fi
+
+if [ $? != 0 ] ; then
+    echo "Key Copy failed"
+    echo ${TMPDIR}
+    exit
+    cleanup
+fi
+
+## Cleanup
+rm -rf ${TMPDIR}
+
+echo "New configuration imported: ${CONF_FILE}"
+
+true
