@@ -27,7 +27,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         xtype: 'textfield',
         bind: '{settings.siteName}',
         allowBlank: false,
-        maskRe: /[a-zA-Z0-9\-_]/
+        maskRe: /[a-zA-Z0-9\-]/
     },{
         fieldLabel: 'Address Space'.t(),
         xtype: 'textfield',
@@ -138,7 +138,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         xtype: 'textfield',
         fieldLabel: 'Client Name'.t(),
         allowBlank: false,
-        maskRe: /[a-zA-Z0-9\-_]/,
+        maskRe: /[a-zA-Z0-9\-]/,
         bind: {
             value: '{record.name}',
             readOnly: '{record.existing}'
