@@ -97,18 +97,30 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
+## JS
+
+# ung-all
+ungAllDirs = [ 'overrides', 'model', 'store', 'controller',
                'cmp', 'widget', 'view', 'Application.js' ]
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
+# sections
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
 end
 
-JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+# common
+['reports', 'ungrid', 'util'].each do |n|
+  JsBuilder.new(uvm_lib, "#{n}-all", "uvm/js/common/#{n}", "script/common")
+end
 
+# jslinting
+JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
+
+## i18n
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )
   poFiles.each do |f|
