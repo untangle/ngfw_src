@@ -8,7 +8,7 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    refreshInterval: null,
+    refreshTimeout: null,
 
     // colorPalette: [
     //     // red
@@ -43,6 +43,9 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.bind('{entry}', function (entry) {
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
+            if (me.refreshTimeout) {
+                clearInterval(me.refreshTimeout);
+            }
 
             dataGrid.setColumns([]);
             dataGrid.setLoading(true);
@@ -338,12 +341,28 @@ Ext.define('Ung.view.reports.EntryController', {
     // },
 
     refreshData: function () {
-        var vm = this.getViewModel();
+        var me = this, vm = me.getViewModel(), ctrl;
         switch(vm.get('entry.type')) {
-            case 'TEXT': this.getView().down('textreport').getController().fetchData(); break;
-            case 'EVENT_LIST': this.getView().down('eventreport').getController().fetchData(); break;
-            default: this.getView().down('graphreport').getController().fetchData();
+            case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
+            case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
+            default: ctrl = this.getView().down('graphreport').getController();
         }
+
+        if (!ctrl) {
+            console.error('Entry controller not found!');
+            return;
+        }
+
+        ctrl.fetchData(false, function () {
+            if (vm.get('autoRefresh')) {
+                me.refreshTimeout = setTimeout(function () {
+                    me.refreshData();
+                }, 5000);
+            } else {
+                clearTimeout(me.refreshTimeout);
+            }
+        });
+
     },
 
     resetView: function(){
@@ -746,11 +765,10 @@ Ext.define('Ung.view.reports.EntryController', {
 
         if (btn.pressed) {
             me.refreshData();
-            this.refreshInterval = setInterval(function () {
-                me.refreshData();
-            }, 5000);
         } else {
-            clearInterval(this.refreshInterval);
+            if (me.refreshTimeout) {
+                clearInterval(me.refreshTimeout);
+            }
         }
 
     },
