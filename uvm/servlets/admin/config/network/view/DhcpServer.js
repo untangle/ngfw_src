@@ -75,9 +75,9 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         enableColumnHide: false,
         enableColumnMove: false,
 
-        viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-        },
+        // viewConfig: {
+        //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+        // },
 
         tbar: [{
             text: 'Refresh'.t(),
