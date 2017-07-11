@@ -80,9 +80,9 @@ Ext.define('Ung.config.email.view.Quarantine', {
             title: 'User Quarantines'.t(),
             flex: 1,
 
-            viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
-            },
+            // viewConfig: {
+            //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
+            // },
             selModel: {
                 selType: 'checkboxmodel'
             },
