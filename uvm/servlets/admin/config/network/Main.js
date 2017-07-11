@@ -29,12 +29,13 @@ Ext.define('Ung.config.network.Main', {
         { xtype: 'config-network-interfaces' },
         { xtype: 'config-network-hostname' },
         { xtype: 'config-network-services' },
-        { xtype: 'config-network-portforwardrules' },
-        { xtype: 'config-network-natrules' },
-        { xtype: 'config-network-bypassrules' },
+        { xtype: 'config-network-port-forward-rules' },
+        { xtype: 'config-network-nat-rules' },
+        { xtype: 'config-network-bypass-rules' },
+        { xtype: 'config-network-filter-rules' },
         { xtype: 'config-network-routes' },
-        { xtype: 'config-network-dnsserver' },
-        { xtype: 'config-network-dhcpserver' },
+        { xtype: 'config-network-dns-server' },
+        { xtype: 'config-network-dhcp-server' },
         { xtype: 'config-network-advanced' },
         { xtype: 'config-network-troubleshooting' }
     ]

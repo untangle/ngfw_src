@@ -78,48 +78,6 @@ public class IntfMatcher
     {
         InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId(interfaceId);
 
-        /**
-         * OpenVPN (250) interface special handling
-         * Create a fake "interface settings" object
-         * because OpenVPN interface doesnt have settings
-         */
-        if ( interfaceId == 0xfa ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 250 );
-            intfSettings.setIsWan( false );
-        }
-
-        /**
-         * L2TP (251) interface special handling
-         * Create a fake "interface settings" object
-         * because L2TP interface doesnt have settings
-         */
-        if ( interfaceId == 0xfb ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 251 );
-            intfSettings.setIsWan( false );
-        }
-        /**
-         * Xauth (252) interface special handling
-         * Create a fake "interface settings" object
-         * because Xauth interface doesnt have settings
-         */
-        if ( interfaceId == 0xfc ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 252 );
-            intfSettings.setIsWan( false );
-        }
-        /**
-         * GRE (253) interface special handling
-         * Create a fake "interface settings" object
-         * because GRE interface doesnt have settings
-         */
-        if ( interfaceId == 0xfd ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 253 );
-            intfSettings.setIsWan( false );
-        }
-
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);
             return false;
@@ -145,10 +103,10 @@ public class IntfMatcher
             return false;
 
         case ANY_WAN:
-            return intfSettings.getIsWan();
+            return (intfSettings.getIsWan());
 
         case ANY_NON_WAN:
-            return !intfSettings.getIsWan();
+            return (!intfSettings.getIsWan());
             
         case SINGLE:
             if (singleInt == intfSettings.getInterfaceId())

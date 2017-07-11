@@ -442,110 +442,24 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }]
             }],
         }, {
-            title: 'Filter Rules'.t(),
-            layout: 'border',
+            title: 'Access Rules'.t(),
+            layout: 'fit',
 
             items: [{
-                xtype: 'ungrid',
-                region: 'center',
-                title: 'Forward Filter Rules'.t(),
-
-                tbar: ['@add', '->', '@import', '@export'],
-                recordActions: ['edit', 'delete', 'reorder'],
-
-                listProperty: 'settings.forwardFilterRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
-                conditions: [
-                    {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
-                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: 'textfield', visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
-                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-                ],
-
-                emptyRow: {
-                    ruleId: -1,
-                    enabled: true,
-                    ipvsEnabled: false,
-                    description: '',
-                    javaClass: 'com.untangle.uvm.network.FilterRule',
-                    conditions: {
-                        javaClass: 'java.util.LinkedList',
-                        list: []
-                    },
-                    blocked: false
-                },
-
-                bind: '{forwardFilterRules}',
-
-                columns: [{
-                    header: 'Rule Id'.t(),
-                    width: 70,
-                    align: 'right',
-                    resizable: false,
-                    dataIndex: 'ruleId',
-                    renderer: function (value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Enable'.t(),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'IPv6'.t(),
-                    dataIndex: 'ipv6Enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    header: 'Description',
-                    width: 200,
-                    dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
-                }, {
-                    header: 'Conditions'.t(),
-                    flex: 1,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Block'.t(),
-                    dataIndex: 'blocked',
-                    resizable: false,
-                    width: 70
-                }],
-                editorFields: [
-                    Field.enableRule('Enable Forward Filter Rule'.t()),
-                    Field.enableIpv6,
-                    Field.description,
-                    Field.conditions,
-                    Field.blockedCombo
-                ]
-            }, {
                 xtype: 'ungrid',
                 region: 'south',
                 height: '70%',
                 split: true,
 
-                title: 'Input Filter Rules'.t(),
+                title: 'Access Rules'.t(),
 
                 tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
-                listProperty: 'settings.inputFilterRules.list',
+                listProperty: 'settings.accessRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
-                    {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
                     {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
                     {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
                     {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
@@ -570,7 +484,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     readOnly: false
                 },
 
-                bind: '{inputFilterRules}',
+                bind: '{accessRules}',
 
                 columns: [{
                     header: 'Rule Id'.t(),
@@ -621,7 +535,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }
                 }],
                 editorFields: [
-                    Field.enableRule('Enable Input Filter Rule'.t()),
+                    Field.enableRule('Enable Access Rule'.t()),
                     Field.enableIpv6,
                     Field.description,
                     Field.conditions,

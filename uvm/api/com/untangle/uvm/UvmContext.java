@@ -92,6 +92,13 @@ public interface UvmContext
     DaemonManager daemonManager();
 
     /**
+     * Get the HostsFileManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    HostsFileManager hostsFileManager();
+
+    /**
      * The LocalDirectory for managing/authenticating users
      *
      * @return the local directory

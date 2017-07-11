@@ -212,6 +212,10 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
         padding: 10,
         items: [{
             xtype: 'checkbox',
+            boxLabel: 'Use hostname instead of IP address for the capture page redirect'.t(),
+            bind: '{settings.redirectUsingHostname}'
+        }, {
+            xtype: 'checkbox',
             boxLabel: 'Always use HTTPS for the capture page redirect'.t(),
             bind: '{settings.alwaysUseSecureCapture}'
         }, {

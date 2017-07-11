@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: web.xml,v 1.00 2013/04/24 16:35:35 dmorris Exp $ -->
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
+
+  <display-name>Tunnel VPN</display-name>
+
+  <description>
+    Tunnel VPN Servlet
+  </description>
+
+  <!-- Upload tunnel zip config -->
+  <servlet>
+    <servlet-name>UploadConfig</servlet-name>
+    <servlet-class>com.untangle.app.tunnel_vpn.servlet.UploadConfig</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>UploadConfig</servlet-name>
+    <url-pattern>/uploadConfig</url-pattern>
+  </servlet-mapping>
+
+</web-app>

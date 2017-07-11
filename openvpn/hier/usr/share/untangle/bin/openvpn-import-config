@@ -5,7 +5,6 @@
 # It stores the files in settings, OpenVpnManager will later copy them into place
 #
 
-serverAddress=${1}
 filename="${1}"
 destination=`mktemp || -3`
 

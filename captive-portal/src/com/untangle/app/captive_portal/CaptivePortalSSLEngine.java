@@ -289,16 +289,31 @@ public class CaptivePortalSSLEngine
         // now that we've parsed the client request we create the redirect
         InetAddress hostAddr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
         int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        String captureHost = hostAddr.getHostAddress().toString();
+        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String targetPort = "";
+        String urlPrefix = "";
 
-        // handle our http server configured for a different port
-        if (httpPort != 80) {
-            captureHost = captureHost + ":" + httpPort;
+        // start with hostname but prefer hostName + domainName if both are defined
+        String fullName = hostName;
+        if ((domainName != null) && (domainName.length() > 0)) fullName = (hostName + "." + domainName);
+
+        // start with the client interface IP address but prefer hostname when enabled
+        String captureHost = hostAddr.getHostAddress().toString();
+        if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
+            captureHost = fullName;
         }
 
-        // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
-        String prefix = "http://";
-        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
+        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
+            // set the urlPrefix and target port if secure capture is enabled
+            urlPrefix = "https://";
+            if (httpsPort != 443) targetPort = (":" + Integer.toString(httpsPort));
+        } else {
+            // set the urlPrefix and target port if secure capture is NOT enabled
+            urlPrefix = "http://";
+            if (httpPort != 80) targetPort = (":" + Integer.toString(httpPort));
+        }
 
         // VERY IMPORTANT - the NONCE value must be a1b2c3d4e5f6 because the
         // handler.py script looks for this special value and uses it to
@@ -306,7 +321,7 @@ public class CaptivePortalSSLEngine
         // requested page after login.  Yes it's a hack but I didn't want to
         // add an additional form field and risk breaking existing custom pages
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: " + prefix + captureHost + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + appStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
+        vector += "Location: " + urlPrefix + captureHost + targetPort + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + appStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";

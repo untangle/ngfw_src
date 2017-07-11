@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -38,7 +37,7 @@ public class WanFailoverTesterMonitor
     
     private boolean isRunning = false;
     
-    private Boolean wanStatusArray[] = new Boolean[IntfConstants.MAX_INTF+1];
+    private Boolean wanStatusArray[] = new Boolean[InterfaceSettings.MAX_INTERFACE_ID+1];
 
     
     public WanFailoverTesterMonitor( WanFailoverApp app )
@@ -100,7 +99,7 @@ public class WanFailoverTesterMonitor
 
         // reinitialize the wanStatusArray
         wanStatusArray[0] = null; // there is no interface "0"
-        for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+        for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
             wanStatusArray[i] = null;
         }
 
@@ -152,7 +151,7 @@ public class WanFailoverTesterMonitor
     {
         List<WanStatus> statusList = new LinkedList<WanStatus>();
         
-        for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+        for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
             InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId( i );
             if ( ic != null && ic.getIsWan() ) {
                 statusList.add(new WanStatus( i, ic.getName(), ic.getSystemDev(), (this.wanStatusArray[i] == null ? Boolean.TRUE : this.wanStatusArray[i])));
@@ -184,7 +183,7 @@ public class WanFailoverTesterMonitor
         // update the connected and disabled WAN blingers
         int connectedWans = 0;
         int disconnectedWans = 0;
-        for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+        for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
             if (wanStatusArray[i] != null)
                 if (wanStatusArray[i])
                     connectedWans++;
@@ -199,7 +198,7 @@ public class WanFailoverTesterMonitor
     {
         //first find the lowest id that is an active WAN
         int defaultWan = 0;
-        for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+        for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
             if (wanStatusArray[i] != null && wanStatusArray[i]) {
                 defaultWan = i;
                 break;
@@ -208,7 +207,7 @@ public class WanFailoverTesterMonitor
 
         if (defaultWan == 0) {
             logger.warn("No active WANs found, using first WAN");
-            for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+            for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
                 InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId( i );
                 if ( ic != null && ic.getIsWan() ) {
                     defaultWan = i;
@@ -224,7 +223,7 @@ public class WanFailoverTesterMonitor
 
         String onlineWans  = "";
         String offlineWans = "";
-        for (int i = 1 ; i < IntfConstants.MAX_INTF+1 ; i++) {
+        for (int i = 1 ; i < InterfaceSettings.MAX_INTERFACE_ID+1 ; i++) {
             if (wanStatusArray[i] != null) {
                 if (wanStatusArray[i]) {
                     onlineWans += " " + i;

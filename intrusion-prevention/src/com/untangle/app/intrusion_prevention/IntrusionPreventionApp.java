@@ -621,9 +621,6 @@ public class IntrusionPreventionApp extends AppBase
          * Pull static addresses
          */
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
-                continue;
-            }
             if ( interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ){
                 continue;
             }
@@ -661,13 +658,13 @@ public class IntrusionPreventionApp extends AppBase
             for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
                 isWanInterface = false;
                 for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-                    if( interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId() ){
+                    if(interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId()) {
                         continue;
                     }
-                    if(interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
+                    if(interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED) {
                         continue;
                     }
-                    if( interfaceSettings.getIsWan()){
+                    if(interfaceSettings.getIsWan()) {
                         isWanInterface = true;
                     }
                 }
@@ -708,7 +705,7 @@ public class IntrusionPreventionApp extends AppBase
     {
         List<String> interfaces = new LinkedList<String>();
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() ){
+            if (interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.DISABLED) {
                 continue;
             }
             interfaces.add( interfaceSettings.getSystemDev() );

@@ -1,6 +1,6 @@
 Ext.define('Ung.config.network.view.DhcpServer', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config-network-dhcpserver',
+    alias: 'widget.config-network-dhcp-server',
     itemId: 'dhcp-server',
 
     viewModel: true,

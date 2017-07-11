@@ -112,16 +112,6 @@ CREATE TABLE reports.sessions (
                                  "application_control_application",
                                  "application_control_blocked",
                                  "application_control_flagged"])
-    sql_helper.add_column('sessions','policy_rule_id','int2') # 12.1
-    sql_helper.add_column('sessions','client_country','text') # 12.1
-    sql_helper.add_column('sessions','client_latitude','real') # 12.1
-    sql_helper.add_column('sessions','client_longitude','real') # 12.1
-    sql_helper.add_column('sessions','server_country','text') # 12.1
-    sql_helper.add_column('sessions','server_latitude','real') # 12.1
-    sql_helper.add_column('sessions','server_longitude','real') # 12.1
-    sql_helper.add_column('sessions','local_addr','inet') # 12.2
-    sql_helper.add_column('sessions','remote_addr','inet') # 12.2
-    sql_helper.drop_column('sessions','shield_blocked') # 12.2
     sql_helper.add_column('sessions','tags','text') # 13.0
 
 @sql_helper.print_timing
@@ -194,9 +184,6 @@ CREATE TABLE reports.session_minutes (
                                  "client_intf",
                                  "server_intf",
                                  "application_control_application"])
-    sql_helper.add_column('session_minutes','local_addr','inet') # 12.2
-    sql_helper.add_column('session_minutes','remote_addr','inet') # 12.2
-    sql_helper.drop_column('session_minutes','shield_blocked') # 12.2
     sql_helper.add_column('session_minutes','tags','text') # 13.0
         
 

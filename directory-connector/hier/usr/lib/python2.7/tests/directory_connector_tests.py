@@ -37,7 +37,8 @@ def create_ad_settings(ldap_secure=False):
     else:
         ldap_port = 389
     return {
-       "activeDirectorySettings": {
+        "apiEnabled": True,
+        "activeDirectorySettings": {
             "LDAPHost": AD_HOST,
             "LDAPSecure": ldap_secure,
             "LDAPPort": ldap_port,
@@ -47,7 +48,7 @@ def create_ad_settings(ldap_secure=False):
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
             "superuserPass": AD_PASSWORD
-       },
+        },
         "radiusSettings": {
             "port": 1812, 
             "enabled": False, 
@@ -72,6 +73,7 @@ def create_radius_settings():
     Need to send Active Directory setting even though it's not used in this case.
     """
     return {
+        "apiEnabled": True,
         "activeDirectorySettings": {
             "enabled": False, 
             "superuserPass": AD_PASSWORD, 
@@ -210,6 +212,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         appSettings = app.getSettings()
         appSettings.get('googleSettings')['authenticationEnabled'] = True
         appSettings.get('facebookSettings')['authenticationEnabled'] = True
+        appSettings['apiEnabled'] = True
         app.setSettings(appSettings)
 
         

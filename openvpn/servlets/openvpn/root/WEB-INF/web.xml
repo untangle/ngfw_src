@@ -7,7 +7,7 @@
   <display-name>OpenVPN</display-name>
 
   <description>
-    OpenVPN client download utility
+    OpenVPN Servlet
   </description>
 
   <!-- Download the windows setup or configuration file -->

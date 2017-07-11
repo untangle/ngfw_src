@@ -19,7 +19,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     private final CaptivePortalApp captureApp;
 
 // THIS IS FOR ECLIPSE - @formatter:off
-    
+
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>\r\n"
         + "<TITLE>Captive Portal - Access Denied - Authentication Required</TITLE>\r\n"
@@ -54,16 +54,43 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     {
         CaptivePortalBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
-        
-        // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
-        String prefix = "http://";
-        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
-        
-        String retval = (prefix + host + "/capture/handler.py/index?nonce=" + nonce);
+
+        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String targetPort = "";
+        String urlPrefix = "";
+
+        // start with hostname but prefer hostName + domainName if both are defined
+        String fullName = hostName;
+        if ((domainName != null) && (domainName.length() > 0)) fullName = (hostName + "." + domainName);
+
+        // start with the passed host which should be the IP of the appropriate interface
+        String captureHost = host;
+
+        // if the redirectUsingHostname flag is set we use the configured hostname instead
+        if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
+            captureHost = fullName;
+        }
+
+        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
+            // set the urlPrefix and target port if secure capture is enabled
+            urlPrefix = "https://";
+            if (httpsPort != 443) targetPort = (":" + Integer.toString(httpsPort));
+        } else {
+            // set the urlPrefix and target port if secure capture is NOT enabled
+            urlPrefix = "http://";
+            if (httpPort != 80) targetPort = (":" + Integer.toString(httpPort));
+        }
+
+        String retval = (urlPrefix + captureHost + targetPort + "/capture/handler.py/index?nonce=" + nonce);
         retval = (retval + "&method=" + details.getMethod());
         retval = (retval + "&appid=" + appSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
+
+        logger.debug("CLIENT REPLY = " + retval);
         return (retval);
     }
 }
