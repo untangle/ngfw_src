@@ -40,9 +40,14 @@ This Python script is called by the Untangle server in front of the Captive
 Portal user to perform final validation of the client and retrieve the
 email address used to login.
 
+/var/cache/apache2/facebook_auth.txt
+/var/cache/apache2/facebook_user.txt
+/var/cache/apache2/google_auth.txt
+/var/cache/apache2/google_user.txt
+/var/cache/apache2/microsoft_auth.txt
+/var/cache/apache2/microsoft_user.txt
 
-/var/cache/apache2/login.txt
-/var/cache/apache2/token.txt
+These files are used to load the auth and user data instead of fetching from
+the external providers when the development flag file exists:
 
-These two files are used by getAccessToken when the development flag in the
-script is manually set to True.
+  Development Flag File: /var/cache/apache2/development.flag

@@ -10,14 +10,19 @@ import os
 
 def handle_google(logfile,authcode):
 
-	authdata = {}
-	authdata['code'] = authcode
-	authdata['client_id'] = '271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com'
-	authdata['client_secret'] = 'GMbC0PUZe2qCw_sq98_-SE5l'
-	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
-	authdata['grant_type'] = 'authorization_code'
-	authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
-	authtext = authresp.text;
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/google_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = '271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com'
+		authdata['client_secret'] = 'GMbC0PUZe2qCw_sq98_-SE5l'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
+		authtext = authresp.text;
 
 	logfile.write("AUTH: %s\n" % (authtext));
 	authjson = json.loads(authtext)
@@ -25,10 +30,15 @@ def handle_google(logfile,authcode):
 	if (not "access_token" in authjson):
 		return("ERROR: missing access")
 
-	userdata = {}
-	userdata['access_token'] = authjson['access_token']
-	userresp = requests.get("https://www.googleapis.com/plus/v1/people/me", params=userdata)
-	usertext = userresp.text
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/google_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userdata = {}
+		userdata['access_token'] = authjson['access_token']
+		userresp = requests.get("https://www.googleapis.com/plus/v1/people/me", params=userdata)
+		usertext = userresp.text
 
 	logfile.write("USER: %s\n" % (usertext));
 	userjson = json.loads(usertext)
@@ -47,14 +57,19 @@ def handle_google(logfile,authcode):
 
 def handle_facebook(logfile,authcode):
 
-	authdata = {}
-	authdata['code'] = authcode
-	authdata['client_id'] = '1840471182948119'
-	authdata['client_secret'] = '0f93a8ce9631adf41115447354432bb8'
-	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
-	authdata['grant_type'] = 'authorization_code'
-	authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
-	authtext = authresp.text;
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/facebook_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = '1840471182948119'
+		authdata['client_secret'] = '0f93a8ce9631adf41115447354432bb8'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
+		authtext = authresp.text;
 
 	logfile.write("AUTH: %s\n" % (authtext));
 	authjson = json.loads(authtext)
@@ -62,11 +77,16 @@ def handle_facebook(logfile,authcode):
 	if (not "access_token" in authjson):
 		return("ERROR: missing access")
 
-	userdata = {}
-	userdata['access_token'] = authjson['access_token']
-	userdata['fields'] = 'id,name,email'
-	userresp = requests.get("https://graph.facebook.com/me", params=userdata)
-	usertext = userresp.text
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/google_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userdata = {}
+		userdata['access_token'] = authjson['access_token']
+		userdata['fields'] = 'id,name,email'
+		userresp = requests.get("https://graph.facebook.com/me", params=userdata)
+		usertext = userresp.text
 
 	logfile.write("USER: %s\n" % (usertext));
 	userjson = json.loads(usertext)
