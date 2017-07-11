@@ -17,7 +17,6 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
         });
     },
