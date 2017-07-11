@@ -93,6 +93,15 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
     buildApps: function (policy) {
         var me = this, appsList = [], instance, status = null, parentPolicy = null;
+
+        // fix NGFW-10894 - after creating new policy and installing apps within policy manager
+        Rpc.asyncData('rpc.appManager.getAppsViews')
+            .then(function (policies) {
+                Ext.getStore('policies').loadData(policies);
+            });
+        // also get the current policy apps if were installed/removed
+        Ung.app.getGlobalController().getAppsView().getController().getApps();
+
         Ext.Array.each(policy.appProperties.list, function (app) {
 
             if (app.type !== 'FILTER') { return; }
