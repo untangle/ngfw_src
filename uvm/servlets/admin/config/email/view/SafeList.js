@@ -61,9 +61,9 @@ Ext.define('Ung.config.email.view.SafeList', {
 
         title: 'Per User Safe Lists'.t(),
 
-        viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-        },
+        // viewConfig: {
+        //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+        // },
         selModel: {
             selType: 'checkboxmodel'
         },
