@@ -1217,16 +1217,16 @@ class NetworkTests(unittest2.TestCase):
         remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
         result = uvmContext.hostTable().getHosts()
-        sessionList = result['list']
+        hostList = result['list']
         # find session generated with netcat in session table.
-        for i in range(len(sessionList)):
-            # print sessionList[i]
+        for i in range(len(hostList)):
+            # print hostList[i]
             # print "------------------------------"
-            if (sessionList[i]['address'] == remote_control.clientIP):
-                foundTestSession = True
+            if (hostList[i]['address'] == remote_control.clientIP):
+                foundHost = True
                 break
         remote_control.run_command("pkill netcat")
-        assert(foundTestSession)
+        assert(foundHost)
 
     # Test logging of blocked sessions via untangle-nflogd
     def test_150_filterRulesBlockedEventLog(self):
@@ -1271,6 +1271,62 @@ class NetworkTests(unittest2.TestCase):
         assert(events != None)
         assert(found)
 
+    # Test that filter rule's SRC_ADDR condition supports commas
+    def test_151_filterRulesBlockedSrcComma(self):
+        # verify port 80 is open
+        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+
+        # Add a block rule for port 80 and enabled blocked session logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ createFilterRule("SRC_ADDR",remote_control.clientIP+",1.2.3.4","PROTOCOL","TCP",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # make the request again which should now be blocked
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        # put the network settings back the way we found them
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert (result1 == 0)
+        assert (result2 != 0)
+
+    # Test that filter rule's SRC_ADDR condition supports commas
+    def test_152_filterRulesBlockedSrcMacComma(self):
+        foundTestSession = False
+        remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
+        time.sleep(2) # since we launched netcat in background, give it a second to establish connection
+        result = uvmContext.hostTable().getHosts()
+        hostList = result['list']
+        # find session generated with netcat in session table.
+        for i in range(len(hostList)):
+            # print hostList[i]
+            # print "------------------------------"
+            if (hostList[i]['address'] == remote_control.clientIP):
+                foundHost = hostList[i]
+                break
+        remote_control.run_command("pkill netcat")
+        assert(foundHost != None)
+        if foundHost.get('macAddress') == None:
+            raise unittest2.SkipTest('Skipping because we dont know the MAC')
+        
+        print foundHost.get('macAddress')
+        # verify port 80 is open
+        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+
+        # Add a block rule for port 80 and enabled blocked session logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ createFilterRule("SRC_MAC",foundHost.get('macAddress')+",22:22:22:22:22:22","PROTOCOL","TCP",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # make the request again which should now be blocked
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        # put the network settings back the way we found them
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert (result1 == 0)
+        assert (result2 != 0)
+        
     # Test UDP traceroute bug 12663 
     def test_160_tracerouteUDP(self):
         tracerouteExists = remote_control.run_command("test -x /usr/sbin/traceroute")
