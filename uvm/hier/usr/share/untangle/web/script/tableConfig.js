@@ -3050,6 +3050,12 @@ Ext.define('Ung.TableConfig', {
                                 return i18n._( "Active Directory" );
                             case "RADIUS":
                                 return i18n._( "RADIUS" );
+                            case "GOOGLE":
+                                return i18n._( "Google Account" );
+                            case "FACEBOOK":
+                                return i18n._( "Facebook Account" );
+                            case "MICROSOFT":
+                                return i18n._( "Microsoft Account" );
                             case "CUSTOM":
                                 return i18n._( "Custom" );
                         }
