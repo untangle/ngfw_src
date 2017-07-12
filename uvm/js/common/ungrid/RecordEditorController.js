@@ -21,7 +21,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
     conditionsGrid: {
         xtype: 'grid',
-        trackMouseOver: false,
         disableSelection: true,
         sortableColumns: false,
         enableColumnHide: false,
