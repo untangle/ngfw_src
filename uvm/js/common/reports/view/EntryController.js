@@ -40,6 +40,8 @@ Ext.define('Ung.view.reports.EntryController', {
             entryContainer = me.getView().down('#entryContainer'),
             dataGrid = this.getView().down('#currentData');
 
+        vm.set('context', Ung.app.servletContext);
+
         vm.bind('{entry}', function (entry) {
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
@@ -361,7 +363,11 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
+        var tb = me.getView().down('#actionsToolbar');
+        tb.setDisabled(true); // disable toolbar actions while fetching data
+
         ctrl.fetchData(false, function () {
+            tb.setDisabled(false);
             if (vm.get('autoRefresh')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.refreshData();

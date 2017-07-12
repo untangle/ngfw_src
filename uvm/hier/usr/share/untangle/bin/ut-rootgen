@@ -13,7 +13,7 @@ SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.
 # Even though these aren't used when creating the root certificate
 # we have to define and export them since they are referenced
 # in parts of our ut-openssl.cnf file.
-UT_ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
+UT_ROOT_PATH="@PREFIX@/usr/share/untangle/settings/untangle-certificates"
 UT_EXT_MODE="req_ext_nil"
 UT_SAN_LIST="empty"
 export UT_ROOT_PATH

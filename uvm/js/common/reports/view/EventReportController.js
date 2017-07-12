@@ -136,9 +136,8 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         var grid = v.down('grid');
 
-        me.getViewModel().set('eventsData', []);
         if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
-        me.getView().setLoading(true);
+        // me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
@@ -149,7 +148,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
                 }
-                me.getView().setLoading(false);
+                // me.getView().setLoading(false);
                 if (treeNav) { treeNav.setDisabled(false); }
 
                 me.loadResultSet(result);
