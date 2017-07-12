@@ -300,7 +300,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         }
 
         if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
-        me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
+        // me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
             vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000));
@@ -314,7 +314,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function (result) {
                 if (treeNav) { treeNav.setDisabled(false); }
-                me.chart.hideLoading();
+                // me.chart.hideLoading();
                 me.data = result.list;
 
                 // after data is fetched, generate chart series based on it's type

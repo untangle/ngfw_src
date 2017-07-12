@@ -90,6 +90,7 @@ Ext.define('Ung.view.reports.Entry', {
             }]
         }, {
             xtype: 'toolbar',
+            itemId: 'actionsToolbar',
             ui: 'footer',
             dock: 'bottom',
             // border: true,
