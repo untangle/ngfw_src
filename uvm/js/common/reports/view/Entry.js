@@ -211,9 +211,11 @@ Ext.define('Ung.view.reports.Entry', {
                 }
             }, '-', {
                 itemId: 'dashboardBtn',
+                hidden: true,
                 bind: {
                     iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
-                    text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard'
+                    text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
+                    hidden: '{context !== "admin"}'
                 },
                 handler: 'dashboardAddRemove'
             }]
