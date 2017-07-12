@@ -40,6 +40,8 @@ Ext.define('Ung.view.reports.EntryController', {
             entryContainer = me.getView().down('#entryContainer'),
             dataGrid = this.getView().down('#currentData');
 
+        vm.set('context', Ung.app.servletContext);
+
         vm.bind('{entry}', function (entry) {
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
