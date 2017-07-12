@@ -43,6 +43,10 @@ def create_ad_settings(ldap_secure=False):
             "LDAPSecure": ldap_secure,
             "LDAPPort": ldap_port,
             "OUFilter": "",
+            "OUFilters": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
             "domain": AD_DOMAIN,
             "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
