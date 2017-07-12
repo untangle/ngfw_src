@@ -102,7 +102,47 @@ def handle_facebook(logfile,authcode):
 #------------------------------------------------------------------------------
 
 def handle_microsoft(logfile,authcode):
-	return("ERROR: missing something")
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/microsoft_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = 'f963a9b1-4d6c-4970-870d-3a75014e1364'
+		authdata['client_secret'] = 'qOYMyx9TdyAjveTQ6T1CA5e'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", data=authdata)
+		authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/microsoft_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userhead = {}
+		userhead['Authorization'] = ('Bearer ' + authjson['access_token'])
+		userresp = requests.get("https://graph.microsoft.com/v1.0/me", headers=userhead)
+		usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("userPrincipalName" in userjson):
+		return(userjson['userPrincipalName'])
+
+	if ("displayName" in userjson):
+		return(userjson['displayName'])
+
+	return("ERROR: missing identity")
 
 #------------------------------------------------------------------------------
 qstring = None
