@@ -114,6 +114,10 @@ def createRadiusSettings():
             "superuserPass": "passwd",
             "LDAPPort": "389",
             "OUFilter": "",
+            "OUFilters": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
             "domain": "adtest.metaloft.com",
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "LDAPHost": AD_HOST,
