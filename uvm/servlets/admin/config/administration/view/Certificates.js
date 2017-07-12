@@ -101,7 +101,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
             flex: 1,
             bind: '{certificates}',
             layout: 'fit',
-            trackMouseOver: false,
+
             sortableColumns: false,
             enableColumnHide: false,
 

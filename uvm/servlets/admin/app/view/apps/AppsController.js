@@ -142,8 +142,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     vm.set('policyName', policyNode.get('name'));
                     me.getApps();
                 } else {
-                    Ext.Msg.alert('Error!', 'No policy with id: ' + vm.get('policyId'));
-                    Ung.app.redirectTo('#apps/1'); // redirect to main policy
+                    Ung.app.redirectTo('#apps/1'); // redirect to main policy if in apps view
                 }
             }
         });
@@ -184,7 +183,6 @@ Ext.define('Ung.view.apps.AppsController', {
                 vm.set('policyName', policyNode.get('name'));
                 vm.set('policyMenu', true);
             } else {
-                Ext.Msg.alert('Error!', 'No policy with id: ' + vm.get('policyId'));
                 Ung.app.redirectTo('#apps/1'); // redirect to main policy
             }
         } else {
