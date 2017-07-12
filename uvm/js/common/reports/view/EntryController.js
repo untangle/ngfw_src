@@ -353,7 +353,11 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
+        var tb = me.getView().down('#actionsToolbar');
+        tb.setDisabled(true); // disable toolbar actions while fetching data
+
         ctrl.fetchData(false, function () {
+            tb.setDisabled(false);
             if (vm.get('autoRefresh')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.refreshData();
