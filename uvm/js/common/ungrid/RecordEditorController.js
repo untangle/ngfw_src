@@ -21,7 +21,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
     conditionsGrid: {
         xtype: 'grid',
-        trackMouseOver: false,
         disableSelection: true,
         sortableColumns: false,
         enableColumnHide: false,
@@ -375,6 +374,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 queryMode: 'local',
                 selectOnFocus: false,
                 // anyMatch: true,
+                growMax: 60,
                 createNewOnEnter: true,
                 createNewOnBlur: true,
                 value: record.get('value'),
@@ -408,6 +408,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 queryMode: 'local',
                 selectOnFocus: false,
                 // anyMatch: true,
+                growMax: 60,
                 createNewOnEnter: true,
                 createNewOnBlur: true,
                 // value: record.get('value'),
@@ -456,6 +457,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 queryMode: 'local',
                 selectOnFocus: false,
                 // anyMatch: true,
+                growMax: 60,
                 createNewOnEnter: true,
                 createNewOnBlur: true,
                 // value: record.get('value'),
