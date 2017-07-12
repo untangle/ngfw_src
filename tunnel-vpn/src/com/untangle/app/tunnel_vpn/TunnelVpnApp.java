@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -119,6 +120,11 @@ public class TunnelVpnApp extends AppBase
         }
 
         /**
+         * sync these settings to the filesystem
+         */
+        syncToSystem((this.getRunState() == AppSettings.AppState.RUNNING));
+        
+        /**
          * Write the external resources & scripts
          */
         this.tunnelVpnManager.writeIptablesFiles( settings );
@@ -157,6 +163,8 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void postDestroy()
     {
+        syncToSystem( false );
+        removeAllTunnelVirtualInterfaces();
     }
         
     @Override
@@ -165,10 +173,10 @@ public class TunnelVpnApp extends AppBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         TunnelVpnSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/tunnel-vpn/" + "settings_" + appID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/tunnel-vpn/" + "settings_" + appID + ".js";
 
         try {
-            readSettings = settingsManager.load( TunnelVpnSettings.class, settingsFileName );
+            readSettings = settingsManager.load( TunnelVpnSettings.class, settingsFilename );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -184,7 +192,17 @@ public class TunnelVpnApp extends AppBase
         else {
             logger.info("Loading Settings...");
 
-            // UPDATE settings if necessary
+            /**
+             * If the settings file date is newer than the system files, re-sync them
+             */
+            if ( ! UvmContextFactory.context().isDevel() ) {
+                File settingsFile = new File( settingsFilename );
+                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn-rules");
+                if (settingsFile.lastModified() > outputFile.lastModified() ) {
+                    logger.warn("Settings file newer than interfaces files, Syncing...");
+                    this.setSettings( readSettings );
+                } 
+            }
             
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
@@ -255,7 +273,55 @@ public class TunnelVpnApp extends AppBase
         
         return extra;
     }
+
+    /**
+     * This removes all tunnels from network settings
+     */
+    private void removeAllTunnelVirtualInterfaces()
+    {
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        List<InterfaceSettings> nonTunnelInterfaces = networkSettings.getVirtualInterfaces().stream().filter(x -> !x.getIsWan()).collect(Collectors.toList());
+        networkSettings.setVirtualInterfaces(nonTunnelInterfaces);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+    }
+    
+    /**
+     * Sync the settings to the filesystem
+     */
+    private void syncToSystem( boolean enabled )
+    {
+        /**
+         * First we write a new 350-tunnel-vpn iptables script with the current settings
+         */
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_"  + appID + ".js";
+        String scriptFilename = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-sync-settings.py";
+        String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
+        String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
+        if ( !enabled )
+            output += " -d";
+        String lines[] = output.split("\\r?\\n");
+        for ( String line : lines )
+            logger.info("Sync Settings: " + line);
+
+        /**
+         * Run the iptables script
+         */
+        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
+        lines = output.split("\\r?\\n");
+        for ( String line : lines )
+            logger.info("Adding tunnel-vpn iptables: " + line);
+
+        /**
+         * Run the route script
+         */
+        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/post-network-hook.d/050-tunnel-vpn");
+        lines = output.split("\\r?\\n");
+        for ( String line : lines )
+            logger.info("Adding tunnel-vpn routes  : " + line);
         
+    }
+
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override
