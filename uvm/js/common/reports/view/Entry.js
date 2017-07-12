@@ -687,7 +687,6 @@ Ext.define('Ung.view.reports.Entry', {
                 items: [{
                     xtype: 'grid',
                     itemId: 'sqlConditions',
-                    trackMouseOver: false,
                     sortableColumns: false,
                     enableColumnResize: false,
                     enableColumnMove: false,
@@ -820,7 +819,6 @@ Ext.define('Ung.view.reports.Entry', {
         split: true,
         hidden: true,
 
-        trackMouseOver: false,
         sortableColumns: false,
         enableColumnResize: false,
         enableColumnMove: false,

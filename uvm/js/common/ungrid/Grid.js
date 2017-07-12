@@ -109,7 +109,6 @@ Ext.define('Ung.cmp.Grid', {
     stateful: false,
 
     layout: 'fit',
-    trackMouseOver: false,
     enableColumnHide: false,
     // columnLines: true,
     scrollable: true,
