@@ -170,7 +170,6 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     conditionsGrid: {
         xtype: 'grid',
-        trackMouseOver: false,
         disableSelection: true,
         sortableColumns: false,
         enableColumnHide: false,
@@ -616,7 +615,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                                         match = false;
                                         break;
                                     }
-                                }   
+                                }
                             }
                         }
                     }, this ) );
@@ -675,7 +674,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
               case 'boolean':
                 fieldType = 'boolean';
-                break;                
+                break;
             }
         }
         return fieldType;
@@ -899,7 +898,7 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
         if(conditions.length == 0){
             className = '*All*';
         }else{
-            className = conditions[0].fieldValue;            
+            className = conditions[0].fieldValue;
         }
             className = className.substring( 1, className.length - 1);
 
@@ -955,6 +954,6 @@ Ext.define('Ung.cmp.EventGridColumns', {
         header: 'Conditions'.t(),
         flex: 1,
         dataIndex: 'conditions',
-        renderer: 'conditionFieldsRenderer'        
+        renderer: 'conditionFieldsRenderer'
     }
 });

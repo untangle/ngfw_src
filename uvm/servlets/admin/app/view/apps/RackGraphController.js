@@ -48,6 +48,7 @@ Ext.define('Ung.view.apps.RackGraphController', {
                     fontSize: '12px'
                 }
             },
+            lang: { noData: '' },
             exporting: {
                 enabled: false
             },
