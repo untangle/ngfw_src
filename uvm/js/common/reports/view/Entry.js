@@ -90,6 +90,7 @@ Ext.define('Ung.view.reports.Entry', {
             }]
         }, {
             xtype: 'toolbar',
+            itemId: 'actionsToolbar',
             ui: 'footer',
             dock: 'bottom',
             // border: true,
@@ -210,9 +211,11 @@ Ext.define('Ung.view.reports.Entry', {
                 }
             }, '-', {
                 itemId: 'dashboardBtn',
+                hidden: true,
                 bind: {
                     iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
-                    text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard'
+                    text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
+                    hidden: '{context !== "admin"}'
                 },
                 handler: 'dashboardAddRemove'
             }]
@@ -686,7 +689,6 @@ Ext.define('Ung.view.reports.Entry', {
                 items: [{
                     xtype: 'grid',
                     itemId: 'sqlConditions',
-                    trackMouseOver: false,
                     sortableColumns: false,
                     enableColumnResize: false,
                     enableColumnMove: false,
@@ -819,7 +821,6 @@ Ext.define('Ung.view.reports.Entry', {
         split: true,
         hidden: true,
 
-        trackMouseOver: false,
         sortableColumns: false,
         enableColumnResize: false,
         enableColumnMove: false,
