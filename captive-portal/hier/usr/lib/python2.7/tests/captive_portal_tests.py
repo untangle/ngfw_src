@@ -79,6 +79,10 @@ def createDirectoryConnectorSettings():
             "LDAPHost": AD_HOST,
             "LDAPPort": 389,
             "OUFilter": "",
+            "OUFilters": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
             "domain": "adtest.adtesting.int",
             "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
