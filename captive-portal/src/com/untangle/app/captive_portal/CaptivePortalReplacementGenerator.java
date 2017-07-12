@@ -40,9 +40,9 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     protected static final String FACEBOOK_AUTH_PATH = "/v2.9/dialog/oauth";
     protected static final String FACEBOOK_CLIENT_ID = "1840471182948119";
 
-    protected static final String MICROSOFT_AUTH_HOST = "login.windows.net";
-    protected static final String MICROSOFT_AUTH_PATH = "/common/oauth2/authorize";
-    protected static final String MICROSOFT_CLIENT_ID = "TODO-NEED-SOMETHING-HERE-TODO";
+    protected static final String MICROSOFT_AUTH_HOST = "login.microsoftonline.com";
+    protected static final String MICROSOFT_AUTH_PATH = "/common/oauth2/v2.0/authorize";
+    protected static final String MICROSOFT_CLIENT_ID = "f963a9b1-4d6c-4970-870d-3a75014e1364";
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -116,7 +116,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
             return (exauth.toString());
         }
 
-        // if using Google authentication setup the authentication redirect
+        // if using Facebook authentication setup the authentication redirect
         // and pass the target as the OAuth state
         if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
             exauth.setScheme("https");
@@ -126,6 +126,21 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
             exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
             exauth.addParameter("response_type", "code");
             exauth.addParameter("scope", "email");
+            exauth.addParameter("state", target.toString());
+            logger.debug("CLIENT REPLY = " + exauth.toString());
+            return (exauth.toString());
+        }
+
+        // if using Microsoft authentication setup the authentication redirect
+        // and pass the target as the OAuth state
+        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
+            exauth.setScheme("https");
+            exauth.setHost(MICROSOFT_AUTH_HOST);
+            exauth.setPath(MICROSOFT_AUTH_PATH);
+            exauth.addParameter("client_id", MICROSOFT_CLIENT_ID);
+            exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
+            exauth.addParameter("response_type", "code");
+            exauth.addParameter("scope", "openid User.Read");
             exauth.addParameter("state", target.toString());
             logger.debug("CLIENT REPLY = " + exauth.toString());
             return (exauth.toString());
