@@ -51,6 +51,12 @@ if [ "$provider" == "Untangle" ] ; then
 
     # Specify device explicitly
     setOption "dev" "tun${tunnel_id}" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+
+    # Add up/down scripts
+    setOption "script-security" "2" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    echo "up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    echo "down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+
 else     
     echo "Unknown provider: $provider"
     cleanup 1
