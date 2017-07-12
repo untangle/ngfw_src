@@ -7,6 +7,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -142,10 +143,10 @@ public class WanBalancerApp extends AppBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         WanBalancerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + appID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + appID + ".js";
         
         try {
-            readSettings = settingsManager.load( WanBalancerSettings.class, settingsFileName );
+            readSettings = settingsManager.load( WanBalancerSettings.class, settingsFilename );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -161,8 +162,18 @@ public class WanBalancerApp extends AppBase
         else {
             logger.info("Loading Settings...");
 
-            // UPDATE settings if necessary
-            
+            /**
+             * If the settings file date is newer than the system files, re-sync them
+             */
+            if ( ! UvmContextFactory.context().isDevel() ) {
+                File settingsFile = new File( settingsFilename );
+                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/330-wan-balancer-rules");
+                if (settingsFile.lastModified() > outputFile.lastModified() ) {
+                    logger.warn("Settings file newer than interfaces files, Syncing...");
+                    this.setSettings( readSettings );
+                }
+            }
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }

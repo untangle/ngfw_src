@@ -105,6 +105,10 @@ def createRadiusSettings():
             "LDAPPort": 636,
             "LDAPSecure": True,
             "OUFilter": "",
+            "OUFilters": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
             "domain": "mydomain.int",
             "enabled": False,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",

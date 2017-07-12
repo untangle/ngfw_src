@@ -904,6 +904,8 @@ class NetworkTests(unittest2.TestCase):
             dynIpFound = False
             if outsideIP == dynIP or outsideIP2 == dynIP:
                 dynIpFound = True
+            else:
+                time.sleep(10)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert(dynIpFound)
