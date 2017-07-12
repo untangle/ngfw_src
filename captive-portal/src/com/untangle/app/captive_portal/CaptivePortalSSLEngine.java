@@ -128,8 +128,15 @@ public class CaptivePortalSSLEngine
             if (sniHostname.toLowerCase().equals("www.facebook.com")) allowed = true;
             if (sniHostname.toLowerCase().equals("graph.facebook.com")) allowed = true;
 
+            // hosts we must allow for Microsoft OAuth
+            if (sniHostname.toLowerCase().endsWith(".microsoftonline.com")) allowed = true;
+            if (sniHostname.toLowerCase().endsWith(".microsoftonline-p.com")) allowed = true;
+            if (sniHostname.toLowerCase().endsWith(".live.com")) allowed = true;
+            if (sniHostname.toLowerCase().endsWith(".gfx.ms")) allowed = true;
+            if (sniHostname.toLowerCase().endsWith(".microsoft.com")) allowed = true;
+
             if (allowed) {
-                logger.debug("Releasing session: " + sniHostname);
+                logger.debug("Releasing OAuth session: " + sniHostname);
                 session.sendDataToServer(data);
                 session.release();
                 return true;
@@ -378,6 +385,16 @@ public class CaptivePortalSSLEngine
             exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
             exauth.addParameter("response_type", "code");
             exauth.addParameter("scope", "email");
+            exauth.addParameter("state", output.toString());
+            vector += "Location: " + exauth.toString() + "\r\n";
+        } else if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
+            exauth.setScheme("https");
+            exauth.setHost(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_HOST);
+            exauth.setPath(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_PATH);
+            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.MICROSOFT_CLIENT_ID);
+            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
+            exauth.addParameter("response_type", "code");
+            exauth.addParameter("scope", "openid User.Read");
             exauth.addParameter("state", output.toString());
             vector += "Location: " + exauth.toString() + "\r\n";
         } else {
