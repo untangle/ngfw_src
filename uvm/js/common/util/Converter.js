@@ -614,6 +614,9 @@ Ext.define('Ung.util.Converter', {
         LOCAL_DIRECTORY: 'Local Directory'.t(),
         ACTIVE_DIRECTORY: 'Active Directory'.t(),
         RADIUS: 'RADIUS'.t(),
+        GOOGLE: 'Google Account'.t(),
+        FACEBOOK: 'Facebook Account'.t(),
+        MICROSOFT: 'Microsoft Account'.t(),
         CUSTOM: 'Custom'.t(),
         default: 'Unknown'.t()
     },
