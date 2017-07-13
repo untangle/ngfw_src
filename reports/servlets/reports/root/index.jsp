@@ -58,11 +58,20 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
             ], function (ex) {
                 if (ex) { console.error(ex); return; };
                 // if everything is initialized just launch the application
-                Ext.application({
-                    extend: 'Ung.Application',
-                    namespace: 'Ung',
-                    servletContext: 'reports'
-                });
+                var chartReport = Ext.Object.fromQueryString(window.location.search.substring(1));
+                if(chartReport.reportChart == 1){
+                    Ext.application({
+                        extend: 'Ung.ChartApplication',
+                        namespace: 'Ung',
+                        servletContext: 'chart'
+                    });
+                }else{
+                    Ext.application({
+                        extend: 'Ung.Application',
+                        namespace: 'Ung',
+                        servletContext: 'reports'
+                    });
+                }
             });
         });
     </script>
