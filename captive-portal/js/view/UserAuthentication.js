@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.view.UserAuthentication', {
+Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-userauthentication',
     itemId: 'user-authentication',

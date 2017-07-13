@@ -30,7 +30,6 @@ public class TunnelVpnSettings implements Serializable, JSONString
     public List<TunnelVpnTunnelSettings> getTunnels() { return this.servers; }
     public void setTunnels( List<TunnelVpnTunnelSettings> newValue ) { this.servers = newValue; }
 
-
     public List<TunnelVpnRule> getRules() { return rules; }
     public void setRules(List<TunnelVpnRule> newValue) { rules = newValue; }
     

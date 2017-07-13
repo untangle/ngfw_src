@@ -5,9 +5,16 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
 
     viewModel: {
         stores: {
+            rules: {
+                data: '{settings.rules.list}'
+            },
             tunnels: {
                 data: '{settings.tunnels.list}'
             },
+            destinationTunnelList: {
+                fields: [ 'index', 'name' ],
+                data: '{destinationTunnelData}'
+            }
         },
     },
 
@@ -27,6 +34,7 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
     items: [
         { xtype: 'app-tunnel-vpn-status' },
         { xtype: 'app-tunnel-vpn-tunnels' },
+        { xtype: 'app-tunnel-vpn-rules' },
     ]
 
 });

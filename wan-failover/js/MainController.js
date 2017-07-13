@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanfailover.MainController', {
+Ext.define('Ung.apps.wan-failover.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-wan-failover',
 
@@ -108,9 +108,9 @@ Ext.define('Ung.apps.wanfailover.MainController', {
     }
 });
 
-Ext.define('Ung.apps.wanfailover.SpecialController', {
+Ext.define('Ung.apps.wan-failover.SpecialController', {
     extend: 'Ung.cmp.GridController',
-    alias: 'controller.app-wanfailover-special',
+    alias: 'controller.app-wan-failover-special',
 
     generateSuggestions: function(btn) {
         var parent = btn.up('#tests');

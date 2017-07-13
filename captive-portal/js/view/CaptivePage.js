@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
+Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-captivepage',
     itemId: 'captive-page',

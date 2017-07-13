@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.MainController', {
+Ext.define('Ung.apps.captive-portal.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-captive-portal',
 
