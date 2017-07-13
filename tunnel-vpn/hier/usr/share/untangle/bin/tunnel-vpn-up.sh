@@ -1,7 +1,5 @@
 #!/bin/sh
 
-exec >/tmp/foo
-
 echo
 echo "`date`"
 echo "bytes_received: ${bytes_received}"
@@ -41,3 +39,23 @@ echo "trusted_port: ${trusted_port}"
 echo "untrusted_port: ${untrusted_port}"
 echo "username: ${username}"
 echo
+
+if [ -z "${dev}" ] ; then
+    echo "Missing dev!"
+    exit 1
+fi
+if [ -z "${ifconfig_remote}" ] ; then
+    echo "Missing remote IP!"
+    exit 1
+fi
+
+interface_id="`echo ${dev} | sed -e 's/[a-zA-Z]//g'`"
+if [ -z "${interface_id}" ] ; then
+    echo "Missing ID!"
+    exit 1
+fi
+
+/usr/share/untangle-netd/bin/add-uplink.sh ${dev} ${ifconfig_remote} uplink.${interface_id} -4
+
+
+
