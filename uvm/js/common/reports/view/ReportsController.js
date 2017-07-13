@@ -20,6 +20,7 @@ Ext.define('Ung.view.reports.ReportsController', {
         var me = this, vm = me.getViewModel(), path = '';
         me.getView().setLoading(false);
 
+        me.buildTablesStore();
         vm.bind('{hash}', function (hash) {
             if (!hash) { me.resetView(); return; }
 
@@ -32,6 +33,13 @@ Ext.define('Ung.view.reports.ReportsController', {
             me.lookup('tree').selectPath(path, 'slug', '/', me.selectPath, me);
         });
         me.buildStats();
+    },
+
+    buildTablesStore: function () {
+        var me = this; vm = me.getViewModel();
+        Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
+            vm.set('tables', result); // used in advanced report settings table name
+        });
     },
 
     /**
