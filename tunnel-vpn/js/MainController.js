@@ -16,6 +16,16 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
+
+            var destinationTunnelData = [];
+            destinationTunnelData.push([0, 'Route Normally'.t()]);
+            if ( result.tunnels && result.tunnels.list ) {
+                for (var i = 0 ; i < result.tunnels.list.length ; i++) {
+                    var tunnel = result.tunnels.list[i];
+                    destinationTunnelData.push([tunnel.tunnelId, tunnel.name]);
+                }
+            }
+            vm.set('destinationTunnelData', destinationTunnelData);
         });
     },
 
