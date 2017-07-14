@@ -39,7 +39,7 @@ public class TunnelVpnManager
 
     private static final String TUNNEL_START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/tunnel-start";
     private static final String TUNNEL_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/tunnel-stop";
-    private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/730-tunnelvpn";
+    private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn";
     private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
     private static final String LAUNCH_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-launch";
 
