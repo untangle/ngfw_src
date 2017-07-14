@@ -19,6 +19,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
             var destinationTunnelData = [];
             destinationTunnelData.push([0, 'Route Normally'.t()]);
+            destinationTunnelData.push([-1, 'Any Available Tunnel'.t()]);
             if ( result.tunnels && result.tunnels.list ) {
                 for (var i = 0 ; i < result.tunnels.list.length ; i++) {
                     var tunnel = result.tunnels.list[i];
