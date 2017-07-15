@@ -20,7 +20,8 @@ from uvm import Uvm
 
 officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
-                ('10.112.0.0/16','10.112.56.44')] # ATS VM
+                #('10.112.0.0/16','10.112.56.44')
+                ] # ATS VM
 iperfServer = ""
 
 # special Untangle box configured as a OpenVPN server
@@ -38,7 +39,7 @@ ftpServer = socket.gethostbyname(testServerHost)
 # Servers running remote syslog
 listSyslogServer = '10.111.5.20'
 
-accountFileServer = "10.112.56.44"
+accountFileServer = "10.111.56.29"
 accountFile = "/tmp/account_login.json"
 
 uvmContext = Uvm().getUvmContext(timeout=120)
