@@ -25,7 +25,6 @@ app = None
 appDataAD = None
 appAD = None
 appWeb = None
-AD_HOST = "10.112.56.47"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
 localUserName = 'test20'
@@ -75,7 +74,7 @@ def createDirectoryConnectorSettings():
     # Need to send Radius setting even though it's not used in this case.
     return {
        "activeDirectorySettings": {
-            "LDAPHost": AD_HOST,
+            "LDAPHost": global_functions.adServer,
             "LDAPPort": 389,
             "OUFilter": "",
             "OUFilters": {
@@ -119,7 +118,7 @@ def createRadiusSettings():
             },
             "domain": "adtest.metaloft.com",
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "LDAPHost": AD_HOST,
+            "LDAPHost": global_functions.adServer,
             "superuser": AD_ADMIN
         },
         "radiusSettings": {
@@ -197,7 +196,7 @@ class CaptivePortalTests(unittest2.TestCase):
             print "ERROR: App %s already installed" % self.appNameWeb()
             raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), defaultRackId)
-        adResult = subprocess.call(["ping","-c","1",AD_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        adResult = subprocess.call(["ping","-c","1",global_functions.adServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
