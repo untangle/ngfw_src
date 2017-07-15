@@ -36,8 +36,7 @@ testServerHost = 'test.untangle.com'
 ftpServer = socket.gethostbyname(testServerHost)
 
 # Servers running remote syslog
-listSyslogServerHosts = [('10.111.5.20','16'),# Office network
-                            ('10.112.56.30','16')]# ATS VM
+listSyslogServer = '10.111.5.20'
 
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
@@ -88,29 +87,9 @@ def verify_iperf_configuration(wanIP):
     return True
 
 def find_syslog_server(wan_IP):
-    smtp_IP = ""
-    smtp_domain = "";
-    match = False
-    for syslogerverHostIP in listSyslogServerHosts:
-        interfaceNet = syslogerverHostIP[0] + "/" + str(syslogerverHostIP[1])
-        if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-            match = True
-            break
-
-        # Verify that it will pass through our WAN network
-        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + syslogerverHostIP[0], shell=True)
-        space_split = result.split("\n")[1].strip().split()
-        if len(space_split) > 1:
-            try:
-                if ipaddr.IPAddress(space_split[1]) in ipaddr.IPv4Network(wan_IP + "/24"):
-                    match = True
-                    break
-            except Exception,e:
-                continue
-
-    if match is True:
-        syslog_IP = syslogerverHostIP[0]
-
+    syslog_IP = ""
+    if is_in_office_network(wan_IP):
+        syslog_IP = listSyslogServer
     return syslog_IP
 
 def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None ):
