@@ -20,7 +20,6 @@ AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
 AD_DOMAIN = "adtest.adtesting.int"
 AD_USER = "user_28004"
-RADIUS_HOST = "10.112.56.71"
 
 AD_RESULT = 1
 RADIUS_RESULT = 1
@@ -58,7 +57,7 @@ def create_ad_settings(ldap_secure=False):
             "enabled": False, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
-            "server": RADIUS_HOST, 
+            "server": global_functions.radiusServer, 
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
@@ -98,7 +97,7 @@ def create_radius_settings():
             "enabled": True, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
-            "server": RADIUS_HOST, 
+            "server": global_functions.radiusServer, 
             "sharedSecret": "chakas"
         },
         "googleSettings": {
@@ -214,7 +213,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
         AD_RESULT = subprocess.call(["ping", "-c", "1", AD_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.radiusServer], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable google & facebook
         appSettings = app.getSettings()
