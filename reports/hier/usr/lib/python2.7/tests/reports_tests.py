@@ -151,13 +151,13 @@ class ReportsTests(unittest2.TestCase):
             can_relay = False
 
         if can_syslog == None:
+            can_syslog = False
             wan_IP = uvmContext.networkManager().getFirstWanAddress()
             syslog_server_host = global_functions.find_syslog_server(wan_IP)
-            portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
-            if portResult == 0:
-               can_syslog = True
-            else:
-               can_syslog = False
+            if syslog_server_host:
+                portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
+                if portResult == 0:
+                    can_syslog = True
                
     def setUp(self):
         print
