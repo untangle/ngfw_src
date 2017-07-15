@@ -22,7 +22,6 @@ tunnelUp = False
 orig_netsettings = None
 
 # hardcoded for ats testing
-radiusHost = "10.112.56.71"
 l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.112.11.55","10.111.56.91","10.111.56.94"]
 l2tpClientHost = "10.111.56.83"  # Windows running freeSSHd
 l2tpLocalUser = "test"
@@ -131,7 +130,7 @@ def createRadiusSettings():
             "authenticationMethod": "MSCHAPV2",
             "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": radiusHost,
+            "server": global_functions.radiusServer,
             "sharedSecret": "chakas"
         },
         "version": 1
@@ -178,7 +177,7 @@ class IPsecTests(unittest2.TestCase):
         appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     def setUp(self):
         pass
