@@ -28,7 +28,6 @@ appWeb = None
 AD_HOST = "10.112.56.47"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
-radiusHost = "10.112.56.71"
 localUserName = 'test20'
 adUserName = 'atsadmin'
 captureIP = None
@@ -94,7 +93,7 @@ def createDirectoryConnectorSettings():
             "enabled": False,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": radiusHost,
+            "server": global_functions.radiusServer,
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
@@ -128,7 +127,7 @@ def createRadiusSettings():
             "enabled": True,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": radiusHost,
+            "server": global_functions.radiusServer,
             "sharedSecret": "chakas"
         },
         "googleSettings": {
@@ -199,7 +198,7 @@ class CaptivePortalTests(unittest2.TestCase):
             raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), defaultRackId)
         adResult = subprocess.call(["ping","-c","1",AD_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # Get the IP address of test.untangle.com
