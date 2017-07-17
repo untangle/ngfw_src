@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.Main', {
+Ext.define('Ung.apps.captive-portal.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-captive-portal',
     controller: 'app-captive-portal',

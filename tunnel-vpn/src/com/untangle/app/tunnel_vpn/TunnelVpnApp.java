@@ -60,6 +60,14 @@ public class TunnelVpnApp extends AppBase
     public void setSettings(final TunnelVpnSettings newSettings)
     {
         /**
+         * Number the rules
+         */
+        int idx = 0;
+        for (TunnelVpnRule rule : newSettings.getRules()) {
+            rule.setRuleId(++idx);
+        }
+
+        /**
          * Save the settings
          */
         String appID = this.getAppSettings().getId().toString();
@@ -146,6 +154,7 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
+        insertIptablesRules();
         this.tunnelVpnManager.launchProcesses();
     }
 
@@ -197,7 +206,7 @@ public class TunnelVpnApp extends AppBase
              */
             if ( ! UvmContextFactory.context().isDevel() ) {
                 File settingsFile = new File( settingsFilename );
-                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn-rules");
+                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
                 if (settingsFile.lastModified() > outputFile.lastModified() ) {
                     logger.warn("Settings file newer than interfaces files, Syncing...");
                     this.setSettings( readSettings );
@@ -223,7 +232,17 @@ public class TunnelVpnApp extends AppBase
         logger.info("Creating the default settings...");
 
         TunnelVpnSettings settings = new TunnelVpnSettings();
-        
+
+        List<TunnelVpnRule> rules = new LinkedList<TunnelVpnRule>();
+
+        TunnelVpnRule rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Route all traffic over any available Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        rule.setConditions(new LinkedList<TunnelVpnRuleCondition>());
+        rules.add(rule);
+
+        settings.setRules(rules);
         return settings;
     }
 
@@ -304,24 +323,22 @@ public class TunnelVpnApp extends AppBase
         for ( String line : lines )
             logger.info("Sync Settings: " + line);
 
+        if ( enabled )
+            insertIptablesRules();
+    }
+
+    private void insertIptablesRules()
+    {
         /**
          * Run the iptables script
          */
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
-        lines = output.split("\\r?\\n");
+        String output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
+        String lines[] = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info("Adding tunnel-vpn iptables: " + line);
 
-        /**
-         * Run the route script
-         */
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/post-network-hook.d/050-tunnel-vpn");
-        lines = output.split("\\r?\\n");
-        for ( String line : lines )
-            logger.info("Adding tunnel-vpn routes  : " + line);
-        
     }
-
+    
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override

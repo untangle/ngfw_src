@@ -108,7 +108,7 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
 
     if 'destinationWan' in route_rule:
         if int(route_rule.get('destinationWan')) == 0:
-            target = " -j RETURN " 
+            target = " -j ACCEPT " 
         else:
             target = " -j MARK --set-mark 0x%04X/0x%04X " % ( int(route_rule.get('destinationWan'))<<8 ,0xff00) 
     else:
@@ -119,12 +119,12 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( route_rule['conditions']['list'], description, verbosity );
 
     iptables_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + target for ipt in iptables_conditions ]
-    iptables_commands_return = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j RETURN " for ipt in iptables_conditions ]
+    iptables_commands_accept = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j ACCEPT " for ipt in iptables_conditions ]
 
     file.write("# %s\n" % description);
     for cmd in iptables_commands:
         file.write(cmd + "\n")
-    for cmd in iptables_commands_return:
+    for cmd in iptables_commands_accept:
         file.write(cmd + "\n")
     return
 

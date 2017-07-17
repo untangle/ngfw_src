@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanbalancer.Main', {
+Ext.define('Ung.apps.wan-balancer.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-wan-balancer',
     controller: 'app-wan-balancer',
