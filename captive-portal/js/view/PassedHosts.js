@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
+Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-passedhosts',
     itemId: 'passed-hosts',

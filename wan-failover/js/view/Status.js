@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanfailover.view.Status', {
+Ext.define('Ung.apps.wan-failover.view.Status', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-failover-status',
     itemId: 'status',

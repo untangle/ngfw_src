@@ -26,6 +26,7 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
 
     emptyRow: {
         ruleId: 0,
+        enabled: true,
         flagged: true,
         blocked: false,
         description: '',

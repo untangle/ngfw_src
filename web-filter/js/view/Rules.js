@@ -26,6 +26,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
 
     emptyRow: {
         ruleId: 0,
+        enabled: true,
         flagged: true,
         blocked: false,
         description: '',
@@ -51,7 +52,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
         Field.description,
         Field.conditions,
         Field.flagged,
-        Field.blocked
+        Field.blockedCombo
     ],
 
     conditions: [

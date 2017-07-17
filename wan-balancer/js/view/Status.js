@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanbalancer.view.Status', {
+Ext.define('Ung.apps.wan-balancer.view.Status', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-balancer-status',
     itemId: 'status',
@@ -51,7 +51,7 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
     }]
 });
 
-Ext.define('Ung.apps.wanbalancer.view.Allocation', {
+Ext.define('Ung.apps.wan-balancer.view.Allocation', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-balancer-allocation',
     itemId: 'Allocation',

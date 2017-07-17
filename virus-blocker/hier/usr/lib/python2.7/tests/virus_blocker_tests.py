@@ -104,7 +104,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_250_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleVirus.exe")
+        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print "md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum)
@@ -116,7 +116,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_260_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleLargeVirus.exe")
+        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print "md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum)
