@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanfailover.view.Tests', {
+Ext.define('Ung.apps.wan-failover.view.Tests', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-failover-tests',
     itemId: 'tests',
@@ -33,11 +33,11 @@ Ext.define('Ung.apps.wanfailover.view.Tests', {
 
 });
 
-Ext.define('Ung.apps.wanfailover.view.TestGrid', {
+Ext.define('Ung.apps.wan-failover.view.TestGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-wan-failover-test-grid',
     itemId: 'test-grid',
-    controller: 'app-wanfailover-special',
+    controller: 'app-wan-failover-special',
 
     dockedItems: [{
         xtype: 'toolbar',

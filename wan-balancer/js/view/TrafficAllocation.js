@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanbalancer.view.TrafficAllocation', {
+Ext.define('Ung.apps.wan-balancer.view.TrafficAllocation', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-wan-balancer-trafficallocation',
     itemId: 'traffic-allocation',
@@ -30,7 +30,7 @@ Ext.define('Ung.apps.wanbalancer.view.TrafficAllocation', {
 
 });
 
-Ext.define('Ung.apps.wanbalancer.view.WeightGrid', {
+Ext.define('Ung.apps.wan-balancer.view.WeightGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-wan-balancer-weight-grid',
     itemId: 'weight-grid',

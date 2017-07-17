@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.captiveportal.view.Status', {
+Ext.define('Ung.apps.captive-portal.view.Status', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-captive-portal-status',
     itemId: 'status',

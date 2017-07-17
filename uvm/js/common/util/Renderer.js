@@ -145,7 +145,7 @@ Ext.define('Ung.util.Renderer', {
         var size;
         for( var i = 0; i < Ung.util.Renderer.datasizeMap.length; i++){
             size = Ung.util.Renderer.datasizeMap[i];
-            if( value >= size[0] ){
+            if( value >= size[0] || value <= (0-size[0])){
                 break;
             }
         }

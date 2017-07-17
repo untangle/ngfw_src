@@ -453,7 +453,8 @@ class NetworkTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         print wan_IP
         device_in_office = global_functions.is_in_office_network(wan_IP)
-
+        self.ftpUserName, self.ftpPassword = global_functions.get_live_account_info("ftp")
+        
         if run_ftp_inbound_tests == None:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -465,6 +466,7 @@ class NetworkTests(unittest2.TestCase):
                 else:
                     run_ftp_inbound_tests = False
             except:
+                print "Socket test failed to %s" % remote_control.clientIP
                 run_ftp_inbound_tests = False
 
     def setUp(self):
@@ -693,10 +695,10 @@ class NetworkTests(unittest2.TestCase):
     def test_070_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasvResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
         print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
         assert (pasvResult == 0)
         assert (portResult == 0)
@@ -716,10 +718,10 @@ class NetworkTests(unittest2.TestCase):
         appendFWRule(appFW, createSingleConditionFirewallRule("DST_PORT","21", blocked=False))
         appendFWRule(appFW, createSingleConditionFirewallRule("PROTOCOL","TCP", blocked=True))
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasvResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -734,10 +736,10 @@ class NetworkTests(unittest2.TestCase):
     def test_072_ftpModesBypassed(self):
         setFirstLevelRule(createBypassConditionRule("DST_PORT","21"),'bypassRules')
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasvResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -754,10 +756,10 @@ class NetworkTests(unittest2.TestCase):
         netsettings['filterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasvResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 

@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.wanbalancer.MainController', {
+Ext.define('Ung.apps.wan-balancer.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-wan-balancer',
 

@@ -221,11 +221,20 @@ public abstract class DecisionEngine
         GenericRule urlRule = checkUrlList(sess, host, uri.toString(), requestLine);
         if (urlRule != null) {
             if (urlRule.getBlocked()) {
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
+                logger.debug("LOG: matched block rule: " + requestLine.getRequestLine());
+                app.logEvent(hbe);
+
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle());
                 return app.generateNonce(bd);
-            } else if (!isFlagged && urlRule.getFlagged()) {
-                isFlagged = true;
-                reason = Reason.BLOCK_URL;
+            } else {
+                if (urlRule.getFlagged())
+                    isFlagged = true;
+
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.FILTER_RULE, catStr, app.getName());
+                logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
+                app.logEvent(hbe);
+                return null;
             }
         }
 

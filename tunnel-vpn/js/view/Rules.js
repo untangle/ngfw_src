@@ -1,8 +1,8 @@
-Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
+Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     extend: 'Ung.cmp.Grid',
-    alias: 'widget.app-wan-balancer-routerules',
-    itemId: 'route-rules',
-    title: 'Route Rules'.t(),
+    alias: 'widget.app-tunnel-vpn-rules',
+    itemId: 'rules',
+    title: 'Rules'.t(),
     viewModel: true,
 
     dockedItems: [{
@@ -12,7 +12,7 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
             xtype: 'tbtext',
             padding: '8 5',
             style: { fontSize: '12px', fontWeight: 600 },
-            html: 'Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session.<BR>If there is no matching rule or the rule is set to Balance the session will be routed according to the Traffic Allocation settings.'.t()
+            html: 'Rules are determine which sessions will use a tunnel VPN. Rules are evaluated in order and the action from the first matching rule is used to route the matching session.<BR>'.t()
         }]
     }, {
         xtype: 'toolbar',
@@ -22,8 +22,8 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
 
     recordActions: ['edit', 'delete', 'reorder'],
 
-    listProperty: 'settings.routeRules.list',
-    ruleJavaClass: 'com.untangle.app.wan_balancer.RouteRuleCondition',
+    listProperty: 'settings.rules.list',
+    ruleJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition',
 
     conditions: [
         {name:"DST_ADDR",displayName: "Destination Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
@@ -44,23 +44,23 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.app.wan_balancer.RouteRule'
+        javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRule'
     },
 
-    bind: '{routeRules}',
+    bind: '{rules}',
 
     columns: [
         Column.ruleId,
         Column.enabled,
         Column.description,
         Column.conditions, {
-            header: 'Destination WAN'.t(),
-            dataIndex: 'destinationWan',
+            header: 'Destination Tunnel'.t(),
+            dataIndex: 'tunnelId',
             width: 250,
             renderer: function(value, meta, record, row, col, store, grid) {
-                var wanlist = this.getViewModel().get('destinationWanList');
+                var tunnellist = this.getViewModel().get('destinationTunnelList');
                 var dstname = 'Unknown'.t();
-                wanlist.each(function(record) { if (record.get('index') == value) dstname = record.get('name'); });
+                tunnellist.each(function(record) { if (record.get('index') == value) dstname = record.get('name'); });
                 return(dstname);
             }
         }
@@ -71,10 +71,10 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
         Field.description,
         Field.conditions, {
             xtype: 'combo',
-            fieldLabel: 'Destination WAN'.t(),
+            fieldLabel: 'Destination Tunnel'.t(),
             bind: {
-                value: '{record.destinationWan}',
-                store: '{destinationWanList}'
+                value: '{record.tunnelId}',
+                store: '{destinationTunnelList}'
             },
             allowBlank: false,
             editable: false,

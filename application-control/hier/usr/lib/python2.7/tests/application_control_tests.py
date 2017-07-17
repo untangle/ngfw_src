@@ -141,9 +141,10 @@ class ApplicationControlTests(unittest2.TestCase):
         pingResult = subprocess.call(["ping","-c","1",global_functions.ftpServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if pingResult:
             raise unittest2.SkipTest(global_functions.ftpServer + " not reachable")
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
+        ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")            
+        result1 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",True,True)
-        result2 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
+        result2 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
