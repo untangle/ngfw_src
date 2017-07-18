@@ -23,6 +23,7 @@ public class SystemSettings implements Serializable, JSONString
     private boolean supportEnabled = true;
     private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
+    private String administrationSubnets = null;
 
     private boolean autoUpgrade;
     private DayOfWeekMatcher autoUpgradeDays;
@@ -58,6 +59,12 @@ public class SystemSettings implements Serializable, JSONString
      */
     public boolean getHttpAdministrationAllowed() { return this.httpAdministrationAllowed; }
     public void setHttpAdministrationAllowed( boolean newValue ) { this.httpAdministrationAllowed = newValue; }
+
+    /**
+     * Get whether or not local insecure administration is enabled.
+     */
+    public String getAdministrationSubnets() { return this.administrationSubnets; }
+    public void setAdministrationSubnets( String newValue ) { this.administrationSubnets = newValue; }
     
     /**
      * Untangle cloud access flag

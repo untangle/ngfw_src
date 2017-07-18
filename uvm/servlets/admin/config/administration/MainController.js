@@ -184,6 +184,14 @@ Ext.define('Ung.config.administration.MainController', {
             return;
         }
 
+        var subnets = view.down('textfield[name="administrationSubnets"]');
+        if (subnets.rendered && !subnets.isValid()) {
+            Ung.app.redirectTo('#config/administration/admin');
+            Ext.MessageBox.alert('Warning'.t(), 'Invalid subnet.'.t());
+            subnets.focus(true);
+            return;
+        }
+
         view.setLoading(true);
 
         view.query('ungrid').forEach(function (grid) {

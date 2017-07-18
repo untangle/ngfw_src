@@ -58,6 +58,7 @@ import org.apache.tomcat.util.scan.StandardJarScanner;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.app.IPMatcher;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -449,31 +450,50 @@ public class TomcatManagerImpl implements TomcatManager
 
         private boolean isAccessAllowed( ServletRequest request )
         {
-            String address = request.getRemoteAddr();
-            boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
-
-            logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
-
-            /**
-             * Always allow HTTP from 127.0.0.1
-             */
             try {
-                if (address != null && InetAddress.getByName( address ).isLoopbackAddress())
+                InetAddress address = null;
+                boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
+                String administrationSubnets = UvmContextFactory.context().systemManager().getSettings().getAdministrationSubnets();
+
+                try {
+                    address = InetAddress.getByName(request.getRemoteAddr());
+                } catch (Exception e) {
+                    logger.warn( "Unable to parse the internet address: " + address );
                     return true;
-            } catch (UnknownHostException e) {
-                logger.warn( "Unable to parse the internet address: " + address );
-            }
-        
-            /**
-             * Otherwise only allow HTTP if enabled
-             */
-            if (request.getScheme().equals("http")) {
-                if (!isHttpAllowed)
+                }
+
+                logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
+
+                /**
+                 * Always allow from 127.0.0.1
+                 */
+                if (address.isLoopbackAddress())
+                    return true;
+
+                /**
+                 * Otherwise only allow HTTP if enabled
+                 */
+                if (request.getScheme().equals("http") && !isHttpAllowed) {
                     logger.warn("isAccessAllowed( " + request + " ) denied. [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
-                return isHttpAllowed;
+                    return false;
+                }
+
+                /**
+                 * Always allow from admin subnets
+                 */
+                if (administrationSubnets != null) {
+                    IPMatcher subnets = new IPMatcher(administrationSubnets);
+                    if (!subnets.isMatch( address )) {
+                        logger.warn("isAccessAllowed( " + request + " ) denied for " + address + ". [scheme: " + request.getScheme() + " subnet allowed: " + administrationSubnets + "]");
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Exception", e);
+                return true;
             }
-            else
-                return true; /* https always allowed */
+
+            return true;
         }
     }
 }
