@@ -109,6 +109,15 @@ Ext.define('Ung.config.administration.view.Admin', {
             bind: '{systemSettings.httpAdministrationAllowed}'
         }, {
             xtype: 'textfield',
+            name: 'administrationSubnets',
+            fieldLabel: 'Restrict Administration Subnet(s)'.t(),
+            vtype: 'ipMatcher',
+            labelAlign: 'right',
+            maxWidth: 400,
+            labelWidth: 250,
+            bind: '{systemSettings.administrationSubnets}'
+        }, {
+            xtype: 'textfield',
             fieldLabel: 'Default Administration Username Text'.t(),
             labelAlign: 'right',
             maxWidth: 400,
