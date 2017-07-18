@@ -288,8 +288,7 @@ class OpenVpnTests(unittest2.TestCase):
         else:
             print "No VPN IP address found"
         # Shutdown VPN on both sides.
-        # remote_control.run_command("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
-        remote_control.run_command("sudo pkill openvpn", host=vpnPoolAddressIP)
+        remote_control.run_command("sudo pkill openvpn", host=vpnPoolAddressIP,nowait=True)
         time.sleep(3) # openvpn takes time to shut down
 
         appData['remoteClients']['list'][:] = []  
