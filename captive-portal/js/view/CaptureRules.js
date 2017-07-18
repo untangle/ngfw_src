@@ -116,6 +116,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
         {name:'HTTP_USER_AGENT_OS',displayName: 'HTTP: Client User OS'.t(), type: 'textfield', visible: false},
         {name:'HTTP_USER_AGENT', displayName: 'HTTP: Client User Agent'.t(), type: 'textfield', visible: true },
         {name:'HTTP_USER_AGENT_OS', displayName: 'HTTP: Client User OS'.t(), type: 'textfield', visible: false },
+        {name:'SSL_INSPECTOR_SNI_HOSTNAME', displayName: 'SSL: SNI Host Name'.t(), type: 'textfield', visible: true },
         {name:"CLIENT_COUNTRY",displayName: "Client Country".t(), type: "countryfield", visible: true},
         {name:"SERVER_COUNTRY",displayName: "Server Country".t(), type: "countryfield", visible: true}
     ]
