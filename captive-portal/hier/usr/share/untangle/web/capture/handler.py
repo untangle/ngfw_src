@@ -163,7 +163,7 @@ def index(req):
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-            captureApp.facebookLogin(address,altraw)
+            captureApp.microsoftLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
                 target = str(redirectUrl)
