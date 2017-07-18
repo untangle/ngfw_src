@@ -99,25 +99,14 @@ def headerparserhandler(req):
     sess.save()
     sess.unlock()
 
-    if None != username:
+    if username != None:
         pw = base64.encodestring('%s' % username).strip()
         req.headers_in['Authorization'] = "BASIC % s" % pw
         req.notes['authorized'] = 'true'
         return apache.OK
-    else:
-        # we only do this as to not present a login screen when access
-        # is restricted. a tomcat valve enforces this setting.
-        if options.get('UseRemoteAccessSettings', 'no') == 'yes':
-            http_enabled = get_uvm_settings_item('system','httpAdministrationAllowed')
-            connection = req.connection
 
-            (addr, port) = connection.local_addr
-            if not re.match('127\.', connection.remote_ip):
-                if port == 80 and not http_enabled:
-                    return apache.HTTP_FORBIDDEN
-
-        apache.log_error('Auth failure [Username not specified]. Redirecting to auth page. (realm: %s)' % realm)
-        login_redirect(req, realm, token)
+    apache.log_error('Auth failure [Username not specified]. Redirecting to auth page. (realm: %s)' % realm)
+    login_redirect(req, realm, token)
 
 def session_user(sess, realm):
     if sess.has_key('apache_realms') and sess['apache_realms'].has_key(realm):
