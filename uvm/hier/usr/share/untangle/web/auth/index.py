@@ -9,7 +9,6 @@ import json
 from StringIO import StringIO
 
 from mod_python import apache, Session, util
-from psycopg2 import connect
 
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 import uvm_login
@@ -37,6 +36,13 @@ def login(req, url=None, realm='Administrator', token=None):
     error_msg = None
     if req.form.has_key('username') or req.form.has_key('password'):
         error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
+
+    connection = req.connection
+    (addr, port) = connection.local_addr
+    is_local = re.match('127\.', connection.remote_ip)
+    if port == 80 and not get_uvm_settings_item('system','httpAdministrationAllowed') and not is_local:
+        write_error_page(req, "Permission denied")
+        return
 
     if token != None and get_uvm_settings_item('system','cloudEnabled'):
         if _valid_token(req, token):
@@ -271,3 +277,47 @@ def _write_login_form(req, title, host, error_msg):
 </html>""" % (title, login_url, title, host, banner_msg, error_msg, default_username, username_str, password_str, login_str, focus_field_id)
 
     req.write(html)
+
+def write_error_page(req, msg):
+    req.content_type = "text/html; charset=utf-8"
+    req.send_http_header()
+
+    us = _("Server")
+    try:
+        us = _("%s Server") % get_company_name()
+    except:
+        pass
+
+    if not type(us) is str:
+        us = us.encode("utf-8")
+    if not type(msg) is str:
+        msg = msg.encode("utf-8")
+
+    html = """\
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html xmlns=\"http://www.w3.org/1999/xhtml\">
+<head>
+<title>%s</title>
+<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />
+<style type=\"text/css\">
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+</style>
+</head>
+<body>
+<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">
+<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">
+<center>
+<img alt=\"\" src=\"/images/BrandingLogo.png\" /><br /><br />
+<b>%s</b><br /><br />
+<em>%s</em>
+</center><br /><br />
+</div></div></div><div class=\"main-bot-left\"></div><div class=\"main-bot-right\"></div>
+</div>
+</body>
+</html>
+""" % (us, us, cgi.escape(msg))
+
+    req.write(html)
+    

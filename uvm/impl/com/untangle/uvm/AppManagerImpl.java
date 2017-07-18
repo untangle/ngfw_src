@@ -66,7 +66,7 @@ public class AppManagerImpl implements AppManager
      * This stores the count of apps currently being loaded
      */
     private volatile int appsBeingLoaded = 0;
-    
+
     private AppManagerSettings settings = null;
 
     private Semaphore startSemaphore = new Semaphore(0);
@@ -130,7 +130,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstances();
     }
-    
+
     public List<Long> appInstancesIds()
     {
         return appToIdList(appInstances());
@@ -141,11 +141,11 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstancesIds();
     }
-    
+
     public List<App> appInstances( String appName )
     {
         appName = fixupName( appName ); // handle old names
-        
+
         List<App> list = new LinkedList<App>();
 
         for (App app : loadedAppsMap.values()) {
@@ -162,7 +162,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstances( appName );
     }
-    
+
     public List<App> appInstances( String name, Integer policyId )
     {
         return appInstances( name, policyId, true);
@@ -173,7 +173,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstances( name, policyId, true );
     }
-    
+
     public List<App> appInstances( String name, Integer policyId, boolean parents )
     {
         name = fixupName( name ); // handle old names
@@ -196,7 +196,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstances( name, policyId, parents );
     }
-    
+
     public List<App> appInstances( Integer policyId )
     {
         return getAppsForPolicy( policyId );
@@ -207,7 +207,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return appInstances( policyId );
     }
-    
+
     public List<Long> appInstancesIds( Integer policyId )
     {
         return appToIdList( appInstances( policyId ) );
@@ -272,7 +272,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return app( name );
     }
-    
+
     public App instantiate( String appName ) throws Exception
     {
         return instantiate( appName, 1 /* Default Policy ID */ );
@@ -320,7 +320,7 @@ public class AppManagerImpl implements AppManager
                     throw new Exception(message);
                 }
             }
-            
+
             if (appProperties.getType() == AppProperties.Type.SERVICE )
                 policyId = null;
 
@@ -368,7 +368,7 @@ public class AppManagerImpl implements AppManager
 
         // Full System GC so the JVM gives memory back
         UvmContextFactory.context().gc();
-        
+
         return app;
     }
 
@@ -404,7 +404,7 @@ public class AppManagerImpl implements AppManager
         // This is necessary because the G1 does not actually account for MaxHeapFreeRatio
         // except during an full GC.
         UvmContextFactory.context().gc();
-        
+
         return;
     }
 
@@ -423,7 +423,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return allAppStates();
     }
-    
+
     public boolean isInstantiated( String appName )
     {
         return (this.app(appName) != null);
@@ -443,7 +443,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return getAllAppSettings();
     }
-    
+
     public Map<Long, AppProperties> getAllAppPropertiesMap()
     {
         HashMap<Long, AppProperties> result = new HashMap<Long, AppProperties>();
@@ -458,7 +458,7 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return getAllAppPropertiesMap();
     }
-    
+
     public List<AppProperties> getAllAppProperties()
     {
         LinkedList<AppProperties> appProps = new LinkedList<AppProperties>();
@@ -475,14 +475,14 @@ public class AppManagerImpl implements AppManager
         logger.warn("deprecated method called.", new Exception());
         return getAllAppProperties();
     }
-    
+
     public AppsView getAppsView( Integer policyId )
     {
         AppManagerImpl nm = (AppManagerImpl)UvmContextFactory.context().appManager();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
         /* This stores a list of installable apps. (for this rack) */
-        Map<String, AppProperties> installableAppsMap =  new HashMap<String, AppProperties>();
+        Map<String, String> installableAppsMap =  new HashMap<String, String>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<String, License>();
 
@@ -512,7 +512,7 @@ public class AppManagerImpl implements AppManager
                 continue;
             }
 
-            installableAppsMap.put( appProps.getDisplayName(), appProps );
+            installableAppsMap.put( appProps.getDisplayName(), appProps.getName() );
         }
 
         /**
@@ -568,12 +568,12 @@ public class AppManagerImpl implements AppManager
          * Build the list of apps to show on the left hand nav
          */
         logger.debug("Building apps panel:");
-        List<AppProperties> installableApps = new ArrayList<AppProperties>(installableAppsMap.values());
+        List<String> installableApps = new ArrayList<String>(installableAppsMap.values());
         Collections.sort( installableApps );
 
         List<AppProperties> appProperties = new LinkedList<AppProperties>();
-        for (App app : visibleApps) {
-            appProperties.add(app.getAppProperties());
+        for (AppProperties appProps : nm.getAllAppProperties()) {
+            appProperties.add(appProps);
         }
         List<AppSettings> appSettings  = new LinkedList<AppSettings>();
         for (App app : visibleApps) {
@@ -601,7 +601,7 @@ public class AppManagerImpl implements AppManager
 
         return views;
     }
-    
+
     protected void init()
     {
         loadSettings();
@@ -614,7 +614,7 @@ public class AppManagerImpl implements AppManager
                 logger.info( app.getAppSettings().getId() + " " + app.getAppSettings().getAppName() );
             }
         }
-        
+
         startAutoLoad();
 
         logger.info("Initialized AppManager");
@@ -720,7 +720,7 @@ public class AppManagerImpl implements AppManager
     {
         long t0 = System.currentTimeMillis();
         int passCount = 0;
-        
+
         if (!live) {
             throw new RuntimeException("AppManager is shut down");
         }
@@ -807,10 +807,10 @@ public class AppManagerImpl implements AppManager
                             if ( app == null ) {
                                 logger.error("Failed to load app:" + name);
                                 loadedAppsMap.remove(appSettings);
-                            } 
+                            }
                         }
                     };
-                // remove from unloaded apps 
+                // remove from unloaded apps
                 appsBeingLoaded++;
                 unloadedAppsMap.remove( appSettings.getId() );
 
@@ -883,7 +883,7 @@ public class AppManagerImpl implements AppManager
             logger.warn("Invalid arguments");
             return false;
         }
-        
+
         for( App n : loadedAppsMap.values() ) {
             String name = n.getAppSettings().getAppName();
             if ( appName.equals( name ) ) {
@@ -946,7 +946,7 @@ public class AppManagerImpl implements AppManager
         logger.info("Initializing Settings...");
 
         AppManagerSettings newSettings = new AppManagerSettings();
-        
+
         this._setSettings(newSettings);
     }
 
@@ -1144,7 +1144,7 @@ public class AppManagerImpl implements AppManager
     {
         boolean foundArch = false;
         String arch = System.getProperty("os.arch");
-        
+
         if ( supportedArchitectures == null )
             return true;
 

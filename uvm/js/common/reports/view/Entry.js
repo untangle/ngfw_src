@@ -480,7 +480,10 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'combo',
                     fieldLabel: 'Table'.t(),
                     anchor: '100%',
-                    bind: '{entry.table}',
+                    bind: {
+                        value: '{entry.table}',
+                        store: '{tables}'
+                    },
                     editable: false,
                     queryMode: 'local'
                 }, {

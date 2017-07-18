@@ -30,22 +30,25 @@ Ext.define('Ung.view.reports.EventReportController', {
                 };
 
                 var grid = me.getView().down('grid');
-                var identifier = 'eventsGrid-' + entry.get('uniqueId');
-                grid.itemId = identifier;
-                grid.stateId = identifier;
 
                 me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                 me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
-
                 var visibleColumns = Ext.clone(me.defaultColumns);
-                var currentStorage = Ext.state.Manager.provider.get(identifier);
-                if( currentStorage ){
-                    currentStorage.columns.forEach( function( column ){
-                        if( ( column.hidden !== undefined ) &&
-                            ( column.hidden === false ) ){
-                            visibleColumns.push(column.id);
-                        }
-                    });
+
+                // check if in Reports view otherwise it freezes when in widget editor (NGFW-10854)
+                if (me.getView().up('reports-entry')) {
+                    var identifier = 'eventsGrid-' + entry.get('uniqueId');
+                    grid.itemId = identifier;
+                    grid.stateId = identifier;
+                    var currentStorage = Ext.state.Manager.provider.get(identifier);
+                    if( currentStorage ){
+                        currentStorage.columns.forEach( function( column ){
+                            if( ( column.hidden !== undefined ) &&
+                                ( column.hidden === false ) ){
+                                visibleColumns.push(column.id);
+                            }
+                        });
+                    }
                 }
 
                 me.tableConfig.columns.forEach( function(column){
@@ -196,7 +199,9 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         vm.set('propsData', propsData);
         // when selecting an event hide Settings if open
-        me.getView().up('reports-entry').lookupReference('settingsBtn').setPressed(false);
+        if (me.getView().up('reports-entry')) {
+            me.getView().up('reports-entry').lookupReference('settingsBtn').setPressed(false);
+        }
 
     },
 
