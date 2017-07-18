@@ -118,7 +118,7 @@ public class CaptivePortalSSLEngine
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
         if (sniHostname != null) {
-            // attach to session just like SSL Inspector for use by rules 
+            // attach sniHostname to session just like SSL Inspector for use by rules 
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
 
             if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
@@ -144,17 +144,26 @@ public class CaptivePortalSSLEngine
                 session.release();
                 return true;
             }
+        }
 
-            // now that we attached the sniHostname to the session do another rule check
-            CaptureRule rule = captureApp.checkCaptureRules(session);
+        // grab the cached certificate for the server
+        X509Certificate serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(session.getServerAddr().getHostAddress().toString());
 
-            // found a rule match so allow the session
-            if (rule != null) {
-                captureApp.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
-                session.sendDataToServer(data);
-                session.release();
-                return true;
-            }
+        // attach the subject and issuer names just like SSL Inspector for use by the rule matcher
+        if (serverCert != null) {
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectDN().toString());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerDN().toString());
+        }
+
+        // do the rule check again now that we have the SSL attachments
+        CaptureRule rule = captureApp.checkCaptureRules(session);
+
+        // found a rule match so allow the session
+        if (rule != null) {
+            captureApp.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            session.sendDataToServer(data);
+            session.release();
+            return true;
         }
 
         while (!done) {
