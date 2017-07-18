@@ -1770,16 +1770,16 @@ public class FixedReports
         }
 
         try {
-            String url = "http://127.0.0.1/reports/?reportChart=1" + 
-                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + 
-                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") + 
+            String url = "http://127.0.0.1/reports/?reportChart=1" +
+                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") +
+                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") +
                 "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
-            webbrowser.waitForElement("highcharts-0");
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-legend");
             Thread.sleep(1000);
             webbrowser.takeScreenshot(filename);
         } catch (org.openqa.selenium.TimeoutException e) {
-            webbrowser.waitForElement("label-1016");
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.ID, "label-1016");
             webbrowser.takeScreenshot(filename);
         } catch (Exception e) {
             logger.warn("Exception",e);
