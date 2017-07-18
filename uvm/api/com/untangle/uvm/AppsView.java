@@ -25,14 +25,14 @@ import com.untangle.uvm.app.AppMetric;
 public class AppsView implements Serializable
 {
     private int policyId;
-    private List<AppProperties> installable;
+    private List<String> installable;
     private List<AppSettings> instances;
     private List<AppProperties> appProperties;
     private Map<Long, List<AppMetric>> appMetrics;
     private Map<String, License> licenseMap;
     private Map<Long, AppSettings.AppState> runStates;
 
-    public AppsView(int policyId, List<AppProperties> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<AppMetric>> appMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
+    public AppsView(int policyId, List<String> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<AppMetric>> appMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
     {
         this.policyId = policyId;
         this.installable = installable;
@@ -44,7 +44,7 @@ public class AppsView implements Serializable
     }
 
     public int getPolicyId() { return policyId; }
-    public List<AppProperties> getInstallable() { return installable; }
+    public List<String> getInstallable() { return installable; }
     public List<AppSettings> getInstances() { return instances; }
     public List<AppProperties> getAppProperties() { return appProperties; }
     public Map<Long, List<AppMetric>> getAppMetrics() { return appMetrics; }
