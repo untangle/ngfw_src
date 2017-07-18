@@ -65,6 +65,17 @@ Ext.define('Ung.config.network.view.Interfaces', {
             resizable: false,
             align: 'right'
         }, {
+            dataIndex: 'isWirelessInterface',
+            width: 30,
+            align: 'center',
+            resizable: false,
+            sortable: false,
+            hideable: false,
+            menuDisabled: true,
+            renderer: function (value) {
+                return value ? '<i class="fa fa-wifi fa-gray" style="font-size: 1.2em;"></i>' : '';
+            }
+        }, {
             header: 'Name'.t(),
             dataIndex: 'name',
             minWidth: 200,
