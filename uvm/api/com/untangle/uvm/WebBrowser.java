@@ -32,6 +32,15 @@ public class WebBrowser
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    public enum FIND_KEYS {
+        CLASS,
+        CSS,
+        ID,
+        LINKTEXT,
+        PARTIALLINKTEXT,
+        TAG,
+        XPATH
+    }
     private WebDriver driver = null;
     private Wait<WebDriver> wait = null;
 
@@ -154,15 +163,25 @@ public class WebBrowser
 
 	/**
 	 * Wait for element.  
-     * @param elementId id to wait upon.
+     * @param search key to wait upon.
+     * @param value to wait upon.
      * @return true if found, false if not found.
 	 */
-	public Boolean waitForElement(String elementId)
+	public Boolean waitForElement(FIND_KEYS key, String value)
 	{
 		Boolean found = false;
         found = wait.until(new ExpectedCondition<Boolean>() {
         	public Boolean apply(WebDriver driver) {
-                if( driver.findElement(By.id(elementId)) != null ){
+                By by = null;
+                switch(key){
+                    case CLASS:
+                        by = By.className(value);
+                        break;
+                    case ID:
+                    default:
+                        by = By.id(value);
+                }
+                if( driver.findElement(by) != null ){
                     return true;
                 }
                 return false;

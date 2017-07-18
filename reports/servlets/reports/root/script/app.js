@@ -81,3 +81,62 @@ Ext.define('Ung.Application', {
         });
     }
 });
+
+Ext.define('Ung.view.ChartMain', {
+    extend: 'Ung.view.reports.GraphReport',
+    itemId: 'chart',
+    viewModel: {},
+    renderInReports: true
+});
+
+Ext.define('Ung.controller.ChartGlobal', {
+    extend: 'Ext.app.Controller',
+
+    refs: {
+        chartView: '#chart',
+    },
+    config: {
+        routes: {
+            '': 'onMain',
+        }
+    },
+
+    onMain: function (categoryName, reportName) {
+        var me = this,
+            view = this.getChartView(),
+            vm = view.getViewModel();
+
+        var chartReport = Ext.Object.fromQueryString(window.location.search.substring(1));
+
+        try {
+            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+        } catch (ex) {
+            console.error(ex);
+        }
+
+        rpc.reportsManager.getReportEntry(Ext.bind(function (result, ex) {
+            if (ex) {
+                Util.handleException(ex); return;
+            }
+            if(result){
+                var entry = new Ung.model.Report(result);
+                vm.set('entry', entry);
+                vm.set('startDate', new Date( parseInt( chartReport.startDate, 10 ) ) );
+                vm.set('endDate', new Date( parseInt( chartReport.endDate, 10 ) ) );
+            }
+        }, this), chartReport.reportUniqueId);
+    }
+});
+
+Ext.define('Ung.ChartApplication', {
+    extend: 'Ext.app.Application',
+    name: 'Ung',
+    namespace: 'Ung',
+    controllers: ['ChartGlobal'],
+    defaultToken : '',
+    mainView: 'Ung.view.ChartMain',
+    launch: function () {
+        Ext.fireEvent('init');
+    }
+});
+
