@@ -4,6 +4,7 @@ Ext.define('Ung.view.apps.AppsController', {
 
     control: {
         '#': { afterrender: 'onAfterRender', activate: 'onActivate' },
+        '#installableApps': { deactivate: 'onInstallableDeactivate' },
         '#installableApps > dataview': { select: 'onInstallApp' }
     },
     listen: {
@@ -31,10 +32,6 @@ Ext.define('Ung.view.apps.AppsController', {
         Ext.Array.each(initPolicy.appProperties.list, function (app) {
             apps.push(app);
         });
-        Ext.Array.each(initPolicy.installable.list, function (app) {
-            apps.push(app);
-        });
-
 
         apps = Ext.Array.sort(apps, function (a, b) {
             if (a.viewPosition < b.viewPosition) {
@@ -112,7 +109,10 @@ Ext.define('Ung.view.apps.AppsController', {
 
         // deal with installable apps
         var installableApps = [], installableServices = [];
-        Ext.Array.each(policy.installable.list, function (app) {
+        Ext.Array.each(policy.installable.list, function (appName) {
+            var app = Ext.Array.findBy(policy.appProperties.list, function (a) {
+                return a.name === appName;
+            });
             app.desc = Util.appDescription[app.name];
             app.route = (app.type === 'FILTER') ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name;
             // app.parentPolicy = null;
@@ -144,6 +144,16 @@ Ext.define('Ung.view.apps.AppsController', {
                 } else {
                     Ung.app.redirectTo('#apps/1'); // redirect to main policy if in apps view
                 }
+            }
+        });
+    },
+
+    // remove already finished installed apps when deactivating the view
+    onInstallableDeactivate: function () {
+        var me = this, vm = me.getViewModel();
+        vm.getStore('installableApps').each(function (app) {
+            if (app.get('extraCls') === 'finish') {
+                app.drop();
             }
         });
     },
