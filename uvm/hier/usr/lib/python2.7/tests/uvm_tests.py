@@ -133,6 +133,8 @@ class UvmTests(unittest2.TestCase):
             os.remove(helpLinkFile)
         
         # Check all the links in JSON
+        linkCount = 0
+        failedLinks = 0
         testResults = True
         for link in helpLinks["links"]:
             subLinks = [""]
@@ -149,9 +151,10 @@ class UvmTests(unittest2.TestCase):
 
             pat = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
             version = uvmContext.getFullVersion()
+            print "------------------------------------------------------"
             if ('subcat' in link):
                 subLinks.extend(link['subcat'])
-            for subLink in subLinks:
+            for i, subLink in enumerate(subLinks):
                 if (subLink != ""):
                     subLink = link['fragment'] + "/" + subLink
                 else:
@@ -166,13 +169,25 @@ class UvmTests(unittest2.TestCase):
                 assert(result)
                 patmatch = pat.match( result )
                 assert(patmatch)
+                page = link['page'][i] #set 'page' to expected wiki page value from page array
                 if (patmatch.group(1)):
                     print "Result: \"%s\"" % patmatch.group(1)
+                    
+                    if (patmatch.group(1) == "index.php/%s" % (page)):
+                        print "Page is correct: %s" % (page)
+                    else:
+                        print "******Sent to wrong page. Page should be %s, but you were sent to index.php/%s" % (page, patmatch.group(1))
+                        testResults = False
+                        failedLinks += 1
                 else:
-                    print "Failed to get result for %s.  Expecting: %s" % (subLink,link['title'])
+                    print "******Failed to get result for %s.  Expecting: %s" % (subLink,page)
                     # check all help links before failing the test
                     testResults = False
-                    
+                    failedLinks += 1
+                linkCount += 1
+                print "------------------------------------------------------"
+        print "%d Help Links were checked" % (linkCount)
+        print "%d Links failed to resolve correctly" % (failedLinks)
         assert(testResults)
 
     def test_020_about_info(self):
