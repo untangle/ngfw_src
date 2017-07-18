@@ -118,25 +118,39 @@ public class CaptivePortalSSLEngine
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
         if (sniHostname != null) {
-            if (sniHostname.toLowerCase().equals("auth-relay.untangle.com")) allowed = true;
+            // attach to session just like SSL Inspector for use by rules 
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
+
+            if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
 
             // hosts we must allow for Google OAuth
-            if (sniHostname.toLowerCase().equals("accounts.google.com")) allowed = true;
-            if (sniHostname.toLowerCase().equals("ssl.gstatic.com")) allowed = true;
+            if (sniHostname.equals("accounts.google.com")) allowed = true;
+            if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
 
             // hosts we must allow for Facebook OAuth
-            if (sniHostname.toLowerCase().equals("www.facebook.com")) allowed = true;
-            if (sniHostname.toLowerCase().equals("graph.facebook.com")) allowed = true;
+            if (sniHostname.equals("www.facebook.com")) allowed = true;
+            if (sniHostname.equals("graph.facebook.com")) allowed = true;
 
             // hosts we must allow for Microsoft OAuth
-            if (sniHostname.toLowerCase().endsWith(".microsoftonline.com")) allowed = true;
-            if (sniHostname.toLowerCase().endsWith(".microsoftonline-p.com")) allowed = true;
-            if (sniHostname.toLowerCase().endsWith(".live.com")) allowed = true;
-            if (sniHostname.toLowerCase().endsWith(".gfx.ms")) allowed = true;
-            if (sniHostname.toLowerCase().endsWith(".microsoft.com")) allowed = true;
+            if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
+            if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
+            if (sniHostname.endsWith(".live.com")) allowed = true;
+            if (sniHostname.endsWith(".gfx.ms")) allowed = true;
+            if (sniHostname.endsWith(".microsoft.com")) allowed = true;
 
             if (allowed) {
                 logger.debug("Releasing OAuth session: " + sniHostname);
+                session.sendDataToServer(data);
+                session.release();
+                return true;
+            }
+
+            // now that we attached the sniHostname to the session do another rule check
+            CaptureRule rule = captureApp.checkCaptureRules(session);
+
+            // found a rule match so allow the session
+            if (rule != null) {
+                captureApp.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
                 session.sendDataToServer(data);
                 session.release();
                 return true;
@@ -428,35 +442,94 @@ public class CaptivePortalSSLEngine
         return true;
     }
 
+// THIS IS FOR ECLIPSE - @formatter:off
+
+    /*
+
+    This table describes the structure of the TLS ClientHello message:
+
+    Size   Description
+    ----------------------------------------------------------------------
+    1      Record Content Type
+    2      SSL Version
+    2      Record Length 
+    1      Handshake Type
+    3      Message Length
+    2      Client Preferred Version
+    4      Client Epoch GMT
+    28     28 Random Bytes
+    1      Session ID Length
+    0+     Session ID Data
+    2      Cipher Suites Length
+    0+     Cipher Suites Data
+    1      Compression Methods Length
+    0+     Compression Methods Data
+    2      Extensions Length
+    0+     Extensions Data
+
+    This is the format of an SSLv2 client hello:
+
+    struct {
+        uint16 msg_length;
+        uint8 msg_type;
+        Version version;
+        uint16 cipher_spec_length;
+        uint16 session_id_length;
+        uint16 challenge_length;
+        V2CipherSpec cipher_specs[V2ClientHello.cipher_spec_length];
+        opaque session_id[V2ClientHello.session_id_length];
+        opaque challenge[V2ClientHello.challenge_length;
+    } V2ClientHello;
+
+
+    We don't bother checking the buffer position or length here since the
+    caller uses the buffer underflow exception to know when it needs to wait
+    for more data when a full packet has not yet been received.
+
+    */
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
         int counter = 0;
         int pos;
 
-        logger.debug("Searching for SNI in " + data.toString());
-
-        // make sure we have a TLS handshake message
+        // we use the first byte of the message to determine the protocol
         int recordType = Math.abs(data.get());
 
-        if (recordType != TLS_HANDSHAKE) {
-            logger.debug("First byte is not TLS Handshake signature");
+        // First check for an SSLv2 hello which Appendix E.2 of RFC 5246
+        // says must always set the high bit of the length field
+        if ((recordType & 0x80) == 0x80) {
+            // skip over the next byte of the length word
+            data.position(data.position() + 1);
+
+            // get the message type
+            int legacyType = Math.abs(data.get());
+
+            // if not a valid ClientHello we throw an exception since
+            // they may be blocking just this kind of invalid traffic
+            if (legacyType != CLIENT_HELLO) throw new Exception("Packet contains an invalid SSL handshake");
+
+            // looks like a valid handshake message but the protocol does
+            // not support SNI so we just return null
+            logger.debug("No SNI available because SSLv2Hello was detected");
             return (null);
         }
 
+        // not SSLv2Hello so proceed with TLS based on the table describe above
+        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet does not contain TLS Handshake");
+
         int sslVersion = data.getShort();
-        int recLength = Math.abs(data.getShort());
+        int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-
-        if (shakeType != CLIENT_HELLO) {
-            logger.debug("Handshake type is not ClientHello");
-            return (null);
-        }
+        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");
 
         // extract all the handshake data so we can get to the extensions
-        int messHilen = data.get();
-        int messLolen = data.getShort();
+        int messageExtra = data.get();
+        int messageLength = data.getShort();
         int clientVersion = data.getShort();
         int clientTime = data.getInt();
 
@@ -489,17 +562,15 @@ public class CaptivePortalSSLEngine
             data.position(pos + compLength);
         }
 
-        // if the position equals recLength plus 5 we know this is the end
+        // if position equals recordLength plus five we know this is the end
         // of the packet and thus there are no extensions - will normally
         // be equal but we include the greater than just to be safe
-        if (data.position() >= (recLength + 5)) {
-            logger.debug("No extensions found in TLS handshake message");
-            return (null);
-        }
+        if (data.position() >= (recordLength + 5)) return (null);
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
 
+        // walk through all of the extensions looking for SNI signature
         while (counter < extensionLength) {
             int extType = Math.abs(data.getShort());
             int extSize = Math.abs(data.getShort());

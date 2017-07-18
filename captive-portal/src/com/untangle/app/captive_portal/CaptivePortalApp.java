@@ -735,16 +735,6 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
-    public boolean isUserInCookieTable(InetAddress address, String username)
-    {
-        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
-    }
-
-    public void removeUserFromCookieTable(InetAddress address)
-    {
-        captureUserCookieTable.removeActiveUser(address);
-    }
-
     public CaptureRule checkCaptureRules(AppTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
@@ -757,6 +747,16 @@ public class CaptivePortalApp extends AppBase
         }
 
         return (null);
+    }
+
+    public boolean isUserInCookieTable(InetAddress address, String username)
+    {
+        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
+    }
+
+    public void removeUserFromCookieTable(InetAddress address)
+    {
+        captureUserCookieTable.removeActiveUser(address);
     }
 
     /**
