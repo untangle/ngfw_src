@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.uvm.app.IPMatcher;
-
 @SuppressWarnings("serial")
 public class TunnelVpnTunnelSettings implements java.io.Serializable
 {
