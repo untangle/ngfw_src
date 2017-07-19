@@ -461,7 +461,7 @@ public class TomcatManagerImpl implements TomcatManager
                 if (address != null && InetAddress.getByName( address ).isLoopbackAddress())
                     return true;
             } catch (UnknownHostException e) {
-                logger.warn( "Unable to parse the internet address: " + address );
+                logger.warn( "Unable to parse the internet address: " + request.getRemoteAddr() );
             }
         
             /**
