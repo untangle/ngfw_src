@@ -122,10 +122,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         } else {
             logger.info("Loading Settings...");
 
-            /* 12.1 - new facebook settings */
-            if (readSettings.getFacebookSettings() == null) {
-                readSettings.setFacebookSettings( new FacebookSettings() );
-                setSettings( readSettings );
+            /* 13.1 conversion */
+            if ( readSettings.getVersion() < 2 ) {
+                convertV1toV2Settings( readSettings );
+                this.setSettings( readSettings );
             }
             
             this.settings = readSettings;
@@ -371,6 +371,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public void initializeSettings()
     {
         this.settings = new DirectoryConnectorSettings();
+        this.settings.setVersion(2);
         this.settings.setActiveDirectorySettings(new ActiveDirectorySettings("Administrator", "mypassword", "mydomain.int", "ad_server.mydomain.int", 636, true ));
         this.settings.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
         this.settings.setGoogleSettings(new GoogleSettings());
@@ -378,6 +379,20 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         setSettings(this.settings);
     }
 
+    private void convertV1toV2Settings( DirectoryConnectorSettings settings )
+    {
+        if (settings.getVersion() != 1) {
+            logger.warn("Invalid version to convert: " + settings.getVersion());
+            return;
+        }
+        settings.setVersion(2);
+        /**
+         * Allowing manual specification is the old behavior
+         * On upgrade, keep the old behavior
+         */
+        settings.setApiManualAddressAllowed( true );
+    }
+    
     private synchronized void reconfigure()
     {
         /**
