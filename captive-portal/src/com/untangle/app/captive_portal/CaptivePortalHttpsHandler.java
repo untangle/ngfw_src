@@ -38,7 +38,7 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
             return;
         }
 
-        logger.debug("Doing HTTPS-->HTTP redirect for " + special.getHostAddress().toString());
+        logger.debug("Performing HTTPS processing for " + special.getHostAddress().toString());
 
         // first we remove the attachment
         sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, null);
