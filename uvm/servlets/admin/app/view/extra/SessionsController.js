@@ -5,7 +5,8 @@ Ext.define('Ung.view.extra.SessionsController', {
 
     control: {
         '#': {
-            deactivate: 'onDeactivate'
+            deactivate: 'onDeactivate',
+            refresh: 'getSessions'
         },
         '#sessionsgrid': {
             afterrender: 'getSessions'
@@ -44,24 +45,20 @@ Ext.define('Ung.view.extra.SessionsController', {
         var me = this,
             v = me.getView(),
             grid = v.down('#sessionsgrid'),
-            // filters = grid.getStore().getFilters(),
+            filters = grid.getStore().getFilters(),
             store = Ext.getStore('sessions');
 
-        // var existingRouteFilter = filters.findBy( function( filter ){
-        //     if(filter.config.source == "route"){
-        //         return true;
-        //     }
-        // } );
-        // if( existingRouteFilter != null ){
-        //     console.log("remove");
-        //     console.log(existingRouteFilter);
-        //     filters.remove(existingRouteFilter);
-        // }
-        // if( v.routeFilter ){
-        //     console.log("add");
-        //     console.log(v.routeFilter);
-        //     filters.add(v.routeFilter);
-        // }
+        var existingRouteFilter = filters.findBy( function( filter ){
+            if(filter.config.source == "route"){
+                return true;
+            }
+        } );
+        if( existingRouteFilter != null ){
+            filters.remove(existingRouteFilter);
+        }
+        if( v.routeFilter ){
+            filters.add(v.routeFilter);
+        }
 
         if( !store.getFields() ){
             store.setFields(grid.fields);

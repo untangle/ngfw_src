@@ -92,6 +92,7 @@ Ext.define('Ung.config.local-directory.MainController', {
             }).always(function () {
                 me.loadSettings();
                 view.setLoading(false);
+                Ext.fireEvent('resetfields', view);
             });
     }
 

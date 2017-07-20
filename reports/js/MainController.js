@@ -21,7 +21,12 @@ Ext.define('Ung.apps.reports.MainController', {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
-
+            // setTimeout(function () {
+            //     Ext.Array.each(v.query('field'), function (field) {
+            //         console.log(field.getFieldLabel());
+            //         field.resetOriginalValue();
+            //     });
+            // }, 500);
             // intervals
         });
 
@@ -96,6 +101,7 @@ Ext.define('Ung.apps.reports.MainController', {
             if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
+            Ext.fireEvent('resetfields', v);
         }, vm.get('settings'));
     },
 
@@ -343,7 +349,7 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
         var categories = vm.get(v.group + 'Categories' );
         vm.get('reportEntries').each(function(record ){
             var uniqueId = record.get('uniqueId');
-            if( ( recommended && 
+            if( ( recommended &&
                   ( emailRecommendedReportIds.indexOf( uniqueId ) > -1 &&
                     categories.indexOf(record.get('category') ) > -1 ) ) ||
                 uniqueIds.indexOf( uniqueId ) > -1 ){

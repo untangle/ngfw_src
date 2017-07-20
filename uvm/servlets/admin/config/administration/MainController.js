@@ -98,6 +98,11 @@ Ext.define('Ung.config.administration.MainController', {
                 skinsList: result[2],
                 skinSettings: result[3]
             });
+
+            // Ext.Array.each(v.query('ungrid'), function (grid) {
+            //     grid.getStore().commitChanges();
+            // });
+
         }, function(ex) {
             console.error(ex);
             Util.handleException(ex);
@@ -228,6 +233,7 @@ Ext.define('Ung.config.administration.MainController', {
             me.loadCertificates();
             // window.location.reload();
             Util.successToast('Administration'.t() + ' settings saved!');
+            Ext.fireEvent('resetfields', view);
         }, function(ex) {
             console.error(ex);
             Util.handleException(ex);

@@ -39,9 +39,12 @@ Ext.define('Ung.controller.Global', {
 
     listen: {
         global: {
-            appinstall: 'onAppInstall'
+            appinstall: 'onAppInstall',
+            resetfields: 'onResetFields' // used to reset the fields after saving the settings
         }
     },
+
+    hashBackup: '', // used to revert the hash when user changes are detected in Apps or Configs
 
     config: {
         refs: {
@@ -52,36 +55,96 @@ Ext.define('Ung.controller.Global', {
         },
 
         routes: {
-            '': 'onDashboard',
-            'expert': 'setExpertMode',
-            'noexpert': 'setNoExpertMode',
-            'apps': 'onApps',
-            'apps/:policyId': 'onApps',
-            'apps/:policyId/:app': 'onApps',
+            '': { before: 'detectChanges', action: 'onDashboard' },
+            'apps': { before: 'detectChanges', action: 'onApps' },
+            'apps/:policyId': { before: 'detectChanges', action: 'onApps' },
+            'apps/:policyId/:app': { before: 'detectChanges', action: 'onApps' },
             'apps/:policyId/:app/:view': 'onApps',
-            'service/:app': 'onService',
+            'service/:app': { before: 'detectChanges', action: 'onService' },
             'service/:app/:view': 'onService',
 
-            'config': 'onConfig',
-            'config/:configName': 'onConfig',
+            'config': { before: 'detectChanges', action: 'onConfig' },
+            'config/:configName': { before: 'detectChanges', action: 'onConfig' },
             'config/:configName/:configView': 'onConfig',
-            'reports': 'onReports',
-            'reports/:category': 'onReports',
-            'reports/:category/:entry': 'onReports',
-            'sessions': 'onSessions',
-            // 'sessions/:params': {
-            //     action: 'onSessions',
-            //     conditions: {
-            //         ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
-            //     }
-            // },
-            'hosts': 'onHosts',
-            'devices': 'onDevices',
-            'users': 'onUsers'
+            'reports': { before: 'detectChanges', action: 'onReports' },
+            'reports/:category': { before: 'detectChanges', action: 'onReports' },
+            'reports/:category/:entry': { before: 'detectChanges', action: 'onReports' },
+            'sessions': { before: 'detectChanges', action: 'onSessions' },
+            'sessions/:params': {
+                action: 'onSessions',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
+            'hosts': { before: 'detectChanges', action: 'onHosts' },
+            'hosts/:params': {
+                action: 'onHosts',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
+            'devices': { before: 'detectChanges', action: 'onDevices' },
+            'devices/:params': {
+                action: 'onDevices',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
+            'users': { before: 'detectChanges', action: 'onUsers' },
+            'expert': 'setExpertMode',
+            'noexpert': 'setNoExpertMode'
         },
 
         reportsEnabled: true
     },
+
+    detectChanges: function () {
+        var action = arguments[arguments.length - 1]; // arguments length vary, action being the last one
+        var cmp = Ung.app.getMainView().down('#appCard') || Ung.app.getMainView().down('#configCard');
+        if (!cmp) {
+            action.resume(); // resume if there is no app or config view
+            return;
+        }
+
+        var dirtyFields = false, dirtyGrids = false;
+        Ext.Array.each(cmp.query('field'), function (field) {
+            if (field._isChanged && !dirtyFields) {
+                dirtyFields = true;
+            }
+        });
+        // check for grids changes
+        Ext.Array.each(cmp.query('ungrid'), function (grid) {
+            var store = grid.getStore();
+            if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0 && !dirtyGrids) {
+                dirtyGrids = true;
+            }
+        });
+
+        if (dirtyFields || dirtyGrids) {
+            Ext.MessageBox.confirm('Warning'.t(), 'There are unsaved settings which will be lost. Do you want to continue?'.t(),
+            function(btn) {
+                if (btn === 'yes') {
+                    action.resume(); // if user wants to loose changes move on
+                } else {
+                    Ung.app.redirectTo(Ung.app.hashBackup); // otherwise keep it in same view and reset the hash to reflect the same view
+                }
+            });
+        } else {
+            action.resume();
+        }
+    },
+
+    onResetFields: function (view) {
+        Ext.Array.each(view.query('field'), function (field) {
+            if (field.hasOwnProperty('_initialValue')) {
+                delete field._initialValue;
+            }
+            if (field.hasOwnProperty('_isChanged')) {
+                delete field._isChanged;
+            }
+        });
+    },
+
 
     onAppInstall: function () {
         // refetch current applications and rebuild reports tree
@@ -233,7 +296,13 @@ Ext.define('Ung.controller.Global', {
                         xtype: 'config-' + config,
                         name: config,
                         itemId: 'configCard',
-                        activeTab: view || 0
+                        activeTab: view || 0,
+                        listeners: {
+                            deactivate: function () {
+                                // remove the config container
+                                mainView.remove('configCard');
+                            }
+                        }
                     });
                     mainView.getViewModel().set('activeItem', 'configCard');
                     mainView.getViewModel().notify();
@@ -257,37 +326,44 @@ Ext.define('Ung.controller.Global', {
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
+    onMonitor: function(id, xtype, params){
+        var me = this,
+            mainview = me.getMainView();
+
+        var filter = null;
+        if (params) {
+            filter = {
+                property: params.split('=')[0].replace('?', ''),
+                value: params.split('=')[1],
+                source: 'route'
+            };
+        }
+
+        var existing = mainview.getComponent( id );
+        if(existing){
+            existing.routeFilter = filter;
+            existing.fireEvent('refresh');
+        }else{
+            this.getMainView().add({
+                xtype: xtype,
+                itemId: id,
+                routeFilter: filter
+            });
+        }
+        this.getMainView().getViewModel().set('activeItem', id);
+
+    },
+
     onSessions: function (params) {
-        // var filter = null;
-        // if (params) {
-        //     filter = {
-        //         property: params.split('=')[0].replace('?', ''),
-        //         value: params.split('=')[1],
-        //         source: 'route'
-        //     };
-        // }
-        this.getMainView().add({
-            xtype: 'ung.sessions',
-            itemId: 'sessions'
-            // routeFilter: filter
-        });
-        this.getMainView().getViewModel().set('activeItem', 'sessions');
+        this.onMonitor( 'sessions', 'ung.sessions', params);
     },
 
-    onHosts: function () {
-        this.getMainView().add({
-            xtype: 'ung.hosts',
-            itemId: 'hosts'
-        });
-        this.getMainView().getViewModel().set('activeItem', 'hosts');
+    onHosts: function ( params ) {
+        this.onMonitor( 'hosts', 'ung.hosts', params);
     },
 
-    onDevices: function () {
-        this.getMainView().add({
-            xtype: 'ung.devices',
-            itemId: 'devices'
-        });
-        this.getMainView().getViewModel().set('activeItem', 'devices');
+    onDevices: function ( params ) {
+        this.onMonitor( 'devices', 'ung.devices', params);
     },
 
     onUsers: function () {
