@@ -52,6 +52,25 @@ def createCaptureNonWanNicRule(idValue):
         "ruleId": idValue
     };
 
+def createCaptureAllowHttpRule(idValue):
+    return {
+        "capture": False,
+        "description": "Test Rule - Allow HTTP to test server",
+        "enabled": True,
+        "id": 1,
+        "javaClass": "com.untangle.app.captive_portal.CaptureRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                "invert": False,
+                "javaClass": "com.untangle.app.captive_portal.CaptureRuleCondition",
+                "conditionType": "HTTP_HOST",
+                "value": "test.untangle.com"
+                }]
+            },
+        "ruleId": idValue
+     };
+
 def createCaptureAllowHttpsRule(idValue):
     return {
         "capture": False,
@@ -382,7 +401,25 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_025b.out")
         assert (search == 0)
 
-    def test_026_PassRuleHttps(self):
+    def test_026_PassRuleHttp(self):
+        global app, appData
+
+        # Create pass rule for our HTTP test server and append Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureAllowHttpRule(1))
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(2))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
+
+        # check that basic captive page is NOT show for host with HTTP hostname pass rule
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_026.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_027.out")
+        assert (search != 0)
+
+    def test_027_PassRuleHttps(self):
         global app, appData
 
         # Create pass rule for our HTTPS test server and append Internal NIC capture rule with basic login page
@@ -395,9 +432,9 @@ class CaptivePortalTests(unittest2.TestCase):
         app.setSettings(appData)
 
         # check that basic captive page is NOT show for host with SNI hostname pass rule
-        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_026.out --insecure https://test.untangle.com/")
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_027.out --insecure https://test.untangle.com/")
         assert (result == 0)
-        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_026.out")
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_027.out")
         assert (search != 0)
 
     def test_030_loginLocalDirectory(self):
