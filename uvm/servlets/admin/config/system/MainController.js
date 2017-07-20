@@ -125,6 +125,7 @@ Ext.define('Ung.config.system.MainController', {
             v.setLoading(false);
             me.loadSettings();
             Util.successToast('System settings saved!');
+            Ext.fireEvent('resetfields', v);
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
