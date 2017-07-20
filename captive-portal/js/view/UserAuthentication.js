@@ -35,7 +35,7 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
                 case 'LOCAL_DIRECTORY': return 'Configure Local Directory'.t();
                 case 'RADIUS': return 'Configure RADIUS'.t();
                 case 'ACTIVE_DIRECTORY': return 'Configure Active Directory'.t();
-                case 'ANY': return 'Configure Directory Connector'.t();
+                case 'ANY_DIRCON': return 'Configure Directory Connector'.t();
                 default: return '';
                 }
             },
@@ -44,7 +44,7 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
                 case 'LOCAL_DIRECTORY': return false;
                 case 'RADIUS': return  false;
                 case 'ACTIVE_DIRECTORY': return false;
-                case 'ANY': return false;
+                case 'ANY_DIRCON': return false;
                 default: return true;
                 }
             }
@@ -75,12 +75,13 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
             items: [
                 { boxLabel: '<strong>' + 'None'.t() + '</strong>', inputValue: 'NONE' },
                 { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
-                { boxLabel: '<strong>' + 'Google Account'.t() + '</strong>', inputValue: 'GOOGLE' },
-                { boxLabel: '<strong>' + 'Facebook Account'.t() + '</strong>', inputValue: 'FACEBOOK' },
-                { boxLabel: '<strong>' + 'Microsoft Account'.t() + '</strong>', inputValue: 'MICROSOFT' },
                 { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' },
                 { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
-                { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY' },
+                { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY_DIRCON' },
+                { boxLabel: '<strong>' + 'Google Account'.t() + '</strong> (OAuth Provider)', inputValue: 'GOOGLE' },
+                { boxLabel: '<strong>' + 'Facebook Account'.t() + '</strong> (OAuth Provider)', inputValue: 'FACEBOOK' },
+                { boxLabel: '<strong>' + 'Microsoft Account'.t() + '</strong> (OAuth Provider)', inputValue: 'MICROSOFT' },
+//                { boxLabel: '<strong>' + 'Any OAuth Provider'.t() + '</strong> (' + 'uses OAuth provider selection page'.t() + ')', inputValue: 'ANY_OAUTH' },
             ]
         }, {
             // todo: update this button later
