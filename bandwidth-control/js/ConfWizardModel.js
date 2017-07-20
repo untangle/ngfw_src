@@ -160,7 +160,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                     'web traffic to download sites'.t(),
                     'non-real-time background services (e.g. Microsoft&reg; updates, backup services)'.t(),
                     'any detected Peer-to-Peer traffic'.t(),
-                    'all web traffic in violation of school policy'.t()
+                    'all web traffic in violation of policy'.t()
                 ],
                 limits: [
                     'heavily limits BitTorrent usage'.t()
