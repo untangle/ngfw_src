@@ -19,6 +19,9 @@ Ext.define('Ung.view.main.Main', {
         formulas: {
             reportsEnabled: function (get) {
                 return (get('reportsInstalled') && get('reportsRunning'));
+            },
+            supportInstalled: function(get){
+                return (get('supportInstalled'));
             }
         }
     },
@@ -83,7 +86,9 @@ Ext.define('Ung.view.main.Main', {
                 userCls: '{activeItem === "reports" ? "pressed" : ""}',
                 hidden: '{!reportsInstalled}'
             }
-        }, '->', {
+        },
+        '->',
+        {
             iconCls: 'fa fa-exclamation-triangle fa-lg fa-orange',
             itemId: 'notificationBtn',
             cls: 'notification-btn',
@@ -92,10 +97,18 @@ Ext.define('Ung.view.main.Main', {
             menuAlign: 'tr-br',
             hidden: true
         }, {
+            text: 'Support'.t(),
+            iconCls: 'fa fa-life-ring',
+            handler: 'supportHandler',
+            href: '#support',
+            hidden: true,
+            bind: {
+                userCls: '{activeItem === "support" ? "pressed" : ""}',
+                hidden: '{!supportInstalled}'
+            }
+        }, {
             text: 'Help'.t(),
             iconCls: 'fa fa-question-circle',
-            // href: rpc.helpUrl + '?' + Util.getAbout() + window.location.href,
-            // hrefTarget: '_blank',
             handler: 'helpHandler'
         }, {
             text: 'Account'.t() + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
