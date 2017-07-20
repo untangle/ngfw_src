@@ -48,6 +48,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
+            Ext.fireEvent('resetfields', v);
         }, vm.get('settings'));
 
     }

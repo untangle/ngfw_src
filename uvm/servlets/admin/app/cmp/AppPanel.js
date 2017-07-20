@@ -57,9 +57,32 @@ Ext.define('Ung.cmp.AppPanel', {
             }
         },
 
-        afterrender: function (tabPanel) {
-            var vm = tabPanel.getViewModel();
+        tabchange: function (tabPanel) {
+            Ung.app.hashBackup = window.location.hash; // keep track of hash for changes detection
+        },
 
+        afterrender: function (appPanel) {
+            // code used for detecting user manual data change
+            Ung.app.hashBackup = window.location.hash; // keep track of hash for changes detection
+            Ext.Array.each(appPanel.query('field'), function (field) {
+                // setup the _initialValue of the field on focus
+                field.on('focus', function () {
+                    if (!field.hasOwnProperty('_initialValue')) {
+                        field._initialValue = field.getValue();
+                    }
+                });
+                field.on('blur', function () {
+                    // on field blur check if new value is different than the initial one
+                    // add an _isChanged prop which is true if field value is really changed by the user manually
+                    if (field._initialValue !== field.getValue()) {
+                        field._isChanged = true;
+                    } else {
+                        field._isChanged = false;
+                    }
+                });
+            });
+
+            var vm = appPanel.getViewModel();
             // add policy name in the tabbar, needs a small delay for policiestree to be available
             Ext.defer(function () {
                 try {

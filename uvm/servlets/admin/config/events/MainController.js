@@ -101,6 +101,7 @@ Ext.define('Ung.config.events.MainController', {
         ], this).then(function() {
             me.loadEvents();
             Util.successToast('Events'.t() + ' settings saved!');
+            Ext.fireEvent('resetfields', view);
         }, function(ex) {
             console.error(ex);
             Util.handleException(ex);
