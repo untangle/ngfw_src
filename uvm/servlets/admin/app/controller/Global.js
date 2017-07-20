@@ -69,14 +69,26 @@ Ext.define('Ung.controller.Global', {
             'reports/:category': 'onReports',
             'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
-            // 'sessions/:params': {
-            //     action: 'onSessions',
-            //     conditions: {
-            //         ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
-            //     }
-            // },
+            'sessions/:params': {
+                action: 'onSessions',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
             'hosts': 'onHosts',
+            'hosts/:params': {
+                action: 'onHosts',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
             'devices': 'onDevices',
+            'devices/:params': {
+                action: 'onDevices',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                }
+            },
             'users': 'onUsers'
         },
 
@@ -252,37 +264,44 @@ Ext.define('Ung.controller.Global', {
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
+    onMonitor: function(id, xtype, params){
+        var me = this,
+            mainview = me.getMainView();
+
+        var filter = null;
+        if (params) {
+            filter = {
+                property: params.split('=')[0].replace('?', ''),
+                value: params.split('=')[1],
+                source: 'route'
+            };
+        }
+
+        var existing = mainview.getComponent( id );
+        if(existing){
+            existing.routeFilter = filter;
+            existing.fireEvent('refresh');
+        }else{
+            this.getMainView().add({
+                xtype: xtype,
+                itemId: id,
+                routeFilter: filter
+            });
+        }
+        this.getMainView().getViewModel().set('activeItem', id);
+
+    },
+
     onSessions: function (params) {
-        // var filter = null;
-        // if (params) {
-        //     filter = {
-        //         property: params.split('=')[0].replace('?', ''),
-        //         value: params.split('=')[1],
-        //         source: 'route'
-        //     };
-        // }
-        this.getMainView().add({
-            xtype: 'ung.sessions',
-            itemId: 'sessions'
-            // routeFilter: filter
-        });
-        this.getMainView().getViewModel().set('activeItem', 'sessions');
+        this.onMonitor( 'sessions', 'ung.sessions', params);
     },
 
-    onHosts: function () {
-        this.getMainView().add({
-            xtype: 'ung.hosts',
-            itemId: 'hosts'
-        });
-        this.getMainView().getViewModel().set('activeItem', 'hosts');
+    onHosts: function ( params ) {
+        this.onMonitor( 'hosts', 'ung.hosts', params);
     },
 
-    onDevices: function () {
-        this.getMainView().add({
-            xtype: 'ung.devices',
-            itemId: 'devices'
-        });
-        this.getMainView().getViewModel().set('activeItem', 'devices');
+    onDevices: function ( params ) {
+        this.onMonitor( 'devices', 'ung.devices', params);
     },
 
     onUsers: function () {
