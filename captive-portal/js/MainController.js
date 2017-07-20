@@ -98,7 +98,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory');
                 break;
-            case 'ANY':
+            case 'ANY_DIRCON':
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
                 break;

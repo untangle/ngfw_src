@@ -255,6 +255,11 @@ public class CaptivePortalApp extends AppBase
             readSettings.setCertificateDetection(CaptivePortalSettings.CertificateDetection.CHECK_CERTIFICATE);
         }
 
+        // we're retiring auth type ANY since there are multiply ANY options
+        if (readSettings.getAuthenticationType() == CaptivePortalSettings.AuthenticationType.ANY) {
+            readSettings.setAuthenticationType(CaptivePortalSettings.AuthenticationType.ANY_DIRCON);
+        }
+
         return (readSettings);
     }
 
@@ -505,12 +510,12 @@ public class CaptivePortalApp extends AppBase
             }
             break;
 
-        case ANY:
+        case ANY_DIRCON:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
             } catch (Exception e) {
-                logger.warn("ANY authentication failure", e);
+                logger.warn("ANY_DIRCON authentication failure", e);
                 isAuthenticated = false;
             }
             break;

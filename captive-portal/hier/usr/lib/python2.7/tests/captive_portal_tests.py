@@ -479,7 +479,7 @@ class CaptivePortalTests(unittest2.TestCase):
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
-        appData['authenticationType']="ANY"
+        appData['authenticationType']="ANY_DIRCON"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
         app.setSettings(appData)
