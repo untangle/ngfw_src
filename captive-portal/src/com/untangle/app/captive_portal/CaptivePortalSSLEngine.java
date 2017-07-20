@@ -158,13 +158,17 @@ public class CaptivePortalSSLEngine
         // do the rule check again now that we have the SSL attachments
         CaptureRule rule = captureApp.checkCaptureRules(session);
 
-        // found a rule match so allow the session
-        if (rule != null) {
+        // if we find a pass rule allow the session
+        if ((rule != null) && (rule.getCapture() == false)) {
+            logger.debug("Releasing HTTPS session on rule match: " + rule.getDescription());
             captureApp.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             session.sendDataToServer(data);
             session.release();
             return true;
         }
+
+        // no rule match so log and and proceed with sending back the redirect  
+        logger.debug("Doing HTTPS-->HTTP redirect for " + session.getOrigClientAddr().getHostAddress().toString());
 
         while (!done) {
             status = sslEngine.getHandshakeStatus();

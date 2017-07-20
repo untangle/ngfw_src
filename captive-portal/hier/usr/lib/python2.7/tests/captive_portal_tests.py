@@ -33,7 +33,7 @@ captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
 
 # pdb.set_trace()
-def createCaptureNonWanNicRule():
+def createCaptureNonWanNicRule(idValue):
     return {
         "capture": True,
         "description": "Test Rule - Capture all internal traffic",
@@ -49,8 +49,27 @@ def createCaptureNonWanNicRule():
                 "value": "non_wan"
                 }]
             },
-        "ruleId": 1
+        "ruleId": idValue
     };
+
+def createCaptureAllowHttpsRule(idValue):
+    return {
+        "capture": False,
+        "description": "Test Rule - Allow HTTPS to test server",
+        "enabled": True,
+        "id": 1,
+        "javaClass": "com.untangle.app.captive_portal.CaptureRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                "invert": False,
+                "javaClass": "com.untangle.app.captive_portal.CaptureRuleCondition",
+                "conditionType": "SSL_INSPECTOR_SNI_HOSTNAME",
+                "value": "test.untangle.com"
+                }]
+            },
+        "ruleId": idValue
+     };
 
 def createLocalDirectoryUser():
     return {'javaClass': 'java.util.LinkedList',
@@ -220,7 +239,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_021_captureTrafficCheck(self):
         global app, appData
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         app.setSettings(appData)
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
         assert (result == 0)
@@ -242,7 +261,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_022_webFilterAffinityCheck(self):
         global app, appData, appWeb
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         app.setSettings(appData)
 
         newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.app.GenericRule", "string": "test.untangle.com" }
@@ -270,7 +289,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
@@ -304,7 +323,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 10
@@ -336,7 +355,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
@@ -363,12 +382,30 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_025b.out")
         assert (search == 0)
 
+    def test_026_PassRuleHttps(self):
+        global app, appData
+
+        # Create pass rule for our HTTPS test server and append Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureAllowHttpsRule(1))
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(2))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
+
+        # check that basic captive page is NOT show for host with SNI hostname pass rule
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_026.out --insecure https://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_026.out")
+        assert (search != 0)
+
     def test_030_loginLocalDirectory(self):
         global app, appData
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
@@ -404,7 +441,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="ANY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
@@ -435,107 +472,6 @@ class CaptivePortalTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)
 
-    def test_032_loginGoogle(self):
-        raise unittest2.SkipTest('Broken test - google keeps banning account')
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        global app, appData
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        device_in_office = global_functions.is_in_office_network(wan_IP)
-        if (device_in_office):
-            raise unittest2.SkipTest('Google Login not working in office')
-        googleUserName, googlePassword = global_functions.get_live_account_info("Google")
-        print "username: %s\n " % str(googleUserName)
-        if googlePassword != None:
-            print "password: %s\n" % (len(googlePassword)*"*")
-
-        # account not found if message returned
-        if googleUserName == "message":
-            raise unittest2.SkipTest(googlePassword)
-        # Create Internal NIC capture rule with basic login page
-        appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        appData['authenticationType']="GOOGLE"
-        appData['pageType'] = "BASIC_LOGIN"
-        appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
-
-        # Configure Directory Connector
-        appAD.setSettings(createDirectoryConnectorSettings())
-
-        # check that basic captive page is shown
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'username and password' /tmp/capture_test_032.out")
-        assert (search == 0)
-
-        # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
-        # print 'appid is %s' % appid  # debug line
-        result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_032a.out")
-        assert (search == 0)
-        foundUsername = findNameInHostTable(googleUserName)
-        assert(foundUsername)
-
-        # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out " + global_functions.get_http_url() + "/capture/logout")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_030b.out")
-        assert (search == 0)
-        foundUsername = findNameInHostTable(googleUserName)
-        assert(not foundUsername)
-
-    def test_033_loginFacebook(self):
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        global app, appData
-        facebookUserName, facebookPassword = global_functions.get_live_account_info("Facebook")
-        print "username: %s\n " % str(facebookUserName)
-        if facebookPassword != None:
-            print "password: %s\n" % (len(facebookPassword)*"*")
-
-        # account not found if message returned
-        if facebookUserName == "message":
-            raise unittest2.SkipTest(facebookPassword)
-        # Create Internal NIC capture rule with basic login page
-        appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        appData['authenticationType']="FACEBOOK"
-        appData['pageType'] = "BASIC_LOGIN"
-        appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
-
-        # Configure Directory Connector
-        appAD.setSettings(createDirectoryConnectorSettings())
-
-        # check that basic captive page is shown
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'username and password' /tmp/capture_test_032.out")
-        assert (search == 0)
-
-        # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
-        # print 'appid is %s' % appid  # debug line
-        result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + facebookUserName + "&password=" + facebookPassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_032a.out")
-        assert (search == 0)
-        foundUsername = findNameInHostTable(facebookUserName)
-        assert(foundUsername)
-
-        # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out " + global_functions.get_http_url() + "/capture/logout")
-        assert (result == 0)
-        search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_030b.out")
-        assert (search == 0)
-        foundUsername = findNameInHostTable(facebookUserName)
-        assert(not foundUsername)
-
     def test_035_loginActiveDirectory(self):
         global appData, app, appDataAD, appAD
         if (adResult != 0):
@@ -547,7 +483,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="ACTIVE_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
@@ -620,7 +556,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="RADIUS"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
@@ -674,7 +610,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
 
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
@@ -738,7 +674,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
 
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
@@ -790,7 +726,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
 
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
@@ -816,7 +752,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
@@ -853,7 +789,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
-        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
