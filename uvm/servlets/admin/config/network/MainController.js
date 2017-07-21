@@ -235,6 +235,7 @@ Ext.define('Ung.config.network.MainController', {
         .then(function(result) {
             me.loadSettings();
             Util.successToast('Network'.t() + ' settings saved!');
+            Ext.fireEvent('resetfields', view);
         }).always(function () {
             view.setLoading(false);
         });

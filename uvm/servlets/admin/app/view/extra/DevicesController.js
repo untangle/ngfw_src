@@ -5,7 +5,8 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     control: {
         '#': {
-            deactivate: 'onDeactivate'
+            deactivate: 'onDeactivate',
+            refresh: 'getDevices'
         },
         '#devicesgrid': {
             afterrender: 'getDevices'
@@ -20,7 +21,20 @@ Ext.define('Ung.view.extra.DevicesController', {
         var me = this,
             v = me.getView(),
             grid = me.getView().down('#devicesgrid'),
+            filters = grid.getStore().getFilters(),
             store = Ext.getStore('devices');
+
+        var existingRouteFilter = filters.findBy( function( filter ){
+            if(filter.config.source == "route"){
+                return true;
+            }
+        } );
+        if( existingRouteFilter != null ){
+            filters.remove(existingRouteFilter);
+        }
+        if( v.routeFilter ){
+            filters.add(v.routeFilter);
+        }
 
         if( !store.getFields() ){
             store.setFields(grid.fields);
