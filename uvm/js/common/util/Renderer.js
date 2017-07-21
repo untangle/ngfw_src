@@ -80,6 +80,9 @@ Ext.define('Ung.util.Renderer', {
     },
 
     interface: function (value) {
+        if (!rpc.reportsManager) {
+            return value.toString();
+        }
         if (!Ung.util.Renderer.interfaceMap) {
             // this.buildInterfaceMap();
             var interfacesList = [], i;
