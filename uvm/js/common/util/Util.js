@@ -15,14 +15,14 @@ Ext.define('Ung.util.Util', {
     ],
 
     baseCategories: [
-        { name: 'hosts', type: 'system', displayName: 'Hosts' },
-        { name: 'devices', type: 'system', displayName: 'Devices' },
-        { name: 'network', type: 'system', displayName: 'Network' },
-        { name: 'administration', type: 'system', displayName: 'Administration' },
-        { name: 'system', type: 'system', displayName: 'System' },
-        { name: 'events', type: 'system', displayName: 'Events' },
-        { name: 'shield', type: 'system', displayName: 'Shield' },
-        { name: 'users', type: 'system', displayName: 'Users' }
+        { name: 'hosts', type: 'system', displayName: 'Hosts', viewPosition: 1 },
+        { name: 'devices', type: 'system', displayName: 'Devices', viewPosition: 2 },
+        { name: 'users', type: 'system', displayName: 'Users', viewPosition: 3 },
+        { name: 'network', type: 'system', displayName: 'Network', viewPosition: 4 },
+        { name: 'administration', type: 'system', displayName: 'Administration', viewPosition: 5 },
+        { name: 'events', type: 'system', displayName: 'Events', viewPosition: 6 },
+        { name: 'system', type: 'system', displayName: 'System',  viewPosition: 7 },
+        { name: 'shield', type: 'system', displayName: 'Shield', viewPosition: 8 }
     ],
 
     appStorage: { },
