@@ -280,6 +280,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                         v.setLoading(false);
                         me.getSettings();
                         Util.successToast('Settings saved...');
+                        Ext.fireEvent('resetfields', v);
                     }, this));
                 }
             },
@@ -337,7 +338,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
          * save in the same session, causes to see all records as modified
          * and therefore, send send ALL data back.
          *
-         * To get around this, we have the inline loader rouines set the 
+         * To get around this, we have the inline loader rouines set the
          * 'storeId'Load variable and if we see it here, cause all of those changes
          * to be "commited" since nothing has changed.
          *

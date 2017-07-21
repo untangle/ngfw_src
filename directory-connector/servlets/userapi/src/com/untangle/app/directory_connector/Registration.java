@@ -60,6 +60,14 @@ public class Registration extends HttpServlet
         String action = null;
         String secretKey = null;
         String clientIp = null;
+        InetAddress inetAddress;
+
+        try {
+            inetAddress = InetAddress.getByName(request.getRemoteAddr());
+        } catch (Exception e) {
+            logger.warn( "Unable to parse the internet address: " + request.getRemoteAddr());
+            return;
+        }
 
         Map<String, String[]> parameters = request.getParameterMap();
 
@@ -83,9 +91,21 @@ public class Registration extends HttpServlet
                 return;
             }
         }
-        if ( clientIp == null || clientIp.equals("") )
-            clientIp = request.getRemoteAddr();
-        
+        if ( clientIp != null && !clientIp.equals("") ) {
+            /**
+             * Only allow the client IP to be specified manually if the spoofing is allowed
+             * Or the secretkey is specified (and correct)
+             */
+            if ( directoryConnector.getSettings().getApiManualAddressAllowed() || (secretKey != null && !secretKey.equals("")) ) {
+                try {
+                    inetAddress = InetAddress.getByName(clientIp);
+                } catch (Exception e) {
+                    logger.warn( "Unable to parse the internet address: " + request.getRemoteAddr());
+                    return;
+                }
+            }
+        }
+
         logger.debug("User API ( action=" + action + " username=" + username + " hostname=" + hostname + " clientIp=" + clientIp + " secretKey=" + secretKey + " )");
         
         //String remoteHost = request.getRemoteHost();
@@ -99,7 +119,6 @@ public class Registration extends HttpServlet
             action = "login"; 
         }
 
-        InetAddress inetAddress = InetAddress.getByName( clientIp );
 
         if (action.equals("logout")) {
             logger.debug( "logout   user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );

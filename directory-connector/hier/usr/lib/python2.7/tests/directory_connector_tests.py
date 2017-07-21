@@ -258,8 +258,6 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         checkUserRegistration
         """
-        if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = global_functions.get_http_url()
         assert(http_admin)
@@ -287,8 +285,6 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         checkUserRegistration, mixed character case in username
         """
-        if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = global_functions.get_http_url().title()
         assert(http_admin)
@@ -310,8 +306,6 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Check old user registration
         """
-        if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = global_functions.get_http_url()
         assert(http_admin)
@@ -454,6 +448,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test google authentication
         """
+        raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         googleUserName, googlePassword = ("badusername@untangle.com","xxxxxxxxx")
@@ -466,6 +461,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test facebook authentication
         """
+        raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         facebookUserName, facebookPassword = global_functions.get_live_account_info("Facebook")
@@ -481,6 +477,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test facebook authentication
         """
+        raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         facebookUserName, facebookPassword = ("badusername@untangle.com","xxxxxxxxx")

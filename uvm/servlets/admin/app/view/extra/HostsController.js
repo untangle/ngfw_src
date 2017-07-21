@@ -5,7 +5,8 @@ Ext.define('Ung.view.extra.HostsController', {
 
     control: {
         '#': {
-            deactivate: 'onDeactivate'
+            deactivate: 'onDeactivate',
+            refresh: 'getHosts'
         },
         '#hostsgrid': {
             afterrender: 'getHosts'
@@ -42,7 +43,20 @@ Ext.define('Ung.view.extra.HostsController', {
         var me = this,
             v = me.getView(),
             grid = me.getView().down('#hostsgrid'),
+            filters = grid.getStore().getFilters(),
             store = grid.getStore('hosts');
+
+        var existingRouteFilter = filters.findBy( function( filter ){
+            if(filter.config.source == "route"){
+                return true;
+            }
+        } );
+        if( existingRouteFilter != null ){
+            filters.remove(existingRouteFilter);
+        }
+        if( v.routeFilter ){
+            filters.add(v.routeFilter);
+        }
 
         if( !store.getFields() ){
             store.setFields(grid.fields);

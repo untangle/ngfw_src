@@ -31,6 +31,7 @@ public class ExtensionImpl implements Runnable
 
     private ExtensionImpl()
     {
+        classDescriptions.put("AdminLoginEvent","These events are created by the base system and inserted to the [[Database_Schema#admin_logins|admin_logins]] table when the host table is modified.");
         classDescriptions.put("UserTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
@@ -79,6 +80,9 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
 
+        attributeDescriptions.put("login","Login name"); // FIXME
+        attributeDescriptions.put("local","Logged in locally"); // FIXME
+        attributeDescriptions.put("succeeded","Login succeeded"); // FIXME
         attributeDescriptions.put("address","The address");
         attributeDescriptions.put("class","The class name");
         attributeDescriptions.put("key","The key");
@@ -271,6 +275,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("causalRule","The causal rule");
         attributeDescriptions.put("eventSent","True if the event was sent, false otherwise");
         attributeDescriptions.put("oldValue","");
+        attributeDescriptions.put("rxBytes","The number of RX (received) bytes");
+        attributeDescriptions.put("txBytes","The number of TX (transmitted) bytes");
 
         HashMap<String,String> specificDescriptions;
         

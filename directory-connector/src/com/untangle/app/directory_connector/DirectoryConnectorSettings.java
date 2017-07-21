@@ -12,11 +12,11 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DirectoryConnectorSettings implements java.io.Serializable, JSONString
 {
-    private int version = 1;
+    private int version = 2;
 
     private boolean apiEnabled = false;
     private String apiSecretKey = null;
-    
+    private boolean apiManualAddressAllowed = false;
     private ActiveDirectorySettings activeDirectorySettings;
     private RadiusSettings radiusSettings;
     private GoogleSettings googleSettings;
@@ -44,7 +44,18 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
 
     public String getApiSecretKey() { return this.apiSecretKey; };
     public void setApiSecretKey( String newValue ) { this.apiSecretKey = newValue; }
-    
+
+    /**
+     * This is a hidden setting used to maintain backwards compatibility
+     * On new installs this is always false
+     * Manual specification of the client IP is only allowed when using the secret key
+     *
+     * However on old installs we allowed manual specification of the address with no secret key
+     * So on upgrade this was set to true
+     */
+    public boolean getApiManualAddressAllowed() { return this.apiManualAddressAllowed; };
+    public void setApiManualAddressAllowed( boolean newValue ) { this.apiManualAddressAllowed = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
