@@ -280,6 +280,12 @@ Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 Description: OpenVPN
  The OpenVPN application.
 
+Package: untangle-app-tunnel-vpn
+Architecture: all
+Depends: untangle-vm, openvpn
+Description: Tunnel VPN
+ The Tunnel VPN application.
+
 Package: untangle-app-intrusion-prevention
 Architecture: all
 Conflicts: untangle-node-intrusion-prevention
