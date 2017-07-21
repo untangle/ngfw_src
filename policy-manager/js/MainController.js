@@ -281,7 +281,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
                     store: policiesStore,
                     emptyText: 'Select parent',
                     allowBlank: false,
-                    disabled: rec && rec.get('policyId') === 1,
+                    hidden: rec && rec.get('policyId') === 1,
                     queryMode: 'local',
                     editable: false
                 }],
