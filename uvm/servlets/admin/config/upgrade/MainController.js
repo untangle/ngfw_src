@@ -34,9 +34,9 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
 
     saveSettings: function () {
-        var me = this,
+        var me = this, view = me.getView(),
             vm = me.getViewModel();
-        me.getView().setLoading('Saving ...');
+        view.setLoading('Saving ...');
 
         for( var key in this.settingsValueMap){
             for( var settingsKey in this.settingsValueMap[key]){
@@ -46,10 +46,11 @@ Ext.define('Ung.config.upgrade.MainController', {
             }
         }
         rpc.systemManager.setSettings(function (result, ex) {
-            me.getView().setLoading(false);
+            view.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             Util.successToast('Upgrade Settings'.t() + ' saved!');
             me.loadSettings();
+            Ext.fireEvent('resetfields', view);
         }, me.getViewModel().get('settings'));
 
     },

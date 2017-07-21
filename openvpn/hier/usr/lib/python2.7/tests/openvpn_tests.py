@@ -282,18 +282,19 @@ class OpenVpnTests(unittest2.TestCase):
 
             # run a web request to internet and make sure it goes through web filter
             # webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
-            webresult = remote_control.run_command("wget -q --timeout=4 -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
+            webresult = remote_control.run_command("wget --timeout=4 -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
 
             print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
         else:
             print "No VPN IP address found"
         # Shutdown VPN on both sides.
-        remote_control.run_command("sudo pkill openvpn", host=vpnPoolAddressIP,nowait=True)
-        time.sleep(3) # openvpn takes time to shut down
-
+        # Delete profile on server
         appData['remoteClients']['list'][:] = []  
         app.setSettings(appData)
         time.sleep(5) # wait for vpn tunnel to go down 
+        # kill the client side
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        time.sleep(3) # openvpn takes time to shut down
         # print ("result " + str(result) + " webresult " + str(webresult))
         assert(result1==0)
         assert(result2==0)

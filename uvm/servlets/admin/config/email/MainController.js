@@ -126,6 +126,7 @@ Ext.define('Ung.config.email.MainController', {
         Ext.Deferred.sequence(promises, this)
         .then(function() {
             Util.successToast('Email'.t() + ' settings saved!');
+            Ext.fireEvent('resetfields', view);
             // me.loadSettings();
             deferred.resolve();
         }, function(ex) {

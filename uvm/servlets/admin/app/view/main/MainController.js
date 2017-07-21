@@ -122,12 +122,19 @@ Ext.define('Ung.view.main.MainController', {
         if (rpc.appManager.app('reports')) {
             vm.set('reportsRunning', rpc.appManager.app('reports').getRunState() === 'RUNNING');
         }
+        vm.set('supportInstalled', rpc.appManager.app('live-support') !== null);
         vm.notify();
     },
 
     helpHandler: function (btn) {
         var helpUrl = rpc.helpUrl + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout();
         window.open(helpUrl);
+    },
+    supportHandler: function (btn) {
+        var fragment = window.location.hash;
+        var supportView = Ext.create('Ung.view.main.Support', {
+            'fragment': fragment
+        });
+        supportView.show();
     }
-
 });
