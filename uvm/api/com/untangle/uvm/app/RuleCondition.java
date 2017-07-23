@@ -60,6 +60,9 @@ public class RuleCondition implements JSONString, Serializable
         PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
         USERNAME, /* "dmorris" or "none" or "*" */
         TAGGED, /* glob */
+        HOST_TAGGED, /* glob */
+        CLIENT_TAGGED, /* glob */
+        SERVER_TAGGED, /* glob */
         HOST_ENTITLED, /* none */
         HOST_HOSTNAME, /* glob */
         CLIENT_HOSTNAME, /* glob */
@@ -346,6 +349,9 @@ public class RuleCondition implements JSONString, Serializable
                 break;
             
             case TAGGED:
+            case HOST_TAGGED:
+            case CLIENT_TAGGED:
+            case SERVER_TAGGED:
             case HOST_MAC:
             case SRC_MAC:
             case DST_MAC:
@@ -754,6 +760,36 @@ public class RuleCondition implements JSONString, Serializable
             }
             return false;
 
+        case HOST_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.sessionEvent().getLocalAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case CLIENT_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case SERVER_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
         case HOST_ENTITLED:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (hostEntry == null)
@@ -977,6 +1013,39 @@ public class RuleCondition implements JSONString, Serializable
                             return true;
                     }
                 }
+            }
+            return false;
+
+        case HOST_TAGGED:
+            tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
+            if (tmpAddress == null)
+                return false;
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( tmpAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case CLIENT_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case SERVER_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
             }
             return false;
 
