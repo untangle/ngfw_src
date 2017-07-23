@@ -622,6 +622,11 @@ public class HostTableImpl implements HostTable
                         }
 
                         /**
+                         * Remove any expired tags
+                         */
+                        entry.removeExpiredTags();
+                        
+                        /**
                          * If this host hasnt been touched recently, delete it
                          */
                         if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {

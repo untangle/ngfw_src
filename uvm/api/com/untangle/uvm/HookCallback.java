@@ -18,5 +18,5 @@ public interface HookCallback
     /**
      * This is the callback called when the "event" occurs
      */
-    public void callback( Object o );
+    public void callback( Object... arguments );
 }

@@ -867,7 +867,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /**
          * Licenses are only saved when changed - call license changed hook
          */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, null );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
     }
     
     /**
