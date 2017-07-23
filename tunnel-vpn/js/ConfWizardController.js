@@ -44,11 +44,6 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         if (activeItem.getItemId() === 'upload') {
             v.getLayout().next();
         }
-
-        if (activeItem.getItemId() === 'traffic') {
-            v.getLayout().next();
-        }
-        
     },
 
     onPrev: function () {

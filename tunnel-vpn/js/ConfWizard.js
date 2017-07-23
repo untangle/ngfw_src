@@ -94,28 +94,6 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             }]
         }]
     }, {
-        title: 'Traffic'.t(),
-        header: false,
-        itemId: 'traffic',
-        items: [{
-            xtype: 'component',
-            html: '<h2>' + 'This step configures which hosts on your network will use the VPN'.t() + '</h2>'
-        }, {
-            xtype: 'checkbox',
-            bind: "{trafficConfig.allTraffic}",
-            fieldLabel: "All outbound hosts should use the Tunnel (when connected)".t(),
-            labelWidth: 250,
-            checked: true
-        }, {
-            xtype: 'component',
-            margin: '10 0 5 0',
-            hidden: false,
-            bind: {
-                hidden: '{!trafficConfig.allTraffic}',
-            },
-            html: '<strong>' + 'FIXME configure traffic'.t() + '</strong><br/>'
-        }]
-    }, {
         title: 'Finish'.t(),
         header: false,
         itemId: 'finish',
@@ -125,6 +103,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         }, {
             xtype: 'component',
             html: '<p><strong>' + 'A new tunnel VPN connection has been added.'.t() + '</strong></p>'
+        }, {
+            xtype: 'component',
+            html: '<p>' + 'Now you can configure the <i>Rules</i> to control what traffic uses this Tunnel VPN connection.'.t() + '</p>'
         }]
     }],
 
