@@ -23,10 +23,10 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -237,14 +237,48 @@ public class TunnelVpnApp extends AppBase
         TunnelVpnSettings settings = new TunnelVpnSettings();
 
         List<TunnelVpnRule> rules = new LinkedList<TunnelVpnRule>();
-
-        TunnelVpnRule rule = new TunnelVpnRule();
+        TunnelVpnRule rule;
+        List<TunnelVpnRuleCondition> conditions;
+        TunnelVpnRuleCondition condition1;
+        
+        rule = new TunnelVpnRule();
         rule.setEnabled(false);
         rule.setDescription("Route all traffic over any available Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        rule.setConditions(new LinkedList<TunnelVpnRuleCondition>());
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        rule.setConditions(conditions);
         rules.add(rule);
 
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route all hosts tagged with \"tunnel\" over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"tunnel");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route all hosts tagged with \"bittorrent-usage\" over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"bittorrent-usage");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route TCP port 80 and port 443 over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.DST_PORT,"80,443");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+        
         settings.setRules(rules);
         return settings;
     }

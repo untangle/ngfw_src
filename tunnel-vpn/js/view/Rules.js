@@ -12,7 +12,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
             xtype: 'tbtext',
             padding: '8 5',
             style: { fontSize: '12px', fontWeight: 600 },
-            html: 'Rules are determine which sessions will use a tunnel VPN. Rules are evaluated in order and the action from the first matching rule is used to route the matching session.<BR>'.t()
+            html: 'Rules determine which sessions will use a tunnel VPN connections. Rules are evaluated in order and the action from the first matching rule is used to route the matching session.<BR>'.t()
         }]
     }, {
         xtype: 'toolbar',

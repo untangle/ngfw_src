@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.Date;
 import java.util.Iterator;
@@ -67,7 +68,7 @@ public class HostTableImpl implements HostTable
     private final HostTableAddTagHook addTagHook = new HostTableAddTagHook();
     private final HostTableRemoveTagHook removeTagHook = new HostTableRemoveTagHook();
 
-    private HashSet<String> createdIpSets = new HashSet<String>();
+    private HashMap<String,HashSet<String>> currentIpSets = new HashMap<String,HashSet<String>>();
     
     protected HostTableImpl()
     {
@@ -834,48 +835,58 @@ public class HostTableImpl implements HostTable
         
         public void callback( Object... args )
         {
-            if (args.length < 2) {
-                logger.warn( "Invalid args: " + args.length);
-                return;
-            }
-            Object o1 = args[0];
-            Object o2 = args[1];
+            try {
+                if (args.length < 2) {
+                    logger.warn( "Invalid args: " + args.length);
+                    return;
+                }
+                Object o1 = args[0];
+                Object o2 = args[1];
             
-            if (!(o1 instanceof HostTableEntry) || !(o2 instanceof Tag)) {
-                logger.warn( "Invalid arguments: " + o1 + " " + o2);
-                return;
-            }
+                if (!(o1 instanceof HostTableEntry) || !(o2 instanceof Tag)) {
+                    logger.warn( "Invalid arguments: " + o1 + " " + o2);
+                    return;
+                }
                  
-            HostTableEntry entry = (HostTableEntry)o1;
-            Tag tag = (Tag)o2;
+                HostTableEntry entry = (HostTableEntry)o1;
+                Tag tag = (Tag)o2;
 
-            if (tag.getName() == null) {
-                logger.warn("Invalid tag name: " + tag.getName());
-                return;
-            }
-            if (entry.getAddress() == null) {
-                logger.warn("Invalid address: " + entry);
-                return;
-            }
+                if (tag.getName() == null) {
+                    logger.warn("Invalid tag name: " + tag.getName());
+                    return;
+                }
+                if (entry.getAddress() == null) {
+                    logger.warn("Invalid address: " + entry);
+                    return;
+                }
             
-            //only keep basic ascii
-            String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
-            String output;
-            String[] lines;
-            logger.info("Tag " + tagName + " added to " + entry.getAddress().getHostAddress());
+                //only keep basic ascii
+                String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
+                String address = entry.getAddress().getHostAddress();
+                String output;
+                String[] lines;
+                logger.info("Tag " + tagName + " added to " + entry.getAddress().getHostAddress());
 
-            if (!createdIpSets.contains(tagName)) {
-                createdIpSets.add(tagName);
-                output = UvmContextFactory.context().execManager().execOutput("ipset create tag-" + tagName + " iphash");
-                lines = output.split("\\r?\\n");
-                for ( String line : lines )
-                    logger.info("ipset create: " + line);
+                HashSet<String> currentIps = currentIpSets.get(tagName);
+                if (currentIps == null) {
+                    currentIps = new HashSet<String>();
+                    currentIpSets.put(address,currentIps);
+                    output = UvmContextFactory.context().execManager().execOutput("ipset create tag-" + tagName + " iphash");
+                    lines = output.split("\\r?\\n");
+                    for ( String line : lines )
+                        logger.info("ipset create: " + line);
+                }
+
+                if (!currentIps.contains(address)) {
+                    currentIps.add(address);
+                    output = UvmContextFactory.context().execManager().execOutput("ipset add tag-" + tagName + " " + address);
+                    lines = output.split("\\r?\\n");
+                    for ( String line : lines )
+                        logger.info("ipset add: " + line);
+                }
+            } catch (Exception e) {
+                logger.warn("Exception",e);
             }
-
-            output = UvmContextFactory.context().execManager().execOutput("ipset add tag-" + tagName + " " + entry.getAddress().getHostAddress());
-            lines = output.split("\\r?\\n");
-            for ( String line : lines )
-                logger.info("ipset add: " + line);
         }
     }
 
@@ -888,41 +899,50 @@ public class HostTableImpl implements HostTable
         
         public void callback( Object... args )
         {
-            if (args.length < 2) {
-                logger.warn( "Invalid args: " + args.length);
-                return;
-            }
-            Object o1 = args[0];
-            Object o2 = args[1];
+            try {
+                if (args.length < 2) {
+                    logger.warn( "Invalid args: " + args.length);
+                    return;
+                }
+                Object o1 = args[0];
+                Object o2 = args[1];
 
-            if (!(o1 instanceof HostTableEntry) || !(o2 instanceof Tag)) {
-                logger.warn( "Invalid arguments: " + o1 + " " + o2);
-                return;
-            }
+                if (!(o1 instanceof HostTableEntry) || !(o2 instanceof Tag)) {
+                    logger.warn( "Invalid arguments: " + o1 + " " + o2);
+                    return;
+                }
 
-            HostTableEntry entry = (HostTableEntry)o1;
-            Tag tag = (Tag)o2;
+                HostTableEntry entry = (HostTableEntry)o1;
+                Tag tag = (Tag)o2;
 
-            if (tag.getName() == null) {
-                logger.warn("Invalid tag name: " + tag.getName());
-                return;
-            }
-            if (entry.getAddress() == null) {
-                logger.warn("Invalid address: " + entry);
-                return;
-            }
+                if (tag.getName() == null) {
+                    logger.warn("Invalid tag name: " + tag.getName());
+                    return;
+                }
+                if (entry.getAddress() == null) {
+                    logger.warn("Invalid address: " + entry);
+                    return;
+                }
             
-            //only keep basic ascii
-            String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
-            String output;
-            String[] lines;
-            logger.info("Tag " + tag.getName() + " removed from " + entry.getAddress().getHostAddress());
+                //only keep basic ascii
+                String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
+                String address = entry.getAddress().getHostAddress();
+                String output;
+                String[] lines;
+                logger.info("Tag " + tag.getName() + " removed from " + entry.getAddress().getHostAddress());
 
-            output = UvmContextFactory.context().execManager().execOutput("ipset del tag-" + tagName + " " + entry.getAddress().getHostAddress());
-            lines = output.split("\\r?\\n");
-            for ( String line : lines )
-                logger.info("ipset del: " + line);
-            
+                HashSet<String> currentIps = currentIpSets.get(tagName);
+
+                if (currentIps.contains(address)) {
+                    currentIps.remove(address);
+                    output = UvmContextFactory.context().execManager().execOutput("ipset del tag-" + tagName + " " + entry.getAddress().getHostAddress());
+                    lines = output.split("\\r?\\n");
+                    for ( String line : lines )
+                        logger.info("ipset del: " + line);
+                }
+            } catch (Exception e) {
+                logger.warn("Exception",e);
+            }
         }
     }
     
