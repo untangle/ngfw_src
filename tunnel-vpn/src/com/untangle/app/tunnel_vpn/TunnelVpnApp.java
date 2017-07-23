@@ -22,6 +22,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
@@ -44,6 +45,8 @@ public class TunnelVpnApp extends AppBase
 
     private TunnelVpnSettings settings = null;
     private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager(this);
+
+    private final TunnelVpnNetworkHookCallback networkHookCallback = new TunnelVpnNetworkHookCallback();
     
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
@@ -338,6 +341,14 @@ public class TunnelVpnApp extends AppBase
             logger.info("Adding tunnel-vpn iptables: " + line);
 
     }
+
+    private void networkSettingsEvent( NetworkSettings settings ) throws Exception
+    {
+        // refresh iptables rules in case WAN config has changed
+        logger.info("Network Settings have changed. Restarting tunnels...");
+
+        this.tunnelVpnManager.restartProcesses();
+    }
     
     private class TunnelUploadHandler implements UploadHandler
     {
@@ -400,4 +411,28 @@ public class TunnelVpnApp extends AppBase
             return new ExecManagerResult(0, fileItem.getName());
         }
     }
+
+    private class TunnelVpnNetworkHookCallback implements HookCallback
+    {
+        public String getName()
+        {
+            return "tunnel-vpn-network-settings-change-hook";
+        }
+
+        public void callback( Object o )
+        {
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+
+            try {
+                NetworkSettings settings = (NetworkSettings)o;
+                networkSettingsEvent( settings );
+            } catch( Exception e ) {
+                logger.error( "Unable to reconfigure the NAT app" );
+            }
+        }
+    }
+
 }
