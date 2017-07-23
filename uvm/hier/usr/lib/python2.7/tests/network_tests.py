@@ -1330,6 +1330,29 @@ class NetworkTests(unittest2.TestCase):
 
         assert (result1 == 0)
         assert (result2 != 0)
+
+    # Test that filter rule's SRC_ADDR condition supports commas
+    def test_153_filterRulesBlockedClientTagged(self):
+        # verify port 80 is open
+        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+
+        global_functions.host_tags_add("foobar")
+        
+        # Add a block rule for port 80 and enabled blocked session logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ createFilterRule("CLIENT_TAGGED","foobar","PROTOCOL","TCP",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # make the request again which should now be blocked
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        global_functions.host_tags_clear()
+        
+        # put the network settings back the way we found them
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert (result1 == 0)
+        assert (result2 != 0)
         
     # Test UDP traceroute bug 12663 
     def test_160_tracerouteUDP(self):

@@ -26,9 +26,9 @@ fi
 
 /usr/share/untangle-netd/bin/add-uplink.sh ${dev} ${ifconfig_remote} uplink.${interface_id} -4
 
-/sbin/iptables -t mangle -A tunnel-vpn-${interface_id} -j MARK --set-mark $((${interface_id}<<8))/0xff00 -m comment --comment "Set destination interface to use tunnel ${interface_id}"
-/sbin/iptables -t mangle -A tunnel-vpn-${interface_id} -j ACCEPT -m comment --comment "stop processing all other rules"
+/sbin/iptables -t mangle -I tunnel-vpn-${interface_id} -j ACCEPT -m comment --comment "stop processing all other rules"
+/sbin/iptables -t mangle -I tunnel-vpn-${interface_id} -j MARK --set-mark $((${interface_id}<<8))/0xff00 -m comment --comment "Set destination interface to use tunnel ${interface_id}"
 
-/sbin/iptables -t mangle -A tunnel-vpn-any -j MARK --set-mark $((${interface_id}<<8))/0xff00 -m comment --comment "Set destination interface to use tunnel ${interface_id}"
-/sbin/iptables -t mangle -A tunnel-vpn-any -j ACCEPT -m comment --comment "Set destination interface to use tunnel ${interface_id}"
+/sbin/iptables -t mangle -I tunnel-vpn-any -j ACCEPT -m comment --comment "Set destination interface to use tunnel ${interface_id}"
+/sbin/iptables -t mangle -I tunnel-vpn-any -j MARK --set-mark $((${interface_id}<<8))/0xff00 -m comment --comment "Set destination interface to use tunnel ${interface_id}"
 

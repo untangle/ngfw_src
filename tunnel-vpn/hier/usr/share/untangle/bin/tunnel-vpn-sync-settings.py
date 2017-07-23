@@ -154,12 +154,14 @@ fi
 
     file.write("${IPTABLES} -t mangle -N tunnel-vpn-any 2>/dev/null" + "\n");
     file.write("${IPTABLES} -t mangle -F tunnel-vpn-any >/dev/null 2>&1" + "\n");
+    file.write("${IPTABLES} -t mangle -A tunnel-vpn-any -j RETURN" + "\n");
     file.write("\n");
 
     for tunnel in settings.get('tunnels').get('list'):
         file.write("# Create target for tunnel-%i %s" % (tunnel.get('tunnelId'),tunnel.get('name')) + "\n");
         file.write("${IPTABLES} -t mangle -N tunnel-vpn-%i 2>/dev/null"%tunnel.get('tunnelId') + "\n");
         file.write("${IPTABLES} -t mangle -F tunnel-vpn-%i >/dev/null 2>&1"%tunnel.get('tunnelId') + "\n");
+        file.write("${IPTABLES} -t mangle -A tunnel-vpn-%i -j RETURN"%tunnel.get('tunnelId') + "\n");
         file.write("\n");
     
     file.write("# Call chains from prerouting-tunnel-vpn in mangle" + "\n");
