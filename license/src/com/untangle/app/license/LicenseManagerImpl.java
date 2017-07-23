@@ -958,6 +958,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         case "ftp": return true;
         case "untangle-casing-smtp": return true;
         case "smtp": return true;
+        case "tunnel-vpn": return true;
         default: return false;
         }
     }

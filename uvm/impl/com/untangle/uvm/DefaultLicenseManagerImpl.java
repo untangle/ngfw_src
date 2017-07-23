@@ -103,6 +103,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         else if ("shield".equals(identifier)) return true;
         else if ("spam-blocker-lite".equals(identifier)) return true;
         else if ("web-monitor".equals(identifier)) return true;
+        else if ("tunnel-vpn".equals(identifier)) return true;
 
         if ("license".equals(identifier)) return true;
         else if ("http".equals(identifier)) return true;
