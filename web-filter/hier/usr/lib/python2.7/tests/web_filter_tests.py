@@ -445,6 +445,33 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
 
+    def test_010_0000_rule_condition_host_tagged(self):
+        "test HOST_TAGGED"
+        global_functions.host_tags_add("foobar")
+        self.rule_add("HOST_TAGGED","foobar")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.host_tags_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_tagged(self):
+        "test CLIENT_TAGGED"
+        global_functions.host_tags_add("foobar")
+        self.rule_add("CLIENT_TAGGED","foobar")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.host_tags_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_tagged(self):
+        "test SERVER_TAGGED"
+        global_functions.host_tags_add("foobar")
+        self.rule_add("SERVER_TAGGED","foobar")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.host_tags_clear()
+        assert (result == 0)
+        
     def test_010_0000_rule_condition_host_hostname(self):
         "test HOST_HOSTNAME"
         global_functions.host_hostname_set( remote_control.get_hostname() )

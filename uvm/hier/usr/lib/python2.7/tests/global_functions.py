@@ -36,6 +36,7 @@ vpnServerVpnLanIP = "192.168.235.96"
 vpnClientVpnIP = "10.111.5.20"  
 
 testServerHost = 'test.untangle.com'
+testServerIp = socket.gethostbyname(testServerHost)
 ftpServer = socket.gethostbyname(testServerHost)
 
 # Servers running remote syslog
