@@ -527,6 +527,10 @@ Ext.define('Ung.util.Converter', {
     },
 
     interface: function (value) {
+        if (!rpc.reportsManager) {
+            return value.toString();
+        }
+
         if (!this.interfaceMap) {
             // this.buildInterfaceMap();
             var interfacesList = [], i;
