@@ -36,6 +36,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     buildTablesStore: function () {
+        if (!rpc.reportsManager) { return; }
         var me = this; vm = me.getViewModel();
         Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
             vm.set('tables', result); // used in advanced report settings table name
