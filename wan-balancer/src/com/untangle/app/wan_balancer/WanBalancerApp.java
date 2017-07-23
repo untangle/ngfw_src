@@ -299,8 +299,9 @@ public class WanBalancerApp extends AppBase
             return "wan-balancer-network-settings-change-hook";
         }
 
-        public void callback( Object o )
+        public void callback( Object... args )
         {
+            Object o = args[0];
             if ( ! (o instanceof NetworkSettings) ) {
                 logger.warn( "Invalid network settings: " + o);
                 return;

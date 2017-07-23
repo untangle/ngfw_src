@@ -942,8 +942,9 @@ public class CaptivePortalApp extends AppBase
          * However it is removed if the MAC address changes (a different host)
          * or something drastic occurs. In this case we should log the host out.
          */
-        public void callback(Object o)
+        public void callback(Object... args)
         {
+            Object o = args[0];
             if (!(o instanceof InetAddress)) {
                 logger.warn("Invalid argument: " + o);
                 return;
