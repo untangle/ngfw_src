@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.io.InputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -230,6 +232,22 @@ public class TunnelVpnApp extends AppBase
         setSettings(settings);
     }
     
+    public int getNewTunnelId()
+    {
+        return this.tunnelVpnManager.getNewTunnelId();
+    }
+
+    public void setUsernamePassword( int tunnelId, String username, String password )
+    {
+        String filename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId + "/auth.txt";
+        String content = username + "\n" + password + "\n";
+        try {
+            Files.write(Paths.get(filename), content.getBytes());
+        } catch (Exception e) {
+            logger.warn("Failed to write username/password.",e);
+        }
+    }
+
     private TunnelVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
@@ -399,6 +417,7 @@ public class TunnelVpnApp extends AppBase
                 logger.info( "UploadTunnel is missing the file." );
                 return new ExecManagerResult(1, "UploadTunnel is missing the file.");
             }
+
             InputStream inputStream = fileItem.getInputStream();
             if ( inputStream == null ) {
                 logger.info( "UploadTunnel is missing the file." );
@@ -411,7 +430,17 @@ public class TunnelVpnApp extends AppBase
             File temp = null;
             OutputStream outputStream = null;
             try {
-                temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
+                String filename = fileItem.getName();
+                if ( filename.endsWith(".zip") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
+                } else if ( filename.endsWith(".conf") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".conf" );
+                } else if ( filename.endsWith(".ovpn") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".ovpn" );
+                } else {
+                    return new ExecManagerResult(1, "Unknown file extension:" + filename);
+                }
+
                 temp.deleteOnExit();
                 outputStream = new FileOutputStream( temp );
             

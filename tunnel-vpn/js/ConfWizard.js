@@ -51,7 +51,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 ['Untangle', 'Untangle'.t()],
                 ['NordVPN', 'NordVPN'.t()],
                 ['ExpressVPN', 'ExpressVPN'.t()],
-                ['Custom', 'Custom'.t()]
+                ['Custom_zip', 'Custom zip file'.t()],
+                ['Custom_ovpn', 'Custom ovpn file'.t()],
+                ['Custom_conf', 'Custom conf file'.t()],
             ]
         }]
     }, {
@@ -92,6 +94,24 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                     value: '{provider}',
                 },
             }]
+        },{
+            xtype: 'textfield',
+            name: 'username',
+            fieldLabel: 'Username'.t(),
+            hidden: true,
+            bind: {
+                value: '{username}',
+                hidden: '{usernameHidden}'
+            },
+        },{
+            xtype: 'textfield',
+            fieldLabel: 'Password'.t(),
+            name: 'password',
+            hidden: true,
+            bind: {
+                value: '{password}',
+                hidden: '{passwordHidden}'
+            },
         }]
     }, {
         title: 'Finish'.t(),
