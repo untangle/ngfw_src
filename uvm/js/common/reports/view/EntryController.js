@@ -43,6 +43,8 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.set('context', Ung.app.servletContext);
 
         vm.bind('{entry}', function (entry) {
+            vm.set('disableSave', entry.readOnly);
+            vm.set('disableNewSave', true);
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
             if (me.refreshTimeout) {
@@ -71,9 +73,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
-
-
-
 
             // set the _sqlConditions data as for the sql conditions grid store
             vm.set('_sqlConditions', entry.get('conditions') || []);
@@ -560,7 +559,46 @@ Ext.define('Ung.view.reports.EntryController', {
         });
     },
 
+    titleChange: function( control, newValue, oldValue){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
 
+        var currentRecord = vm.get('entry');
+
+        var titleConflictSave = false;
+        var titleConflictSaveNew = false;
+        var sameCustomizableReport = false;
+        var sameReport = false;
+        Rpc.asyncData('rpc.reportsManager.getReportEntries')
+            .then(function(result) {
+            result.list.forEach( function(reportEntry){
+                if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
+                    titleConflictSave = true;
+                    titleConflictSaveNew = true;
+
+                    if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
+                        sameReport = true;
+                    }
+                    if( sameReport &&
+                        currentRecord.get('readOnly') == false){
+                        sameCustomizableReport = true;
+                        titleConflictSave = false;
+                    }
+                }
+            });
+
+            if( titleConflictSave && !sameReport ){
+                control.setValidation("Another report within this category has this title".t());
+            }else{
+                control.setValidation(true);
+            }
+
+            vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
+            vm.set('disableNewSave', titleConflictSaveNew );
+
+        });
+    },
 
     updateReport: function () {
         var me = this,

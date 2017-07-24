@@ -317,7 +317,10 @@ Ext.define('Ung.view.reports.Entry', {
                 fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
                 labelAlign: 'right',
                 bind: '{entry.title}',
-                anchor: '100%'
+                anchor: '100%',
+                listeners: {
+                    change: 'titleChange'
+                }
             }, {
                 xtype: 'textarea',
                 grow: true,
@@ -797,18 +800,19 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 text: 'Save'.t(),
                 iconCls: 'fa fa-save',
-                // formBind: true,
                 disabled: true,
                 bind: {
-                    disabled: '{entry.readOnly}'
+                    disabled: '{disableSave}'
                 },
                 handler: 'updateReport'
             }, {
                 text: 'Save as New Report'.t(),
                 iconCls: 'fa fa-plus-circle',
                 itemId: 'saveNewBtn',
-                handler: 'saveNewReport'
-                // formBind: true
+                handler: 'saveNewReport',
+                bind: {
+                    disabled: '{disableNewSave}'
+                }
             }]
         }]
     }, {
