@@ -573,7 +573,9 @@ public class AppManagerImpl implements AppManager
 
         List<AppProperties> appProperties = new LinkedList<AppProperties>();
         for (AppProperties appProps : nm.getAllAppProperties()) {
-            appProperties.add(appProps);
+            if ( ! appProps.getInvisible() ) { /* add only visible apps */
+                appProperties.add(appProps);
+            }
         }
         List<AppSettings> appSettings  = new LinkedList<AppSettings>();
         for (App app : visibleApps) {
