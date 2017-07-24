@@ -1133,7 +1133,7 @@ public class MailSenderImpl implements MailSender
             return "mail-sender-network-settings-change-hook";
         }
 
-        public void callback( Object o )
+        public void callback( Object... args )
         {
             syncConfigFiles();
         }

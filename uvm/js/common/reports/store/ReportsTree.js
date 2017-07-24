@@ -3,6 +3,10 @@ Ext.define('Ung.store.ReportsTree', {
     alias: 'store.reportstree',
     storeId: 'reportstree',
     filterer: 'bottomup',
+    sorters: [{
+        property: 'viewPosition',
+        direction: 'ASC'
+    }],
 
     build: function () {
         var me = this, nodes = [], storeCat, category;
@@ -20,6 +24,7 @@ Ext.define('Ung.store.ReportsTree', {
                 cls: 'x-tree-category',
                 url: storeCat.get('slug'),
                 children: [],
+                viewPosition: storeCat.get('viewPosition')
                 // expanded: group._groupKey === vm.get('category.categoryName')
             };
             // add reports to each category

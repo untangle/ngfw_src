@@ -19,6 +19,9 @@ public interface HookManager
     public static String HOST_TABLE_QUOTA_GIVEN = "host-table-quota-given";
     public static String HOST_TABLE_QUOTA_EXCEEDED = "host-table-quota-exceeded";
     public static String HOST_TABLE_QUOTA_REMOVED = "host-table-quota-removed";
+    public static String HOST_TABLE_RESUME_TAG = "host-table-resume-tag";
+    public static String HOST_TABLE_ADD_TAG = "host-table-add-tag";
+    public static String HOST_TABLE_REMOVE_TAG = "host-table-remove-tag";
     public static String USER_TABLE_REMOVE = "user-table-remove";
     public static String USER_TABLE_ADD = "user-table-add";
     public static String USER_TABLE_QUOTA_GIVEN = "user-table-quota-given";
@@ -31,5 +34,5 @@ public interface HookManager
 
     public boolean unregisterCallback( String groupName, HookCallback callback );
 
-    public int callCallbacks( String hookName, Object o );
+    public int callCallbacks( String hookName, Object... arguments );
 }

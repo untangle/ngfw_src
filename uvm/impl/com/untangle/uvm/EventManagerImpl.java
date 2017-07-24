@@ -413,10 +413,22 @@ public class EventManagerImpl implements EventManager
         eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
-        eventRule.setTagName( "bittorrent-use" );
+        eventRule.setTagName( "bittorrent-usage" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
         rules.add( eventRule );
 
+        matchers = new LinkedList<EventRuleCondition>();
+        matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        matchers.add( matcher1 );
+        matcher2 = new EventRuleCondition( "category", "=", "BITTORRE" );
+        matchers.add( matcher2 );
+        eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "sessionEvent.localAddr" );
+        eventRule.setTagName( "bittorrent-usage" );
+        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        rules.add( eventRule );
+        
         return rules;
     }
 

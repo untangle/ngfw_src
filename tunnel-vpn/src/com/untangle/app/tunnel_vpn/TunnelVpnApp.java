@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.io.InputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,10 +24,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -44,6 +47,8 @@ public class TunnelVpnApp extends AppBase
 
     private TunnelVpnSettings settings = null;
     private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager(this);
+
+    private final TunnelVpnNetworkHookCallback networkHookCallback = new TunnelVpnNetworkHookCallback();
     
     public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
     {
@@ -227,6 +232,22 @@ public class TunnelVpnApp extends AppBase
         setSettings(settings);
     }
     
+    public int getNewTunnelId()
+    {
+        return this.tunnelVpnManager.getNewTunnelId();
+    }
+
+    public void setUsernamePassword( int tunnelId, String username, String password )
+    {
+        String filename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId + "/auth.txt";
+        String content = username + "\n" + password + "\n";
+        try {
+            Files.write(Paths.get(filename), content.getBytes());
+        } catch (Exception e) {
+            logger.warn("Failed to write username/password.",e);
+        }
+    }
+
     private TunnelVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
@@ -234,14 +255,48 @@ public class TunnelVpnApp extends AppBase
         TunnelVpnSettings settings = new TunnelVpnSettings();
 
         List<TunnelVpnRule> rules = new LinkedList<TunnelVpnRule>();
-
-        TunnelVpnRule rule = new TunnelVpnRule();
+        TunnelVpnRule rule;
+        List<TunnelVpnRuleCondition> conditions;
+        TunnelVpnRuleCondition condition1;
+        
+        rule = new TunnelVpnRule();
         rule.setEnabled(false);
         rule.setDescription("Route all traffic over any available Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        rule.setConditions(new LinkedList<TunnelVpnRuleCondition>());
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        rule.setConditions(conditions);
         rules.add(rule);
 
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route all hosts tagged with \"tunnel\" over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"tunnel");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route all hosts tagged with \"bittorrent-usage\" over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"bittorrent-usage");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+
+        rule = new TunnelVpnRule();
+        rule.setEnabled(false);
+        rule.setDescription("Example: Route TCP port 80 and port 443 over any Tunnel.");
+        rule.setTunnelId(-1); //any tunnel
+        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.DST_PORT,"80,443");
+        conditions.add(condition1);
+        rule.setConditions(conditions);
+        rules.add(rule);
+        
         settings.setRules(rules);
         return settings;
     }
@@ -338,6 +393,14 @@ public class TunnelVpnApp extends AppBase
             logger.info("Adding tunnel-vpn iptables: " + line);
 
     }
+
+    private void networkSettingsEvent( NetworkSettings settings ) throws Exception
+    {
+        // refresh iptables rules in case WAN config has changed
+        logger.info("Network Settings have changed. Restarting tunnels...");
+
+        this.tunnelVpnManager.restartProcesses();
+    }
     
     private class TunnelUploadHandler implements UploadHandler
     {
@@ -354,6 +417,7 @@ public class TunnelVpnApp extends AppBase
                 logger.info( "UploadTunnel is missing the file." );
                 return new ExecManagerResult(1, "UploadTunnel is missing the file.");
             }
+
             InputStream inputStream = fileItem.getInputStream();
             if ( inputStream == null ) {
                 logger.info( "UploadTunnel is missing the file." );
@@ -366,7 +430,17 @@ public class TunnelVpnApp extends AppBase
             File temp = null;
             OutputStream outputStream = null;
             try {
-                temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
+                String filename = fileItem.getName();
+                if ( filename.endsWith(".zip") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
+                } else if ( filename.endsWith(".conf") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".conf" );
+                } else if ( filename.endsWith(".ovpn") ) {
+                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".ovpn" );
+                } else {
+                    return new ExecManagerResult(1, "Unknown file extension:" + filename);
+                }
+
                 temp.deleteOnExit();
                 outputStream = new FileOutputStream( temp );
             
@@ -400,4 +474,29 @@ public class TunnelVpnApp extends AppBase
             return new ExecManagerResult(0, fileItem.getName());
         }
     }
+
+    private class TunnelVpnNetworkHookCallback implements HookCallback
+    {
+        public String getName()
+        {
+            return "tunnel-vpn-network-settings-change-hook";
+        }
+
+        public void callback( Object... args )
+        {
+            Object o = args[0];
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+
+            try {
+                NetworkSettings settings = (NetworkSettings)o;
+                networkSettingsEvent( settings );
+            } catch( Exception e ) {
+                logger.error( "Unable to reconfigure the NAT app" );
+            }
+        }
+    }
+
 }

@@ -104,6 +104,11 @@ public interface HostTable
     void clear();
 
     /**
+     * Launch the cleanup thread immediately
+     */
+    void cleanup();
+
+    /**
      * Get the current size of the table
      */
     int getCurrentSize();
