@@ -979,7 +979,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         writeStatusFile( "running" );
 
         // call startup hook
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, null );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, 1 );
     }
 
     @Override

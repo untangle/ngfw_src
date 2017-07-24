@@ -36,6 +36,7 @@ vpnServerVpnLanIP = "192.168.235.96"
 vpnClientVpnIP = "10.111.5.20"  
 
 testServerHost = 'test.untangle.com'
+testServerIp = socket.gethostbyname(testServerHost)
 ftpServer = socket.gethostbyname(testServerHost)
 
 # Servers running remote syslog
@@ -368,14 +369,16 @@ def host_tags_add(str):
     entry['tags']['list'].append( {
         "javaClass": "com.untangle.uvm.Tag",
         "name": str,
-        "expirationTime": 0
+        "expirationTime": int(round((time.time()+60) * 1000)) #60 seconds from now
     } )
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
 def host_tags_clear():
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-    entry['tags']['list'] = []
+    for t in entry['tags']['list']:
+        t['expirationTime'] = 1; #expire 1970
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+    uvmContext.hostTable().cleanup()
     
 def host_hostname_set(str):
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )

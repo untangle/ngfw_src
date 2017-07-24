@@ -366,43 +366,43 @@ public class BandwidthControlApp extends AppBase
     private class HostTaggedHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-tagged"; }
-        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "host tagged"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "host tagged"); }
     }
 
     private class HostQuotaGivenHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-given-hook"; }
-        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota given"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota given"); }
     }
 
     private class HostQuotaExceededHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
-        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota exceeded"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota exceeded"); }
     }
 
     private class HostQuotaRemovedHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-removed-hook"; }
-        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota removed"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota removed"); }
     }
 
     private class UserQuotaGivenHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-given-hook"; }
-        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota given"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota given"); }
     }
 
     private class UserQuotaExceededHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
-        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota exceeded"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota exceeded"); }
     }
 
     private class UserQuotaRemovedHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-removed-hook"; }
-        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota removed"); }
+        public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota removed"); }
     }
     
 }

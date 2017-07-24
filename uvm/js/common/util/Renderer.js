@@ -79,7 +79,10 @@ Ext.define('Ung.util.Renderer', {
         return Ext.util.Format.date( date, 'timestamp_fmt'.t());
     },
 
-    interface_id: function (value) {
+    interface: function (value) {
+        if (!rpc.reportsManager) {
+            return value.toString();
+        }
         if (!Ung.util.Renderer.interfaceMap) {
             // this.buildInterfaceMap();
             var interfacesList = [], i;

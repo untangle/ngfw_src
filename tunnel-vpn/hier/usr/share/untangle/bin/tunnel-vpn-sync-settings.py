@@ -147,19 +147,21 @@ fi
 
 """)
 
-    file.write("# Create (if needed) and flush restore-interface-marks, mark-src-intf, mark-dst-intf chains" + "\n");
+    file.write("# Create (if needed) and flush" + "\n");
     file.write("${IPTABLES} -t mangle -N tunnel-vpn-rules 2>/dev/null" + "\n");
     file.write("${IPTABLES} -t mangle -F tunnel-vpn-rules >/dev/null 2>&1" + "\n");
     file.write("\n");
 
     file.write("${IPTABLES} -t mangle -N tunnel-vpn-any 2>/dev/null" + "\n");
     file.write("${IPTABLES} -t mangle -F tunnel-vpn-any >/dev/null 2>&1" + "\n");
+    file.write("${IPTABLES} -t mangle -A tunnel-vpn-any -j RETURN" + "\n");
     file.write("\n");
 
     for tunnel in settings.get('tunnels').get('list'):
         file.write("# Create target for tunnel-%i %s" % (tunnel.get('tunnelId'),tunnel.get('name')) + "\n");
         file.write("${IPTABLES} -t mangle -N tunnel-vpn-%i 2>/dev/null"%tunnel.get('tunnelId') + "\n");
         file.write("${IPTABLES} -t mangle -F tunnel-vpn-%i >/dev/null 2>&1"%tunnel.get('tunnelId') + "\n");
+        file.write("${IPTABLES} -t mangle -A tunnel-vpn-%i -j RETURN"%tunnel.get('tunnelId') + "\n");
         file.write("\n");
     
     file.write("# Call chains from prerouting-tunnel-vpn in mangle" + "\n");
@@ -171,6 +173,13 @@ fi
     file.write("${IPTABLES} -t mangle -I prerouting-tunnel-vpn -m conntrack --ctstate NEW -m comment --comment \"Run route rules\" -j tunnel-vpn-rules" + "\n");
     file.write("\n");
 
+    for tunnel in settings.get('tunnels').get('list'):
+        file.write("${IPTABLES} -t mangle -D mark-src-intf -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\" >/dev/null 2>&1"%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t mangle -D mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\" >/dev/null 2>&1"%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
+        file.write("${IPTABLES} -t mangle -A mark-src-intf -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t mangle -A mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
+        file.write("\n");
+    
     try:
         file.write("\n")
         file.write("# Rules" + "\n")

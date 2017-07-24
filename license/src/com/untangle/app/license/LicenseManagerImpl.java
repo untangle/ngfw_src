@@ -867,7 +867,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /**
          * Licenses are only saved when changed - call license changed hook
          */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, null );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
     }
     
     /**
@@ -958,6 +958,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         case "ftp": return true;
         case "untangle-casing-smtp": return true;
         case "smtp": return true;
+        case "tunnel-vpn": return true;
         default: return false;
         }
     }
