@@ -42,6 +42,13 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         }
 
         if (activeItem.getItemId() === 'upload') {
+            if (vm.get('provider') == 'ExpressVPN') {
+                this.getView().appManager.setUsernamePassword(vm.get('tunnelId'),vm.get('username'),vm.get('password'));
+            }
+            else if (vm.get('provider') == 'NordVPN') {
+                this.getView().appManager.setUsernamePassword(vm.get('tunnelId'),vm.get('username'),vm.get('password'));
+            }
+
             v.getLayout().next();
         }
     },
@@ -59,10 +66,13 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         if ( file == null || file.length === 0 ) {
             Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
             return;
-            }
+        }
+        Ext.MessageBox.wait('Uploading...'.t(), 'Please wait'.t());
         form.submit({
             url: "upload",
             success: Ext.bind(function( form, action ) {
+                var tunnelId = this.getView().appManager.getNewTunnelId();
+                this.getViewModel().set("tunnelId",tunnelId);
                 Ext.MessageBox.alert('Configuration Import Success'.t(), action.result.msg);
             }, this),
             failure: Ext.bind(function( form, action ) {
