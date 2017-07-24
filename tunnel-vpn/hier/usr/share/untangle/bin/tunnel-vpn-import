@@ -27,18 +27,11 @@ setOption()
     fi
 }
 
-if [ ! -f "${filename}" ]; then
-    echo "Unable to find the file: ${filename}"
-    cleanup 1
-fi
+importZip()
+{
+    TMPDIR=`mktemp -d || exit -3`
+    unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
 
-TMPDIR=`mktemp -d || exit -3`
-unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
-
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
-mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
-
-if [ "$provider" == "Untangle" ] ; then
     CONF_FILE="`ls ${TMPDIR}/untangle-vpn/*.conf`"
     if [ ! -f $CONF_FILE ] ; then
         echo "Unknown format: Missing conf file"
@@ -56,7 +49,49 @@ if [ "$provider" == "Untangle" ] ; then
     setOption "script-security" "2" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
     echo "up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
     echo "down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+}
 
+importOvpn()
+{
+    if [[ ! "${filename}" == *ovpn ]] && [[ ! "${filename}" == *conf ]]; then
+        echo "Unknown file extension: ${filename}"
+        cleanup 1
+    fi
+    # Copy file into place
+    cp -Pf ${filename} @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+
+    # Specify device explicitly
+    setOption "dev" "tun${tunnel_id}" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+
+    # Add up/down scripts
+    setOption "script-security" "2" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    echo "up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    echo "down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+}
+
+if [ ! -f "${filename}" ]; then
+    echo "Unable to find the file: ${filename}"
+    cleanup 1
+fi
+
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
+mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
+
+
+if [ "$provider" == "Untangle" ] ; then
+    importZip
+elif [ "$provider" == "NordVPN" ] ; then
+    importOvpn
+    echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+elif [ "$provider" == "ExpressVPN" ] ; then
+    importOvpn
+    echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+elif [ "$provider" == "Custom_zip" ] ; then
+    importZip
+elif [ "$provider" == "Custom_ovpn" ] ; then
+    importOvpn
+elif [ "$provider" == "Custom_conf" ] ; then
+    importOvpn
 else     
     echo "Unknown provider: $provider"
     cleanup 1

@@ -11,7 +11,8 @@ Ext.define('TableConfig', {
 
     checkHealth: function() {
         if(!rpc.reportsManager) {
-            rpc.reportsManager = Ung.Main.getReportsManager();
+            console.info('Reports not installed!');
+            return;
         }
         var i, table, column, systemColumns, systemColumnsMap, tableConfigColumns, tableConfigColumnsMap;
         var systemTables = rpc.reportsManager.getTables();

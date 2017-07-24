@@ -44,6 +44,7 @@ public class TunnelVpnManager
     private static final String LAUNCH_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-launch";
 
     private final TunnelVpnApp app;
+    private int newTunnelId = -1;
     
     protected TunnelVpnManager(TunnelVpnApp app)
     {
@@ -77,8 +78,6 @@ public class TunnelVpnManager
         
         //FIXME check that the PID files are gone
         //FIXME check that the processes are dead
-
-        removeIptablesRules();
     }
     
     protected synchronized void launchProcesses()
@@ -130,7 +129,7 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
         
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_SCRIPT + " \""  + filename + "\" " + provider + " " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_SCRIPT + " \""  + filename + "\" \"" + provider + "\" " + tunnelId);
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -181,6 +180,11 @@ public class TunnelVpnManager
         return;
     }
 
+    protected int getNewTunnelId()
+    {
+        return this.newTunnelId;
+    }
+    
     private void writeFile( String fileName, StringBuilder sb )
     {
         logger.info( "Writing File: " + fileName );
@@ -221,14 +225,6 @@ public class TunnelVpnManager
         }
     }
 
-    /**
-     * Removes iptables rules
-     */
-    private synchronized void removeIptablesRules()
-    {
-        logger.warn("FIXME");
-    }
-
     private int findLowestAvailableTunnelId( TunnelVpnSettings settings )
     {
         if ( settings.getTunnels() == null )
@@ -242,8 +238,10 @@ public class TunnelVpnManager
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
+                newTunnelId = i;
                 return i;
+            }
         }
 
         logger.error("Failed to find available tunnel ID");

@@ -51,7 +51,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 ['Untangle', 'Untangle'.t()],
                 ['NordVPN', 'NordVPN'.t()],
                 ['ExpressVPN', 'ExpressVPN'.t()],
-                ['Custom', 'Custom'.t()]
+                ['Custom_zip', 'Custom zip file'.t()],
+                ['Custom_ovpn', 'Custom ovpn file'.t()],
+                ['Custom_conf', 'Custom conf file'.t()],
             ]
         }]
     }, {
@@ -92,28 +94,24 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                     value: '{provider}',
                 },
             }]
-        }]
-    }, {
-        title: 'Traffic'.t(),
-        header: false,
-        itemId: 'traffic',
-        items: [{
-            xtype: 'component',
-            html: '<h2>' + 'This step configures which hosts on your network will use the VPN'.t() + '</h2>'
-        }, {
-            xtype: 'checkbox',
-            bind: "{trafficConfig.allTraffic}",
-            fieldLabel: "All outbound hosts should use the Tunnel (when connected)".t(),
-            labelWidth: 250,
-            checked: true
-        }, {
-            xtype: 'component',
-            margin: '10 0 5 0',
-            hidden: false,
+        },{
+            xtype: 'textfield',
+            name: 'username',
+            fieldLabel: 'Username'.t(),
+            hidden: true,
             bind: {
-                hidden: '{!trafficConfig.allTraffic}',
+                value: '{username}',
+                hidden: '{usernameHidden}'
             },
-            html: '<strong>' + 'FIXME configure traffic'.t() + '</strong><br/>'
+        },{
+            xtype: 'textfield',
+            fieldLabel: 'Password'.t(),
+            name: 'password',
+            hidden: true,
+            bind: {
+                value: '{password}',
+                hidden: '{passwordHidden}'
+            },
         }]
     }, {
         title: 'Finish'.t(),
@@ -125,6 +123,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         }, {
             xtype: 'component',
             html: '<p><strong>' + 'A new tunnel VPN connection has been added.'.t() + '</strong></p>'
+        }, {
+            xtype: 'component',
+            html: '<p>' + 'Now you can configure the <i>Rules</i> to control what traffic uses this Tunnel VPN connection.'.t() + '</p>'
         }]
     }],
 

@@ -391,6 +391,12 @@ public class HostTableEntry implements Serializable, JSONString
             for ( Tag t : newValue ) {
                 if ( t == null || t.getName() == null )
                     continue;
+                /**
+                 * We call resume tag instead of add tag, so the listener can differentiate between explicitly added tags
+                 * and tags loaded on startup
+                 */
+                UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_RESUME_TAG, this, t );
+
                 newSet.put(t.getName(),t);
             }
         }
@@ -414,6 +420,7 @@ public class HostTableEntry implements Serializable, JSONString
             logger.info("Ignoring adding expired tag:" + tag);
             return;
         }
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_ADD_TAG, this, tag );
         updateEvent( "addTag", "", tag.getName() );
         this.tags.put( tag.getName(), tag );
     }
@@ -430,8 +437,10 @@ public class HostTableEntry implements Serializable, JSONString
     public synchronized Tag removeTag( Tag tag )
     {
         Tag t = this.tags.remove( tag.getName() );
-        if ( t != null )
+        if ( t != null ) {
+            UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_REMOVE_TAG, this, t );
             updateEvent( "removeTag", "", t.getName() );
+        }
         return t;
     }
 
@@ -441,7 +450,7 @@ public class HostTableEntry implements Serializable, JSONString
         if ( t == null )
             return false;
         if ( t.isExpired() ) {
-            this.tags.remove( t.getName() );
+            removeTag(t);
             return false;
         }
         return true;
@@ -449,11 +458,9 @@ public class HostTableEntry implements Serializable, JSONString
 
     public synchronized void removeExpiredTags()
     {
-        
-        for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
-            Tag t = i.next();
+        for ( Tag t : new LinkedList<Tag>(this.tags.values()) ) {
             if ( t.isExpired() )
-                i.remove();
+                removeTag(t);
         }
     }
     

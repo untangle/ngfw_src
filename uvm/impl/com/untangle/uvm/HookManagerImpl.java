@@ -133,7 +133,7 @@ public class HookManagerImpl implements HookManager
         return removed;
     }
 
-    public int callCallbacks( String hookName, Object o )
+    public int callCallbacks( String hookName, Object... arguments )
     {
         try {
             if ( hookName == null ) {
@@ -158,7 +158,7 @@ public class HookManagerImpl implements HookManager
                         for ( HookCallback cb : callbacks ) {
                             try {
                                 logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
-                                cb.callback( o );
+                                cb.callback( arguments );
                             } catch (Throwable t) {
                                 logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
                                 logger.warn( "Unregistering callback [" + cb.getName() + "]");
