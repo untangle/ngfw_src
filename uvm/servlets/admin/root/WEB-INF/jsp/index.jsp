@@ -23,10 +23,8 @@
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
 
-        <%-- Triton theme already contains fontawesome --%>
-        <c:if test="${extjsTheme!='triton'}">
+        <!-- FontAwesome -->
         <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-        </c:if>
 
         <%-- Import custom fonts (see sass/_vars.scss)--%>
         <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" />
