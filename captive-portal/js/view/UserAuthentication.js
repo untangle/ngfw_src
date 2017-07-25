@@ -81,7 +81,7 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
                 { boxLabel: '<strong>' + 'Google Account'.t() + '</strong> (OAuth Provider)', inputValue: 'GOOGLE' },
                 { boxLabel: '<strong>' + 'Facebook Account'.t() + '</strong> (OAuth Provider)', inputValue: 'FACEBOOK' },
                 { boxLabel: '<strong>' + 'Microsoft Account'.t() + '</strong> (OAuth Provider)', inputValue: 'MICROSOFT' },
-//                { boxLabel: '<strong>' + 'Any OAuth Provider'.t() + '</strong> (' + 'uses OAuth provider selection page'.t() + ')', inputValue: 'ANY_OAUTH' },
+                { boxLabel: '<strong>' + 'Any OAuth Provider'.t() + '</strong> (' + 'uses OAuth provider selection page'.t() + ')', inputValue: 'ANY_OAUTH' },
             ]
         }, {
             // todo: update this button later
