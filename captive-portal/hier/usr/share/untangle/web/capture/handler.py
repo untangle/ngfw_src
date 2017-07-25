@@ -72,6 +72,7 @@ def index(req):
     # in the URL when the redirect was generated
     args = split_args(req.args);
     if (not 'AUTHCODE' in args): args['AUTHCODE'] = "Empty"
+    if (not 'AUTHMODE' in args): args['AUTHMODE'] = "Empty"
     if (not 'METHOD' in args):   args['METHOD'] = "Empty"
     if (not 'NONCE' in args):    args['NONCE'] = "Empty"
     if (not 'APPID' in args):    args['APPID'] = "Empty"
@@ -84,9 +85,10 @@ def index(req):
     captureApp = load_rpc_manager(appid)
 
     authcode = args['AUTHCODE']
+    authmode = args['AUTHMODE']
 
     if (authcode != "Empty"):
-        if (captureSettings.get("authenticationType") == "GOOGLE"):
+        if (captureSettings.get("authenticationType") == "GOOGLE") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "GOOGLE")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
             altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=GOOGLE&authCode=%s" % authcode)
@@ -117,7 +119,7 @@ def index(req):
             util.redirect(req, target)
             return
 
-        if (captureSettings.get("authenticationType") == "FACEBOOK"):
+        if (captureSettings.get("authenticationType") == "FACEBOOK") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "FACEBOOK")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
             altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=FACEBOOK&authCode=%s" % authcode)
@@ -148,7 +150,7 @@ def index(req):
             util.redirect(req, target)
             return
 
-        if (captureSettings.get("authenticationType") == "MICROSOFT"):
+        if (captureSettings.get("authenticationType") == "MICROSOFT") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "MICROSOFT")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
             altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=MICROSOFT&authCode=%s" % authcode)
@@ -178,6 +180,11 @@ def index(req):
                     target = str("http://" + host + raw)
             util.redirect(req, target)
             return
+
+    # if configured for any OAuth provider create and return the selection page
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        page = generate_page(req,captureSettings,args)
+        return(page)
 
     if captureSettings.get("sessionCookiesEnabled") == True and 'Cookie' in req.headers_in:
         cookie = HandlerCookie(req)
@@ -365,19 +372,29 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def generate_page(req,captureSettings,args,extra=''):
 
-    # use the path from the request filename to locate the correct template
-    if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
+    # We use the path from the request filename to locate the correct template
+    # and start with the OAuth selection page if that authentication type is
+    # enabled. Otherwise we use the configured page type to decide.
+
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        name = req.filename[:req.filename.rindex('/')] + "/pickpage.html"
+
+    elif (captureSettings.get('pageType') == 'BASIC_LOGIN'):
         name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
 
-    if (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
+    elif (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
         name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
 
-    if (captureSettings.get('pageType') == 'CUSTOM'):
+    elif (captureSettings.get('pageType') == 'CUSTOM'):
         name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
 
-    file = open(name, "r")
-    page = file.read();
-    file.close()
+    else:
+        page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
+        return(page)
+
+    webfile = open(name, "r")
+    page = webfile.read();
+    webfile.close()
 
     if (not 'certificateDetection' in captureSettings):
         captureSettings['certificateDetection'] = 'DISABLE_DETECTION'
@@ -415,6 +432,38 @@ def generate_page(req,captureSettings,args,extra=''):
     if (captureSettings.get('pageType') == 'CUSTOM'):
         path = "/capture/custom_" + str(args['APPID'])
         page = replace_marker(page,'$.CustomPath.$',path)
+
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        uvmContext = Uvm().getUvmContext()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+
+        target = ""
+        port = None
+
+        if (captureSettings.get("alwaysUseSecureCapture" == True)):
+            target += "https://"
+            if (networkSettings.get('httpsPort') != 443):
+                port = str(httpsPort)
+        else:
+            target += "http://"
+            if (networkSettings.get('httpPort') != 80):
+                port = str(httpPort)
+
+        target += req.hostname
+        if (port != None):
+            target += ":"
+            target += port
+
+        target += "/capture/handler.py/index"
+        target += "?nonce=" + args['NONCE']
+        target += "&method=" + args['METHOD']
+        target += "&appid=" + args['APPID']
+        target += "&host=" + args['HOST']
+        target += "&uri=" + args['URI']
+
+        page = replace_marker(page,'$.GoogleState.$', urllib.quote(target + "&authmode=GOOGLE").encode('utf8'))
+        page = replace_marker(page,'$.FacebookState.$', urllib.quote(target + "&authmode=FACEBOOK").encode('utf8'))
+        page = replace_marker(page,'$.MicrosoftState.$', urllib.quote(target + "&authmode=MICROSOFT").encode('utf8'))
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags
