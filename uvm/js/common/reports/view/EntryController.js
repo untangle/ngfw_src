@@ -600,7 +600,9 @@ Ext.define('Ung.view.reports.EntryController', {
 
             vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
             vm.set('disableNewSave', titleConflictSaveNew );
-
+            if(!titleConflictSave){
+                vm.set('entry.title', newValue);
+            }
         });
     },
 
