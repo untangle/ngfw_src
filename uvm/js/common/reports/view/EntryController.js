@@ -368,6 +368,8 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
+        me.titleChange( null, vm.get('entry.title'), '');
+
     },
 
     resetView: function(){
@@ -588,10 +590,12 @@ Ext.define('Ung.view.reports.EntryController', {
                 }
             });
 
-            if( titleConflictSave && !sameReport ){
-                control.setValidation("Another report within this category has this title".t());
-            }else{
-                control.setValidation(true);
+            if(control){
+                if( titleConflictSave && !sameReport ){
+                    control.setValidation("Another report within this category has this title".t());
+                }else{
+                    control.setValidation(true);
+                }
             }
 
             vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
@@ -621,7 +625,8 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     saveNewReport: function () {
-        var v = this.getView(),
+        var me = this, 
+            v = this.getView(),
             vm = this.getViewModel(),
             entry = vm.get('entry');
 
@@ -638,6 +643,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
+                me.refreshData();
             });
     },
 
