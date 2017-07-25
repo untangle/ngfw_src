@@ -26,6 +26,8 @@ Ext.define('Ung.config.network.MainController', {
             v.setLoading(false);
             var intfStatus, devStatus;
 
+            rpc.networkSettings = result[0]; // update rpc.networkSettings with latest data (usually after save)
+
             result[0].interfaces.list.forEach(function (intf) {
 
                 if (result[1] && result[1].list.length > 0) {
@@ -57,7 +59,7 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('accessRulesLength', accessRulesLength);
 
             me.setPortForwardWarnings();
-
+            me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
@@ -1069,5 +1071,17 @@ Ext.define('Ung.config.network.MainController', {
             mbit:        sourceRecordCopy.get('mbit'),
             connected:   sourceRecordCopy.get('connected')
         });
+    },
+
+    // updates interfaces list from rules conditions
+    setInterfaceConditions: function () {
+        Ext.Array.each(this.getView().query('ungrid'), function (grid) {
+            Ext.Array.each(grid.conditions, function (cond) {
+                if (cond.name === 'SRC_INTF' || cond.name === 'DST_INTF') {
+                    cond.values = Util.getInterfaceList(true, true);
+                }
+            });
+        });
     }
+
 });
