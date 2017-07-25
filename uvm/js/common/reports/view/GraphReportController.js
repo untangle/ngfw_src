@@ -82,7 +82,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 renderTo: me.getView().lookupReference('graph').getEl().dom,
                 animation: false,
                 spacing: widgetDisplay ? [5, 5, 10, 5] : [10, 10, 15, 10],
-                style: { fontFamily: 'Source Sans Pro', fontSize: '12px' }
+                style: { fontFamily: 'Source Sans Pro', fontSize: '12px' },
+                backgroundColor: 'transparent'
             },
             exporting: {
                 enabled: false

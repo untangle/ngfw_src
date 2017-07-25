@@ -357,8 +357,13 @@ Ext.define('Ung.view.reports.EntryController', {
         var tb = me.getView().down('#actionsToolbar');
         tb.setDisabled(true); // disable toolbar actions while fetching data
 
+        // add some background while fetching data
+        var graphCmp = me.getView().down('#graphreport > component');
+        graphCmp.addCls('fetching');
+
         ctrl.fetchData(false, function () {
             tb.setDisabled(false);
+            graphCmp.removeCls('fetching');
             if (vm.get('autoRefresh')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.refreshData();
@@ -627,7 +632,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     saveNewReport: function () {
-        var me = this, 
+        var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
             entry = vm.get('entry');

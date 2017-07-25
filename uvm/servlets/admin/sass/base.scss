@@ -328,8 +328,13 @@ cite {
     height: 100%;
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
+    background: transparent;
+    transition: .35s cubic-bezier(0.23, 1, 0.32, 1);
+    &.fetching {
+        // background: #EEE;
+        background: rgba(204, 204, 204, 0.5);
+    }
 }
-
 
 .entry-btn {
     width: 220px;
