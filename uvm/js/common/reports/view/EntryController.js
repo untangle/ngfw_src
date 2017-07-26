@@ -609,7 +609,19 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry');
+            entry = vm.get('entry'), tdcg, tdc = [];
+
+        // update timeDataColumns or textColumns
+        if (entry.get('type') === 'TIME_GRAPH') {
+            tdcg = v.down('#timeDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.timeDataColumns', tdc);
+        }
+        if (entry.get('type') === 'TEXT') {
+            tdcg = v.down('#textDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.textColumns', tdc);
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
@@ -629,10 +641,22 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry');
+            entry = vm.get('entry'), tdcg, tdc = [];
 
         entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         entry.set('readOnly', false);
+
+        // update timeDataColumns or textColumns
+        if (entry.get('type') === 'TIME_GRAPH') {
+            tdcg = v.down('#timeDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.timeDataColumns', tdc);
+        }
+        if (entry.get('type') === 'TEXT') {
+            tdcg = v.down('#textDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.textColumns', tdc);
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())

@@ -518,15 +518,54 @@ Ext.define('Ung.view.reports.Entry', {
                     queryMode: 'local'
                 }, {
                     // TIME_GRAPH only
-                    xtype: 'textarea',
-                    anchor: '100%',
-                    fieldLabel: 'Time Data Columns'.t(),
-                    grow: true,
-                    hidden: true,
+                    xtype: 'grid',
+                    itemId: 'timeDataColumnsGrid',
+                    sortableColumns: false,
+                    enableColumnResize: false,
+                    enableColumnMove: false,
+                    enableColumnHide: false,
+                    disableSelection: true,
+                    margin: '0 0 5 0',
+                    tbar: [{
+                        xtype: 'component',
+                        html: 'Time Data Columns'.t(),
+                        padding: '0 0 0 5'
+                    }, '->', {
+                        xtype: 'button',
+                        text: 'Add'.t(),
+                        iconCls: 'fa fa-plus-circle',
+                        handler: function (btn) {
+                            btn.up('grid').getStore().add({ str: '' });
+                        }
+                    }],
+                    plugins: [{
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    }],
                     bind: {
-                        value: '{entry.timeDataColumns}',
+                        store: '{timeDataColumnsStore}',
                         hidden: '{!isTimeGraph}'
-                    }
+                    },
+                    columns: [{
+                        dataIndex: 'str',
+                        flex: 1,
+                        editor: 'textfield',
+                        renderer: function (val) {
+                            return val || '<em>Click to insert column value ...</em>';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        width: 40,
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-times',
+                        handler: function (view, rowIndex, colIndex, item, e, record) {
+                            record.drop();
+                        },
+                        menuDisabled: true,
+                        hideable: false
+                    }]
                 }, {
                     xtype: 'component',
                     style: {
@@ -661,16 +700,55 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{!isGraphEntry}'
                     }
                 }, {
-                    // TEXT entries
-                    xtype: 'textarea',
-                    anchor: '100%',
-                    fieldLabel: 'Text Columns'.t(),
-                    grow: true,
-                    hidden: true,
+                    // TEXT only
+                    xtype: 'grid',
+                    itemId: 'textDataColumnsGrid',
+                    sortableColumns: false,
+                    enableColumnResize: false,
+                    enableColumnMove: false,
+                    enableColumnHide: false,
+                    disableSelection: true,
+                    margin: '0 0 5 0',
+                    tbar: [{
+                        xtype: 'component',
+                        html: 'Text Columns'.t(),
+                        padding: '0 0 0 5'
+                    }, '->', {
+                        xtype: 'button',
+                        text: 'Add'.t(),
+                        iconCls: 'fa fa-plus-circle',
+                        handler: function (btn) {
+                            btn.up('grid').getStore().add({ str: '' });
+                        }
+                    }],
+                    plugins: [{
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    }],
                     bind: {
-                        value: '{entry.textColumns}',
+                        store: '{textDataColumnsStore}',
                         hidden: '{!isTextEntry}'
-                    }
+                    },
+                    columns: [{
+                        dataIndex: 'str',
+                        flex: 1,
+                        editor: 'textfield',
+                        renderer: function (val) {
+                            return val || '<em>Click to insert column value ...</em>';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        width: 40,
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-times',
+                        handler: function (view, rowIndex, colIndex, item, e, record) {
+                            record.drop();
+                        },
+                        menuDisabled: true,
+                        hideable: false
+                    }]
                 }, {
                     // TEXT entries
                     xtype: 'textfield',
