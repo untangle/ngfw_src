@@ -105,8 +105,10 @@ Ext.define('Ung.view.reports.Entry', {
                 xtype: 'combo',
                 itemId: 'eventsLimitSelector',
                 hidden: true,
+                disabled: true,
                 bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}'
+                    hidden: '{entry.type !== "EVENT_LIST"}',
+                    disabled: '{fetching}'
                 },
                 editable: false,
                 value: 1000,
@@ -128,9 +130,11 @@ Ext.define('Ung.view.reports.Entry', {
                 format: 'date_fmt'.t(),
                 editable: false,
                 width: 100,
+                disabled: true,
                 bind: {
                     value: '{_sd}',
-                    maxValue: '{_ed}'
+                    maxValue: '{_ed}',
+                    disabled: '{fetching}'
                 }
             }, {
                 xtype: 'timefield',
@@ -138,9 +142,11 @@ Ext.define('Ung.view.reports.Entry', {
                 // format: 'date_fmt'.t(),
                 editable: false,
                 width: 80,
+                disabled: true,
                 bind: {
                     value: '{_st}',
                     // maxValue: '{_ed}'
+                    disabled: '{fetching}'
                 }
             }, {
                 xtype: 'label',
@@ -149,17 +155,23 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 xtype: 'checkbox',
                 boxLabel: 'Present'.t(),
-                bind: '{tillNow}'
+                disabled: true,
+                bind: {
+                    value: '{tillNow}',
+                    disabled: '{fetching}'
+                }
             }, {
                 xtype: 'datefield',
                 format: 'date_fmt'.t(),
                 editable: false,
                 width: 100,
                 hidden: true,
+                disabled: true,
                 bind: {
                     value: '{_ed}',
                     hidden: '{tillNow}',
-                    minValue: '{_sd}'
+                    minValue: '{_sd}',
+                    disabled: '{fetching}'
                 },
                 maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
             }, {
@@ -169,36 +181,47 @@ Ext.define('Ung.view.reports.Entry', {
                 editable: false,
                 width: 80,
                 hidden: true,
+                disabled: true,
                 bind: {
                     value: '{_et}',
                     hidden: '{tillNow}',
                     // minValue: '{_sd}'
+                    disabled: '{fetching}'
                 },
                 // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
             }, '->', {
+                xtype: 'component',
+                html: '<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>',
+                hidden: true,
+                bind: {
+                    hidden: '{!fetching}'
+                }
+            }, {
+                xtype: 'checkbox',
+                boxLabel: 'Auto Refresh'.t(),
+                disabled: true,
+                bind: {
+                    value: '{autoRefresh}',
+                    disabled: '{!autoRefresh && fetching}'
+                },
+                handler: 'setAutoRefresh'
+            }, {
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'refreshBtn',
                 handler: 'refreshData',
                 bind: {
-                    disabled: '{autoRefresh}'
-                }
-            }, {
-                xtype: 'button',
-                text: 'Auto Refresh'.t(),
-                enableToggle: true,
-                toggleHandler: 'setAutoRefresh',
-                bind: {
-                    iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                    pressed: '{autoRefresh}'
+                    disabled: '{autoRefresh || fetching}'
                 }
             }, {
                 text: 'Reset View'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'resetBtn',
                 handler: 'resetView',
+                disabled: true,
                 bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}'
+                    hidden: '{entry.type !== "EVENT_LIST"}',
+                    disabled: '{fetching}'
                 }
             }, {
                 itemId: 'downloadBtn',
@@ -206,16 +229,20 @@ Ext.define('Ung.view.reports.Entry', {
                 iconCls: 'fa fa-download',
                 handler: 'downloadGraph',
                 hidden: true,
+                disabled: true,
                 bind: {
-                    hidden: '{!isGraphEntry}'
+                    hidden: '{!isGraphEntry}',
+                    disabled: '{fetching}'
                 }
             }, '-', {
                 itemId: 'dashboardBtn',
                 hidden: true,
+                disabled: true,
                 bind: {
                     iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
                     text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
-                    hidden: '{context !== "admin"}'
+                    hidden: '{context !== "admin"}',
+                    disabled: '{fetching}'
                 },
                 handler: 'dashboardAddRemove'
             }]

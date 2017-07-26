@@ -7,7 +7,11 @@ Ext.define('Ung.view.reports.Reports', {
 
     controller: 'reports',
 
-    viewModel: true,
+    viewModel: {
+        data: {
+            fetching: false
+        }
+    },
 
     // tbar: [{
     //     xtype: 'component',
@@ -117,13 +121,7 @@ Ext.define('Ung.view.reports.Reports', {
         }],
 
         listeners: {
-            select: function (el, node) {
-                if (Ung.app.servletContext === 'reports') {
-                    Ung.app.redirectTo('#' + node.get('url'));
-                } else {
-                    Ung.app.redirectTo('#reports/' + node.get('url'));
-                }
-            }
+            beforeselect: 'beforeSelectReport'
         }
     }, {
         region: 'center',
