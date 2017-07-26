@@ -65,15 +65,19 @@ Ext.define('Ung.config.network.view.Interfaces', {
             resizable: false,
             align: 'right'
         }, {
-            dataIndex: 'isWirelessInterface',
             width: 30,
             align: 'center',
             resizable: false,
             sortable: false,
             hideable: false,
             menuDisabled: true,
-            renderer: function (value) {
-                return value ? '<i class="fa fa-wifi fa-gray" style="font-size: 1.2em;"></i>' : '';
+            renderer: function (value, meta, record) {
+                var icon_src = '/skins/common/images/intf_nic';
+                meta.tdCls = 'intf_icon';
+                if (record.get('isWirelessInterface')) { icon_src = '/skins/common/images/intf_wifi'; }
+                if (record.get('isVlanInterface')) { icon_src = '/skins/common/images/intf_vlan'; }
+                icon_src += record.get('configType') === 'DISABLED' ? '_disabled.png' : '.png';
+                return '<img src="' + icon_src + '" />';
             }
         }, {
             header: 'Name'.t(),
