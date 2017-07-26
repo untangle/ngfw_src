@@ -39,7 +39,6 @@ Ext.define('Ung.view.reports.TextReportController', {
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 
-        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             vm.get('entry').getData(), // entry

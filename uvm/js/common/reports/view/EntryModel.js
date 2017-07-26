@@ -13,17 +13,31 @@ Ext.define('Ung.view.reports.EntryModel', {
         // fetching: false // set in Reports ViewModel
     },
 
-    // stores: {
-    //     _sqlConditionsStore: {
-    //         data: '{_sqlConditions}',
-    //         proxy: {
-    //             type: 'memory',
-    //             reader: {
-    //                 type: 'json'
-    //             }
-    //         }
-    //     }
-    // },
+    stores: {
+        timeDataColumnsStore: {
+            data: '{timeDataColumns}', // defined as a formula
+            proxy: {
+                type: 'memory',
+                reader: { type: 'json' }
+            }
+        },
+        textDataColumnsStore: {
+            data: '{textDataColumns}', // defined as a formula
+            proxy: {
+                type: 'memory',
+                reader: { type: 'json' }
+            }
+        }
+        // _sqlConditionsStore: {
+        //     data: '{_sqlConditions}',
+        //     proxy: {
+        //         type: 'memory',
+        //         reader: {
+        //             type: 'json'
+        //         }
+        //     }
+        // }
+    },
 
     formulas: {
         _reportCard: function (get) {
@@ -168,6 +182,23 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         isTextEntry: function (get)  {
             return get('entry.type') === 'TEXT';
+        },
+
+        timeDataColumns: function (get) {
+            var columns = get('entry.timeDataColumns'), arr = [];
+            if (!columns || !Ext.isArray(columns)) { return []; }
+            Ext.Array.each(columns, function (column) {
+                arr.push({ str: column });
+            });
+            return arr;
+        },
+        textDataColumns: function (get) {
+            var columns = get('entry.textColumns'), arr = [];
+            if (!columns || !Ext.isArray(columns)) { return []; }
+            Ext.Array.each(columns, function (column) {
+                arr.push({ str: column });
+            });
+            return arr;
         }
     }
 
