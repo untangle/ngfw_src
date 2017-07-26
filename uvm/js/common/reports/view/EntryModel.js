@@ -9,7 +9,8 @@ Ext.define('Ung.view.reports.EntryModel', {
         tillNow: true,
         _currentData: [],
         sqlFilterData: [],
-        autoRefresh: false
+        autoRefresh: false,
+        // fetching: false // set in Reports ViewModel
     },
 
     // stores: {

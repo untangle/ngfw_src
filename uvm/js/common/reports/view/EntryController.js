@@ -342,7 +342,7 @@ Ext.define('Ung.view.reports.EntryController', {
     // },
 
     refreshData: function () {
-        var me = this, vm = me.getViewModel(), ctrl;
+        var me = this, vm = me.getViewModel(), ctrl, reps = me.getView().up('#reports');
         switch(vm.get('entry.type')) {
             case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
             case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
@@ -354,16 +354,10 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
-        var tb = me.getView().down('#actionsToolbar');
-        tb.setDisabled(true); // disable toolbar actions while fetching data
-
-        // add some background while fetching data
-        var graphCmp = me.getView().down('#graphreport > component');
-        graphCmp.addCls('fetching');
-
+        // if (reps) { reps.getViewModel().set('fetching', true); }
         ctrl.fetchData(false, function () {
-            tb.setDisabled(false);
-            graphCmp.removeCls('fetching');
+            // if (reps) { reps.getViewModel().set('fetching', false); }
+
             if (vm.get('autoRefresh')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.refreshData();
@@ -815,12 +809,12 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    setAutoRefresh: function (btn) {
+    setAutoRefresh: function (ck, val) {
         var me = this,
             vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
+        vm.set('autoRefresh', val);
 
-        if (btn.pressed) {
+        if (val) {
             me.refreshData();
         } else {
             if (me.refreshTimeout) {
