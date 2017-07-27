@@ -29,9 +29,9 @@ input:-webkit-autofill {
 </header>
 
 <div class="form-login" style="padding: 15px;">
+    <h2>$.WelcomeText.$</h2>
+    <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
     <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
-        <h2>$.WelcomeText.$</h2>
-        <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
         <input name="method" id="method" type="hidden" value="$.method.$" />
         <input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
         <input name="appid" id="appid" type="hidden" value="$.appid.$" />
@@ -45,9 +45,8 @@ input:-webkit-autofill {
 
         <button id="submit" type="submit" name="submit" title="Login">Log In</button>
         <br/><br/>
-        <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
-
     </form>
+    <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
 </div>
 <!--DEBUG-->
 </body>
