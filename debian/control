@@ -154,7 +154,7 @@ Conflicts: untangle-node-directory-connector, libradius1, radiusclient1
 Replaces: untangle-node-directory-connector
 Provides: untangle-node-directory-connector
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, libfreeradius-client-dev, freeradius-common, untangle-google-connector, xvfb
+Depends: untangle-vm, untangle-app-license, libfreeradius-client-dev | libfreeradius-dev, freeradius-common, untangle-google-connector, xvfb
 Description: The Untangle Directory Connector
  The Untangle Directory Connector.
 
