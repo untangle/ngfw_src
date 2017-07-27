@@ -46,6 +46,15 @@ Ext.define('Ung.view.MainController', {
         // }, Ung.app.conf.token, mids);
     },
 
+    filterMessages: function (field, value) {
+        if (!value) {
+            field.getTrigger('clear').hide();
+        } else {
+            field.getTrigger('clear').show();
+        }
+        // to do the rest of the filtering
+    },
+
 
     // Safe List actions
     addSafeListAddress: function(btn) {
@@ -159,9 +168,10 @@ Ext.define('Ung.view.Messages', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
+        style: { background: '#FEFEDD' },
         items: [{
             xtype: 'component',
-            padding: 5,
+            padding: '10 5',
             bind: { html: '<i class="fa fa-exclamation-triangle fa-lg" style="color: orange;"></i> {warning}' }
         }]
     }, {
@@ -169,27 +179,44 @@ Ext.define('Ung.view.Messages', {
         dock: 'top',
         ui: 'footer',
         style: { background: '#EEE' },
-        defaults: {
-            disabled: true,
-            bind: { disabled: '{!messages.selection}' }
-        },
         items: [{
             text: 'Release to Inbox'.t(),
             iconCls: 'fa fa-inbox',
             handler: 'releaseMessages',
+            disabled: true,
+            bind: { disabled: '{!messages.selection}' }
         }, {
             text: 'Release to Inbox & Add Senders to Safe List'.t(),
-            iconCls: 'fa fa-user'
+            iconCls: 'fa fa-user',
+            disabled: true,
+            bind: { disabled: '{!messages.selection}' }
         }, {
             text: 'Delete'.t(),
             iconCls: 'fa fa-trash',
-            handler: 'purgeMessages'
-        }]
-    }, {
-        xtype: 'toolbar',
-        dock: 'bottom',
-        items: [ 'Filter:'.t(), {
-            xtype: 'textfield'
+            handler: 'purgeMessages',
+            disabled: true,
+            bind: { disabled: '{!messages.selection}' }
+        }, '->', {
+            xtype: 'textfield',
+            fieldLabel: 'Filter'.t(),
+            labelAlign: 'right',
+            enableKeyEvents: true,
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    hidden: true,
+                    handler: function (field) {
+                        field.setValue('');
+                    }
+                }
+            },
+            listeners: {
+                change: 'filterMessages',
+                buffer: 100
+            }
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Case sensitive'.t()
         }]
     }],
 
@@ -270,9 +297,10 @@ Ext.define('Ung.view.SafeList', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
+        style: { background: '#FEFEDD' },
         items: [{
             xtype: 'component',
-            padding: 5,
+            padding: '10 5',
             html: '<i class="fa fa-exclamation-triangle fa-lg" style="color: orange;"></i> ' + 'You can use the Safe List to make sure that messages from these senders are never quarantined.'.t()
         }]
     }, {
