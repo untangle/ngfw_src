@@ -7,16 +7,28 @@ var rpc = {}; // global rpc object
  Ext.define('Bootstrap', {
     singleton: true,
 
+    servletContext: 'ADMIN',
+
     initRpc: function () {
-        // initialize rpc;
-        var startUpInfo;
-        rpc = new JSONRpcClient('/admin/JSON-RPC');
-        try { startUpInfo = rpc.UvmContext.getWebuiStartupInfo(); } catch (ex) { alert(ex); }
-        Ext.apply(rpc, startUpInfo);
+        // initialize rpc
+        if (this.servletContext === 'ADMIN' || this.servletContext === 'REPORTS') {
+            var startUpInfo;
+            rpc = new JSONRpcClient('/admin/JSON-RPC');
+            try { startUpInfo = rpc.UvmContext.getWebuiStartupInfo(); } catch (ex) { alert(ex); }
+            Ext.apply(rpc, startUpInfo);
+        }
+
+        if (this.servletContext === 'QUARANTINE') {
+            rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
+        }
     },
 
     initTranslations: function () {
         // initialize translations
+
+        // if not defined (e.g. quarantine)
+        if (!rpc.translations) { String.prototype.t = function() { return this.valueOf(); }; return; }
+
         if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
         if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
         if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
@@ -37,15 +49,20 @@ var rpc = {}; // global rpc object
 
     initHighcharts: function () {
         // set server timezone for charts
-        Highcharts.setOptions({
-            global: {
-                timezoneOffset: -(rpc.timeZoneOffset / 60000)
-            }
-        });
+        if (window.Highcharts) {
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -(rpc.timeZoneOffset / 60000)
+                }
+            });
+        }
     },
 
-    load: function (scriptsArray, cb) {
+    load: function (scriptsArray, servletContext, cb) {
         var me = this;
+
+        me.servletContext = servletContext;
+
         me.initRpc(); me.initTranslations(); me.initHighcharts();
 
         // check local storage

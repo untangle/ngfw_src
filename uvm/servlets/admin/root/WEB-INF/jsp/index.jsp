@@ -73,7 +73,7 @@
                     '/script/common/reports-all.js', // include reports module
                     '/script/common/ungrid-all.js', // include custom grid module
                     'script/ung-all.js'
-                ], function (ex) {
+                ], 'ADMIN', function (ex) {
                     if (ex) { console.error(ex); return; };
                     // if everything is initialized just launch the application
                     Ext.application({
