@@ -6,6 +6,7 @@ Ext.define("Ung.Inbox", {
     viewport : null,
     init : function(config) {
         Ext.apply(this, config);
+        console.log(this);
         Ext.Ajax.request({
             url : 'i18n',
             success : Ext.bind(function(response, options) {
@@ -535,6 +536,7 @@ Ext.define("Ung.Inbox", {
                 this.gridSafelist.getStore().loadData(sl);
             }, this), this.token, addresses);
         };
+        console.log(this.safelistData);
         this.gridSafelist = Ext.create('Ext.grid.Panel', {
             flex : 1,
             enableColumnHide : false,
