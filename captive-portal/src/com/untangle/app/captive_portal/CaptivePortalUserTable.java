@@ -86,16 +86,20 @@ public class CaptivePortalUserTable
         // timed-out while active in our table.
         if (local.getAnonymous() == true) {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserNetAddress(), true);
-            entry.setUsernameCaptivePortal(null);
-            entry.setCaptivePortalAuthenticated(true);
+            if (entry != null) {
+                entry.setUsernameCaptivePortal(null);
+                entry.setCaptivePortalAuthenticated(true);
+            }
         }
 
         // for all other users set the global capture username and also
         // the captive portal flag so we don't get timed-out of the table
         else {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserNetAddress(), true);
-            entry.setUsernameCaptivePortal(local.getUserName());
-            entry.setCaptivePortalAuthenticated(true);
+            if (entry != null) {
+                entry.setUsernameCaptivePortal(local.getUserName());
+                entry.setCaptivePortalAuthenticated(true);
+            }
         }
 
         return (local);
@@ -127,8 +131,11 @@ public class CaptivePortalUserTable
 
         // clear the capture username from the host table entry and turn
         // of the captive portal flag so it knows we are all done
-        entry.setUsernameCaptivePortal(null);
-        entry.setCaptivePortalAuthenticated(false);
+        if (entry != null) {
+            entry.setUsernameCaptivePortal(null);
+            entry.setCaptivePortalAuthenticated(false);
+        }
+
         return (true);
     }
 
