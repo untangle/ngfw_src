@@ -20,6 +20,12 @@
   </servlet>
 
   <servlet>
+    <servlet-name>InboxMaintenanceServletNew</servlet-name>
+    <servlet-class>com.untangle.app.smtp.web.euv.InboxMaintenanceServletNew</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
     <servlet-name>RequestServlet</servlet-name>
     <servlet-class>com.untangle.app.smtp.web.euv.RequestServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
@@ -48,6 +54,11 @@
   <servlet-mapping>
     <servlet-name>InboxMaintenenceServlet</servlet-name>
     <url-pattern>/manageuser</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>InboxMaintenanceServletNew</servlet-name>
+    <url-pattern>/manageusernew</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

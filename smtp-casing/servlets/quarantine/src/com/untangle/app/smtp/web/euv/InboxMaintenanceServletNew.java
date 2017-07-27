@@ -22,14 +22,14 @@ import com.untangle.uvm.UvmContextFactory;
  * Servlet used for inbox maintenence.
  */
 @SuppressWarnings("serial")
-public class InboxMaintenenceServlet extends HttpServlet
+public class InboxMaintenanceServletNew extends HttpServlet
 {
     /**
      * Page to forward end-users to, if the system is
      * hosed and cannot fufill request.
      */
     private static final String AUTH_TOKEN_RP = "tkn";
-    private static final String INBOX_VIEW = "/WEB-INF/jsp/inbox.jsp";
+    private static final String INBOX_VIEW = "/WEB-INF/jsp/inboxnew.jsp";
     private static final String REQUEST_FWD = "/request";
     private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
 
