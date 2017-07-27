@@ -55,7 +55,7 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
                 '/script/common/reports-all.js', // include reports module
                 '/script/common/ungrid-all.js', // include custom grid module
                 'script/app.js' // include this standalone reports app
-            ], function (ex) {
+            ], 'REPORTS', function (ex) {
                 if (ex) { console.error(ex); return; };
                 // if everything is initialized just launch the application
                 var chartReport = Ext.Object.fromQueryString(window.location.search.substring(1));
