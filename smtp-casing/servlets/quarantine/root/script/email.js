@@ -7,8 +7,10 @@ Ext.define('Ung.view.Main', {
 
     dockedItems: [{
         xtype: 'toolbar',
+        ui: 'navigation',
         dock: 'top',
         border: false,
+        height: 52,
         style: {
             background: '#1b1e26'
         },
@@ -98,45 +100,10 @@ Ext.define('Ung.view.Main', {
     }
 });
 
-Ext.define('Ung.controller.Global', {
-    extend: 'Ext.app.Controller',
-
-    // stores: [
-    //     'Categories',
-    //     'Reports',
-    //     'ReportsTree'
-    // ],
-
-    // refs: {
-    //     reportsView: '#reports',
-    // },
-    // config: {
-    //     routes: {
-    //         '': 'onMain',
-    //         ':category': 'onMain',
-    //         ':category/:entry': 'onMain'
-    //     }
-    // },
-
-    // onMain: function (categoryName, reportName) {
-    //     var reportsVm = this.getReportsView().getViewModel();
-    //     var hash = ''; // used to handle reports tree selection
-
-    //     if (categoryName) {
-    //         hash += categoryName;
-    //     }
-    //     if (reportName) {
-    //         hash += '/' + reportName;
-    //     }
-    //     reportsVm.set('hash', hash);
-    // }
-});
-
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
     name: 'Ung',
     namespace: 'Ung',
-    controllers: ['Global'],
     defaultToken : '',
     mainView: 'Ung.view.Main',
     launch: function () {
