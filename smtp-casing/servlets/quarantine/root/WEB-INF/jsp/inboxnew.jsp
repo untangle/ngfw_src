@@ -79,27 +79,8 @@
                     });
                 });
             }
-
-
-
-
-            // setups all initializations and load required scrips
-
         });
     </script>
-
-
-
-    <!-- <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="script/request.js"></script>
-
-    <script type="text/javascript">
-        Ext.onReady(function() {
-            Ung.Request.init({
-                companyName: "${fn:replace(companyName,'"','')}",
-            })
-        });
-    </script> -->
  </head>
 <body>
 </body>
