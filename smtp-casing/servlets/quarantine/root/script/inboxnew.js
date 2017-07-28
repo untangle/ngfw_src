@@ -196,10 +196,10 @@ Ext.define('Ung.view.Messages', {
             handler: 'purgeMessages',
             disabled: true,
             bind: { disabled: '{!messages.selection}' }
-        }, '->', {
+        }, '->', 'Filter:'.t(), {
             xtype: 'textfield',
-            fieldLabel: 'Filter'.t(),
-            labelAlign: 'right',
+            // fieldLabel: 'Filter'.t(),
+            // labelAlign: 'right',
             enableKeyEvents: true,
             triggers: {
                 clear: {
@@ -451,15 +451,7 @@ Ext.define('Ung.Inbox', {
     mainView: 'Ung.view.Main',
     launch: function () {
         // add initial confs in main viewmodel
-        this.getMainView().getViewModel().set(Ung.app.conf);
-        // Ext.Deferred.parallel([
-        //     Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-        //     Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
-        // ]).then(function (result) {
-        //     Ext.getStore('reports').loadData(result[0].list); // reports store is defined in Reports module
-        //     Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list));
-        //     Ext.getStore('reportstree').build(); // build the reports tree
-        //     Ext.fireEvent('init');
-        // });
+        this.getMainView().getViewModel().set(this.conf);
+        document.title = Ext.String.format('{0} | Quarantine Digest for: {1}'.t(), this.conf.companyName, this.conf.currentAddress);
     }
 });

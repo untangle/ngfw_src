@@ -6,7 +6,7 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>${companyName} | Request Quarantine Digest</title>
+    <title>${companyName}</title>
 
     <!-- FontAwesome -->
     <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
@@ -30,21 +30,43 @@
 
     <script src="/script/common/bootstrap.js"></script>
     <script>
+        var rpc;
         Ext.onReady(function () {
-            // setups all initializations and load required scrips
-            Bootstrap.load([
-                '/script/common/util-all.js', // include custom grid module
-//                '/script/common/reports-all.js', // include reports module
-                '/script/common/ungrid-all.js', // include custom grid module
-                // 'script/email.js'
-                'script/email.js'
-            ], 'QUARANTINE', function (ex) {
-                // if everything is initialized just launch the application
-                Ext.application({
-                    extend: 'Ung.Application',
-                    namespace: 'Ung'
-                });
+
+            // load translations first because it's a separate call
+            rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
+
+            Ext.Ajax.request({
+                url : 'i18n',
+                method : 'GET',
+                params: { module: 'untangle' },
+                success: function(response, options) {
+                    rpc.translations = Ext.decode(response.responseText);
+                    initApp();
+                },
+                failure : function() {
+                    Ext.MessageBox.alert('Error', 'Unable to load the language pack.');
+                    initApp();
+                },
             });
+
+            function initApp(response, options) {
+                String.prototype.t = function() {
+                    return rpc.translations[this.valueOf()] || this.valueOf();
+                };
+
+                Bootstrap.load([
+                    '/script/common/util-all.js',
+                    'script/email.js'
+                ], 'QUARANTINE', function (ex) {
+                    // if everything is initialized just launch the application
+                    Ext.application({
+                        extend: 'Ung.Application',
+                        namespace: 'Ung',
+                        companyName: "${fn:replace(companyName,'"','')}"
+                    });
+                });
+            }
         });
     </script>
 

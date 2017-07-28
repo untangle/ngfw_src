@@ -63,7 +63,9 @@ var rpc = {}; // global rpc object
 
         me.servletContext = servletContext;
 
-        me.initRpc(); me.initTranslations(); me.initHighcharts();
+        if (servletContext === 'ADMIN' || servletContext === 'REPORTS') {
+            me.initRpc(); me.initHighcharts(); me.initTranslations();
+        }
 
         // check local storage
         if (Ext.supports.LocalStorage) {
