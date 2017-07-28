@@ -38,7 +38,7 @@ public class InboxMaintenenceServlet extends HttpServlet
     {
 
         String authTkn = req.getParameter(AUTH_TOKEN_RP);
-        authTkn = "test";
+
         if(authTkn == null) {
             log("[MaintenenceControlerBase] Auth token null");
             req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);
