@@ -140,15 +140,6 @@ Ext.define('Ung.Application', {
     defaultToken : '',
     mainView: 'Ung.view.Main',
     launch: function () {
-        console.log('launch');
-        // Ext.Deferred.parallel([
-        //     Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-        //     Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
-        // ]).then(function (result) {
-        //     Ext.getStore('reports').loadData(result[0].list); // reports store is defined in Reports module
-        //     Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list));
-        //     Ext.getStore('reportstree').build(); // build the reports tree
-        //     Ext.fireEvent('init');
-        // });
+        document.title = Ext.String.format('{0} | Request Quarantine Digest'.t(), this.companyName);
     }
 });
