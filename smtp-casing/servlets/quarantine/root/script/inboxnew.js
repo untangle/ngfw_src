@@ -102,7 +102,9 @@ Ext.define('Ung.view.Main', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
+        ui: 'navigation',
         border: false,
+        height: 52,
         style: {
             background: '#1b1e26'
         },
