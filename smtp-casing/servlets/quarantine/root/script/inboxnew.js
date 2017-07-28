@@ -28,22 +28,99 @@ Ext.define('Ung.view.Main', {
         { xtype: 'messages' },
         { xtype: 'safelist' },
         { xtype: 'forwardreceive' }
-    ]
+    ],
+    listeners: {
+        afterrender: 'onAfterRender'
+    }
 });
 
 Ext.define('Ung.view.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.main',
 
+    onAfterRender: function (view) {
+        this.token = Ung.app.conf.token;
+        this.refreshQuarantineGrid();
+    },
+
+    refreshQuarantineGrid: function () {
+        var me = this, vm = me.getViewModel();
+        rpc.getInboxRecords(function (result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            var mails = [];
+            Ext.Array.each(result, function (mail) {
+                mail.time = mail.internDate; // preserve time in a different prop
+                Ext.apply(mail, mail.mailSummary);
+                mails.push(mail);
+            });
+            vm.set('mails', mails);
+        }, me.token);
+
+        // for testing
+        var mails = [], getTestRecord = function(index) {
+            return {
+                recipients : 'recipients' + index,
+                sender : 'sender' + (index % 10) + '@test.com',
+                mailID : 'mailID' + index,
+                internDate : 10000 * index,
+                quarantineSize : 500 * index,
+                attachmentCount : 1000 - index,
+                quarantineDetail : parseFloat(index) / 100,
+                truncatedSubject : 'subject spam' + index
+            };
+        };
+        var length = Math.floor((Math.random() * 50));
+        for (var i = parseInt(length / 3, 10); i < length; i++) {
+            mails.push(getTestRecord(i));
+        }
+        vm.set('mails', mails);
+    },
+
     // Quarantined Messages actions
     releaseMessages: function (btn) {
-        var mids = [];
+        var me = this, mids = [];
         Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
             mids.push(rec.get('mailID'));
         });
-        Ext.Msg.alert('To Do!', 'Release to Inbox');
-        // rpc.releaseMessages(function () {
-        // }, Ung.app.conf.token, mids);
+        rpc.releaseMessages(function (result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            if (result.releaseCount > 0) {
+                Util.successToast(Ext.String.format('Released {0} Messages'.t(), result.releaseCount));
+            }
+        }, me.token, mids);
+    },
+
+    releaseAndSafeList: function (btn) {
+        var me = this, vm = me.getViewModel(), addresses = [];
+        Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
+            addresses.push(rec.get('sender'));
+        });
+        rpc.safelist(function (result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            if (result.safelistCount > 0) {
+                Util.successToast(Ext.String.format('Safelisted {0} Addresses'.t(), result.safelistCount));
+            }
+            // refresh safelist grid
+            if (result.safelist) {
+                Ext.Array.each(result.safelist, function (sl) {
+                    sl = [ sl ];
+                });
+                vm.set('safelistData', result.safelist);
+            }
+        }, me.token, addresses);
+    },
+
+    purgeMessages: function (btn) {
+        var me = this, mids = [];
+        Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
+            mids.push(rec.get('mailID'));
+        });
+        rpc.purgeMessages(function (result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            if (result.purgeCount > 0) {
+                Util.successToast(Ext.String.format('Deleted {0} Messages'.t(), result.purgeCount));
+            }
+        }, me.token, mids);
     },
 
     filterMessages: function (field, value) {
@@ -58,7 +135,7 @@ Ext.define('Ung.view.MainController', {
 
     // Safe List actions
     addSafeListAddress: function(btn) {
-        var grid = btn.up('grid');
+        var me = this, vm = me.getViewModel(), grid = btn.up('grid');
         var addWin = grid.add({
             xtype: 'window',
             modal: 'true',
@@ -95,7 +172,21 @@ Ext.define('Ung.view.MainController', {
                 handler: function (btn) {
                     var emailField = btn.up('window').down('textfield');
                     if (!emailField.isValid()) { return; }
-                    Ext.Msg.alert('To Do!', 'releaseAndSafelist()');
+
+                    rpc.safelist(function (result, ex) {
+                        if (ex) { Util.handleException(ex); btn.up('window').close(); return; }
+                        if (result.safelistCount > 0) {
+                            Util.successToast(Ext.String.format('Safelisted {0} Addresses'.t(), result.safelistCount));
+                        }
+                        // refresh safelist grid
+                        if (result.safelist) {
+                            Ext.Array.each(result.safelist, function (sl) {
+                                sl = [ sl ];
+                            });
+                            vm.set('safelistData', result.safelist);
+                        }
+                        btn.up('window').close();
+                    }, me.token, [emailField.getValue()]);
                 }
             }, {
                 text: 'Cancel'.t(),
@@ -109,43 +200,57 @@ Ext.define('Ung.view.MainController', {
     },
 
     deleteSafeListAddresses: function (btn) {
-        var records = btn.up('grid').getSelection(), addresses = [];
+        var me = this, records = btn.up('grid').getSelection(), addresses = [];
         Ext.Array.each(records, function(record) {
             addresses.push(record.get('emailAddress'));
         });
-        rpc.deleteRemaps(function(result, ex) {
+        rpc.deleteAddressesFromSafelist(function(result, ex) {
             if (ex) { Util.handleException(ex); return; }
-            var message = Ext.String.format('Deleted {0} Remaps'.t(), addresses.length);
-            Util.successToast(message);
+            Util.successToast(Ext.String.format('Deleted {0} addresses'.t(), result.safelistCount));
             // drop removed records from grid
             Ext.Array.each(records, function (record) {
                 record.drop();
             });
-        }, Ung.app.conf.token, addresses);
+        }, me.token, addresses);
     },
 
     // Forward / Receive actions
     setForwardAddress: function (btn) {
-        var emailField = btn.up('panel').down('textfield');
+        var me = this, emailField = btn.up('panel').down('textfield');
         if (!emailField.isValid()) { return; }
         rpc.setRemap(function(result, ex) {
             if (ex) { Util.handleException(ex); return; }
             Ung.app.conf.forwardAddress = emailField.getValue();
             Util.successToast('Updated forward address'.t());
-        }, Ung.app.conf.token, emailField.getValue());
+        }, me.token, emailField.getValue());
     },
 
     deleteForwardAddress: function(btn) {
         // delete forward address if exists
-        var forwardAddress = Ung.app.conf.forwardAddress;
+        var me = this, forwardAddress = Ung.app.conf.forwardAddress;
         if (forwardAddress) {
             rpc.deleteRemap(function(result, ex) {
                 if (ex) { Util.handleException(ex); return; }
                 Ung.app.conf.forwardAddress = '';
                 this.getViewModel().set('forwardAddress', '');
                 Util.successToast('Deleted forward address'.t());
-            }, Ung.app.conf.token, forwardAddress);
+            }, me.token, forwardAddress);
         }
+    },
+
+    deleteReceived: function(btn) {
+        var me = this, records = btn.up('grid').getSelection(), addresses = [];
+        Ext.Array.each(records, function(record) {
+            addresses.push(record.get('emailAddress'));
+        });
+        rpc.deleteRemaps(function(result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            Util.successToast(Ext.String.format('Deleted {0} Remaps'.t(), addresses.length));
+            // drop removed records from grid
+            Ext.Array.each(records, function (record) {
+                record.drop();
+            });
+        }, me.token, addresses);
     }
 
 });
@@ -156,13 +261,13 @@ Ext.define('Ung.view.MainController', {
 Ext.define('Ung.view.Messages', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.messages',
-    reference: 'messages',
+    reference: 'messagesGrid',
     title: 'Quarantined Messages'.t(),
     viewModel: {
         formulas: {
             warning: function (get) {
                 return Ext.String.format('The messages below were quarantined and will be deleted after {0} days.'.t(), get('quarantineDays'));
-            }
+            },
         }
     },
     dockedItems: [{
@@ -182,24 +287,23 @@ Ext.define('Ung.view.Messages', {
         items: [{
             text: 'Release to Inbox'.t(),
             iconCls: 'fa fa-inbox',
-            handler: 'releaseMessages',
             disabled: true,
-            bind: { disabled: '{!messages.selection}' }
+            bind: { disabled: '{!messagesGrid.selection}' },
+            handler: 'releaseMessages'
         }, {
             text: 'Release to Inbox & Add Senders to Safe List'.t(),
             iconCls: 'fa fa-user',
             disabled: true,
-            bind: { disabled: '{!messages.selection}' }
+            bind: { disabled: '{!messagesGrid.selection}' },
+            handler: 'releaseAndSafeList'
         }, {
             text: 'Delete'.t(),
             iconCls: 'fa fa-trash',
-            handler: 'purgeMessages',
             disabled: true,
-            bind: { disabled: '{!messages.selection}' }
+            bind: { disabled: '{!messagesGrid.selection}' },
+            handler: 'purgeMessages'
         }, '->', 'Filter:'.t(), {
             xtype: 'textfield',
-            // fieldLabel: 'Filter'.t(),
-            // labelAlign: 'right',
             enableKeyEvents: true,
             triggers: {
                 clear: {
@@ -219,6 +323,35 @@ Ext.define('Ung.view.Messages', {
             boxLabel: 'Case sensitive'.t()
         }]
     }],
+    bind: {
+        store: {
+            data: '{mails}',
+            sortOnLoad: true,
+            sorters: { property : 'internDate', direction : 'DESC' },
+            fields: [
+                { name: 'recipients' },
+                { name: 'mailID' },
+                { name: 'attachmentCount' },
+                { name: 'truncatedSender' },
+                { name: 'truncatedSubject' },
+                { name: 'subject' },
+                { name: 'quarantineCategory' },
+                { name: 'quarantineDetail', sortType : 'asFloat' },
+                { name: 'quarantineSize' },
+                { name : 'sender', sortType : Ext.data.SortTypes.asUCString },
+                {
+                    name: 'internDate',
+                    convert: function(value) {
+                        var date = new Date(), d, t;
+                        date.setTime(value);
+                        d = Ext.util.Format.date(date, 'm/d/Y');
+                        t = Ext.util.Format.date(date, 'g:i a');
+                        return d + ' ' + t;
+                    }
+                }
+            ]
+        }
+    },
 
     enableColumnHide : false,
     enableColumnMove : false,
@@ -237,7 +370,7 @@ Ext.define('Ung.view.Messages', {
         tooltipType: 'title',
         align: 'center',
         renderer: function(value) {
-            return value != 0 ? value : '';
+            return value !== 0 ? value : '';
         },
         filter: { type : 'numeric' }
     }, {
@@ -278,21 +411,10 @@ Ext.define('Ung.view.Messages', {
 Ext.define('Ung.view.SafeList', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.safelist',
-    reference: 'safelist',
+    reference: 'safelistGrid',
 
     title: 'Safe List'.t(),
-    viewModel: {
-        stores: {
-            safeListStore: {
-                data: '{safelistData}',
-                fields: [{ name: 'emailAddress' }],
-                proxy: {
-                    type: 'memory',
-                    reader: { type: 'array' }
-                }
-            }
-        }
-    },
+    viewModel: true,
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -317,7 +439,7 @@ Ext.define('Ung.view.SafeList', {
             iconCls: 'fa fa-trash',
             disabled: true,
             bind: {
-                disabled: '{!safelist.selection}'
+                disabled: '{!safelistGrid.selection}'
             },
             handler: 'deleteSafeListAddresses'
         }]
@@ -333,7 +455,16 @@ Ext.define('Ung.view.SafeList', {
         menuDisabled: true,
         flex: 1
     }],
-    bind: '{safeListStore}'
+    bind: {
+        store: {
+            data: '{safelistData}',
+            fields: [{ name: 'emailAddress' }],
+            proxy: {
+                type: 'memory',
+                reader: { type: 'array' }
+            }
+        }
+    }
 });
 
 /**
@@ -378,7 +509,7 @@ Ext.define('Ung.view.ForwardReceive', {
         }]
     }, {
         xtype: 'grid',
-        reference: 'receivedQuarantinedMessages',
+        reference: 'receivedGrid',
         title: 'Received Quarantined Messages From:'.t(),
         region: 'center',
         flex: 1,
@@ -400,9 +531,8 @@ Ext.define('Ung.view.ForwardReceive', {
                 text: 'Delete Addresses'.t(),
                 iconCls: 'fa fa-trash',
                 disabled: true,
-                bind: {
-                    disabled: '{!receivedQuarantinedMessages.selection}'
-                }
+                bind: { disabled: '{!receivedGrid.selection}' },
+                handler: 'deleteReceived'
             }]
         }],
     }]
