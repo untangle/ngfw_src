@@ -1,3 +1,95 @@
+/**
+ * GlobalFilter
+ * todo: check if really works properly
+ */
+Ext.define('Ung.grid.feature.GlobalFilter', {
+    extend: 'Ext.grid.feature.Feature',
+    useVisibleColumns: true,
+    useFields: null,
+    init: function(grid) {
+        this.grid = grid;
+        this.globalFilter = Ext.create('Ext.util.Filter', {
+            regExpProtect : /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
+            disabled : true,
+            regExpMode : false,
+            caseSensitive : false,
+            regExp : null,
+            stateId : 'globalFilter',
+            searchFields : {},
+            filterFn : function(record) {
+                if (!this.regExp) {
+                    return true;
+                }
+                var datas = record.getData(), key, val;
+                for (key in this.searchFields) {
+                    if (datas[key] !== undefined) {
+                        val = datas[key];
+                        if (val == null) {
+                            continue;
+                        }
+                        if (typeof val == 'boolean' || typeof val == 'number') {
+                            val = val.toString();
+                        } else if (typeof val == 'object') {
+                            if (val.time != null) {
+                                val = Util.timestampFormat(val);
+                            }
+                        }
+                        if (typeof val == 'string') {
+                            if (this.regExp.test(val)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            },
+            getSearchValue : function(value) {
+                if (value === '' || value === '^' || value === '$') {
+                    return null;
+                }
+                if (!this.regExpMode) {
+                    value = value.replace(this.regExpProtect, function(m) {
+                        return '\\' + m;
+                    });
+                } else {
+                    try {
+                        new RegExp(value);
+                    } catch (error) {
+                        return null;
+                    }
+                }
+                return value;
+            },
+            buildSearch : function(value, caseSensitive, searchFields) {
+                this.searchFields = searchFields;
+                this.setCaseSensitive(caseSensitive);
+                var searchValue = this.getSearchValue(value);
+                this.regExp = searchValue == null ? null : new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
+                this.setDisabled(this.regExp == null);
+            }
+        });
+        this.callParent(arguments);
+    },
+    updateGlobalFilter : function(value, caseSensitive) {
+        var me = this, searchFields = {}, i, col;
+        if (me.useVisibleColumns) {
+            var visibleColumns = this.grid.getVisibleColumns();
+            for (i = 0; i < visibleColumns.length; i++) {
+                col = visibleColumns[i];
+                if (col.dataIndex) {
+                    searchFields[col.dataIndex] = true;
+                }
+            }
+        } else if (me.searchFields !== null) {
+            for (i = 0; i < me.searchFields.length; i++) {
+                searchFields[me.searchFields[i]] = true;
+            }
+        }
+        me.globalFilter.buildSearch(value, caseSensitive, searchFields);
+        me.grid.getStore().getFilters().notify('endupdate');
+    }
+});
+
 Ext.define('Ung.view.Main', {
     extend: 'Ext.tab.Panel',
     controller: 'main',
@@ -39,8 +131,17 @@ Ext.define('Ung.view.MainController', {
     alias: 'controller.main',
 
     onAfterRender: function (view) {
-        this.token = Ung.app.conf.token;
-        this.refreshQuarantineGrid();
+        var me = this, vm = me.getViewModel(), messagesGrid = view.down('messages');
+        me.token = Ung.app.conf.token;
+        me.refreshQuarantineGrid();
+
+        // and store populate add globalfilter
+        vm.bind('mails', function() {
+            if (messagesGrid.getStore().filters.length === 0) {
+                messagesGrid.getStore().addFilter(messagesGrid.features[0].globalFilter);
+            }
+        });
+
     },
 
     refreshQuarantineGrid: function () {
@@ -57,23 +158,23 @@ Ext.define('Ung.view.MainController', {
         }, me.token);
 
         // for testing
-        var mails = [], getTestRecord = function(index) {
-            return {
-                recipients : 'recipients' + index,
-                sender : 'sender' + (index % 10) + '@test.com',
-                mailID : 'mailID' + index,
-                internDate : 10000 * index,
-                quarantineSize : 500 * index,
-                attachmentCount : 1000 - index,
-                quarantineDetail : parseFloat(index) / 100,
-                truncatedSubject : 'subject spam' + index
-            };
-        };
-        var length = Math.floor((Math.random() * 50));
-        for (var i = parseInt(length / 3, 10); i < length; i++) {
-            mails.push(getTestRecord(i));
-        }
-        vm.set('mails', mails);
+        // var mails = [], getTestRecord = function(index) {
+        //     return {
+        //         recipients : 'recipients' + index,
+        //         sender : 'sender' + (index % 10) + '@test.com',
+        //         mailID : 'mailID' + index,
+        //         internDate : 10000 * index,
+        //         quarantineSize : 500 * index,
+        //         attachmentCount : 1000 - index,
+        //         quarantineDetail : parseFloat(index) / 100,
+        //         truncatedSubject : 'subject spam' + index
+        //     };
+        // };
+        // var length = Math.floor((Math.random() * 50));
+        // for (var i = parseInt(length / 3, 10); i < length; i++) {
+        //     mails.push(getTestRecord(i));
+        // }
+        // vm.set('mails', mails);
     },
 
     // Quarantined Messages actions
@@ -124,12 +225,13 @@ Ext.define('Ung.view.MainController', {
     },
 
     filterMessages: function (field, value) {
+        var grid = field.up('grid'), cs = grid.down('#casesensitive');
         if (!value) {
             field.getTrigger('clear').hide();
         } else {
             field.getTrigger('clear').show();
         }
-        // to do the rest of the filtering
+        grid.features[0].updateGlobalFilter(value, cs.getValue());
     },
 
 
@@ -270,6 +372,7 @@ Ext.define('Ung.view.Messages', {
             },
         }
     },
+    features: [Ext.create('Ung.grid.feature.GlobalFilter', {})],
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -315,11 +418,11 @@ Ext.define('Ung.view.Messages', {
                 }
             },
             listeners: {
-                change: 'filterMessages',
-                buffer: 100
+                change: 'filterMessages'
             }
         }, {
             xtype: 'checkbox',
+            itemId: 'casesensitive',
             boxLabel: 'Case sensitive'.t()
         }]
     }],
@@ -538,45 +641,10 @@ Ext.define('Ung.view.ForwardReceive', {
     }]
 });
 
-Ext.define('Ung.controller.Global', {
-    extend: 'Ext.app.Controller',
-
-    // stores: [
-    //     'Categories',
-    //     'Reports',
-    //     'ReportsTree'
-    // ],
-
-    // refs: {
-    //     reportsView: '#reports',
-    // },
-    // config: {
-    //     routes: {
-    //         '': 'onMain',
-    //         ':category': 'onMain',
-    //         ':category/:entry': 'onMain'
-    //     }
-    // },
-
-    // onMain: function (categoryName, reportName) {
-    //     var reportsVm = this.getReportsView().getViewModel();
-    //     var hash = ''; // used to handle reports tree selection
-
-    //     if (categoryName) {
-    //         hash += categoryName;
-    //     }
-    //     if (reportName) {
-    //         hash += '/' + reportName;
-    //     }
-    //     reportsVm.set('hash', hash);
-    // }
-});
-
 Ext.define('Ung.Inbox', {
     extend: 'Ext.app.Application',
     name: 'Ung',
     namespace: 'Ung',
-    controllers: ['Global'],
     defaultToken : '',
     mainView: 'Ung.view.Main',
     launch: function () {
