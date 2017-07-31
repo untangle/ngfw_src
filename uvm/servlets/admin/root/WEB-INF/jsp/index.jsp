@@ -21,7 +21,7 @@
         <!-- ExtJS lib & theme -->
         <c:set var="debug" value="${param['debug']}"/>
         <c:choose>
-            <c:when test="${debug == '1'}">
+            <c:when test="${debug == '1' or '@PREFIX@' != ''}">
         <script src="/ext6.2/ext-all-debug.js"></script>
             </c:when>
             <c:otherwise>
