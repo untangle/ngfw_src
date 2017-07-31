@@ -274,6 +274,10 @@ Ext.define('Ung.view.apps.AppsController', {
                 return;
             }
 
+            if (record.get('name') === 'live-support') { // just reload the page for now
+                Ung.app.getMainView().getController().setLiveSupport();
+            }
+
             if (record.get('name') === 'policy-manager') { // build the policies tree
                 Ext.getStore('policiestree').build();
                 vm.set('policyManagerInstalled', true);
@@ -291,6 +295,7 @@ Ext.define('Ung.view.apps.AppsController', {
 
     onRemoveApp: function () {
         // just refresh apps to avoid any possible issues with rendering apps from parent policies
+        Ung.app.getMainView().getController().setLiveSupport();
         this.getApps();
     },
 
