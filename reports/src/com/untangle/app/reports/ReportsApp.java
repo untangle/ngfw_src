@@ -116,6 +116,22 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             template.setTemplateId(idx);
         }
 
+        /**
+         * Remove any report entries with a duplicate title (in same category)
+         */
+        HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+        for (Iterator<ReportEntry> i = newSettings.getReportEntries().iterator(); i.hasNext(); ) {
+            ReportEntry entry = i.next();
+            String name = entry.getCategory() + "/" + entry.getTitle();
+            ReportEntry existing = names.get( name );
+            if ( existing != null ) {
+                logger.warn("REMOVING Duplicate report entry title: " + name);
+                i.remove();
+                continue;
+            }
+            names.put( name, entry );
+        }
+
         /* Manage id changes for users with email report flag. */
         if ( newSettings.getReportsUsers().size() > 0){
             for ( ReportsUser user : newSettings.getReportsUsers() ) {
@@ -629,16 +645,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
                 }
             }
-        }
-        HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
-        for ( ReportEntry entry : settings.getReportEntries() ) {
-            String name = entry.getCategory() + "/" + entry.getTitle();
-            ReportEntry existing = names.get( name );
-            if ( existing != null ) {
-                logger.warn("Duplicate report entry title: " + name);
-                throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("duplicate report entry title") + ": \"" + entry.getTitle() + "\"");
-            }
-            names.put( name, entry );
         }
     }
 
