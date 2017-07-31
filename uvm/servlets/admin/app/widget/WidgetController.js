@@ -46,6 +46,15 @@ Ext.define('Ung.widget.WidgetController', {
                     }
                 }
 
+                if (e.target.dataset.action === 'info') {
+                    Ext.Msg.show({
+                        title: vm.get('entry.localizedTitle') + ' / ' + vm.get('entry.category'),
+                        msg: vm.get('entry.localizedDescription'),
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.Msg.INFO
+                    });
+                }
+
             }
         });
     },

@@ -32,6 +32,9 @@ Ext.define('Ung.view.reports.ReportsController', {
             me.lookup('tree').collapseAll();
             me.lookup('tree').selectPath(path, 'slug', '/', me.selectPath, me);
         });
+        vm.bind('{fetching}', function (val) {
+            if (!val) { Ext.MessageBox.hide(); } // hide any loading message box
+        });
         me.buildStats();
     },
 
@@ -41,6 +44,20 @@ Ext.define('Ung.view.reports.ReportsController', {
         Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
             vm.set('tables', result); // used in advanced report settings table name
         });
+    },
+
+    // check if data is fetching and cancel selection if true
+    beforeSelectReport: function (el, node) {
+        var me = this, vm = me.getViewModel();
+        if (vm.get('fetching')) {
+            Ext.MessageBox.wait('Data is fetching...'.t(), 'Please wait'.t(), { text: '' });
+            return false;
+        }
+        if (Ung.app.servletContext === 'reports') {
+            Ung.app.redirectTo('#' + node.get('url'));
+        } else {
+            Ung.app.redirectTo('#reports/' + node.get('url'));
+        }
     },
 
     /**
