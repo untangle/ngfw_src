@@ -43,7 +43,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             html: '<h2>' + 'Choose a the VPN service provider'.t() + '</h2>'
         }, {
             xtype: 'combo',
-            fieldLabel: 'Configuration'.t(),
+            fieldLabel: 'Provider'.t(),
+            width: 400,
             margin: 10,
             editable: false,
             bind: '{selectedProvider}',
@@ -51,9 +52,12 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 ['Untangle', 'Untangle'.t()],
                 ['NordVPN', 'NordVPN'.t()],
                 ['ExpressVPN', 'ExpressVPN'.t()],
-                ['Custom_zip', 'Custom zip file'.t()],
-                ['Custom_ovpn', 'Custom ovpn file'.t()],
-                ['Custom_conf', 'Custom conf file'.t()],
+                ['CustomZip', 'Custom zip file'.t()],
+                ['CustomZipPass', 'Custom zip file with username/password'.t()],
+                ['CustomOvpn', 'Custom ovpn file'.t()],
+                ['CustomOvpnPass', 'Custom ovpn file with username/password'.t()],
+                ['CustomConf', 'Custom conf file'.t()],
+                ['CustomConfPass', 'Custom conf file with username/password'.t()],
             ]
         }]
     }, {

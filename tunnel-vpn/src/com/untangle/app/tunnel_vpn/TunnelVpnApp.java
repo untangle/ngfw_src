@@ -237,17 +237,6 @@ public class TunnelVpnApp extends AppBase
         return this.tunnelVpnManager.getNewTunnelId();
     }
 
-    public void setUsernamePassword( int tunnelId, String username, String password )
-    {
-        String filename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId + "/auth.txt";
-        String content = username + "\n" + password + "\n";
-        try {
-            Files.write(Paths.get(filename), content.getBytes());
-        } catch (Exception e) {
-            logger.warn("Failed to write username/password.",e);
-        }
-    }
-
     private TunnelVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");

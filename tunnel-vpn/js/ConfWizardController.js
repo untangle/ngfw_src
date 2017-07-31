@@ -42,12 +42,31 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         }
 
         if (activeItem.getItemId() === 'upload') {
-            if (vm.get('provider') == 'ExpressVPN') {
-                this.getView().appManager.setUsernamePassword(vm.get('tunnelId'),vm.get('username'),vm.get('password'));
+            var settings = this.getView().appManager.getSettings();
+            var tunnel = null, i=0;
+            // Set username/password of tunnel if specified
+            if (vm.get('username') != null && vm.get('password') != null) {
+                if ( settings.tunnels != null && settings.tunnels.list != null ) {
+                    for (i=0; i< settings.tunnels.list.length ; i++) {
+                        tunnel = settings.tunnels.list[i];
+                        if (tunnel['tunnelId'] == vm.get('tunnelId')) {
+                            tunnel['username'] = vm.get('username');
+                            tunnel['password'] = vm.get('password');
+                        }
+                    }
+                }
             }
-            else if (vm.get('provider') == 'NordVPN') {
-                this.getView().appManager.setUsernamePassword(vm.get('tunnelId'),vm.get('username'),vm.get('password'));
+            // Enable tunnel
+            if ( settings.tunnels != null && settings.tunnels.list != null ) {
+                for (i=0; i< settings.tunnels.list.length ; i++) {
+                    tunnel = settings.tunnels.list[i];
+                    if (tunnel['tunnelId'] == vm.get('tunnelId')) {
+                        tunnel['enabled'] = true;
+                    }
+                }
             }
+            // Save new settings
+            this.getView().appManager.setSettings(settings);
 
             v.getLayout().next();
         }

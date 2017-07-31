@@ -15,15 +15,19 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                 this.set('providerTitle', details.providerTitle);
                 this.set('providerInstructions', details.providerInstructions);
 
-                if ( val == 'ExpressVPN' ) {
+                switch (val) {
+                  case 'ExpressVPN':
+                  case 'NordVPN':
+                  case 'CustomZipPass':
+                  case 'CustomConfPass':
+                  case 'CustomOvpnPass':
                     this.set('usernameHidden', false);
                     this.set('passwordHidden', false);
-                } else if ( val == 'NordVPN' ) {
-                    this.set('usernameHidden', false);
-                    this.set('passwordHidden', false);
-                } else {
+                    break;
+                default:
                     this.set('usernameHidden', true);
                     this.set('passwordHidden', true);
+                    break;
                 }
             }
         }
@@ -54,8 +58,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                 providerInstructions: '<li>' + 'Log in to "My account" at nordvpn.com'.t() + '<br/>' +
                     '<li>' + 'Click on the "Download area"'.t() + '<br/>' +
                     '<li>' + 'Download the Linux ".OVPN configuration files" zip'.t() + '<br/>' +
-                    '<li>' + 'Upload the zip and chose the ovpn file for the server closest to your region'.t() + '<br/>' +
-                    '<li>' + 'Upload the downloaded ovpn file below'.t() + '<br/>' +
+                    '<li>' + 'Choose an ovpn file for a server (in your region)'.t() + '<br/>' +
+                    '<li>' + 'Upload the chosen ovpn file below'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password of your NordVPN account'.t() + '<br/>'
             },
             ExpressVPN: {
@@ -67,19 +71,37 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                     '<li>' + 'NOTE: This is not your ExpressVPN account username/password'.t() + '<br/>'
             },
             Custom_zip: {
-                providerName: 'Custom'.t(),
+                providerName: 'CustomZip'.t(),
                 providerTitle: 'Upload the Custom OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>'
             },
+            Custom_zip_password: {
+                providerName: 'CustomZipPass'.t(),
+                providerTitle: 'Upload the Custom OpenVPN config zip with username/password'.t(),
+                providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>' +
+                    '<li>' + 'Provide the username/password'.t() + '<br/>'
+            },
             Custom_ovpn: {
-                providerName: 'Custom'.t(),
+                providerName: 'CustomOvpn'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .ovpn file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>'
             },
+            Custom_ovpn_password: {
+                providerName: 'CustomOvpnPass'.t(),
+                providerTitle: 'Upload the Custom OpenVPN .ovpn file with username/password'.t(),
+                providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>' +
+                    '<li>' + 'Provide the username/password'.t() + '<br/>'
+            },
             Custom_conf: {
-                providerName: 'Custom'.t(),
+                providerName: 'CustomConf'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .conf file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>'
+            },
+            Custom_conf_password: {
+                providerName: 'CustomConfPass'.t(),
+                providerTitle: 'Upload the Custom OpenVPN .conf file with username/password'.t(),
+                providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>' +
+                    '<li>' + 'Provide the username/password'.t() + '<br/>'
             },
         },
 
