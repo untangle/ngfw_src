@@ -105,8 +105,10 @@ Ext.define('Ung.view.reports.Entry', {
                 xtype: 'combo',
                 itemId: 'eventsLimitSelector',
                 hidden: true,
+                disabled: true,
                 bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}'
+                    hidden: '{entry.type !== "EVENT_LIST"}',
+                    disabled: '{fetching}'
                 },
                 editable: false,
                 value: 1000,
@@ -128,9 +130,11 @@ Ext.define('Ung.view.reports.Entry', {
                 format: 'date_fmt'.t(),
                 editable: false,
                 width: 100,
+                disabled: true,
                 bind: {
                     value: '{_sd}',
-                    maxValue: '{_ed}'
+                    maxValue: '{_ed}',
+                    disabled: '{fetching}'
                 }
             }, {
                 xtype: 'timefield',
@@ -138,9 +142,11 @@ Ext.define('Ung.view.reports.Entry', {
                 // format: 'date_fmt'.t(),
                 editable: false,
                 width: 80,
+                disabled: true,
                 bind: {
                     value: '{_st}',
                     // maxValue: '{_ed}'
+                    disabled: '{fetching}'
                 }
             }, {
                 xtype: 'label',
@@ -149,17 +155,23 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 xtype: 'checkbox',
                 boxLabel: 'Present'.t(),
-                bind: '{tillNow}'
+                disabled: true,
+                bind: {
+                    value: '{tillNow}',
+                    disabled: '{fetching}'
+                }
             }, {
                 xtype: 'datefield',
                 format: 'date_fmt'.t(),
                 editable: false,
                 width: 100,
                 hidden: true,
+                disabled: true,
                 bind: {
                     value: '{_ed}',
                     hidden: '{tillNow}',
-                    minValue: '{_sd}'
+                    minValue: '{_sd}',
+                    disabled: '{fetching}'
                 },
                 maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
             }, {
@@ -169,36 +181,47 @@ Ext.define('Ung.view.reports.Entry', {
                 editable: false,
                 width: 80,
                 hidden: true,
+                disabled: true,
                 bind: {
                     value: '{_et}',
                     hidden: '{tillNow}',
                     // minValue: '{_sd}'
+                    disabled: '{fetching}'
                 },
                 // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
             }, '->', {
+                xtype: 'component',
+                html: '<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>',
+                hidden: true,
+                bind: {
+                    hidden: '{!fetching}'
+                }
+            }, {
+                xtype: 'checkbox',
+                boxLabel: 'Auto Refresh'.t(),
+                disabled: true,
+                bind: {
+                    value: '{autoRefresh}',
+                    disabled: '{!autoRefresh && fetching}'
+                },
+                handler: 'setAutoRefresh'
+            }, {
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'refreshBtn',
                 handler: 'refreshData',
                 bind: {
-                    disabled: '{autoRefresh}'
-                }
-            }, {
-                xtype: 'button',
-                text: 'Auto Refresh'.t(),
-                enableToggle: true,
-                toggleHandler: 'setAutoRefresh',
-                bind: {
-                    iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                    pressed: '{autoRefresh}'
+                    disabled: '{autoRefresh || fetching}'
                 }
             }, {
                 text: 'Reset View'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'resetBtn',
                 handler: 'resetView',
+                disabled: true,
                 bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}'
+                    hidden: '{entry.type !== "EVENT_LIST"}',
+                    disabled: '{fetching}'
                 }
             }, {
                 itemId: 'downloadBtn',
@@ -206,16 +229,20 @@ Ext.define('Ung.view.reports.Entry', {
                 iconCls: 'fa fa-download',
                 handler: 'downloadGraph',
                 hidden: true,
+                disabled: true,
                 bind: {
-                    hidden: '{!isGraphEntry}'
+                    hidden: '{!isGraphEntry}',
+                    disabled: '{fetching}'
                 }
             }, '-', {
                 itemId: 'dashboardBtn',
                 hidden: true,
+                disabled: true,
                 bind: {
                     iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
                     text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
-                    hidden: '{context !== "admin"}'
+                    hidden: '{context !== "admin"}',
+                    disabled: '{fetching}'
                 },
                 handler: 'dashboardAddRemove'
             }]
@@ -317,7 +344,10 @@ Ext.define('Ung.view.reports.Entry', {
                 fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
                 labelAlign: 'right',
                 bind: '{entry.title}',
-                anchor: '100%'
+                anchor: '100%',
+                listeners: {
+                    change: 'titleChange'
+                }
             }, {
                 xtype: 'textarea',
                 grow: true,
@@ -488,15 +518,54 @@ Ext.define('Ung.view.reports.Entry', {
                     queryMode: 'local'
                 }, {
                     // TIME_GRAPH only
-                    xtype: 'textarea',
-                    anchor: '100%',
-                    fieldLabel: 'Time Data Columns'.t(),
-                    grow: true,
-                    hidden: true,
+                    xtype: 'grid',
+                    itemId: 'timeDataColumnsGrid',
+                    sortableColumns: false,
+                    enableColumnResize: false,
+                    enableColumnMove: false,
+                    enableColumnHide: false,
+                    disableSelection: true,
+                    margin: '0 0 5 0',
+                    tbar: [{
+                        xtype: 'component',
+                        html: 'Time Data Columns'.t(),
+                        padding: '0 0 0 5'
+                    }, '->', {
+                        xtype: 'button',
+                        text: 'Add'.t(),
+                        iconCls: 'fa fa-plus-circle',
+                        handler: function (btn) {
+                            btn.up('grid').getStore().add({ str: '' });
+                        }
+                    }],
+                    plugins: [{
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    }],
                     bind: {
-                        value: '{entry.timeDataColumns}',
+                        store: '{timeDataColumnsStore}',
                         hidden: '{!isTimeGraph}'
-                    }
+                    },
+                    columns: [{
+                        dataIndex: 'str',
+                        flex: 1,
+                        editor: 'textfield',
+                        renderer: function (val) {
+                            return val || '<em>Click to insert column value ...</em>';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        width: 40,
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-times',
+                        handler: function (view, rowIndex, colIndex, item, e, record) {
+                            record.drop();
+                        },
+                        menuDisabled: true,
+                        hideable: false
+                    }]
                 }, {
                     xtype: 'component',
                     style: {
@@ -631,16 +700,55 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{!isGraphEntry}'
                     }
                 }, {
-                    // TEXT entries
-                    xtype: 'textarea',
-                    anchor: '100%',
-                    fieldLabel: 'Text Columns'.t(),
-                    grow: true,
-                    hidden: true,
+                    // TEXT only
+                    xtype: 'grid',
+                    itemId: 'textDataColumnsGrid',
+                    sortableColumns: false,
+                    enableColumnResize: false,
+                    enableColumnMove: false,
+                    enableColumnHide: false,
+                    disableSelection: true,
+                    margin: '0 0 5 0',
+                    tbar: [{
+                        xtype: 'component',
+                        html: 'Text Columns'.t(),
+                        padding: '0 0 0 5'
+                    }, '->', {
+                        xtype: 'button',
+                        text: 'Add'.t(),
+                        iconCls: 'fa fa-plus-circle',
+                        handler: function (btn) {
+                            btn.up('grid').getStore().add({ str: '' });
+                        }
+                    }],
+                    plugins: [{
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    }],
                     bind: {
-                        value: '{entry.textColumns}',
+                        store: '{textDataColumnsStore}',
                         hidden: '{!isTextEntry}'
-                    }
+                    },
+                    columns: [{
+                        dataIndex: 'str',
+                        flex: 1,
+                        editor: 'textfield',
+                        renderer: function (val) {
+                            return val || '<em>Click to insert column value ...</em>';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        width: 40,
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-times',
+                        handler: function (view, rowIndex, colIndex, item, e, record) {
+                            record.drop();
+                        },
+                        menuDisabled: true,
+                        hideable: false
+                    }]
                 }, {
                     // TEXT entries
                     xtype: 'textfield',
@@ -797,18 +905,19 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 text: 'Save'.t(),
                 iconCls: 'fa fa-save',
-                // formBind: true,
                 disabled: true,
                 bind: {
-                    disabled: '{entry.readOnly}'
+                    disabled: '{disableSave}'
                 },
                 handler: 'updateReport'
             }, {
                 text: 'Save as New Report'.t(),
                 iconCls: 'fa fa-plus-circle',
                 itemId: 'saveNewBtn',
-                handler: 'saveNewReport'
-                // formBind: true
+                handler: 'saveNewReport',
+                bind: {
+                    disabled: '{disableNewSave}'
+                }
             }]
         }]
     }, {
