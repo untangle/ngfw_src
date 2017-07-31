@@ -15,9 +15,6 @@ import time
 import os
 import uvm.i18n_helper
 
-## 
-import cProfile
-
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 ## PythonOption ApplicationPath /
@@ -74,20 +71,124 @@ def index(req):
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
     args = split_args(req.args);
-    if (not 'METHOD' in args):  args['METHOD'] = "Empty"
-    if (not 'NONCE' in args):   args['NONCE'] = "Empty"
-    if (not 'APPID' in args):   args['APPID'] = "Empty"
-    if (not 'HOST' in args):    args['HOST'] = "Empty"
-    if (not 'URI' in args):     args['URI'] = "Empty"
+    if (not 'AUTHCODE' in args): args['AUTHCODE'] = "Empty"
+    if (not 'AUTHMODE' in args): args['AUTHMODE'] = "Empty"
+    if (not 'METHOD' in args):   args['METHOD'] = "Empty"
+    if (not 'NONCE' in args):    args['NONCE'] = "Empty"
+    if (not 'APPID' in args):    args['APPID'] = "Empty"
+    if (not 'HOST' in args):     args['HOST'] = "Empty"
+    if (not 'URI' in args):      args['URI'] = "Empty"
 
     # load the configuration data
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
+    captureApp = load_rpc_manager(appid)
+
+    authcode = args['AUTHCODE']
+    authmode = args['AUTHMODE']
+
+    if (authcode != "Empty"):
+        if (captureSettings.get("authenticationType") == "GOOGLE") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "GOOGLE")):
+            # Here we call the relay server with the authcode that was returned to the client
+            # This will confirm the user is actually authenticated and return the email address
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=GOOGLE&authCode=%s" % authcode)
+            altraw = altres.read()
+
+            if ("ERROR:" in altraw):
+                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+                return(page)
+
+            nonce = args['NONCE']
+            host = args['HOST']
+            uri = args['URI']
+            raw = urllib.unquote(uri).decode('utf8')
+            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            captureApp.googleLogin(address,altraw)
+            redirectUrl = captureSettings.get('redirectUrl')
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
+            else:
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                raw = urllib.unquote(uri).decode('utf8')
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + raw)
+                else:
+                    target = str("http://" + host + raw)
+            util.redirect(req, target)
+            return
+
+        if (captureSettings.get("authenticationType") == "FACEBOOK") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "FACEBOOK")):
+            # Here we call the relay server with the authcode that was returned to the client
+            # This will confirm the user is actually authenticated and return the email address
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=FACEBOOK&authCode=%s" % authcode)
+            altraw = altres.read()
+
+            if ("ERROR:" in altraw):
+                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+                return(page)
+
+            nonce = args['NONCE']
+            host = args['HOST']
+            uri = args['URI']
+            raw = urllib.unquote(uri).decode('utf8')
+            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            captureApp.facebookLogin(address,altraw)
+            redirectUrl = captureSettings.get('redirectUrl')
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
+            else:
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                raw = urllib.unquote(uri).decode('utf8')
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + raw)
+                else:
+                    target = str("http://" + host + raw)
+            util.redirect(req, target)
+            return
+
+        if (captureSettings.get("authenticationType") == "MICROSOFT") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "MICROSOFT")):
+            # Here we call the relay server with the authcode that was returned to the client
+            # This will confirm the user is actually authenticated and return the email address
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=MICROSOFT&authCode=%s" % authcode)
+            altraw = altres.read()
+
+            if ("ERROR:" in altraw):
+                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+                return(page)
+
+            nonce = args['NONCE']
+            host = args['HOST']
+            uri = args['URI']
+            raw = urllib.unquote(uri).decode('utf8')
+            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            captureApp.microsoftLogin(address,altraw)
+            redirectUrl = captureSettings.get('redirectUrl')
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
+            else:
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                raw = urllib.unquote(uri).decode('utf8')
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + raw)
+                else:
+                    target = str("http://" + host + raw)
+            util.redirect(req, target)
+            return
+
+    # if configured for any OAuth provider create and return the selection page
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        page = generate_page(req,captureSettings,args)
+        return(page)
 
     if captureSettings.get("sessionCookiesEnabled") == True and 'Cookie' in req.headers_in:
         cookie = HandlerCookie(req)
         if cookie.get_field("username") != None:
-            captureApp = load_rpc_manager(appid)
             # Process cookie if exists.
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
@@ -97,22 +198,23 @@ def index(req):
                 cookie.expire()
             elif ((cookie != None) and
                 (cookie.is_valid() == True) and
-                (captureApp.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
+                (captureApp.userLogin(address,cookie.get_field("username")) == 0)):
                 # Cookie checks out.  Active them, let them through.
                 redirectUrl = captureSettings.get('redirectUrl')
                 if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
                     target = str(redirectUrl)
                 else:
+                    nonce = args['NONCE']
                     host = args['HOST']
                     uri = args['URI']
-                    nonce = args['NONCE']
+                    raw = urllib.unquote(uri).decode('utf8')
                     if ((host == 'Empty') or (uri == 'Empty')):
                         page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                         return(page)
                     if (nonce == 'a1b2c3d4e5f6'):
-                        target = str("https://" + host + uri)
+                        target = str("https://" + host + raw)
                     else:
-                        target = str("http://" + host + uri)
+                        target = str("http://" + host + raw)
                 util.redirect(req, target)
                 return
 
@@ -177,10 +279,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
+            raw = urllib.unquote(uri).decode('utf8')
             if (nonce == 'a1b2c3d4e5f6'):
-                target = str("https://" + host + uri)
+                target = str("https://" + host + raw)
             else:
-                target = str("http://" + host + uri)
+                target = str("http://" + host + raw)
         util.redirect(req, target)
         return
 
@@ -238,10 +341,11 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
+            raw = urllib.unquote(uri).decode('utf8')
             if (nonce == 'a1b2c3d4e5f6'):
-                target = str("https://" + host + uri)
+                target = str("https://" + host + raw)
             else:
-                target = str("http://" + host + uri)
+                target = str("http://" + host + raw)
         util.redirect(req, target)
         return
 
@@ -268,19 +372,29 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def generate_page(req,captureSettings,args,extra=''):
 
-    # use the path from the request filename to locate the correct template
-    if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
+    # We use the path from the request filename to locate the correct template
+    # and start with the OAuth selection page if that authentication type is
+    # enabled. Otherwise we use the configured page type to decide.
+
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        name = req.filename[:req.filename.rindex('/')] + "/pickpage.html"
+
+    elif (captureSettings.get('pageType') == 'BASIC_LOGIN'):
         name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
 
-    if (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
+    elif (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
         name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
 
-    if (captureSettings.get('pageType') == 'CUSTOM'):
+    elif (captureSettings.get('pageType') == 'CUSTOM'):
         name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
 
-    file = open(name, "r")
-    page = file.read();
-    file.close()
+    else:
+        page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
+        return(page)
+
+    webfile = open(name, "r")
+    page = webfile.read();
+    webfile.close()
 
     if (not 'certificateDetection' in captureSettings):
         captureSettings['certificateDetection'] = 'DISABLE_DETECTION'
@@ -318,6 +432,38 @@ def generate_page(req,captureSettings,args,extra=''):
     if (captureSettings.get('pageType') == 'CUSTOM'):
         path = "/capture/custom_" + str(args['APPID'])
         page = replace_marker(page,'$.CustomPath.$',path)
+
+    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+        uvmContext = Uvm().getUvmContext()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+
+        target = ""
+        port = None
+
+        if (captureSettings.get("alwaysUseSecureCapture" == True)):
+            target += "https://"
+            if (networkSettings.get('httpsPort') != 443):
+                port = str(httpsPort)
+        else:
+            target += "http://"
+            if (networkSettings.get('httpPort') != 80):
+                port = str(httpPort)
+
+        target += req.hostname
+        if (port != None):
+            target += ":"
+            target += port
+
+        target += "/capture/handler.py/index"
+        target += "?nonce=" + args['NONCE']
+        target += "&method=" + args['METHOD']
+        target += "&appid=" + args['APPID']
+        target += "&host=" + args['HOST']
+        target += "&uri=" + args['URI']
+
+        page = replace_marker(page,'$.GoogleState.$', urllib.quote(target + "&authmode=GOOGLE").encode('utf8'))
+        page = replace_marker(page,'$.FacebookState.$', urllib.quote(target + "&authmode=FACEBOOK").encode('utf8'))
+        page = replace_marker(page,'$.MicrosoftState.$', urllib.quote(target + "&authmode=MICROSOFT").encode('utf8'))
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags

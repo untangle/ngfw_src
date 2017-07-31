@@ -255,6 +255,11 @@ public class CaptivePortalApp extends AppBase
             readSettings.setCertificateDetection(CaptivePortalSettings.CertificateDetection.CHECK_CERTIFICATE);
         }
 
+        // we're retiring auth type ANY since there are multiply ANY options
+        if (readSettings.getAuthenticationType() == CaptivePortalSettings.AuthenticationType.ANY) {
+            readSettings.setAuthenticationType(CaptivePortalSettings.AuthenticationType.ANY_DIRCON);
+        }
+
         return (readSettings);
     }
 
@@ -505,32 +510,12 @@ public class CaptivePortalApp extends AppBase
             }
             break;
 
-        case GOOGLE:
-            try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
-                if (directoryConnector != null) isAuthenticated = directoryConnector.googleAuthenticate(username, password);
-            } catch (Exception e) {
-                logger.warn("Google authentication failure", e);
-                isAuthenticated = false;
-            }
-            break;
-
-        case FACEBOOK:
-            try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
-                if (directoryConnector != null) isAuthenticated = directoryConnector.facebookAuthenticate(username, password);
-            } catch (Exception e) {
-                logger.warn("Facebook authentication failure", e);
-                isAuthenticated = false;
-            }
-            break;
-
-        case ANY:
+        case ANY_DIRCON:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
             } catch (Exception e) {
-                logger.warn("ANY authentication failure", e);
+                logger.warn("ANY_DIRCON authentication failure", e);
                 isAuthenticated = false;
             }
             break;
@@ -573,10 +558,6 @@ public class CaptivePortalApp extends AppBase
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Activate success " + address.getHostAddress().toString());
 
-        if (captureSettings.getSessionCookiesEnabled()) {
-            captureUserCookieTable.removeActiveUser(address);
-        }
-
         return (0);
     }
 
@@ -593,6 +574,47 @@ public class CaptivePortalApp extends AppBase
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Login success " + address.getHostAddress().toString());
+
+        if (captureSettings.getSessionCookiesEnabled()) {
+            captureUserCookieTable.removeActiveUser(address);
+        }
+
+        return (0);
+    }
+
+    public int googleLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.GOOGLE, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Google OAuth success " + address.getHostAddress().toString());
+
+        return (0);
+    }
+
+    public int facebookLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.FACEBOOK, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Facebook OAuth success " + address.getHostAddress().toString());
+
+        return (0);
+    }
+
+    public int microsoftLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address, username, false);
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.MICROSOFT, CaptivePortalUserEvent.EventType.LOGIN);
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
+        logger.info("Microsoft OAuth success " + address.getHostAddress().toString());
+
         return (0);
     }
 
@@ -718,16 +740,6 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
-    public boolean isUserInCookieTable(InetAddress address, String username)
-    {
-        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
-    }
-
-    public void removeUserFromCookieTable(InetAddress address)
-    {
-        captureUserCookieTable.removeActiveUser(address);
-    }
-
     public CaptureRule checkCaptureRules(AppTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
@@ -740,6 +752,16 @@ public class CaptivePortalApp extends AppBase
         }
 
         return (null);
+    }
+
+    public boolean isUserInCookieTable(InetAddress address, String username)
+    {
+        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
+    }
+
+    public void removeUserFromCookieTable(InetAddress address)
+    {
+        captureUserCookieTable.removeActiveUser(address);
     }
 
     /**
