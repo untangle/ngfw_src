@@ -82,7 +82,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 renderTo: me.getView().lookupReference('graph').getEl().dom,
                 animation: false,
                 spacing: widgetDisplay ? [5, 5, 10, 5] : [10, 10, 15, 10],
-                style: { fontFamily: 'Source Sans Pro', fontSize: '12px' }
+                style: { fontFamily: 'Source Sans Pro', fontSize: '12px' },
+                backgroundColor: 'transparent'
             },
             exporting: {
                 enabled: false
@@ -279,12 +280,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
     fetchData: function (reset, cb) {
         var me = this,
             vm = this.getViewModel(),
-            entryType = vm.get('entry.type');
-
-        var treeNav;
-        if (me.getView().up('#reports')) {
-            treeNav = me.getView().up('#reports').down('treepanel');
-        }
+            entryType = vm.get('entry.type'),
+            reps = me.getView().up('#reports');
 
         if (reset) {
             // if report entry changed, reset the chart first
@@ -299,8 +296,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             me.chart.zoomOut();
         }
 
-        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
-        // me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
+        if (reps) { reps.getViewModel().set('fetching', true); }
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
             vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000));
@@ -313,7 +309,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.get('tillNow') ? null : vm.get('endDate'), // end date
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function (result) {
-                if (treeNav) { treeNav.setDisabled(false); }
+                if (reps) { reps.getViewModel().set('fetching', false); }
                 // me.chart.hideLoading();
                 me.data = result.list;
 

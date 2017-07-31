@@ -43,6 +43,8 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.set('context', Ung.app.servletContext);
 
         vm.bind('{entry}', function (entry) {
+            vm.set('disableSave', entry.readOnly);
+            vm.set('disableNewSave', true);
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
             if (me.refreshTimeout) {
@@ -71,9 +73,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
-
-
-
 
             // set the _sqlConditions data as for the sql conditions grid store
             vm.set('_sqlConditions', entry.get('conditions') || []);
@@ -351,7 +350,7 @@ Ext.define('Ung.view.reports.EntryController', {
     // },
 
     refreshData: function () {
-        var me = this, vm = me.getViewModel(), ctrl;
+        var me = this, vm = me.getViewModel(), ctrl, reps = me.getView().up('#reports');
         switch(vm.get('entry.type')) {
             case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
             case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
@@ -363,11 +362,10 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
-        var tb = me.getView().down('#actionsToolbar');
-        tb.setDisabled(true); // disable toolbar actions while fetching data
-
+        // if (reps) { reps.getViewModel().set('fetching', true); }
         ctrl.fetchData(false, function () {
-            tb.setDisabled(false);
+            // if (reps) { reps.getViewModel().set('fetching', false); }
+
             if (vm.get('autoRefresh')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.refreshData();
@@ -376,6 +374,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 clearTimeout(me.refreshTimeout);
             }
         });
+
+        me.titleChange( null, vm.get('entry.title'), '');
 
     },
 
@@ -568,13 +568,68 @@ Ext.define('Ung.view.reports.EntryController', {
         });
     },
 
+    titleChange: function( control, newValue, oldValue){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
 
+        var currentRecord = vm.get('entry');
+
+        var titleConflictSave = false;
+        var titleConflictSaveNew = false;
+        var sameCustomizableReport = false;
+        var sameReport = false;
+        Rpc.asyncData('rpc.reportsManager.getReportEntries')
+            .then(function(result) {
+            result.list.forEach( function(reportEntry){
+                if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
+                    titleConflictSave = true;
+                    titleConflictSaveNew = true;
+
+                    if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
+                        sameReport = true;
+                    }
+                    if( sameReport &&
+                        currentRecord.get('readOnly') == false){
+                        sameCustomizableReport = true;
+                        titleConflictSave = false;
+                    }
+                }
+            });
+
+            if(control){
+                if( titleConflictSave && !sameReport ){
+                    control.setValidation("Another report within this category has this title".t());
+                }else{
+                    control.setValidation(true);
+                }
+            }
+
+            vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
+            vm.set('disableNewSave', titleConflictSaveNew );
+            if(!titleConflictSave){
+                vm.set('entry.title', newValue);
+            }
+        });
+    },
 
     updateReport: function () {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry');
+            entry = vm.get('entry'), tdcg, tdc = [];
+
+        // update timeDataColumns or textColumns
+        if (entry.get('type') === 'TIME_GRAPH') {
+            tdcg = v.down('#timeDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.timeDataColumns', tdc);
+        }
+        if (entry.get('type') === 'TEXT') {
+            tdcg = v.down('#textDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.textColumns', tdc);
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
@@ -591,12 +646,25 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     saveNewReport: function () {
-        var v = this.getView(),
+        var me = this,
+            v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry');
+            entry = vm.get('entry'), tdcg, tdc = [];
 
         entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         entry.set('readOnly', false);
+
+        // update timeDataColumns or textColumns
+        if (entry.get('type') === 'TIME_GRAPH') {
+            tdcg = v.down('#timeDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.timeDataColumns', tdc);
+        }
+        if (entry.get('type') === 'TEXT') {
+            tdcg = v.down('#textDataColumnsGrid');
+            tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
+            vm.set('entry.textColumns', tdc);
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
@@ -608,6 +676,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
+                me.refreshData();
             });
     },
 
@@ -772,12 +841,12 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    setAutoRefresh: function (btn) {
+    setAutoRefresh: function (ck, val) {
         var me = this,
             vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
+        vm.set('autoRefresh', val);
 
-        if (btn.pressed) {
+        if (val) {
             me.refreshData();
         } else {
             if (me.refreshTimeout) {

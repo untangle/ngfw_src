@@ -17,10 +17,8 @@
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
 
-    <%-- Triton theme already contains fontawesome --%>
-    <c:if test="${extjsTheme!='triton'}">
+    <!-- FontAwesome -->
     <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-    </c:if>
 
     <script>
       var rpc = {};

@@ -117,12 +117,8 @@ Ext.define('Ung.view.reports.EventReportController', {
     fetchData: function (reset, cb) {
         var me = this,
             v = me.getView(),
-            vm = me.getViewModel();
-
-        var treeNav;
-        if (me.getView().up('#reports')) {
-            treeNav = me.getView().up('#reports').down('treepanel');
-        }
+            vm = me.getViewModel(),
+            reps = me.getView().up('#reports');
 
         var limit = 1000;
         if( me.getView().up('reports-entry') ){
@@ -139,8 +135,9 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         var grid = v.down('grid');
 
-        if (treeNav) { treeNav.setDisabled(true); } // disable reports tree while data is fetched
         // me.getView().setLoading(true);
+        if (reps) { reps.getViewModel().set('fetching', true); }
+
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
@@ -152,7 +149,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
                 }
                 // me.getView().setLoading(false);
-                if (treeNav) { treeNav.setDisabled(false); }
+                if (reps) { reps.getViewModel().set('fetching', false); }
 
                 me.loadResultSet(result);
 

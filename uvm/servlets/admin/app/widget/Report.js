@@ -3,9 +3,7 @@ Ext.define('Ung.widget.Report', {
     alias: 'widget.reportwidget',
 
     controller: 'widget',
-    viewModel: {
-        type: 'reportwidget'
-    },
+    viewModel: true,
     config: {
         widget: null,
         entry: null
@@ -32,8 +30,9 @@ Ext.define('Ung.widget.Report', {
         cls: 'header',
         itemId: 'header',
         bind: {
-            html: '<h1>{entry.localizedTitle}</h1><p>{entry.localizedDescription}</p>' +
+            html: '<h1>{entry.localizedTitle}</h1><p>{entry.category}</p>' +
                 '<div class="actions">' +
+                    '<a class="action-btn"><i class="fa fa-info-circle fa-lg" data-action="info"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-cog fa-lg" data-action="settings"></i></a>' +
                     '<a class="action-btn" style="display: {entry.type === "TIME_GRAPH" || entry.type === "TIME_GRAPH_DYNAMIC" || entry.type === "PIE_GRAPH" ? "auto" : "none"};"><i class="fa fa-download fa-lg" data-action="download"></i></a>' +
                     // '<a class="action-btn"><i class="fa fa-area-chart fa-lg" data-action="style"></i></a>' +
