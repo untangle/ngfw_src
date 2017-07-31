@@ -52,7 +52,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
     getActiveUsers: function (cmp) {
         var vm = this.getViewModel(),
-            grid = (cmp.getXType() === 'gridpanel' || cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
+            grid = (cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
         grid.setLoading(true);
         this.getView().appManager.getActiveUsers(function (result, ex) {
             grid.setLoading(false);
@@ -81,7 +81,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
         window.open('/capture/handler.py/index?appid=' + vm.get('instance.id') , '_blank');
     },
 
-    configureLocalDirectory: function (btn) {
+    configureAuthenticationMethod: function (btn) {
         var vm = this.getViewModel();
         var policyId = vm.get('policyId');
         var authType = this.getViewModel().get('settings.authenticationType');
@@ -91,14 +91,6 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             case 'LOCAL_DIRECTORY':
                 Ung.app.redirectTo('#config/local-directory');
                 break;
-            case 'GOOGLE':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google');
-                break;
-            case 'FACEBOOK':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/facebook');
-                break;
             case 'RADIUS':
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
@@ -106,6 +98,10 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             case 'ACTIVE_DIRECTORY':
                 if (dircon == null) this.showMissingServiceWarning();
                 else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory');
+                break;
+            case 'ANY_DIRCON':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
                 break;
             default: return;
         }

@@ -6,7 +6,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
 
     viewModel: {
         formulas: {
-            _redirUrl: {
+            _redirectUrl: {
                 get: function (get) {
                     return get('settings.redirectUrl');
                 },
@@ -222,7 +222,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
             xtype: 'textfield',
             width: 600,
             fieldLabel: 'Redirect URL'.t(),
-            bind: '{_redirUrl}'
+            bind: '{_redirectUrl}'
         }, {
             xtype: 'component',
             margin: '10 0 0 0',
