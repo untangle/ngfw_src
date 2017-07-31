@@ -13,7 +13,7 @@ public class CaptivePortalSettings implements Serializable
 {
     public static enum AuthenticationType
     {
-        ANY, ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, GOOGLE, FACEBOOK, CUSTOM, NONE
+        NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON, GOOGLE, FACEBOOK, MICROSOFT, ANY_OAUTH, CUSTOM, ANY
     };
 
     public static enum PageType
