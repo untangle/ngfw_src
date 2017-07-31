@@ -154,6 +154,7 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
     }
 
     @Override
@@ -172,6 +173,7 @@ public class TunnelVpnApp extends AppBase
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
     }
 
     @Override
