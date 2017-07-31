@@ -19,9 +19,6 @@ Ext.define('Ung.view.main.Main', {
         formulas: {
             reportsEnabled: function (get) {
                 return (get('reportsInstalled') && get('reportsRunning'));
-            },
-            supportInstalled: function(get){
-                return (get('supportInstalled'));
             }
         }
     },
