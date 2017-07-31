@@ -105,7 +105,8 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     onBeforeRender: function(view) {
-        var vm = view.getViewModel();
+        var me = this,
+            vm = view.getViewModel();
 
         // vm.bind('{reportsEnabled}', function(enabled) {
         //     if (enabled) {
@@ -122,8 +123,19 @@ Ext.define('Ung.view.main.MainController', {
         if (rpc.appManager.app('reports')) {
             vm.set('reportsRunning', rpc.appManager.app('reports').getRunState() === 'RUNNING');
         }
-        vm.set('supportInstalled', rpc.appManager.app('live-support') !== null);
-        vm.notify();
+        me.setLiveSupport();
+    },
+
+    setLiveSupport: function(){
+        var me = this,
+            view = me.getView(),
+            vm = view.getViewModel();
+
+        var supportInstalled = ( rpc.appManager.app('live-support') !== null );
+        if( vm.get('supportInstalled') != supportInstalled ){
+            vm.set('supportInstalled', supportInstalled);
+            vm.notify();
+        }
     },
 
     helpHandler: function (btn) {
