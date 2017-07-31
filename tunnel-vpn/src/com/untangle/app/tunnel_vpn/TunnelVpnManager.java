@@ -169,7 +169,7 @@ public class TunnelVpnManager
          */
         TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
         tunnelSettings.setName( tunnelName );
-        tunnelSettings.setEnabled( true );
+        tunnelSettings.setEnabled( false ); //newly imported tunnels are not enabled on import
         tunnelSettings.setAllTraffic( false );
         tunnelSettings.setTags( new LinkedList<String>() );
         tunnelSettings.setTunnelId( tunnelId );

@@ -179,7 +179,11 @@ fi
         file.write("${IPTABLES} -t mangle -A mark-src-intf -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
         file.write("${IPTABLES} -t mangle -A mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
         file.write("\n");
-    
+
+        file.write("${IPTABLES} -t nat -D nat-rules -i tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\" >/dev/null 2>&1"%(tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t nat -I nat-rules -i tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\""%(tunnel.get('tunnelId')) + "\n");
+        file.write("\n");
+        
     try:
         file.write("\n")
         file.write("# Rules" + "\n")
@@ -244,6 +248,18 @@ write_iptables_file( file, parser.verbosity )
 file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
-
 if parser.verbosity > 0: print "Wrote %s" % filename
+
+# Write the auth.txt files
+for tunnel in settings.get('tunnels').get('list'):
+    if tunnel.get('username') == None or tunnel.get('password') == None or tunnel.get('tunnelId') == None:
+        continue
+    filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
+    file = open( filename, "w+" )
+    file.write("%s\n%s\n" % (tunnel.get('username'),tunnel.get('password')));
+    file.flush()
+    file.close()
+    if parser.verbosity > 0: print "Wrote %s" % filename
+
+
 
