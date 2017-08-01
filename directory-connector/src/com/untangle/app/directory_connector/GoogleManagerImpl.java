@@ -88,25 +88,7 @@ public class GoogleManagerImpl
     {
         return this.settings;
     }
-    
-    public boolean authenticate( String username, String pwd )
-    {
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
-            return false;
-        if (!this.settings.getAuthenticationEnabled())
-            return false;
 
-        return GoogleAuthenticator.authenticate( username, pwd );
-    }
-    
-    public boolean authenticateTest( String username, String pwd )
-    {
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
-            return false;
-
-        return GoogleAuthenticator.authenticate( username, pwd );
-    }
-    
     /**
      * This returns true if google drive is configured.
      * False otherwise
@@ -262,5 +244,5 @@ public class GoogleManagerImpl
         driveProcOut = null;
         driveProc = null;
     }
-    
+
 }
