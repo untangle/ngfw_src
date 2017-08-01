@@ -3,7 +3,7 @@ Active Directory Connector tests
 """
 import unittest2
 import time
-import string 
+import string
 import random
 import subprocess
 from uvm import Uvm
@@ -52,20 +52,12 @@ def create_ad_settings(ldap_secure=False):
             "superuserPass": AD_PASSWORD
         },
         "radiusSettings": {
-            "port": 1812, 
-            "enabled": False, 
-            "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
-            "server": global_functions.radiusServer, 
+            "port": 1812,
+            "enabled": False,
+            "authenticationMethod": "PAP",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
+            "server": global_functions.radiusServer,
             "sharedSecret": "mysharedsecret"
-        },
-        "googleSettings": {
-            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
-            "authenticationEnabled": True
-        },
-        "facebookSettings": {
-            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
-            "authenticationEnabled": True
         }
     }
 
@@ -77,35 +69,27 @@ def create_radius_settings():
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-            "enabled": False, 
-            "superuserPass": AD_PASSWORD, 
+            "enabled": False,
+            "superuserPass": AD_PASSWORD,
             "LDAPSecure": True,
-            "LDAPPort": "636", 
-            "OUFilter": "", 
+            "LDAPPort": "636",
+            "OUFilter": "",
             "OUFilters": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
             },
-            "domain": AD_DOMAIN, 
-            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings", 
-            "LDAPHost": global_functions.adServer, 
+            "domain": AD_DOMAIN,
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
+            "LDAPHost": global_functions.adServer,
             "superuser": AD_ADMIN
-        }, 
+        },
         "radiusSettings": {
-            "port": 1812, 
-            "enabled": True, 
-            "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
-            "server": global_functions.radiusServer, 
+            "port": 1812,
+            "enabled": True,
+            "authenticationMethod": "PAP",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
+            "server": global_functions.radiusServer,
             "sharedSecret": "chakas"
-        },
-        "googleSettings": {
-            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
-            "authenticationEnabled": True
-        },
-        "facebookSettings": {
-            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
-            "authenticationEnabled": True
         }
     }
 
@@ -133,7 +117,7 @@ def add_ad_settings(ldap_secure=False):
         app.setSettings(create_ad_settings())
         return 0
     else:
-        # settings failed 
+        # settings failed
         return 1
 
 def add_radius_settings():
@@ -148,9 +132,9 @@ def add_radius_settings():
         app.setSettings(create_radius_settings())
         return 0
     else:
-        # settings failed 
+        # settings failed
         return 1
-    
+
 def register_username(http_admin_url, user):
     """
     Register user name
@@ -186,7 +170,7 @@ def find_name_in_host_table (hostname='test'):
             break
     remote_control.run_command("pkill netcat")
     return found_test_session
-    
+
 class DirectoryConnectorTests(unittest2.TestCase):
     """
     Directory connector tests
@@ -214,14 +198,6 @@ class DirectoryConnectorTests(unittest2.TestCase):
         AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.adServer], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.radiusServer], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # enable google & facebook
-        appSettings = app.getSettings()
-        appSettings.get('googleSettings')['authenticationEnabled'] = True
-        appSettings.get('facebookSettings')['authenticationEnabled'] = True
-        appSettings['apiEnabled'] = True
-        app.setSettings(appSettings)
-
-        
     def setUp(self):
         pass
 
@@ -240,7 +216,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
         print 'result %s' % result
-        
+
         assert (result == 0)
 
     def test_016_setADSettings_Secure(self):
@@ -251,7 +227,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
         print 'result %s' % result
-        
+
         assert (result == 0)
 
     def test_030_checkUserRegistrationScript(self):
@@ -270,13 +246,13 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # print 'result %s' % result
         # print 'user_list %s' % user_list
         found_username = find_name_in_host_table(test_name_lower)
-        assert(found_username)        
+        assert(found_username)
         assert (result == 0)
         assert (test_name_lower in user_list)
 
         events = global_functions.get_events('Directory Connector','API Events',None,1)
         assert(events != None)
-        found_in_reports = global_functions.check_events( events.get('list'), 5, 
+        found_in_reports = global_functions.check_events( events.get('list'), 5,
                                             "login_name",test_name_lower,
                                             "client_addr", remote_control.clientIP)
         assert( found_in_reports )
@@ -297,8 +273,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # print 'num %s' % numUsers
         test_name = test_name.lower()
         found_username = find_name_in_host_table(test_name)
-        
-        assert(found_username)        
+
+        assert(found_username)
         assert (result == 0)
         assert (test_name in user_list)
 
@@ -317,11 +293,11 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # print 'result %s' % result
         # print 'num %s' % numUsers
         found_username = find_name_in_host_table(test_name)
-        
-        assert(found_username)        
+
+        assert(found_username)
         assert (result == 0)
         assert (test_name in user_list)
-        
+
     def test_040_checkADSettings_NonSecure(self):
         """
         Check AD settings, non-secure
@@ -337,7 +313,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         appAD = app.getActiveDirectoryManager()
         appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
         found = appADData.count(string_to_find)
-        
+
         assert (found)
 
     def test_041_checkADSettings_Secure(self):
@@ -355,7 +331,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         appAD = app.getActiveDirectoryManager()
         appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
         found = appADData.count(string_to_find)
-        
+
         assert (found)
 
     def test_050_checkListOfADUsers_NonSecure(self):
@@ -365,7 +341,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         global appData
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
-        # Check for a list of Active Directory Users 
+        # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=False)
         print 'result %s' % result
         assert (result == 0)
@@ -376,7 +352,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         result = 1
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
-            userName = appADData[i]['uid'] 
+            userName = appADData[i]['uid']
             if (AD_USER in userName):
                 result = 0
             # print 'userName %s' % userName
@@ -389,7 +365,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         global appData
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
-        # Check for a list of Active Directory Users 
+        # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=True)
         print 'result %s' % result
         assert (result == 0)
@@ -400,7 +376,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         result = 1
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
-            userName = appADData[i]['uid'] 
+            userName = appADData[i]['uid']
             if (AD_USER in userName):
                 result = 0
             # print 'userName %s' % userName
@@ -424,68 +400,6 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'test_result_string %s attempts %s' % (test_result_string, attempts) # debug line
         assert ("success" in test_result_string)
 
-    def test_070_checkGoogleAuth(self):
-        """
-        Test google authentication
-        """
-        raise unittest2.SkipTest('Broken test - google keeps banning account')
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        device_in_office = global_functions.is_in_office_network(wan_IP)
-        if (device_in_office):
-            raise unittest2.SkipTest('Google Login not working in office')
-        googleUserName, googlePassword = global_functions.get_live_account_info("Google")
-        print "username: %s\n " % str(googleUserName)
-        if googlePassword != None:
-            print "password: %s\n" % (len(googlePassword)*"*")
-
-        result = app.getGoogleManager().authenticate( googleUserName, googlePassword )
-        print result
-        assert ( result == True )
-
-    def test_071_checkGoogleAuthBad(self):
-        """
-        Test google authentication
-        """
-        raise unittest2.SkipTest('Broken test - google keeps banning account')
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        googleUserName, googlePassword = ("badusername@untangle.com","xxxxxxxxx")
-
-        result = app.getGoogleManager().authenticate( googleUserName, googlePassword )
-        print result
-        assert ( result == False )
-
-    def test_080_checkFacebookAuth(self):
-        """
-        Test facebook authentication
-        """
-        raise unittest2.SkipTest('Broken test - google keeps banning account')
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        facebookUserName, facebookPassword = global_functions.get_live_account_info("Facebook")
-        print "username: %s\n " % str(facebookUserName)
-        if facebookPassword != None:
-            print "password: %s\n" % (len(facebookPassword)*"*")
-
-        result = app.getFacebookManager().authenticate( facebookUserName, facebookPassword )
-        print result
-        assert ( result == True )
-
-    def test_081_checkFacebookAuthBad(self):
-        """
-        Test facebook authentication
-        """
-        raise unittest2.SkipTest('Broken test - google keeps banning account')
-        if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest('Not supported on ARM')
-        facebookUserName, facebookPassword = ("badusername@untangle.com","xxxxxxxxx")
-
-        result = app.getFacebookManager().authenticate( facebookUserName, facebookPassword )
-        print result
-        assert ( result == False )
-        
     @staticmethod
     def finalTearDown(self):
         """

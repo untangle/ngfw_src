@@ -1,5 +1,5 @@
 /**
- * $Id: FacebookAuthenticator.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
+ * $Id: DirectoryConnectorApp.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
  * 
  * Copyright (c) 2003-2017 Untangle, Inc.
  *
@@ -63,16 +63,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      * The Google Manager
      */
     private GoogleManagerImpl googleManager = null;
-
-    /**
-     * The Facebook Manager
-     */
-    private FacebookManagerImpl facebookManager = null;
-
-    /**
-     * is xvfb running? (used by selenium-based authenticators)
-     */
-    private static boolean xvfbLaunched = false;
     
     public DirectoryConnectorApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
@@ -94,8 +84,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
-
-        stopXvfb();
     }
 
     @Override
@@ -204,11 +192,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return this.googleManager;
     }
 
-    public FacebookManagerImpl getFacebookManager()
-    {
-        return this.facebookManager;
-    }
-    
     public List<UserEntry> getUserEntries()
     {
         LinkedList<UserEntry> users = new LinkedList<UserEntry>();
@@ -246,8 +229,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     {
         if (activeDirectoryAuthenticate(username, pwd)) return true;
         if (radiusAuthenticate(username, pwd)) return true;
-        if (googleAuthenticate(username, pwd)) return true;
-        if (facebookAuthenticate(username, pwd)) return true;
 
         return false;
     }
@@ -276,30 +257,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return this.radiusManager.authenticate(username, pwd);
     }
 
-    public boolean googleAuthenticate(String username, String pwd)
-    {
-        if (!isLicenseValid())
-            return false;
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
-            return false;
-        if (this.googleManager == null)
-            return false;
-
-        return this.googleManager.authenticate(username, pwd);
-    }
-
-    public boolean facebookAuthenticate(String username, String pwd)
-    {
-        if (!isLicenseValid())
-            return false;
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
-            return false;
-        if (this.facebookManager == null)
-            return false;
-
-        return this.facebookManager.authenticate(username, pwd);
-    }
-    
     public boolean anyAuthenticate(String username, String pwd)
     {
         if (!isLicenseValid())
@@ -316,14 +273,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         } catch (Exception e) {}
         try {
             if (radiusAuthenticate( username, pwd ))
-                return true;                              
-        } catch (Exception e) {}
-        try {
-            if (googleAuthenticate( username, pwd ))
-                return true;                              
-        } catch (Exception e) {}
-        try {
-            if (facebookAuthenticate( username, pwd ))
                 return true;                              
         } catch (Exception e) {}
         return false;
@@ -357,26 +306,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return getGoogleManager().isGoogleDriveConnected();
     }
 
-    public void startXvfbIfNecessary()
-    {
-        if ( ! xvfbLaunched ) {
-            UvmContextFactory.context().execManager().exec("killall Xvfb");
-            UvmContextFactory.context().execManager().execOutput("nohup Xvfb :1 -screen 5 1024x768x8 >/dev/null 2>&1 &");
-            xvfbLaunched = true;
-        }
-
-        // sleep one second to give it time to start
-        try { Thread.sleep(1000); } catch (Exception e) {}
-    }
-
-    public void stopXvfb()
-    {
-        // Kill any running Xvfb used by GoogleAuthenticator and FacebookAuthenticator
-        UvmContextFactory.context().execManager().exec("killall Xvfb");
-
-        xvfbLaunched = false;        
-    }
-    
     @Override
     public void initializeSettings()
     {
@@ -385,7 +314,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         this.settings.setActiveDirectorySettings(new ActiveDirectorySettings("Administrator", "mypassword", "mydomain.int", "ad_server.mydomain.int", 636, true ));
         this.settings.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
         this.settings.setGoogleSettings(new GoogleSettings());
-        this.settings.setFacebookSettings(new FacebookSettings());
         setSettings(this.settings);
     }
 
@@ -430,14 +358,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         else
             this.googleManager.setSettings(settings.getGoogleSettings());
 
-        /**
-         * Initialize the Google manager (or update settings on current)
-         */
-        if (facebookManager == null)
-            this.facebookManager = new FacebookManagerImpl(settings.getFacebookSettings(), this);
-        else
-            this.facebookManager.setSettings(settings.getFacebookSettings());
-        
         /**
          * Initialize the Group manager (if necessary) and Refresh
          */
