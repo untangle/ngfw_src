@@ -151,6 +151,7 @@ class AdBlockerTests(unittest2.TestCase):
  
     # verify a accuweather cookie can be blocked
     def test_101_accuweatherCookieEnabled(self):
+        raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
         addCookieEnabled("accuweather.com")
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
@@ -160,6 +161,7 @@ class AdBlockerTests(unittest2.TestCase):
          
     # verify a accuweather cookie can be blocked, but set both "enabled" and "blocked" params
     def test_102_accuweatherCookieBlockedEnabled(self):
+        raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
         addCookieBlockedEnabled("www.accuweather.com")
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
