@@ -73,7 +73,7 @@ public class SqlCondition implements Serializable, JSONString
      *
      * @returns true if auto-format supported, false otherwise
      */
-    public Boolean getAutoFormatValue()
+    public boolean getAutoFormatValue()
     {
         /**
          * Some operators require special handling
