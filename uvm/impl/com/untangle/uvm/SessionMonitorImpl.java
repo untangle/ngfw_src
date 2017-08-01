@@ -514,10 +514,8 @@ public class SessionMonitorImpl implements SessionMonitor
                     int dport_count = 0;
                     for ( int i = 0 ; i < parts.length ; i++ ) {
                         String part = parts[i];
-                        if ( part == null ) {
-                            logger.warn("Invalid part: " + i + " " + line);
+                        if ( part == null )
                             continue;
-                        }
                         String[] subparts = part.split("=");
                         if ( subparts.length != 2 )
                             continue;
