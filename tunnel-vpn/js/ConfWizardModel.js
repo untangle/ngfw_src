@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
+Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardModel', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.app-tunnel-vpn-wizard',
 
@@ -8,7 +8,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                 return;
             },
             set: function (val) {
-                var details = this.get('providerConfigs')[val];
+                var controller = this.getView().getController(),
+                    details = this.get('providerConfigs')[val];
 
                 this.set('provider', val);
                 this.set('providerName', details.providerName);
@@ -29,6 +30,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                     this.set('passwordHidden', true);
                     break;
                 }
+
+                controller.nextCheckProvider();
             }
         }
     },

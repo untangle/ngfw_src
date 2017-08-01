@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
+Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-tunnel-vpn-wizard',
 
@@ -15,8 +15,11 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
     },
 
     onActivateCard: function (panel) {
-        var vm = this.getViewModel(),
-            layout = this.getView().getLayout();
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel(),
+            layout = me.getView().getLayout(),
+            activeItem = v.getLayout().getActiveItem();
 
         vm.set('prevBtn', layout.getPrev());
         if (layout.getPrev()) {
@@ -25,6 +28,19 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         vm.set('nextBtn', layout.getNext());
         if (layout.getNext()) {
             vm.set('nextBtnText', layout.getNext().getTitle());
+        }
+
+        switch(activeItem.getItemId()){
+            case 'vpn-service':
+                me.nextCheckProvider();
+                break;
+
+            case 'upload':
+                me.nextCheckConfig();
+                break;
+
+            default:
+                vm.set('nextEnabled', true);
         }
     },
 
@@ -92,6 +108,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
             success: Ext.bind(function( form, action ) {
                 var tunnelId = this.getView().appManager.getNewTunnelId();
                 this.getViewModel().set("tunnelId",tunnelId);
+                this.getView().getController().nextCheckConfig();
                 Ext.MessageBox.alert('Configuration Import Success'.t(), action.result.msg);
             }, this),
             failure: Ext.bind(function( form, action ) {
@@ -104,4 +121,27 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         // fire finish event to reload settings ant try to start app
         this.getView().fireEvent('finish');
         this.getView().close();
-    }});
+    },
+
+    nextCheckProvider: function(){
+        var me = this,
+            vm = me.getViewModel();
+
+        vm.set('nextEnabled', ( vm.get('provider') == null) ? false: true );
+    },
+
+    nextCheckConfig: function(component, newValue){
+        var me = this,
+            vm = me.getViewModel();
+
+        var nextEnabled = true;
+        if(vm.get('usernameHidden') == false){
+            var username = ( component != null ) && ( component.name == 'username' ) ? newValue : vm.get('username');
+            var password = ( component != null ) && ( component.name == 'password' ) ? newValue : vm.get('password');
+            nextEnabled = ( username != null) && ( password != null);
+        }
+        nextEnabled &= ( vm.get('tunnelId') > -1 );
+        vm.set('nextEnabled', nextEnabled ? true: false );
+    }
+
+});

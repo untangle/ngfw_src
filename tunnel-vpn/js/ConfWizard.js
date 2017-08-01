@@ -1,7 +1,7 @@
-Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
+Ext.define('Ung.apps.tunnel-vpn.view.ConfWizard', {
     extend: 'Ext.window.Window',
     alias: 'widget.app-tunnel-vpn-wizard',
-    title: '<i class="fa fa-magic"></i> ' + 'Bandwidth Control Setup Wizard'.t(),
+    title: '<i class="fa fa-magic"></i> ' + 'Tunnel VPN Setup Wizard'.t(),
     modal: true,
 
     controller: 'app-tunnel-vpn-wizard',
@@ -82,11 +82,14 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             border: false,
             margin: '0 0 0 0',
             items: [{
-                xtype: 'fileuploadfield',
+                xtype: 'filefield',
+                label: 'Upload Config File'.t(),
                 name: 'upload_file',
-                buttonText: 'Upload Config File'.t(),
-                buttonOnly: true,
-                listeners: { 'change': 'uploadFile' }
+                buttonText: 'Select Config File...'.t(),
+                width: 300,
+                listeners: {
+                    change: 'uploadFile'
+                }
             },{
                 xtype: 'hidden',
                 name: 'type',
@@ -107,6 +110,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 value: '{username}',
                 hidden: '{usernameHidden}'
             },
+            listeners: {
+                change: 'nextCheckConfig'
+            }
         },{
             xtype: 'textfield',
             fieldLabel: 'Password'.t(),
@@ -116,6 +122,9 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 value: '{password}',
                 hidden: '{passwordHidden}'
             },
+            listeners: {
+                change: 'nextCheckConfig'
+            }
         }]
     }, {
         title: 'Finish'.t(),
@@ -152,7 +161,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             hidden: true,
             bind: {
                 text: 'Next'.t() + ' - <strong>' + '{nextBtnText}' + '</strong>',
-                hidden: '{!nextBtn}'
+                hidden: '{!nextBtn}',
+                disabled: '{nextEnabled == false}'
             },
             iconCls: 'fa fa-chevron-circle-right',
             iconAlign: 'right',
