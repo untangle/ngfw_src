@@ -8,7 +8,11 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
             tunnelLog: {
                 get: function(get) {
                     var tunnelApp = rpc.appManager.app('tunnel-vpn');
-                    return(tunnelApp.getLogFile());
+                    var log = tunnelApp.getLogFile();
+                    if( log == null){
+                        log = 'No Tunnel VPN log information available.'.t();
+                    }
+                    return log;
                 }
             }
         },
