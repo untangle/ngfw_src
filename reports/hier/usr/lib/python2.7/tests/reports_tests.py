@@ -270,7 +270,7 @@ class ReportsTests(unittest2.TestCase):
         email_context_found2 = ""
         if email_found:
             email_context_found1 = remote_control.run_command("grep -i -e 'Reports:.*Daily.*' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
-            email_context_found2 = remote_control.run_command("grep -i -e q'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
+            email_context_found2 = remote_control.run_command("grep -i -e 'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
