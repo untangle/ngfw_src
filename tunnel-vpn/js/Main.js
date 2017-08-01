@@ -4,6 +4,14 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
     controller: 'app-tunnel-vpn',
 
     viewModel: {
+        formulas: {
+            tunnelLog: {
+                get: function(get) {
+                    var tunnelApp = rpc.appManager.app('tunnel-vpn');
+                    return(tunnelApp.getLogFile());
+                }
+            }
+        },
         stores: {
             rules: {
                 data: '{settings.rules.list}'
@@ -35,6 +43,7 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
         { xtype: 'app-tunnel-vpn-status' },
         { xtype: 'app-tunnel-vpn-tunnels' },
         { xtype: 'app-tunnel-vpn-rules' },
+        { xtype: 'app-tunnel-vpn-log' },
     ]
 
 });
