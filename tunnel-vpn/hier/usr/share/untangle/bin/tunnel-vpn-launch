@@ -11,6 +11,5 @@ tunnel_name="tunnel-${tunnel_id}"
 mkdir -p /run/openvpn
 
 echo "Launching openvpn..."
-/usr/sbin/openvpn --writepid /run/openvpn/${tunnel_name}.pid --daemon ovpn-${tunnel_name} --status /run/openvpn/${tunnel_name}.status 10 --cd ${conf_dir} --config ${conf_dir}/tunnel.conf --log-append /var/log/uvm/tunnel.log </dev/null
+/usr/sbin/openvpn --writepid /run/openvpn/${tunnel_name}.pid --daemon ovpn-${tunnel_name} --status /run/openvpn/${tunnel_name}.status 10 --cd ${conf_dir} --config ${conf_dir}/tunnel.conf --log-append /var/log/uvm/tunnel.log </dev/null &
 
-cat /run/openvpn/${tunnel_name}.pid
