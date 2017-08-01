@@ -38,6 +38,14 @@ def setUpClient(vpn_enabled=True,vpn_export=False,vpn_exportNetwork="127.0.0.1",
             "name": vpn_name
     }
 
+def create_export(network, name="export", enabled=True):
+    return {
+        "javaClass": "com.untangle.app.openvpn.OpenVpnExport", 
+        "name": name,
+        "enabled": enabled,
+        "network": network
+    }
+
 def waitForServerVPNtoConnect():
     timeout = 60  # wait for up to one minute for the VPN to connect
     while timeout > 0:
@@ -183,6 +191,7 @@ class OpenVpnTests(unittest2.TestCase):
         appData = app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
+        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         app.setSettings(appData)
