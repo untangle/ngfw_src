@@ -50,7 +50,10 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
             Untangle: {
                 providerName: 'Untangle'.t(),
                 providerTitle: 'Upload the Untangle OpenVPN config zip',
-                providerInstructions: 'FIXME',
+                providerInstructions: '<li>' + 'Log in the main Untangle server'.t() + '<br/>' +
+                    '<li>' + 'Inside "OpenVPN" app settings in Server > Remote Clients add new client and hit Save'.t() + '<br/>' +
+                    '<li>' + 'Click Download for the new client and download the configuration zip file for remote Untangle OpenVPN clients'.t() + '<br/>' +
+                    '<li>' + 'Upload the zip file below'.t() + '<br/>'
             },
             NordVPN: {
                 providerName: 'NordVPN'.t(),
