@@ -14,7 +14,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
 
             var destinationTunnelData = [];
@@ -96,6 +95,18 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 break;
         }
     },
-    
+
 });
 
+Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.tunnelgrid',
+
+    addRecord: function () {
+        var me = this;
+        me.getView().up('app-tunnel-vpn').getController().runWizard();
+    },
+
+
+});
