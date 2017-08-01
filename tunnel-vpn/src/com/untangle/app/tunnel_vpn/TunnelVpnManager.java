@@ -75,9 +75,6 @@ public class TunnelVpnManager
         } catch (Exception e) {
             logger.warn("Failed to kill processes",e);
         }
-        
-        //FIXME check that the PID files are gone
-        //FIXME check that the processes are dead
     }
     
     protected synchronized void launchProcesses()
@@ -85,6 +82,10 @@ public class TunnelVpnManager
         insertIptablesRules();        
 
         for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
+            if ( !tunnelSettings.getEnabled() ) {
+                logger.info("Tunnel " + tunnelSettings.getTunnelId() + " not enabled. Skipping...");
+                continue;
+            }
             int tunnelId = tunnelSettings.getTunnelId();
             String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
             ExecManagerResult result = UvmContextFactory.context().execManager().exec( LAUNCH_SCRIPT + " " + tunnelSettings.getTunnelId() + " " + directory);
