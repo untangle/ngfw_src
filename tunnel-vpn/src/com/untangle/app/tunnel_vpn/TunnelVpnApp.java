@@ -45,6 +45,8 @@ public class TunnelVpnApp extends AppBase
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
+    private static final String TUNNEL_LOG = "/var/log/uvm/tunnel.log";
+
     private TunnelVpnSettings settings = null;
     private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager(this);
 
@@ -241,7 +243,12 @@ public class TunnelVpnApp extends AppBase
 
     public String getLogFile()
     {
-        return UvmContextFactory.context().execManager().execOutput("cat /var/log/uvm/tunnel.log");
+        File f = new File( TUNNEL_LOG );
+        if (f.exists()) {
+            return UvmContextFactory.context().execManager().execOutput("cat " + TUNNEL_LOG);
+        }else{
+            return null;
+        }
     }
 
     private TunnelVpnSettings getDefaultSettings()
