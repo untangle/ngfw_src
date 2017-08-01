@@ -82,19 +82,26 @@ if [ "$provider" == "Untangle" ] ; then
     importZip
 elif [ "$provider" == "NordVPN" ] ; then
     importOvpn
-    echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
 elif [ "$provider" == "ExpressVPN" ] ; then
     importOvpn
-    echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-elif [ "$provider" == "Custom_zip" ] ; then
+elif [ "$provider" == "CustomZip" ] ; then
     importZip
-elif [ "$provider" == "Custom_ovpn" ] ; then
+elif [ "$provider" == "CustomZipPass" ] ; then
+    importZip
+elif [ "$provider" == "CustomOvpn" ] ; then
     importOvpn
-elif [ "$provider" == "Custom_conf" ] ; then
+elif [ "$provider" == "CustomOvpnPass" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomConf" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomConfPass" ] ; then
     importOvpn
 else     
     echo "Unknown provider: $provider"
     cleanup 1
 fi
 
+sed -e '/auth-user-pass.*/d' -i @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+    
 cleanup 0

@@ -70,34 +70,34 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                     '<li>' + 'Provide the username/password provided by ExpressVPN'.t() + '<br/>' + 
                     '<li>' + 'NOTE: This is not your ExpressVPN account username/password'.t() + '<br/>'
             },
-            Custom_zip: {
+            CustomZip: {
                 providerName: 'CustomZip'.t(),
                 providerTitle: 'Upload the Custom OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>'
             },
-            Custom_zip_password: {
+            CustomZipPass: {
                 providerName: 'CustomZipPass'.t(),
                 providerTitle: 'Upload the Custom OpenVPN config zip with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password'.t() + '<br/>'
             },
-            Custom_ovpn: {
+            CustomOvpn: {
                 providerName: 'CustomOvpn'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .ovpn file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>'
             },
-            Custom_ovpn_password: {
+            CustomOvpnPass: {
                 providerName: 'CustomOvpnPass'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .ovpn file with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password'.t() + '<br/>'
             },
-            Custom_conf: {
+            CustomConf: {
                 providerName: 'CustomConf'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .conf file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>'
             },
-            Custom_conf_password: {
+            CustomConfPass: {
                 providerName: 'CustomConfPass'.t(),
                 providerTitle: 'Upload the Custom OpenVPN .conf file with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>' +

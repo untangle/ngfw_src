@@ -57,7 +57,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.TunnelsGrid', {
         javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings',
         'enabled': true,
         'name': '',
-        },
+    },
 
     bind: '{tunnels}',
 
@@ -75,6 +75,22 @@ Ext.define('Ung.apps.tunnel-vpn.view.TunnelsGrid', {
         editor: {
             xtype: 'textfield',
             bind: '{record.name}'
+        }
+    }, {
+        header: 'Username'.t(),
+        width: 150,
+        dataIndex: 'username',
+        editor: {
+            xtype: 'textfield',
+            bind: '{record.username}'
+        }
+    }, {
+        header: 'Password'.t(),
+        width: 150,
+        dataIndex: 'password',
+        editor: {
+            xtype: 'textfield',
+            bind: '{record.password}'
         }
     }],
 });
