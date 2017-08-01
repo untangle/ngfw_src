@@ -66,11 +66,13 @@ public class TunnelVpnManager
                     public boolean accept(File dir, String name) {
                         return name.startsWith("tunnel-") && name.endsWith("pid");
                     }
-                });        
-            for(File f: matchingFiles) {
-                String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)","");
-                logger.info("Killing OpenVPN process: " + pid);
-                UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
+                });
+            if( matchingFiles != null ){
+                for(File f: matchingFiles) {
+                    String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)","");
+                    logger.info("Killing OpenVPN process: " + pid);
+                    UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
+                }
             }
         } catch (Exception e) {
             logger.warn("Failed to kill processes",e);
