@@ -253,7 +253,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
                     var isConnected = result;
 
                     v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
-                    v.down('[name=fieldsetEnabledAuth]').setVisible(isConnected);
                     v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
 
                     if ( isConnected ){
@@ -277,42 +276,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         v.appManager.getGoogleManager().disconnectGoogleDrive();
         me.refreshGoogleTask.run();
         vm.set('settings.googleSettings.authenticationEnabled', false);
-    },
-
-    googleAuthenticationTest: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        Ext.MessageBox.wait( 'Testing...'.t(), 'Google Authentication Test'.t());
-        var username = v.down('textfield[name=google_test_username]').getValue();
-        var password = v.down('textfield[name=google_test_password]').getValue();
-
-        var message = v.appManager.getGoogleManager().authenticateTest( Ext.bind(function(result, exception) {
-            if (exception) { Util.handleException(ex); return; }
-            var message;
-            if ( result ) {
-                message = 'Login successful.'.t();
-            }else{
-                message = 'Login failed.'.t();
-            }
-            Ext.MessageBox.alert( 'Google Authentication Test'.t(), message);
-        }, this), username, password);
-    },
-
-    facebookAuthenticationTest: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        Ext.MessageBox.wait( 'Testing...'.t(), 'Facebook Authentication Test'.t());
-        var username = v.down('textfield[name=facebook_test_username]').getValue();
-        var password = v.down('textfield[name=facebook_test_password]').getValue();
-
-        var message = v.appManager.getFacebookManager().authenticateTest( Ext.bind(function(result, exception) {
-            if (exception) { Util.handleException(ex); return; }
-            var message;
-            if ( result ) {
-                message = 'Login successful.'.t();
-            }else{
-                message = 'Login failed.'.t();
-            }
-            Ext.MessageBox.alert( 'Google Authentication Test'.t(), message);
-        }, this), username, password);
     }
 
 });

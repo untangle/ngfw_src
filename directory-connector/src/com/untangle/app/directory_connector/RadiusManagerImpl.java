@@ -1,5 +1,5 @@
 /**
- * $Id: FacebookAuthenticator.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
+ * $Id: RadiusManagerImpl.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
  * 
  * Copyright (c) 2003-2017 Untangle, Inc.
  *

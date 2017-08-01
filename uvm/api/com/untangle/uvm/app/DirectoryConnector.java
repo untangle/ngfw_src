@@ -33,16 +33,6 @@ public interface DirectoryConnector
     public boolean radiusAuthenticate( String username, String group );
 
     /**
-     * Authenticate a user using Google
-     */
-    public boolean googleAuthenticate( String username, String group );
-
-    /**
-     * Authenticate a user using Facebook
-     */
-    public boolean facebookAuthenticate( String username, String group );
-    
-    /**
      * Authenticate a user using any authentication method
      */
     public boolean anyAuthenticate( String username, String group );
