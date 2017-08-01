@@ -32,12 +32,13 @@ public class InboxMaintenenceServlet extends HttpServlet
     private static final String INBOX_VIEW = "/WEB-INF/jsp/inbox.jsp";
     private static final String REQUEST_FWD = "/request";
     private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
-    
+
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
 
         String authTkn = req.getParameter(AUTH_TOKEN_RP);
+
         if(authTkn == null) {
             log("[MaintenenceControlerBase] Auth token null");
             req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);
@@ -82,7 +83,7 @@ public class InboxMaintenenceServlet extends HttpServlet
 
                 String[] inboundRemappings = quarantine.getMappedFrom(account);
                 req.setAttribute( "remapsData", buildJsonList(inboundRemappings));
-                
+
                 String[] safelistData = safelistManipulation.getSafelistContents(account);
                 req.setAttribute( "safelistData", buildJsonList(safelistData));
             }
@@ -96,15 +97,15 @@ public class InboxMaintenenceServlet extends HttpServlet
             req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
-        
+
         req.setAttribute( "currentAddress", account);
         req.setAttribute( "currentAuthToken", authTkn);
         req.setAttribute( "quarantineDays", maxDaysToIntern);
-        
+
         /* Setup the cobranding settings. */
         UvmContext uvm = UvmContextFactory.context();
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
-        
+
         /* setup the skinning settings */
         req.setAttribute( "skinName", uvm.skinManager().getSettings().getSkinName());
         req.setAttribute( "extjsTheme", uvm.skinManager().getSkinInfo().getExtjsTheme());
@@ -123,7 +124,7 @@ public class InboxMaintenenceServlet extends HttpServlet
             v.put( value );
             ja.put( v );
         }
-        
+
         return ja.toString();
     }
 }

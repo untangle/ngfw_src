@@ -26,6 +26,12 @@
   </servlet>
 
   <servlet>
+    <servlet-name>EmailServlet</servlet-name>
+    <servlet-class>com.untangle.app.smtp.web.euv.EmailServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
     <servlet-class>com.untangle.app.smtp.web.euv.UtJsonRpcServlet</servlet-class>
     <init-param>
@@ -33,12 +39,12 @@
       <param-value>200</param-value>
     </init-param>
   </servlet>
-  
+
   <servlet>
     <servlet-name>I18NServlet</servlet-name>
     <servlet-class>com.untangle.app.smtp.web.euv.I18NServlet</servlet-class>
   </servlet>
-  
+
   <servlet-mapping>
     <servlet-name>InboxMaintenenceServlet</servlet-name>
     <url-pattern>/manageuser</url-pattern>
@@ -53,7 +59,7 @@
     <servlet-name>JSONRPCServlet</servlet-name>
     <url-pattern>/JSON-RPC</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>I18NServlet</servlet-name>
     <url-pattern>/i18n</url-pattern>
@@ -62,5 +68,5 @@
   <welcome-file-list>
     <welcome-file>request</welcome-file>
   </welcome-file-list>
-  
+
 </web-app>
