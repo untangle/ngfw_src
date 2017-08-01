@@ -180,8 +180,8 @@ fi
         file.write("${IPTABLES} -t mangle -A mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
         file.write("\n");
 
-        file.write("${IPTABLES} -t nat -D nat-rules -i tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\" >/dev/null 2>&1"%(tunnel.get('tunnelId')) + "\n");
-        file.write("${IPTABLES} -t nat -I nat-rules -i tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\""%(tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t nat -D nat-rules -o tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\" >/dev/null 2>&1"%(tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t nat -I nat-rules -o tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\""%(tunnel.get('tunnelId')) + "\n");
         file.write("\n");
         
     try:
