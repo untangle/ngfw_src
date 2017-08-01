@@ -239,6 +239,11 @@ public class TunnelVpnApp extends AppBase
         return this.tunnelVpnManager.getNewTunnelId();
     }
 
+    public String getLogFile()
+    {
+        return UvmContextFactory.context().execManager().execOutput("cat /var/log/uvm/tunnel.log");
+    }
+
     private TunnelVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");

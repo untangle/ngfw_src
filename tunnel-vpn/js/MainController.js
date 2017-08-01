@@ -82,7 +82,20 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             }
         });
         me.wizard.show();
-    }
+    },
+
+    refreshTextArea: function(cmp)
+    {
+        var tunnelVpnApp = rpc.appManager.app('tunnel-vpn');
+        var target;
+
+        switch(cmp.target) {
+            case "tunnelLog":
+                target = this.getView().down('#tunnelLog');
+                target.setValue(tunnelVpnApp.getLogFile());
+                break;
+        }
+    },
     
 });
 
