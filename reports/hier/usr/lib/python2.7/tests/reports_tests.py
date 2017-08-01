@@ -269,8 +269,8 @@ class ReportsTests(unittest2.TestCase):
         email_context_found1 = ""
         email_context_found2 = ""
         if email_found:
-            email_context_found1 = remote_control.run_command("grep -i 'Daily Reports' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
-            email_context_found2 = remote_control.run_command("grep -i 'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
+            email_context_found1 = remote_control.run_command("grep -i -e 'Reports:.*Daily.*' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
+            email_context_found2 = remote_control.run_command("grep -i -e q'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
@@ -420,7 +420,7 @@ class ReportsTests(unittest2.TestCase):
         # look for all the appropriate sections in the report email
         results = []
         if email_found:
-            for str in ['Daily Reports','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']:
+            for str in ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']:
                 results.append(remote_control.run_command("grep -q -i '%s' /tmp/test_103_email_report_admin_file 2>&1"%str))
 
         # restore
