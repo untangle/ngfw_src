@@ -234,7 +234,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # Check to see if the delivered email file is present
-            emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + to_address + " 2>&1" ,stdout=True)
+            emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + to_address + " 2>&1 | grep spam-status" ,stdout=True)
             if (emailContext != ""):
                 emailFound = True
                 
