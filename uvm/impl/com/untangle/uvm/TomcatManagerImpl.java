@@ -116,9 +116,6 @@ public class TomcatManagerImpl implements TomcatManager
 
         ServletContext ctx;
         
-        ctx = loadServlet("/webui", "webui", true );
-        ctx.setAttribute("threadRequest", threadRequest);
-
         ctx = loadServlet("/admin", "admin", true );
         ctx.setAttribute("threadRequest", threadRequest);
 

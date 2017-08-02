@@ -1,7 +1,7 @@
-package com.untangle.uvm.webui.jabsorb.serializer;
-
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
+/**
+ * $Id$
+ */
+package com.untangle.uvm.admin.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -9,26 +9,26 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
+import com.untangle.uvm.app.MimeType;
+
 @SuppressWarnings({"serial","unchecked","rawtypes"})
-public class TimeZoneSerializer extends AbstractSerializer
+public class MimeTypeSerializer extends AbstractSerializer
 {
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] { TimeZone.class, SimpleTimeZone.class };
+    private static Class[] _serializableClasses = new Class[] { MimeType.class };
 
     /**
      * Classes that this can serialise to.
      */
     private static Class[] _JSONClasses = new Class[] { String.class };
 
-    public Class[] getJSONClasses()
-    {
+    public Class[] getJSONClasses() {
         return _JSONClasses;
     }
 
-    public Class[] getSerializableClasses()
-    {
+    public Class[] getSerializableClasses() {
         return _serializableClasses;
     }
     
@@ -41,10 +41,11 @@ public class TimeZoneSerializer extends AbstractSerializer
     public Object marshall(SerializerState state, Object p, Object o)
             throws MarshallException
     {
+        
         if( o == null ) {
             return "";
-        } else if (o instanceof TimeZone) {
-            return ((TimeZone)o).getID();
+        } else if (o instanceof MimeType) {
+            return ((MimeType)o).getType();
         }
         
         return null;
@@ -59,7 +60,6 @@ public class TimeZoneSerializer extends AbstractSerializer
     public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
         throws UnmarshallException
     {
-
         state.setSerialized(json, ObjectMatch.OKAY);
         return ObjectMatch.OKAY;
     }
@@ -73,12 +73,12 @@ public class TimeZoneSerializer extends AbstractSerializer
     public Object unmarshall(SerializerState state, Class clazz, Object json)
             throws UnmarshallException
     {
-        TimeZone returnValue = null;
+        Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = TimeZone.getTimeZone(val);
+            returnValue = new MimeType( val );
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"TimeZone\" specified:"
+            throw new UnmarshallException("Invalid \"MIME type\" specified:"
                     + val);
         }
         
@@ -87,6 +87,7 @@ public class TimeZoneSerializer extends AbstractSerializer
         }
         state.setSerialized(json, returnValue);
         return returnValue;
+        
     }
 
 }

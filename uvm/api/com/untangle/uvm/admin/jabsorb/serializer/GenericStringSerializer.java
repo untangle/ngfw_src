@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.jabsorb.serializer;
+package com.untangle.uvm.admin.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;

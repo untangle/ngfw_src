@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f
 import uvm
 import sys
 import traceback
