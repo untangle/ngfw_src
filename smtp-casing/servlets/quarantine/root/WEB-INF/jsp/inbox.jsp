@@ -84,7 +84,7 @@
 
                 Bootstrap.load([
                     '/script/common/util-all.js',
-                    'script/inboxnew.js'
+                    'script/inbox.js'
                 ], 'QUARANTINE', function (ex) {
                     // if everything is initialized just launch the application
                     Ext.application({
