@@ -82,14 +82,21 @@ Ext.define('Ung.apps.tunnel-vpn.view.ConfWizard', {
             border: false,
             margin: '0 0 0 0',
             items: [{
-                xtype: 'filefield',
-                label: 'Upload Config File'.t(),
-                name: 'upload_file',
-                buttonText: 'Select Config File...'.t(),
-                width: 300,
-                listeners: {
-                    change: 'uploadFile'
-                }
+                xtype: 'container',
+                layout: 'hbox',
+                items: [{
+                    xtype: 'filefield',
+                    label: 'Upload Config File'.t(),
+                    name: 'upload_file',
+                    buttonText: 'Select Config File...'.t(),
+                    width: 300,
+                    listeners: {
+                        change: 'uploadFile'
+                    }
+                },{
+                    xtype: 'label',
+                    bind: '{fileResult}'
+                }]
             },{
                 xtype: 'hidden',
                 name: 'type',
