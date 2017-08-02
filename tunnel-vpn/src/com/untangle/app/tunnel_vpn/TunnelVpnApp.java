@@ -304,6 +304,10 @@ public class TunnelVpnApp extends AppBase
         return settings;
     }
 
+    public void importTunnelConfig(String filename, String provider){
+        this.tunnelVpnManager.importTunnelConfig( filename, provider);
+    }
+
     /**
      * This finds all the tunnels that do not have corresponding virtual interfaces
      * in the current network settings.
@@ -441,7 +445,7 @@ public class TunnelVpnApp extends AppBase
                 } else if ( filename.endsWith(".ovpn") ) {
                     temp = File.createTempFile( "tunnel-vpn-newconfig-", ".ovpn" );
                 } else {
-                    return new ExecManagerResult(1, "Unknown file extension:" + filename);
+                    return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN");
                 }
 
                 temp.deleteOnExit();
@@ -468,13 +472,13 @@ public class TunnelVpnApp extends AppBase
             }
 
             try {
-                tunnelVpnManager.importTunnelConfig( temp.getPath(), argument );
+                tunnelVpnManager.validateTunnelConfig( temp.getPath(), argument );
             } catch ( Exception e ) {
                 logger.warn( "Unable to install the client configuration", e );
                 return new ExecManagerResult(1, e.getMessage());
             }
             
-            return new ExecManagerResult(0, fileItem.getName());
+            return new ExecManagerResult(0, temp.getPath() + '&' + "Valid");
         }
     }
 
