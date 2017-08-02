@@ -142,31 +142,31 @@ class AdBlockerTests(unittest2.TestCase):
         assert (result == 0)
         
     # verify there is a accuweather cookie
-    def test_100_accuweatherCookie(self):
+    def test_100_webCookie(self):
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 0)
  
     # verify a accuweather cookie can be blocked
-    def test_101_accuweatherCookieEnabled(self):
-        raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
-        addCookieEnabled("accuweather.com")
+    def test_101_webCookieEnabled(self):
+        # raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
+        addCookieEnabled("untangle.com")
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 1)
          
     # verify a accuweather cookie can be blocked, but set both "enabled" and "blocked" params
-    def test_102_accuweatherCookieBlockedEnabled(self):
-        raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
-        addCookieBlockedEnabled("www.accuweather.com")
+    def test_102_webCookieBlockedEnabled(self):
+        # raise unittest2.SkipTest("FIXME - accuweather switched to HTTPS")
+        addCookieBlockedEnabled("untangle.com")
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://www.accuweather.com/ ; grep -q www.accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 1)
 
     # verify update mechanism
