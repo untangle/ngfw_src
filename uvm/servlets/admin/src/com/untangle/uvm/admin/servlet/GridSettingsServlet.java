@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.servlet;
+package com.untangle.uvm.admin.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;

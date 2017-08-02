@@ -111,12 +111,13 @@ def create_email_template(mobile=False):
         "title": "Custom Report"
     }
 
-def fetch_email( filename, email_address, tries=120 ):
+def fetch_email( filename, email_address, tries=10 ):
     remote_control.run_command("rm -f %s" % filename)
     while tries > 0:
         tries -= 1
         # Check to see if the delivered email file is present
-        result = remote_control.run_command("wget -q --timeout=5 -O %s http://test.untangle.com/cgi-bin/getEmail.py?toaddress=%s 2>&1" % (filename, email_address))
+        result = remote_control.run_command("wget -q --timeout=20 --tries=1 -O %s http://test.untangle.com/cgi-bin/getEmail.py?toaddress=%s 2>&1" % (filename, email_address))
+        time.sleep(10)
         if (result == 0):
             return True
     return False

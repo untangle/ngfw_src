@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.jabsorb;
+package com.untangle.uvm.admin.jabsorb;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

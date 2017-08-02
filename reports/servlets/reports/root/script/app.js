@@ -1,5 +1,3 @@
-/** main.js and util.js are old UI resources */
-
 Ext.define('Ung.view.Main', {
     extend: 'Ung.view.reports.Reports', // defined in module
     // layout: 'border',
