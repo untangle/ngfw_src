@@ -422,13 +422,13 @@ public class TunnelVpnApp extends AppBase
         {
             if (fileItem == null) {
                 logger.info( "UploadTunnel is missing the file." );
-                return new ExecManagerResult(1, "UploadTunnel is missing the file.");
+                return new ExecManagerResult(1, "Tunnel VPN is missing the file" + ": " + fileItem.getName());
             }
 
             InputStream inputStream = fileItem.getInputStream();
             if ( inputStream == null ) {
                 logger.info( "UploadTunnel is missing the file." );
-                return new ExecManagerResult(1, "UploadTunnel is missing the file.");
+                return new ExecManagerResult(1, "Tunnel VPN is missing the file" + ": " + fileItem.getName());
             }
 
             logger.info("Uploaded new tunnel config: " + fileItem.getName() + " " + argument );
@@ -445,7 +445,7 @@ public class TunnelVpnApp extends AppBase
                 } else if ( filename.endsWith(".ovpn") ) {
                     temp = File.createTempFile( "tunnel-vpn-newconfig-", ".ovpn" );
                 } else {
-                    return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN");
+                    return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN" + ": " + fileItem.getName());
                 }
 
                 temp.deleteOnExit();
@@ -456,7 +456,7 @@ public class TunnelVpnApp extends AppBase
                 while (( len = inputStream.read( data )) > 0 ) outputStream.write( data, 0, len );
             } catch ( IOException e ) {
                 logger.warn( "Unable to validate client file.", e  );
-                return new ExecManagerResult(1, e.getMessage());
+                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName() );
             } finally {
                 try {
                     if ( outputStream != null ) outputStream.close();
@@ -474,11 +474,11 @@ public class TunnelVpnApp extends AppBase
             try {
                 tunnelVpnManager.validateTunnelConfig( temp.getPath(), argument );
             } catch ( Exception e ) {
-                logger.warn( "Unable to install the client configuration", e );
-                return new ExecManagerResult(1, e.getMessage());
+                logger.warn( "Unable to validate the client configuration", e );
+                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName() );
             }
             
-            return new ExecManagerResult(0, temp.getPath() + '&' + "Valid");
+            return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + fileItem.getName() );
         }
     }
 
