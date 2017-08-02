@@ -44,7 +44,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRule'
+        javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRule',
+        tunnelId: 0
     },
 
     bind: '{rules}',
