@@ -26,7 +26,7 @@ public class SetupServlet extends HttpServlet
     private final Logger logger = Logger.getLogger(getClass());
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException 
+        throws ServletException, IOException
     {
         UvmContext context = UvmContextFactory.context();
         request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );

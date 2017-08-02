@@ -1,11 +1,7 @@
-/**
- * $Id$
- */
-package com.untangle.uvm.webui.jabsorb.serializer;
+package com.untangle.uvm.admin.jabsorb.serializer;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -14,12 +10,12 @@ import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
 @SuppressWarnings({"serial","unchecked","rawtypes"})
-public class InetAddressSerializer extends AbstractSerializer
+public class TimeZoneSerializer extends AbstractSerializer
 {
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] { InetAddress.class, Inet4Address.class, Inet6Address.class };
+    private static Class[] _serializableClasses = new Class[] { TimeZone.class, SimpleTimeZone.class };
 
     /**
      * Classes that this can serialise to.
@@ -43,12 +39,12 @@ public class InetAddressSerializer extends AbstractSerializer
      *      java.lang.Object, java.lang.Object)
      */
     public Object marshall(SerializerState state, Object p, Object o)
-        throws MarshallException
+            throws MarshallException
     {
         if( o == null ) {
             return "";
-        } else if (o instanceof InetAddress) {
-            return ((InetAddress)o).getHostAddress();
+        } else if (o instanceof TimeZone) {
+            return ((TimeZone)o).getID();
         }
         
         return null;
@@ -75,27 +71,22 @@ public class InetAddressSerializer extends AbstractSerializer
      *      java.lang.Class, java.lang.Object)
      */
     public Object unmarshall(SerializerState state, Class clazz, Object json)
-        throws UnmarshallException
+            throws UnmarshallException
     {
-        Object returnValue = null;
+        TimeZone returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            if ("".equals(val)) {
-                returnValue = null;
-                state.setSerialized(json, returnValue);
-                return returnValue;
-            }
-            else
-                returnValue = InetAddress.getByName(val);
+            returnValue = TimeZone.getTimeZone(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"InetAddress\" specified:" + val);
+            throw new UnmarshallException("Invalid \"TimeZone\" specified:"
+                    + val);
         }
         
         if (returnValue == null) {
             throw new UnmarshallException("invalid class " + clazz);
         }
-
         state.setSerialized(json, returnValue);
         return returnValue;
     }
+
 }

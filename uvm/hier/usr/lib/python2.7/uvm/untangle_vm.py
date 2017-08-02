@@ -68,7 +68,7 @@ class Uvm:
             traceback.print_exc(e)
             return None
         
-        proxy = ServiceProxy( "http://" + hostname +  "/webui/JSON-RPC", None, handler, None )
+        proxy = ServiceProxy( "http://" + hostname +  "/admin/JSON-RPC", None, handler, None )
         return proxy.UvmContext
 
 

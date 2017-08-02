@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.jabsorb.serializer;
+package com.untangle.uvm.admin.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -9,15 +9,15 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.app.MimeType;
+import com.untangle.uvm.app.IPMaskedAddress;
 
 @SuppressWarnings({"serial","unchecked","rawtypes"})
-public class MimeTypeSerializer extends AbstractSerializer
+public class IPMaskedAddressSerializer extends AbstractSerializer
 {
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] { MimeType.class };
+    private static Class[] _serializableClasses = new Class[] { IPMaskedAddress.class };
 
     /**
      * Classes that this can serialise to.
@@ -44,8 +44,8 @@ public class MimeTypeSerializer extends AbstractSerializer
         
         if( o == null ) {
             return "";
-        } else if (o instanceof MimeType) {
-            return ((MimeType)o).getType();
+        } else if (o instanceof IPMaskedAddress) {
+            return o.toString();
         }
         
         return null;
@@ -60,6 +60,7 @@ public class MimeTypeSerializer extends AbstractSerializer
     public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
         throws UnmarshallException
     {
+
         state.setSerialized(json, ObjectMatch.OKAY);
         return ObjectMatch.OKAY;
     }
@@ -76,9 +77,9 @@ public class MimeTypeSerializer extends AbstractSerializer
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = new MimeType( val );
+            returnValue = IPMaskedAddress.parse(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"MIME type\" specified:"
+            throw new UnmarshallException("Invalid \"subnet\" specified:"
                     + val);
         }
         
