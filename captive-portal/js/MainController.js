@@ -53,9 +53,9 @@ Ext.define('Ung.apps.captive-portal.MainController', {
     getActiveUsers: function (cmp) {
         var vm = this.getViewModel(),
             grid = (cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
-        grid.setLoading(true);
+        if ( grid != null ) grid.setLoading(true);
         this.getView().appManager.getActiveUsers(function (result, ex) {
-            grid.setLoading(false);
+            if ( grid != null ) grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             vm.set('activeUsers', result.list);
         });
