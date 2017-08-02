@@ -35,6 +35,11 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
+    /** used for Port Forward Rules */
+    addSimpleRecord: function () {
+        this.simpleEditorWin(null);
+    },
+
     regexId :  /^([^_]).*(id|Id)$/,
     copyRecord: function (view, rowIndex, colIndex, item, e, record) {
         var me = this,
@@ -71,7 +76,11 @@ Ext.define('Ung.cmp.GridController', {
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record) {
-        this.editorWin(record);
+        if (!record.get('simple')) {
+            this.editorWin(record);
+        } else {
+            this.simpleEditorWin(record);
+        }
     },
 
     editorWin: function (record) {
@@ -85,6 +94,19 @@ Ext.define('Ung.cmp.GridController', {
         if (this.dialog.ownerCt.editorHeight) this.dialog.height = this.dialog.ownerCt.editorHeight;
 
         this.dialog.show();
+    },
+
+    simpleEditorWin: function (record) {
+        this.simpledialog = this.getView().add({
+            xtype: this.getView().simpleEditorAlias,
+            record: record
+        });
+
+        // look for window overrides in the parent grid
+        if (this.simpledialog.ownerCt.editorWidth) this.simpledialog.width = this.simpledialog.ownerCt.editorWidth;
+        if (this.simpledialog.ownerCt.editorHeight) this.simpledialog.height = this.simpledialog.ownerCt.editorHeight;
+
+        this.simpledialog.show();
     },
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {

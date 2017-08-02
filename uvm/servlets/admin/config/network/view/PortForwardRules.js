@@ -21,7 +21,9 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         name: 'Port Forward Rules',
         flex: 3,
 
-        tbar: ['@add', '->', '@import', '@export'],
+        simpleEditorAlias: 'config-network-portforwardsimple',
+
+        tbar: ['@addSimple', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.portForwardRules.list',
@@ -43,7 +45,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
-            simple: true,
+            simple: false,
             enabled: true,
             // description: '',
             javaClass: 'com.untangle.uvm.network.PortForwardRule',
