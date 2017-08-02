@@ -58,6 +58,10 @@ def create_ad_settings(ldap_secure=False):
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
             "server": global_functions.radiusServer,
             "sharedSecret": "mysharedsecret"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
         }
     }
 
@@ -90,6 +94,10 @@ def create_radius_settings():
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
             "server": global_functions.radiusServer,
             "sharedSecret": "chakas"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
         }
     }
 
@@ -197,6 +205,11 @@ class DirectoryConnectorTests(unittest2.TestCase):
         app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
         AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.adServer], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.radiusServer], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # enable the API for testing
+        appSettings = app.getSettings()
+        appSettings['apiEnabled'] = True
+        app.setSettings(appSettings)
 
     def setUp(self):
         pass
