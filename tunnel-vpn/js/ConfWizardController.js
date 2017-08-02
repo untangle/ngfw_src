@@ -123,7 +123,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardController', {
                 Ext.MessageBox.hide();
             }, this),
             failure: Ext.bind(function( form, action ) {
-                v.set('fileResult', action.result.msg);
+                vm.set('fileResult', action.result.msg);
                 Ext.MessageBox.hide();
             }, this)
         });
