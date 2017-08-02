@@ -41,6 +41,7 @@ public class TunnelVpnManager
     private static final String TUNNEL_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/tunnel-stop";
     private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn";
     private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
+    private static final String VALIDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-validate";
     private static final String LAUNCH_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-launch";
 
     private final TunnelVpnApp app;
@@ -179,6 +180,40 @@ public class TunnelVpnManager
         tunnels.add( tunnelSettings );
         settings.setTunnels( tunnels );
         app.setSettings( settings );
+
+        return;
+    }
+
+    protected synchronized void validateTunnelConfig( String filename, String provider )
+    {
+        if (filename==null || provider==null) {
+            logger.warn("Invalid arguments");
+            throw new RuntimeException("Invalid Arguments");
+        }
+
+        TunnelVpnSettings settings = app.getSettings();
+        int tunnelId = findLowestAvailableTunnelId( settings );
+        String tunnelName = "tunnel-" + provider + "-" + tunnelId;
+
+        if (tunnelId < 1) {
+            logger.warn("Failed to find available tunnel ID");
+            throw new RuntimeException("Failed to find available tunnel ID");
+        }
+
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( VALIDATE_SCRIPT + " \""  + filename + "\" \"" + provider + "\" " + tunnelId);
+
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( VALIDATE_SCRIPT + ": ");
+            for ( String line : lines ) {
+                logger.info( VALIDATE_SCRIPT + ": " + line);
+            }
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to validate client config (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to validate client config: " + result.getOutput().trim());
+        }
 
         return;
     }

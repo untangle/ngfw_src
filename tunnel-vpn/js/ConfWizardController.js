@@ -58,31 +58,36 @@ Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardController', {
         }
 
         if (activeItem.getItemId() === 'upload') {
-            var settings = this.getView().appManager.getSettings();
-            var tunnel = null, i=0;
-            // Set username/password of tunnel if specified
-            if (vm.get('username') != null && vm.get('password') != null) {
+            // Save new settings
+            v.appManager.importTunnelConfig(function (result, ex) {
+                v.setLoading(false);
+                if (ex) { Util.handleException(ex); return; }
+
+                var settings = v.appManager.getSettings();
+                var tunnel = null, i=0;
+                // Set username/password of tunnel if specified
+                if (vm.get('username') != null && vm.get('password') != null) {
+                    if ( settings.tunnels != null && settings.tunnels.list != null ) {
+                        for (i=0; i< settings.tunnels.list.length ; i++) {
+                            tunnel = settings.tunnels.list[i];
+                            if (tunnel['tunnelId'] == vm.get('tunnelId')) {
+                                tunnel['username'] = vm.get('username');
+                                tunnel['password'] = vm.get('password');
+                            }
+                        }
+                    }
+                }
+                // Enable tunnel
                 if ( settings.tunnels != null && settings.tunnels.list != null ) {
                     for (i=0; i< settings.tunnels.list.length ; i++) {
                         tunnel = settings.tunnels.list[i];
                         if (tunnel['tunnelId'] == vm.get('tunnelId')) {
-                            tunnel['username'] = vm.get('username');
-                            tunnel['password'] = vm.get('password');
+                            tunnel['enabled'] = true;
                         }
                     }
                 }
-            }
-            // Enable tunnel
-            if ( settings.tunnels != null && settings.tunnels.list != null ) {
-                for (i=0; i< settings.tunnels.list.length ; i++) {
-                    tunnel = settings.tunnels.list[i];
-                    if (tunnel['tunnelId'] == vm.get('tunnelId')) {
-                        tunnel['enabled'] = true;
-                    }
-                }
-            }
-            // Save new settings
-            this.getView().appManager.setSettings(settings);
+                v.appManager.setSettings(settings);
+            }, vm.get('tempPath'), vm.get('provider'));
 
             v.getLayout().next();
         }
@@ -96,6 +101,9 @@ Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardController', {
     },
 
     uploadFile: function(cmp) {
+        var me = this,
+            vm = me.getViewModel();
+
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
         var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
         if ( file == null || file.length === 0 ) {
@@ -107,12 +115,16 @@ Ext.define('Ung.apps.tunnel-vpn.view.ConfWizardController', {
             url: "upload",
             success: Ext.bind(function( form, action ) {
                 var tunnelId = this.getView().appManager.getNewTunnelId();
-                this.getViewModel().set("tunnelId",tunnelId);
+                vm.set("tunnelId",tunnelId);
                 this.getView().getController().nextCheckConfig();
-                Ext.MessageBox.alert('Configuration Import Success'.t(), action.result.msg);
+                var resultMsg = action.result.msg.split('&');
+                vm.set('fileResult', resultMsg[1]);
+                vm.set('tempPath', resultMsg[0]);
+                Ext.MessageBox.hide();
             }, this),
             failure: Ext.bind(function( form, action ) {
-                Ext.MessageBox.alert('Configuration Import Failure'.t(), action.result.msg);
+                v.set('fileResult', action.result.msg);
+                Ext.MessageBox.hide();
             }, this)
         });
     },
