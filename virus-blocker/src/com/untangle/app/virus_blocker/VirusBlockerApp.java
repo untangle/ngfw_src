@@ -20,6 +20,27 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     public VirusBlockerApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
+
+        // if the bdamserver package is not installed we set our special flag
+        try {
+            // if entitled to "virus-blocker" enable BD
+            if ( UvmContextFactory.context().licenseManager().isLicenseValid( "virus-blocker" ) ) {
+                this.fileScannerAvailable = true;
+            } else {
+                // otherwise - BD not available
+                this.fileScannerAvailable = false;
+            }
+
+            File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
+
+            if (!daemonCheck.exists()) {
+                this.fileScannerAvailable = false;
+            }
+
+        } catch (Exception exn) {
+            this.fileScannerAvailable = false;
+        }
+
         this.setScanner( new VirusBlockerScanner(this) );
     }
 
@@ -66,6 +87,17 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     public boolean isPremium()
     {
         return true;
+    }
+
+    @Override
+    public boolean isLicenseValid()
+    {
+        // accept either license "virus-blocker" or "virus-blocker-cloud"
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( "virus-blocker" ) )
+            return true;
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( "virus-blocker-cloud" ) )
+            return true;
+        return false;
     }
 
     @Override
