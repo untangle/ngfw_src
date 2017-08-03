@@ -31,7 +31,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             vm.set('destinationTunnelData', destinationTunnelData);
         });
 
-        // !!! translate title, instructions
         vm.set('providers',{
             Untangle: {
                 description: 'Untangle'.t(),
@@ -102,10 +101,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
         vm.set('providersComboList', Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description' ],
-            // sorters: [{
-            //     property: 'name',
-            //     direction: 'ASC'
-            // }],
             data: providerComboListData
         }) );
 
@@ -254,7 +249,8 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
         var me = this,
             v = me.getView(),
             vm = me.getViewModel(),
-            appManager = v.up('app-tunnel-vpn').appManager;
+            appManager = v.up('app-tunnel-vpn').appManager,
+            component = cmp;
 
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
         var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
@@ -264,35 +260,23 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
         }
         Ext.MessageBox.wait('Uploading and validating...'.t(), 'Please wait'.t());
 
-        // console.log(form.down('[name=fileValid]'));
-        // var fileValid = form.down('[name=fileValid]');
-
-        var cc = cmp;
-        cc.setValidation(true);
+        component.setValidation(true);
 
         form.submit({
             url: "upload",
             success: Ext.bind(function( form, action ) {
                 Ext.MessageBox.hide();
-                console.log('success');
-                // tunnel id could go in save routnine.  Or earlier?
                 var tunnelId = appManager.getNewTunnelId();
                 vm.set("record.tunnelId",tunnelId);
-                // vm.set("fileValid",true);
                 var resultMsg = action.result.msg.split('&');
                 vm.set('fileResult', resultMsg[1]);
                 vm.set('record.tempPath', resultMsg[0]);
-                //cc.setValidation(true);
-                // fileValid.setValidation(true);
             }, this),
             failure: Ext.bind(function( form, action ) {
-                console.log('failure');
                 Ext.MessageBox.hide();
-                // vm.set("fileValid",false);
                 console.log(action);
                 vm.set('fileResult', action.result.msg);
-                cc.setValidation('Must upload valid VPN config file'.t());
-                // fileValid.setValidation(action.result.msg);
+                component.setValidation('Must upload valid VPN config file'.t());
             }, this)
         });
     },
@@ -303,17 +287,17 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
 
         vm.set('fileResult', '');
         if( newValue == ''){
-            vm.set('providerSelected', false);
-            vm.set('providerTitle', '');
-            vm.set('providerInstructions', '');
+            vm.set('tunnelProviderSelected', false);
+            vm.set('tunnelProviderTitle', '');
+            vm.set('tunnelProviderInstructions', '');
             combo.setValidation('Provider must be selected');
         }else{
-            vm.set('providerSelected', true);
+            vm.set('tunnelProviderSelected', true);
             var providers = vm.get('providers');
             for( var provider in providers ){
                 if(provider == newValue){
-                    vm.set('providerTitle', providers[provider].providerTitle);
-                    vm.set('providerInstructions', providers[provider].providerInstructions);
+                    vm.set('tunnelProviderTitle', providers[provider].providerTitle);
+                    vm.set('tunnelProviderInstructions', providers[provider].providerInstructions);
                 }
             }
             combo.setValidation(true);
@@ -324,12 +308,12 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
                 case 'CustomZipPass':
                 case 'CustomConfPass':
                 case 'CustomOvpnPass':
-                    vm.set('usernameHidden', false);
-                    vm.set('passwordHidden', false);
+                    vm.set('tunnelUsernameHidden', false);
+                    vm.set('tunnelPasswordHidden', false);
                     break;
                 default:
-                    vm.set('usernameHidden', true);
-                    vm.set('passwordHidden', true);
+                    vm.set('tunnelUsernameHidden', true);
+                    vm.set('tunnelPasswordHidden', true);
             }
         }
         me.updateTunnelName();

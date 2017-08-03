@@ -85,7 +85,6 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         xtype: 'combo',
         name: 'provider',
         fieldLabel: 'Provider'.t(),
-        // margin: 10,
         editable: false,
         valueField: 'name',
         displayField: 'description',
@@ -100,19 +99,18 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         xtype: 'component',
         margin: '0 10 0 190',
         bind: {
-            html: '{providerTitle}'
+            html: '{tunnelProviderTitle}'
         }
     },{
         xtype: 'component',
         margin: '0 10 0 190',
         bind: {
-            html: '{providerInstructions}'
+            html: '{tunnelProviderInstructions}'
         }
     },{
         xtype: 'form',
         name: 'upload_form',
         border: false,
-        // margin: '0 0 0 0',
         margin: '10 10 0 170',
         items: [{
             xtype: 'container',
@@ -127,7 +125,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
                     change: 'uploadFile'
                 },
                 bind: {
-                    disabled: '{providerSelected == false}'
+                    disabled: '{tunnelProviderSelected == false}'
                 },
                 validation: 'Must upload VPN config file'.t()
             },{
@@ -135,16 +133,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
                 margin: '5 0 0 0',
                 bind: {
                     text: '{fileResult}',
-                    disabled: '{providerSelected == false}'
+                    disabled: '{tunnelProviderSelected == false}'
                 }
             }]
         },{
-            // Change to "filevalid"
-            xtype: 'hidden',
-            name: 'fileValid',
-            value: '{fileValid}'
-        },{
-            // Change to "filevalid"
             xtype: 'hidden',
             name: 'type',
             value: 'tunnel_vpn'
@@ -160,16 +152,16 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         fieldLabel: 'Username'.t(),
         bind: {
             value: '{record.username}',
-            disabled: '{providerSelected == false}',
-            hidden: '{usernameHidden == true}'
+            disabled: '{tunnelProviderSelected == false}',
+            hidden: '{tunnelUsernameHidden == true}'
         },
     }, {
         xtype: 'textfield',
         fieldLabel: 'Password'.t(),
         bind: {
             value: '{record.password}',
-            disabled: '{providerSelected == false}',
-            hidden: '{passwordHidden == true}'
+            disabled: '{tunnelProviderSelected == false}',
+            hidden: '{tunnelPasswordHidden == true}'
         },
     }]
 
