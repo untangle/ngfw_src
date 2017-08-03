@@ -90,12 +90,14 @@ public class VirusBlockerScanner implements VirusScanner
 
     public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
-        if (!app.isLicenseValid()) {
-            logger.warn("VirusBlocker scan circumvented: license expired.");
-            return VirusScannerResult.ERROR;
-        }
 
-        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher( scanfile, session, app.getSettings().getEnableCloudScan(), app.getSettings().getEnableLocalScan() );
-        return scan.doScan(VirusBlockerScanner.timeout);
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( "virus-blocker" ) ) {
+            VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher( scanfile, session, app.getSettings().getEnableCloudScan(), app.getSettings().getEnableLocalScan() );
+            return scan.doScan(VirusBlockerScanner.timeout);
+        } else if ( UvmContextFactory.context().licenseManager().isLicenseValid( "virus-blocker-cloud" ) ) {
+            VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher( scanfile, session, app.getSettings().getEnableCloudScan(), false );
+            return scan.doScan(VirusBlockerScanner.timeout);
+        }
+        return VirusScannerResult.ERROR;
     }
 }
