@@ -79,5 +79,14 @@ copytruncate
 missingok
 }
 
+/var/log/uvm/tunel.log {
+rotate 1
+size 50k
+compress
+notifempty
+copytruncate
+missingok
+}
+
 
 

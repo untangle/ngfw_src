@@ -245,7 +245,7 @@ public class TunnelVpnApp extends AppBase
     {
         File f = new File( TUNNEL_LOG );
         if (f.exists()) {
-            return UvmContextFactory.context().execManager().execOutput("cat " + TUNNEL_LOG);
+            return UvmContextFactory.context().execManager().execOutput("tail -n 1000 " + TUNNEL_LOG);
         }else{
             return null;
         }
