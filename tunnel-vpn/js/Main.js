@@ -16,12 +16,20 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
                 }
             }
         },
+        data: {
+            // ?? put inside tunnel:{}
+            providerSelected: false,
+            providerTitle: '',
+            providerInstructions: '',
+            usernameHidden: true,
+            passwordHidden: true
+        },
         stores: {
+            tunnels: {
+                data: '{settings.tunnels.list}',
+            },
             rules: {
                 data: '{settings.rules.list}'
-            },
-            tunnels: {
-                data: '{settings.tunnels.list}'
             },
             destinationTunnelList: {
                 fields: [ 'index', 'name' ],
