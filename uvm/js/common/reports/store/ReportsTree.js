@@ -11,7 +11,7 @@ Ext.define('Ung.store.ReportsTree', {
     build: function () {
         var me = this, nodes = [], storeCat, category;
         Ext.Array.each(Ext.getStore('reports').getGroups().items, function (group) {
-            storeCat = Ext.getStore('categories').findRecord('displayName', group._groupKey);
+            storeCat = Ext.getStore('categories').findRecord('displayName', group._groupKey, 0, false, true, true);
 
             if (!storeCat) { return; }
 
