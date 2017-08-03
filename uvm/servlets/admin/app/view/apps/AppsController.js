@@ -264,6 +264,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 installing: false,
                 instanceId: instance.id,
                 targetState: instance.targetState,
+                state: result.getRunState(),
                 parentPolicy: null,
                 metrics: result.getMetrics().list,
                 route: (record.get('type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + record.get('name') : '#service/' + record.get('name')
@@ -431,6 +432,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 installing: false,
                 instanceId: instance.id,
                 targetState: instance.targetState,
+                state: result.getRunState(),
                 parentPolicy: null,
                 metrics: result.getMetrics().list,
                 route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
