@@ -62,6 +62,9 @@ public class License implements Serializable
     /** The licensed number of seats */
     private Integer seats = null;
 
+    /** The string to display */
+    private String seatsDisplay = null;
+
     /** This stores the computed validity state of this license */
     private Boolean valid;
 
@@ -230,6 +233,26 @@ public class License implements Serializable
     public Integer getSeats() { return this.seats; }
     public void setSeats( Integer newValue ) { this.seats = newValue; }
 
+    /**
+     * Set the key version for this license.
+     */
+    public String getSeatsDisplay()
+    {
+        if (this.seatsDisplay != null)
+            return this.seatsDisplay;
+        else {
+            if (this.seats == null)
+                return null;
+            else
+                return this.seats.toString();
+        }
+    }
+
+    public void setSeatsDisplay( String newValue )
+    {
+        this.seatsDisplay = newValue;
+    }
+    
     /**
      * Returns the valid state
      * This is a transient value - it is set (or reset) on settings load

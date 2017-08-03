@@ -45,7 +45,7 @@ Ext.define('Ung.config.about.view.Licenses', {
             formatter: 'this.dateRenderer'
         }, {
             header: 'Seats'.t(),
-            dataIndex: 'seats',
+            dataIndex: 'seatsDisplay',
             width: 50
         }, {
             header: 'Valid'.t(),
