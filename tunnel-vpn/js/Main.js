@@ -17,12 +17,11 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
             }
         },
         data: {
-            // ?? put inside tunnel:{}
-            providerSelected: false,
-            providerTitle: '',
-            providerInstructions: '',
-            usernameHidden: true,
-            passwordHidden: true
+            tunnelProviderSelected: false,
+            tunnelProviderTitle: '',
+            tunnelProviderInstructions: '',
+            tunnelUsernameHidden: true,
+            tunnelPasswordHidden: true
         },
         stores: {
             tunnels: {
