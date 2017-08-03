@@ -81,7 +81,7 @@ Ext.define('Ung.view.main.Main', {
             hidden: true,
             bind: {
                 userCls: '{activeItem === "reports" ? "pressed" : ""}',
-                hidden: '{!reportsInstalled}'
+                hidden: '{!reportsInstalled || !reportsRunning}'
             }
         },
         '->',

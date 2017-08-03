@@ -9,6 +9,13 @@ Ext.define('Ung.view.apps.SimpleItem', {
 
     viewModel: {
         formulas: {
+            stateCss: function (get) {
+                if (get('state') !== get('targetState')) { return 'bad'; }
+                else {
+                    if (get('state') === 'RUNNING') { return 'running'; }
+                    else { return ''; }
+                }
+            },
             html: function (get) {
                 var html = '';
                 if (get('parentPolicy') || get('installing')) {
@@ -17,7 +24,7 @@ Ext.define('Ung.view.apps.SimpleItem', {
                     html += '<a href="' + get('route') + '" class="app-item">';
                 }
                 if (get('app.hasPowerButton')) {
-                    html += '<span class="state ' + get('targetState') + '"><i class="fa fa-power-off"></i></span>';
+                    html += '<span class="state ' + get('stateCss') + '"><i class="fa fa-power-off"></i></span>';
                 }
                 if (get('licenseMessage')) {
                     html += '<span class="license">' + get('licenseMessage') +  '</span>';
