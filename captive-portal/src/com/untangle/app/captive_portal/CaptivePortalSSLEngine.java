@@ -117,6 +117,8 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
+        CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
+
         if (sniHostname != null) {
             // attach sniHostname to session just like SSL Inspector for use by rules 
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
@@ -124,19 +126,25 @@ public class CaptivePortalSSLEngine
             if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
 
             // hosts we must allow for Google OAuth
-            if (sniHostname.equals("accounts.google.com")) allowed = true;
-            if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
+            if ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
+                if (sniHostname.equals("accounts.google.com")) allowed = true;
+                if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
+            }
 
             // hosts we must allow for Facebook OAuth
-            if (sniHostname.equals("www.facebook.com")) allowed = true;
-            if (sniHostname.equals("graph.facebook.com")) allowed = true;
+            if ((authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
+                if (sniHostname.equals("www.facebook.com")) allowed = true;
+                if (sniHostname.equals("graph.facebook.com")) allowed = true;
+            }
 
             // hosts we must allow for Microsoft OAuth
-            if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
-            if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
-            if (sniHostname.endsWith(".live.com")) allowed = true;
-            if (sniHostname.endsWith(".gfx.ms")) allowed = true;
-            if (sniHostname.endsWith(".microsoft.com")) allowed = true;
+            if ((authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
+                if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
+                if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
+                if (sniHostname.endsWith(".live.com")) allowed = true;
+                if (sniHostname.endsWith(".gfx.ms")) allowed = true;
+                if (sniHostname.endsWith(".microsoft.com")) allowed = true;
+            }
 
             if (allowed) {
                 logger.debug("Releasing OAuth session: " + sniHostname);
