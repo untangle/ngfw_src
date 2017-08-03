@@ -85,6 +85,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 appVm.set({
                     instanceId: instance.id,
                     targetState: instance.targetState,
+                    state: policy.runStates.map[instance.id],
                     parentPolicy: parentPolicy,
                     metrics: metrics,
                     route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name'),
@@ -94,6 +95,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 appVm.set({
                     instanceId: null,
                     targetState: null,
+                    state: null,
                     parentPolicy: null,
                     metrics: null,
                     route: null
