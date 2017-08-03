@@ -17,6 +17,9 @@ Ext.define('Ung.apps.virusblocker.MainController', {
             console.log(result);
             vm.set('settings', result);
         });
+        v.appManager.isFileScannerAvailable(function (result,ex) {
+            vm.set('isFileScannerAvailable', result);
+        });
     },
 
     setSettings: function () {

@@ -83,7 +83,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
     private Date lastSignatureUpdate = new Date();
     private String signatureVersion = "";
 
-    private boolean fileScannerAvailable = true;
+    protected boolean fileScannerAvailable = true;
     private VirusSettings settings;
 
     /* This can't be static because it uses policy which is per app */
@@ -133,17 +133,6 @@ public abstract class VirusBlockerBaseApp extends AppBase
         this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http", this, null, virusHttpHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength(), isPremium());
         this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp", this, null, virusSmtpHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength(), isPremium());
         this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
-
-        // if the bdamserver package is not installed we set our special flag
-        try {
-            File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-            if (daemonCheck.exists() == false) {
-                fileScannerAvailable = false;
-            }
-        } catch (Exception exn) {
-            fileScannerAvailable = false;
-        }
-
         this.replacementGenerator = new VirusReplacementGenerator(getAppSettings());
 
         String appName = getName();
