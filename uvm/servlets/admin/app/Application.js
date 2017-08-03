@@ -14,13 +14,6 @@ Ext.define('Ung.Application', {
 
     mainView: 'Ung.view.main.Main',
 
-    init: function () {
-        // if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-        // if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-        // if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-        // if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
-    },
-
     launch: function () {
         window.document.title = rpc.companyName + (rpc.hostname ? ' - ' + rpc.hostname : '');
         Ext.get('app-loader').destroy();
@@ -30,13 +23,16 @@ Ext.define('Ung.Application', {
 
         Ext.fireEvent('afterlaunch'); // used in Main view ctrl
 
+        // check for reports app running in the first policy
+        rpc.reportsRunning = false;
+        if (rpc.appManager.app('reports')) {
+            rpc.reportsRunning = rpc.appManager.app('reports').getRunState() === 'RUNNING';
+        }
         try {
             rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
-        } catch (ex) {
-            // console.log(ex);
-        }
+        } catch (ex) { console.error(ex); }
 
-        if (rpc.reportsManager) {
+        if (rpc.reportsManager && rpc.reportsRunning) {
             // reports installed
             Ext.Deferred.parallel([
                 Rpc.asyncPromise('rpc.dashboardManager.getSettings'),

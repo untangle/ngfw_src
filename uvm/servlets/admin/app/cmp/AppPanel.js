@@ -31,7 +31,7 @@ Ext.define('Ung.cmp.AppPanel', {
             },
             bind: {
                 html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> {props.displayName}' +
-                    ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.targetState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
+                    ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (runState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
             }
         }])
     }, {
