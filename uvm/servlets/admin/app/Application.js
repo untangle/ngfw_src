@@ -25,12 +25,11 @@ Ext.define('Ung.Application', {
 
         // check for reports app running in the first policy
         rpc.reportsRunning = false;
-        if (rpc.appManager.app('reports')) {
-            rpc.reportsRunning = rpc.appManager.app('reports').getRunState() === 'RUNNING';
+        var reportsApp = rpc.appManager.app('reports');
+        if (reportsApp != null) {
+            rpc.reportsRunning = reportsApp.getRunState() === 'RUNNING';
+            rpc.reportsManager = reportsApp.getReportsManager();
         }
-        try {
-            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
-        } catch (ex) { console.error(ex); }
 
         if (rpc.reportsManager && rpc.reportsRunning) {
             // reports installed
