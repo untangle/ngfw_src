@@ -120,6 +120,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
         if (me.validateSettings() != true) return;
 
+        var validSave = true;
         var tunnelsToImport = [];
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -136,24 +137,34 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
                 var items = Ext.Array.pluck(store.getRange(), 'data');
                 if(grid.listProperty == 'settings.tunnels.list'){
-                    items.forEach(function(item){
-                        if( item.tunnelId == -1 ){
-                            item.tunnelId = me.getNextAvailableTunnelId(items);
+                    items.forEach(function(tunnel){
+                        if( tunnel.tunnelId == -1 ){
+                            var tunnelId = me.getNextAvailableTunnelId(items);
+                            if( tunnelId === false){
+                                validSave = false;
+                                Util.handleException("Unable to obtain a unique tunnel id, cannot add tunnel".t() + ": " + tunnel.name);
+                                return;
+                            }
+                            tunnel.tunnelId = tunnelId;
                         }
-                        if(item.tempPath){
+                        if(tunnel.tempPath){
                             tunnelsToImport.push({
-                                filename: item.tempPath,
-                                provider: item.provider,
-                                tunnelId: item.tunnelId,
-                                name: item.name
+                                filename: tunnel.tempPath,
+                                provider: tunnel.provider,
+                                tunnelId: tunnel.tunnelId,
+                                name: tunnel.name
                             });
-                            delete item.tempPath;
+                            delete tunnel.tempPath;
                         }
                     });
                 }
                 vm.set(grid.listProperty, items);
             }
         });
+
+        if( validSave == false ){
+            return;
+        }
 
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
@@ -184,6 +195,8 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         var found = false;
         var tunnel;
         var tunnels = vm.get('settings.tunnels.list');
+        var virtualInterfaces = rpc.networkManager.getNetworkSettings().virtualInterfaces.list;
+
         for( var i = 200; i < 240; i++ ){
             found = false;
             for(tunnel in tunnels){
@@ -201,7 +214,14 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 });
             }
 
-            // also virtual conflicts....
+            if(virtualInterfaces){
+                virtualInterfaces.forEach( function( interface ){
+                    if( i == interface.interfaceId){
+                        found = true;
+                        return;
+                    }
+                });
+            }
 
             if (!found) {
                 return i;
