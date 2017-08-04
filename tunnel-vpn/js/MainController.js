@@ -278,6 +278,14 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
         }else{
             this.callParent(arguments);
         }
+    },
+
+    checkauth: function( e, editor){
+        var me = this,
+            vm = this.getViewModel();
+
+        var providers = vm.get('providers');
+        return providers[editor.record.get('provider')].userAuth;
     }
 
  });
