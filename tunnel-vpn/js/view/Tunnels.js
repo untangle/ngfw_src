@@ -5,6 +5,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     title: 'Tunnels'.t(),
     viewModel: true,
 
+    controller: 'untunnelgrid',
     editorXtype: 'ung.cmp.untunnelrecordeditor',
 
     dockedItems: [{
