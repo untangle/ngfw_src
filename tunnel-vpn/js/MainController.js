@@ -170,6 +170,12 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             });
 
             me.getSettings();
+
+            if(tunnelsToImport.length > 0){
+                if( me.getView().appManager.getRunState() !== 'RUNNING'){
+                    me.getView().down('appstate > button').click();
+                }
+            }
             Ext.fireEvent('resetfields', v);
         }, vm.get('settings'));
     },
