@@ -231,7 +231,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     showEditor: function (rec) {
-        var me = this, policiesStore = [[0, 'None'.t()]];
+        var me = this, policiesStore = [[0, 'None'.t()]], initialName;
         if (!me.lookup('tree')) { return; }
         me.lookup('tree').getRootNode().cascadeBy(function (node) {
             if (node.isRoot()) { return; }
@@ -243,6 +243,8 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 policiesStore.push([node.get('policyId'), node.get('name')]);
             }
         });
+
+        if (rec) { initialName = rec.get('name'); }
 
         me.editWin = me.getView().add({
             xtype: 'window',
@@ -272,7 +274,15 @@ Ext.define('Ung.apps.policymanager.MainController', {
                     emptyText: 'enter policy name',
                     allowBlank: false,
                     labelAlign: 'top',
-                    value: rec ? rec.get('name') : ''
+                    value: rec ? rec.get('name') : '',
+                    msgTarget: 'side',
+                    validator: function (val) {
+                        if (val === initialName) { return true; } // if name not modified it can be saved
+                        if (Ext.getStore('policiestree').find('name', val, 0, false, false, true) >= 0) {
+                            return 'This policy name already exists'.t();
+                        }
+                        return true;
+                    }
                 }, {
                     xtype:  'textarea',
                     name: 'description',
