@@ -208,25 +208,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         return(true);
     },
 
-    runWizard: function (btn) {
-        var me = this;
-        me.wizard = me.getView().add({
-            xtype: 'app-tunnel-vpn-wizard',
-            appManager: me.getView().appManager,
-            listeners: {
-                // when wizard is finished, reload settings and try to start the app
-                finish: function () {
-                    me.getSettings(function (configured) {
-                        if (configured && me.getView().appManager.getRunState() !== 'RUNNING') {
-                            me.getView().down('appstate > button').click();
-                        }
-                    });
-                }
-            }
-        });
-        me.wizard.show();
-    },
-
     refreshTextArea: function(cmp)
     {
         var tunnelVpnApp = rpc.appManager.app('tunnel-vpn');
@@ -247,21 +228,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         return 'tun' + value;
     }
 });
-
-// Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
-//     extend: 'Ung.cmp.GridController',
-
-//     alias: 'controller.untunnelgrid',
-
-
-// //     addRecord: function () {
-// //         var me = this;
-// //         me.getView().up('app-tunnel-vpn').getController().runWizard();
-// //     },
-
-
-
-// });
 
 Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
@@ -323,7 +289,9 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             }
 
             var record = vm.get('record');
-            if( ( newValue != oldValue ) && ( ( typeof record.modified.provider == undefined ) || record.modified.provider != newValue ) ){
+            if( ( oldValue != null ) &&
+                ( newValue != oldValue ) && 
+                ( ( typeof record.modified.provider == undefined ) || record.modified.provider != newValue ) ){
                 fileButton.setValidation('Provider changed');
             }
 
