@@ -23,6 +23,16 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         items: ['@add']
     }],
 
+    plugins: [{
+        ptype: 'cellediting',
+        clicksToEdit: 1,
+        listeners: {
+            beforeedit: 'checkauth'
+        }
+    }, {
+        ptype: 'responsive'
+    }],
+
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
 
@@ -58,15 +68,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         dataIndex: 'username',
         editor: {
             xtype: 'textfield',
-            bind: '{record.username}'
-        }
-    }, {
-        header: 'Password'.t(),
-        width: Renderer.usernameWidth,
-        dataIndex: 'password',
-        editor: {
-            xtype: 'textfield',
-            bind: '{record.password}'
+            bind: '{record.username}',
+            listeners: {
+                beforeedit: 'checkauth'
+            }
         }
     }],
 
@@ -166,6 +171,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Password'.t(),
+        inputType: 'password',
         bind: {
             value: '{record.password}',
             disabled: '{tunnelProviderSelected == false}',
