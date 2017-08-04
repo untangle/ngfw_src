@@ -146,26 +146,6 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to import client config");
         }
 
-        List<TunnelVpnTunnelSettings> tunnels = settings.getTunnels();
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
-
-        /**
-         * Sanity checks
-         */
-        for ( TunnelVpnTunnelSettings tunnelSettings : tunnels ) {
-            if (tunnelId == tunnelSettings.getTunnelId()) {
-                logger.error("Tunnel ID conflict: " + tunnelId);
-                throw new RuntimeException("Tunnel ID conflict: " + tunnelId);
-            }
-        }
-        for ( InterfaceSettings virtualInterfaceSettings : virtualInterfaces ) {
-            if (tunnelId == virtualInterfaceSettings.getInterfaceId()) {
-                logger.error("Tunnel ID conflict: " + tunnelId);
-                throw new RuntimeException("Tunnel ID conflict: " + tunnelId);
-            }
-        }
-
         return;
     }
 
