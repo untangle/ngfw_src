@@ -5,7 +5,6 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     title: 'Tunnels'.t(),
     viewModel: true,
 
-    // controller: 'untunnelgrid',
     editorXtype: 'ung.cmp.untunnelrecordeditor',
 
     dockedItems: [{
@@ -23,8 +22,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         items: ['@add']
     }],
 
-    recordActions: ['delete'],
-    // recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
 
     bind: '{tunnels}',
@@ -50,6 +48,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
             bind: '{record.name}'
         }
     }, {
+        header: 'Provider'.t(),
+        width: Renderer.messageWidth,
+        dataIndex: 'provider',
+    }, {
         header: 'Username'.t(),
         width: Renderer.usernameWidth,
         dataIndex: 'username',
@@ -72,6 +74,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         name: 'tunnel',
         provider: '',
         javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings',
+        tunnelId: -1
     },
 
     editorFields: [
@@ -81,6 +84,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         fieldLabel: 'Tunnel Name'.t(),
         name: 'tunnelName',
         bind: '{record.name}'
+    },{
+        xtype: 'hidden',
+        name: 'tunnelId',
+        bind: '{record.tunnelId}'
     }, {
         xtype: 'combo',
         name: 'provider',

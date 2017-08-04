@@ -304,8 +304,8 @@ public class TunnelVpnApp extends AppBase
         return settings;
     }
 
-    public void importTunnelConfig(String filename, String provider){
-        this.tunnelVpnManager.importTunnelConfig( filename, provider);
+    public void importTunnelConfig(String filename, String provider, int tunnelId){
+        this.tunnelVpnManager.importTunnelConfig( filename, provider, tunnelId);
     }
 
     /**

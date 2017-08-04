@@ -34,6 +34,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         vm.set('providers',{
             Untangle: {
                 description: 'Untangle'.t(),
+                userAuth: false,
                 providerTitle: 'Upload the Untangle OpenVPN config zip',
                 providerInstructions: '<li>' + 'Log in the main Untangle server'.t() + '<br/>' +
                     '<li>' + 'Inside "OpenVPN" app settings in Server > Remote Clients add new client and hit Save'.t() + '<br/>' +
@@ -42,6 +43,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             },
             NordVPN: {
                 description: 'NordVPN'.t(),
+                userAuth: true,
                 providerTitle: 'Upload the NordVPN OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Log in to "My account" at nordvpn.com'.t() + '<br/>' +
                     '<li>' + 'Click on the "Download area"'.t() + '<br/>' +
@@ -52,6 +54,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             },
             ExpressVPN: {
                 description: 'ExpressVPN'.t(),
+                userAuth: true,
                 providerTitle: 'Upload the ExpressVPN OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Log in to "My account" at expressvpn.com'.t() + '<br/>' +
                     '<li>' + 'FIXME"'.t() + '<br/>' +
@@ -60,33 +63,39 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             },
             CustomZip: {
                 description: 'Custom zip file'.t(),
+                userAuth: false,
                 providerTitle: 'Upload the Custom OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>'
             },
             CustomZipPass: {
                 description: 'Custom zip file with username/password'.t(),
+                userAuth: true,
                 providerTitle: 'Upload the Custom OpenVPN config zip with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .zip File'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password'.t() + '<br/>'
             },
             CustomOvpn: {
                 description: 'Custom ovpn file'.t(),
+                userAuth: false,
                 providerTitle: 'Upload the Custom OpenVPN .ovpn file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>'
             },
             CustomOvpnPass: {
                 description: 'Custom ovpn file with username/password'.t(),
+                userAuth: true,
                 providerTitle: 'Upload the Custom OpenVPN .ovpn file with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .ovpn File'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password'.t() + '<br/>'
             },
             CustomConf: {
                 description: 'Custom conf file'.t(),
+                userAuth: false,
                 providerTitle: 'Upload the Custom OpenVPN .conf file'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>'
             },
             CustomConfPass: {
                 description: 'Custom conf file with username/password'.t(),
+                userAuth: true,
                 providerTitle: 'Upload the Custom OpenVPN .conf file with username/password'.t(),
                 providerInstructions: '<li>' + 'Upload the Custom OpenVPN Config .conf File'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password'.t() + '<br/>'
@@ -111,6 +120,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
         if (me.validateSettings() != true) return;
 
+        var tunnelsToImport = [];
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||
@@ -127,39 +137,17 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 var items = Ext.Array.pluck(store.getRange(), 'data');
                 if(grid.listProperty == 'settings.tunnels.list'){
                     items.forEach(function(item){
+                        if( item.tunnelId == -1 ){
+                            item.tunnelId = me.getNextAvailableTunnelId(items);
+                        }
                         if(item.tempPath){
-                            console.log(item);
-                            var tempPath = item.tempPath;
+                            tunnelsToImport.push({
+                                filename: item.tempPath,
+                                provider: item.provider,
+                                tunnelId: item.tunnelId,
+                                name: item.name
+                            });
                             delete item.tempPath;
-                            v.appManager.importTunnelConfig(function (result, ex) {
-                                v.setLoading(false);
-                                if (ex) { Util.handleException(ex); return; }
-
-                                // var settings = appManager.getSettings();
-                                // var tunnel = null, i=0;
-                                // // Set username/password of tunnel if specified
-                                // if (vm.get('username') != null && vm.get('password') != null) {
-                                //     if ( settings.tunnels != null && settings.tunnels.list != null ) {
-                                //         for (i=0; i< settings.tunnels.list.length ; i++) {
-                                //             tunnel = settings.tunnels.list[i];
-                                //             if (tunnel['tunnelId'] == vm.get('tunnelId')) {
-                                //                 tunnel['username'] = vm.get('username');
-                                //                 tunnel['password'] = vm.get('password');
-                                //             }
-                                //         }
-                                //     }
-                                // }
-                                // Enable tunnel
-                                // if ( settings.tunnels != null && settings.tunnels.list != null ) {
-                                //     for (i=0; i< settings.tunnels.list.length ; i++) {
-                                //         tunnel = settings.tunnels.list[i];
-                                //             if (tunnel['tunnelId'] == vm.get('tunnelId')) {
-                                //                 tunnel['enabled'] = true;
-                                //             }
-                                //     }
-                                // }
-                                // v.appManager.setSettings(settings);
-                            }, tempPath, item.provider);
                         }
                     });
                 }
@@ -172,9 +160,48 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
+
+            tunnelsToImport.forEach( function(tunnel){
+                v.appManager.importTunnelConfig(function (result, ex) {
+                    v.setLoading(false);
+                    if (ex) { Util.handleException(ex); return; }
+                    Util.successToast('Configuration imported'.t() + ': ' + tunnel.name);
+                }, tunnel.filename, tunnel.provider, tunnel.tunnelId);
+            });
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
         }, vm.get('settings'));
+    },
+
+    getNextAvailableTunnelId: function(current){
+        var found = false;
+        var tunnel;
+        var tunnels = vm.get('settings.tunnels.list');
+        for( var i = 200; i < 240; i++ ){
+            found = false;
+            for(tunnel in tunnels){
+                if ( tunnel.tunnelId != null && i == tunnel.tunnelId ) {
+                    found = true;
+                    break;
+                }
+            }
+            if(current){
+                current.forEach( function(tunnel){
+                    if ( tunnel.tunnelId != null && i == tunnel.tunnelId ) {
+                        found = true;
+                        return;
+                    }
+                });
+            }
+
+            // also virtual conflicts....
+
+            if (!found) {
+                return i;
+            }
+        }
+        return false;
     },
 
     validateSettings: function() {
@@ -214,6 +241,9 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
     },
 
     tunnelidRenderer: function(value){
+        if(value == -1){
+            return 'New'.t();
+        }
         return 'tun' + value;
     }
 });
@@ -253,11 +283,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             component = cmp;
 
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
-        var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
-        if ( file == null || file.length === 0 ) {
-            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
-            return;
-        }
         Ext.MessageBox.wait('Uploading and validating...'.t(), 'Please wait'.t());
 
         component.setValidation(true);
@@ -266,8 +291,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             url: "upload",
             success: Ext.bind(function( form, action ) {
                 Ext.MessageBox.hide();
-                var tunnelId = appManager.getNewTunnelId();
-                vm.set("record.tunnelId",tunnelId);
                 var resultMsg = action.result.msg.split('&');
                 vm.set('fileResult', resultMsg[1]);
                 vm.set('record.tempPath', resultMsg[0]);
@@ -293,27 +316,33 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             combo.setValidation('Provider must be selected');
         }else{
             vm.set('tunnelProviderSelected', true);
+
+            var fileButton = Ext.ComponentQuery.query('[name=upload_file]')[0];
+            if(vm.get('record.tunnelId') != -1){
+                fileButton.setValidation(true);
+            }
+
+            var record = vm.get('record');
+            if( ( newValue != oldValue ) && ( ( typeof record.modified.provider == undefined ) || record.modified.provider != newValue ) ){
+                fileButton.setValidation('Provider changed');
+            }
+
+            combo.setValidation(true);
+
             var providers = vm.get('providers');
             for( var provider in providers ){
                 if(provider == newValue){
                     vm.set('tunnelProviderTitle', providers[provider].providerTitle);
                     vm.set('tunnelProviderInstructions', providers[provider].providerInstructions);
-                }
-            }
-            combo.setValidation(true);
 
-            switch(newValue){
-                case 'ExpressVPN':
-                case 'NordVPN':
-                case 'CustomZipPass':
-                case 'CustomConfPass':
-                case 'CustomOvpnPass':
-                    vm.set('tunnelUsernameHidden', false);
-                    vm.set('tunnelPasswordHidden', false);
-                    break;
-                default:
-                    vm.set('tunnelUsernameHidden', true);
-                    vm.set('tunnelPasswordHidden', true);
+                    if(providers[provider].userAuth == true){
+                        vm.set('tunnelUsernameHidden', false);
+                        vm.set('tunnelPasswordHidden', false);
+                    }else{
+                        vm.set('tunnelUsernameHidden', true);
+                        vm.set('tunnelPasswordHidden', true);
+                    }
+                }
             }
         }
         me.updateTunnelName();
