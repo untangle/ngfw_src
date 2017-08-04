@@ -57,9 +57,12 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 userAuth: true,
                 providerTitle: 'Upload the ExpressVPN OpenVPN config zip'.t(),
                 providerInstructions: '<li>' + 'Log in to "My account" at expressvpn.com'.t() + '<br/>' +
-                    '<li>' + 'FIXME"'.t() + '<br/>' +
-                    '<li>' + 'Provide the username/password provided by ExpressVPN'.t() + '<br/>' + 
-                    '<li>' + 'NOTE: This is not your ExpressVPN account username/password'.t() + '<br/>'
+                    '<li>' + 'Click on "Set up ExpressVPN"'.t() + '<br/>' +
+                    '<li>' + 'Click on "Manual Configuration" and choose "OpenVPN"'.t() + '<br/>' +
+                    '<li>' + 'Provide the username/password provided by ExpressVPN'.t() + '<br/>' +  
+                    '<li>' + 'NOTE: This is not your ExpressVPN account username/password'.t() + '<br/>' +
+                    '<li>' + 'Choose your server and download the corresponding .ovpn file'.t() + '<br/>' +
+                    '<li>' + 'Upload the .ovpn file'.t() + '<br/>'
             },
             CustomZip: {
                 description: 'Custom zip file'.t(),
