@@ -219,8 +219,6 @@ public class Dispatcher
         return sessions;
     }
 
-    //////////////////////////////////////////////////////////////////
-
     void dispatchTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
         elog(Level.DEBUG, "TCPNewSessionRequest", sessionRequest.id());
