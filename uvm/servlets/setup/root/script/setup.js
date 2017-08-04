@@ -892,7 +892,7 @@ Ext.define('Ung.Setup.Internet', {
                 items: [{
                     fieldLabel: 'IP Address'.t(),
                     allowBlank: false,
-                    bind: { value: '{wan.v4StaticAddress || wan.v4Address}' }
+                    bind: { value: '{wan.v4StaticAddress}', emptyText: '{wan.v4Address}' }
                 }, {
                     fieldLabel: 'Netmask'.t(),
                     xtype: 'combo',
@@ -900,17 +900,17 @@ Ext.define('Ung.Setup.Internet', {
                     queryMode: 'local',
                     triggerAction: 'all',
                     value: 24,
-                    bind: { value: '{wan.v4StaticPrefix || wan.v4PrefixLength}' },
+                    bind: { value: '{wan.v4StaticPrefix}', emptyText: '/{wan.v4PrefixLength} - {wan.v4Netmask}' },
                     editable: false,
                     allowBlank: false
                 }, {
                     fieldLabel: 'Gateway'.t(),
                     allowBlank: false,
-                    bind: { value: '{wan.v4StaticGateway || wan.v4Gateway}' }
+                    bind: { value: '{wan.v4StaticGateway}', emptyText: '{wan.v4Gateway}' }
                 }, {
                     fieldLabel: 'Primary DNS'.t(),
                     allowBlank: false,
-                    bind: { value: '{wan.v4StaticDns1 || wan.v4Dns1}' }
+                    bind: { value: '{wan.v4StaticDns1}', emptyText: '{wan.v4Dns1}' }
                 }, {
                     xtype: 'fieldcontainer',
                     width: 'auto',
@@ -927,7 +927,7 @@ Ext.define('Ung.Setup.Internet', {
                         name: 'dns2',
                         fieldLabel: 'Secondary DNS'.t(),
                         allowBlank: true,
-                        bind: { value: '{wan.v4StaticDns2 || wan.v4Dns2}' }
+                        bind: { value: '{wan.v4StaticDns2}', emptyText: '{wan.v4Dns2}' }
                     }, {
                         xtype: 'label',
                         margin: '0 0 0 5',
@@ -1048,7 +1048,7 @@ Ext.define('Ung.Setup.InternetController', {
     },
 
     save: function (cb) {
-        var me = this; vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
 
         // validate any current form first
         if (!me.getView().down('panel').getLayout().getActiveItem().isValid()) {
