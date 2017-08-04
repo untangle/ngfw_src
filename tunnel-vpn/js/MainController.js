@@ -255,6 +255,33 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
     }
 });
 
+Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.untunnelgrid',
+
+    deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+
+        var rulesInUse = [];
+        var recordTunnelId = record.get('tunnelId');
+        var rules = vm.get('rules');
+        rules.each( function(rule){
+            if( ( recordTunnelId != -1 ) && ( recordTunnelId == rule.get('tunnelId') ) ){
+                rulesInUse.push( rule.get('description') );
+            }
+        });
+
+        if(rulesInUse.length > 0){
+            Util.handleException('Cannot delete tunnel.  It is used by one or more rules'.t() + ': ' + rulesInUse.join(','));
+        }else{
+            this.callParent(arguments);
+        }
+    }
+
+ });
+
 Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.untunnelrecordeditor',
