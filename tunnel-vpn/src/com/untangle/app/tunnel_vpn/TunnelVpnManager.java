@@ -117,7 +117,7 @@ public class TunnelVpnManager
         }
     }
     
-    protected synchronized void importTunnelConfig( String filename, String provider )
+    protected synchronized void importTunnelConfig( String filename, String provider, int tunnelId )
     {
         if (filename==null || provider==null) {
             logger.warn("Invalid arguments");
@@ -125,8 +125,6 @@ public class TunnelVpnManager
         }
         
         TunnelVpnSettings settings = app.getSettings();
-        int tunnelId = findLowestAvailableTunnelId( settings );
-        String tunnelName = "tunnel-" + provider + "-" + tunnelId;
         
         if (tunnelId < 1) {
             logger.warn("Failed to find available tunnel ID");
@@ -168,19 +166,6 @@ public class TunnelVpnManager
             }
         }
 
-        /**
-         * Set TunnelVPN settings
-         */
-        TunnelVpnTunnelSettings tunnelSettings = new TunnelVpnTunnelSettings();
-        tunnelSettings.setName( tunnelName );
-        tunnelSettings.setEnabled( false ); //newly imported tunnels are not enabled on import
-        tunnelSettings.setAllTraffic( false );
-        tunnelSettings.setTags( new LinkedList<String>() );
-        tunnelSettings.setTunnelId( tunnelId );
-        tunnels.add( tunnelSettings );
-        settings.setTunnels( tunnels );
-        app.setSettings( settings );
-
         return;
     }
 
@@ -193,7 +178,6 @@ public class TunnelVpnManager
 
         TunnelVpnSettings settings = app.getSettings();
         int tunnelId = findLowestAvailableTunnelId( settings );
-        String tunnelName = "tunnel-" + provider + "-" + tunnelId;
 
         if (tunnelId < 1) {
             logger.warn("Failed to find available tunnel ID");

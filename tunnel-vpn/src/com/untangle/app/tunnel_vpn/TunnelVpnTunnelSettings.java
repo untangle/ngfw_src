@@ -14,6 +14,7 @@ public class TunnelVpnTunnelSettings implements java.io.Serializable
     private boolean enabled = true;
     private String name;
 
+    private String provider = null;
     private String username = null;
     private String password = null;
     
@@ -33,6 +34,9 @@ public class TunnelVpnTunnelSettings implements java.io.Serializable
 
     public boolean getAllTraffic() { return allTraffic; }
     public void setAllTraffic(boolean newValue) { allTraffic = newValue; }
+
+    public String getProvider() { return provider; }
+    public void setProvider(String newValue) { this.provider = newValue; }
 
     public String getUsername() { return username; }
     public void setUsername(String newValue) { this.username = newValue; }
