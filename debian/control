@@ -353,6 +353,7 @@ Depends: untangle-libuvm,
          untangle-libuvmcore (>= 11.1),
          untangle-libuvmthirdparty,
          untangle-development-runtime (> 13.0.0),
+	 ipset,
          gzip, zip, unzip
 Description: Platform
  The Platform.
