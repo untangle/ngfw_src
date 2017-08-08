@@ -398,6 +398,8 @@ public class OpenVpnAppImpl extends AppBase
                 continue;
             if ( intfSettings.getIsWan() )
                 continue;
+            if ( intfSettings.getV4StaticAddress() == null || intfSettings.getV4StaticNetmask() == null )
+                continue;
             
             OpenVpnExport export = new OpenVpnExport();
             export.setEnabled( true );
