@@ -870,7 +870,7 @@ public class HostTableImpl implements HostTable
                 HashSet<String> currentIps = currentIpSets.get(tagName);
                 if (currentIps == null) {
                     currentIps = new HashSet<String>();
-                    currentIpSets.put(address,currentIps);
+                    currentIpSets.put(tagName,currentIps);
                     output = UvmContextFactory.context().execManager().execOutput("ipset create tag-" + tagName + " iphash");
                     lines = output.split("\\r?\\n");
                     for ( String line : lines )
