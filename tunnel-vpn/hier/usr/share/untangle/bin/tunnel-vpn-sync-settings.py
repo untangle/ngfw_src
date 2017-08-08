@@ -252,11 +252,19 @@ if parser.verbosity > 0: print "Wrote %s" % filename
 
 # Write the auth.txt files
 for tunnel in settings.get('tunnels').get('list'):
-    if tunnel.get('username') == None or tunnel.get('password') == None or tunnel.get('tunnelId') == None:
+    if tunnel.get('tunnelId') == None:
         continue
+    username = 'username'
+    password = 'password'
+    if tunnel.get('username') != None:
+        username = tunnel.get('username')
+    if tunnel.get('password') != None:
+        password = tunnel.get('password')
     filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
+    try: os.makedirs(os.path.dirname(filename))
+    except: pass
     file = open( filename, "w+" )
-    file.write("%s\n%s\n" % (tunnel.get('username'),tunnel.get('password')));
+    file.write("%s\n%s\n" % (username,password));
     file.flush()
     file.close()
     if parser.verbosity > 0: print "Wrote %s" % filename
