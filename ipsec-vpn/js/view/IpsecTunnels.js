@@ -148,7 +148,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             labelWidth: 120,
             editable: false,
             bind: '{record.runmode}',
-            store: [['start','Always Connected'],['add','On Demand']]
+            store: [['start','Always Connected'],['route','On Demand']]
         }]
     }, {
         xtype: 'container',
