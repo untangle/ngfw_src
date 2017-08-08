@@ -135,6 +135,7 @@ public class CaptivePortalSSLEngine
             if ((authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
                 if (sniHostname.equals("www.facebook.com")) allowed = true;
                 if (sniHostname.equals("graph.facebook.com")) allowed = true;
+                if (sniHostname.equals("m.facebook.com")) allowed = true;
             }
 
             // hosts we must allow for Microsoft OAuth
