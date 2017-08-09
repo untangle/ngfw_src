@@ -126,6 +126,9 @@ Ext.define('Ung.config.system.MainController', {
             me.loadSettings();
             Util.successToast('System settings saved!');
             Ext.fireEvent('resetfields', v);
+            if(vm.get('localizationChanged') == true){
+                window.location.reload();
+            }
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
@@ -269,6 +272,16 @@ Ext.define('Ung.config.system.MainController', {
         this.getHttpSettings();
         this.getFtpSettings();
         this.getSmtpSettings();
+    },
+
+    languageChange: function(combo, newValue, oldValue){
+        var me = this,
+            vm = me.getViewModel();
+
+        if( ( oldValue != null ) &&
+            ( newValue != oldValue ) ){
+            vm.set('localizationChanged', true);
+        }
     }
 
 });

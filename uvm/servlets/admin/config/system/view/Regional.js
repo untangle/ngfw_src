@@ -154,6 +154,9 @@ Ext.define('Ung.config.system.view.Regional', {
                 getInnerTpl: function() {
                     return '<div data-qtip="{statistics}">{name}</div>';
                 }
+            },
+            listeners: {
+                change: 'languageChange'
             }
         }, {
             xtype: 'fieldset',

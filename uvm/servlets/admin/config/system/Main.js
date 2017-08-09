@@ -11,7 +11,8 @@ Ext.define('Ung.config.system.Main', {
     controller: 'config-system',
 
     viewModel: {
-        type: 'config-system'
+        type: 'config-system',
+        localizationChanged: false
     },
 
     items: [
