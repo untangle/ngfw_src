@@ -12,7 +12,7 @@
     "pieSumColumn": "sum(rx_bytes+tx_bytes)",
     "readOnly": true,
     "table": "interface_stat_events",
-    "seriesRenderer": "interface_id",
+    "seriesRenderer": "interface",
     "title": "Data Usage (by interface)",
     "pieStyle": "COLUMN",
     "type": "PIE_GRAPH"

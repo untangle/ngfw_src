@@ -16,7 +16,7 @@
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "readOnly": false,
-    "seriesRenderer": "interface_id",
+    "seriesRenderer": "interface",
     "table": "wan_failover_test_events",
     "timeDataDynamicAggregationFunction": "count",
     "timeDataDynamicAllowNull": false,
