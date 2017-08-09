@@ -69,7 +69,7 @@ public class EventRuleCondition
         if ( field == null || comparator == null || fieldValue == null )
             return false;
 
-        Object valueObj = getAttribute( obj, field);
+        Object valueObj = getAttribute( obj, field );
         if ( valueObj == null ) {
             //logger.warn("DEBUG missing field: " + field + " value: " + valueObj );
             return false;
@@ -217,7 +217,14 @@ public class EventRuleCondition
         if ( value == null && "javaClass".equals(fieldName) ) {
             try { value = obj.get( "class" ); } catch (Exception e) {}
         }
-
+        // try capitalizing first letter
+        // some json serializers captialize first char in some cases
+        // example: cClientAddr vs CClientAddr 
+        if ( value == null ) {
+            fieldName = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
+            try { value = obj.get( fieldName ); } catch (Exception e) {}
+        }
+        
         // if the attributeName contains a "." then recurse
         // "foo.bar" should get obj['foo']['bar']
         if ( value != null && parts.length > 1 ) {
