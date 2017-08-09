@@ -169,186 +169,186 @@ public class EventManagerImpl implements EventManager
     {
         LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         AlertRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WanFailoverEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "action", "=", "DISCONNECTED" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "WAN is offline", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WanFailoverEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "action", "=", "DISCONNECTED" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "WAN is offline", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "load1", ">", "20" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Server load is high", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "load1", ">", "20" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Server load is high", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "diskFreePercent", "<", ".2" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Free disk space is low", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "diskFreePercent", "<", ".2" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Free disk space is low", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "memFreePercent", "<", ".05" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "memFreePercent", "<", ".05" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Free memory is low", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "swapUsedPercent", ">", ".25" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Swap usage is high", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "swapUsedPercent", ">", ".25" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Swap usage is high", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "sServerPort", "=", "22" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "sServerPort", "=", "22" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "sServerPort", "=", "3389" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "sServerPort", "=", "3389" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "entitled", "=", "false" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "entitled", "=", "false" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "False" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Malware Distribution Point website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "True" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Malware Distribution Point website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "False" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Botnet" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Botnet website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Botnet" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Botnet website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "True" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Botnet" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Botnet website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Botnet" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Botnet website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "False" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Phishing/Fraud website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "blocked", "=", "True" );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Phishing/Fraud website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*DeviceTableEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "key", "=", "add" );
-        matchers.add( matcher2 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*DeviceTableEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "key", "=", "add" );
+        conditions.add( condition2 );
         if ( "i386".equals(System.getProperty("os.arch", "unknown")) || "amd64".equals(System.getProperty("os.arch", "unknown"))) {
-            eventRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
+            eventRule = new AlertRule( false, conditions, true, true, "New device discovered", false, 0 );
         } else {
-            eventRule = new AlertRule( true, matchers, true, true, "New device discovered", false, 0 );
+            eventRule = new AlertRule( true, conditions, true, true, "New device discovered", false, 0 );
         }
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*QuotaEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "action", "=", "2" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host exceeded quota.", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*QuotaEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "action", "=", "2" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host exceeded quota.", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "protochain", "=", "*BITTORRE*" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "protochain", "=", "*BITTORRE*" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host is using Bittorrent", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*HttpResponseEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "contentLength", ">", "1000000000" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*HttpResponseEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "contentLength", ">", "1000000000" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host is doing large download", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*CaptureUserEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "event", "=", "FAILED" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*CaptureUserEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "event", "=", "FAILED" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Failed Captive Portal login", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*VirusHttpEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "clean", "=", "False" );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*VirusHttpEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "clean", "=", "False" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "HTTP virus blocked", false, 0 );
         rules.add( eventRule );
 
         return rules;
@@ -358,14 +358,14 @@ public class EventManagerImpl implements EventManager
     {
         LinkedList<SyslogRule> rules = new LinkedList<SyslogRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         SyslogRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        eventRule = new SyslogRule( true, matchers, true, true, "All events", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        eventRule = new SyslogRule( true, conditions, true, true, "All events", false, 0 );
         rules.add( eventRule );
 
         return rules;
@@ -375,54 +375,54 @@ public class EventManagerImpl implements EventManager
     {
         LinkedList<TriggerRule> rules = new LinkedList<TriggerRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         TriggerRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( true, conditions, true, "Tag suspicious activity", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "cClientAddr" );
         eventRule.setTagName( "suspicious" );
         eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
         
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "category", "=", "Proxy" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( false, matchers, true, "Tag proxy-using hosts", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "category", "=", "Proxy" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag proxy-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "proxy-use" );
         eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "application", "=", "BITTORRE" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "application", "=", "BITTORRE" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "bittorrent-usage" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "category", "=", "BITTORRE" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "category", "=", "BITTORRE" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "bittorrent-usage" );
