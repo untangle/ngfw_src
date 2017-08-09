@@ -117,6 +117,8 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
+//        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
+
         CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
 
         if (sniHostname != null) {
@@ -136,6 +138,7 @@ public class CaptivePortalSSLEngine
                 if (sniHostname.equals("www.facebook.com")) allowed = true;
                 if (sniHostname.equals("graph.facebook.com")) allowed = true;
                 if (sniHostname.equals("m.facebook.com")) allowed = true;
+                if (sniHostname.equals("static.xx.fbcdn.net")) allowed = true;
             }
 
             // hosts we must allow for Microsoft OAuth
