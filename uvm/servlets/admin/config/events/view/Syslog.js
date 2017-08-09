@@ -1,10 +1,11 @@
 Ext.define('Ung.config.events.view.Syslog', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias: 'widget.config-events-syslog',
     itemId: 'syslog',
     title: 'Syslog'.t(),
 
     bodyPadding: 10,
+    withValidation: true,
 
     items:[{
         title: 'Remote Syslog Configuration'.t(),
@@ -13,7 +14,6 @@ Ext.define('Ung.config.events.view.Syslog', {
             html: 'If enabled logged events will be sent in real-time to a remote syslog for custom processing.'.t()
         }, {
             xtype:'checkbox',
-            // margin: '0 10 0 10',
             labelWidth: 160,
             bind: "{settings.syslogEnabled}",
             fieldLabel: 'Enable Remote Syslog'.t(),
@@ -57,7 +57,6 @@ Ext.define('Ung.config.events.view.Syslog', {
                 vtype: 'port'
             },{
                 xtype: 'combo',
-                // name: 'syslogProtocol',
                 editable: false,
                 fieldLabel: 'Protocol'.t(),
                 queryMode: 'local',
@@ -68,8 +67,6 @@ Ext.define('Ung.config.events.view.Syslog', {
                 name: 'syslogEventsSummary',
                 xtype: 'component',
                 html: '',
-                // hidden: !this.getEventSettings().syslogEnabled
-
             }]
         }]
     }, {
