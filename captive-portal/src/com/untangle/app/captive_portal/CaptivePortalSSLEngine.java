@@ -117,7 +117,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
-        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
+//        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
 
         CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
 
