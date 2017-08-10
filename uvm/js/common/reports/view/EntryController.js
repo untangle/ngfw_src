@@ -605,6 +605,15 @@ Ext.define('Ung.view.reports.EntryController', {
                 }
             }
 
+            var messages = [];
+            if(currentRecord.get('readOnly')){
+                messages.push( '<i class="fa fa-info-circle fa-lg"></i>' + 'This is a default report and is read-only.  Delete and Save are disabled.'.t());
+            }
+            if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
+                messages.push( '<i class="fa fa-info-circle fa-lg"></i>'+ 'Another report within this category has the same title.  Save as New Report is disabled'.t());
+            }
+            vm.set('reportMessages',  messages.join('<br>'));
+
             vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
             vm.set('disableNewSave', titleConflictSaveNew );
             if(!titleConflictSave){

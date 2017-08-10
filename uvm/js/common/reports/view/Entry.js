@@ -334,10 +334,10 @@ Ext.define('Ung.view.reports.Entry', {
                 padding: 10,
                 margin: '0 0 10 0',
                 style: { background: '#EEE' },
-                html: '<i class="fa fa-info-circle fa-lg"></i> This is a default report. Any changes can be saved only by creating a new Report.',
                 hidden: true,
                 bind: {
-                    hidden: '{!entry.readOnly}'
+                    hidden: '{!entry.readOnly}',
+                    html: '{reportMessages}'
                 }
             }, {
                 xtype: 'textfield',
@@ -894,7 +894,9 @@ Ext.define('Ung.view.reports.Entry', {
                     }]
                 }]
             }],
-            bbar: ['->', {
+            bbar: [
+            '->',
+            {
                 text: 'Delete'.t(),
                 iconCls: 'fa fa-minus-circle',
                 disabled: true,
@@ -913,7 +915,6 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 text: 'Save as New Report'.t(),
                 iconCls: 'fa fa-plus-circle',
-                itemId: 'saveNewBtn',
                 handler: 'saveNewReport',
                 bind: {
                     disabled: '{disableNewSave}'
