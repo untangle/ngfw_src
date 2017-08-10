@@ -27,6 +27,7 @@ public class ExtensionImpl implements Runnable
 
     private ExtensionImpl()
     {
+        classDescriptions.put("AdminLoginEvent","These events are created by the base system and inserted to the [[Database_Schema#user_table_updates|admin_logins]] table when an administrator login is attempted or successful.");
         classDescriptions.put("UserTableEvent","These events are created by the base system and inserted to the [[Database_Schema#user_table_updates|user_table_updates]] table when the user table is modified.");
         classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
@@ -96,14 +97,14 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("s2pBytes","The number of bytes sent from the server to Untangle");
         attributeDescriptions.put("s2pChunks","The number of chunks/packets sent from the server to Untangle");
         attributeDescriptions.put("sessionId","The session ID");
-        attributeDescriptions.put("cClientAddr","The client-side (pre-NAT) client address");
-        attributeDescriptions.put("cClientPort","The client-side (pre-NAT) client port");
-        attributeDescriptions.put("cServerAddr","The client-side (pre-NAT) server address");
-        attributeDescriptions.put("cServerPort","The client-side (pre-NAT) server port");
-        attributeDescriptions.put("sClientAddr","The server-side (post-NAT) client address");
-        attributeDescriptions.put("sClientPort","The server-side (post-NAT) client port");
-        attributeDescriptions.put("sServerAddr","The server-side (post-NAT) server address");
-        attributeDescriptions.put("sServerPort","The server-side (post-NAT) server port");
+        attributeDescriptions.put("CClientAddr","The client-side (pre-NAT) client address");
+        attributeDescriptions.put("CClientPort","The client-side (pre-NAT) client port");
+        attributeDescriptions.put("CServerAddr","The client-side (pre-NAT) server address");
+        attributeDescriptions.put("CServerPort","The client-side (pre-NAT) server port");
+        attributeDescriptions.put("SClientAddr","The server-side (post-NAT) client address");
+        attributeDescriptions.put("SClientPort","The server-side (post-NAT) client port");
+        attributeDescriptions.put("SServerAddr","The server-side (post-NAT) server address");
+        attributeDescriptions.put("SServerPort","The server-side (post-NAT) server port");
         attributeDescriptions.put("bypassed","True if bypassed, false otherwise");
         attributeDescriptions.put("clientIntf","The client interface ID");
         attributeDescriptions.put("entitled","The entitled status");
@@ -188,7 +189,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("state","The state");
         attributeDescriptions.put("confidence","The confidence (0-100)");
         attributeDescriptions.put("status","The status");
-        attributeDescriptions.put("iPAddr","The IP address");
+        attributeDescriptions.put("IPAddr","The IP address");
         attributeDescriptions.put("vendorName","The application name");
         attributeDescriptions.put("clientAddr","The client address");
         attributeDescriptions.put("clientPort","The client port");
@@ -246,6 +247,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("type","The type");
         attributeDescriptions.put("bytesRxDelta","The delta number of RX (received) bytes from the previous event");
         attributeDescriptions.put("bytesRxTotal","The total number of RX (received) bytes");
+        attributeDescriptions.put("rxBytes","The total of received bytes");
+        attributeDescriptions.put("txBytes","The total of transmitted bytes");
         attributeDescriptions.put("bytesTxDelta","The delta number of TX (transmitted) bytes from the previous event");
         attributeDescriptions.put("bytesTxTotal","The total number of TX (transmitted) bytes");
         attributeDescriptions.put("end","The end");
@@ -266,7 +269,9 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("entity","The entity");
         attributeDescriptions.put("causalRule","The causal rule");
         attributeDescriptions.put("eventSent","True if the event was sent, false otherwise");
-        attributeDescriptions.put("oldValue","");
+        attributeDescriptions.put("oldValue","The old value");
+        attributeDescriptions.put("login","The login username");
+        attributeDescriptions.put("succeeded","1 if successful, 0 otherwise");
 
         HashMap<String,String> specificDescriptions;
         
@@ -295,6 +300,10 @@ public class ExtensionImpl implements Runnable
         specificDescriptions = new HashMap<String,String>();
         specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
+
+        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions.put("local","1 if login is done via local console, 0 otherwise");
+        classSpecificAttributeDescriptions.put("AdminLoginEvent",specificDescriptions);
     }
 
     
@@ -358,7 +367,14 @@ public class ExtensionImpl implements Runnable
 
                 String methodName = method.getName();
                 methodName = methodName.replaceAll("^get","");
-                methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                if (methodName.length() > 1) {
+                    // if second char is upper case, leave first char
+                    if (!Character.isUpperCase(methodName.charAt(1))) {
+                        methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                    }
+                } else {
+                    methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                }
 
                 String returnType = method.getReturnType().toString();
                 returnType = returnType.replaceAll(".*\\.","");
