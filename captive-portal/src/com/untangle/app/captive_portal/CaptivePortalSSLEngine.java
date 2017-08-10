@@ -117,7 +117,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
-//        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
+        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
 
         CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
 
@@ -126,6 +126,7 @@ public class CaptivePortalSSLEngine
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
 
             if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
+            if (sniHostname.equals("connectivitycheck.gstatic.com")) allowed = true;
 
             // hosts we must allow for Google OAuth
             if ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
@@ -135,9 +136,10 @@ public class CaptivePortalSSLEngine
 
             // hosts we must allow for Facebook OAuth
             if ((authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
+                if (sniHostname.equals("m.facebook.com")) allowed = true;
                 if (sniHostname.equals("www.facebook.com")) allowed = true;
                 if (sniHostname.equals("graph.facebook.com")) allowed = true;
-                if (sniHostname.equals("m.facebook.com")) allowed = true;
+                if (sniHostname.equals("staticxx.facebook.com")) allowed = true;
                 if (sniHostname.equals("static.xx.fbcdn.net")) allowed = true;
             }
 
@@ -151,7 +153,7 @@ public class CaptivePortalSSLEngine
             }
 
             if (allowed) {
-                logger.debug("Releasing OAuth session: " + sniHostname);
+                logger.debug("Releasing HTTPS OAuth session: " + sniHostname);
                 session.sendDataToServer(data);
                 session.release();
                 return true;
