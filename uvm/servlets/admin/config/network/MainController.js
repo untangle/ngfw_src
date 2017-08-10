@@ -72,9 +72,9 @@ Ext.define('Ung.config.network.MainController', {
         var vm = this.getViewModel();
         var me = this;
 
-        // if (!Util.validateForms(view)) {
-        //     return;
-        // }
+        if (!Util.validateForms(view)) {
+            return;
+        }
 
         // update interfaces data
         var interfacesStore = view.down('#interfacesGrid').getStore();
@@ -104,37 +104,6 @@ Ext.define('Ung.config.network.MainController', {
                 // store.commitChanges();
             }
         });
-
-        // extra validations
-        var hostNameCmp = view.down('textfield[name="HostName"]');
-        if (hostNameCmp.rendered && !hostNameCmp.isValid()) {
-            Ung.app.redirectTo('#config/network/hostname');
-            Ext.MessageBox.alert('Warning'.t(), 'A Host Name must be specified.'.t());
-            hostNameCmp.focus(true);
-            return;
-        }
-        var domainNameCmp = view.down('textfield[name="DomainName"]');
-        if (domainNameCmp.rendered && !domainNameCmp.isValid()) {
-            Ung.app.redirectTo('#config/network/hostname');
-            Ext.MessageBox.alert('Warning'.t(), 'A Domain Name must be specified.'.t());
-            domainNameCmp.focus(true);
-            return;
-        }
-        var httpsPortCmp = view.down('textfield[name="httpsPort"]');
-        if (httpsPortCmp.rendered && !httpsPortCmp.isValid()) {
-            Ung.app.redirectTo('#config/network/services');
-            Ext.MessageBox.alert('Warning'.t(), 'A HTTPS port must be specified.'.t());
-            httpsPortCmp.focus(true);
-            return;
-        }
-
-        var httpPortCmp = view.down('textfield[name="httpPort"]');
-        if (httpPortCmp.rendered && !httpPortCmp.isValid()) {
-            Ung.app.redirectTo('#config/network/services');
-            Ext.MessageBox.alert('Warning'.t(), 'A HTTP port must be specified.'.t());
-            httpPortCmp.focus(true);
-            return;
-        }
 
         // check if Block All access rule exists and is enabled
         var blockAllRule = me.isBlockAllAccessRuleEnabled(vm.get('settings'));
@@ -778,7 +747,15 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     doneEdit: function (btn) {
-        var me = this, dialogVm = me.dialog.getViewModel(), intf = dialogVm.get('intf');
+        var me = this,
+            view = me.getView(),
+            dialogVm = me.dialog.getViewModel(),
+            intf = dialogVm.get('intf');
+
+        if (!Util.validateForms(view)) {
+            return;
+        }
+
         this.dialog.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||

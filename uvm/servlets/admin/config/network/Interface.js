@@ -9,6 +9,7 @@ Ext.define('Ung.config.network.Interface', {
     closable: false,
     layout: 'border',
     modal: true,
+    withValidation: true,
 
     items: [{
         region: 'north',
@@ -403,6 +404,7 @@ Ext.define('Ung.config.network.Interface', {
                     },
                     fieldLabel: 'Address'.t(),
                     allowBlank: false,
+                    blankText: 'Address must be specified.'.t(),
                     vtype: 'ip4Address'
                 }, {
                     // static netmask

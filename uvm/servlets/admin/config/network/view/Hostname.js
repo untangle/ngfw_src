@@ -24,6 +24,7 @@ Ext.define('Ung.config.network.view.Hostname', {
                 labelAlign: 'right',
                 emptyText: 'hostname',
                 allowBlank: false,
+                blankText: 'Hostname must be specified.'.t(),
                 name: 'HostName',
                 bind: '{settings.hostName}',
                 maskRe: /[a-zA-Z0-9\-]/
@@ -43,6 +44,7 @@ Ext.define('Ung.config.network.view.Hostname', {
                 labelAlign: 'right',
                 emptyText: 'example.com',
                 allowBlank: false,
+                blankText: 'Domain Name must be specified.'.t(),
                 name: 'DomainName',
                 bind: '{settings.domainName}'
             }, {

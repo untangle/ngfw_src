@@ -37,7 +37,7 @@ Ext.define('Ung.config.events.view.Syslog', {
                 bind: '{settings.syslogHost}',
                 toValidate: true,
                 allowBlank: false,
-                blankText: 'A Host must be specified.'.t(),
+                blankText: 'Host must be specified.'.t(),
                 validator: Ext.bind( function( value ){
                     if( value == '127.0.0.1' ||
                         value == 'localhost' ){
