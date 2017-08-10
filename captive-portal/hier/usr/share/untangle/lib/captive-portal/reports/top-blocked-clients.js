@@ -8,16 +8,16 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "client_addr",
+    "pieGroupColumn": "c_client_addr",
     "pieSumColumn": "count(*)",
     "readOnly": true,
-    "table": "captive_portal_user_events",
+    "table": "sessions",
     "conditions": [
         {
+            "column": "captive_portal_blocked",
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "event_info",
-            "operator": "=",
-            "value": "FAILED"
+            "operator": "is",
+            "value": "TRUE"
         }
     ],
     "title": "Top Blocked Clients",
