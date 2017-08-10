@@ -854,8 +854,7 @@ public class EventManagerImpl implements EventManager
 
 
     /**
-     * This thread waits on the l
-     * It also explicitly releases hosts from the penalty box and quotas after expiration
+     * This thread waits on the inputQueue
      */
     private class EventWriter implements Runnable
     {
@@ -874,7 +873,7 @@ public class EventManagerImpl implements EventManager
             while (thread != null) {
                 synchronized( this ) {
                     try {
-                        if (inputQueue.size() > 10000) {
+                        if (inputQueue.size() > 20000) {
                             logger.warn("Large input queue size: " + inputQueue.size());
                         }
 
