@@ -29,7 +29,7 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
 
     // constructors -----------------------------------------------------------
 
-    CaptivePortalHttpHandler( CaptivePortalApp app )
+    CaptivePortalHttpHandler(CaptivePortalApp app)
     {
         super();
         this.app = app;
@@ -38,14 +38,15 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
     // HttpEventHandler methods -----------------------------------------------
 
     @Override
-    protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
         Token[] response = null;
+        boolean allowed = false;
 
         // first check to see if the user is already authenticated
         if (app.isClientAuthenticated(session.getClientAddr()) == true) {
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
-            releaseRequest( session );
+            releaseRequest(session);
             return (requestHeader);
         }
 
@@ -59,7 +60,7 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
             }
 
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
-            releaseRequest( session );
+            releaseRequest(session);
             return (requestHeader);
         }
 
@@ -69,7 +70,7 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         // by default we allow traffic so if there is no rule pass the traffic
         if (rule == null) {
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
-            releaseRequest( session );
+            releaseRequest(session);
             return (requestHeader);
         }
 
@@ -79,25 +80,32 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
             app.logEvent(logevt);
 
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
-            releaseRequest( session );
+            releaseRequest(session);
             return (requestHeader);
         }
 
-        String method = getRequestLine( session ).getMethod().toString();
-        String uri = getRequestLine( session ).getRequestUri().toString();
+        String method = getRequestLine(session).getMethod().toString();
+        String uri = getRequestLine(session).getRequestUri().toString();
 
         // look for a host in the request line
-        String host = getRequestLine( session ).getRequestUri().getHost();
+        String host = getRequestLine(session).getRequestUri().getHost();
 
         // if not found there look in the request header
-        if (host == null)
-            host = requestHeader.getValue("Host");
+        if (host == null) host = requestHeader.getValue("Host");
 
         // if still not found then just use the IP address of the server
-        if (host == null)
-            host = session.getServerAddr().getHostAddress().toString();
+        if (host == null) host = session.getServerAddr().getHostAddress().toString();
 
         host = host.toLowerCase();
+
+        // allow things needed to make OAuth login work better
+        if (host.equals("connectivitycheck.gstatic.com")) allowed = true;
+
+        if (allowed == true) {
+            logger.info("Releasing HTTP OAuth session: " + host);
+            releaseRequest(session);
+            return (requestHeader);
+        }
 
         // look for prefetch shenaniganery
         String prefetch = requestHeader.getValue("X-moz");
@@ -116,47 +124,47 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         app.logEvent(logevt);
         app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
-        blockRequest( session, response );
+        blockRequest(session, response);
         return requestHeader;
     }
 
     @Override
-    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken chunk )
+    protected ChunkToken doRequestBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd( AppTCPSession session )
+    protected void doRequestBodyEnd(AppTCPSession session)
     {
     }
 
     @Override
-    protected HeaderToken doResponseHeader( AppTCPSession session, HeaderToken header )
+    protected HeaderToken doResponseHeader(AppTCPSession session, HeaderToken header)
     {
-        releaseResponse( session );
+        releaseResponse(session);
         return header;
     }
 
     @Override
-    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken chunk )
+    protected ChunkToken doResponseBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd( AppTCPSession session )
+    protected void doResponseBodyEnd(AppTCPSession session)
     {
     }
 
     @Override
-    protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
+    protected RequestLineToken doRequestLine(AppTCPSession session, RequestLineToken requestLine)
     {
         return requestLine;
     }
 
     @Override
-    protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
+    protected StatusLine doStatusLine(AppTCPSession session, StatusLine statusLine)
     {
         return statusLine;
     }
