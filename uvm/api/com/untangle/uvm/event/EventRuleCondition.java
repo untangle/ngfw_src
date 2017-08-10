@@ -217,13 +217,6 @@ public class EventRuleCondition
         if ( value == null && "javaClass".equals(fieldName) ) {
             try { value = obj.get( "class" ); } catch (Exception e) {}
         }
-        // try capitalizing first letter
-        // some json serializers captialize first char in some cases
-        // example: cClientAddr vs CClientAddr 
-        if ( value == null ) {
-            fieldName = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
-            try { value = obj.get( fieldName ); } catch (Exception e) {}
-        }
         
         // if the attributeName contains a "." then recurse
         // "foo.bar" should get obj['foo']['bar']

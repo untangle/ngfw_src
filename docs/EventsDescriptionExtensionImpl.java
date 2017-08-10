@@ -104,14 +104,14 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("s2pBytes","The number of bytes sent from the server to Untangle");
         attributeDescriptions.put("s2pChunks","The number of chunks/packets sent from the server to Untangle");
         attributeDescriptions.put("sessionId","The session ID");
-        attributeDescriptions.put("cClientAddr","The client-side (pre-NAT) client address");
-        attributeDescriptions.put("cClientPort","The client-side (pre-NAT) client port");
-        attributeDescriptions.put("cServerAddr","The client-side (pre-NAT) server address");
-        attributeDescriptions.put("cServerPort","The client-side (pre-NAT) server port");
-        attributeDescriptions.put("sClientAddr","The server-side (post-NAT) client address");
-        attributeDescriptions.put("sClientPort","The server-side (post-NAT) client port");
-        attributeDescriptions.put("sServerAddr","The server-side (post-NAT) server address");
-        attributeDescriptions.put("sServerPort","The server-side (post-NAT) server port");
+        attributeDescriptions.put("CClientAddr","The client-side (pre-NAT) client address");
+        attributeDescriptions.put("CClientPort","The client-side (pre-NAT) client port");
+        attributeDescriptions.put("CServerAddr","The client-side (pre-NAT) server address");
+        attributeDescriptions.put("CServerPort","The client-side (pre-NAT) server port");
+        attributeDescriptions.put("SClientAddr","The server-side (post-NAT) client address");
+        attributeDescriptions.put("SClientPort","The server-side (post-NAT) client port");
+        attributeDescriptions.put("SServerAddr","The server-side (post-NAT) server address");
+        attributeDescriptions.put("SServerPort","The server-side (post-NAT) server port");
         attributeDescriptions.put("bypassed","True if bypassed, false otherwise");
         attributeDescriptions.put("clientIntf","The client interface ID");
         attributeDescriptions.put("entitled","The entitled status");
@@ -196,7 +196,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("state","The state");
         attributeDescriptions.put("confidence","The confidence (0-100)");
         attributeDescriptions.put("status","The status");
-        attributeDescriptions.put("iPAddr","The IP address");
+        attributeDescriptions.put("IPAddr","The IP address");
         attributeDescriptions.put("vendorName","The application name");
         attributeDescriptions.put("clientAddr","The client address");
         attributeDescriptions.put("clientPort","The client port");
@@ -319,7 +319,7 @@ public class ExtensionImpl implements Runnable
 
         try {
             String lines[] = result.split("\\n");
-            System.out.println("this.eventsConfig = {");
+            System.out.println("{");
             for ( String line : lines ) {
                 printClassDescription( line );
             }
@@ -381,7 +381,14 @@ public class ExtensionImpl implements Runnable
 
                 String methodName = method.getName();
                 methodName = methodName.replaceAll("^get","");
-                methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                if (methodName.length() > 1) {
+                    // if second char is upper case, leave first char
+                    if (!Character.isUpperCase(methodName.charAt(1))) {
+                        methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                    }
+                } else {
+                    methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                }
 
                 Class returnTypeClazz = method.getReturnType();
                 String returnType = returnTypeClazz.toString();
