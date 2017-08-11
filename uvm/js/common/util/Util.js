@@ -537,22 +537,23 @@ Ext.define('Ung.util.Util', {
         var invalidFields = [];
 
         view.query('[withValidation=true]').forEach(function (form) {
-            if( ( form.isDirty === undefined ) || form.isDirty()){
-                form.query('field').forEach(function (field) {
-                    if(field.isHidden()){
-                        return;
-                    }
-                    if(field.up('*{isHidden()==true}')){
-                        return;
-                    }
-                    if(field.up().tab && field.up().tab.isHidden() == true ){
-                        return;
-                    }
-                    if(field.isValid() == false){
-                        invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
-                    }
-                });
-            }
+            form.query('field').forEach(function (field) {
+                if(field.isHidden()){
+                    return;
+                }
+                if(field.up('*{isHidden()==true}')){
+                    return;
+                }
+                if(field.up().tab && field.up().tab.isHidden() == true ){
+                    return;
+                }
+                if(field.initialConfig.bind && field.$hasBinds == undefined){
+                    return;
+                }
+                if( field.isValid() == false){
+                    invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
+                }
+            });
         });
 
         if (invalidFields.length > 0) {
