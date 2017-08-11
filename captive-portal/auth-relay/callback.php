@@ -2,20 +2,21 @@
 
 $redirect = "";
 
-if (isset($_REQUEST['code'])) {
-    $code = $_REQUEST['code'];
-} else {
-    echo "<html>Missing code</html>";
-    die();
-}
 if (isset($_REQUEST['state'])) {
-    $state = $_REQUEST['state'];
+    $state = urldecode($_REQUEST['state']);
 } else {
     echo "<html>Missing state</html>";
     die();
 }
 
-$redirect = urldecode($state) . "&authcode=$code";
+if (isset($_REQUEST['code'])) {
+    $code = $_REQUEST['code'];
+    $redirect = $state . "&authcode=$code";
+} else {
+    $code = "MISSING";
+    parse_str($state,$target);
+    $redirect = "http://" . $target['host'] . $target['uri'];
+}
 
 #show_debug();
 
