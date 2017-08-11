@@ -607,10 +607,10 @@ Ext.define('Ung.view.reports.EntryController', {
 
             var messages = [];
             if(currentRecord.get('readOnly')){
-                messages.push( '<i class="fa fa-info-circle fa-lg"></i>' + 'This is a default report and is read-only.  Delete and Save are disabled.'.t());
+                messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
             }
             if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
-                messages.push( '<i class="fa fa-info-circle fa-lg"></i>'+ 'Another report within this category has the same title.  Save as New Report is disabled'.t());
+                messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
             }
             vm.set('reportMessages',  messages.join('<br>'));
 
