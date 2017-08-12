@@ -865,7 +865,6 @@ public class HostTableImpl implements HostTable
                 String address = entry.getAddress().getHostAddress();
                 String output;
                 String[] lines;
-                logger.info("Tag " + tagName + " added to " + entry.getAddress().getHostAddress());
 
                 HashSet<String> currentIps = currentIpSets.get(tagName);
                 if (currentIps == null) {
@@ -878,6 +877,7 @@ public class HostTableImpl implements HostTable
                 }
 
                 if (!currentIps.contains(address)) {
+                    logger.info("Tag " + tagName + " added to " + entry.getAddress().getHostAddress());
                     currentIps.add(address);
                     output = UvmContextFactory.context().execManager().execOutput("ipset add tag-" + tagName + " " + address);
                     lines = output.split("\\r?\\n");
