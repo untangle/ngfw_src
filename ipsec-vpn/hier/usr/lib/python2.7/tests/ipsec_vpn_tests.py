@@ -22,7 +22,7 @@ tunnelUp = False
 orig_netsettings = None
 
 # hardcoded for ats testing
-l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.112.11.55","10.111.56.91","10.111.56.94"]
+l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.0.134","10.111.56.91","10.111.56.94"]
 l2tpClientHost = "10.111.56.83"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
@@ -33,7 +33,7 @@ ipsecHostLANIP = "192.168.235.96"
 ipsecPcLANIP = "192.168.235.83"
 ipsecHostLAN = "192.168.235.0/24"
 ipsecHostname = "ipsecsite.untangle.int"
-configuredHostIPs = [('10.112.11.55','192.168.2.1','192.168.2.0/24'), # ATS
+configuredHostIPs = [('10.111.0.134','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
                      ('10.111.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
                      ('10.111.56.56','10.111.56.56','10.111.56.15/32'), # QA 3 Bridged
