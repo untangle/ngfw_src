@@ -176,8 +176,8 @@ fi
     for tunnel in settings.get('tunnels').get('list'):
         file.write("${IPTABLES} -t mangle -D mark-src-intf -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\" >/dev/null 2>&1"%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
         file.write("${IPTABLES} -t mangle -D mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\" >/dev/null 2>&1"%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
-        file.write("${IPTABLES} -t mangle -I mark-src-intf -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
-        file.write("${IPTABLES} -t mangle -I mark-dst-intf -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
+        file.write("${IPTABLES} -t mangle -I mark-src-intf 3 -i tun%i -j MARK --set-mark %i/0x00ff -m comment --comment \"Set src interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')) + "\n");
+        file.write("${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun%i -j MARK --set-mark %i/0xff00 -m comment --comment \"Set dst interface mark for tunnel vpn\""%(tunnel.get('tunnelId'),tunnel.get('tunnelId')<<8) + "\n");
         file.write("\n");
 
         file.write("${IPTABLES} -t nat -D nat-rules -o tun%i -j MASQUERADE -m comment --comment \"NAT tunnel vpn sessions\" >/dev/null 2>&1"%(tunnel.get('tunnelId')) + "\n");
