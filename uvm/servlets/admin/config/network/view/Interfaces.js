@@ -233,37 +233,22 @@ Ext.define('Ung.config.network.view.Interfaces', {
         split: true,
         collapsible: false,
         height: '50%',
-        // maxHeight: '50%',
         hidden: true,
         layout: 'border',
         bind: {
-            // title: '{si.name} ({si.physicalDev})',
             hidden: '{!interfacesGrid.selection}',
         },
-        // tbar: [{
-        //     bind: {
-        //         text: '<strong>' + 'Edit'.t() + ' {si.name} ({si.physicalDev})' + '</strong>',
-        //         iconCls: 'fa fa-pencil',
-        //         scale: 'large',
-        //         width: '100%',
-        //         handler: 'editInterface'
-        //     }
-        // }],
         items: [{
             title: 'Status'.t(),
             region: 'center',
-            // border: false,
             itemId: 'interfaceStatus',
             xtype: 'propertygrid',
-            // header: false,
             hideHeaders: true,
             sortableColumns: false,
             align: 'right',
             nameColumnWidth: 150,
-            // hidden: true,
             bind: {
                 source: '{siStatus}',
-                // hidden: '{isDisabled}'
             },
             sourceConfig: {
                 device: { displayName: 'Device'.t() },
@@ -291,23 +276,23 @@ Ext.define('Ung.config.network.view.Interfaces', {
             region: 'east',
             width: '60%',
             split: true,
-            // border: false,
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
 
-            // viewConfig: {
-            //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-            // },
             bind: '{interfaceArp}',
             columns: [{
                 header: 'MAC Address'.t(),
-                dataIndex: 'macAddress'
+                dataIndex: 'macAddress',
+                width: Renderer.macWidth
             }, {
                 header: 'IP Address'.t(),
-                dataIndex: 'address'
+                dataIndex: 'address',
+                width: Renderer.ipWidth
             }, {
                 header: 'Type'.t(),
-                dataIndex: 'type'
+                dataIndex: 'type',
+                width: Renderer.messageWidth,
+                flex: 1
             }],
             tbar: [{
                 xtype: 'button',
@@ -316,22 +301,5 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 handler: 'getInterfaceArp'
             }]
         }]
-    }
-    // {
-    //     region: 'east',
-    //     weight: 20,
-    //     bind: {
-    //         source: '{interfacesGrid.selection.data}'
-    //     },
-    //     title: 'Interface',
-    //     xtype: 'propertygrid',
-    //     split: true,
-    //     collapsible: true,
-    //     shadow: false,
-    //     animCollapse: false,
-    //     titleCollapse: true,
-    //     editable: false,
-    //     width: 400
-    // }
-    ]
+    }]
 });
