@@ -6,7 +6,7 @@ Ext.define('Ung.util.Renderer', {
      * Common column widths
      */
     // Action
-    actionWidth: 80,
+    actionWidth: 60,
     // Boolean
     booleanWidth: 40,
     // Counter
@@ -17,6 +17,8 @@ Ext.define('Ung.util.Renderer', {
     hostnameWidth: 120,
     // Numeric identifier
     idWidth: 75,
+    // Icon
+    iconWidth: 30,
     // IP Address
     ipWidth: 100,
     // Load measurement

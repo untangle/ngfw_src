@@ -45,7 +45,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         ],
         columns: [{
             dataIndex: 'connected',
-            width: 40,
+            width: Renderer.iconWidth,
             align: 'center',
             resizable: false,
             sortable: false,
@@ -61,11 +61,11 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Id'.t(),
             dataIndex: 'interfaceId',
-            width: 70,
+            width: Renderer.idWidth,
             resizable: false,
             align: 'right'
         }, {
-            width: 30,
+            width: Renderer.iconWidth,
             align: 'center',
             resizable: false,
             sortable: false,
@@ -82,12 +82,12 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Name'.t(),
             dataIndex: 'name',
-            minWidth: 200,
+            minWidth: Renderer.messageWidth,
             flex: 1
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
-            width: 130,
+            minWidth: Renderer.idWidth,
             renderer: function (value) {
                 switch (value) {
                 case 'CONNECTED': return 'connected'.t();
@@ -99,7 +99,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Device'.t(),
             dataIndex: 'physicalDev',
-            width: 100,
+            minWidth: Renderer.idWidth,
             renderer: function (value, metadata, record) {
                 if (record.get('isVlanInterface')) {
                     return record.get('systemDev');
@@ -109,32 +109,32 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Speed'.t(),
             dataIndex: 'mbit',
-            width: 100
+            minWidth: Renderer.idWidth,
         }, {
             header: 'Physical Dev'.t(),
             dataIndex: 'physicalDev',
             hidden: true,
-            width: 80
+            minWidth: Renderer.idWidth,
         }, {
             header: 'System Dev'.t(),
             dataIndex: 'systemDev',
             hidden: true,
-            width: 80
+            minWidth: Renderer.idWidth,
         }, {
             header: 'Symbolic Dev'.t(),
             dataIndex: 'symbolicDev',
             hidden: true,
-            width: 80
+            minWidth: Renderer.idWidth,
         }, {
             header: 'IMQ Dev'.t(),
             dataIndex: 'imqDev',
             hidden: true,
-            width: 80
+            minWidth: Renderer.idWidth,
         }, {
             header: 'Duplex'.t(),
             dataIndex: 'duplex',
             hidden: true,
-            width: 100,
+            minWidth: Renderer.idWidth,
             renderer: function (value) {
                 switch (value) {
                 case 'FULL_DUPLEX': return 'full-duplex'.t();
@@ -145,7 +145,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Config'.t(),
             dataIndex: 'configType',
-            width: 100,
+            minWidth: Renderer.idWidth,
             renderer: function (value) {
                 switch (value) {
                 case 'ADDRESSED': return 'Addressed'.t();
@@ -157,13 +157,13 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Current Address'.t(),
             dataIndex: 'v4Address',
-            width: 150,
+            minWidth: Renderer.ipWidth,
             renderer: function (value, metaData, record) {
                 return Ext.isEmpty(value) ? '' : value + ' / ' + record.get('v4PrefixLength');
             }
         }, {
             header: 'is WAN'.t(),
-            width: 80,
+            minWidth: Renderer.booleanWidth,
             resizable: false,
             dataIndex: 'isWan',
             align: 'center',
@@ -172,6 +172,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'is Vlan'.t(),
+            minWidth: Renderer.booleanWidth,
             hidden: true,
             dataIndex: 'isVlanInterface',
             align: 'center',
@@ -181,16 +182,16 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'MAC Address'.t(),
             hidden: true,
-            width: 160,
+            minWidth: Renderer.macWidth,
             dataIndex: 'macAddress'
         }, {
             header: 'Vendor'.t(),
             hidden: true,
-            width: 160,
+            minWidth: Renderer.messageWidth,
             dataIndex: 'vendor'
         }, {
             xtype: 'actioncolumn',
-            width: 60,
+            minWidth: Renderer.actionWidth,
             header: 'Edit'.t(),
             align: 'center',
             resizable: false,
@@ -201,7 +202,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             hideable: false
         }, {
             xtype: 'actioncolumn',
-            width: 60,
+            minWidth: Renderer.actionWidth,
             header: 'Delete'.t(),
             align: 'center',
             resizable: false,
