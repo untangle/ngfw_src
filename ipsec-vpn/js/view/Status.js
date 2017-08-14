@@ -35,10 +35,11 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             title: 'Enabled IPsec Tunnels'.t(),
             itemId: 'tunnelStatus',
             trackMouseOver: false,
-            sortableColumns: false,
+            sortableColumns: true,
             enableColumnHide: false,
             minHeight: 150,
-            maxHeight: 250,
+            maxHeight: 800,
+            resizable: true,
             margin: '10 0 10 0',
             viewConfig: {
                 emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No IPsec Tunnels'.t() + ' ...</p>',
@@ -49,6 +50,22 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             bind: '{tunnelStatusStore}',
 
             columns: [{
+                header: 'Status'.t(),
+                dataIndex: 'mode',
+                renderer: function(value) {
+                    var showtxt = 'Inactive'.t(),
+                        showico = 'fa fa-circle fa-gray';
+                    if (value.toLowerCase() === 'active') {
+                        showtxt = 'Active'.t();
+                        showico = 'fa fa-circle fa-green';
+                    }
+                    if (value.toLowerCase() === 'unknown') {
+                        showtxt = 'Unknown'.t();
+                        showico = 'fa fa-exclamation-triangle fa-orange';
+                    }
+                    return '<i class="' + showico + '">&nbsp;&nbsp;</i>' + showtxt;
+                }
+            }, {
                 header: 'Local IP'.t(),
                 dataIndex: 'src',
                 width: 140
@@ -77,21 +94,6 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                 header: 'Bytes Out'.t(),
                 dataIndex: 'outBytes',
                 width: 100
-            }, {
-                header: 'Status'.t(),
-                dataIndex: 'mode',
-                renderer: function(value) {
-                    var showtxt = 'Inactive'.t(),
-                        showico = 'ua-cell-disabled';
-                    if (value.toLowerCase() === 'active') {
-                        showtxt = 'Active'.t();
-                        showico = 'ua-cell-enabled';
-                    }
-                    if (value.toLowerCase() === 'unknown') {
-                        showtxt = 'Unknown'.t();
-                    }
-                    return '<div class="' + showico + '">' + showtxt + '</div>';
-                }
             }],
             bbar: [{
                 text: 'Refresh'.t(),
@@ -107,10 +109,11 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             title: 'Active VPN Sessions'.t(),
             itemId: 'virtualUsers',
             trackMouseOver: false,
-            sortableColumns: false,
+            sortableColumns: true,
             enableColumnHide: false,
             minHeight: 150,
-            maxHeight: 250,
+            maxHeight: 800,
+            resizable: true,
             margin: '0 0 10 0',
             viewConfig: {
                 emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/> ' + 'No VPN Sessions'.t() + ' ...</p>',
