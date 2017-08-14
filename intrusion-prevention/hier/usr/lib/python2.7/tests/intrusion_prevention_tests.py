@@ -33,7 +33,7 @@ class IntrusionPreventionInterface:
     """
     Intrusion Prevention management object
     """
-    config_url = "https://localhost/webui/download?"
+    config_url = "https://localhost/admin/download?"
     config_request_arguments_template = {
         "type": "IntrusionPreventionSettings",
         "arg1": "load",
