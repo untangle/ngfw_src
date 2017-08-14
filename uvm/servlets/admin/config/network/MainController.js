@@ -6,6 +6,7 @@ Ext.define('Ung.config.network.MainController', {
     control: {
         '#': { afterrender: 'loadSettings' },
         '#interfaces': { beforerender: 'onInterfaces' },
+        '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
         '#qosStatistics': { afterrender: 'refreshQosStatistics' },
         '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
@@ -17,6 +18,7 @@ Ext.define('Ung.config.network.MainController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel();
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
@@ -60,6 +62,7 @@ Ext.define('Ung.config.network.MainController', {
 
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
+
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
@@ -251,12 +254,17 @@ Ext.define('Ung.config.network.MainController', {
     onInterfaces: function () {
         var me = this,
             vm = this.getViewModel();
+
         vm.bind('{interfacesGrid.selection}', function(interface) {
             if (interface) {
                 me.getInterfaceStatus();
                 me.getInterfaceArp();
             }
         });
+    },
+
+    interfacesGridReconfigure: function(){
+        this.getView().down('#interfacesGrid').getSelectionModel().select(0);
     },
 
     getInterfaceStatus: function () {
