@@ -29,12 +29,12 @@ for token in wordlist:
     if (token.startswith("ESTABLISHED") == True):
         svalue = "active"
 
-    if (token.startswith("local") == True):
+    if (token.startswith("local") == True) and (wordlist[index + 1].find("[") != -1) and (wordlist[index + 1].find("]") != -1):
         lvalue = wordlist[index + 1]
         lvalue = lvalue.lstrip("[")
         lvalue = lvalue.rstrip("]")
 
-    if (token.startswith("remote") == True):
+    if (token.startswith("remote") == True) and (wordlist[index + 1].find("[") != -1) and (wordlist[index + 1].find("]") != -1):
         rvalue = wordlist[index + 1]
         rvalue = rvalue.lstrip("[")
         rvalue = rvalue.rstrip("]")

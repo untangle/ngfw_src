@@ -554,7 +554,7 @@ public class IpsecVpnApp extends AppBase
          * We use the IN: and OUT: tags to find the beginning of each value and
          * the trailing space to isolate the numeric portions of the string to
          * keep Long.valueOf happy. We use the LOCAL: and REMOTE: tags to find
-         * and display the actual left and right endpoints of active tunnels. 
+         * and display the actual left and right endpoints of active tunnels.
          */
 
         try {
@@ -585,7 +585,7 @@ public class IpsecVpnApp extends AppBase
                 len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
                     string = result.substring(top + wid, top + wid + len);
-                    record.setSrc(string);
+                    if (!string.equals("unknown")) record.setSrc(string);
                 }
             }
 
@@ -595,7 +595,7 @@ public class IpsecVpnApp extends AppBase
                 len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
                     string = result.substring(top + wid, top + wid + len);
-                    record.setDst(string);
+                    if (!string.equals("unknown")) record.setDst(string);
                 }
             }
         }
