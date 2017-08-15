@@ -20,7 +20,6 @@ public class SslInspectorSettings implements Serializable
     private boolean processEncryptedMailTraffic;
     private boolean processEncryptedWebTraffic;
     private boolean blockInvalidTraffic;
-    private boolean serverFakeHostname;
     private boolean serverBlindTrust;
     private boolean javaxDebug;
     private boolean enabled;
@@ -45,7 +44,6 @@ public class SslInspectorSettings implements Serializable
         processEncryptedMailTraffic = false;
         processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
-        serverFakeHostname = true;
         serverBlindTrust = false;
         javaxDebug = false;
         enabled = true;
@@ -121,18 +119,6 @@ public class SslInspectorSettings implements Serializable
     public void setBlockInvalidTraffic(boolean flag)
     {
         this.blockInvalidTraffic = flag;
-    }
-
-    public boolean getServerFakeHostname()
-    {
-//        return (serverFakeHostname);
-        return(false);
-    }
-
-    public void setServerFakeHostname(boolean flag)
-    {
-//        this.serverFakeHostname = flag;
-        this.serverFakeHostname = false;
     }
 
     public boolean getServerBlindTrust()
