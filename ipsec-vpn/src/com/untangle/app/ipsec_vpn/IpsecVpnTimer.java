@@ -44,7 +44,7 @@ public class IpsecVpnTimer extends TimerTask
         }
     }
 
-    private final String TUNNEL_STATS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
+    private final String TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final Logger logger = Logger.getLogger(getClass());
     private final IpsecVpnApp app;
 
@@ -151,15 +151,18 @@ public class IpsecVpnTimer extends TimerTask
         long inValue = 0;
         long outBytes = 0;
         long inBytes = 0;
-        int top, len;
+        int top, wid, len;
         String result;
 
-        /*
-         * the script should return the tunnel statis in the following format...
-         * | TUNNNEL:tunnel_name IN:123 OUT:456 |
-         */
+// THIS IS FOR ECLIPSE - @formatter:off
 
-        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATS_SCRIPT + " " + watcher.tunnelName);
+        /*
+         * the script should return the tunnel status in the following format:
+         * | TUNNNEL:tunnel_name LOCAL:1.2.3.4 REMOTE:5.6.7.8 STATE:active IN:123 OUT:456 |
+         */
+        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATUS_SCRIPT + " " + watcher.tunnelName);
+
+// THIS IS FOR ECLIPSE - @formatter:on
 
         /*
          * We use the IN: and OUT: tags to find the beginning of each value and
@@ -169,18 +172,20 @@ public class IpsecVpnTimer extends TimerTask
 
         try {
             top = result.indexOf("IN:");
+            wid = 3;
             if (top > 0) {
-                len = result.substring(top + 3).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    inValue = Long.valueOf(result.substring(top + 3, top + 3 + len));
+                    inValue = Long.valueOf(result.substring(top + wid, top + wid + len));
                 }
             }
 
             top = result.indexOf("OUT:");
+            wid = 4;
             if (top > 0) {
-                len = result.substring(top + 4).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    outValue = Long.valueOf(result.substring(top + 4, top + 4 + len));
+                    outValue = Long.valueOf(result.substring(top + wid, top + wid + len));
                 }
             }
         }
@@ -212,15 +217,11 @@ public class IpsecVpnTimer extends TimerTask
          * same as they were during the last check.
          */
 
-        if (inValue < watcher.inLast)
-            inBytes = inValue;
-        else
-            inBytes = (inValue - watcher.inLast);
+        if (inValue < watcher.inLast) inBytes = inValue;
+        else inBytes = (inValue - watcher.inLast);
 
-        if (outValue < watcher.outLast)
-            outBytes = outValue;
-        else
-            outBytes = (outValue - watcher.outLast);
+        if (outValue < watcher.outLast) outBytes = outValue;
+        else outBytes = (outValue - watcher.outLast);
 
         watcher.inLast = inValue;
         watcher.outLast = outValue;
