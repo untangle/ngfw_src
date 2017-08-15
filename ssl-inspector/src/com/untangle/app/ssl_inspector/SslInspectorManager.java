@@ -230,58 +230,6 @@ class SslInspectorManager
             // our cert generator script creates certificates in PKCS12 format
             keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(new FileInputStream(certPathFile), keyStorePass.toCharArray());
-
-            /*
-             * Because Java 6 doesn't support SNI we see cases where the cert
-             * returned by a server without SNI may be different than the cert
-             * returned if SNI had been included in the request. I've seen this
-             * with t0.gstatic.com (and also t1, t2, and t3) where the server
-             * returns a generic google cert. The end result is the browser may
-             * show a hostname/certname warning message, or may ignore the
-             * content altogether. As a workaround, if the client included an
-             * SNI hostname, we search the CN and ALT names in the standard
-             * server cert to make sure it will validate. If not, we create a
-             * special certificate that matches the SNI received from the
-             * client.
-             */
-
-            // grab the SNI hostname so we can check against loaded cert
-            String sniHostname = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
-            if ((app.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
-
-                // we put special certs in files named with the SNI hostname 
-                String hackFileName = (sniHostname + ".p12");
-                String hackPathFile = keyStorePath + "/" + hackFileName;
-
-                synchronized (keyStorePath) {
-                    // see if the special file already exists
-                    File special = new File(hackPathFile);
-
-                    // file not found so call the external script to generate a new cert
-                    if ((special.exists() == false) || (special.length() == 0)) {
-                        logger.info("Creating new certificate for " + sniHostname + " in " + hackFileName);
-
-                        // call the external script to generate the new certificate
-                        String argList[] = new String[2];
-                        argList[0] = hackFileName;
-                        argList[1] = "/CN=" + sniHostname;
-                        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-                        logger.debug("SCRIPT_ARGS = " + argString);
-                        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
-                    }
-
-                    else {
-                        logger.debug("Loading existing certificate " + hackPathFile);
-                    }
-                }
-
-                // now that we know the special cert file exists we initialize
-                // the keystore again and load it with the special certificate
-                keyStore = KeyStore.getInstance("PKCS12");
-                keyStore.load(new FileInputStream(hackPathFile), keyStorePass.toCharArray());
-            }
-
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -751,63 +699,6 @@ for more data when a full packet has not yet been received.
         if ((rawdata[rawlen - 1] != '\n') && (rawdata[rawlen - 1] != '\r')) return (false);
 
         return (true);
-    }
-
-    // this function validates a certificate for a specific hostname
-    // by making sure the argumented hostname matches either the CN
-    // or one of the subject alt names included in the certificate
-    private boolean validateCertificate(X509Certificate argCert, String argName) throws Exception
-    {
-        // if the argumented name is null we just return true
-        if (argName == null) return (true);
-
-        // for starters if we find wildcard characters in the arg name then
-        // who knows what the hell is going on so just blindly return true
-        if (argName.contains("*") == true) return (true);
-        if (argName.contains("?") == true) return (true);
-
-        String certName = new String();
-
-        // grab the subject distinguished name from the certificate
-        LdapName ldapDN = new LdapName(argCert.getSubjectDN().getName());
-
-        // we only want the CN from the certificate
-        for (Rdn rdn : ldapDN.getRdns()) {
-            if (rdn.getType().equals("CN") == false) continue;
-            certName += rdn.getValue().toString();
-            break;
-        }
-
-        // see if the name matches the certificate common name
-        logger.debug("CHECKING CN " + certName + " FOR " + argName);
-        if (Pattern.matches(GlobUtil.globToRegex(certName), argName) == true) return (true);
-
-        // The SAN list is stored as a collection of List's where the
-        // first entry is an Integer indicating the type of name and the
-        // second entry is the String holding the actual name
-        Collection<List<?>> altNames = argCert.getSubjectAlternativeNames();
-
-        // if there aren't any alt names then nothing else to check
-        if (altNames == null) return (false);
-
-        Iterator<List<?>> iterator = altNames.iterator();
-
-        while (iterator.hasNext()) {
-            List<?> entry = iterator.next();
-            int value = ((Integer) entry.get(0)).intValue();
-
-            // check the entry type against the list we understand
-            if (validAlternateList.containsKey(value) == false) continue;
-
-            String string = entry.get(1).toString();
-
-            // if this alt name matches the arg name return true
-            logger.debug("CHECKING ALT " + string + " FOR " + argName);
-            if (Pattern.matches(GlobUtil.globToRegex(string), argName) == true) return (true);
-        }
-
-        // nothing matched above so return false
-        return (false);
     }
 
     // this is a dumb trust manager that will blindly trust all server certs
