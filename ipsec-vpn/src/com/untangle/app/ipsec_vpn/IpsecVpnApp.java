@@ -31,11 +31,10 @@ import com.untangle.uvm.util.I18nUtil;
 public class IpsecVpnApp extends AppBase
 {
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
-    private final static String GRAB_VIRTUALLOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
+    private final static String GRAB_VIRTUAL_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
     private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
     private final static String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
-    private final static String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
-    private final static String GRAB_TRAFFIC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
+    private final static String GRAB_TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final static String APP_STARTUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-app-startup";
 
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
@@ -196,7 +195,7 @@ public class IpsecVpnApp extends AppBase
     public String getVirtualLogFile()
     {
         logger.debug("getVirtualLogFile()");
-        return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUALLOGFILE_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUAL_LOGFILE_SCRIPT);
     }
 
     public String getPolicyInfo()
@@ -252,7 +251,7 @@ public class IpsecVpnApp extends AppBase
     }
 
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
         logger.debug("preStart()");
 
@@ -271,7 +270,7 @@ public class IpsecVpnApp extends AppBase
     }
 
     @Override
-    protected void postStart( boolean isPermanentTransition )
+    protected void postStart(boolean isPermanentTransition)
     {
         logger.debug("postStart()");
 
@@ -281,11 +280,11 @@ public class IpsecVpnApp extends AppBase
     }
 
     @Override
-    protected void preStop( boolean isPermanentTransition )
+    protected void preStop(boolean isPermanentTransition)
     {
         logger.debug("preStop()");
 
-        super.preStop( isPermanentTransition );
+        super.preStop(isPermanentTransition);
 
         timer.cancel();
 
@@ -308,7 +307,7 @@ public class IpsecVpnApp extends AppBase
     }
 
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
         logger.debug("postStop()");
 
@@ -379,8 +378,7 @@ public class IpsecVpnApp extends AppBase
 
         for (int x = 0; x < ttot; x++) {
             if (list.get(x).getActive() == true) etot++;
-            else
-                dtot++;
+            else dtot++;
         }
 
         this.setMetric(IpsecVpnApp.STAT_CONFIGURED, (long) ttot);
@@ -485,25 +483,6 @@ public class IpsecVpnApp extends AppBase
     public LinkedList<ConnectionStatusRecord> getTunnelStatus()
     {
         LinkedList<ConnectionStatusRecord> displayList = new LinkedList<ConnectionStatusRecord>();
-        LinkedList<ConnectionStatusRecord> statusList;
-
-        String output = IpsecVpnApp.execManager().execOutput(GRAB_STATUS_SCRIPT);
-
-        // call the ipsec-status script to get the state and policy info
-        try {
-            JSONSerializer serializer = new JSONSerializer();
-
-            serializer.setFixupDuplicates(false);
-            serializer.setMarshallNullAttributes(false);
-            serializer.registerDefaultSerializers();
-
-            @SuppressWarnings("unchecked")
-            LinkedList<ConnectionStatusRecord> fetchList = (LinkedList<ConnectionStatusRecord>) serializer.fromJSON(output);
-            statusList = fetchList;
-        } catch (Exception exn) {
-            logger.error("Invalid JSON returned from ipsec-status: " + output, exn);
-            return (displayList);
-        }
 
         // get the list of configured tunnels from the settings
         LinkedList<IpsecVpnTunnel> configList = settings.getTunnels();
@@ -513,20 +492,20 @@ public class IpsecVpnApp extends AppBase
         for (int x = 0; x < configList.size(); x++) {
             IpsecVpnTunnel tunnel = configList.get(x);
             if (tunnel.getActive() == false) continue;
-            ConnectionStatusRecord record = createDisplayRecord(tunnel, statusList);
+            ConnectionStatusRecord record = createDisplayRecord(tunnel);
             displayList.add(record);
         }
 
         return (displayList);
     }
 
-    private ConnectionStatusRecord createDisplayRecord(IpsecVpnTunnel tunnel, LinkedList<ConnectionStatusRecord> statusList)
+    private ConnectionStatusRecord createDisplayRecord(IpsecVpnTunnel tunnel)
     {
+        String string;
+        long value;
+        int top, wid, len;
+
         ConnectionStatusRecord record = new ConnectionStatusRecord();
-        ConnectionStatusRecord finder;
-        AddressCalculator srcCalc;
-        AddressCalculator dstCalc;
-        String remoteAddress;
 
         // start by creating an inactive record using the configured values
         record.setType("DISPLAY");
@@ -541,176 +520,94 @@ public class IpsecVpnApp extends AppBase
         record.setInBytes("0");
         record.setOutBytes("0");
 
-        // make sure we have the remote IP address in case they used the hostname
-        try {
-            InetAddress remote = InetAddress.getByName(tunnel.getRight());
-            remoteAddress = remote.getHostAddress().toString();
-        } catch (Exception exn) {
-            record.setMode("unknown");
-            return (record);
-        }
+        /*
+         * Use the id and description to create a unique connection name that
+         * won't cause problems in the ipsec.conf file by replacing non-word
+         * characters with a hyphen. We also prefix this name with UT123_ to
+         * ensure no dupes in the config file.
+         */
+        String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
 
-        for (int x = 0; x < statusList.size(); x++) {
-            // walk through every status record until we find the STATE
-            // record that matches the argumented tunnel entry.
-            ConnectionStatusRecord status = statusList.get(x);
-
-            // start with the STATE record where src matches the local IP
-            // and dst matches the remote IP of the configured tunnel
-            if (!status.getType().equals("STATE")) continue;
-            if (!status.getMode().equals(tunnel.getConntype())) continue;
-            if (!status.getSrc().equals(tunnel.getLeft())) continue;
-            if (!status.getDst().equals(remoteAddress)) continue;
-
-            // we found the correct STATE record so now we have make sure there
-            // is a matching STATE record for the reverse direction along with
-            // matching IN, OUT, and FWD policy records.  We do these searches by
-            // calling the findMatchingRecord function which searches through the
-            // entire list of status records for a match based on the status
-            // record we're currently evaluating.  Think double-nested for loop.
-
-            // look for the inverse STATE record where the src matches the
-            // remote IP and the dst matches the local IP and the requid
-            // matches the reqid in the record we found above
-            finder = findMatchingRecord(MatchMode.STATE, status.getReqid(), remoteAddress, tunnel.getLeft(), statusList);
-            if (finder == null) continue;
-
-            // because we allow, and ipsec seems to accept, subnets that are defined
-            // using the host/bits format (192.168.2.1/24) in addition to the
-            // network/bits format (192.168.2.0/24) we use the IpPalculator to
-            // convert the configured subnet values to the actual network/bits
-            // values needed to match the 'ip xfrm policy' output. With IKEv2
-            // we also support multiple subnets for both sides so we just look
-            // for the first if there is more than one configured.
-            String lstr = tunnel.getLeftSubnet();
-            String rstr = tunnel.getRightSubnet();
-            int lidx = lstr.indexOf(',');
-            int ridx = rstr.indexOf(',');
-
-            if (lidx == -1) srcCalc = new AddressCalculator(tunnel.getLeftSubnet());
-            else srcCalc = new AddressCalculator(tunnel.getLeftSubnet().substring(0,lidx));
-
-            if (ridx == -1) dstCalc = new AddressCalculator(tunnel.getRightSubnet());
-            else dstCalc = new AddressCalculator(tunnel.getRightSubnet().substring(0,ridx));
-
-            // look for a POLICY out record with matching reqid that also matches our src and dst networks
-            finder = findMatchingRecord(MatchMode.OUT, status.getReqid(), srcCalc.getBaseNetwork(), dstCalc.getBaseNetwork(), statusList);
-            if (finder == null) continue;
-
-            // look for a POLICY in record with matching reqid that also matches our dst and src networks
-            finder = findMatchingRecord(MatchMode.IN, status.getReqid(), dstCalc.getBaseNetwork(), srcCalc.getBaseNetwork(), statusList);
-            if (finder == null) continue;
-
-            // for transport mode there won't be a POLICY fwd record so we're done
-            // when we find the correct status record with matching in/out records
-            if (tunnel.getConntype().equals("transport")) {
-                record.setMode("active");
-                getTrafficStatistics(record);
-                break;
-            }
-
-            // look for a POLICY fwd record with matching reqid - we don't care about
-            // src or dst here since if we make it this far we know the reqid of the
-            // status record has matching in and out records
-            finder = findMatchingRecord(MatchMode.FWD, status.getReqid(), null, null, statusList);
-            if (finder == null) continue;
-
-            // we found the correct status record with matching in/out/fwd
-            // records which means tunnel is active so we update the mode
-            record.setMode("active");
-            getTrafficStatistics(record);
-            break;
-        }
-
-        return (record);
-    }
-
-    private ConnectionStatusRecord findMatchingRecord(MatchMode matchMode, String reqid, String src, String dst, LinkedList<ConnectionStatusRecord> statusList)
-    {
-        for (int x = 0; x < statusList.size(); x++) {
-            ConnectionStatusRecord status = statusList.get(x);
-
-            switch (matchMode)
-            {
-            case STATE:
-                if (status.getType().equals("STATE") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case IN:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("in") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case OUT:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("out") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case FWD:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("fwd") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                return (status);
-            }
-        }
-        return null;
-    }
-
-    private void getTrafficStatistics(ConnectionStatusRecord status)
-    {
-        long outValue = 0;
-        long inValue = 0;
-        int top, len;
-
-        // Use the id and description to create a unique connection name that won't cause
-        // problems in the ipsec.conf file by replacing non-word characters with a hyphen.
-        // We also prefix this name with UT123_ to ensure no dupes in the config file.
-        String workname = ("UT" + status.getId() + "_" + status.getDescription().replaceAll("\\W", "-"));
+// THIS IS FOR ECLIPSE - @formatter:off
 
         /*
-         * the script should return the tunnel stats in the following format |
-         * TUNNNEL:tunnel_name IN:123 OUT:456 |
+         * the script should return the tunnel status in the following format:
+         * | TUNNNEL:tunnel_name LOCAL:1.2.3.4 REMOTE:5.6.7.8 STATE:active IN:123 OUT:456 |
          */
-        String result = IpsecVpnApp.execManager().execOutput(GRAB_TRAFFIC_SCRIPT + " " + workname);
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + workname);
+
+        /*
+         * If the tunnel is active, update the mode and continue parsing.
+         * Otherwise just return the inactive record.
+         */
+        top = result.indexOf("STATE:active");
+        if (top > 0) {
+            record.setMode("active");
+        } else {
+            return (record);
+        }
 
         /*
          * We use the IN: and OUT: tags to find the beginning of each value and
          * the trailing space to isolate the numeric portions of the string to
-         * keep Long.valueOf happy.
+         * keep Long.valueOf happy. We use the LOCAL: and REMOTE: tags to find
+         * and display the actual left and right endpoints of active tunnels. 
          */
 
         try {
+
             top = result.indexOf("IN:");
+            wid = 3;
             if (top > 0) {
-                len = result.substring(top + 3).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    inValue = Long.valueOf(result.substring(top + 3, top + 3 + len));
-                    status.setInBytes(Long.toString(inValue));
+                    value = Long.valueOf(result.substring(top + wid, top + wid + len));
+                    record.setInBytes(Long.toString(value));
                 }
             }
 
             top = result.indexOf("OUT:");
+            wid = 4;
             if (top > 0) {
-                len = result.substring(top + 4).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    outValue = Long.valueOf(result.substring(top + 4, top + 4 + len));
-                    status.setOutBytes(Long.toString(outValue));
+                    value = Long.valueOf(result.substring(top + wid, top + wid + len));
+                    record.setOutBytes(Long.toString(value));
+                }
+            }
+
+            top = result.indexOf("LOCAL:");
+            wid = 6;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    string = result.substring(top + wid, top + wid + len);
+                    record.setSrc(string);
+                }
+            }
+
+            top = result.indexOf("REMOTE:");
+            wid = 7;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    string = result.substring(top + wid, top + wid + len);
+                    record.setDst(string);
                 }
             }
         }
 
         /*
-         * If we can't parse the tunnel stats just return
+         * If we can't parse the tunnel traffic stats just return
          */
         catch (Exception exn) {
-            return;
+            logger.warn("Exception parsing IPsec status: " + result, exn);
         }
+
+        return (record);
     }
 
     /*
