@@ -115,13 +115,21 @@ Ext.define('Ung.config.system.MainController', {
 
         // var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
 
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
-            Rpc.asyncPromise('rpc.shieldManager.setSettings', vm.get('shieldSettings')),
-            // Rpc.asyncPromise('rpc.systemManager.setDate', newDate),
-        ], this).then(function () {
+        var sequence = [];
+        sequence.push(Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')));
+        sequence.push(Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')));
+        sequence.push(Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')));
+        sequence.push(Rpc.asyncPromise('rpc.shieldManager.setSettings', vm.get('shieldSettings')));
+        //sequence.push(Rpc.asyncPromise('rpc.systemManager.setDate', newDate));
+
+        if (!rpc.smtpApp) rpc.smtpApp = rpc.appManager.app("smtp");
+        if (rpc.smtpApp) sequence.push(Rpc.asyncPromise('rpc.smtpApp.setSettings', vm.get('smtpSettings')));
+        if (!rpc.httpApp) rpc.httpApp = rpc.appManager.app("http");
+        if (rpc.httpApp) sequence.push(Rpc.asyncPromise('rpc.httpApp.setSettings', vm.get('httpSettings')));
+        if (!rpc.ftpApp) rpc.ftpApp = rpc.appManager.app("ftp");
+        if (rpc.ftpApp) sequence.push(Rpc.asyncPromise('rpc.ftpApp.setSettings', vm.get('ftpSettings')));
+
+        Ext.Deferred.sequence(sequence, this).then(function () {
             v.setLoading(false);
             me.loadSettings();
             Util.successToast('System settings saved!');
