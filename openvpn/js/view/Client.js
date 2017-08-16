@@ -85,6 +85,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
         dataIndex: 'name',
         editor: {
             xtype: 'textfield',
+            vtype: 'openvpnName',
             bind: '{record.name}'
         }
     }],
