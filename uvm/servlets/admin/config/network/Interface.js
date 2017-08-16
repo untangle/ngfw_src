@@ -105,12 +105,15 @@ Ext.define('Ung.config.network.Interface', {
                 xtype: 'checkbox',
                 fieldLabel: 'Is WAN Interface'.t(),
                 hidden: true,
-                initializing: true,
+                initialized: false,
                 bind: {
                     value: '{intf.isWan}',
                     hidden: '{!isAddressed}'
                 },
                 listeners: {
+                    afterrender: function (ck) {
+                        ck.initialized = true;
+                    },
                     change: function (ck, newValue) {
                         var win = ck.up('window');
                         if (!newValue) {
@@ -127,7 +130,6 @@ Ext.define('Ung.config.network.Interface', {
                             }
                             win.down('tabpanel').setActiveItem(0);
                         }
-                        ck.initialized = true;
                     }
                 }
             }, {
