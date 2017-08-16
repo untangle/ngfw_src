@@ -90,6 +90,15 @@ Ext.define('Ung.apps.openvpn.MainController', {
         var clientNames = {};
         var groupNames = {};
 
+        // make sure all components with an isValid function are actually valid
+        v.query().forEach(function(cmp) {
+            if ( (cmp.isValid) && (typeof cmp.isValid === "function") && (!cmp.isValid()) ) problem++;
+        });
+        if (problem != 0) {
+            Ext.MessageBox.alert("Invalid Configuration".t(), "Changes not saved because one or more fields contains an invalid value.".t());
+            return(false);
+        }
+
         // make sure they don't try to delete all groups
         counter = 0;
         groupStore.each(function(record) {
