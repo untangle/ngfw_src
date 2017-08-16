@@ -122,6 +122,8 @@ public class WanFailoverTesterMonitor
                 logger.warn("reconfigure(): NULL settings");
             } else {
                 for ( WanTestSettings wanTest : settings.getTests() ) {
+                    if (!wanTest.getEnabled())
+                        continue;
                     WanFailoverTester tester = new WanFailoverTester( wanTest, this, this.app );
                     new Thread(tester).start();
                     logger.info("Launching new Tester: (" + wanTest.getInterfaceId() + ", " + wanTest.getType() + ")");
