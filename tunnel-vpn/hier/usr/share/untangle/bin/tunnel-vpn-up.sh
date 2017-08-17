@@ -7,13 +7,7 @@ addRoute()
     /usr/share/untangle-netd/bin/add-uplink.sh $1 $2 uplink.$3 -4
 }
 
-echo
-echo "`date`"
-echo "dev: ${dev}"
-echo "ifconfig_local: ${ifconfig_local}"
-echo "ifconfig_remote: ${ifconfig_remote}"
-echo "route_vpn_gateway: ${route_vpn_gateway}"
-echo
+echo "`date`: dev:${dev} local:${ifconfig_local} remote:${ifconfig_remote} gateway:${route_vpn_gateway}"
 
 if [ -z "${dev}" ] ; then
     echo "Missing dev!"
