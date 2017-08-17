@@ -2,10 +2,7 @@
 
 exec >> /var/log/uvm/tunnel.log 2>&1
 
-echo
-echo "`date`"
-echo "dev: ${dev}"
-echo
+echo "`date`: dev:${dev} local:${ifconfig_local} remote:${ifconfig_remote} gateway:${route_vpn_gateway}"
 
 if [ -z "${dev}" ] ; then
     echo "Missing dev!"

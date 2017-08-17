@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Collectors;
+import java.util.Collections;
 import java.io.InputStream;
 import java.io.File;
 import java.nio.file.Files;
@@ -245,7 +246,22 @@ public class TunnelVpnApp extends AppBase
     {
         File f = new File( TUNNEL_LOG );
         if (f.exists()) {
-            return UvmContextFactory.context().execManager().execOutput("tail -n 1000 " + TUNNEL_LOG);
+            String output = UvmContextFactory.context().execManager().execOutput("tail -n 1000 " + TUNNEL_LOG);
+            if ( output == null )
+                return null;
+
+            // remove strings that we don't want to show the users
+            // these are strings/errors that are normal but scary to the user
+            String[] lines = output.split("\\n");
+            List<String> list = new LinkedList<String>();
+            Collections.addAll(list, lines);
+            for (Iterator<String> i = list.iterator(); i.hasNext();) {
+                String str = i.next();
+                if (str.contains("unable to redirect default gateway -- Cannot read current default gateway from system"))
+                    i.remove();
+            }
+            String finalstr = list.stream().collect(Collectors.joining("\n"));
+            return finalstr;
         }else{
             return null;
         }
