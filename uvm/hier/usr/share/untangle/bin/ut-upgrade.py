@@ -72,7 +72,7 @@ def log(str):
         pass
 
 def log_date( cmd ):
-    p = subprocess.Popen(["date","+%Y-%m-%d %H:%m"], stdout=subprocess.PIPE )
+    p = subprocess.Popen(["date","+%Y-%m-%d %H:%M"], stdout=subprocess.PIPE )
     for line in iter(p.stdout.readline, ''):
         log( line.strip() + " " + cmd)
     p.wait()
