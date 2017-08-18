@@ -8,6 +8,7 @@
 filename="${1}"
 provider="${2}"
 tunnel_id="${3}"
+tunnel_name="tunnel-${tunnel_id}"
 destination=`mktemp || -3`
 
 cleanup()
@@ -103,5 +104,9 @@ fi
 
 sed -e '/auth-user-pass.*/d' -i @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
 echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-    
+echo "management 127.0.0.1 " $((2000+${tunnel_id})) >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+echo "writepid /run/openvpn/${tunnel_name}.pid" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+echo "log-append /var/log/uvm/tunnel.log" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
+
+
 cleanup 0
