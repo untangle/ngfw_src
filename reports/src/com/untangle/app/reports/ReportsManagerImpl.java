@@ -371,11 +371,14 @@ public class ReportsManagerImpl implements ReportsManager
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
-                if (ReportsApp.dbDriver.equals("sqlite"))
-                    cacheTablesResults = conn.getMetaData().getTables( null, null, null, null );
-                else
+                if (ReportsApp.dbDriver.equals("sqlite")) {
+                    // don't cache sqlite results
+                    // the result is FORWARD_ONLY
+                    rs = conn.getMetaData().getTables( null, null, null, null );
+                } else {
                     cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
-                rs = cacheTablesResults;
+                    rs = cacheTablesResults;
+                }
             } else {
                 rs.beforeFirst();
             }
