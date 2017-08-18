@@ -103,12 +103,12 @@ def write_iptables_shield_rule( file, shield_rule, verbosity=0 ):
         target = " -g shield-process # SCAN"
 
     description = "Route Rule #%i" % int(shield_rule['ruleId'])
+    commands = IptablesUtil.conditions_to_prep_commands( shield_rule['conditions']['list'], description, verbosity );
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( shield_rule['conditions']['list'], description, verbosity );
-
-    iptables_commands = [ "${IPTABLES} -t filter -A shield-rules " + ipt + target for ipt in iptables_conditions ]
+    commands += [ "${IPTABLES} -t filter -A shield-rules " + ipt + target for ipt in iptables_conditions ]
 
     file.write("# %s\n" % description);
-    for cmd in iptables_commands:
+    for cmd in commands:
         file.write(cmd + "\n")
     return
 
