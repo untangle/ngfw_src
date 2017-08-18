@@ -82,7 +82,9 @@ public class TunnelVpnManager
     
     protected synchronized void launchProcesses()
     {
-        insertIptablesRules();        
+        logger.info("Launching OpenVPN processes...");
+
+        insertIptablesRules();
 
         for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
             if ( !tunnelSettings.getEnabled() ) {
