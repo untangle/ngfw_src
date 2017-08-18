@@ -96,15 +96,21 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         // if still not found then just use the IP address of the server
         if (host == null) host = session.getServerAddr().getHostAddress().toString();
 
+        // always convert to lower case
         host = host.toLowerCase();
 
-        // allow things needed to make OAuth login work better
-        if (host.equals("connectivitycheck.gstatic.com")) allowed = true;
+        // allow things needed to make OAuth login work better only when enabled
+        CaptivePortalSettings.AuthenticationType authType = app.getCaptivePortalSettings().getAuthenticationType();
+        if ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
 
-        if (allowed == true) {
-            logger.info("Releasing HTTP OAuth session: " + host);
-            releaseRequest(session);
-            return (requestHeader);
+            // google devices hit this before the user requested URL which breaks the post authentication redirect to the original destination 
+            if (host.equals("connectivitycheck.gstatic.com")) allowed = true;
+
+            if (allowed == true) {
+                logger.info("Releasing HTTP OAuth session: " + host);
+                releaseRequest(session);
+                return (requestHeader);
+            }
         }
 
         // look for prefetch shenaniganery
