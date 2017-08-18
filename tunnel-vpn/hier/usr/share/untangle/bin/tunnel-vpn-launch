@@ -19,9 +19,10 @@ echo "Launching openvpn..."
     --cd ${conf_dir} \
     --log-append /var/log/uvm/tunnel.log \
     --auth-user-pass auth.txt \
-    --management 127.0.0.1 $((2000+${tunnel_id})) \
     --script-security 2 \
     --up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh \
     --down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh \
     </dev/null &
+
+#    --management 127.0.0.1 $((2000+${tunnel_id})) \
 
