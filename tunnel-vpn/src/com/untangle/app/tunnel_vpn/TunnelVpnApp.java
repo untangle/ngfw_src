@@ -101,6 +101,7 @@ public class TunnelVpnApp extends AppBase
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
 
+        boolean networkSettingsChanged = false;
         List<TunnelVpnTunnelSettings> missing = findTunnelsMissingFromNetworkSettings();
         if (missing.size() > 0) {
             for( TunnelVpnTunnelSettings tunnelSettings : missing ) {
@@ -120,7 +121,7 @@ public class TunnelVpnApp extends AppBase
                 logger.info("Adding new virtual interface: " + tunnelSettings.getTunnelId() + " " + tunnelSettings.getName());
 
             }
-            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            networkSettingsChanged = true;
         }
         List<InterfaceSettings> extra = findExtraVirtualInterfaces();
         if (extra.size() > 0) {
@@ -132,19 +133,23 @@ public class TunnelVpnApp extends AppBase
                     i.remove();
                 }
             }
-            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            networkSettingsChanged = true;
         }
 
         /**
          * sync these settings to the filesystem
          */
         syncToSystem((this.getRunState() == AppSettings.AppState.RUNNING));
+
+        if (networkSettingsChanged) {
+            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            // processes will be automatically restarted after this is complete by the network settings hook
+        } else {
+            // restart tunnels
+            if(this.getRunState() == AppSettings.AppState.RUNNING)
+                this.tunnelVpnManager.restartProcesses();
+        }
         
-        /**
-         * Write the external resources & scripts
-         */
-        if(this.getRunState() == AppSettings.AppState.RUNNING)
-            this.tunnelVpnManager.restartProcesses();
     }
 
     @Override
@@ -386,6 +391,8 @@ public class TunnelVpnApp extends AppBase
      */
     private void syncToSystem( boolean enabled )
     {
+        logger.info("syncToSystem()...");
+
         /**
          * First we write a new 350-tunnel-vpn iptables script with the current settings
          */
@@ -421,7 +428,8 @@ public class TunnelVpnApp extends AppBase
         // refresh iptables rules in case WAN config has changed
         logger.info("Network Settings have changed. Restarting tunnels...");
 
-        this.tunnelVpnManager.restartProcesses();
+        if(this.getRunState() == AppSettings.AppState.RUNNING)
+            this.tunnelVpnManager.restartProcesses();
     }
     
     private class TunnelUploadHandler implements UploadHandler
