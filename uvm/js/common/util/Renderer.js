@@ -29,6 +29,8 @@ Ext.define('Ung.util.Renderer', {
     macWidth: 110,
     // General purpose
     messageWidth: 120,
+    // Network (ip/bit)
+    networkWidth: 120,
     // Port
     portWidth: 70,
     // Data size
