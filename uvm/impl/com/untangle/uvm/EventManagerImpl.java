@@ -412,7 +412,7 @@ public class EventManagerImpl implements EventManager
         conditions.add( condition2 );
         eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "sessionEvent.localAddr" );
+        eventRule.setTagTarget( "sessionEvent.CClientAddr" );
         eventRule.setTagName( "bittorrent-usage" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
         rules.add( eventRule );
