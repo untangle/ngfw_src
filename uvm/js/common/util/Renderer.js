@@ -26,7 +26,7 @@ Ext.define('Ung.util.Renderer', {
     // Latitude/longtitude
     locationWidth: 50,
     // MAC address
-    macWidth: 110,
+    macWidth: 120,
     // General purpose
     messageWidth: 120,
     // Network (ip/bit)
