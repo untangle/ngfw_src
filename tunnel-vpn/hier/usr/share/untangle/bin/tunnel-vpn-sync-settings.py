@@ -107,16 +107,13 @@ def write_iptables_rule( file, rule, verbosity=0 ):
         target = " -j tunnel-vpn-%s " % str(tunnelId)
         
     description = "Route Rule #%i" % int(rule['ruleId'])
+    commands = IptablesUtil.conditions_to_prep_commands( rule['conditions']['list'], description, verbosity );
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( rule['conditions']['list'], description, verbosity );
-
-    iptables_commands = [ "${IPTABLES} -t mangle -A tunnel-vpn-rules " + ipt + target for ipt in iptables_conditions ]
-    #iptables_commands_accept = [ "${IPTABLES} -t mangle -A tunnel-vpn-rules " + ipt + " -j ACCEPT " for ipt in iptables_conditions ]
+    commands += [ "${IPTABLES} -t mangle -A tunnel-vpn-rules " + ipt + target for ipt in iptables_conditions ]
 
     file.write("# %s\n" % description);
-    for cmd in iptables_commands:
+    for cmd in commands:
         file.write(cmd + "\n")
-    #for cmd in iptables_commands_accept:
-    #    file.write(cmd + "\n")
     return
 
 
