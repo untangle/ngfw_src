@@ -11,5 +11,16 @@ tunnel_name="tunnel-${tunnel_id}"
 mkdir -p /run/openvpn
 
 echo "Launching openvpn..."
-/usr/sbin/openvpn --daemon ovpn-${tunnel_name} --cd ${conf_dir} --config ${conf_dir}/tunnel.conf </dev/null &
+/usr/sbin/openvpn --writepid /run/openvpn/${tunnel_name}.pid \
+                  --daemon ovpn-${tunnel_name} \
+                  --dev tun${tunnel_id}
+                  --cd ${conf_dir} \
+                  --config ${conf_dir}/tunnel.conf \
+                  --log-append /var/log/uvm/tunnel.log \
+                  --auth-user-pass auth.txt \
+                  --management 127.0.0.1 $((2000+${tunnel_id})) \
+                  --script-security 2 \
+                  --up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh \
+                  --down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh \
+                  </dev/null &
 

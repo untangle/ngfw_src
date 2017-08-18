@@ -42,14 +42,6 @@ importZip()
     # Copy file into place
     cp -Pf $CONF_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
     cp -Pf ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
-
-    # Specify device explicitly
-    setOption "dev" "tun${tunnel_id}" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-
-    # Add up/down scripts
-    setOption "script-security" "2" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-    echo "up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-    echo "down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
 }
 
 importOvpn()
@@ -60,14 +52,6 @@ importOvpn()
     fi
     # Copy file into place
     cp -Pf ${filename} @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-
-    # Specify device explicitly
-    setOption "dev" "tun${tunnel_id}" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-
-    # Add up/down scripts
-    setOption "script-security" "2" @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-    echo "up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-    echo "down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
 }
 
 if [ ! -f "${filename}" ]; then
@@ -77,7 +61,6 @@ fi
 
 mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
 mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
-
 
 if [ "$provider" == "Untangle" ] ; then
     importZip
@@ -101,12 +84,5 @@ else
     echo "Unknown provider: $provider"
     cleanup 1
 fi
-
-sed -e '/auth-user-pass.*/d' -i @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-echo "auth-user-pass auth.txt" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-echo "management 127.0.0.1 " $((2000+${tunnel_id})) >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-echo "writepid /run/openvpn/${tunnel_name}.pid" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-echo "log-append /var/log/uvm/tunnel.log" >> @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
-
 
 cleanup 0
