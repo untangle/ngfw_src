@@ -143,7 +143,6 @@ public class TunnelVpnApp extends AppBase
         /**
          * Write the external resources & scripts
          */
-        this.tunnelVpnManager.writeIptablesFiles( settings );
         if(this.getRunState() == AppSettings.AppState.RUNNING)
             this.tunnelVpnManager.restartProcesses();
     }
