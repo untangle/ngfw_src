@@ -157,7 +157,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Current Address'.t(),
             dataIndex: 'v4Address',
-            minWidth: Renderer.ipWidth,
+            minWidth: Renderer.networkWidth,
             renderer: function (value, metaData, record) {
                 return Ext.isEmpty(value) ? '' : value + ' / ' + record.get('v4PrefixLength');
             }
