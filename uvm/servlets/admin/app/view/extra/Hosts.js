@@ -67,7 +67,7 @@ Ext.define('Ung.view.extra.Hosts', {
         fields: [{
             name: 'address',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asIp'
         },{
             name: 'macAddress',
             type: 'string',
