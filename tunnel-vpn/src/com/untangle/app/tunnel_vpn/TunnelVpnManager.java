@@ -191,6 +191,10 @@ public class TunnelVpnManager
      */
     private synchronized void insertIptablesRules()
     {
+        File f = new File( IPTABLES_SCRIPT );
+        if (!f.exists())
+            return;
+
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
