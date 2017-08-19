@@ -16,15 +16,25 @@ import java.util.Map;
 import java.util.Random;
 import java.io.FilenameFilter;
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -167,6 +177,35 @@ public class TunnelVpnManager
         return this.newTunnelId;
     }
     
+    public List<JSONObject> getTunnelStates()
+    {
+        List<JSONObject> states = new LinkedList<JSONObject>();
+        
+        try {
+            for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
+                org.json.JSONObject json = new org.json.JSONObject();
+                if (tunnelSettings.getTunnelId() == null)
+                    continue;
+                json.put("tunnelId",tunnelSettings.getTunnelId());
+                json.put("name",tunnelSettings.getName());
+                json.put("provider",tunnelSettings.getProvider());
+
+                if(app.getRunState() != AppSettings.AppState.RUNNING) {
+                    json.put("state","OFF");
+                } else if (!tunnelSettings.getEnabled()) {
+                    json.put("state","DISABLED");
+                } else {
+                    json.put("state",getTunnelState(tunnelSettings.getTunnelId()));
+                }
+                states.add( json );
+            }
+        } catch (Exception e) {
+            logger.error("Error generating tunnel status", e);
+        }
+
+        return states;
+    }
+    
     private void writeFile( String fileName, StringBuilder sb )
     {
         logger.info( "Writing File: " + fileName );
@@ -232,5 +271,48 @@ public class TunnelVpnManager
 
         logger.error("Failed to find available tunnel ID");
         return -1;
+    }
+
+    private String getTunnelState(int tunnelId)
+    {
+        Socket socket = null;
+        BufferedReader in = null;
+        BufferedWriter out = null;
+        
+        try {
+            try {
+                /* Connect to the management port */
+                socket = new Socket((String)null, 2000+tunnelId );
+                socket.setSoTimeout( 2000 ); // 2 seconds
+
+                in = new BufferedReader( new InputStreamReader( socket.getInputStream()));
+                out = new BufferedWriter( new OutputStreamWriter( socket.getOutputStream()));
+
+                /* Read out the hello message */
+                in.readLine();
+
+                out.write( "state" + "\n" );
+                out.flush();
+
+                String state = in.readLine();
+                logger.info("Tunnel " + tunnelId + " state: " + state);
+
+                if ( state == null )
+                    return null;
+
+                String[] splits = state.split(",");
+                if (splits.length < 2)
+                    return null;
+                else
+                    return splits[1];
+            } finally {
+                if ( out != null )    out.close();
+                if ( in != null )     in.close();
+                if ( socket != null ) socket.close();
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to get tunnel status",e);
+            return null;
+        }
     }
 }
