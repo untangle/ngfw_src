@@ -324,10 +324,16 @@ public class TunnelVpnApp extends AppBase
         return settings;
     }
 
-    public void importTunnelConfig(String filename, String provider, int tunnelId){
+    public void importTunnelConfig(String filename, String provider, int tunnelId)
+    {
         this.tunnelVpnManager.importTunnelConfig( filename, provider, tunnelId);
     }
 
+    public List<org.json.JSONObject> getTunnelStates()
+    {
+        return this.tunnelVpnManager.getTunnelStates();
+    }
+        
     /**
      * This finds all the tunnels that do not have corresponding virtual interfaces
      * in the current network settings.

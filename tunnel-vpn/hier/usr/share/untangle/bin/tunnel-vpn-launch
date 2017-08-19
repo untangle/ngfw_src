@@ -7,6 +7,7 @@
 tunnel_id=${1}
 conf_dir=${2}
 tunnel_name="tunnel-${tunnel_id}"
+management_port=$((2000+${tunnel_id}))
 
 mkdir -p /run/openvpn
 
@@ -22,7 +23,7 @@ echo "Launching openvpn..."
     --script-security 2 \
     --up @PREFIX@/usr/share/untangle/bin/tunnel-vpn-up.sh \
     --down @PREFIX@/usr/share/untangle/bin/tunnel-vpn-down.sh \
+    --management 127.0.0.1 ${management_port} \
     </dev/null &
 
-#    --management 127.0.0.1 $((2000+${tunnel_id})) \
 
