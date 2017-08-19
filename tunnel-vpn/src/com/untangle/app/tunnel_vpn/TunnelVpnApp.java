@@ -250,7 +250,7 @@ public class TunnelVpnApp extends AppBase
     {
         File f = new File( TUNNEL_LOG );
         if (f.exists()) {
-            String output = UvmContextFactory.context().execManager().execOutput("tail -n 1000 " + TUNNEL_LOG);
+            String output = UvmContextFactory.context().execManager().execOutput("tail -n 200 " + TUNNEL_LOG);
             if ( output == null )
                 return null;
 
