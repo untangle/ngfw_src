@@ -38,9 +38,7 @@ for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
     fi
 
     echo "Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds..."
-
-    ## Just in case, kill all openvpn instances
-    killall openvpn > /dev/null 2>&1 
+    /etc/init.d/openvpn stop
 
     sleep ${RESTART_DELAY}
 done
