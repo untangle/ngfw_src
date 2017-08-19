@@ -310,6 +310,8 @@ public class TunnelVpnManager
                 if ( in != null )     in.close();
                 if ( socket != null ) socket.close();
             }
+        } catch (java.net.ConnectException e) {
+            return "DISCONNECTED";
         } catch (Exception e) {
             logger.warn("Failed to get tunnel status",e);
             return null;
