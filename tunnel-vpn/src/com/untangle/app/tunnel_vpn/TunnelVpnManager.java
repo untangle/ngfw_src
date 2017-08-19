@@ -72,7 +72,7 @@ public class TunnelVpnManager
     {
         logger.info("Killing OpenVPN processes...");
         try {
-            File dir = new File("/run/openvpn/");
+            File dir = new File("/run/tunnelvpn/");
             File[] matchingFiles = dir.listFiles(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
                         return name.startsWith("tunnel-") && name.endsWith("pid");
