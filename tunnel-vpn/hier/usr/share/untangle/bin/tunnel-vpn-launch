@@ -9,12 +9,12 @@ conf_dir=${2}
 tunnel_name="tunnel-${tunnel_id}"
 management_port=$((2000+${tunnel_id}))
 
-mkdir -p /run/openvpn
+mkdir -p /run/tunnelvpn
 
 echo "Launching openvpn..."
 /usr/sbin/openvpn \
     --config ${conf_dir}/tunnel.conf \
-    --writepid /run/openvpn/${tunnel_name}.pid \
+    --writepid /run/tunnelvpn/${tunnel_name}.pid \
     --daemon ovpn-${tunnel_name} \
     --dev tun${tunnel_id} \
     --cd ${conf_dir} \
