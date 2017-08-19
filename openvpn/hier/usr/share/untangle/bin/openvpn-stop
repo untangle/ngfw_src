@@ -2,10 +2,3 @@
 
 /etc/init.d/openvpn stop
 
-killall openvpn > /dev/null 2>&1
-
-sleep .5
-
-killall -KILL openvpn > /dev/null 2>&1
-
-true 
