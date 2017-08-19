@@ -263,6 +263,8 @@ public class TunnelVpnApp extends AppBase
                 String str = i.next();
                 if (str.contains("unable to redirect default gateway -- Cannot read current default gateway from system"))
                     i.remove();
+                if (str.contains("MANAGEMENT:"))
+                    i.remove();
             }
             String finalstr = list.stream().collect(Collectors.joining("\n"));
             return finalstr;
