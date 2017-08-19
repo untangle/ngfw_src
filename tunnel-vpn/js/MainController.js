@@ -8,11 +8,27 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         }
     },
 
+    getTunnelStates: function () {
+        var grid = this.getView().down('#tunnelStates'),
+            vm = this.getViewModel();
+        grid.setLoading(true);
+        this.getView().appManager.getTunnelStates(function (result, ex) {
+            grid.setLoading(false);
+            if (ex) { Util.handleException(ex); return; }
+            if ( result == null )
+                vm.set('tunnelStatesData', []);
+            else
+                vm.set('tunnelStatesData', result.list);
+        });
+    },
+
     getSettings: function () {
         var me = this,
             v = me.getView(), 
             vm = me.getViewModel();
         v.setLoading(true);
+
+        this.getTunnelStates();
 
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);

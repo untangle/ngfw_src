@@ -27,6 +27,51 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'grid',
+            title: 'Tunnel Status'.t(),
+            itemId: 'tunnelStates',
+            trackMouseOver: false,
+            sortableColumns: false,
+            enableColumnHide: false,
+
+            minHeight: 150,
+            maxHeight: 250,
+            margin: '10 0 10 0',
+            resizable: true,
+            resizeHandles: 's',
+            viewConfig: {
+                emptyText: '',
+                stripeRows: false
+            },
+
+            collapsible: true,
+            hideCollapseTool: true,
+            animCollapse: false,
+            bind: {
+                store: '{tunnelStatesList}'
+            },
+
+            columns: [{
+                header: 'Tunnel ID'.t(),
+                dataIndex: 'tunnelId',
+                width: 75
+            }, {
+                header: 'Tunnel Name'.t(),
+                dataIndex: 'name',
+                width: 150,
+                flex: 1
+            }, {
+                header: 'Tunnel Status'.t(),
+                dataIndex: 'state',
+                width: 180,
+            }],
+            bbar: [{
+                text: 'Refresh'.t(),
+                iconCls: 'fa fa-refresh',
+                handler: 'getTunnelStates'
+            }]
+
+        }, {
             xtype: 'appreports'
         }]
     }, {
