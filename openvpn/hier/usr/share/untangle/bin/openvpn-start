@@ -14,9 +14,6 @@ fi
 ## For some reason "restart" is different stop then start
 /etc/init.d/openvpn stop
 
-## Just in case, kill all openvpn instances
-killall openvpn > /dev/null 2>&1 
-
 sleep .5
 
 # Verify/set the links to the settings files from /etc/openvpn
