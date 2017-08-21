@@ -22,12 +22,10 @@ import uvm
 Debug = False
 AppTitle = "Untangle Next Generation Firewall Configuration Console"
 
-# def enum(*sequential, **named):
-#     enums = dict(zip(sequential, range(len(sequential))), **named)
-#     return type('Enum', (), enums)
-
-
 class UvmContext:
+    """
+    UVM managemnt
+    """
     context = None
     def __init__(self):
         try:
@@ -46,6 +44,9 @@ class UvmContext:
                 sys.exit(1)
 
     def exec_and_get_output(self, command, screen):
+        """
+        Execute a command and send output to the output screen
+        """
         screen.external_call_header()
 
         reader = self.context.execManager().execEvil(command)
@@ -67,6 +68,9 @@ class UvmContext:
 #   save settings
 
 class Screen(object):
+    """
+    Base class for screen management
+    """
     title = None
     y_pos = 0
     x_pos = 0
@@ -226,89 +230,10 @@ class Screen(object):
         self.window.refresh()
         return textbox
 
-"""
-Form
-"""
-class Form(Screen):
-    modes = ["confirm"]
-
-    mode_menu_pos = {}
-    mode_items = {}
-    mode_selected_item = {}
-
-    confirm_selections = [{
-        "text": "Save"
-    },{
-        "text": "Cancel",
-        "action": False
-    }]
-
-    def display(self):
-        super(Form, self).display()
-
-        if self.current_mode not in self.mode_menu_pos:
-            self.mode_menu_pos[self.current_mode] = 0
-
-        if hasattr(self,'display_form'):
-            self.display_form()
-
-        self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
-        getattr(self,'display_' + self.current_mode)()
-
-    def display_confirm(self):
-        self.y_pos += 2
-        self.display_title( "Confirm" )
-        self.y_pos += 1
-
-        for index, item in enumerate(self.confirm_selections):
-            if index == self.mode_menu_pos[self.current_mode]:
-                mode = curses.A_REVERSE
-            else:
-                mode = curses.A_NORMAL
-
-            msg = '%-12s' % (item["text"]) 
-            self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
-
-        self.y_pos = self.y_pos + len(self.confirm_selections) + 1
-        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to save or cancel changes and press [Enter]")
-
-    def navigate(self, n):
-        self.mode_menu_pos[self.current_mode] += n
-        if self.mode_menu_pos[self.current_mode] < 0:
-            self.mode_menu_pos[self.current_mode] = 0
-            return
-        elif self.mode_menu_pos[self.current_mode] >= len(self.mode_items[self.current_mode]):
-            self.mode_menu_pos[self.current_mode] = len(self.mode_items[self.current_mode])-1
-            return
-
-    def key_process(self):
-
-        if self.key in [curses.KEY_ENTER, ord('\n')]:
-            for index, item in enumerate(self.mode_items[self.current_mode]):
-                if index == self.mode_menu_pos[self.current_mode]:
-                    self.mode_selected_item[self.current_mode] = item
-
-                    ## what to do based on list data
-                    if self.current_mode == "confirm":
-                        if self.mode_selected_item[self.current_mode]["action"] is False:
-                            return False
-
-        if self.key == 27:
-            self.mode_items[self.current_mode] = None
-
-        if super(Form, self).key_process() is False:
-            return False
-
-        if self.key == curses.KEY_UP:
-            self.navigate(-1)
-
-        elif self.key == curses.KEY_DOWN:
-            self.navigate(1)
-
-        return True
-
 class Menu(Screen):
-
+    """
+    Menu class
+    """
     menu_pos = 0
 
     def __init__(self, items, stdscreen):
@@ -321,6 +246,9 @@ class Menu(Screen):
         self.deviceStatus = Uvm.context.networkManager().getDeviceStatus()
         self.interfaces = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
 
+        """
+        Get IP address of first interface that is not WAN to display recommended URL
+        """
         for interface in self.interfaces:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
@@ -352,6 +280,9 @@ class Menu(Screen):
                 break
 
     def display(self):
+        """
+        Show menu
+        """
         super(Menu, self).display()
 
         for index, item in enumerate(self.items):
@@ -374,6 +305,9 @@ class Menu(Screen):
         self.window.addstr( self.y_pos, self.x_pos, "For full configuration browse to https://%s" % (self.internal_ip_address) )
 
     def navigate(self, n):
+        """
+        Record current index position
+        """
         self.menu_pos += n
         if self.menu_pos < 0:
             self.menu_pos = 0
@@ -381,14 +315,16 @@ class Menu(Screen):
             self.menu_pos = len(self.items)-1
 
     def key_process(self):
+        """
+        Handle key presses
+        """
         if super(Menu, self).key_process() is False:
             return False
 
         if self.key in [curses.KEY_ENTER, ord('\n')]:
-            # if self.menu_pos == len(self.items)-1:
-            #     ## !"exit"
-            #     return False
-            # else:
+            """
+            Enter key.  Select current menu item
+            """
             if type(self.items[self.menu_pos][1]) is type:
                 obj = self.items[self.menu_pos][1](self.stdscreen)
                 obj.process()
@@ -407,13 +343,105 @@ class Menu(Screen):
         return True
 
 
+"""
+Form
+"""
+class Form(Screen):
+    """
+    Form class
+    """
+    modes = ["confirm"]
+
+    mode_menu_pos = {}
+    mode_items = {}
+    mode_selected_item = {}
+
+    confirm_selections = [{
+        "text": "Save"
+    },{
+        "text": "Cancel",
+        "action": False
+    }]
+
+    def display(self):
+        """ 
+        Display
+        """
+        super(Form, self).display()
+
+        if self.current_mode not in self.mode_menu_pos:
+            self.mode_menu_pos[self.current_mode] = 0
+
+        if hasattr(self,'display_form'):
+            self.display_form()
+
+        self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
+        getattr(self,'display_' + self.current_mode)()
+
+    def display_confirm(self):
+        """
+        Display confirm form
+        """
+        self.y_pos += 2
+        self.display_title( "Confirm" )
+        self.y_pos += 1
+
+        for index, item in enumerate(self.confirm_selections):
+            if index == self.mode_menu_pos[self.current_mode]:
+                mode = curses.A_REVERSE
+            else:
+                mode = curses.A_NORMAL
+
+            msg = '%-12s' % (item["text"]) 
+            self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
+
+        self.y_pos = self.y_pos + len(self.confirm_selections) + 1
+        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to save or cancel changes and press [Enter]")
+
+    def navigate(self, n):
+        """
+        Navigate menu positions in mode
+        """
+        self.mode_menu_pos[self.current_mode] += n
+        if self.mode_menu_pos[self.current_mode] < 0:
+            self.mode_menu_pos[self.current_mode] = 0
+            return
+        elif self.mode_menu_pos[self.current_mode] >= len(self.mode_items[self.current_mode]):
+            self.mode_menu_pos[self.current_mode] = len(self.mode_items[self.current_mode])-1
+            return
+
+    def key_process(self):
+        """
+        Proces key presses
+        """
+        if self.key in [curses.KEY_ENTER, ord('\n')]:
+            for index, item in enumerate(self.mode_items[self.current_mode]):
+                if index == self.mode_menu_pos[self.current_mode]:
+                    self.mode_selected_item[self.current_mode] = item
+
+                    ## what to do based on list data
+                    if self.current_mode == "confirm":
+                        if self.mode_selected_item[self.current_mode]["action"] is False:
+                            return False
+
+        if self.key == 27:
+            self.mode_items[self.current_mode] = None
+
+        if super(Form, self).key_process() is False:
+            return False
+
+        if self.key == curses.KEY_UP:
+            self.navigate(-1)
+
+        elif self.key == curses.KEY_DOWN:
+            self.navigate(1)
+
+        return True
+
 class RemapInterfaces(Screen):
     title = "Remap Interfaces"
 
     menu_pos = 0
-
-    # modes = enum( 'SELECT', 'MOVE', 'CONFIRM')
-    # mode = modes()
 
     switch_values = [
         "deviceName",
@@ -437,8 +465,6 @@ class RemapInterfaces(Screen):
                 if interface["physicalDev"] == device["deviceName"]:
                     for k,v in device.iteritems():
                         interface[k] = v
-
-        # self.mode = self.modes.SELECT
 
     def display(self):
         super(RemapInterfaces, self).display()
@@ -496,15 +522,10 @@ class RemapInterfaces(Screen):
         # 2. Append selected
         # 3. Anything after selected is appended.
         if self.selected_device is not None:
-            # interfaces = []
-            # order = []
-
-            # selected_found = None
             other_index = None
             selected_index = None
             for index, interface in enumerate(self.interfaces):
                 if self.selected_device == interface["deviceName"]:
-                    # selected_found = True
                     selected_index = index
                     continue
 
