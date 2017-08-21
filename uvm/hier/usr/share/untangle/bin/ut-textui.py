@@ -93,7 +93,7 @@ class Screen(object):
         self.max_height, self.max_width = stdscreen.getmaxyx()
         self.current_mode = self.modes[0]
 
-    def debug_msg(self, msg, clear=False):
+    def debug_message(self, msg, clear=False):
         """
         Print a message on the bottom of the screen
         """
@@ -111,6 +111,22 @@ class Screen(object):
 
         if self.debug_x_pos >= width:
             self.debug_x_pos = 0
+
+    def message(self, msg, cont=False):
+        """
+        Line based message
+        """
+        str_msg = str(msg)
+        # Clear entire line
+        self.stdscreen.hline(self.y_pos, 0, " " , 79)
+
+        self.window.addstr( self.y_pos, self.x_pos, msg )
+
+        if cont is True:
+            self.x_pos += len(str_msg)
+        else:
+            self.y_pos += 1
+            self.x_pos = 0
 
     def process(self):
         """
@@ -143,10 +159,10 @@ class Screen(object):
         self.window.refresh()
         self.y_pos = 0
         self.display_title(AppTitle)
-        self.y_pos += 1
+        # self.y_pos += 1
         if self.title is not None:
             self.display_title(self.title)
-            self.y_pos += 1
+            # self.y_pos += 1
         self.y_pos += 1
 
     def display_title(self, title):
@@ -154,6 +170,7 @@ class Screen(object):
         Display title with appropriate attributes
         """
         self.window.addstr(self.y_pos, self.x_pos, title, curses.A_BOLD)
+        self.y_pos += 1
 
     def key_process(self):
         """
@@ -360,8 +377,10 @@ class Form(Screen):
         "text": "Save"
     },{
         "text": "Cancel",
-        "action": False
+        "action": False,
+        "default": True
     }]
+    confirm_message = "Use [Up] and [Down] cursor keys to save or cancel changes and press [Enter]"
 
     def display(self):
         """ 
@@ -369,13 +388,21 @@ class Form(Screen):
         """
         super(Form, self).display()
 
+        self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
+
+        """
+        Select default option. If not specified, use first
+        """
+        if self.current_mode not in self.mode_menu_pos:
+            for index, item in enumerate(self.mode_items[self.current_mode]):
+                if "default" in item and item["default"] is True:
+                    self.mode_menu_pos[self.current_mode] = index
         if self.current_mode not in self.mode_menu_pos:
             self.mode_menu_pos[self.current_mode] = 0
 
         if hasattr(self,'display_form'):
             self.display_form()
 
-        self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
         getattr(self,'display_' + self.current_mode)()
 
     def display_confirm(self):
@@ -384,7 +411,7 @@ class Form(Screen):
         """
         self.y_pos += 2
         self.display_title( "Confirm" )
-        self.y_pos += 1
+        # self.y_pos += 1
 
         for index, item in enumerate(self.confirm_selections):
             if index == self.mode_menu_pos[self.current_mode]:
@@ -396,7 +423,7 @@ class Form(Screen):
             self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
 
         self.y_pos = self.y_pos + len(self.confirm_selections) + 1
-        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to save or cancel changes and press [Enter]")
+        self.message(self.confirm_message)
 
     def navigate(self, n):
         """
@@ -419,10 +446,12 @@ class Form(Screen):
                 if index == self.mode_menu_pos[self.current_mode]:
                     self.mode_selected_item[self.current_mode] = item
 
-                    ## what to do based on list data
-                    if self.current_mode == "confirm":
+                    if "action" in self.mode_selected_item[self.current_mode]:
                         if self.mode_selected_item[self.current_mode]["action"] is False:
                             return False
+                    method = getattr(self, self.current_mode + '_action')
+                    if method:
+                        method()
 
         if self.key == 27:
             self.mode_items[self.current_mode] = None
@@ -471,7 +500,7 @@ class RemapInterfaces(Screen):
 
         msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
         self.display_title( msg )
-        self.y_pos += 1
+        # self.y_pos += 1
 
         for index, interface in enumerate(self.interfaces):
             if self.selected_device is not None:
@@ -652,12 +681,12 @@ class AssignInterfaces(Screen):
     def display(self):
         super(AssignInterfaces, self).display()
 
-        # self.debug_msg()
+        # self.debug_message()
 
         if self.current_mode not in self.mode_menu_pos:
             self.mode_menu_pos[self.current_mode] = 0
 
-        # self.debug_msg("current mode=" + self.current_mode)
+        # self.debug_message("current mode=" + self.current_mode)
         if ( self.current_mode not in self.mode_items ) or ( self.mode_items[self.current_mode] == None ):
             ## ?? maybe _list instead
             if self.current_mode == "edit_field":
@@ -682,7 +711,7 @@ class AssignInterfaces(Screen):
     def display_interface(self, show_selected_only = False):
         msg = '%-12s %-15s %-4s %-5s  %-10s %-18s %-5s' % ("Status", "Name", "Dev", "Speed", "Config", "Address", "is Wan" )
         self.display_title( msg )
-        self.y_pos += 1
+        # self.y_pos += 1
 
         for index, interface in enumerate(self.mode_items["interface"]):
             if show_selected_only:
@@ -724,7 +753,7 @@ class AssignInterfaces(Screen):
         self.y_pos += 1
         msg = '%-12s' % ("Config")
         self.display_title( msg )
-        self.y_pos += 1
+        # self.y_pos += 1
 
         for index, item in enumerate(self.mode_items["config"]):
             if show_selected_only is True:
@@ -753,7 +782,7 @@ class AssignInterfaces(Screen):
         self.y_pos += 1
         msg = '%-12s' % ("Addressed")
         self.display_title( msg )
-        self.y_pos += 1
+        # self.y_pos += 1
         index_adjust = 0
 
         for index, item in enumerate(self.mode_items["addressed"]):
@@ -768,7 +797,7 @@ class AssignInterfaces(Screen):
                     index_adjust -= 1
                     continue
 
-                # self.debug_msg(index)
+                # self.debug_message(index)
                 if index == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
@@ -789,12 +818,12 @@ class AssignInterfaces(Screen):
 
         self.display_addressed(show_selected_only=True)
     
-        self.debug_msg("current mode="+self.current_mode)
+        self.debug_message("current mode="+self.current_mode)
 
         self.y_pos += 1
         msg = '%-12s' % ("Edit")
         self.display_title( msg )
-        self.y_pos += 1
+        # self.y_pos += 1
 
         # if modified, add edit_commit_fields
 
@@ -802,12 +831,12 @@ class AssignInterfaces(Screen):
         edit_index = None
         edit_item = None
         # if(edit_mode):
-        #     self.debug_msg( self.mode_selected_item["edit_field"] );
+        #     self.debug_message( self.mode_selected_item["edit_field"] );
         for index, item in enumerate(self.mode_items["edit"]):
             if edit_mode:
                 # "edit_field" in self.mode_selected_item and item == self.mode_selected_item["edit_field"]:
-                # self.debug_msg("edit field")
-                # self.debug_msg("do edit")
+                # self.debug_message("edit field")
+                # self.debug_message("do edit")
                 # mode = curses.A_REVERSE
                 if self.mode_selected_item["edit"][1] == item[1]:
                     mode = curses.A_REVERSE
@@ -848,7 +877,7 @@ class AssignInterfaces(Screen):
         ##  if None, don't write back.
         self.mode_selected_item['interface'][edit_item[1]] = newValue.strip()
         self.key = 27
-        # self.debug_msg(newValue)
+        # self.debug_message(newValue)
 
     # def display_confirm(self, show_selected_only=False):
 
@@ -870,7 +899,7 @@ class AssignInterfaces(Screen):
     #                 index_adjust -= 1
     #                 continue
 
-    #             # self.debug_msg(index)
+    #             # self.debug_message(index)
     #             if index == self.mode_menu_pos[self.current_mode]:
     #                 mode = curses.A_REVERSE
     #             else:
@@ -958,13 +987,6 @@ class Ping(Screen):
             self.y_pos += 2
             Uvm.exec_and_get_output("ping -c 5 " + address, self )
 
-# class Upgrade(Screen):
-#     title = "Upgrade"
-
-#     def __init__(self, stdscreen):
-#         super(self.__class__, self).__init__(stdscreen)
-#         Uvm.context.systemManager().upgrade()
-
 class Upgrade(Form):
     title = "Reboot"
 
@@ -985,11 +1007,21 @@ class Reboot(Form):
         "text": "Yes"
     },{
         "text": "No",
-        "action": False
+        "action": False,
+        "default": True
     }]
+    confirm_message = "Use [Up] and [Down] cursor keys to confirm or cancel and press [Enter]"
 
     def display_form(self):
-        self.window.addstr(self.y_pos, self.x_pos, "Are you sure you want to reboot the system?")
+        self.message("Are you sure you want to reboot the system?")
+        self.y_pos += 1
+        self.message("This will interrupt network operations until the server has restarted.")
+        self.message("This may take up to several minutes to complete.")
+
+    def confirm_action(self):
+        self.window.clear()
+        self.window.refresh()
+        Uvm.context.rebootBox()
 
 class Shutdown(Form):
     title = "Shutdown"
@@ -998,11 +1030,19 @@ class Shutdown(Form):
         "text": "Yes"
     },{
         "text": "No",
-        "action": False
+        "action": False,
+        "default": True
     }]
 
     def display_form(self):
-        self.window.addstr(self.y_pos, self.x_pos, "Are you sure you want to shut down the system?")
+        self.message("Are you sure you want to shut down the system?")
+        self.y_pos += 1
+        self.message("This will stop all network operations.")
+
+    def confirm_action(self):
+        self.window.clear()
+        self.window.refresh()
+        Uvm.context.shutdownBox()
 
 class FactoryDefaults(Form):
     title = "Shutdown"
