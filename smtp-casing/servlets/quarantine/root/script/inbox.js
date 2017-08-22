@@ -151,7 +151,7 @@ Ext.define('Ung.view.MainController', {
         rpc.getInboxRecords(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
             var mails = [];
-            Ext.Array.each(result, function (mail) {
+            Ext.Array.each(result.list, function (mail) {
                 mail.time = mail.internDate; // preserve time in a different prop
                 Ext.apply(mail, mail.mailSummary);
                 mails.push(mail);
