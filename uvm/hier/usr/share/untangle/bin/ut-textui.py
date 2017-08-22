@@ -105,6 +105,9 @@ class Screen(object):
         if len(str_msg) + self.debug_x_pos > ( width - 1):
             self.debug_x_pos = 0
 
+        if len(str_msg) > width:
+            str_msg = str_msg[:width - 1]
+
         self.window.addstr( height - 1, self.debug_x_pos, str_msg )
 
         self.debug_x_pos += len(str_msg) + 1
@@ -388,7 +391,8 @@ class Form(Screen):
         """
         super(Form, self).display()
 
-        self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
+        if hasattr(self, self.current_mode + '_selections'):
+            self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
 
         """
         Select default option. If not specified, use first
@@ -403,12 +407,23 @@ class Form(Screen):
         if hasattr(self,'display_form'):
             self.display_form()
 
-        getattr(self,'display_' + self.current_mode)()
+        if hasattr(self,'display_' + self.current_mode):
+            getattr(self,'display_' + self.current_mode)()
 
     def display_confirm(self):
         """
         Display confirm form
         """
+        last_mode = None
+        if len(self.modes) > 1:
+            for mode in self.modes:
+                if mode == self.current_mode:
+                    break
+                last_mode = mode
+
+        if last_mode is not None and hasattr(self,'display_' + last_mode):
+            getattr(self, 'display_' + last_mode)(show_selected_only=True)
+
         self.y_pos += 2
         self.display_title( "Confirm" )
         # self.y_pos += 1
@@ -422,8 +437,8 @@ class Form(Screen):
             msg = '%-12s' % (item["text"]) 
             self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
 
-        self.y_pos = self.y_pos + len(self.confirm_selections) + 1
-        self.message(self.confirm_message)
+        # self.y_pos = self.y_pos + len(self.confirm_selections) + 1
+        # self.message(self.confirm_message)
 
     def navigate(self, n):
         """
@@ -449,9 +464,8 @@ class Form(Screen):
                     if "action" in self.mode_selected_item[self.current_mode]:
                         if self.mode_selected_item[self.current_mode]["action"] is False:
                             return False
-                    method = getattr(self, self.current_mode + '_action')
-                    if method:
-                        method()
+                    if hasattr( self, 'action_' + self.current_mode ):
+                        getattr(self, 'action_' + self.current_mode)()
 
         if self.key == 27:
             self.mode_items[self.current_mode] = None
@@ -599,64 +613,92 @@ class RemapInterfaces(Screen):
 
         return True
 
-class AssignInterfaces(Screen):
+# class AssignInterfaces(Screen):
+class AssignInterfaces(Form):
     title = "Assign Interface Addresses"
 
-    modes = ['interface', 'config', 'addressed', 'edit', 'edit_field', 'confirm']
-    mode_menu_pos = {}
-    mode_items = {}
-    mode_selected_item = {}
+    # modes = ['interface', 'config', 'addressed', 'edit', 'edit_field', 'confirm']
+    modes = ['interface', 'config', 'addressed', 'edit', 'confirm']
 
-    selected = {}
+    config_selections = [{
+        "text": "Addressed", 
+        "value": "ADDRESSED",
+    },{
+        "text": "Bridged", 
+        "value": "BRIDGED",
+    },{
+        "text": "Disabled", 
+        "value": "DISABLED",
+    }]
 
-    config_selections = [
-        ('Addressed', 'ADDRESSED'),
-        ('Bridged', 'BRIDGED'),
-        ('Disabled', 'DISABLED')
-    ]
+    addressed_selections = [{
+        "text": "DHCP", 
+        "value": "DHCP"
+    },{
+        "text": "Static", 
+        "value": "STATIC"
+    },{
+        "text": "PPPoE", 
+        "value": "PPPOE"
+    }]
 
-    # addressed_edits = [
-    addressed_selections = [
-        ('DHCP', 'DHCP'),
-        ('Static', 'STATIC'),
-        ('PPPoE', 'PPPOE')
-    ]
+    bridged_selections = []
 
     # primary/secondary only for WAN
     # need to get/show current
-    dhcp_field_selections = [
-        ('Address Override', 'v4AutoAddressOverride'),
-        ('Netmask Override', 'v4AutoPrefixOverride'),
-        ('Gateway Override', 'v4AutoGatewayOverride'),
-        ('Primary DNS Override', 'v4AutoDns1Override'),
-        ('Secondary DNS Override', 'v4AutoDns2Override')
-    ]
+    dhcp_field_selections = [{
+        "text": "Address Override",
+        "key": "v4AutoAddressOverride"
+    },{
+        "text": "Netmask Override",
+        "key": "v4AutoPrefixOverride"
+    },{
+        "text": "Gateway Override",
+        "key": "v4AutoGatewayOverride"
+    },{
+        "text": "Primary DNS Override",
+        "key": "v4AutoDns1Override"
+    },{
+        "text": "Secondary DNS Override",
+        "key": "v4AutoDns2Override"
+    }]
 
     # primary/secondary only for WAN
-    static_field_selections = [
-        ('Address', 'v4StaticAddress'),
-        ('Netmask', 'v4StaticPrefix'),
-        ('Gateway', 'v4StaticGateway'),
-        ('Primary DNS', 'v4StaticDns1'),
-        ('Secondary DNS', 'v4StaticDns2')
-    ]
+    static_field_selections = [{
+        "text": "Address",
+        "key": "v4StaticAddress"
+    },{
+        "text": "Netmask",
+        "key": "v4StaticPrefix"
+    },{
+        "text": "Gateway",
+        "key": "v4StaticGateway"
+    },{
+        "text": "Primary DNS",
+        "key": "v4StaticDns1"
+    },{
+        "text": "Secondary DNS",
+        "key": "v4StaticDns2"
+    }]
 
     # primary/secondary only if use peer dns =false
-    pppoe_field_selections = [
-        ('Username', 'v4PPPoEUsername'),
-        ('Password', 'v4PPPoEPassword'),
-        ('Use Peer DNS', 'v4PPPoEUsePeerDns'),
-        ('Primary DNS', 'v4PPPoEDns1'),
-        ('Secondary DNS', 'v4PPPoEDns1')
-    ]
+    pppoe_field_selections = [{
+        "text": "Username",
+        "key": "v4PPPoEUsername"
+    },{
+        "text": "Password",
+        "key": "v4PPPoEPassword"
+    },{
+        "text": "Use Peer DNS",
+        "key": "v4PPPoEUsePeerDns"
+    },{
+        "text": "Primary DNS",
+        "key": "v4PPPoEDns1"
+    },{
+        "text": "Secondary DNS",
+        "key": "v4PPPoEDns1"
+    }]
 
-    # confirms_selection = [
-    #     ('Save', 'save'),
-    #     ('Cancel', 'cancel')
-    # ]
-
-    # modes = enum( 'SELECT', 'CONFIG', 'ADDRESSED', 'EDIT', 'CONFIRM')
-    # mode = modes()
 
     def __init__(self, stdscreen):
         super(AssignInterfaces, self).__init__(stdscreen)
@@ -679,49 +721,32 @@ class AssignInterfaces(Screen):
         self.selected_device = None
 
     def display(self):
-        super(AssignInterfaces, self).display()
-
-        # self.debug_message()
-
-        if self.current_mode not in self.mode_menu_pos:
-            self.mode_menu_pos[self.current_mode] = 0
-
-        # self.debug_message("current mode=" + self.current_mode)
-        if ( self.current_mode not in self.mode_items ) or ( self.mode_items[self.current_mode] == None ):
-            ## ?? maybe _list instead
-            if self.current_mode == "edit_field":
-                self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
-            elif self.current_mode == "edit":
-                if self.mode_selected_item["addressed"][1] == "DHCP":
-                    self.mode_items[self.current_mode] = self.dhcp_field_selections
-                elif self.mode_selected_item["addressed"][1] == "STATIC":
-                    self.mode_items[self.current_mode] = self.static_field_selections
-                elif self.mode_selected_item["addressed"][1] == "PPPOE":
-                    self.mode_items[self.current_mode] = self.pppoe_field_selections
-            else:
-                self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
-
-        if self.current_mode == "edit_field":
-            getattr(self,'display_edit')()
+        if self.current_mode == "addressed" and self.mode_selected_item["config"]["value"] == "DISABLED":
+            self.current_mode = 'confirm';
+        elif self.current_mode == "edit_field":
+            self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
+        elif self.current_mode == "edit":
+            if self.mode_selected_item["addressed"]["value"] == "DHCP":
+                self.mode_items[self.current_mode] = self.dhcp_field_selections
+            elif self.mode_selected_item["addressed"]["value"] == "STATIC":
+                self.mode_items[self.current_mode] = self.static_field_selections
+            elif self.mode_selected_item["addressed"]["value"] == "PPPOE":
+                self.mode_items[self.current_mode] = self.pppoe_field_selections
         else:
-            getattr(self,'display_' + self.current_mode)()
+            self.mode_items[self.current_mode] = getattr(self, self.current_mode + '_selections')
 
-        self.y_pos += 1
+        super(AssignInterfaces, self).display()
 
     def display_interface(self, show_selected_only = False):
         msg = '%-12s %-15s %-4s %-5s  %-10s %-18s %-5s' % ("Status", "Name", "Dev", "Speed", "Config", "Address", "is Wan" )
         self.display_title( msg )
-        # self.y_pos += 1
 
         for index, interface in enumerate(self.mode_items["interface"]):
             if show_selected_only:
                 select_mode = curses.A_NORMAL
-                # if interface["deviceName"] != self.selected_device:
                 if interface != self.mode_selected_item['interface']:
                     continue
             else:
-                ## !!! highlight current value
-                # if index == self.menu_pos:
                 if index == self.mode_menu_pos[self.current_mode]:
                     select_mode = curses.A_REVERSE
                 else:
@@ -729,8 +754,8 @@ class AssignInterfaces(Screen):
 
             config = interface["configType"]
             for c in self.config_selections:
-                if c[1] == config:
-                    config = c[0] 
+                if c["value"] == config:
+                    config = c["text"] 
 
             address = ''
             if 'v4Address' in interface:
@@ -743,6 +768,7 @@ class AssignInterfaces(Screen):
 
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
+            ## !!! build bridged selections
             self.y_pos = self.y_pos + len(self.mode_items["interface"])
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select interface to edit and press [Enter]")
 
@@ -753,11 +779,9 @@ class AssignInterfaces(Screen):
         self.y_pos += 1
         msg = '%-12s' % ("Config")
         self.display_title( msg )
-        # self.y_pos += 1
 
         for index, item in enumerate(self.mode_items["config"]):
             if show_selected_only is True:
-                # if self.config != config:
                 if item != self.mode_selected_item['config']:
                     continue
                 mode = curses.A_NORMAL
@@ -767,7 +791,9 @@ class AssignInterfaces(Screen):
                 else:
                     mode = curses.A_NORMAL
 
-            msg = '%-12s' % (item[0]) 
+            msg = '%-12s' % (item["text"]) 
+            if show_selected_only is True:
+                index = 0            
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + 1
@@ -779,21 +805,22 @@ class AssignInterfaces(Screen):
 
         self.display_config(show_selected_only=True)
 
+        if "addressed" not in self.mode_items:
+            return
+
         self.y_pos += 1
         msg = '%-12s' % ("Addressed")
         self.display_title( msg )
-        # self.y_pos += 1
         index_adjust = 0
 
         for index, item in enumerate(self.mode_items["addressed"]):
             if show_selected_only is True:
-                # if self.config != config:
                 if item != self.mode_selected_item['addressed']:
                     continue
                 mode = curses.A_NORMAL
             else: 
                 ## !!! highlight current value
-                if self.mode_selected_item['interface']['isWan'] is False and item[1] != 'STATIC':
+                if self.mode_selected_item['interface']['isWan'] is False and item["value"] != 'STATIC':
                     index_adjust -= 1
                     continue
 
@@ -806,7 +833,9 @@ class AssignInterfaces(Screen):
             if show_selected_only is True:
                 index = 0
 
-            msg = '%-20s' % (item[0]) 
+            msg = '%-20s' % (item["text"]) 
+            if show_selected_only is True:
+                index = 0            
             self.window.addstr( self.y_pos + index + index_adjust, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + 1
@@ -814,53 +843,36 @@ class AssignInterfaces(Screen):
             self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select address mode and press [Enter]")
 
-    def display_edit(self):
+    def display_edit(self,show_selected_only = False):
+        """
+        Ignore show_selected_only.  Need to accept it though.
+        """
 
         self.display_addressed(show_selected_only=True)
     
-        self.debug_message("current mode="+self.current_mode)
+        if "edit" not in self.mode_items:
+            return
 
         self.y_pos += 1
         msg = '%-12s' % ("Edit")
         self.display_title( msg )
         # self.y_pos += 1
 
-        # if modified, add edit_commit_fields
-
-        edit_mode = self.current_mode == "edit_field"
-        edit_index = None
-        edit_item = None
-        # if(edit_mode):
-        #     self.debug_message( self.mode_selected_item["edit_field"] );
         for index, item in enumerate(self.mode_items["edit"]):
-            if edit_mode:
-                # "edit_field" in self.mode_selected_item and item == self.mode_selected_item["edit_field"]:
-                # self.debug_message("edit field")
-                # self.debug_message("do edit")
-                # mode = curses.A_REVERSE
-                if self.mode_selected_item["edit"][1] == item[1]:
-                    mode = curses.A_REVERSE
-                    edit_index = index
-                    edit_item = item
-                else:
-                    mode = curses.A_NORMAL
+            if index == self.mode_menu_pos[self.current_mode]:
+                mode = curses.A_REVERSE
+                self.edit_index = self.y_pos + index
+                self.edit_item = item
             else:
-                if index == self.mode_menu_pos[self.current_mode]:
-                    mode = curses.A_REVERSE
-                else:
-                    mode = curses.A_NORMAL
+                mode = curses.A_NORMAL
 
-            msg = '%-30s %-40s' % (item[0], self.mode_selected_item['interface'][item[1]]) 
+            msg = '%-30s %-40s' % (item["text"], self.mode_selected_item['interface'][item["key"]]) 
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
-        if edit_mode:
-            self.window.addstr( self.y_pos + len(self.mode_items["edit"]) + 2, self.x_pos, "Modify the value and press [Enter]")
-
-            # ??? may only need index?
-            self.edit_field(edit_index, edit_item)
-        else:
-            self.y_pos = self.y_pos + len(self.mode_items["edit"]) + 1
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select field to edit and press [Enter]")
+        self.y_pos = self.y_pos + len(self.mode_items["edit"])
+        if show_selected_only is False:
+            self.y_pos += 1
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select field to edit and press [Right]")
 
         ## track modifiications
 
@@ -868,105 +880,61 @@ class AssignInterfaces(Screen):
         # note value type:
         # integer
         # none
-        textbox = self.textbox( self.y_pos + edit_index, 31, str(self.mode_selected_item['interface'][edit_item[1]]) )
+        # textbox = self.textbox( self.y_pos + edit_index, 31, str(self.mode_selected_item['interface'][edit_item[1]]) )
+        textbox = self.textbox( edit_index, 31, str(self.mode_selected_item['interface'][edit_item["key"]]) )
         # self.y_pos = self.y_pos + len(self.mode_items["edit"]) + 2
         newValue = textbox.edit()
         ## validate.
         ## if valid, set value to newValue
         ## massage back to proper type
         ##  if None, don't write back.
-        self.mode_selected_item['interface'][edit_item[1]] = newValue.strip()
+        self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
         self.key = 27
         # self.debug_message(newValue)
 
-    # def display_confirm(self, show_selected_only=False):
+    def action_interface(self):
+        for index, item in enumerate(self.interface_selections):
+            if index == self.mode_menu_pos[self.current_mode]:
+                self.mode_selected_item["config"] = item["configType"]
+                for index, litem in enumerate(self.config_selections):
+                    if litem["value"] == item["configType"]:
+                        self.mode_menu_pos["config"] = index
+                if item["configType"] == "ADDRESSED":
+                    self.mode_selected_item["addressed"] = item["v4ConfigType"]
+                    for index, litem in enumerate(self.addressed_selections):
+                        if litem["value"] == item["v4ConfigType"]:
+                            self.mode_menu_pos["addressed"] = index
 
-    #     self.y_pos += 1
-    #     msg = '%-12s' % ("Confirm")
-    #     self.display_title( msg )
-    #     self.y_pos += 1
-    #     index_adjust = 0
-
-    #     for index, item in enumerate(self.mode_items["addressed"]):
-    #         if show_selected_only is True:
-    #             # if self.config != config:
-    #             if item != self.mode_selected_item['addressed']:
-    #                 continue
-    #             mode = curses.A_NORMAL
-    #         else: 
-    #             ## !!! highlight current value
-    #             if self.mode_selected_item['interface']['isWan'] is False and item[1] != 'STATIC':
-    #                 index_adjust -= 1
-    #                 continue
-
-    #             # self.debug_message(index)
-    #             if index == self.mode_menu_pos[self.current_mode]:
-    #                 mode = curses.A_REVERSE
-    #             else:
-    #                 mode = curses.A_NORMAL
-
-    #         if show_selected_only is True:
-    #             index = 0
-
-    #         msg = '%-20s' % (item[0]) 
-    #         self.window.addstr( self.y_pos + index + index_adjust, self.x_pos, msg, mode)
-
-    #     self.y_pos = self.y_pos + 1
-    #     if show_selected_only is False:
-    #         self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
-    #         self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select address mode and press [Enter]")
-
-
-    def navigate(self, n):
-        self.mode_menu_pos[self.current_mode] += n
-        if self.mode_menu_pos[self.current_mode] < 0:
-            self.mode_menu_pos[self.current_mode] = 0
-            return
-        elif self.mode_menu_pos[self.current_mode] >= len(self.mode_items[self.current_mode]):
-            self.mode_menu_pos[self.current_mode] = len(self.mode_items[self.current_mode])-1
-            return
 
     def key_process(self):
-
-        if self.key in [curses.KEY_ENTER, ord('\n')]:
-            for index, item in enumerate(self.mode_items[self.current_mode]):
-                if index == self.mode_menu_pos[self.current_mode]:
-                    self.mode_selected_item[self.current_mode] = item
-
-                    if self.current_mode == "interface":
-                        self.mode_selected_item["config"] = item["configType"]
-                        for index, litem in enumerate(self.config_selections):
-                            if litem[1] == item["configType"]:
-                                self.mode_menu_pos["config"] = index
-                        if item["configType"] == "ADDRESSED":
-                            self.mode_selected_item["addressed"] = item["v4ConfigType"]
-                            for index, litem in enumerate(self.addressed_selections):
-                                if litem[1] == item["v4ConfigType"]:
-                                    self.mode_menu_pos["addressed"] = index
-
-        if self.key == 27:
-            self.mode_items[self.current_mode] = None
-
-        if self.key in [curses.KEY_ENTER, ord('\n')]:
-            if self.current_mode == "config" and self.mode_selected_item[self.current_mode][1] == "DISABLED":
-                self.current_mode = "confirm"
-            if self.current_mode == "edit_field":
-                self.current_mode = "edit"
-            else:
-                if super(AssignInterfaces, self).key_process() is False:
-                    return False
+        if self.current_mode == "edit" and self.key == curses.KEY_RIGHT:
+            self.edit_field(self.edit_index, self.edit_item)
+            # self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
         else:
             if super(self.__class__, self).key_process() is False:
                 return False
 
-        if self.key == curses.KEY_UP:
-            self.navigate(-1)
+    def action_confirm(self):
+        self.window.clear()
+        if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
+            return
 
-        elif self.key == curses.KEY_DOWN:
-            self.navigate(1)
+        networkSettings = Uvm.context.networkManager().getNetworkSettings()
+        for interface in networkSettings["interfaces"]["list"]:
+            if interface["name"] == self.mode_selected_item["interface"]["name"]:
+                if self.mode_selected_item["config"] is not None:
+                    interface["configType"] = self.mode_selected_item["config"]["value"];
+                    if interface["configType"] == "ADDRESSED":
+                        if self.mode_selected_item["addressed"] is not None:
+                            interface["v4ConfigType"] = self.mode_selected_item["addressed"]["value"];
+                            for field in self.mode_items["edit"]:
+                                if self.mode_selected_item['interface'][field["key"]] is not None:
+                                    interface[field["key"]] = self.mode_selected_item['interface'][field["key"]]
 
-        return True
+        self.window.refresh()
+        Uvm.context.networkManager().setNetworkSettings(networkSettings)
 
+        # sleep(20)
 
 class Ping(Screen):
     title = "Ping"
@@ -1018,7 +986,7 @@ class Reboot(Form):
         self.message("This will interrupt network operations until the server has restarted.")
         self.message("This may take up to several minutes to complete.")
 
-    def confirm_action(self):
+    def action_confirm(self):
         self.window.clear()
         self.window.refresh()
         Uvm.context.rebootBox()
@@ -1039,7 +1007,7 @@ class Shutdown(Form):
         self.y_pos += 1
         self.message("This will stop all network operations.")
 
-    def confirm_action(self):
+    def action_confirm(self):
         self.window.clear()
         self.window.refresh()
         Uvm.context.shutdownBox()
@@ -1055,7 +1023,14 @@ class FactoryDefaults(Form):
     }]
 
     def display_form(self):
-        self.window.addstr(self.y_pos, self.x_pos, "Are you sure you want to restore the system to factory defaults?")
+        self.message("Are you sure you want to RESET ALL SETTINGS to factory defaults?")
+        self.y_pos += 1
+        self.message("ALL current settings WILL BE LOST")
+
+    def action_confirm(self):
+        self.window.clear()
+        self.window.refresh()
+        # Uvm.context.shutdownBox()
 
 class UiApp(object):
     def __init__(self, stdscreen):
