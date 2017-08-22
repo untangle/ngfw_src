@@ -39,9 +39,15 @@
             });
             rpc.timezones = tzArray;
 
+            var lang;
+            // when no translations it is assumed that language is english
+            if (Ext.Object.isEmpty(rpc.translations)) { lang = 'en'; };
+
             String.prototype.t = function() {
-                // return rpc.translations[this.valueOf()] || (lang === 'xx' ? '<cite>' + this.valueOf() + '</cite>' : this.valueOf());
-                return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                if (lang !== 'en') {
+                    return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                }
+                return this.valueOf();
             };
 
             window.document.title = 'Setup Wizard'.t();
