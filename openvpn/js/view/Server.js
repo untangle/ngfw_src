@@ -5,6 +5,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     title: 'Server'.t(),
     viewModel: true,
     autoScroll: true,
+    withValidation: true,
 
     tbar: [{
         xtype: 'tbtext',
