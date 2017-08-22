@@ -5,6 +5,7 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     title: 'Advanced'.t(),
     viewModel: true,
     autoScroll: true,
+    withValidation: true,
 
     tbar: [{
         xtype: 'tbtext',
