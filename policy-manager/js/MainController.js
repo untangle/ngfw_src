@@ -108,11 +108,10 @@ Ext.define('Ung.apps.policymanager.MainController', {
             if (app.type !== 'FILTER') { return; }
 
             instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
+            parentPolicy = null;
 
             if (instance) {
-                // status = instance.targetState;
                 if (instance.policyId && policy.policyId !== instance.policyId) {
-                    // parentPolicy = me.policiesMap[instance.policyId].name;
                     parentPolicy = me.lookup('tree').getStore().findNode('policyId', instance.policyId).get('name');
                 }
 
