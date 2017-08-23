@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
+import base64
+import getopt
+import json
+import md5
 import sys
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
-
-import getopt
 
 import curses
 import curses.textpad
 from curses import panel
-
-import json
 
 from time import sleep
 
@@ -21,6 +21,7 @@ import uvm
 
 Debug = False
 AppTitle = "Untangle Next Generation Firewall Configuration Console"
+Require_Auth = True
 
 class UvmContext:
     """
@@ -1094,32 +1095,73 @@ class FactoryDefaults(Form):
         self.window.refresh()
         # Uvm.context.shutdownBox()
 
+class Login(Screen):
+    title = "Login"
+    authorized = False
+
+    def display(self):
+        super(Login, self).display()
+
+        curses.echo()
+        mode = curses.A_NORMAL
+        label = "Administrator password: "
+        self.window.addstr(self.y_pos, self.x_pos, label)
+        curses.curs_set(1)
+        curses.noecho()
+        password = self.window.getstr(self.y_pos, len(label), 50)
+        curses.curs_set(0)
+
+        if len(password.strip()) == 0:
+            self.process_continue = False
+        else:
+            self.y_pos += 2
+
+            adminSettings = Uvm.context.adminManager().getSettings()
+            for user in adminSettings["users"]["list"]:
+                if user["username"] == "admin":
+                    pw_hash_base64 = user['passwordHashBase64']
+                    pw_hash = base64.b64decode(pw_hash_base64)
+                    raw_pw = pw_hash[0:len(pw_hash) - 8]
+                    salt = pw_hash[len(pw_hash) - 8:]
+                    if raw_pw == md5.new(password.strip() + salt).digest():
+                        self.authorized = True
+                        self.process_continue = False
+                    else:
+                        self.authorized = False
+
+        if self.authorized == False:
+            self.message("Invalid password.  Press any key to try again")
+
+
 class UiApp(object):
     def __init__(self, stdscreen):
         self.screen = stdscreen
         curses.curs_set(0)
 
-        # if Uvm.context.wizardSettings.wizardComplete:
-        #     ## get password form
-        #     print "wizard completed"
-        # else:
-        #     print "wizard not completed"
+        authorized = False
+        if Require_Auth:
+            if Uvm.context.getWizardSettings()["wizardComplete"] is True:
+                login = Login(stdscreen)
+                login.process()
+                authorized = login.authorized
+            else:
+                authorized = True
 
-
-        menu_items = [
-            ('Remap Interfaces', RemapInterfaces),
-            ('Configure Interface', AssignInterfaces),
-            ('Ping', Ping),
-            ('Upgrade', Upgrade),
-            ('Reboot', Reboot),
-            ('Shutdown', Shutdown),
-            ('Reset To Factory Defaults', FactoryDefaults)
-        ]
+        if Require_Auth is False or authorized is True:
+            menu_items = [
+                ('Remap Interfaces', RemapInterfaces),
+                ('Configure Interface', AssignInterfaces),
+                ('Ping', Ping),
+                ('Upgrade', Upgrade),
+                ('Reboot', Reboot),
+                ('Shutdown', Shutdown),
+                ('Reset To Factory Defaults', FactoryDefaults)
+            ]
             # ('Shell (secret)', curses.beep),
             # ('Exit', exit)
 
-        menu = Menu(menu_items, stdscreen)
-        menu.process()
+            menu = Menu(menu_items, stdscreen)
+            menu.process()
 
 def usage():
     """
@@ -1130,11 +1172,13 @@ def usage():
 def main(argv):
     global Debug
     global Uvm
+    global Require_Auth
 
     Uvm = UvmContext()
+    Require_Auth = True
 
     try:
-        opts, args = getopt.getopt(argv, "hdr:s:t:", ["help", "debug"] )
+        opts, args = getopt.getopt(argv, "hdr:s:t:n", ["help", "debug", "noauth"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -1145,6 +1189,8 @@ def main(argv):
             sys.exit()
         if opt in ( "-d", "--debug"):
             Debug = True
+        if opt in ( "--noauth"):
+            Require_Auth = False
 
     curses.wrapper(UiApp)
 
