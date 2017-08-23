@@ -12,8 +12,6 @@ import time
 import logging
 import platform
 
-from uvm.settings_reader import get_uvm_settings_item
-
 # set noninteractive mode for all apt-get calls
 os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 # set the path (in case its run from cron)

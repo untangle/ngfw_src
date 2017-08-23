@@ -1,12 +1,15 @@
+from mod_python import apache
+from uvm import Uvm
+from mod_python import Cookie
+import sys
+import uvm.i18n_helper
+
+sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+
 from uvm.settings_reader import get_app_settings_item
 from uvm.settings_reader import get_appid_settings
 from uvm.settings_reader import get_app_settings
 from uvm.settings_reader import get_settings_item
-from mod_python import apache
-from uvm import Uvm
-from mod_python import Cookie
-import pprint
-import uvm.i18n_helper
 
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 

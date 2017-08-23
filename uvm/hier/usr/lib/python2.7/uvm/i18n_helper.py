@@ -1,5 +1,3 @@
-import gettext
-
 # $HeadURL: https://untangle.svn.beanstalkapp.com/ngfw/work/src/uvm/hier/usr/lib/python2.7/uvm/i18n_helper.py $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
@@ -16,7 +14,11 @@ import gettext
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import gettext
+import sys
 import os
+
+sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 def get_uvm_settings_item(a,b):
     return None
