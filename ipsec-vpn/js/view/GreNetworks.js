@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
     itemId: 'gre-networks',
     title: 'GRE Networks'.t(),
     viewModel: true,
+    withValidation: true,
 
     tbar: [{
         xtype: 'tbtext',
