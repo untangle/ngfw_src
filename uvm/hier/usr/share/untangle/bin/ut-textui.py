@@ -4,6 +4,7 @@ import base64
 import getopt
 import json
 import md5
+import signal
 import sys
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
@@ -1031,6 +1032,9 @@ class Upgrade(Form):
     def display_form(self):
         self.window.addstr(self.y_pos, self.x_pos, "Are you sure you want to upgrade the system?")
 
+        # upgradesAvailable
+        # upgrade
+
 class Reboot(Form):
     title = "Reboot"
 
@@ -1158,7 +1162,6 @@ class UiApp(object):
                 ('Reset To Factory Defaults', FactoryDefaults)
             ]
             # ('Shell (secret)', curses.beep),
-            # ('Exit', exit)
 
             menu = Menu(menu_items, stdscreen)
             menu.process()
@@ -1168,6 +1171,9 @@ def usage():
     Show usage
     """
     print "usage"
+
+def signal_handler( signla, frame):
+    return
 
 def main(argv):
     global Debug
@@ -1191,6 +1197,9 @@ def main(argv):
             Debug = True
         if opt in ( "--noauth"):
             Require_Auth = False
+
+    if Debug is False:
+        signal.signal(signal.SIGINT, signal_handler)
 
     curses.wrapper(UiApp)
 
