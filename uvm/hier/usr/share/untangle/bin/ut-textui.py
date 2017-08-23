@@ -206,7 +206,7 @@ class Screen(object):
         self.y_pos += 1
         self.window.addstr(self.y_pos, self.x_pos, "Press any key to perform operation again");
         self.y_pos +=1
-        self.window.addstr(self.y_pos, self.x_pos, "Press Esc to return to menu")
+        self.window.addstr(self.y_pos, self.x_pos, "Press [Esc] to return to menu")
         self.window.refresh()
 
     def external_call_output(self, data, reset_column = False):
@@ -315,7 +315,7 @@ class Menu(Screen):
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + len(self.items) + 1
-        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select menu and press [Enter]")
+        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select menu and press [Enter]")
 
         # Footer
         height, width = self.stdscreen.getmaxyx()
@@ -383,7 +383,7 @@ class Form(Screen):
         "action": False,
         "default": True
     }]
-    confirm_message = "Use [Up] and [Down] cursor keys to save or cancel changes and press [Enter]"
+    confirm_message = "Use [Up] and [Down] keys to save or cancel changes and press [Enter]"
 
     def display(self):
         """ 
@@ -482,12 +482,14 @@ class Form(Screen):
 
         return True
 
-class RemapInterfaces(Screen):
+class RemapInterfaces(Form):
     title = "Remap Interfaces"
-
-    menu_pos = 0
+    modes = ["interface", "confirm"]
 
     switch_values = [
+        "physicalDev",
+        "systemDev",
+        "symbolicDev",
         "deviceName",
         "mbit",
         "duplex",
@@ -502,29 +504,26 @@ class RemapInterfaces(Screen):
         self.networkSettings = Uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = Uvm.context.networkManager().getInterfaceStatus()
         self.deviceStatus = Uvm.context.networkManager().getDeviceStatus()
-        self.interfaces = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        self.interface_selections = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
 
-        for interface in self.interfaces:
+        for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
                     for k,v in device.iteritems():
                         interface[k] = v
 
-    def display(self):
-        super(RemapInterfaces, self).display()
-
+    def display_interface(self, show_selected_only=False):
         msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
         self.display_title( msg )
-        # self.y_pos += 1
 
-        for index, interface in enumerate(self.interfaces):
+        for index, interface in enumerate(self.interface_selections):
             if self.selected_device is not None:
                 if ( interface["deviceName"] == self.selected_device ):
                     mode = curses.A_REVERSE
                 else:    
                     mode = curses.A_NORMAL
             else:
-                if index == self.menu_pos:
+                if index == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
                     mode = curses.A_NORMAL
@@ -545,30 +544,20 @@ class RemapInterfaces(Screen):
             self.window.addstr( self.y_pos + index, self.x_pos, msg)
             self.window.addstr( self.y_pos + index, self.x_pos + 29, msg[29:], mode)
 
-        self.y_pos = self.y_pos + len(self.interfaces) + 1
+        self.y_pos = self.y_pos + len(self.interface_selections) + 1
         if self.selected_device is not None:
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to move selected device to new location and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to move device to new location and press [Enter]")
         else:
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select device to move and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select device to move and press [Right]")
         self.y_pos += 1
 
     def navigate(self, n):
-        self.menu_pos += n
-        if self.menu_pos < 0:
-            self.menu_pos = 0
-            return
-        elif self.menu_pos >= len(self.interfaces):
-            self.menu_pos = len(self.interfaces)-1
-            return
+        super(RemapInterfaces, self).navigate(n)
 
-        # reorder in two steps
-        # 1. Walk up to new index.  Anything before selected is appended.
-        # 2. Append selected
-        # 3. Anything after selected is appended.
-        if self.selected_device is not None:
+        if self.current_mode == "interface" and self.selected_device is not None:
             other_index = None
             selected_index = None
-            for index, interface in enumerate(self.interfaces):
+            for index, interface in enumerate(self.interface_selections):
                 if self.selected_device == interface["deviceName"]:
                     selected_index = index
                     continue
@@ -583,38 +572,47 @@ class RemapInterfaces(Screen):
                     if n > 0:
                         if other_index is not None:
                             break
-                        if selected_index == len(self.interfaces):
+                        if selected_index == len(self.interface_selections):
                             other_index = None
                             break
 
             if ( other_index is not None ) and ( selected_index is not None ):
                 for key in self.switch_values:
-                    old_value = self.interfaces[other_index][key]
-                    self.interfaces[other_index][key] = self.interfaces[selected_index][key]
-                    self.interfaces[selected_index][key] = old_value
+                    old_value = self.interface_selections[other_index][key]
+                    self.interface_selections[other_index][key] = self.interface_selections[selected_index][key]
+                    self.interface_selections[selected_index][key] = old_value
 
     def key_process(self):
-        if super(RemapInterfaces, self).key_process() is False:
-            return False
-
-        if self.key in [curses.KEY_ENTER, ord('\n')]:
+        if self.current_mode == "interface" and self.key == curses.KEY_RIGHT:
             if self.selected_device is None:
-                for index, interface in enumerate(self.interfaces):
-                    if index == self.menu_pos:
+                for index, interface in enumerate(self.interface_selections):
+                    if index == self.mode_menu_pos[self.current_mode]:
                         self.selected_device = interface['deviceName']
             else:
-                ## confirm here
                 self.selected_device = None
+        else:
+            if super(self.__class__, self).key_process() is False:
+                return False
 
-        elif self.key == curses.KEY_UP:
-            self.navigate(-1)
+    def action_confirm(self):
+        self.window.clear()
+        if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
+            return
 
-        elif self.key == curses.KEY_DOWN:
-            self.navigate(1)
+        networkSettings = Uvm.context.networkManager().getNetworkSettings()
+        for interface in networkSettings["interfaces"]["list"]:
+            for i in self.interface_selections:
+                if interface["interfaceId"] == i["interfaceId"]:
+                    interface["physicalDev"] = i["physicalDev"]
+                    interface["systemDev"] = i["systemDev"]
+                    interface["symbolicDev"] = i["symbolicDev"]
 
-        return True
+        self.message("Saving network settings...")
+        self.window.refresh()
+        self.current_mode = None
+        Uvm.context.networkManager().setNetworkSettings(networkSettings)
+        return False
 
-# class AssignInterfaces(Screen):
 class AssignInterfaces(Form):
     title = "Assign Interface Addresses"
 
@@ -722,7 +720,6 @@ class AssignInterfaces(Form):
                     for k,v in interfaceStatus.iteritems():
                         interface[k] = v
 
-        self.selected_device = None
         self.modes = self.modes_addressed
 
     def display(self):
@@ -741,7 +738,7 @@ class AssignInterfaces(Form):
         super(AssignInterfaces, self).display()
 
     def display_interface(self, show_selected_only = False):
-        msg = '%-12s %-15s %-4s %-5s  %-10s %-18s %-5s' % ("Status", "Name", "Dev", "Speed", "Config", "Address", "is Wan" )
+        msg = '%-12s %-15s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
         self.display_title( msg )
 
         for index, interface in enumerate(self.mode_items["interface"]):
@@ -760,11 +757,22 @@ class AssignInterfaces(Form):
                 if c["value"] == config:
                     config = c["text"] 
 
+            addressed = ""
             address = ''
-            if 'v4Address' in interface:
-                address = interface['v4Address'] + '/' + str(interface['v4PrefixLength'])
+            if interface["configType"] == "ADDRESSED":
+                addressed = interface["v4ConfigType"]
+                for a in self.addressed_selections:
+                    if a["value"] == addressed:
+                        addressed = a["text"]
 
-            msg = '%-12s %-15s %-4s %-5s  %-10s %-18s %-5s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), config, address, interface["isWan"] )
+                if 'v4Address' in interface:
+                    address = interface['v4Address'] + '/' + str(interface['v4PrefixLength'])
+            elif interface["configType"] == "BRIDGED":
+                for i in self.interface_selections:
+                    if i["interfaceId"] == interface["bridgedTo"]:
+                        address = i["name"]
+
+            msg = '%-12s %-15s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
             if show_selected_only is True:
                 index = 0            
             self.window.addstr( self.y_pos + index, self.x_pos, msg, select_mode)
@@ -773,7 +781,7 @@ class AssignInterfaces(Form):
         if show_selected_only is False:
             ## !!! build bridged selections
             self.y_pos = self.y_pos + len(self.mode_items["interface"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select interface to edit and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to edit and press [Enter]")
 
     def display_config(self, show_selected_only=False):
 
@@ -802,7 +810,7 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["config"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select interface config mode and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select config mode and press [Enter]")
 
     def display_addressed(self, show_selected_only=False):
 
@@ -842,7 +850,7 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select address mode and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select address mode and press [Enter]")
 
     def display_bridged(self, show_selected_only=False):
 
@@ -882,7 +890,7 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["bridged"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select interface to bridge and press [Enter]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to bridge and press [Enter]")
 
     def display_edit(self,show_selected_only = False):
         # Ignore show_selected_only.  Need to accept it though to pass along
@@ -910,7 +918,7 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + len(self.mode_items["edit"])
         if show_selected_only is False:
             self.y_pos += 1
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select field to edit and press [Right]")
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select field to edit and press [Right]")
             self.y_pos += 1
             self.window.addstr( self.y_pos, self.x_pos, "Press [Enter] to confirm")
 
@@ -990,8 +998,6 @@ class AssignInterfaces(Form):
         Uvm.context.networkManager().setNetworkSettings(networkSettings)
         return False
 
-        # sleep(20)
-
 class Ping(Screen):
     title = "Ping"
     def display(self):
@@ -1034,7 +1040,7 @@ class Reboot(Form):
         "action": False,
         "default": True
     }]
-    confirm_message = "Use [Up] and [Down] cursor keys to confirm or cancel and press [Enter]"
+    confirm_message = "Use [Up] and [Down] keys to confirm or cancel and press [Enter]"
 
     def display_form(self):
         self.message("Are you sure you want to reboot the system?")
@@ -1093,9 +1099,16 @@ class UiApp(object):
         self.screen = stdscreen
         curses.curs_set(0)
 
+        # if Uvm.context.wizardSettings.wizardComplete:
+        #     ## get password form
+        #     print "wizard completed"
+        # else:
+        #     print "wizard not completed"
+
+
         menu_items = [
             ('Remap Interfaces', RemapInterfaces),
-            ('Assign Interface Addresses', AssignInterfaces),
+            ('Configure Interface', AssignInterfaces),
             ('Ping', Ping),
             ('Upgrade', Upgrade),
             ('Reboot', Reboot),
