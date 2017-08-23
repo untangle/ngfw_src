@@ -465,7 +465,8 @@ class Form(Screen):
                         if self.mode_selected_item[self.current_mode]["action"] is False:
                             return False
                     if hasattr( self, 'action_' + self.current_mode ):
-                        getattr(self, 'action_' + self.current_mode)()
+                        if getattr(self, 'action_' + self.current_mode)() is False:
+                            return False
 
         if self.key == 27:
             self.mode_items[self.current_mode] = None
@@ -617,8 +618,9 @@ class RemapInterfaces(Screen):
 class AssignInterfaces(Form):
     title = "Assign Interface Addresses"
 
-    # modes = ['interface', 'config', 'addressed', 'edit', 'edit_field', 'confirm']
-    modes = ['interface', 'config', 'addressed', 'edit', 'confirm']
+    modes_addressed = ['interface', 'config', 'addressed', 'edit', 'confirm']
+    modes_bridged = ['interface', 'config', 'bridged', 'confirm']
+    modes_disabled = ['interface', 'config', 'confirm']
 
     config_selections = [{
         "text": "Addressed", 
@@ -631,6 +633,8 @@ class AssignInterfaces(Form):
         "value": "DISABLED",
     }]
 
+    bridged_selections = []
+
     addressed_selections = [{
         "text": "DHCP", 
         "value": "DHCP"
@@ -641,8 +645,6 @@ class AssignInterfaces(Form):
         "text": "PPPoE", 
         "value": "PPPOE"
     }]
-
-    bridged_selections = []
 
     # primary/secondary only for WAN
     # need to get/show current
@@ -701,6 +703,8 @@ class AssignInterfaces(Form):
 
 
     def __init__(self, stdscreen):
+        self.modes = self.modes_addressed
+
         super(AssignInterfaces, self).__init__(stdscreen)
 
         self.networkSettings = Uvm.context.networkManager().getNetworkSettings()
@@ -719,11 +723,10 @@ class AssignInterfaces(Form):
                         interface[k] = v
 
         self.selected_device = None
+        self.modes = self.modes_addressed
 
     def display(self):
-        if self.current_mode == "addressed" and self.mode_selected_item["config"]["value"] == "DISABLED":
-            self.current_mode = 'confirm';
-        elif self.current_mode == "edit_field":
+        if self.current_mode == "edit_field":
             self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
         elif self.current_mode == "edit":
             if self.mode_selected_item["addressed"]["value"] == "DHCP":
@@ -819,13 +822,11 @@ class AssignInterfaces(Form):
                     continue
                 mode = curses.A_NORMAL
             else: 
-                ## !!! highlight current value
                 if self.mode_selected_item['interface']['isWan'] is False and item["value"] != 'STATIC':
                     index_adjust -= 1
                     continue
 
-                # self.debug_message(index)
-                if index == self.mode_menu_pos[self.current_mode]:
+                if index + index_adjust == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
                     mode = curses.A_NORMAL
@@ -843,11 +844,48 @@ class AssignInterfaces(Form):
             self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select address mode and press [Enter]")
 
-    def display_edit(self,show_selected_only = False):
-        """
-        Ignore show_selected_only.  Need to accept it though.
-        """
+    def display_bridged(self, show_selected_only=False):
 
+        self.display_config(show_selected_only=True)
+
+        if len(self.bridged_selections) == 0:
+            for interface in self.interface_selections:
+                if interface["interfaceId"] == self.mode_selected_item["interface"]["interfaceId"]:
+                    continue
+                if interface["configType"] != "ADDRESSED":
+                    continue
+                self.bridged_selections.append({"text": interface["name"], "value": interface["interfaceId"]})
+
+        self.y_pos += 1
+        msg = '%-12s' % ("Bridged")
+        self.display_title( msg )
+
+        for index, item in enumerate(self.mode_items["bridged"]):
+            if show_selected_only is True:
+                if item != self.mode_selected_item['bridged']:
+                    continue
+                mode = curses.A_NORMAL
+            else:
+                if index == self.mode_menu_pos[self.current_mode]:
+                    mode = curses.A_REVERSE
+                else:
+                    mode = curses.A_NORMAL
+
+            if show_selected_only is True:
+                index = 0
+
+            msg = '%-20s' % (item["text"])
+            if show_selected_only is True:
+                index = 0
+            self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
+
+        self.y_pos = self.y_pos + 1
+        if show_selected_only is False:
+            self.y_pos = self.y_pos + len(self.mode_items["bridged"])
+            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select interface to bridge and press [Enter]")
+
+    def display_edit(self,show_selected_only = False):
+        # Ignore show_selected_only.  Need to accept it though to pass along
         self.display_addressed(show_selected_only=True)
     
         if "edit" not in self.mode_items:
@@ -873,6 +911,8 @@ class AssignInterfaces(Form):
         if show_selected_only is False:
             self.y_pos += 1
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] cursor keys to select field to edit and press [Right]")
+            self.y_pos += 1
+            self.window.addstr( self.y_pos, self.x_pos, "Press [Enter] to confirm")
 
         ## track modifiications
 
@@ -909,10 +949,20 @@ class AssignInterfaces(Form):
     def key_process(self):
         if self.current_mode == "edit" and self.key == curses.KEY_RIGHT:
             self.edit_field(self.edit_index, self.edit_item)
-            # self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
         else:
             if super(self.__class__, self).key_process() is False:
                 return False
+
+        if self.current_mode == "addressed":
+            if self.mode_selected_item["config"]["value"] == "BRIDGED":
+                self.current_mode = 'bridged'
+                self.modes = self.modes_bridged
+            elif self.mode_selected_item["config"]["value"] == "ADDRESSED":
+                self.current_mode = 'addressed'
+                self.modes = self.modes_addressed
+            elif self.mode_selected_item["config"]["value"] == "DISABLED":
+                self.current_mode = 'confirm'
+                self.modes = self.modes_disabled
 
     def action_confirm(self):
         self.window.clear()
@@ -930,9 +980,15 @@ class AssignInterfaces(Form):
                             for field in self.mode_items["edit"]:
                                 if self.mode_selected_item['interface'][field["key"]] is not None:
                                     interface[field["key"]] = self.mode_selected_item['interface'][field["key"]]
+                    elif interface["configType"] == "BRIDGED":
+                        interface["bridgedTo"] = self.mode_selected_item['bridged']["value"]
 
+
+        self.message("Saving network settings...")
         self.window.refresh()
+        self.current_mode = None
         Uvm.context.networkManager().setNetworkSettings(networkSettings)
+        return False
 
         # sleep(20)
 
