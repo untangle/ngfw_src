@@ -54,7 +54,7 @@ Ext.define('Ung.view.main.SupportController', {
     },
     noSupportHandler: function(btn){
         this.openSupportWindow();
-        btn.up('window').close();        
+        btn.up('window').close();
     },
     yesSupportHandler: function(btn){
         var me = this,
@@ -69,8 +69,8 @@ Ext.define('Ung.view.main.SupportController', {
         ], this).then(function () {
             view.setLoading(false);
             Util.successToast('Remote Support Access enabled!');
-            this.openSupportWindow();
-            btn.up('window').close();        
+            me.openSupportWindow();
+            btn.up('window').close();
         }, function (ex) {
             view.setLoading(false);
             console.error(ex);
