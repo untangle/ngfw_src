@@ -989,14 +989,14 @@ Ext.define('Ung.Setup.Internet', {
         items: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
-            handler: 'getSettings', // refetch settings to refresh
+            handler: 'refresh', // refetch settings to refresh
             bind: {
                 hidden: '{wan.v4ConfigType !== "AUTO"}'
             }
         }, {
             text: 'Test Connectivity'.t(),
             iconCls: 'fa fa-compress',
-            handler: 'save', // save is called becase connectivity test is done inside of it
+            handler: 'save', // save is called because connectivity test is done inside of it
             bind: {
                 hidden: '{wan.v4ConfigType !== "AUTO" && wan.v4ConfigType !== "STATIC" }'
             }
@@ -1133,6 +1133,17 @@ Ext.define('Ung.Setup.InternetController', {
             }
         });
 
+    },
+
+    refresh: function () {
+        var me = this, vm = me.getViewModel();
+        Ung.app.loading('Saving settings ...'.t());
+        // save settings before
+        rpc.networkManager.setNetworkSettings(function (response, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            Ung.app.loading(false);
+            me.getSettings();
+        }, vm.get('networkSettings'));
     }
 
 });
