@@ -209,7 +209,7 @@ Ext.define('Ung.config.system.MainController', {
                         Ext.MessageBox.alert(
                             'Factory Defaults'.t(),
                             'All settings have been reset to factory defaults.', console.log('reload homepage'));
-                    }, 'nohup /usr/share/untangle/bin/factory-defaults');
+                    }, 'nohup /usr/share/untangle/bin/ut-factory-defaults');
                 }
             });
     },
