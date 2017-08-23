@@ -17,6 +17,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
     },
 
     bodyPadding: 10,
+    withValidation: true,
 
     tbar: [{
         xtype: 'tbtext',
