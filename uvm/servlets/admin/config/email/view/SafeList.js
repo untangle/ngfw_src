@@ -36,8 +36,10 @@ Ext.define('Ung.config.email.view.SafeList', {
         recordActions: ['delete'],
         // listProperty: '',
         emptyRow: {
-            emailAddress: 'email@' + rpc.hostname + '.com'
+            // emailAddress: 'email@' + rpc.hostname + '.com'
         },
+
+        topInsert: true,
 
         columns: [{
             header: 'Email Address'.t(),
@@ -49,6 +51,12 @@ Ext.define('Ung.config.email.view.SafeList', {
                 bind: '{record.emailAddress}',
                 emptyText: '[enter email]'.t(),
                 vtype: 'email'
+            },
+            renderer: function (value) {
+                if (!value || value.length === 0) {
+                    return '<span style="color: red;">[add email address here]'.t() + '</span>';
+                }
+                return value;
             }
         }]
     }, {
