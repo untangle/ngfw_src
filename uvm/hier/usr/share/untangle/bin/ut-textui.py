@@ -29,21 +29,19 @@ class UvmContext:
     UVM managemnt
     """
     context = None
-    def __init__(self):
-        try:
-            self.context = uvm.Uvm().getUvmContext( "localhost", None, None, 60 )
-        except (JSONRPCException, JSONDecodeException) as e:
-            if hasattr(e, 'error'):
-                errorstr = repr(e.error)
-            else:
-                errorstr = str(e)
-            if (not parser.quiet):
-                print "Error: %s" % errorstr
-                if (errorstr.find("password") != -1):
-                    print "Are you root? Did you supply a username/password?"
-                if (errorstr.find("unavailable") != -1):
-                    print "Is the untangle-vm running?"
-                sys.exit(1)
+    def __init__(self, tries=1, wait=10):
+        while tries > 0:
+            try:
+                self.context = uvm.Uvm().getUvmContext( "localhost", None, None, 60 )
+                return
+            except (JSONRPCException, JSONDecodeException) as e:
+                self.context = None
+                pass
+            tries -= 1
+            if tries == 0:
+                break
+            sleep(wait)
+        raise
 
     def exec_and_get_output(self, command, screen):
         """
@@ -1220,7 +1218,12 @@ def main(argv):
     if Debug is False:
         signal.signal(signal.SIGINT, signal_handler)
 
-    curses.wrapper(UiApp)
+    try:
+        uvm = UvmContext(tries=30)
+        uvm = None
+        curses.wrapper(UiApp)
+    except:
+        print "Untangle is unavailable at this time"
 
 if __name__ == "__main__":
     main( sys.argv[1:] )
