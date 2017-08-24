@@ -255,7 +255,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             legend: {
                 margin: 0,
                 y: widgetDisplay ? 5 : 0,
-                useHTML: true,
+                // useHTML: true,
                 lineHeight: 12,
                 itemDistance: 10,
                 itemStyle: {
