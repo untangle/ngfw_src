@@ -832,23 +832,25 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     onRenewDhcpLease: function () {
-        var me = this, interfaceId = me.editIntf.get('interfaceId');
-        // Ext.MessageBox.wait('Renewing DHCP Lease...'.t(), 'Please wait'.t());
+        var me = this,
+            dialogVm = me.dialog.getViewModel(),
+            intf = dialogVm.get('intf');
+
         me.dialog.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.networkManager.renewDhcpLease', interfaceId),
+            Rpc.asyncPromise('rpc.networkManager.renewDhcpLease', intf.get('interfaceId')),
             Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
         ], this).then(function (result) {
             var intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
-                return intfSt.interfaceId === interfaceId;
+                return intfSt.interfaceId === intf.get('interfaceId');
             });
 
             if (intfStatus != null) {
                 delete intfStatus.javaClass;
                 delete intfStatus.interfaceId;
+
+                intf.set(intfStatus); // update interface with the new values
             }
-            console.log(intfStatus);
-            Ext.apply(me.editIntf, intfStatus);
         }, function (ex) {
             console.error(ex);
             Util.handleException(ex);
