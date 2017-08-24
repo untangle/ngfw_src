@@ -6,6 +6,8 @@ import json
 import md5
 import signal
 import sys
+import subprocess
+
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 import curses
@@ -243,7 +245,6 @@ class Screen(object):
 
         win.addstr(0,0, value)
         win.refresh()
-#       curses.setsyx(y, x + len(value))
         self.window.move(y, x + len(value) )
         curses.curs_set(1)
         self.stdscreen.refresh()
@@ -260,6 +261,11 @@ class Menu(Screen):
         super(Menu, self).__init__(stdscreen)
         self.items = items
         self.menu_pos = 0
+
+        self.visible_items = []
+        for item in items:
+            if "text" in item:
+                self.visible_items.append(item)
 
         uvm = UvmContext()
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
@@ -307,7 +313,7 @@ class Menu(Screen):
         """
         super(Menu, self).display()
 
-        for index, item in enumerate(self.items):
+        for index, item in enumerate(self.visible_items):
             if index == self.menu_pos:
                 mode = curses.A_REVERSE
             else:
@@ -316,7 +322,7 @@ class Menu(Screen):
             msg = '%s' % (item["text"])
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
-        self.y_pos = self.y_pos + len(self.items) + 1
+        self.y_pos = self.y_pos + len(self.visible_items) + 1
         self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select menu and press [Enter]")
 
         # Footer
@@ -333,8 +339,8 @@ class Menu(Screen):
         self.menu_pos += n
         if self.menu_pos < 0:
             self.menu_pos = 0
-        elif self.menu_pos >= len(self.items):
-            self.menu_pos = len(self.items)-1
+        elif self.menu_pos >= len(self.visible_items):
+            self.menu_pos = len(self.visible_items)-1
 
     def key_process(self):
         """
@@ -347,11 +353,7 @@ class Menu(Screen):
             """
             Enter key.  Select current menu item
             """
-            if type(self.items[self.menu_pos]["class"]) is type:
-                obj = self.items[self.menu_pos]["class"](self.stdscreen)
-                obj.process()
-            else:
-                self.items[self.menu_pos]["class"]()
+            self.call_class(self.visible_items[self.menu_pos])
 
         elif self.key == curses.KEY_UP:
             self.navigate(-1)
@@ -359,11 +361,22 @@ class Menu(Screen):
         elif self.key == curses.KEY_DOWN:
             self.navigate(1)
 
-        elif self.key in range( ord("1"), ord("1") + len(self.items) ):
+        elif self.key in range( ord("1"), ord("1") + len(self.visible_items) ):
             self.menu_pos = self.key - ord("1")
+
+        else:
+            for item in self.items:
+                if "key" in item and self.key == ord(item["key"]):
+                    self.call_class(item)
 
         return True
 
+    def call_class(self, item):
+        if type(item["class"]) is type:
+            obj = item["class"](self.stdscreen)
+            obj.process()
+        else:
+            item["class"]()
 
 """
 Form
@@ -620,7 +633,7 @@ class RemapInterfaces(Form):
         return False
 
 class AssignInterfaces(Form):
-    title = "Assign Interface Addresses"
+    title = "Configure Interfaces"
 
     modes_addressed = ['interface', 'config', 'addressed', 'edit', 'confirm']
     modes_bridged = ['interface', 'config', 'bridged', 'confirm']
@@ -1102,7 +1115,7 @@ class Shutdown(Form):
         uvm.context.shutdownBox()
 
 class FactoryDefaults(Form):
-    title = "Shutdown"
+    title = "Factory Defaults"
 
     confirm_selections = [{
         "text": "Yes"
@@ -1122,6 +1135,25 @@ class FactoryDefaults(Form):
 
         uvm = UvmContext()
         # Uvm.context.shutdownBox()
+
+class suspend_curses():
+    def __enter__(self):
+        curses.endwin()
+
+    def __exit__(self, exc_type, exc_val, tb):
+        newscr = curses.initscr()
+        newscr.refresh()
+        curses.doupdate()
+
+class Shell(Screen):
+
+    def process(self):
+        self.window.clear()
+        self.window.refresh()
+        with suspend_curses():
+            subprocess.call("/bin/bash")
+        return
+
 
 class Login(Screen):
     title = "Login"
@@ -1201,8 +1233,10 @@ class UiApp(object):
             },{
                 "text": "Reset To Factory Defaults",
                 "class": FactoryDefaults
+            },{
+                "class": Shell,
+                "key": '#'
             }]
-            # ('Shell (secret)', curses.beep),
 
             menu = Menu(menu_items, stdscreen)
             menu.process()
