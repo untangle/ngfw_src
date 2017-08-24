@@ -261,10 +261,12 @@ class Menu(Screen):
         self.items = items
         self.menu_pos = 0
 
-        self.networkSettings = Uvm.context.networkManager().getNetworkSettings()
-        self.interfaceStatus = Uvm.context.networkManager().getInterfaceStatus()
-        self.deviceStatus = Uvm.context.networkManager().getDeviceStatus()
+        uvm = UvmContext()
+        self.networkSettings = uvm.context.networkManager().getNetworkSettings()
+        self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
+        self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
         self.interfaces = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        uvm = None
 
         """
         Get IP address of first interface that is not WAN to display recommended URL
@@ -501,10 +503,12 @@ class RemapInterfaces(Form):
         super(RemapInterfaces, self).__init__(stdscreen)
         self.selected_device = None
 
-        self.networkSettings = Uvm.context.networkManager().getNetworkSettings()
-        self.interfaceStatus = Uvm.context.networkManager().getInterfaceStatus()
-        self.deviceStatus = Uvm.context.networkManager().getDeviceStatus()
+        uvm = UvmContext()
+        self.networkSettings = uvm.context.networkManager().getNetworkSettings()
+        self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
+        self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
         self.interface_selections = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        uvm = None
 
         for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
@@ -599,7 +603,8 @@ class RemapInterfaces(Form):
         if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
             return
 
-        networkSettings = Uvm.context.networkManager().getNetworkSettings()
+        uvm = UvmContext()
+        networkSettings = uvm.context.networkManager().getNetworkSettings()
         for interface in networkSettings["interfaces"]["list"]:
             for i in self.interface_selections:
                 if interface["interfaceId"] == i["interfaceId"]:
@@ -610,7 +615,8 @@ class RemapInterfaces(Form):
         self.message("Saving network settings...")
         self.window.refresh()
         self.current_mode = None
-        Uvm.context.networkManager().setNetworkSettings(networkSettings)
+        uvm.context.networkManager().setNetworkSettings(networkSettings)
+        uvm = None
         return False
 
 class AssignInterfaces(Form):
@@ -705,10 +711,12 @@ class AssignInterfaces(Form):
 
         super(AssignInterfaces, self).__init__(stdscreen)
 
-        self.networkSettings = Uvm.context.networkManager().getNetworkSettings()
-        self.interfaceStatus = Uvm.context.networkManager().getInterfaceStatus()
-        self.deviceStatus = Uvm.context.networkManager().getDeviceStatus()
+        uvm  = UvmContext()
+        self.networkSettings = uvm.context.networkManager().getNetworkSettings()
+        self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
+        self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
         self.interface_selections = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        uvm = None
         
         for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
@@ -977,7 +985,8 @@ class AssignInterfaces(Form):
         if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
             return
 
-        networkSettings = Uvm.context.networkManager().getNetworkSettings()
+        uvm = UvmContext()
+        networkSettings = uvm.context.networkManager().getNetworkSettings()
         for interface in networkSettings["interfaces"]["list"]:
             if interface["name"] == self.mode_selected_item["interface"]["name"]:
                 if self.mode_selected_item["config"] is not None:
@@ -995,7 +1004,8 @@ class AssignInterfaces(Form):
         self.message("Saving network settings...")
         self.window.refresh()
         self.current_mode = None
-        Uvm.context.networkManager().setNetworkSettings(networkSettings)
+        uvm.context.networkManager().setNetworkSettings(networkSettings)
+        uvm = None
         return False
 
 class Ping(Screen):
@@ -1015,7 +1025,9 @@ class Ping(Screen):
             self.process_continue = False
         else:
             self.y_pos += 2
-            Uvm.exec_and_get_output("ping -c 5 " + address, self )
+            uvm = UvmContext()
+            uvm.exec_and_get_output("ping -c 5 " + address, self )
+            uvm = None
 
 class Upgrade(Form):
     title = "Reboot"
@@ -1035,7 +1047,10 @@ class Upgrade(Form):
         self.window.clear()
         self.message("Upgrading...")
         self.window.refresh()
-        Uvm.context.systemManager().upgrade()
+
+        uvm = UvmContext()
+        uvm.context.systemManager().upgrade()
+        uvm = None
         return False
 
 class Reboot(Form):
@@ -1059,7 +1074,9 @@ class Reboot(Form):
     def action_confirm(self):
         self.window.clear()
         self.window.refresh()
-        Uvm.context.rebootBox()
+
+        uvm = UvmContext()
+        uvm.context.rebootBox()
 
 class Shutdown(Form):
     title = "Shutdown"
@@ -1080,7 +1097,9 @@ class Shutdown(Form):
     def action_confirm(self):
         self.window.clear()
         self.window.refresh()
-        Uvm.context.shutdownBox()
+
+        uvm = UvmContext()
+        uvm.context.shutdownBox()
 
 class FactoryDefaults(Form):
     title = "Shutdown"
@@ -1100,6 +1119,8 @@ class FactoryDefaults(Form):
     def action_confirm(self):
         self.window.clear()
         self.window.refresh()
+
+        uvm = UvmContext()
         # Uvm.context.shutdownBox()
 
 class Login(Screen):
@@ -1123,7 +1144,8 @@ class Login(Screen):
         else:
             self.y_pos += 2
 
-            adminSettings = Uvm.context.adminManager().getSettings()
+            uvm = UvmContext()
+            adminSettings = uvm.context.adminManager().getSettings()
             for user in adminSettings["users"]["list"]:
                 if user["username"] == "admin":
                     pw_hash_base64 = user['passwordHashBase64']
@@ -1135,6 +1157,7 @@ class Login(Screen):
                         self.process_continue = False
                     else:
                         self.authorized = False
+            uvm = None
 
         if self.authorized == False:
             self.message("Invalid password.  Press any key to try again")
@@ -1142,20 +1165,19 @@ class Login(Screen):
 
 class UiApp(object):
     def __init__(self, stdscreen):
-        global Uvm
         self.screen = stdscreen
         curses.curs_set(0)
 
-        Uvm = UvmContext()
-
         authorized = False
         if Require_Auth:
-            if Uvm.context.getWizardSettings()["wizardComplete"] is True:
+            uvm = UvmContext()
+            if uvm.context.getWizardSettings()["wizardComplete"] is True:
                 login = Login(stdscreen)
                 login.process()
                 authorized = login.authorized
             else:
                 authorized = True
+            uvm = None
 
         if Require_Auth is False or authorized is True:
             menu_items = [{
@@ -1221,9 +1243,11 @@ def main(argv):
     try:
         uvm = UvmContext(tries=30)
         uvm = None
-        curses.wrapper(UiApp)
     except:
         print "Untangle is unavailable at this time"
+        sys.exit(1)
+
+    curses.wrapper(UiApp)
 
 if __name__ == "__main__":
     main( sys.argv[1:] )
