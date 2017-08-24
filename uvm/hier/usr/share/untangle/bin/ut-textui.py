@@ -313,7 +313,7 @@ class Menu(Screen):
             else:
                 mode = curses.A_NORMAL
 
-            msg = '%s' % (item[0])
+            msg = '%s' % (item["text"])
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + len(self.items) + 1
@@ -347,11 +347,11 @@ class Menu(Screen):
             """
             Enter key.  Select current menu item
             """
-            if type(self.items[self.menu_pos][1]) is type:
-                obj = self.items[self.menu_pos][1](self.stdscreen)
+            if type(self.items[self.menu_pos]["class"]) is type:
+                obj = self.items[self.menu_pos]["class"](self.stdscreen)
                 obj.process()
             else:
-                self.items[self.menu_pos][1]()
+                self.items[self.menu_pos]["class"]()
 
         elif self.key == curses.KEY_UP:
             self.navigate(-1)
@@ -1029,11 +1029,16 @@ class Upgrade(Form):
         "action": False
     }]
 
+    upgrades_available = False
     def display_form(self):
-        self.window.addstr(self.y_pos, self.x_pos, "Are you sure you want to upgrade the system?")
+        self.message("Are you sure you want to upgrade the system?")
 
-        # upgradesAvailable
-        # upgrade
+    def action_confirm(self):
+        self.window.clear()
+        self.message("Upgrading...")
+        self.window.refresh()
+        Uvm.context.systemManager().upgrade()
+        return False
 
 class Reboot(Form):
     title = "Reboot"
@@ -1139,8 +1144,11 @@ class Login(Screen):
 
 class UiApp(object):
     def __init__(self, stdscreen):
+        global Uvm
         self.screen = stdscreen
         curses.curs_set(0)
+
+        Uvm = UvmContext()
 
         authorized = False
         if Require_Auth:
@@ -1152,15 +1160,28 @@ class UiApp(object):
                 authorized = True
 
         if Require_Auth is False or authorized is True:
-            menu_items = [
-                ('Remap Interfaces', RemapInterfaces),
-                ('Configure Interface', AssignInterfaces),
-                ('Ping', Ping),
-                ('Upgrade', Upgrade),
-                ('Reboot', Reboot),
-                ('Shutdown', Shutdown),
-                ('Reset To Factory Defaults', FactoryDefaults)
-            ]
+            menu_items = [{
+                "text": "Remap Interfaces",
+                "class": RemapInterfaces
+            },{
+                "text": "Configure Interface",
+                "class": AssignInterfaces
+            },{
+                "text": "Ping",
+                "class": Ping
+            },{
+                "text": "Upgrade",
+                "class": Upgrade,
+            },{
+                "text": "Reboot",
+                "class": Reboot
+            },{
+                "text": "Shutdown",
+                "class": Shutdown
+            },{
+                "text": "Reset To Factory Defaults",
+                "class": FactoryDefaults
+            }]
             # ('Shell (secret)', curses.beep),
 
             menu = Menu(menu_items, stdscreen)
@@ -1177,10 +1198,8 @@ def signal_handler( signla, frame):
 
 def main(argv):
     global Debug
-    global Uvm
     global Require_Auth
 
-    Uvm = UvmContext()
     Require_Auth = True
 
     try:
