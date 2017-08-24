@@ -26,12 +26,23 @@ Ext.define('Ung.cmp.GridController', {
 
     addRecordInline: function () {
         var v = this.getView(),
-            newRecord = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(v.emptyRow));
+            newRecord = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(v.emptyRow)), rowIndex;
+
         newRecord.set('markedForNew', true);
         if (v.topInsert) {
             v.getStore().insert(0, newRecord);
         } else {
             v.getStore().add(newRecord);
+        }
+
+        // start edit the record right after it was added
+        var cellediting = Ext.Array.findBy(v.getPlugins(), function (plugin) {
+            return plugin.ptype === 'cellediting';
+        });
+
+        if (cellediting) {
+            rowIndex = v.getStore().indexOf(newRecord);
+            cellediting.startEditByPosition({ row: rowIndex, column: 0 });
         }
     },
 
