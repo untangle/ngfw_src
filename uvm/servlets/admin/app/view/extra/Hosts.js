@@ -202,47 +202,47 @@ Ext.define('Ung.view.extra.Hosts', {
             dataIndex: 'interfaceId',
             width: Renderer.messageWidth,
             filter: Renderer.stringFilter,
-            rtype: 'interface'
+            renderer: Renderer.interface
         },{
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Completed TCP Session Time'.t(),
             dataIndex: 'lastCompletedTcpSessionTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         },{
             header: 'Entitled Status'.t(),
             dataIndex: 'entitled',
             width: Renderer.booleanWidth,
             hidden: true,
-            rtype: 'boolean',
+            renderer: Renderer.boolean,
             filter: Renderer.booleanFilter
         },{
             header: 'Active'.t(),
             dataIndex: 'active',
             width: Renderer.booleanWidth,
-            rtype: 'boolean',
+            renderer: Renderer.boolean,
             filter: Renderer.booleanFilter
         },{
             header: 'HTTP User Agent'.t(),
@@ -253,13 +253,13 @@ Ext.define('Ung.view.extra.Hosts', {
             header: 'Captive Portal Authenticated'.t(),
             dataIndex: 'captivePortalAuthenticated',
             width: Renderer.booleanWidth,
-            rtype: 'boolean',
+            renderer: Renderer.boolean,
             filter: Renderer.booleanFilter
         },{
             header: 'Tags'.t(),
             dataIndex: 'tags',
             width: Renderer.tagsWidth,
-            rtype: 'tags'
+            renderer: Renderer.tags
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
@@ -361,26 +361,26 @@ Ext.define('Ung.view.extra.Hosts', {
                 dataIndex: 'quotaSize',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasizeoptional'
+                renderer: Renderer.datasizeoptional
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasizeoptional'
+                renderer: Renderer.datasizeoptional
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
                 width: Renderer.timestampWidth,
                 hidden: true,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 width: Renderer.timestampWidth,
                 hidden: true,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',

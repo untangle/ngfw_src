@@ -70,17 +70,12 @@ Ext.define('Ung.util.Renderer', {
     },
 
     timestampOffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
-    timestamp: function( value ){
-        if( !value ){
-            return null;
-        }
-        if( ( typeof( value ) == 'object' ) &&
-            value.time ){
-            value = value.time;
-        }
-        var date = new Date( value );
-        date.setTime( value + this.timestampOffset);
-        return Ext.util.Format.date( date, 'timestamp_fmt'.t());
+    timestamp: function (value) {
+        if (!value) { return ''; }
+        if ((typeof(value) === 'object') && value.time) { value = value.time; }
+        var date = new Date(value);
+        date.setTime(value + Renderer.timestampOffset);
+        return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
     interface: function (value) {

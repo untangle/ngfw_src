@@ -123,19 +123,19 @@ Ext.define('Ung.view.extra.Users', {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         }, {
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
             width: Renderer.timestampWidth,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         }, {
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         }, {
             header: 'Quota'.t(),
@@ -144,24 +144,24 @@ Ext.define('Ung.view.extra.Users', {
                 dataIndex: 'quotaSize',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasizeoptional'
+                renderer: Renderer.datasizeoptional
             }, {
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                rtype: 'datasizeoptional'
+                renderer: Renderer.datasizeoptional
             }, {
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
                 width: Renderer.timestampWidth,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 width: Renderer.timestampWidth,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',

@@ -148,7 +148,7 @@ Ext.define('Ung.view.extra.Devices', {
             dataIndex: 'interfaceId',
             width: Renderer.messageWidth,
             filter: Renderer.stringFilter,
-            rtype: 'interface'
+            renderer: Renderer.interface
         }, {
             header: 'Last Hostname'.t(),
             dataIndex: 'hostnameLastKnown',
@@ -189,7 +189,7 @@ Ext.define('Ung.view.extra.Devices', {
             header: 'Last Seen Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         }, {
             header: 'Tags'.t(),
