@@ -981,7 +981,10 @@ class AssignInterfaces(Form):
             else:
                 mode = curses.A_NORMAL
 
-            msg = '%-30s %-40s' % (item["text"], self.mode_selected_item['interface'][item["key"]]) 
+            value = self.mode_selected_item['interface'][item["key"]]
+            if value is None:
+                value = ""
+            msg = '%-30s %-40s' % (item["text"], value) 
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + len(self.mode_items["edit"])
@@ -997,18 +1000,18 @@ class AssignInterfaces(Form):
         """
         Edit the specified field with a textbox.
         """
-        # note value type:
-        # integer
-        # none
-        # textbox = self.textbox( self.y_pos + edit_index, 31, str(self.mode_selected_item['interface'][edit_item[1]]) )
-        textbox = self.textbox( edit_index, 31, str(self.mode_selected_item['interface'][edit_item["key"]]) )
+        value = self.mode_selected_item['interface'][edit_item["key"]]
+        if value is None:
+            value = ""
+        textbox = self.textbox( edit_index, 31, str(value) )
         # self.y_pos = self.y_pos + len(self.mode_items["edit"]) + 2
         newValue = textbox.edit()
         ## validate.
         ## if valid, set value to newValue
         ## massage back to proper type
         ##  if None, don't write back.
-        self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
+        if newValue != value:
+            self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
         self.key = 27
 
     def action_interface(self):
