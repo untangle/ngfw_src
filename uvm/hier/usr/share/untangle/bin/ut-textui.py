@@ -116,7 +116,7 @@ class Screen(object):
         if self.debug_x_pos >= width:
             self.debug_x_pos = 0
 
-    def message(self, msg, cont=False):
+    def message(self, msg, cont=False, mode=None):
         """
         Line based message
         """
@@ -124,7 +124,10 @@ class Screen(object):
         # Clear entire line
         self.stdscreen.hline(self.y_pos, 0, " " , 79)
 
-        self.window.addstr( self.y_pos, self.x_pos, msg )
+        if mode is None:
+            self.window.addstr( self.y_pos, self.x_pos, msg)
+        else:
+            self.window.addstr( self.y_pos, self.x_pos, msg, mode )
 
         if cont is True:
             self.x_pos += len(str_msg)
@@ -173,8 +176,7 @@ class Screen(object):
         """
         Display title with appropriate attributes
         """
-        self.window.addstr(self.y_pos, self.x_pos, title, curses.A_BOLD)
-        self.y_pos += 1
+        self.message(title, mode=curses.A_BOLD)
 
     def key_process(self):
         """
@@ -198,16 +200,16 @@ class Screen(object):
         """
         For external calls, display header
         """
-        self.window.addstr(self.y_pos, self.x_pos, "Starting operation...");
+        self.message("Starting operation...");
+        self.y_pos += 1
 
     def external_call_footer(self):
         """
         For external calls, display footer
         """
         self.y_pos += 1
-        self.window.addstr(self.y_pos, self.x_pos, "Press any key to perform operation again");
-        self.y_pos +=1
-        self.window.addstr(self.y_pos, self.x_pos, "Press [Esc] to return to menu")
+        self.message("Press any key to perform operation again");
+        self.message("Press [Esc] to return to menu")
         self.window.refresh()
 
     def external_call_output(self, data, reset_column = False):
@@ -329,14 +331,13 @@ class Menu(Screen):
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + len(self.visible_items) + 1
-        self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select menu and press [Enter]")
+        self.message( "Use [Up] and [Down] keys to select menu and press [Enter]")
 
         # Footer
         height, width = self.stdscreen.getmaxyx()
         self.y_pos = height - 3
-        self.window.addstr( self.y_pos, self.x_pos, "Console is only for initial network configuration")
-        self.y_pos += 1
-        self.window.addstr( self.y_pos, self.x_pos, "For full configuration browse to https://%s" % (self.internal_ip_address) )
+        self.message( "Console is only for initial network configuration")
+        self.message( "For full configuration browse to https://%s" % (self.internal_ip_address) )
 
     def navigate(self, n):
         """
@@ -461,9 +462,6 @@ class Form(Screen):
             msg = '%-12s' % (item["text"]) 
             self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
 
-        # self.y_pos = self.y_pos + len(self.confirm_selections) + 1
-        # self.message(self.confirm_message)
-
     def navigate(self, n):
         """
         Navigate menu positions in mode
@@ -581,10 +579,9 @@ class RemapInterfaces(Form):
 
         self.y_pos = self.y_pos + len(self.interface_selections) + 1
         if self.selected_device is not None:
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to move device to new location and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to move device to new location and press [Enter]")
         else:
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select device to move and press [Right]")
-        self.y_pos += 1
+            self.message( "Use [Up] and [Down] keys to select device to move and press [Right]")
 
     def navigate(self, n):
         """
@@ -840,7 +837,7 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["interface"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to edit and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to select interface to edit and press [Enter]")
 
     def display_config(self, show_selected_only=False):
         """
@@ -868,10 +865,10 @@ class AssignInterfaces(Form):
                 index = 0            
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
-        self.y_pos = self.y_pos + 1
+        self.y_pos += 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["config"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select config mode and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to select config mode and press [Enter]")
 
     def display_addressed(self, show_selected_only=False):
         """
@@ -910,10 +907,10 @@ class AssignInterfaces(Form):
                 index = 0            
             self.window.addstr( self.y_pos + index + index_adjust, self.x_pos, msg, mode)
 
-        self.y_pos = self.y_pos + 1
+        self.y_pos += 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select address mode and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to select address mode and press [Enter]")
 
     def display_bridged(self, show_selected_only=False):
         """
@@ -952,10 +949,10 @@ class AssignInterfaces(Form):
                 index = 0
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
-        self.y_pos = self.y_pos + 1
+        self.y_pos += 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["bridged"])
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to bridge and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to select interface to bridge and press [Enter]")
 
     def display_edit(self,show_selected_only = False):
         """
@@ -990,9 +987,8 @@ class AssignInterfaces(Form):
         self.y_pos = self.y_pos + len(self.mode_items["edit"])
         if show_selected_only is False:
             self.y_pos += 1
-            self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select field to edit and press [Right]")
-            self.y_pos += 1
-            self.window.addstr( self.y_pos, self.x_pos, "Press [Enter] to confirm")
+            self.message( "Use [Up] and [Down] keys to select field to edit and press [Right]")
+            self.message( "Press [Enter] to confirm")
 
         ## track modifiications
 
@@ -1004,12 +1000,12 @@ class AssignInterfaces(Form):
         if value is None:
             value = ""
         textbox = self.textbox( edit_index, 31, str(value) )
-        # self.y_pos = self.y_pos + len(self.mode_items["edit"]) + 2
         newValue = textbox.edit()
         ## validate.
         ## if valid, set value to newValue
         ## massage back to proper type
         ##  if None, don't write back.
+        ##  show message
         if newValue != value:
             self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
         self.key = 27
@@ -1104,10 +1100,9 @@ class Ping(Screen):
 
         curses.echo()
         mode = curses.A_NORMAL
-        label = "Address to ping: "
-        self.window.addstr(self.y_pos, self.x_pos, label)
+        self.message("Address to ping")
         curses.curs_set(1)
-        address = self.window.getstr(self.y_pos, len(label), 50)
+        address = self.window.getstr(self.y_pos -1, 31, 50)
         curses.curs_set(0)
 
         if len(address.strip()) == 0:
@@ -1260,10 +1255,10 @@ class Login(Screen):
         curses.echo()
         mode = curses.A_NORMAL
         label = "Administrator password: "
-        self.window.addstr(self.y_pos, self.x_pos, label)
+        self.message(label)
         curses.curs_set(1)
         curses.noecho()
-        password = self.window.getstr(self.y_pos, len(label), 50)
+        password = self.window.getstr(self.y_pos -1, len(label), 50)
         curses.curs_set(0)
 
         if len(password.strip()) == 0:
