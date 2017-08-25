@@ -320,7 +320,7 @@ Ext.define('Ung.view.extra.Sessions', {
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            rtype: 'timestamp',
+            renderer: Renderer.timestamp,
             filter: Renderer.timestampFilter
         }, {
             header: 'Session ID'.t(),
@@ -350,7 +350,7 @@ Ext.define('Ung.view.extra.Sessions', {
             dataIndex: 'bypassed',
             width: Renderer.booleanWidth,
             filter: Renderer.booleanFilter,
-            rtype: 'boolean'
+            renderer: Renderer.boolean
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
@@ -759,7 +759,7 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Tags'.t(),
             dataIndex: 'tags',
             width: Renderer.tagsWidth,
-            rtype: 'tags'
+            renderer: Renderer.tags
         }]
     }, {
         region: 'east',
