@@ -7,6 +7,7 @@ import base64
 import getopt
 import json
 import md5
+import re
 import signal
 import sys
 import subprocess
@@ -67,6 +68,51 @@ class UvmContext:
             for c in results:
                 screen.external_call_output(c)
         screen.external_call_footer()
+
+class Validate:
+    """
+    General class validator
+    """
+
+    def check(self, value, validators):
+        messages = []
+        for validator in validators:
+            if hasattr(self, validator):
+                message = getattr(self, validator)(value)
+                if message != True:
+                    messages.append(message)
+                    if validator == "empty":
+                        return messages
+
+        if len(messages) > 0:
+            return messages
+        else:
+            return None
+
+    def empty(self, value):
+        if len(value.strip()) == 0:
+            return "Value must be specified."
+        return True
+
+    def ip(self, value):
+        ip_regex = re.compile(r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+        if re.match(ip_regex, value.strip()) is None:
+            return "Invalid IP address."
+        return True
+
+    def prefix(self, value):
+        ivalue = int(value)
+        if ivalue < 0 or ivalue > 32:
+            return "Invalid prefix."
+        return True
+
+    def username(self, value):
+        return True
+
+    def password(self, value):
+        return True
+
+Validator = Validate()
 
 class Screen(object):
     """
@@ -410,6 +456,16 @@ class Form(Screen):
     }]
     confirm_message = "Use [Up] and [Down] keys to save or cancel changes and press [Enter]"
 
+    def invalid_messages(self, messages):
+        message = "".join(messages)
+        self.stdscreen.hline(self.y_pos - 2, 0, " " , 79)
+        self.stdscreen.hline(self.y_pos - 1, 0, " " , 79)
+
+        self.y_pos -= 2
+        self.message( message )
+        self.message( "Press any key to continue" )
+        key = self.window.getch()
+
     def display(self):
         """ 
         Display
@@ -694,55 +750,77 @@ class AssignInterfaces(Form):
     # need to get/show current
     dhcp_field_selections = [{
         "text": "Address Override",
-        "key": "v4AutoAddressOverride"
+        "key": "v4AutoAddressOverride",
+        "allow_empty": True,
+        "validators": ["ip"]
     },{
         "text": "Netmask Override",
-        "key": "v4AutoPrefixOverride"
+        "key": "v4AutoPrefixOverride",
+        "allow_empty": True,
+        "validators": ["prefix"]
     },{
         "text": "Gateway Override",
-        "key": "v4AutoGatewayOverride"
+        "key": "v4AutoGatewayOverride",
+        "allow_empty": True,
+        "validators": ["ip"]
     },{
         "text": "Primary DNS Override",
-        "key": "v4AutoDns1Override"
+        "key": "v4AutoDns1Override",
+        "allow_empty": True,
+        "validators": ["ip"]
     },{
         "text": "Secondary DNS Override",
-        "key": "v4AutoDns2Override"
+        "key": "v4AutoDns2Override",
+        "allow_empty": True,
+        "validators": ["ip"]
     }]
 
     # primary/secondary only for WAN
     static_field_selections = [{
         "text": "Address",
-        "key": "v4StaticAddress"
+        "key": "v4StaticAddress",
+        "validators": ["empty", "ip"]
     },{
         "text": "Netmask",
-        "key": "v4StaticPrefix"
+        "key": "v4StaticPrefix",
+        "validators": ["empty", "prefix"]
     },{
         "text": "Gateway",
-        "key": "v4StaticGateway"
+        "key": "v4StaticGateway",
+        "validators": ["empty", "ip"]
     },{
         "text": "Primary DNS",
-        "key": "v4StaticDns1"
+        "key": "v4StaticDns1",
+        "validators": ["empty", "ip"]
     },{
         "text": "Secondary DNS",
-        "key": "v4StaticDns2"
+        "key": "v4StaticDns2",
+        "allow_empty": True,
+        "validators": ["ip"]
     }]
 
     # primary/secondary only if use peer dns =false
     pppoe_field_selections = [{
         "text": "Username",
-        "key": "v4PPPoEUsername"
+        "key": "v4PPPoEUsername",
+        "validators": ["empty"]
     },{
         "text": "Password",
-        "key": "v4PPPoEPassword"
+        "key": "v4PPPoEPassword",
+        "validators": ["empty"]
     },{
         "text": "Use Peer DNS",
         "key": "v4PPPoEUsePeerDns"
     },{
         "text": "Primary DNS",
-        "key": "v4PPPoEDns1"
+        "key": "v4PPPoEDns1",
+        "allow_empty": True,
+        "validators": ["ip"]
     },{
         "text": "Secondary DNS",
-        "key": "v4PPPoEDns1"
+        "key": "v4PPPoEDns1",
+        "allow_empty": True,
+        "validators": ["ip"]
     }]
 
 
@@ -1001,14 +1079,20 @@ class AssignInterfaces(Form):
             value = ""
         textbox = self.textbox( edit_index, 31, str(value) )
         newValue = textbox.edit()
-        ## validate.
-        ## if valid, set value to newValue
-        ## massage back to proper type
-        ##  if None, don't write back.
-        ##  show message
-        if newValue != value:
-            self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
-        self.key = 27
+
+        invalid_messages = None
+        if "validators" in edit_item:
+            invalid_messages = Validator.check(newValue, edit_item["validators"] )
+
+        if  ( "allow_empty" in edit_item ) and ( edit_item["allow_empty"] is True ) and ( len(newValue.strip()) == 0 ):
+            invalid_messages = None
+
+        if invalid_messages is not None:
+            self.invalid_messages(invalid_messages)
+        else:
+            if newValue != value:
+                self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
+            self.key = 27
 
     def action_interface(self):
         """
