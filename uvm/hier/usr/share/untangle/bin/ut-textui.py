@@ -49,6 +49,8 @@ class UvmContext:
             tries -= 1
             if tries == 0:
                 break
+            else:
+                print "Connecting to Untangle..."
             sleep(wait)
         raise
 
@@ -507,7 +509,6 @@ class Form(Screen):
 
         self.y_pos += 2
         self.display_title( "Confirm" )
-        # self.y_pos += 1
 
         for index, item in enumerate(self.confirm_selections):
             if index == self.mode_menu_pos[self.current_mode]:
