@@ -1,5 +1,8 @@
 #!/usr/bin/python
-
+"""
+Text-based user inteface for configuring a subset of critcal items neccessary
+to connect with browser (for complete configuration)
+"""
 import base64
 import getopt
 import json
@@ -32,6 +35,9 @@ class UvmContext:
     """
     context = None
     def __init__(self, tries=1, wait=10):
+        """
+        Connect to uvm as localhost with optional configurable tries and waits
+        """
         while tries > 0:
             try:
                 self.context = uvm.Uvm().getUvmContext( "localhost", None, None, 60 )
@@ -61,13 +67,6 @@ class UvmContext:
             for c in results:
                 screen.external_call_output(c)
         screen.external_call_footer()
-
-### !!! new class for interface management:
-# get
-#   Pull everything into object for reading
-# set
-#   Extract back out for proper network settings
-#   save settings
 
 class Screen(object):
     """
@@ -238,6 +237,9 @@ class Screen(object):
         self.window.refresh()
 
     def textbox(self, y, x, value=""):
+        """
+        Create/display/return a textbox with the current value.
+        """
         win = curses.newwin( 1, 40, y, x)
         textbox = curses.textpad.Textbox( win )
         self.stdscreen.hline(y, x, "_" , 40)
@@ -262,11 +264,18 @@ class Menu(Screen):
         self.items = items
         self.menu_pos = 0
 
+        """
+        Get list of visible items (with "text" attribute).
+        Some items (like shell) are not displayed but accessible via key.
+        """
         self.visible_items = []
         for item in items:
             if "text" in item:
                 self.visible_items.append(item)
 
+        """
+        Get IP address of first interface that is not WAN to display recommended URL
+        """
         uvm = UvmContext()
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
@@ -274,9 +283,6 @@ class Menu(Screen):
         self.interfaces = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
         uvm = None
 
-        """
-        Get IP address of first interface that is not WAN to display recommended URL
-        """
         for interface in self.interfaces:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
@@ -372,6 +378,9 @@ class Menu(Screen):
         return True
 
     def call_class(self, item):
+        """
+        Instantiate a class or call the already instantiated object.
+        """
         if type(item["class"]) is type:
             obj = item["class"](self.stdscreen)
             obj.process()
@@ -498,6 +507,9 @@ class Form(Screen):
         return True
 
 class RemapInterfaces(Form):
+    """
+    Change physical device to interface assignment.
+    """
     title = "Remap Interfaces"
     modes = ["interface", "confirm"]
 
@@ -516,6 +528,9 @@ class RemapInterfaces(Form):
         super(RemapInterfaces, self).__init__(stdscreen)
         self.selected_device = None
 
+        """
+        Build interfaces to use
+        """
         uvm = UvmContext()
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
@@ -530,6 +545,9 @@ class RemapInterfaces(Form):
                         interface[k] = v
 
     def display_interface(self, show_selected_only=False):
+        """
+        Display interface list
+        """
         msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
         self.display_title( msg )
 
@@ -569,6 +587,9 @@ class RemapInterfaces(Form):
         self.y_pos += 1
 
     def navigate(self, n):
+        """
+        If in interface mode, switch the current interfaces physical values.
+        """
         super(RemapInterfaces, self).navigate(n)
 
         if self.current_mode == "interface" and self.selected_device is not None:
@@ -600,6 +621,9 @@ class RemapInterfaces(Form):
                     self.interface_selections[selected_index][key] = old_value
 
     def key_process(self):
+        """
+        Select interface with right-key.
+        """
         if self.current_mode == "interface" and self.key == curses.KEY_RIGHT:
             if self.selected_device is None:
                 for index, interface in enumerate(self.interface_selections):
@@ -612,6 +636,9 @@ class RemapInterfaces(Form):
                 return False
 
     def action_confirm(self):
+        """
+        Load settings and modify interface device values with changes.
+        """
         self.window.clear()
         if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
             return
@@ -633,6 +660,9 @@ class RemapInterfaces(Form):
         return False
 
 class AssignInterfaces(Form):
+    """
+    Configure interfaces for addressing, bridging, disabled.
+    """
     title = "Configure Interfaces"
 
     modes_addressed = ['interface', 'config', 'addressed', 'edit', 'confirm']
@@ -720,6 +750,9 @@ class AssignInterfaces(Form):
 
 
     def __init__(self, stdscreen):
+        """
+        Get interfaces and integrate device and status.
+        """
         self.modes = self.modes_addressed
 
         super(AssignInterfaces, self).__init__(stdscreen)
@@ -744,6 +777,9 @@ class AssignInterfaces(Form):
         self.modes = self.modes_addressed
 
     def display(self):
+        """
+        Handle specific modes for field editing and address type.
+        """
         if self.current_mode == "edit_field":
             self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
         elif self.current_mode == "edit":
@@ -759,6 +795,9 @@ class AssignInterfaces(Form):
         super(AssignInterfaces, self).display()
 
     def display_interface(self, show_selected_only = False):
+        """
+        Display interfaces
+        """
         msg = '%-12s %-15s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
         self.display_title( msg )
 
@@ -800,12 +839,13 @@ class AssignInterfaces(Form):
 
         self.y_pos = self.y_pos + 1
         if show_selected_only is False:
-            ## !!! build bridged selections
             self.y_pos = self.y_pos + len(self.mode_items["interface"])
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to edit and press [Enter]")
 
     def display_config(self, show_selected_only=False):
-
+        """
+        Display interface configuration type
+        """
         self.display_interface(show_selected_only=True)
 
         self.y_pos += 1
@@ -834,7 +874,9 @@ class AssignInterfaces(Form):
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select config mode and press [Enter]")
 
     def display_addressed(self, show_selected_only=False):
-
+        """
+        In address configuration mode, display address typs.
+        """
         self.display_config(show_selected_only=True)
 
         if "addressed" not in self.mode_items:
@@ -874,7 +916,9 @@ class AssignInterfaces(Form):
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select address mode and press [Enter]")
 
     def display_bridged(self, show_selected_only=False):
-
+        """
+        In bridged mode, display available bridged interfaces
+        """
         self.display_config(show_selected_only=True)
 
         if len(self.bridged_selections) == 0:
@@ -914,6 +958,10 @@ class AssignInterfaces(Form):
             self.window.addstr( self.y_pos, self.x_pos, "Use [Up] and [Down] keys to select interface to bridge and press [Enter]")
 
     def display_edit(self,show_selected_only = False):
+        """
+        Display address field edit 
+        """
+
         # Ignore show_selected_only.  Need to accept it though to pass along
         self.display_addressed(show_selected_only=True)
     
@@ -946,6 +994,9 @@ class AssignInterfaces(Form):
         ## track modifiications
 
     def edit_field(self, edit_index, edit_item):
+        """
+        Edit the specified field with a textbox.
+        """
         # note value type:
         # integer
         # none
@@ -959,9 +1010,11 @@ class AssignInterfaces(Form):
         ##  if None, don't write back.
         self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
         self.key = 27
-        # self.debug_message(newValue)
 
     def action_interface(self):
+        """
+        When interface is selected, populate current values for other modes
+        """
         for index, item in enumerate(self.interface_selections):
             if index == self.mode_menu_pos[self.current_mode]:
                 self.mode_selected_item["config"] = item["configType"]
@@ -976,12 +1029,23 @@ class AssignInterfaces(Form):
 
 
     def key_process(self):
+        """
+        Special processing extension
+        """
+
+        """
+        Special edit field processing.
+        """
         if self.current_mode == "edit" and self.key == curses.KEY_RIGHT:
             self.edit_field(self.edit_index, self.edit_item)
         else:
             if super(self.__class__, self).key_process() is False:
                 return False
 
+        """
+        If we just came out of configuraiton mode, change the underlying
+        mode list for the configuration types.
+        """
         if self.current_mode == "addressed":
             if self.mode_selected_item["config"]["value"] == "BRIDGED":
                 self.current_mode = 'bridged'
@@ -994,10 +1058,16 @@ class AssignInterfaces(Form):
                 self.modes = self.modes_disabled
 
     def action_confirm(self):
+        """
+        Perform confirm actions
+        """
         self.window.clear()
         if self.mode_selected_item[self.current_mode] != self.confirm_selections[0]:
             return
 
+        """
+        Modify live values with modified values and save
+        """
         uvm = UvmContext()
         networkSettings = uvm.context.networkManager().getNetworkSettings()
         for interface in networkSettings["interfaces"]["list"]:
@@ -1022,6 +1092,9 @@ class AssignInterfaces(Form):
         return False
 
 class Ping(Screen):
+    """
+    Perform ping commands to test network connectivity.
+    """
     title = "Ping"
     def display(self):
         super(Ping, self).display()
@@ -1043,6 +1116,9 @@ class Ping(Screen):
             uvm = None
 
 class Upgrade(Form):
+    """
+    Upgrade system software
+    """
     title = "Reboot"
 
     confirm_selections = [{
@@ -1067,6 +1143,9 @@ class Upgrade(Form):
         return False
 
 class Reboot(Form):
+    """
+    Reboot system
+    """
     title = "Reboot"
 
     confirm_selections = [{
@@ -1092,6 +1171,9 @@ class Reboot(Form):
         uvm.context.rebootBox()
 
 class Shutdown(Form):
+    """
+    Shutdown system
+    """
     title = "Shutdown"
 
     confirm_selections = [{
@@ -1115,6 +1197,9 @@ class Shutdown(Form):
         uvm.context.shutdownBox()
 
 class FactoryDefaults(Form):
+    """
+    Restore settings to factory defaults
+    """
     title = "Factory Defaults"
 
     confirm_selections = [{
@@ -1137,6 +1222,9 @@ class FactoryDefaults(Form):
         # Uvm.context.shutdownBox()
 
 class suspend_curses():
+    """
+    Special class to handle suspension of curses for shell
+    """
     def __enter__(self):
         curses.endwin()
 
@@ -1146,7 +1234,9 @@ class suspend_curses():
         curses.doupdate()
 
 class Shell(Screen):
-
+    """
+    Open shell
+    """
     def process(self):
         self.window.clear()
         self.window.refresh()
@@ -1154,8 +1244,10 @@ class Shell(Screen):
             subprocess.call("/bin/bash")
         return
 
-
 class Login(Screen):
+    """
+    Perform password entry for admin user
+    """
     title = "Login"
     authorized = False
 
@@ -1196,6 +1288,9 @@ class Login(Screen):
 
 
 class UiApp(object):
+    """
+    Application entry point
+    """
     def __init__(self, stdscreen):
         self.screen = stdscreen
         curses.curs_set(0)
