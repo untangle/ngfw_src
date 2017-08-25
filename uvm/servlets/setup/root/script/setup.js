@@ -987,7 +987,7 @@ Ext.define('Ung.Setup.Internet', {
             margin: '0 5'
         },
         items: [{
-            text: 'Refresh'.t(),
+            text: 'Renew DHCP'.t(),
             iconCls: 'fa fa-refresh',
             handler: 'refresh', // refetch settings to refresh
             bind: {
