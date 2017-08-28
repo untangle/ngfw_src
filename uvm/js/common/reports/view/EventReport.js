@@ -3,6 +3,7 @@ Ext.define('Ung.view.reports.EventReport', {
     alias: 'widget.eventreport',
 
     viewModel: {
+        data: { eventsData: [], propsData: [] },
         stores: {
             events: {
                 data: '{eventsData}',
