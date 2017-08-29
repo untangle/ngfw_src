@@ -57,12 +57,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     updateWidgetsVisibility: function () {
         var dashboard = this.lookup('dashboard'),
             widgets = dashboard.query('reportwidget');
-        if (dashboard.down('networklayoutwidget')) {
-            DashboardQueue.isVisible(dashboard.down('networklayoutwidget'));
-        }
-        if (dashboard.down('mapdistributionwidget')) {
-            DashboardQueue.isVisible(dashboard.down('mapdistributionwidget'));
-        }
+        DashboardQueue.isVisible(dashboard.down('networklayoutwidget'));
+        DashboardQueue.isVisible(dashboard.down('mapdistributionwidget'));
+        DashboardQueue.isVisible(dashboard.down('networkinformationwidget'));
         Ext.Array.each(widgets, function (widget) {
             if (widget) {
                 DashboardQueue.isVisible(widget);
