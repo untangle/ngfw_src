@@ -756,6 +756,19 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         Ext.MessageBox.hide();
     },
 
+    importHandler: function(importMode, newData){
+        var me = this;
+
+        this.callParent(arguments);
+        var store = this.getView().getStore();
+
+        store.each( function(record){
+            me.updateRule(record, 'log', record.get('log') );
+            me.updateRule(record, 'block', record.get('block') );
+
+        });
+    },
+
     rulesReconfigure: function( me , store , columns , oldStore , oldColumns , eOpts ){
         me.getController().updateSearchStatusBar();
     },
