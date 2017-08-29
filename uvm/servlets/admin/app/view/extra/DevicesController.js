@@ -45,6 +45,7 @@ Ext.define('Ung.view.extra.DevicesController', {
             .then(function(result) { 
                 me.getView().setLoading(false);
                 store.loadData(result.list);
+                store.sort('macAddress', 'DSC');
 
                 v.down('ungridstatus').fireEvent('update');
             });

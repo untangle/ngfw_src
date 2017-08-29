@@ -81,6 +81,8 @@ Ext.define('Ung.view.extra.SessionsController', {
                 });
 
                 store.loadData( sessions );
+                store.sort('creationTime', 'DSC');
+
 
                 v.down('ungridstatus').fireEvent('update');
 
