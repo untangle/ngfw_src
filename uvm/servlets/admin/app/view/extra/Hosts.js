@@ -41,7 +41,8 @@ Ext.define('Ung.view.extra.Hosts', {
 
     viewModel: {
         data: {
-            autoRefresh: false
+            autoRefresh: false,
+            autoSort: true
         }
     },
 
