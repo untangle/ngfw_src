@@ -214,7 +214,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
             return;
         }
         var vm = this.getViewModel();
-        if (vm.get('instance.targetState') !== 'RUNNING' && this.updateMetricsCount > 0) {
+        if (vm.get('instance.runState') !== 'RUNNING' && this.updateMetricsCount > 0) {
             return;
         }
         this.updateMetricsCount++;

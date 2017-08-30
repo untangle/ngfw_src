@@ -41,8 +41,8 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.targetState !== "RUNNING"}',
-                disabled: '{instance.targetState !== "RUNNING"}'
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
             },
             items: [{
                 xtype: 'component',

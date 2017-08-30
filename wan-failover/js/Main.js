@@ -35,6 +35,10 @@ Ext.define('Ung.apps.wan-failover.Main', {
                 tag: 'a',
                 href: '#reports/wan-failover',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

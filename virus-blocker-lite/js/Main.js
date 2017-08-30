@@ -32,6 +32,10 @@ Ext.define('Ung.apps.virusblockerlite.Main', {
                 tag: 'a',
                 href: '#reports/virus-blocker-lite',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

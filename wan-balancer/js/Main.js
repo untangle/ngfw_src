@@ -34,6 +34,10 @@ Ext.define('Ung.apps.wan-balancer.Main', {
                 tag: 'a',
                 href: '#reports/wan-balancer',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },
