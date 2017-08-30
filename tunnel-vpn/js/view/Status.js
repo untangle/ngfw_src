@@ -17,7 +17,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
             cls: 'app-desc',
             html: '<img src="/skins/modern-rack/images/admin/apps/tunnel-vpn_80x80.png" width="80" height="80"/>' +
                 '<h3>Tunnel VPN</h3>' +
-                '<p>' + 'Tunnel VPN Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'.t() + '</p>'
+                '<p>' + 'Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,
