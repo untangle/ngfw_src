@@ -24,7 +24,23 @@ Ext.define('Ung.apps.openvpn.Main', {
                 data: '{settings.clientConfiguration.list}'
             },
             clientStatusList: {
-                data: '{clientStatusData}'
+                data: '{clientStatusData}',
+                fields: [{
+                    name: 'address',
+                    type: 'string',
+                    sortType: 'asIp'
+                },{
+                    name: 'clientName',
+                    type: 'string',
+                    sortType: 'asUnString'
+                },{
+                    name: 'start',
+                    sortType: 'asTimestamp'
+                },{
+                    name: 'poolAddress',
+                    type: 'string',
+                    sortType: 'asIp'
+                }]
             },
             serverStatusList: {
                 data: '{serverStatusData}',
