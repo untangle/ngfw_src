@@ -323,6 +323,9 @@ Ext.define('Ung.cmp.Grid', {
         // attach actioncolumns to initialConfig.columns
         Ext.Array.each(columns, function (col) {
             if (col.xtype === 'actioncolumn') {
+                if(!me.initialConfig.columns){
+                    me.initialConfig.columns = [];
+                }
                 me.initialConfig.columns.push(col);
             }
         });
