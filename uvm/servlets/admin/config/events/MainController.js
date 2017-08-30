@@ -91,12 +91,11 @@ Ext.define('Ung.config.events.MainController', {
                 });
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                // store.commitChanges();
+                store.commitChanges();
             }
         });
 
         Ext.Deferred.sequence([
-            // !!! NOT RIGHT YET
             Rpc.asyncPromise('rpc.eventManager.setSettings', vm.get('settings')),
         ], this).then(function() {
             me.loadEvents();
@@ -137,10 +136,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditor', {
         },
     },
 
-    /// !!! For listerner debugging.
     items: [{
         xtype: 'form',
-        // region: 'center',
         scrollable: 'y',
         bodyPadding: 10,
         border: false,
@@ -265,6 +262,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     massageRecordOut: function(record, store){
         var me = this;
         var conditionsList = Ext.Array.pluck( store.getRange(), 'data' );
+
         if(record.get('class') == 'All'){
             conditionsList = [];
         }else{
@@ -845,6 +843,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 container.add({
                     xtype: 'textfield',
                     style: { margin: 0 },
+                    width: 200,
                     bind: {
                         value: '{record.fieldValue}'
                     },
