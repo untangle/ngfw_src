@@ -57,6 +57,10 @@ Ext.define('Ung.cmp.GridController', {
             v = me.getView(),
             grid = v.down('grid'),
             newRecord = record.copy(null);
+
+        var newRecordData_Id = newRecord.data._id;
+        newRecord.data = JSON.parse(JSON.stringify(record.data));
+        newRecord.data._id = newRecordData_Id;
         newRecord.set('markedForNew', true);
 
         var id = null;
