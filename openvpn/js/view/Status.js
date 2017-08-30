@@ -95,7 +95,8 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             bbar: [{
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
-                handler: 'getActiveClients'
+                handler: 'externalAction',
+                action: 'getActiveClients'
             }]
 
         }, {
@@ -153,7 +154,8 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             bbar: [{
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
-                handler: 'getActiveServers'
+                handler: 'externalAction',
+                action: 'getActiveServers'
             }]
 
         }, {
