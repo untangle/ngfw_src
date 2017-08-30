@@ -71,7 +71,7 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
             disabled: true,
             hideHeaders: true,
             bind: {
-                disabled: '{instance.targetState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}',
                 store: { data: '{statistics}' }
             },
             listeners: {

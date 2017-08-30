@@ -14,7 +14,7 @@ Ext.define('Ung.cmp.AppSessions', {
 
     disabled: true,
     bind: {
-        disabled: '{instance.targetState !== "RUNNING"}',
+        disabled: '{instance.runState !== "RUNNING"}',
     },
 
     layout: 'fit',

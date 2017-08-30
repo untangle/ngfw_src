@@ -56,6 +56,7 @@ Ext.define('Ung.cmp.AppRemove', {
                         }
 
                         vm.set('instance.targetState', null);
+                        vm.set('instance.runState', null);
 
                         Ung.app.redirectTo('#apps/' + vm.get('policyId'));
 

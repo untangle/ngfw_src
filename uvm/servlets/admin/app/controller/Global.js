@@ -231,7 +231,7 @@ Ext.define('Ung.controller.Global', {
             Util.handleException("Unable to find app: " + app);
             return;
         }
-        
+
         mainView.setLoading(true);
         Ext.Loader.loadScript({
             //url: 'script/apps/' + app + '.js',
@@ -241,6 +241,7 @@ Ext.define('Ung.controller.Global', {
             onLoad: function () {
                 Rpc.asyncData('rpc.appManager.app', appInstance.id)
                     .then(function (result) {
+                        appInstance.runState = result.getRunState();
                         mainView.add({
                             xtype: 'app-' + app,
                             itemId: 'appCard',
@@ -252,9 +253,7 @@ Ext.define('Ung.controller.Global', {
                                     instance: appInstance,
                                     props: appProps,
                                     license: policy.get('licenseMap').map[app],
-                                    urlName: app,
-                                    runState: result.getRunState(),
-                                    targetState: result.getAppSettings().targetState
+                                    urlName: app
                                 }
                             },
                             listeners: {

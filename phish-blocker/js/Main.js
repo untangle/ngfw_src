@@ -12,6 +12,10 @@ Ext.define('Ung.apps.phishblocker.Main', {
                 tag: 'a',
                 href: '#reports/phish-blocker',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

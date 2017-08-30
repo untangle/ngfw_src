@@ -25,6 +25,10 @@ Ext.define('Ung.apps.sslinspector.Main', {
                 tag: 'a',
                 href: '#reports/ssl-inspector',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },
