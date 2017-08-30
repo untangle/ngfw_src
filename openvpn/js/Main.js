@@ -27,7 +27,11 @@ Ext.define('Ung.apps.openvpn.Main', {
                 data: '{clientStatusData}'
             },
             serverStatusList: {
-                data: '{serverStatusData}'
+                data: '{serverStatusData}',
+                filters: [{
+                    property: 'enabled',
+                    value: true
+                }]
             }
 
         },
