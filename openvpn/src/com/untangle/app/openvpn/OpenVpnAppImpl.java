@@ -45,16 +45,16 @@ public class OpenVpnAppImpl extends AppBase
     private final PipelineConnector[] connectors;
 
     private final EventHandler handler;
-    
+
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
 
     private final OpenVpnHookCallback openVpnHookCallback;
-    
+
     private OpenVpnSettings settings;
 
     private boolean isWebAppDeployed = false;
-    
+
     public OpenVpnAppImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -89,7 +89,7 @@ public class OpenVpnAppImpl extends AppBase
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
-        
+
         /**
          * If there are still no settings, just initialize
          */
@@ -132,12 +132,12 @@ public class OpenVpnAppImpl extends AppBase
         this.openVpnMonitor.start();
         this.openVpnMonitor.enable();
     }
-    
+
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.openVpnHookCallback );
-        
+
         try {
             this.openVpnMonitor.disable();
         } catch ( Exception e ) {
@@ -155,7 +155,7 @@ public class OpenVpnAppImpl extends AppBase
     protected void postDestroy()
     {
         unDeployWebApp();
-        
+
         // purge all settings files (but not the actual settings json file)
         UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/address-pool-assignments.txt" );
         UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/keys/*" );
@@ -172,7 +172,7 @@ public class OpenVpnAppImpl extends AppBase
         UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/server*" );
         UvmContextFactory.context().execManager().exec( "rm -rf " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/*" );
     }
-    
+
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
@@ -233,7 +233,7 @@ public class OpenVpnAppImpl extends AppBase
          * Sync those settings
          */
         this.openVpnManager.configure( this.settings );
-        
+
         /**
          * Restart the daemon
          */
@@ -245,7 +245,7 @@ public class OpenVpnAppImpl extends AppBase
             logger.error( "Could not save VPN settings", exn );
         }
     }
-    
+
     public void incrementPassCount()
     {
         this.incrementMetric(OpenVpnAppImpl.STAT_PASS);
@@ -265,7 +265,7 @@ public class OpenVpnAppImpl extends AppBase
     {
         return _getRemoteServersStatus();
     }
-    
+
     public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe", "onc" */ )
     {
         /**
@@ -331,7 +331,7 @@ public class OpenVpnAppImpl extends AppBase
     {
         return "/openvpn" + "/uploadConfig?";
     }
-    
+
     public void importClientConfig( String filename )
     {
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\"");
@@ -377,7 +377,7 @@ public class OpenVpnAppImpl extends AppBase
          */
         this.openVpnManager.configure( this.settings );
         this.openVpnManager.restart();
-        
+
         return;
     }
 
@@ -386,7 +386,7 @@ public class OpenVpnAppImpl extends AppBase
         OpenVpnSettings newSettings = new OpenVpnSettings();
 
         newSettings.setSiteName( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() + "-" + (new Random().nextInt(10000)));
-        
+
         /**
          * create a list of default exports - use all static non-WANs by default
          */
@@ -400,7 +400,7 @@ public class OpenVpnAppImpl extends AppBase
                 continue;
             if ( intfSettings.getV4StaticAddress() == null || intfSettings.getV4StaticNetmask() == null )
                 continue;
-            
+
             OpenVpnExport export = new OpenVpnExport();
             export.setEnabled( true );
             export.setName( intfSettings.getName() + " " + I18nUtil.marktr("primary network") );
@@ -452,7 +452,7 @@ public class OpenVpnAppImpl extends AppBase
                 break;
             }
         }
-        
+
         return newSettings;
     }
 
@@ -528,9 +528,9 @@ public class OpenVpnAppImpl extends AppBase
                 }
             }
         }
-        
+
     }
-    
+
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
@@ -562,7 +562,7 @@ public class OpenVpnAppImpl extends AppBase
         // They aren't critical though so don't restart the server.
         this.openVpnManager.configure( this.settings );
     }
-    
+
     private List<JSONObject> _getRemoteServersStatus()
     {
         List<JSONObject> results = new LinkedList<JSONObject>();
@@ -573,18 +573,19 @@ public class OpenVpnAppImpl extends AppBase
                 File statusFile = new File( "/var/run/openvpn/" + server.getName() + ".status" );
 
                 result.put( "name", server.getName() );
+                result.put( "enabled", server.getEnabled() );
                 result.put( "connected", false );
                 result.put( "bytesRead", 0 );
                 result.put( "bytesWritten", 0 );
-            
+
                 if ( ! statusFile.exists() ) {
                     results.add( result );
                     continue;
-                } 
+                }
 
                 BufferedReader reader = new BufferedReader(new FileReader(statusFile));
                 String currentLine;
-            
+
                 while((currentLine = reader.readLine()) != null) {
 
                     // Look for TCP/UDP read bytes line
@@ -594,7 +595,7 @@ public class OpenVpnAppImpl extends AppBase
                             logger.warn("Malformed line in openvpn status: " + currentLine );
                             continue;
                         }
-                    
+
                         long i;
                         try {
                             i = Long.parseLong( parts[1] );
@@ -619,7 +620,7 @@ public class OpenVpnAppImpl extends AppBase
                             logger.warn("Malformed line in openvpn status: " + currentLine );
                             continue;
                         }
-                    
+
                         long i;
                         try {
                             i = Long.parseLong( parts[1] );
@@ -648,7 +649,7 @@ public class OpenVpnAppImpl extends AppBase
         {
             return "openvpn-network-settings-change-hook";
         }
-        
+
         public void callback( Object... args )
         {
             Object o = args[0];
@@ -656,12 +657,12 @@ public class OpenVpnAppImpl extends AppBase
                 logger.warn( "Invalid network settings: " + o);
                 return;
             }
-                 
+
             NetworkSettings settings = (NetworkSettings)o;
 
             if ( logger.isDebugEnabled())
                 logger.debug( "network settings changed:" + settings );
-            
+
             try {
                 networkSettingsEvent( settings );
             } catch( Exception e ) {
