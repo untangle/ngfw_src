@@ -100,18 +100,10 @@ Ext.define('Ung.cmp.Grid', {
      */
     actionText: 'Perform the following action(s):'.t(),
 
-    /**
-     * @cfg {String} parentView
-     * The itemId of the component used to get an extra controller with actioncolumn methods specific for that view purpose
-     * e.g. '#users' which alloes accessing the UsersController and call actioncolumn methods from it
-     */
-    parentView: null,
-
     stateful: false,
 
     layout: 'fit',
     enableColumnHide: false,
-    // columnLines: true,
     scrollable: true,
     selModel: {
         type: 'cellmodel'

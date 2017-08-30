@@ -84,9 +84,6 @@ Ext.define('Ung.view.extra.Users', {
         title: 'Current Users'.t(),
         stateful: true,
 
-        // the view passed to the grid for accessing it's controller
-        parentView: '#users',
-
         sortField: 'username',
         sortOrder: 'ASC',
 

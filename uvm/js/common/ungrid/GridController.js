@@ -526,16 +526,26 @@ Ext.define('Ung.cmp.GridController', {
      */
     externalAction: function (v, rowIndex, colIndex, item, e, record) {
         var view = this.getView(),
-            extraCtrl = view.up(view.parentView).getController();
+            parentController = null,
+            action = item && item.action ? item.action : v.action;
 
-        if (!extraCtrl) {
+        while( view != null){
+            parentController = view.getController();
+
+            if( parentController && parentController[action]){
+                break;
+            }
+            view = view.up();
+        }
+
+        if (!parentController) {
             console.log('Unable to get the extra controller');
             return;
         }
 
         // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
-        if (item.action) {
-            extraCtrl[item.action].apply(extraCtrl, arguments);
+        if (action) {
+            parentController[action].apply(parentController, arguments);
         } else {
             console.log('External action not defined!');
         }
