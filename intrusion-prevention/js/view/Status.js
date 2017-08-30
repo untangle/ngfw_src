@@ -22,7 +22,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             cls: 'app-desc',
             html: '<img src="/skins/modern-rack/images/admin/apps/intrusion-prevention_80x80.png" width="80" height="80"/>' +
                 '<h3>Intrusion Prevention</h3>' +
-                '<p>' + 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t() + '</p>'
+                '<p>' + 'Intrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,
