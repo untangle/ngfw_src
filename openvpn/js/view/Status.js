@@ -31,11 +31,10 @@ Ext.define('Ung.apps.openvpn.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
-            xtype: 'grid',
+            xtype: 'ungrid',
             title: 'Connected Remote Clients'.t(),
             itemId: 'activeClients',
             trackMouseOver: false,
-            sortableColumns: false,
             enableColumnHide: false,
 
             minHeight: 150,
@@ -56,33 +55,42 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 store: '{clientStatusList}'
             },
 
+            plugins: ['gridfilters'],
+
             columns: [{
                 header: 'Address'.t(),
                 dataIndex: 'address',
+                width: Renderer.ipWidth,
+                filter: Renderer.stringFilter,
                 flex: 1
             }, {
                 header: 'Client'.t(),
                 dataIndex: 'clientName',
-                width: 200
+                width: Renderer.usernameWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Pool Address'.t(),
                 dataIndex: 'poolAddress',
-                width: 150
+                width: Renderer.networkWidth,
+                filter: Renderer.stringFilter
             }, {
                 header: 'Start Time'.t(),
                 dataIndex: 'start',
-                width: 150,
-                renderer: function(value) { return Util.timestampFormat(value); }
+                renderer: Renderer.timestamp,
+                width: Renderer.timestampWidth,
+                filter: Renderer.timestampFilter
             }, {
                 header: 'Rx Data'.t(),
                 dataIndex: 'bytesRxTotal',
-                width: 100,
-                renderer: function(value) { return (Math.round(value/100000)/10) + ' Mb'; }
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
             }, {
                 header: 'Tx Data'.t(),
                 dataIndex: 'bytesTxTotal',
-                width: 100,
-                renderer: function(value) { return (Math.round(value/100000)/10) + ' Mb'; }
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
             }],
             bbar: [{
                 text: 'Refresh'.t(),
@@ -91,11 +99,10 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             }]
 
         }, {
-            xtype: 'grid',
+            xtype: 'ungrid',
             title: 'Remote Server Status'.t(),
             itemId: 'remoteServers',
             trackMouseOver: false,
-            sortableColumns: false,
             enableColumnHide: false,
 
             minHeight: 150,
@@ -117,25 +124,31 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 store: '{serverStatusList}'
             },
 
+            plugins: ['gridfilters'],
+
             columns: [{
                 header: 'Name'.t(),
                 dataIndex: 'name',
-                width: 150,
+                width: Renderer.hostnameWidth,
+                filter: Renderer.stringFilter,
                 flex: 1
             }, {
                 header: 'Connected'.t(),
                 dataIndex: 'connected',
-                width: 75
+                width: Renderer.messageWidth,
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Rx Data'.t(),
                 dataIndex: 'bytesRead',
-                width: 180,
-                renderer: function(value) { return (Math.round(value/100000)/10) + ' Mb'; }
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
             }, {
                 header: 'Tx Data'.t(),
                 dataIndex:'bytesWritten',
-                width: 180,
-                renderer: function(value) { return (Math.round(value/100000)/10) + ' Mb'; }
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
             }],
             bbar: [{
                 text: 'Refresh'.t(),
