@@ -18,6 +18,10 @@ Ext.define('Ung.apps.webcache.Main', {
                 tag: 'a',
                 href: '#reports/web-cache',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

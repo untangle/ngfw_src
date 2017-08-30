@@ -21,6 +21,10 @@ Ext.define('Ung.apps.applicationcontrollite.Main', {
                 tag: 'a',
                 href: '#reports/application-control-lite',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

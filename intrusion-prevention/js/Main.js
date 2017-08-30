@@ -67,6 +67,10 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 tag: 'a',
                 href: '#reports/intrusion-prevention',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },

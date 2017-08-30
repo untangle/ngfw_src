@@ -52,7 +52,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-                disabled: '{instance.targetState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}',
                 store: '{clientStatusList}'
             },
 
@@ -113,7 +113,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-                disabled: '{instance.targetState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}',
                 store: '{serverStatusList}'
             },
 

@@ -31,6 +31,10 @@ Ext.define('Ung.apps.policymanager.Main', {
                 tag: 'a',
                 href: '#reports/policy-manager',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
+            },
+            hidden: true,
+            bind: {
+                hidden: '{instance.runState !== "RUNNING"}'
             }
         }]
     },
