@@ -21,7 +21,47 @@ Ext.define('Ung.view.extra.UsersController', {
     resetView: function( btn ){
         var grid = this.getView().down('#usersgrid');
         Ext.state.Manager.clear(grid.stateId);
-        grid.reconfigure(null, grid.initialConfig.columns);
+
+        var cols = grid.initialConfig.columns;
+        /**
+         * add Edit/Delete columns needed for reconfigure, as they are missing from initialConfig
+         */
+        if (!Ext.Array.findBy(cols, function(col) {
+            return col.handler === 'editRecord';
+        })) {
+            cols.push({
+                xtype: 'actioncolumn',
+                width: 60,
+                header: 'Edit'.t(),
+                align: 'center',
+                resizable: false,
+                tdCls: 'action-cell',
+                iconCls: 'fa fa-pencil',
+                handler: 'editRecord',
+                menuDisabled: true,
+                hideable: false
+            });
+        }
+
+        if (!Ext.Array.findBy(cols, function(col) {
+            return col.handler === 'deleteRecord';
+        })) {
+            cols.push({
+                xtype: 'actioncolumn',
+                width: 60,
+                header: 'Delete'.t(),
+                align: 'center',
+                resizable: false,
+                tdCls: 'action-cell',
+                iconCls: 'fa fa-trash-o fa-red',
+                handler: 'deleteRecord',
+                menuDisabled: true,
+                hideable: false
+            });
+        }
+
+        grid.reconfigure(null, cols);
+
     },
 
     getUsers: function () {
