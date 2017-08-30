@@ -167,6 +167,7 @@ Ext.define('Ung.cmp.Grid', {
          * Treat viewConfig as an object that inline configuration can override on an
          * individual field level instead of the entire viewConfig object itself.
          */
+        var me = this;
         var viewConfig = {
             enableTextSelection: true,
             // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
@@ -318,6 +319,13 @@ Ext.define('Ung.cmp.Grid', {
                 }
             }
         }
+
+        // attach actioncolumns to initialConfig.columns
+        Ext.Array.each(columns, function (col) {
+            if (col.xtype === 'actioncolumn') {
+                me.initialConfig.columns.push(col);
+            }
+        });
 
         Ext.apply(this, {
             columns: columns,
