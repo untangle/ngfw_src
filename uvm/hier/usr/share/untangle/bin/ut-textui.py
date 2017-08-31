@@ -457,6 +457,7 @@ class Form(Screen):
         "default": True
     }]
     confirm_message = "Use [Up] and [Down] keys to save or cancel changes and press [Enter]"
+    multi_mode_confirm_message = "Press [Esc] to continue editing"
 
     def invalid_messages(self, messages):
         message = "".join(messages)
@@ -518,6 +519,11 @@ class Form(Screen):
 
             msg = '%-12s' % (item["text"]) 
             self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
+
+        self.y_pos += len(self.confirm_selections) + 1
+        self.message(self.confirm_message)
+        if len(self.modes) > 1:
+            self.message(self.multi_mode_confirm_message)
 
     def navigate(self, n):
         """
@@ -639,6 +645,7 @@ class RemapInterfaces(Form):
             self.message( "Use [Up] and [Down] keys to move device to new location and press [Enter]")
         else:
             self.message( "Use [Up] and [Down] keys to select device to move and press [Right]")
+            self.message( "Press [Esc] to return without making changes")
 
     def navigate(self, n):
         """
@@ -928,6 +935,7 @@ class AssignInterfaces(Form):
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["interface"])
             self.message( "Use [Up] and [Down] keys to select interface to edit and press [Enter]")
+            self.message( "Press [Esc] to return without making changes")
 
     def display_config(self, show_selected_only=False):
         """
@@ -959,6 +967,7 @@ class AssignInterfaces(Form):
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["config"])
             self.message( "Use [Up] and [Down] keys to select config mode and press [Enter]")
+            self.message( "Press [Esc] to select interface")
 
     def display_addressed(self, show_selected_only=False):
         """
@@ -995,7 +1004,8 @@ class AssignInterfaces(Form):
         self.y_pos += 1
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["addressed"])
-            self.message( "Use [Up] and [Down] keys to select address mode and press [Enter]")
+            self.message( "Use [Up] and [Down] keys to select addressed mode and press [Enter]")
+            self.message( "Press [Esc] to select config mode")
 
     def display_bridged(self, show_selected_only=False):
         """
@@ -1038,6 +1048,7 @@ class AssignInterfaces(Form):
         if show_selected_only is False:
             self.y_pos = self.y_pos + len(self.mode_items["bridged"])
             self.message( "Use [Up] and [Down] keys to select interface to bridge and press [Enter]")
+            self.message( "Press [Esc] to select config mode")
 
     def display_edit(self,show_selected_only = False):
         """
@@ -1074,8 +1085,7 @@ class AssignInterfaces(Form):
             self.y_pos += 1
             self.message( "Use [Up] and [Down] keys to select field to edit and press [Right]")
             self.message( "Press [Enter] to confirm")
-
-        ## track modifiications
+            self.message( "Press [Esc] to change addressed mode")
 
     def edit_field(self, edit_index, edit_item):
         """
@@ -1217,6 +1227,8 @@ class Upgrade(Form):
         "action": False
     }]
 
+    confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
+
     upgrades_available = False
     def display_form(self):
         self.message("Are you sure you want to upgrade the system?")
@@ -1244,7 +1256,8 @@ class Reboot(Form):
         "action": False,
         "default": True
     }]
-    confirm_message = "Use [Up] and [Down] keys to confirm or cancel and press [Enter]"
+
+    confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
 
     def display_form(self):
         self.message("Are you sure you want to reboot the system?")
@@ -1273,6 +1286,8 @@ class Shutdown(Form):
         "default": True
     }]
 
+    confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
+
     def display_form(self):
         self.message("Are you sure you want to shut down the system?")
         self.y_pos += 1
@@ -1298,6 +1313,8 @@ class FactoryDefaults(Form):
         "action": False
     }]
 
+    confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
+    
     def display_form(self):
         self.message("Are you sure you want to RESET ALL SETTINGS to factory defaults?")
         self.y_pos += 1
