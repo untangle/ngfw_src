@@ -623,16 +623,19 @@ class RemapInterfaces(Form):
         self.display_title( msg )
 
         for index, interface in enumerate(self.interface_selections):
-            if self.selected_device is not None:
-                if ( interface["deviceName"] == self.selected_device ):
-                    mode = curses.A_REVERSE
-                else:    
-                    mode = curses.A_NORMAL
+            if show_selected_only:
+                select_mode = curses.A_NORMAL
             else:
-                if index == self.mode_menu_pos[self.current_mode]:
-                    mode = curses.A_REVERSE
+                if self.selected_device is not None:
+                    if ( interface["deviceName"] == self.selected_device ):
+                        select_mode = curses.A_REVERSE
+                    else:    
+                        select_mode = curses.A_NORMAL
                 else:
-                    mode = curses.A_NORMAL
+                    if index == self.mode_menu_pos[self.current_mode]:
+                        select_mode = curses.A_REVERSE
+                    else:
+                        select_mode = curses.A_NORMAL
 
             duplex = interface["duplex"]
             if duplex == 'FULL_DUPLEX':
@@ -648,7 +651,7 @@ class RemapInterfaces(Form):
 
             msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), duplex, vendor, interface["macAddress"] )
             self.window.addstr( self.y_pos + index, self.x_pos, msg)
-            self.window.addstr( self.y_pos + index, self.x_pos + 29, msg[29:], mode)
+            self.window.addstr( self.y_pos + index, self.x_pos + 29, msg[29:], select_mode)
 
         self.y_pos = self.y_pos + len(self.interface_selections) + 1
         if self.selected_device is not None:
@@ -1076,8 +1079,6 @@ class AssignInterfaces(Form):
         """
         Display address field edit 
         """
-
-        # Ignore show_selected_only.  Need to accept it though to pass along
         self.display_addressed(show_selected_only=True)
     
         if "edit" not in self.mode_items:
@@ -1089,16 +1090,20 @@ class AssignInterfaces(Form):
         # self.y_pos += 1
 
         for index, item in enumerate(self.mode_items["edit"]):
-            if index == self.mode_menu_pos[self.current_mode]:
-                mode = curses.A_REVERSE
-                self.edit_index = self.y_pos + index
-                self.edit_item = item
-            else:
+            if show_selected_only is True:
                 mode = curses.A_NORMAL
+            else:
+                if index == self.mode_menu_pos[self.current_mode]:
+                    mode = curses.A_REVERSE
+                    self.edit_index = self.y_pos + index
+                    self.edit_item = item
+                else:
+                    mode = curses.A_NORMAL
 
             value = self.mode_selected_item['interface'][item["key"]]
             if value is None:
                 value = ""
+
             msg = '%-30s %-40s' % (item["text"], value) 
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
