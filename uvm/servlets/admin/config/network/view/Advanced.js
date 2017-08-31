@@ -16,15 +16,24 @@ Ext.define('Ung.config.network.view.Advanced', {
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
     }],
 
+    listeners: {
+        activate: function (panel) {
+            panel.down('tabpanel').setActiveItem(panel.up('config-network').subTab);
+        }
+    },
+
     items: [{
         xtype: 'tabpanel',
 
-        // tabPosition: 'left',
-        // tabRotation: 0,
-        // tabStretchMax: true,
+        listeners: {
+            beforetabchange: function (tabPanel, card, oldCard) {
+                Ung.app.redirectTo('#config/network/advanced/' + card.getItemId());
+            }
+        },
 
         items: [{
             title: 'Options'.t(),
+            itemId: 'options',
             padding: 10,
             defaults: {
                 xtype: 'checkbox',
@@ -68,7 +77,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'QoS'.t(),
-
+            itemId: 'qos',
             items: [{
                 xtype: 'combo',
                 fieldLabel: 'Queue Discipline'.t(),
@@ -445,6 +454,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }],
         }, {
             title: 'Access Rules'.t(),
+            itemId: 'accessrules',
             layout: 'fit',
 
             items: [{
@@ -472,7 +482,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true},
                     {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
                     {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
-                    
+
                 ],
 
                 emptyRow: {
@@ -549,6 +559,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'UPnP'.t(),
+            itemId: 'upnp',
             layout: 'border',
 
             dockedItems: [{
@@ -731,6 +742,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'DNS & DHCP'.t(),
+            itemId: 'dnsdhcp',
             xtype: 'panel',
             tbar: [{
                 xtype: 'tbtext',
@@ -750,6 +762,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             xtype: 'grid',
+            itemId: 'networkcards',
             title: 'Network Cards'.t(),
 
             bind: '{devices}',
