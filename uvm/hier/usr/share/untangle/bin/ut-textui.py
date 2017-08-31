@@ -80,7 +80,15 @@ class Validate:
         messages = []
         for validator in validators:
             if hasattr(self, validator):
-                message = getattr(self, validator)(value)
+                try:
+                    message = getattr(self, validator)(value)
+                except:
+                    validator_invalid_message = validator + "_invalid_message"
+                    if hasattr(self, validator_invalid_message):
+                        message = getattr(self, validator_invalid_message)
+                    else:
+                        message = "Invalid value"
+
                 if message != True:
                     messages.append(message)
                     if validator == "empty":
@@ -96,16 +104,18 @@ class Validate:
             return "Value must be specified."
         return True
 
+    ip_invalid_message = "Invalid IP address"
     def ip(self, value):
         ip_regex = re.compile(r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
         if re.match(ip_regex, value.strip()) is None:
-            return "Invalid IP address."
+            return self.ip_invalid_message
         return True
 
+    prefix_invalid_message = "Invalid prefix"
     def prefix(self, value):
         ivalue = int(value)
         if ivalue < 0 or ivalue > 32:
-            return "Invalid prefix."
+            return self.prefix_invalid_message
         return True
 
     def username(self, value):
@@ -460,7 +470,7 @@ class Form(Screen):
     multi_mode_confirm_message = "Press [Esc] to continue editing"
 
     def invalid_messages(self, messages):
-        message = "".join(messages)
+        message = ".".join(messages)
         self.stdscreen.hline(self.y_pos - 2, 0, " " , 79)
         self.stdscreen.hline(self.y_pos - 1, 0, " " , 79)
 
@@ -1314,7 +1324,7 @@ class FactoryDefaults(Form):
     }]
 
     confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
-    
+
     def display_form(self):
         self.message("Are you sure you want to RESET ALL SETTINGS to factory defaults?")
         self.y_pos += 1
