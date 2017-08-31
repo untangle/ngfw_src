@@ -54,6 +54,12 @@ class UvmContext:
             sleep(wait)
         raise
 
+    def execute(self, command):
+        """
+        Execute a command and send output to the output screen
+        """
+        self.context.execManager().execResult(command)
+
     def exec_and_get_output(self, command, screen):
         """
         Execute a command and send output to the output screen
@@ -1337,7 +1343,8 @@ class FactoryDefaults(Form):
         "text": "Yes"
     },{
         "text": "No",
-        "action": False
+        "action": False,
+        "default": True
     }]
 
     confirm_message = "Use [Up] and [Down] keys to confirm or cancel operation"
@@ -1352,7 +1359,7 @@ class FactoryDefaults(Form):
         self.window.refresh()
 
         uvm = UvmContext()
-        # Uvm.context.shutdownBox()
+        uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
 
 class suspend_curses():
     """
