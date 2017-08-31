@@ -1278,7 +1278,8 @@ class Upgrade(Form):
             self.y_pos += 1
             self.message("Press any key to continue")
             key = self.window.getch()
-            self.process_continue = False
+            if key != ord('F'):
+                self.process_continue = False
 
     def action_confirm(self):
         self.window.clear()
