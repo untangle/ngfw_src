@@ -1251,7 +1251,7 @@ class Upgrade(Form):
     """
     Upgrade system software
     """
-    title = "Reboot"
+    title = "Upgrade"
 
     confirm_selections = [{
         "text": "Yes"
@@ -1264,7 +1264,21 @@ class Upgrade(Form):
 
     upgrades_available = False
     def display_form(self):
-        self.message("Are you sure you want to upgrade the system?")
+        self.message("Checking for upgrades...")
+        self.window.refresh()
+        uvm = UvmContext()
+        available = uvm.context.systemManager().upgradesAvailable()
+        uvm = None
+        if available:
+            self.message("Upgrades are available")
+            self.y_pos += 1
+            self.message("Are you sure you want to upgrade the system?")
+        else:
+            self.message("No upgrades are available")
+            self.y_pos += 1
+            self.message("Press any key to continue")
+            key = self.window.getch()
+            self.process_continue = False
 
     def action_confirm(self):
         self.window.clear()
