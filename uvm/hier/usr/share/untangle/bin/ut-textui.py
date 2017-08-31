@@ -798,8 +798,7 @@ class AssignInterfaces(Form):
         "validators": ["ip"]
     }]
 
-    # primary/secondary only for WAN
-    static_field_selections = [{
+    static_wan_field_selections = [{
         "text": "Address",
         "key": "v4StaticAddress",
         "validators": ["empty", "ip"]
@@ -820,6 +819,16 @@ class AssignInterfaces(Form):
         "key": "v4StaticDns2",
         "allow_empty": True,
         "validators": ["ip"]
+    }]
+
+    static_nonwan_field_selections = [{
+        "text": "Address",
+        "key": "v4StaticAddress",
+        "validators": ["empty", "ip"]
+    },{
+        "text": "Netmask",
+        "key": "v4StaticPrefix",
+        "validators": ["empty", "prefix"]
     }]
 
     # primary/secondary only if use peer dns =false
@@ -890,7 +899,10 @@ class AssignInterfaces(Form):
             if self.mode_selected_item["addressed"]["value"] == "DHCP":
                 self.mode_items[self.current_mode] = self.dhcp_field_selections
             elif self.mode_selected_item["addressed"]["value"] == "STATIC":
-                self.mode_items[self.current_mode] = self.static_field_selections
+                if self.mode_selected_item['interface']["isWan"] is True:
+                    self.mode_items[self.current_mode] = self.static_wan_field_selections
+                else:
+                    self.mode_items[self.current_mode] = self.static_nonwan_field_selections
             elif self.mode_selected_item["addressed"]["value"] == "PPPOE":
                 self.mode_items[self.current_mode] = self.pppoe_field_selections
         else:
