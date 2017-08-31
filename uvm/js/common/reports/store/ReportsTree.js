@@ -8,6 +8,17 @@ Ext.define('Ung.store.ReportsTree', {
         direction: 'ASC'
     }],
 
+    // initialize the root which will be overriden later
+    root: {
+        text: 'All Reports'.t(),
+        expanded: true,
+        children: [{
+            text: 'Loading...'.t(),
+            icon: 'fa-spinner fa-spin',
+            leaf: true
+        }]
+    },
+
     build: function () {
         var me = this, nodes = [], storeCat, category;
         Ext.Array.each(Ext.getStore('reports').getGroups().items, function (group) {
@@ -46,7 +57,7 @@ Ext.define('Ung.store.ReportsTree', {
         });
 
         me.setRoot({
-            text: 'All reports',
+            text: 'All reports'.t(),
             slug: 'reports',
             expanded: true,
             children: nodes
