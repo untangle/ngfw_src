@@ -66,6 +66,7 @@ Ext.define('Ung.controller.Global', {
             'config': { before: 'detectChanges', action: 'onConfig' },
             'config/:configName': { before: 'detectChanges', action: 'onConfig' },
             'config/:configName/:configView': 'onConfig',
+            'config/:configName/:configView/:subView': 'onConfig',
             'reports': { before: 'detectChanges', action: 'onReports' },
             'reports/:category': { before: 'detectChanges', action: 'onReports' },
             'reports/:category/:entry': { before: 'detectChanges', action: 'onReports' },
@@ -275,7 +276,7 @@ Ext.define('Ung.controller.Global', {
     },
 
 
-    onConfig: function (config, view) {
+    onConfig: function (config, view, subView) {
         var me = this, mainView = me.getMainView();
         mainView.getViewModel().set('activeItem', 'config');
         if (config) {
@@ -296,6 +297,7 @@ Ext.define('Ung.controller.Global', {
                         name: config,
                         itemId: 'configCard',
                         activeTab: view || 0,
+                        subTab: subView || 0,
                         listeners: {
                             deactivate: function () {
                                 // remove the config container
