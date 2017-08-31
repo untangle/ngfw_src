@@ -6,6 +6,12 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
 
     layout: 'fit',
 
+    listeners: {
+        activate: function (panel) {
+            panel.down('tabpanel').setActiveItem(panel.up('config-network').subTab);
+        }
+    },
+
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
@@ -15,8 +21,16 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
 
     items: [{
         xtype: 'tabpanel',
+
+        listeners: {
+            beforetabchange: function (tabPanel, card, oldCard) {
+                Ung.app.redirectTo('#config/network/troubleshooting/' + card.getItemId());
+            }
+        },
+
         items: [{
             xtype: 'networktest',
+            itemId: 'connectivity',
             title: 'Connectivity Test'.t(),
             viewModel: {
                 data: {
@@ -36,6 +50,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'ping',
             title: 'Ping Test'.t(),
 
             commandFields: [{
@@ -60,6 +75,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'dns',
             title: 'DNS Test'.t(),
 
             commandFields: [{
@@ -89,6 +105,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'connection',
             title: 'Connection Test'.t(),
 
             commandFields: [{
@@ -127,6 +144,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'traceroute',
             title: 'Traceroute Test'.t(),
 
             commandFields: [{
@@ -163,6 +181,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'download',
             title: 'Download Test'.t(),
 
             commandFields: [{
@@ -196,6 +215,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             }
         }, {
             xtype: 'networktest',
+            itemId: 'packet',
             title: 'Packet Test'.t(),
 
             commandFields: [{
