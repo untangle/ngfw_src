@@ -736,15 +736,20 @@ class AssignInterfaces(Form):
 
     bridged_selections = []
 
-    addressed_selections = [{
+    addressed_wan_selections = [{
         "text": "DHCP", 
         "value": "DHCP"
     },{
-        "text": "Static", 
+        "text": "Static",
         "value": "STATIC"
     },{
-        "text": "PPPoE", 
+        "text": "PPPoE",
         "value": "PPPOE"
+    }]
+
+    addressed_nonwan_selections = [{
+        "text": "Static",
+        "value": "STATIC"
     }]
 
     # primary/secondary only for WAN
@@ -858,6 +863,12 @@ class AssignInterfaces(Form):
         """
         if self.current_mode == "edit_field":
             self.mode_items[self.current_mode] = self.mode_items[self.modes[self.modes.index(self.current_mode) -1]]
+        elif self.current_mode == "addressed":
+            if self.mode_selected_item['interface']["isWan"] is True:
+                self.mode_items[self.current_mode] = self.addressed_wan_selections
+            else:
+                self.mode_items[self.current_mode] = self.addressed_nonwan_selections
+                self.mode_menu_pos[self.current_mode] = 0
         elif self.current_mode == "edit":
             if self.mode_selected_item["addressed"]["value"] == "DHCP":
                 self.mode_items[self.current_mode] = self.dhcp_field_selections
@@ -897,7 +908,7 @@ class AssignInterfaces(Form):
             address = ''
             if interface["configType"] == "ADDRESSED":
                 addressed = interface["v4ConfigType"]
-                for a in self.addressed_selections:
+                for a in self.addressed_wan_selections:
                     if a["value"] == addressed:
                         addressed = a["text"]
 
@@ -961,7 +972,6 @@ class AssignInterfaces(Form):
         self.y_pos += 1
         msg = '%-12s' % ("Addressed")
         self.display_title( msg )
-        index_adjust = 0
 
         for index, item in enumerate(self.mode_items["addressed"]):
             if show_selected_only is True:
@@ -969,11 +979,7 @@ class AssignInterfaces(Form):
                     continue
                 mode = curses.A_NORMAL
             else: 
-                if self.mode_selected_item['interface']['isWan'] is False and item["value"] != 'STATIC':
-                    index_adjust -= 1
-                    continue
-
-                if index + index_adjust == self.mode_menu_pos[self.current_mode]:
+                if index == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
                     mode = curses.A_NORMAL
@@ -984,11 +990,11 @@ class AssignInterfaces(Form):
             msg = '%-20s' % (item["text"]) 
             if show_selected_only is True:
                 index = 0            
-            self.window.addstr( self.y_pos + index + index_adjust, self.x_pos, msg, mode)
+            self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos += 1
         if show_selected_only is False:
-            self.y_pos = self.y_pos + len(self.mode_items["addressed"]) + index_adjust
+            self.y_pos = self.y_pos + len(self.mode_items["addressed"])
             self.message( "Use [Up] and [Down] keys to select address mode and press [Enter]")
 
     def display_bridged(self, show_selected_only=False):
@@ -1107,7 +1113,7 @@ class AssignInterfaces(Form):
                         self.mode_menu_pos["config"] = index
                 if item["configType"] == "ADDRESSED":
                     self.mode_selected_item["addressed"] = item["v4ConfigType"]
-                    for index, litem in enumerate(self.addressed_selections):
+                    for index, litem in enumerate(self.addressed_wan_selections):
                         if litem["value"] == item["v4ConfigType"]:
                             self.mode_menu_pos["addressed"] = index
 
