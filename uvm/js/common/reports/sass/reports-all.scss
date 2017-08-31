@@ -5,6 +5,10 @@ span.fa:before {
     display: block;
 }
 
+.x-menu-item-icon-default, .x-btn-icon-el {
+    background-size: contain;
+}
+
 .reports-all {
     .charts-bar {
         text-align: center;

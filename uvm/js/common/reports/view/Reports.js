@@ -22,43 +22,34 @@ Ext.define('Ung.view.reports.Reports', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        ui: 'navigation',
         dock: 'top',
-        border: false,
-        hidden: true,
-        bind: {
-            hidden: '{ servlet !== "ADMIN" }'
-        },
         style: {
-            background: '#333435',
             zIndex: 9997
         },
-        defaults: {
-            xtype: 'button',
-            border: false,
-            hrefTarget: '_self'
-        },
-        items: Ext.clone(Util.subNav)
 
-        // to do investigate breadcrumbs
-        // items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-        //     xtype: 'breadcrumb',
-        //     reference: 'breadcrumb',
-        //     defaults: {
-        //         border: false
-        //     },
-        //     listeners: {
-        //         selectionchange: function (el, node) {
-        //             if (node) {
-        //                 if (node.get('url')) {
-        //                     Ung.app.redirectTo('#reports/' + node.get('url'));
-        //                 } else {
-        //                     Ung.app.redirectTo('#reports');
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }])
+        padding: 5,
+        plugins: 'responsive',
+        items: [{
+            xtype: 'breadcrumb',
+            reference: 'breadcrumb',
+            store: 'reportstree',
+            listeners: {
+                selectionchange: function (el, node) {
+                    if (!node.get('slug')) { return; }
+                    if (node) {
+                        if (node.get('url')) {
+                            Ung.app.redirectTo('#reports/' + node.get('url'));
+                        } else {
+                            Ung.app.redirectTo('#reports');
+                        }
+                    }
+                }
+            }
+        }],
+        responsiveConfig: {
+            wide: { hidden: true },
+            tall: { hidden: false }
+        }
     }],
 
     items: [{
@@ -72,7 +63,7 @@ Ext.define('Ung.view.reports.Reports', {
         // singleExpand: true,
         useArrows: true,
         rootVisible: false,
-
+        plugins: 'responsive',
         store: 'reportstree',
 
         viewConfig: {
@@ -122,6 +113,11 @@ Ext.define('Ung.view.reports.Reports', {
 
         listeners: {
             beforeselect: 'beforeSelectReport'
+        },
+
+        responsiveConfig: {
+            wide: { hidden: false },
+            tall: { hidden: true }
         }
     }, {
         region: 'center',

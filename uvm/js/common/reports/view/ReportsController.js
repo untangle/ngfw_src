@@ -69,6 +69,8 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         if (!success) { console.log('error'); return; }
 
+        me.lookup('breadcrumb').setSelection(node); // select node in breadcrumb
+
         if (node.isLeaf()) {
             // report node
             record = Ext.getStore('reports').findRecord('url', node.get('url'));
