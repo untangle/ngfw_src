@@ -17,6 +17,36 @@ Ext.define('Ung.view.Main', {
             hrefTarget: '_self',
             href: '#'
         }]
+    }, {
+        xtype: 'toolbar',
+        dock: 'top',
+        style: {
+            zIndex: 9997
+        },
+
+        padding: 5,
+        plugins: 'responsive',
+        items: [{
+            xtype: 'breadcrumb',
+            reference: 'breadcrumb',
+            store: 'reportstree',
+            listeners: {
+                selectionchange: function (el, node) {
+                    if (!node.get('slug')) { return; }
+                    if (node) {
+                        if (node.get('url')) {
+                            Ung.app.redirectTo('#' + node.get('url'));
+                        } else {
+                            Ung.app.redirectTo('#');
+                        }
+                    }
+                }
+            }
+        }],
+        responsiveConfig: {
+            wide: { hidden: true },
+            tall: { hidden: false }
+        }
     }]
 });
 

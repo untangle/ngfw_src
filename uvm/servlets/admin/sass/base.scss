@@ -20,6 +20,10 @@ cite {
     max-width: calc(100% - 15px);
 }
 
+.x-btn-icon-el {
+    background-size: contain;
+}
+
 .x-panel-navigation {
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     z-index: 999;
