@@ -5,6 +5,8 @@ package com.untangle.app.application_control;
 
 import java.util.LinkedList;
 import java.util.Hashtable;
+import java.util.Comparator;
+import java.text.Collator;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
@@ -25,13 +27,13 @@ public class ApplicationControlProtoList
     /*
      * The following insanity was created to allow changes and additions to the
      * Vineyard protocol list to be incorporated in the list of protocols that
-     * are saved in the app settings. First we look for protocols that have
-     * been removed from vineyard and remove them from our working list. Then we
-     * look for new protocols added to Vineyard that we don't know about and add
-     * them to our working list. In the middle of all of this we look for
-     * differences between our rules and the vineyard rules so we can pull in
-     * any chages to name, description, category, etc.  We use a counter to
-     * keep track of differences so we can return null if nothing changed.
+     * are saved in the app settings. First we look for protocols that have been
+     * removed from vineyard and remove them from our working list. Then we look
+     * for new protocols added to Vineyard that we don't know about and add them
+     * to our working list. In the middle of all of this we look for differences
+     * between our rules and the vineyard rules so we can pull in any chages to
+     * name, description, category, etc. We use a counter to keep track of
+     * differences so we can return null if nothing changed.
      */
 
     public LinkedList<ApplicationControlProtoRule> mergeProtoList(LinkedList<ApplicationControlProtoRule> loadedList)
@@ -104,8 +106,18 @@ public class ApplicationControlProtoList
         }
 
         // if nothing changed just return null
-        if (changeCount == 0) return(null);
-        
+        if (changeCount == 0) return (null);
+
+        // sort the new and improved protocol list by name
+        masterList.sort(new Comparator<ApplicationControlProtoRule>()
+        {
+            @Override
+            public int compare(ApplicationControlProtoRule r1, ApplicationControlProtoRule r2)
+            {
+                return Collator.getInstance().compare(r1.getName(), r2.getName());
+            }
+        });
+
         // return the new and improved protocol list
         return (masterList);
     }
