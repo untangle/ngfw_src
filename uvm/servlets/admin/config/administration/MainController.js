@@ -229,16 +229,19 @@ Ext.define('Ung.config.administration.MainController', {
             Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
         ], this).then(function() {
-            me.loadAdmin();
-            me.loadCertificates();
-            // window.location.reload();
-            Util.successToast('Administration'.t() + ' settings saved!');
-            Ext.fireEvent('resetfields', view);
+            // add 3 seconds timeout to avoid exception
+            setTimeout(function () {
+                me.loadAdmin();
+                me.loadCertificates();
+                Util.successToast('Administration'.t() + ' settings saved!');
+                Ext.fireEvent('resetfields', view);
+                view.setLoading(false);
+            }, 3000);
+
         }, function(ex) {
+            view.setLoading(false);
             console.error(ex);
             Util.handleException(ex);
-        }).always(function() {
-            view.setLoading(false);
         });
     },
 
