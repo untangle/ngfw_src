@@ -50,7 +50,7 @@ Ext.define('Ung.util.Util', {
         'wan-balancer': 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t(),
         'ipsec-vpn': 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t(),
         'openvpn': 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t(),
-        'tunnel-vpn': 'Tunnel VPN provides secure and private internet through encrypted tunnel to remote secure internet providers.'.t(),
+        'tunnel-vpn': 'Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services.'.t(),
         'intrusion-prevention': 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t(),
         'configuration-backup': 'Configuration Backup automatically creates backups of settings uploads them to My Account and Google Drive.'.t(),
         'branding-manager': 'The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).'.t(),
