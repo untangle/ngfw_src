@@ -180,6 +180,9 @@ public class TunnelVpnManager
     public List<JSONObject> getTunnelStates()
     {
         List<JSONObject> states = new LinkedList<JSONObject>();
+
+        if ( app.getSettings() == null || app.getSettings.getTunnels() == null )
+            return;
         
         try {
             for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
