@@ -181,7 +181,7 @@ public class TunnelVpnManager
     {
         List<JSONObject> states = new LinkedList<JSONObject>();
 
-        if ( app.getSettings() == null || app.getSettings.getTunnels() == null )
+        if ( app.getSettings() == null || app.getSettings().getTunnels() == null )
             return states;
         
         try {
