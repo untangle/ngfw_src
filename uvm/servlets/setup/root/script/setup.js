@@ -1338,7 +1338,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         }
 
 
-        // BRIDGED case
+        // BRIDGED (bridge mode)
         if (vm.get('nonWan.configType') === 'BRIDGED') {
             if (window.location.hostname === vm.get('nonWan.v4StaticAddress')) {
                 // get firstWan settings & status
@@ -1346,29 +1346,31 @@ Ext.define('Ung.Setup.InternalNetworkController', {
                     return intf.isWan && intf.configType !== 'DISABLED';
                 });
 
+                // if we found the first WAN
                 if (firstWan && firstWan.interfaceId) {
                     try {
                         firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
                     } catch (e) {
                         Util.handleException(e);
                     }
-
+                    // and the first WAN has a address
                     if (firstWanStatus.v4Address) {
                         //Use Internal Address instead of External Address
                         newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);
                         rpc.keepAlive = function () {}; // prevent keep alive
                         Ext.defer(function () {
                             Ext.MessageBox.confirm('Redirect to the new setup address?'.t(),
-                                Ext.String.format('When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}'.t(), firstWanStatus.v4Address) + '<br/><br/>' +
-                                Ext.String.format('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                                'Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'.t(),
-                                function (btn) {
-                                    if (btn == 'yes') {
-                                        window.location.href = newSetupLocation;
-                                    } else {
-                                        rpc.tolerateKeepAliveExceptions = false;
-                                    }
-                                });
+                                                   Ext.String.format('This change will alter the internal IP address and the setup wizard is no longer accessible using the Internal Address. Instead it could be accessible using the External Address: {0}'.t(), firstWanStatus.v4Address) + '<br/><br/>' +
+                                                   Ext.String.format('To redirect to the new setup address: {0} press Yes.'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
+                                                   'To continue setup using the current address click No, but setup might no longer be accessible.'.t(),
+                                                   function (btn) {
+                                                       if (btn == 'yes') {
+                                                           console.log("Redirecting to " + newSetupLocation);
+                                                           window.location.href = newSetupLocation;
+                                                       } else {
+                                                           rpc.tolerateKeepAliveExceptions = false;
+                                                       }
+                                                   });
                         }, 5000);
                     }
                 }
@@ -1377,50 +1379,20 @@ Ext.define('Ung.Setup.InternalNetworkController', {
             rpc.networkManager.setNetworkSettings(function (result, ex) {
                 Ung.app.loading(false);
                 if (ex) { Util.handleException(ex); return; }
-                console.log('OK');
+                cb();
             }, vm.get('networkSettings'));
-        } else { // non BRIDGED case (ADDRESSED)
+        } else { // ADDRESSED (router)
             vm.set('nonWan.dhcpRangeStart', null);
             vm.set('nonWan.dhcpRangeEnd', null);
             if (window.location.hostname !== 'localhost') {
-                if (me.initialConfigType === 'BRIDGED') {
-                    //If the Transparent Bridge mode was used, test if the external address was used, and offer to redirect Internal address
-                    firstWan = Ext.Array.findBy(vm.get('networkSettings').interfaces.list, function (intf) {
-                        return intf.isWan && intf.configType !== 'DISABLED';
-                    });
-                    if (firstWan && firstWan.interfaceId) {
-                        try {
-                            firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
-                        } catch (e) {
-                            Util.handleException(e);
-                        }
-                        if (window.location.hostname === firstWanStatus.v4Address) {
-                            // Use External Address instead of Internal Address
-                            newSetupLocation = window.location.href.replace(firstWanStatus.v4Address, vm.get('nonWan.v4StaticAddress'));
-                            rpc.tolerateKeepAliveExceptions = true; // prevent keep alive exceptions
-                            Ext.defer(function () {
-                                Ext.MessageBox.confirm('Redirect to the new setup address?'.t(),
-                                    Ext.String.format('When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}'.t(), vm.get('nonWan.v4StaticAddress')) + '<br/><br/>' +
-                                    Ext.String.format('If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                                    'Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.'.t(),
-                                    function (btn) {
-                                        if (btn == 'yes') {
-                                            window.location.href = newSetupLocation;
-                                        } else {
-                                            rpc.tolerateKeepAliveExceptions = false;
-                                        }
-                                    });
-                            }, 5000);
-                        }
-                    }
-                } else if (window.location.hostname == me.initialv4Address && me.initialv4Address != vm.get('nonWan.v4StaticAddress')) {
+                if (window.location.hostname == me.initialv4Address && me.initialv4Address != vm.get('nonWan.v4StaticAddress')) {
                     //If using internal address and it is changed in this step redirect to new internal address
                     newSetupLocation = window.location.href.replace(me.initialv4Address, vm.get('nonWan.v4StaticAddress'));
                     rpc.keepAlive = function () {}; // prevent keep alive
                     Ext.MessageBox.wait('Saving Internal Network Settings'.t() + '<br/><br/>' +
-                        Ext.String.format('The Internal Address is changed to: {0}'.t(), vm.get('nonWan.v4StaticAddress')) + '<br/>' +
-                        Ext.String.format('The changes are applied and you will be redirected to the new setup address: {0}'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                        'If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again.'.t(), 'Please Wait'.t());
+                                        Ext.String.format('The Internal Address is changed to: {0}'.t(), vm.get('nonWan.v4StaticAddress')) + '<br/>' +
+                                        Ext.String.format('The changes are applied and you will be redirected to the new setup address: {0}'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
+                                        'If the new location is not loaded after 30 seconds please reinitialize your local network address and try again.'.t(), 'Please Wait'.t());
                     Ext.defer(function () {
                         window.location.href = newSetupLocation;
                     }, 30000);
@@ -1430,8 +1402,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
             rpc.networkManager.setNetworkSettings(function (result, ex) {
                 Ung.app.loading(false);
                 if (ex) { Util.handleException(ex); return; }
-                // if not going through above alerts just move to next step
-                if (window.location.hostname === 'localhost') { cb(); }
+                cb();
             }, vm.get('networkSettings'));
         }
     }
