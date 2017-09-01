@@ -1375,18 +1375,18 @@ Ext.define('Ung.Setup.InternalNetworkController', {
     
     save: function (cb) {
         var me = this, form = me.getView(), vm = me.getViewModel(), newSetupLocation;
+
+        // if settings are invalid do not save
         if (!form.isValid()) { return; }
 
-        if ( // no changes made
-            me.initialConfigType === vm.get('nonWan.configType') &&
-            me.initialv4Address === vm.get('nonWan.v4StaticAddress') &&
-            me.initialv4Prefix === vm.get('nonWan.v4StaticPrefix') &&
-            me.initialDhcpEnabled === vm.get('nonWan.dhcpEnabled')
-        ) {
+        // no changes made
+        if ( me.initialConfigType === vm.get('nonWan.configType') &&
+             me.initialv4Address === vm.get('nonWan.v4StaticAddress') &&
+             me.initialv4Prefix === vm.get('nonWan.v4StaticPrefix') &&
+             me.initialDhcpEnabled === vm.get('nonWan.dhcpEnabled')) {
             cb();
             return;
         }
-
 
         // BRIDGED (bridge mode)
         if (vm.get('nonWan.configType') === 'BRIDGED') {
@@ -1394,12 +1394,6 @@ Ext.define('Ung.Setup.InternalNetworkController', {
             if (window.location.hostname === vm.get('nonWan.v4StaticAddress')) {
                 me.warnAboutDisappearingAddress();
             }
-            Ung.app.loading('Saving Internal Network Settings'.t());
-            rpc.networkManager.setNetworkSettings(function (result, ex) {
-                Ung.app.loading(false);
-                if (ex) { Util.handleException(ex); return; }
-                cb();
-            }, vm.get('networkSettings'));
         } else { // ADDRESSED (router)
             vm.set('nonWan.dhcpRangeStart', null);
             vm.set('nonWan.dhcpRangeEnd', null);
@@ -1407,13 +1401,15 @@ Ext.define('Ung.Setup.InternalNetworkController', {
             if (window.location.hostname == me.initialv4Address && me.initialv4Address != vm.get('nonWan.v4StaticAddress')) {
                 me.warnAboutChangingAddress();
             }
-            Ung.app.loading('Saving Internal Network Settings'.t());
-            rpc.networkManager.setNetworkSettings(function (result, ex) {
-                Ung.app.loading(false);
-                if (ex) { Util.handleException(ex); return; }
-                cb();
-            }, vm.get('networkSettings'));
         }
+
+        // save settings and continue to next step
+        Ung.app.loading('Saving Internal Network Settings'.t());
+        rpc.networkManager.setNetworkSettings(function (result, ex) {
+            Ung.app.loading(false);
+            if (ex) { Util.handleException(ex); return; }
+            cb();
+        }, vm.get('networkSettings'));
     }
 
 });
