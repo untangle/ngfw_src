@@ -142,7 +142,11 @@ public class TunnelVpnApp extends AppBase
         syncToSystem((this.getRunState() == AppSettings.AppState.RUNNING));
 
         if (networkSettingsChanged) {
-            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            try {
+                UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            } catch (Exception e) {
+                logger.warn("Failed to save network settings",e);
+            }
             // processes will be automatically restarted after this is complete by the network settings hook
         } else {
             // restart tunnels
