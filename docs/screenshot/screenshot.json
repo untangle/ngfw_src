@@ -516,6 +516,19 @@
         "type": "remove_nav"
 
     },{
+        "url": "/admin/index.do#apps/1/tunnel-vpn/status",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/tunnel-vpn/tunnels",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/tunnel-vpn/rules",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/tunnel-vpn/log",
+        "type": "remove_nav"
+
+    },{
         "url": "/admin/index.do#apps/1/intrusion-prevention/status",
         "type": "remove_nav"
     },{
