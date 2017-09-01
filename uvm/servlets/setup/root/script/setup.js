@@ -1322,9 +1322,59 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         }
     },
 
+    warnAboutDisappearingAddress: function() {
+        var me = this, form = me.getView(), vm = me.getViewModel();
+        var firstWan, firstWanStatus, newSetupLocation;
+
+        // get firstWan settings & status
+        firstWan = Ext.Array.findBy(vm.get('networkSettings').interfaces.list, function (intf) {
+            return intf.isWan && intf.configType !== 'DISABLED';
+        });
+
+        // firstWan must exist
+        if (!firstWan || !firstWan.interfaceId)
+            return;
+
+        try {
+            firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
+        } catch (e) {
+            Util.handleException(e);
+        }
+
+        // and the first WAN has a address
+        if (!firstWanStatus || !firstWanStatus.v4Address)
+            return;
+        
+        //Use Internal Address instead of External Address
+        newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);
+        rpc.keepAlive = function () {}; // prevent keep alive
+        Ext.MessageBox.wait('Saving Internal Network Settings'.t() + '<br/><br/>' +
+                            'The Internal Address is no longer accessible.'.t() + '<br/>' +
+                            Ext.String.format('You will be redirected to the new setup address: {0}'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
+                            'If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again.'.t(), 'Please Wait'.t());
+        Ext.defer(function () {
+            window.location.href = newSetupLocation;
+        }, 30000);
+    },
+
+    warnAboutChangingAddress: function() {
+        var me = this, form = me.getView(), vm = me.getViewModel();
+        var newSetupLocation;
+
+        newSetupLocation = window.location.href.replace(me.initialv4Address, vm.get('nonWan.v4StaticAddress'));
+        rpc.keepAlive = function () {}; // prevent keep alive
+        Ext.MessageBox.wait('Saving Internal Network Settings'.t() + '<br/><br/>' +
+                            Ext.String.format('The Internal Address is changed to: {0}'.t(), vm.get('nonWan.v4StaticAddress')) + '<br/>' +
+                            Ext.String.format('The changes are applied and you will be redirected to the new setup address: {0}'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
+                            'If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again.'.t(), 'Please Wait'.t());
+        Ext.defer(function () {
+            window.location.href = newSetupLocation;
+        }, 30000);
+        
+    },
+    
     save: function (cb) {
-        var me = this, form = me.getView(), vm = me.getViewModel(),
-            firstWan, firstWanStatus, newSetupLocation;
+        var me = this, form = me.getView(), vm = me.getViewModel(), newSetupLocation;
         if (!form.isValid()) { return; }
 
         if ( // no changes made
@@ -1340,40 +1390,9 @@ Ext.define('Ung.Setup.InternalNetworkController', {
 
         // BRIDGED (bridge mode)
         if (vm.get('nonWan.configType') === 'BRIDGED') {
+            //If using internal address - redirect to external since internal address is vanishing
             if (window.location.hostname === vm.get('nonWan.v4StaticAddress')) {
-                // get firstWan settings & status
-                firstWan = Ext.Array.findBy(vm.get('networkSettings').interfaces.list, function (intf) {
-                    return intf.isWan && intf.configType !== 'DISABLED';
-                });
-
-                // if we found the first WAN
-                if (firstWan && firstWan.interfaceId) {
-                    try {
-                        firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
-                    } catch (e) {
-                        Util.handleException(e);
-                    }
-                    // and the first WAN has a address
-                    if (firstWanStatus.v4Address) {
-                        //Use Internal Address instead of External Address
-                        newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);
-                        rpc.keepAlive = function () {}; // prevent keep alive
-                        Ext.defer(function () {
-                            Ext.MessageBox.confirm('Redirect to the new setup address?'.t(),
-                                                   Ext.String.format('This change will alter the internal IP address and the setup wizard is no longer accessible using the Internal Address. Instead it could be accessible using the External Address: {0}'.t(), firstWanStatus.v4Address) + '<br/><br/>' +
-                                                   Ext.String.format('To redirect to the new setup address: {0} press Yes.'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                                                   'To continue setup using the current address click No, but setup might no longer be accessible.'.t(),
-                                                   function (btn) {
-                                                       if (btn == 'yes') {
-                                                           console.log("Redirecting to " + newSetupLocation);
-                                                           window.location.href = newSetupLocation;
-                                                       } else {
-                                                           rpc.tolerateKeepAliveExceptions = false;
-                                                       }
-                                                   });
-                        }, 5000);
-                    }
-                }
+                me.warnAboutDisappearingAddress();
             }
             Ung.app.loading('Saving Internal Network Settings'.t());
             rpc.networkManager.setNetworkSettings(function (result, ex) {
@@ -1384,19 +1403,9 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         } else { // ADDRESSED (router)
             vm.set('nonWan.dhcpRangeStart', null);
             vm.set('nonWan.dhcpRangeEnd', null);
-            if (window.location.hostname !== 'localhost') {
-                if (window.location.hostname == me.initialv4Address && me.initialv4Address != vm.get('nonWan.v4StaticAddress')) {
-                    //If using internal address and it is changed in this step redirect to new internal address
-                    newSetupLocation = window.location.href.replace(me.initialv4Address, vm.get('nonWan.v4StaticAddress'));
-                    rpc.keepAlive = function () {}; // prevent keep alive
-                    Ext.MessageBox.wait('Saving Internal Network Settings'.t() + '<br/><br/>' +
-                                        Ext.String.format('The Internal Address is changed to: {0}'.t(), vm.get('nonWan.v4StaticAddress')) + '<br/>' +
-                                        Ext.String.format('The changes are applied and you will be redirected to the new setup address: {0}'.t(), '<a href="' + newSetupLocation + '">' + newSetupLocation + '</a>') + '<br/><br/>' +
-                                        'If the new location is not loaded after 30 seconds please reinitialize your local network address and try again.'.t(), 'Please Wait'.t());
-                    Ext.defer(function () {
-                        window.location.href = newSetupLocation;
-                    }, 30000);
-                }
+            //If using internal address and it is changed in this step redirect to new internal address
+            if (window.location.hostname == me.initialv4Address && me.initialv4Address != vm.get('nonWan.v4StaticAddress')) {
+                me.warnAboutChangingAddress();
             }
             Ung.app.loading('Saving Internal Network Settings'.t());
             rpc.networkManager.setNetworkSettings(function (result, ex) {
