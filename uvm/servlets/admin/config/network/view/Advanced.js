@@ -454,7 +454,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }],
         }, {
             title: 'Access Rules'.t(),
-            itemId: 'accessrules',
+            itemId: 'access_rules',
             layout: 'fit',
 
             items: [{
@@ -742,7 +742,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'DNS & DHCP'.t(),
-            itemId: 'dnsdhcp',
+            itemId: 'dns_and_dhcp',
             xtype: 'panel',
             tbar: [{
                 xtype: 'tbtext',
@@ -762,7 +762,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             xtype: 'grid',
-            itemId: 'networkcards',
+            itemId: 'network_cards',
             title: 'Network Cards'.t(),
 
             bind: '{devices}',
