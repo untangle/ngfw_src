@@ -1307,7 +1307,6 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         me.initialv4Address = nonWan.v4StaticAddress;
         me.initialv4Prefix = nonWan.v4StaticPrefix;
         me.initialDhcpEnabled = nonWan.dhcpEnabled;
-
     },
 
     setConfigType: function (radio) {
@@ -1379,7 +1378,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         // if settings are invalid do not save
         if (!form.isValid()) { return; }
 
-        // no changes made
+        // no changes made - continue to next step
         if ( me.initialConfigType === vm.get('nonWan.configType') &&
              me.initialv4Address === vm.get('nonWan.v4StaticAddress') &&
              me.initialv4Prefix === vm.get('nonWan.v4StaticPrefix') &&
@@ -1395,6 +1394,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
                 me.warnAboutDisappearingAddress();
             }
         } else { // ADDRESSED (router)
+            // set these to null so new values will automatically be calculated based on current address
             vm.set('nonWan.dhcpRangeStart', null);
             vm.set('nonWan.dhcpRangeEnd', null);
             //If using internal address and it is changed in this step redirect to new internal address
