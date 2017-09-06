@@ -71,4 +71,7 @@ rm -rf /usr/share/untangle/lib/untangle-node-ips
 rm -rf /usr/share/untangle/lib/untangle-node-web-filter-lite
 rm -f /var/log/uvm/node*
 
+# 13.1 upgrade
+sed -e 's/stable-130\s/stable-131 /g' -i /etc/apt/sources.list.d/untangle.list
+
 exit 0
