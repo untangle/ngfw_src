@@ -74,4 +74,7 @@ rm -f /var/log/uvm/node*
 # 13.1 upgrade
 sed -e 's/stable-130\s/stable-131 /g' -i /etc/apt/sources.list.d/untangle.list
 
+# 13.2 upgrade
+sed -e 's/stable-131\s/stable-132 /g' -i /etc/apt/sources.list.d/untangle.list
+
 exit 0
