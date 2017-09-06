@@ -102,11 +102,11 @@ Ext.define('Ung.view.main.Main', {
             text: 'Support'.t(),
             iconCls: 'fa fa-life-ring',
             handler: 'supportHandler',
-            href: '#support',
+            // href: '#support',
             hidden: true,
             bind: {
                 userCls: '{activeItem === "support" ? "pressed" : ""}',
-                hidden: '{!supportInstalled}'
+                hidden: '{!liveSupport}'
             },
             responsiveConfig: { 'width >= 768': { text: 'Support'.t(), tooltip: '' }, 'width < 768': { text: '', tooltip: 'Support'.t() } }
         }, {
