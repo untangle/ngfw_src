@@ -126,27 +126,31 @@ Ext.define('Ung.view.main.MainController', {
         me.setLiveSupport();
     },
 
-    setLiveSupport: function(){
-        var me = this,
-            view = me.getView(),
-            vm = view.getViewModel();
-
-        var supportInstalled = ( rpc.appManager.app('live-support') !== null );
-        if( vm.get('supportInstalled') != supportInstalled ){
-            vm.set('supportInstalled', supportInstalled);
-            vm.notify();
-        }
+    setLiveSupport: function() {
+        this.getViewModel().set('liveSupport', rpc.appManager.app('live-support') !== null);
     },
 
     helpHandler: function (btn) {
         var helpUrl = rpc.helpUrl + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout();
         window.open(helpUrl);
     },
+
     supportHandler: function (btn) {
-        var fragment = window.location.hash;
-        var supportView = Ext.create('Ung.view.main.Support', {
-            'fragment': fragment
-        });
-        supportView.show();
+        var me = this;
+        // check here if support is enabled and show modal only if not, otherwise open support window
+        if (rpc.systemManager.getSettings().supportEnabled) {
+            me.supportLaunch();
+        } else {
+            me.getView().add({ xtype: 'support' }).show();
+        }
+    },
+
+    supportLaunch: function () {
+        var supportUrl = Util.getStoreUrl() + '?action=support&' + Util.getAbout() + '&fragment=' + window.location.hash.substr(1) + '&line=ngfw';
+        var user = rpc.adminManager.getSettings().users.list[0];
+        if (user) {
+            supportUrl += '&email=' + user.emailAddress;
+        }
+        window.open(supportUrl);
     }
 });
