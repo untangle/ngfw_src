@@ -494,7 +494,7 @@ Ext.define('Ung.Setup.ServerSettings', {
             if (!form.isValid()) { return; }
 
             Ung.app.loading('Saving Settings'.t());
-            // rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
+            rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext; // to avoid invalid security nonce
 
             // set timezone
             if (rpc.timezoneID !== values.timezone) {
@@ -1343,7 +1343,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         // and the first WAN has a address
         if (!firstWanStatus || !firstWanStatus.v4Address)
             return;
-        
+
         //Use Internal Address instead of External Address
         newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);
         rpc.keepAlive = function () {}; // prevent keep alive
@@ -1369,9 +1369,9 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         Ext.defer(function () {
             window.location.href = newSetupLocation;
         }, 30000);
-        
+
     },
-    
+
     save: function (cb) {
         var me = this, form = me.getView(), vm = me.getViewModel(), newSetupLocation;
 
