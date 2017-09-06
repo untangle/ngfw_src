@@ -24,7 +24,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean neverWriteConfig = false;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
-    private String virtualNetworkPool = "198.51.100.0/24";   // used for GRE
+    private String virtualNetworkPool = "198.51.100.0/24";  // used for GRE
     private String virtualAddressPool = "198.18.0.0/16";    // used for L2TP
     private String virtualXauthPool = "198.19.0.0/16";      // used for XAUTH
     private String virtualSecret = "Please_Change_Me";
@@ -32,6 +32,8 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private String virtualDnsTwo = "";
     private String charonDebug = "";
     private String uniqueIds = "yes";
+    private String phase1DefaultLifetime = "8h";
+    private String phase2DefaultLifetime = "1h";
 
     public IpsecVpnSettings()
     {
@@ -86,6 +88,12 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public String getUniqueIds() { return(uniqueIds); }
     public void setUniqueIds(String uniqueIds) { this.uniqueIds = uniqueIds; }
+
+    public String getPhase1DefaultLifetime() { return(phase1DefaultLifetime); }
+    public void setPhase1DefaultLifetime(String argString) { this.phase1DefaultLifetime = argString; }
+
+    public String getPhase2DefaultLifetime() { return(phase2DefaultLifetime); }
+    public void setPhase2DefaultLifetime(String argString) { this.phase2DefaultLifetime = argString; }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
