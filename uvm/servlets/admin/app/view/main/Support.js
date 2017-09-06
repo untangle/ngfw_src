@@ -8,12 +8,6 @@ Ext.define('Ung.view.main.Support', {
     helpSource: 'support',
 
     controller: 'support',
-    viewModel: {
-        data: {
-            error: null,
-            enableSupport: false
-        }
-    },
 
     modal: true,
     closable: false,
@@ -28,10 +22,6 @@ Ext.define('Ung.view.main.Support', {
 
     defaults: {
         border: false
-    },
-
-    bind:{
-        hidden: '{enableSupport == false}'
     },
 
     items: [{
@@ -61,7 +51,7 @@ Ext.define('Ung.view.main.Support', {
             cls: 'welcome',
             padding: 10,
             html: '<h3>' + 'Remote Support Access is not enabled'.t() + '</h3>' +
-                '<p>' + 'Enabling remote support access is recommended for better and fast support.'.t() + '</p>' + 
+                '<p>' + 'Enabling remote support access is recommended for better and fast support.'.t() + '</p>' +
                 '<p>' + 'Would you like enable the support team to access your server remotely?'.t() + '</p>'
         }]
     }]
