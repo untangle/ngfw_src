@@ -38,12 +38,17 @@ importZip()
 
     unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
 
-    CONF_FILE="`ls ${TMPDIR}/untangle-vpn/*.conf`"
-    if [ ! -f $CONF_FILE ] ; then
-        echo "Unknown format: Missing conf file"
+    CONF_FILE=""
+    if [ ! -f "$CONF_FILE" ] ; then
+        CONF_FILE="`find ${TMPDIR} -type f -name '*.conf'`"
+    fi
+    if [ ! -f "$CONF_FILE" ] ; then
+        CONF_FILE="`find ${TMPDIR} -type f -name '*.ovpn'`"
+    fi
+    if [ ! -f "$CONF_FILE" ] ; then
+        echo "Unknown format: Missing conf/ovpn file"
         cleanup 1
     fi
-
 }
 
 importOvpn()
@@ -64,6 +69,8 @@ if [ "$provider" == "Untangle" ] ; then
 elif [ "$provider" == "NordVPN" ] ; then
     importOvpn
 elif [ "$provider" == "ExpressVPN" ] ; then
+    importOvpn
+elif [ "$provider" == "PrivateInternetAccess" ] ; then
     importOvpn
 elif [ "$provider" == "CustomZip" ] ; then
     importZip
