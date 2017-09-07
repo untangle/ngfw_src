@@ -214,7 +214,7 @@ Ext.define('Ung.cmp.Grid', {
             }, this ) );
         }
 
-        if (this.recordActions) {
+        if (this.recordActions && me.initialConfig.actionColumnsAdded !== true) {
             for (i = 0; i < this.recordActions.length; i += 1) {
                 var action = this.recordActions[i];
                 if (action === 'changePassword') {
@@ -310,17 +310,19 @@ Ext.define('Ung.cmp.Grid', {
                     });
                 }
             }
-        }
 
-        // attach actioncolumns to initialConfig.columns
-        Ext.Array.each(columns, function (col) {
-            if (col.xtype === 'actioncolumn') {
-                if(!me.initialConfig.columns){
-                    me.initialConfig.columns = [];
+            // attach actioncolumns to initialConfig.columns
+            Ext.Array.each(columns, function (col) {
+                if (col.xtype === 'actioncolumn') {
+                    if(!me.initialConfig.columns){
+                        me.initialConfig.columns = [];
+                    }
+                    me.initialConfig.columns.push(col);
                 }
-                me.initialConfig.columns.push(col);
-            }
-        });
+            });
+
+            me.initialConfig.actionColumnsAdded = true;
+        }
 
         Ext.apply(this, {
             columns: columns,
