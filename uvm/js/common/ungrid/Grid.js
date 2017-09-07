@@ -214,11 +214,18 @@ Ext.define('Ung.cmp.Grid', {
             }, this ) );
         }
 
-        if (this.recordActions && me.initialConfig.actionColumnsAdded !== true) {
+        if (this.recordActions &&
+            (me.initialConfig.actionColumnsAdded !== true) ){
+
+            if(!me.initialConfig.columns){
+                me.initialConfig.columns = me.columns;
+            }
+            var initialConfigColumns = Ext.clone(me.initialConfig.columns);
+            var column;
             for (i = 0; i < this.recordActions.length; i += 1) {
                 var action = this.recordActions[i];
                 if (action === 'changePassword') {
-                    columns.push({
+                    column = {
                         xtype: 'actioncolumn',
                         width: 120,
                         header: 'Change Password'.t(),
@@ -229,10 +236,12 @@ Ext.define('Ung.cmp.Grid', {
                         menuDisabled: true,
                         hideable: false,
                         handler: 'changePassword'
-                    });
+                    };
+                    columns.push(column);
+                    initialConfigColumns.push(column);
                 }
                 if (action === 'edit') {
-                    columns.push({
+                    column = {
                         xtype: 'actioncolumn',
                         width: 60,
                         header: 'Edit'.t(),
@@ -246,10 +255,12 @@ Ext.define('Ung.cmp.Grid', {
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
                             return record.get('readOnly') || false;
                         }
-                    });
+                    };
+                    columns.push(column);
+                    initialConfigColumns.push(column);
                 }
                 if (action === 'copy') {
-                    columns.push({
+                    column = {
                         xtype: 'actioncolumn',
                         width: 60,
                         header: 'Copy'.t(),
@@ -260,10 +271,12 @@ Ext.define('Ung.cmp.Grid', {
                         handler: 'copyRecord',
                         menuDisabled: true,
                         hideable: false,
-                    });
+                    };
+                    columns.push(column);
+                    initialConfigColumns.push(column);
                 }
                 if (action === 'delete') {
-                    columns.push({
+                    column = {
                         xtype: 'actioncolumn',
                         width: 60,
                         header: 'Delete'.t(),
@@ -277,7 +290,9 @@ Ext.define('Ung.cmp.Grid', {
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
                             return record.get('readOnly') || false;
                         }
-                    });
+                    };
+                    columns.push(column);
+                    initialConfigColumns.push(column);
                 }
 
                 if (action === 'reorder') {
@@ -294,7 +309,7 @@ Ext.define('Ung.cmp.Grid', {
                             }
                         }
                     });
-                    columns.unshift({
+                    column = {
                         xtype: 'gridcolumn',
                         header: '<i class="fa fa-sort"></i>',
                         align: 'center',
@@ -307,22 +322,17 @@ Ext.define('Ung.cmp.Grid', {
                         renderer: function() {
                             return '<i class="fa fa-arrows" style="cursor: move;"></i>';
                         },
-                    });
+                    };
+                    columns.unshift(column);
+                    initialConfigColumns.unshift(column);
                 }
             }
 
-            // attach actioncolumns to initialConfig.columns
-            Ext.Array.each(columns, function (col) {
-                if (col.xtype === 'actioncolumn') {
-                    if(!me.initialConfig.columns){
-                        me.initialConfig.columns = [];
-                    }
-                    me.initialConfig.columns.push(col);
-                }
+            Ext.apply(this.initialConfig, {
+                columns: initialConfigColumns,
+                actionColumnsAdded: true
             });
-
-            me.initialConfig.actionColumnsAdded = true;
-        }
+         }
 
         Ext.apply(this, {
             columns: columns,
