@@ -20,7 +20,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     private String ldapHost;
     private boolean ldapSecure;
     private String ouFilter = "";
-    private List<String> ouFilters = null;
+    private List<String> ouFilters = new LinkedList<String>();
     private int ldapPort;
     private boolean isEnabled = false;
 
