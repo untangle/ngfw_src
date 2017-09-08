@@ -382,6 +382,7 @@ Ext.define('Ung.view.reports.EntryController', {
     resetView: function(){
         var grid = this.getView().down('grid');
         Ext.state.Manager.clear(grid.stateId);
+        grid.filters.clearFilters();
         grid.reconfigure(null, grid.tableConfig.columns);
     },
 
