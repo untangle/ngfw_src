@@ -60,6 +60,7 @@ Ext.define('Ung.config.network.MainController', {
             var accessRulesLength = me.getAccessRulesCount(vm.get('settings'));
             vm.set('accessRulesLength', accessRulesLength);
 
+            me.setPortForwardSimples();
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
 
@@ -362,6 +363,30 @@ Ext.define('Ung.config.network.MainController', {
             }
             vm.set('siArp', connections);
             arpView.setLoading(false);
+        });
+    },
+
+    setPortForwardSimples: function(){
+        /*
+         * Override the simple flag if protocol and port are not defined.
+         */
+        var vm = this.getViewModel(),
+            portForwardRules = vm.get('settings.portForwardRules');
+
+        portForwardRules.list.forEach(function(portForwardRule){
+            if( portForwardRule.conditions &&
+                portForwardRule.conditions.list){
+                var protocol = null;
+                var port = null;
+                portForwardRule.conditions.list.forEach(function(condition){
+                    if(condition.conditionType == 'PROTOCOL'){
+                        protocol = condition;
+                    }else if(condition.conditionType == 'DST_PORT'){
+                        port = condition;
+                    }
+                });
+                portForwardRule.simple = ( protocol != null && port != null ) ? true : false;
+            }
         });
     },
 
