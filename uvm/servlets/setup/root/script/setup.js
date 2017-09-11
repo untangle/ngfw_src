@@ -1270,7 +1270,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                 triggerAction: 'all',
                 disabled: true,
                 editable: false,
-                bind: { value: '{nonWan.v4StaticPrefix || 24}', disabled: '{!routerRadio.checked}' }
+                bind: { value: '{nonWan.v4StaticPrefix}', disabled: '{!routerRadio.checked}' }
             }, {
                 xtype: 'checkbox',
                 margin: '0 0 0 155',
@@ -1320,7 +1320,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
             margin: 20,
             html: '<img src="/skins/' + rpc.skinName + '/images/admin/wizard/bridge.png"/>'
         }]
-    }],
+    }]
 });
 
 Ext.define('Ung.Setup.InternalNetworkController', {
@@ -1384,8 +1384,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         });
 
         // firstWan must exist
-        if (!firstWan || !firstWan.interfaceId)
-            return;
+        if (!firstWan || !firstWan.interfaceId) { return; }
 
         try {
             firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
@@ -1394,8 +1393,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         }
 
         // and the first WAN has a address
-        if (!firstWanStatus || !firstWanStatus.v4Address)
-            return;
+        if (!firstWanStatus || !firstWanStatus.v4Address) { return; }
 
         //Use Internal Address instead of External Address
         newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);
