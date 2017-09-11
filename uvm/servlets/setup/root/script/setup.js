@@ -746,7 +746,7 @@ Ext.define('Ung.Setup.InterfacesController', {
                 }
             });
 
-            if (interfaces.length === store.getCount()) {
+            if (interfaces.length !== store.getCount()) {
                 Ext.MessageBox.alert('New interfaces'.t(), 'There are new interfaces, please restart the wizard.', '');
                 return;
             }
