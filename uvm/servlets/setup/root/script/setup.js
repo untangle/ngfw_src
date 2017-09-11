@@ -669,7 +669,22 @@ Ext.define('Ung.Setup.InterfacesController', {
     alias: 'controller.interfaces',
 
     control: {
-        '#': { activate: 'getInterfaces' }
+        '#': {
+            activate: 'onActivate',
+            deactivate: 'onDeactivate'
+        }
+    },
+
+    onActivate: function () {
+        var me = this;
+        me.getInterfaces();
+        me.enableAutoRefresh = true;
+        Ext.defer(me.autoRefreshInterfaces, 3000, me); // refreshes interfaces every 3 seconds
+    },
+
+    onDeactivate: function () {
+        var me = this;
+        me.enableAutoRefresh = false;
     },
 
     getInterfaces: function () {
@@ -714,6 +729,44 @@ Ext.define('Ung.Setup.InterfacesController', {
                     Ext.MessageBox.alert('Missing interfaces'.t(), 'Untangle requires two or more network cards. Please reinstall with at least two network cards.'.t(), '');
                 }
             });
+        });
+    },
+
+    autoRefreshInterfaces: function () {
+        var me = this; store = me.getView().down('grid').getStore();
+
+        if (!me.enableAutoRefresh) { return; }
+
+        rpc.networkManager.getNetworkSettings(function (result, ex) {
+            if (ex) { Util.handleException('Unable to refresh the interfaces.'.t()); return; }
+            var interfaces = [];
+            Ext.Array.each(result.interfaces.list, function (intf) {
+                if (!intf.isVlanInterface) {
+                    interfaces.push(intf);
+                }
+            });
+
+            if (interfaces.length === store.getCount()) {
+                Ext.MessageBox.alert('New interfaces'.t(), 'There are new interfaces, please restart the wizard.', '');
+                return;
+            }
+
+            rpc.networkManager.getDeviceStatus(function (result2, ex2) {
+                if (ex) { Util.handleException(ex); return; }
+                if (result === null) { return; }
+
+                var deviceStatusMap = Ext.Array.toValueMap(result2.list, 'deviceName');
+                store.each(function (row) {
+                    var deviceStatus = deviceStatusMap[row.get('physicalDev')];
+                    if (deviceStatus !== null) {
+                        row.set('connected', deviceStatus.connected);
+                    }
+                });
+                if (me.enableAutoRefresh) {
+                    Ext.defer(me.autoRefreshInterfaces, 3000, me);
+                }
+            });
+
         });
     },
 
