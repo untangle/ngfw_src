@@ -87,6 +87,33 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'toolbar',
             dock: 'top',
+            padding: 5,
+            style: {
+                background: '#FFF'
+            },
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [{
+                xtype: 'label',
+                bind: {
+                    html: '<strong>' + 'Timeframe'.t() + ': ' + '{slider.value} hour(s)' + '</strong>'
+                }
+            }, {
+                xtype: 'slider',
+                // fieldLabel: 'Timeframe'.t(),
+                reference: 'slider',
+                value: 1,
+                increment: 1,
+                minValue: 1,
+                maxValue: 24,
+                publishes: 'value',
+                publishOnComplete: false
+            }]
+        }, {
+            xtype: 'toolbar',
+            dock: 'top',
             ui: 'footer',
             items: [{
                 itemId: 'addWidgetBtn',
