@@ -299,7 +299,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         if (reps) { reps.getViewModel().set('fetching', true); }
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000));
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - Ung.dashboardSettings.timeframe * 3600 * 1000));
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 

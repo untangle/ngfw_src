@@ -129,7 +129,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         var startDate = vm.get('startDate');
         var endDate = vm.get('tillNow') ? null : vm.get('endDate');
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000);
+            startDate = new Date(rpc.systemManager.getMilliseconds() - Ung.dashboardSettings.timeframe * 3600 * 1000);
             endDate = new Date(rpc.systemManager.getMilliseconds());
         }
 
