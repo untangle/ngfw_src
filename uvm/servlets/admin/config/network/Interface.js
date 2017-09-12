@@ -111,9 +111,6 @@ Ext.define('Ung.config.network.Interface', {
                     hidden: '{!isAddressed}'
                 },
                 listeners: {
-                    afterrender: function (ck) {
-                        ck.initialized = true;
-                    },
                     change: function (ck, newValue) {
                         var win = ck.up('window');
                         if (!newValue) {
@@ -130,6 +127,7 @@ Ext.define('Ung.config.network.Interface', {
                             }
                             win.down('tabpanel').setActiveItem(0);
                         }
+                        ck.initialized = true; // mark the first call
                     }
                 }
             }, {
