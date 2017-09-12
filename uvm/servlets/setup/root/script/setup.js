@@ -669,7 +669,22 @@ Ext.define('Ung.Setup.InterfacesController', {
     alias: 'controller.interfaces',
 
     control: {
-        '#': { activate: 'getInterfaces' }
+        '#': {
+            activate: 'onActivate',
+            deactivate: 'onDeactivate'
+        }
+    },
+
+    onActivate: function () {
+        var me = this;
+        me.getInterfaces();
+        me.enableAutoRefresh = true;
+        Ext.defer(me.autoRefreshInterfaces, 3000, me); // refreshes interfaces every 3 seconds
+    },
+
+    onDeactivate: function () {
+        var me = this;
+        me.enableAutoRefresh = false;
     },
 
     getInterfaces: function () {
@@ -714,6 +729,44 @@ Ext.define('Ung.Setup.InterfacesController', {
                     Ext.MessageBox.alert('Missing interfaces'.t(), 'Untangle requires two or more network cards. Please reinstall with at least two network cards.'.t(), '');
                 }
             });
+        });
+    },
+
+    autoRefreshInterfaces: function () {
+        var me = this; store = me.getView().down('grid').getStore();
+
+        if (!me.enableAutoRefresh) { return; }
+
+        rpc.networkManager.getNetworkSettings(function (result, ex) {
+            if (ex) { Util.handleException('Unable to refresh the interfaces.'.t()); return; }
+            var interfaces = [];
+            Ext.Array.each(result.interfaces.list, function (intf) {
+                if (!intf.isVlanInterface) {
+                    interfaces.push(intf);
+                }
+            });
+
+            if (interfaces.length !== store.getCount()) {
+                Ext.MessageBox.alert('New interfaces'.t(), 'There are new interfaces, please restart the wizard.', '');
+                return;
+            }
+
+            rpc.networkManager.getDeviceStatus(function (result2, ex2) {
+                if (ex) { Util.handleException(ex); return; }
+                if (result === null) { return; }
+
+                var deviceStatusMap = Ext.Array.toValueMap(result2.list, 'deviceName');
+                store.each(function (row) {
+                    var deviceStatus = deviceStatusMap[row.get('physicalDev')];
+                    if (deviceStatus !== null) {
+                        row.set('connected', deviceStatus.connected);
+                    }
+                });
+                if (me.enableAutoRefresh) {
+                    Ext.defer(me.autoRefreshInterfaces, 3000, me);
+                }
+            });
+
         });
     },
 
@@ -1217,7 +1270,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                 triggerAction: 'all',
                 disabled: true,
                 editable: false,
-                bind: { value: '{nonWan.v4StaticPrefix || 24}', disabled: '{!routerRadio.checked}' }
+                bind: { value: '{nonWan.v4StaticPrefix}', disabled: '{!routerRadio.checked}' }
             }, {
                 xtype: 'checkbox',
                 margin: '0 0 0 155',
@@ -1267,7 +1320,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
             margin: 20,
             html: '<img src="/skins/' + rpc.skinName + '/images/admin/wizard/bridge.png"/>'
         }]
-    }],
+    }]
 });
 
 Ext.define('Ung.Setup.InternalNetworkController', {
@@ -1331,8 +1384,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         });
 
         // firstWan must exist
-        if (!firstWan || !firstWan.interfaceId)
-            return;
+        if (!firstWan || !firstWan.interfaceId) { return; }
 
         try {
             firstWanStatus = rpc.networkManager.getInterfaceStatus(firstWan.interfaceId);
@@ -1341,8 +1393,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
         }
 
         // and the first WAN has a address
-        if (!firstWanStatus || !firstWanStatus.v4Address)
-            return;
+        if (!firstWanStatus || !firstWanStatus.v4Address) { return; }
 
         //Use Internal Address instead of External Address
         newSetupLocation = window.location.href.replace(vm.get('nonWan.v4StaticAddress'), firstWanStatus.v4Address);

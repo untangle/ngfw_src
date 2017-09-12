@@ -62,9 +62,6 @@ public class IpsecVpnManager
                                               "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
                                               "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
 
-    private static final String ikelifetime_default = "1h";
-    private static final String lifetime_default = "8h";
-
 // THIS IS FOR ECLIPSE - @formatter:on
 
     public void generateConfig(IpsecVpnSettings settings)
@@ -191,7 +188,7 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "ikelifetime=" + data.getPhase1Lifetime() + "s" + RET);
             } else {
                 ipsec_conf.write(TAB + "ike=" + ike_default + RET);
-                ipsec_conf.write(TAB + "ikelifetime=" + ikelifetime_default + RET);
+                ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
             }
 
             if (data.getPhase2Manual() == true) {
@@ -203,7 +200,7 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "lifetime=" + data.getPhase2Lifetime() + "s" + RET);
             } else {
                 ipsec_conf.write(TAB + "esp=" + esp_default + RET);
-                ipsec_conf.write(TAB + "lifetime=" + lifetime_default + RET);
+                ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
             }
 
             if ((data.getDpddelay().equals("0") == false) && (data.getDpdtimeout().equals("0") == false)) {
@@ -274,8 +271,8 @@ public class IpsecVpnManager
                     ipsec_conf.write(TAB + "replay_window=0" + RET);
                 }
                 
-                ipsec_conf.write(TAB + "ikelifetime=8h" + RET);
-                ipsec_conf.write(TAB + "keylife=1h" + RET);
+                ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                 ipsec_conf.write(TAB + "dpddelay=10" + RET);
                 ipsec_conf.write(TAB + "dpdtimeout=90" + RET);
                 ipsec_conf.write(TAB + "dpdaction=clear" + RET);
@@ -313,8 +310,8 @@ public class IpsecVpnManager
                     ipsec_conf.write(TAB + "replay_window=0" + RET);
                 }
 
-                ipsec_conf.write(TAB + "ikelifetime=15m" + RET);
-                ipsec_conf.write(TAB + "lifetime=15m" + RET);
+                ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                 ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
                 ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                 ipsec_conf.write(TAB + "leftupdown=" + XAUTH_UPDOWN_SCRIPT + RET);
@@ -351,6 +348,8 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "keyexchange=ikev2" + RET);
                 ipsec_conf.write(TAB + "auto=add" + RET);
                 ipsec_conf.write(TAB + "type=tunnel" + RET);
+                ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                 
                 if (osArch.equals("arm") == true) {
                     ipsec_conf.write(TAB + "replay_window=0" + RET);

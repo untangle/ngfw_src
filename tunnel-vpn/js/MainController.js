@@ -80,6 +80,15 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                     '<li>' + 'Choose your server and download the corresponding .ovpn file'.t() + '<br/>' +
                     '<li>' + 'Upload the .ovpn file'.t() + '<br/>'
             },
+            PrivateInternetAccess: {
+                description: 'PrivateInternetAccess'.t(),
+                userAuth: true,
+                providerTitle: 'Upload the PrivateInternetAccess OpenVPN config ovpn file'.t(),
+                providerInstructions: '<li>' + 'Download the appropriate ovpn file here from:'.t() + '<br/>' +
+                    '<li>' + '<a href="https://www.privateinternetaccess.com/pages/openvpn-ios" target="_blank">https://www.privateinternetaccess.com/pages/openvpn-ios</a>' + '<br/>' +
+                    '<li>' + 'Upload the .ovpn file'.t() + '<br/>' +
+                    '<li>' + 'Provide the username/password of your account'.t() + '<br/>'
+            },
             CustomZip: {
                 description: 'Custom zip file'.t(),
                 userAuth: false,
