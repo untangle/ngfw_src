@@ -213,46 +213,6 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                     }
                 }]
             }, {
-                xtype: 'container',
-                margin: '5 0',
-                layout: { type: 'hbox', align: 'middle' },
-                items: [{
-                    xtype: 'checkbox',
-                    fieldLabel: '<strong>' + 'Timeframe'.t() + '</strong>',
-                    labelWidth: 'auto',
-                    boxLabel: '<strong>' + '1 hour</strong> (default)',
-                    bind: '{_timeframeck}'
-                }, {
-                    xtype: 'numberfield',
-                    width: 50,
-                    maxValue: 72,
-                    minValue: 1,
-                    allowBlank: true,
-                    margin: '0 5 0 10',
-                    hidden: true,
-                    bind: {
-                        value: '{_timeframe}',
-                        hidden: '{_timeframeck}'
-                    }
-                }, {
-                    xtype: 'component',
-                    style: {
-                        fontSize: '11px',
-                        color: '#777'
-                    },
-                    html: '(hours)'.t(),
-                    hidden: true,
-                    bind: {
-                         hidden: '{_timeframeck}'
-                    }
-                }, {
-                    xtype: 'button',
-                    iconCls: 'fa fa-refresh',
-                    tooltip: 'Refresh'.t(),
-                    margin: '0 0 0 10',
-                    handler: 'refreshEntry'
-                }]
-            }, {
                 xtype: 'checkbox',
                 reference: 'columnsck',
                 fieldLabel: '<strong>' + 'Columns'.t() + '</strong>',

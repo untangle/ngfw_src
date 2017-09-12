@@ -40,6 +40,9 @@ Ext.define('Ung.Application', {
                 Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
             ]).then(function (result) {
                 Ung.dashboardSettings = result[0];
+                if (!Ung.dashboardSettings.timeframe) {
+                    Ung.dashboardSettings.timeframe = 1; // hours
+                }
 
                 Ext.getStore('widgets').loadData(result[0].widgets.list);
                 if (result[1]) {
