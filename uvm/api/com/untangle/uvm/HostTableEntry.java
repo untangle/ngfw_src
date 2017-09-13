@@ -470,20 +470,29 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostname()
     {
-        if (getHostnameDevice() != null)
-            return getHostnameDevice();
-        if (getHostnameReports() != null)
-            return getHostnameReports();
-        if (getHostnameDhcp() != null)
-            return getHostnameDhcp();
-        if (getHostnameDirectoryConnector() != null)
-            return getHostnameDirectoryConnector();
-        if (getHostnameDns() != null)
-            return getHostnameDns();
-        if (getHostnameOpenVpn() != null)
-            return getHostnameOpenVpn();
-        if (getHostnameDeviceLastKnown() != null)
-            return getHostnameDeviceLastKnown();
+        String s;
+        s = getHostnameDevice();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameReports();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDhcp();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDirectoryConnector();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDns();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameOpenVpn();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDeviceLastKnown();
+        if (s != null && s.length() != 0)
+            return s;
+
         return null;
     }
 
