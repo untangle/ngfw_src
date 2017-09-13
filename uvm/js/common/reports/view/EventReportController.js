@@ -69,16 +69,17 @@ Ext.define('Ung.view.reports.EventReportController', {
                 });
 
                 grid.tableConfig = me.tableConfig;
+                grid.visibleColumns = visibleColumns;
                 grid.setColumns(me.tableConfig.columns);
 
                 grid.getColumns().forEach( function(column){
                     if( column.xtype == 'actioncolumn'){
                         return;
                     }
-                    column.setHidden( Ext.Array.indexOf(visibleColumns, column.dataIndex) < 0 );
+                    column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
                     if( column.columns ){
                         column.columns.forEach( Ext.bind( function( subColumn ){
-                            subColumn.setHidden( Ext.Array.indexOf(visibleColumns, column.dataIndex) < 0 );
+                            subColumn.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
                         }, this ) );
                     }
                 });
