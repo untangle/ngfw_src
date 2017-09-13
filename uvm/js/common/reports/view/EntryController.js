@@ -384,6 +384,18 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.state.Manager.clear(grid.stateId);
         grid.filters.clearFilters();
         grid.reconfigure(null, grid.tableConfig.columns);
+
+        grid.getColumns().forEach( function(column){
+            if( column.xtype == 'actioncolumn'){
+                 return;
+            }
+            column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
+            if( column.columns ){
+                column.columns.forEach( Ext.bind( function( subColumn ){
+                    subColumn.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
+                }, this ) );
+            }
+        });
     },
 
 
