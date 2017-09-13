@@ -520,7 +520,7 @@ public class HostTableEntry implements Serializable, JSONString
         s = getHostnameOpenVpn();
         if (s != null && s.length() != 0)
             return "OpenVPN";
-        s = getHostnameDevice();
+        s = getHostnameDeviceLastKnown();
         if (s != null && s.length() != 0)
             return "Device Last Known";
         return null;
