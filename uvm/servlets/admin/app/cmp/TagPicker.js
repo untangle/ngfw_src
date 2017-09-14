@@ -176,11 +176,15 @@ Ext.define('Ung.cmp.TagPicker', {
         return this.tags;
     },
     setTags: function (tags) {
-        if (this.grid) {
-            this.grid.getStore().loadData(tags.list);
+        var _tags = [];
+        if (tags && Ext.isArray(tags.list)) {
+            _tags = tags.list;
         }
-        this.tags = tags.list;
-        this.setValue(tags.list);
+        if (this.grid) {
+            this.grid.getStore().loadData(_tags);
+        }
+        this.tags = _tags;
+        this.setValue(_tags);
     },
 
     setValue: function (tags) {
