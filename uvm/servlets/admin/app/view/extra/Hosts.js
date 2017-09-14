@@ -108,7 +108,7 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'hostname',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asHostname'
         },{
             name: 'hostnameSource',
             type: 'string',
