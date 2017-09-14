@@ -15,8 +15,8 @@ Ext.define('Ung.overrides.data.SortTypes', {
         if(Ext.isEmpty(value)) {
             return null;
         }
-        var i, 
-            len, 
+        var i,
+            len,
             parts = ( "" + value ).replace(/\//g,".").split('.');
         for(i = 0, len = parts.length; i < len; i++){
             parts[i] = Ext.String.leftPad(parts[i], 3, '0');
@@ -32,6 +32,19 @@ Ext.define('Ung.overrides.data.SortTypes', {
     // considered at lowest precidence (e.g., x, y, z, null).
     asUnString: function(s) {
         return ( ( s != null ) && !Ext.isEmpty(s) ) ? String(s).toUpperCase() : '~';
+    },
+
+    // combines the IP and String sorting
+    asHostname: function (s) {
+        if (!s) { return '\u0000'; }
+        if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(s)) {
+            var i, len, parts = ( "" + s ).replace(/\//g,".").split('.');
+            for (i = 0, len = parts.length; i < len; i++) {
+                parts[i] = Ext.String.leftPad(parts[i], 3, '0');
+            }
+            return parts.join('.');
+        }
+        return String(s).toUpperCase();
     }
 
 });
