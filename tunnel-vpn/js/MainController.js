@@ -86,6 +86,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 providerTitle: 'Upload the PrivateInternetAccess OpenVPN config ovpn file'.t(),
                 providerInstructions: '<li>' + 'Download the appropriate ovpn file here from:'.t() + '<br/>' +
                     '<li>' + '<a href="https://www.privateinternetaccess.com/pages/openvpn-ios" target="_blank">https://www.privateinternetaccess.com/pages/openvpn-ios</a>' + '<br/>' +
+                    '<li>' + 'Edit the .ovpn file and remove the &quot;crl-verify&quot; section'.t() + '<br/>' +
                     '<li>' + 'Upload the .ovpn file'.t() + '<br/>' +
                     '<li>' + 'Provide the username/password of your account'.t() + '<br/>'
             },
