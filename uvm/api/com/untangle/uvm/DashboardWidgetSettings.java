@@ -20,7 +20,6 @@ public class DashboardWidgetSettings implements Serializable, JSONString
     private Integer refreshIntervalSec; //0= never auto refresh
     private String entryId = null;
     private String[] displayColumns;
-    private Integer timeframe; //number of seconds in the past for startDate when getting data for reports and events
     
     public DashboardWidgetSettings() { }
     public DashboardWidgetSettings(String type) {
@@ -48,7 +47,11 @@ public class DashboardWidgetSettings implements Serializable, JSONString
     public String[] getDisplayColumns() { return displayColumns; }
     public void setDisplayColumns(String[] columns) { this.displayColumns = columns; }
 
-    public Integer getTimeframe(){ return timeframe; }
-    public void setTimeframe( Integer newValue) { this.timeframe = newValue; }
+    /**
+     * DEPRECATED
+     * The timeframe setting is now in the dashboard settings
+     */
+    public Integer getTimeframe(){ return null; }
+    public void setTimeframe( Integer newValue) { return; }
 
 }
