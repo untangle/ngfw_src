@@ -32,11 +32,15 @@ SetCompressor lzma
 
 ; Default service settings
 !define OPENVPN_CONFIG_EXT   "ovpn"
+<<<<<<< HEAD
+=======
+!define UNTANGLE_SETTINGS_DIR "/usr/share/untangle/settings/untangle-node-openvpn"
+>>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.4.0"
-!define GUI_VERSION "11.4.0.0"
+!define OPENVPN_VERSION "2.4.3"
+!define GUI_VERSION "11.8.0.0"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
 
@@ -428,8 +432,18 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
         SetOutPath "$INSTDIR\bin"
         File "${OPENVPN_ROOT}\bin-win32\openvpn-gui.exe"
         ${EndIf}
+<<<<<<< HEAD
 
 	# !insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
+=======
+        
+        ; Look for legacy "RUNASADMIN" regkey and remove it as it is not needed any more
+        ; If user have hade OpenVPN installed before where this regkey is set and has not uninstalled.
+        ReadRegStr $R0 HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers\" "$INSTDIR\bin\openvpn-gui.exe"
+	${If} $R0 == "RUNASADMIN"
+	DeleteRegValue HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
+        ${EndIf}
+>>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
 
 	${If} ${SectionIsSelected} ${SecAddShortcutsWorkaround}
 		CreateDirectory "$SMPROGRAMS\${PACKAGE_NAME}"
@@ -584,6 +598,7 @@ Function .onInit
 
 	# Delete previous start menu
 	RMDir /r "$SMPROGRAMS\${PACKAGE_NAME}"
+        
 FunctionEnd
 
 ;--------------------------------
@@ -627,9 +642,15 @@ Section -post
 	WriteRegExpandStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayIcon" "$INSTDIR\icon.ico"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayVersion" "${OPENVPN_VERSION}"
+<<<<<<< HEAD
 	
 	DetailPrint "Starting OpenVPN Interactive Service"
 	SimpleSC::StartService "OpenVPNServiceInteractive" "" 10
+=======
+
+
+
+>>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
 SectionEnd
 
 ;--------------------------------
@@ -715,7 +736,6 @@ Section "Uninstall"
 	RMDir "$INSTDIR"
 	RMDir /r "$SMPROGRAMS\${PACKAGE_NAME}"
 
-        !insertmacro DelRegKeyIfUnchanged HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
 	!insertmacro DelRegKeyIfUnchanged HKCR ".${OPENVPN_CONFIG_EXT}" "${PACKAGE_NAME}File"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
