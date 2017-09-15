@@ -38,6 +38,7 @@ public class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
     private static final String GENERATE_ZIP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-zip";
     private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
+    private static final String GENERATE_OVPN_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-ovpn";
     private static final String GENERATE_ONC_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-onc";
     private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/720-openvpn";
 
@@ -100,12 +101,12 @@ public class OpenVpnManager
         writeRemoteServerFiles( settings );
     }
 
-
     private void writeConfFiles( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
         writeRemoteClientConfigurationFile( settings, client, UNIX_EXTENSION );
         writeRemoteClientConfigurationFile( settings, client, WIN_EXTENSION );
     }
+
     /**
      * Create all of the client zip configuration files
      */
@@ -145,6 +146,27 @@ public class OpenVpnManager
             logger.info( GENERATE_EXE_SCRIPT + ": ");
             for ( String line : lines )
                 logger.info(GENERATE_EXE_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+    }
+
+    /**
+     * Create all of the client ovpn configuration files
+     */
+    protected void createClientDistributionOvpn( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    {
+        writeConfFiles( settings, client );
+
+        String cmdStr;
+        ExecManagerResult result;
+
+        cmdStr = GENERATE_OVPN_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        logger.debug( "Executing: " + cmdStr );
+        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_OVPN_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info(GENERATE_OVPN_SCRIPT + ": " + line);
         } catch (Exception e) {}
     }
 

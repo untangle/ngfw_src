@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#
+# This takes the client name and site name and generates the zip file containing all the configuration
+# for the specified client. The specified client must already exist with all its config (cert etc)
+#
+
+commonName="${1}"
+siteName="${2}"
+
+if [ -z "${commonName}" ]; then
+    echo "Must specify a common name."
+    exit -3
+fi
+
+if [ -z "${siteName}" ]; then
+    echo "specify a site name."
+    exit -3
+fi
+
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/openvpn"
+PACKAGE_DIR="/tmp/openvpn/client-packages"
+
+UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
+FULL_CONFIG_FILE=${PACKAGE_DIR}/inline-${commonName}.ovpn
+CLI_CRT_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.crt
+CLI_KEY_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.key
+CA_CERT=${SETTINGS_DIR}/ca.crt
+
+## Create a tempory directory for the client
+buildConfigFile() {
+    # start with the unix config file
+    cp ${UNIX_CONFIG_FILE} ${FULL_CONFIG_FILE}
+
+    # remove the existing ca, cert, and key file lines
+    sed -i '/^ca /d' ${FULL_CONFIG_FILE}
+    sed -i '/^cert /d' ${FULL_CONFIG_FILE}
+    sed -i '/^key /d' ${FULL_CONFIG_FILE}
+
+    # add the CA certificate inline
+    echo "" >> ${FULL_CONFIG_FILE}
+    echo "<ca>" >> ${FULL_CONFIG_FILE}
+    cat ${CA_CERT} >> ${FULL_CONFIG_FILE}
+    echo "</ca>" >> ${FULL_CONFIG_FILE}
+
+    # add the client certificate inline
+    echo "" >> ${FULL_CONFIG_FILE}
+    echo "<cert>" >> ${FULL_CONFIG_FILE}
+    openssl x509 -in ${CLI_CRT_FILE} >> ${FULL_CONFIG_FILE}
+    echo "</cert>" >> ${FULL_CONFIG_FILE}
+
+    # add the client key inline
+    echo "" >> ${FULL_CONFIG_FILE}
+    echo "<key>" >> ${FULL_CONFIG_FILE}
+    cat ${CLI_KEY_FILE} >> ${FULL_CONFIG_FILE}
+    echo "</key>" >> ${FULL_CONFIG_FILE}
+}
+
+FULL_FILE="${PACKAGE_DIR}/inline-${commonName}.ovpn"
+if [ -f $FULL_FILE ] && [ $FULL_FILE -nt $CLI_CRT_FILE ] && [ $FULL_FILE -nt /etc/openvpn/server.conf ] ; then
+    echo "$FULL_FILE already exists and is up to date"
+else
+    buildConfigFile
+fi
+
+true
