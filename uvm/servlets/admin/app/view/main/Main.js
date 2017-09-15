@@ -95,9 +95,8 @@ Ext.define('Ung.view.main.Main', {
             itemId: 'notificationBtn',
             cls: 'notification-btn',
             arrowVisible: false,
-            margin: '0 20 0 0',
-            menuAlign: 'tr-br',
-            hidden: true
+            hidden: true,
+            responsiveConfig: { 'width >= 768': { margin: '0 20 0 0', menuAlign: 'tr-br' }, 'width < 768': { margin: 0, menuAlign: 't-b' } }
         }, {
             text: 'Support'.t(),
             iconCls: 'fa fa-life-ring',

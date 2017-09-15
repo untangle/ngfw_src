@@ -8,10 +8,10 @@ Ext.define('Ung.util.Util', {
 
     subNav: [
         '->',
-        { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', hrefTarget: '_self', bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' } },
-        { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', hrefTarget: '_self', bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' } },
-        { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', hrefTarget: '_self', bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' } },
-        { text: 'Users'.t(), iconCls: 'fa fa-users', href: '#users', hrefTarget: '_self', bind: { userCls: '{activeItem === "users" ? "pressed" : ""}' } }
+        { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', hrefTarget: '_self', bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Sessions'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Sessions'.t() } } },
+        { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', hrefTarget: '_self', bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Hosts'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Hosts'.t() } } },
+        { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', hrefTarget: '_self', bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Devices'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Devices'.t() } } },
+        { text: 'Users'.t(), iconCls: 'fa fa-users', href: '#users', hrefTarget: '_self', bind: { userCls: '{activeItem === "users" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Users'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Users'.t() } } }
     ],
 
     baseCategories: [
