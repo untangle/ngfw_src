@@ -1,9 +1,9 @@
-#! /bin/bash
+#!/bin/bash
 
 #
 # This takes the client name and site name and generates the zip file containing all the configuration
 # for the specified client. The specified client must already exist with all its config (cert etc)
-# 
+#
 
 commonName="${1}"
 siteName="${2}"
@@ -37,7 +37,7 @@ buildConfigFile() {
 
     mkdir ${outputDir} || exit -4
     mkdir ${keyDir} || exit -4
-    
+
     cp ${UNIX_CONFIG_FILE} ${outputDir}/${siteName}.conf
     cp ${WIN_CONFIG_FILE}  ${outputDir}/${siteName}.ovpn
     todos ${outputDir}/${siteName}.ovpn
@@ -67,7 +67,7 @@ buildConfigFile() {
     rm -f ${keyDir}/${siteName}-${commonName}.key
     rm -f ${keyDir}/${siteName}-${commonName}.crt
     rm -f ${keyDir}/${siteName}-${commonName}-ca.crt
-    
+
     rmdir ${keyDir}
     rmdir ${outputDir}
     rmdir ${tmpDir}
@@ -81,4 +81,3 @@ else
 fi
 
 true
-

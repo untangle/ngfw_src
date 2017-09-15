@@ -266,7 +266,7 @@ public class OpenVpnAppImpl extends AppBase
         return _getRemoteServersStatus();
     }
 
-    public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe", "onc" */ )
+    public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe", "ovpn", "onc" */ )
     {
         /**
          * Find the client by that name
@@ -307,6 +307,10 @@ public class OpenVpnAppImpl extends AppBase
         else if ( "zip".equals(format) ) {
             this.openVpnManager.createClientDistributionZip( settings, client );
             fileName = "config.zip";
+        }
+        else if ( "ovpn".equals(format) ) {
+            this.openVpnManager.createClientDistributionOvpn( settings, client );
+            fileName = "inline.ovpn";
         }
         else if ( "onc".equals(format) ) {
             this.openVpnManager.createClientDistributionOnc( settings, client );
