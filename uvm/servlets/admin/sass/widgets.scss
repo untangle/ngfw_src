@@ -32,7 +32,13 @@
         box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
         /*transform: scale(0.98);*/
     }
-
+    .x-mask {
+        background: rgba(255, 255, 255, 0.5);
+        i {
+            font-size: 1em;
+            color: #999;
+        }
+    }
 }
 
 .widget.small {
@@ -66,11 +72,19 @@
             font-size: 18px;
             font-weight: 400;
             //line-height: 40px;
-            padding: 5px 10px 0 10px;
+            padding: 5px 10px 1px 10px;
             margin: 0;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            a {
+                color: #555;
+                text-decoration: none;
+                &:hover {
+                    color: #333;
+                    text-decoration: underline;
+                }
+            }
         }
 
         .actions {
@@ -112,6 +126,14 @@
             line-height: 1;
             color: #999;
             font-size: 14px;
+            a {
+                color: #999;
+                text-decoration: none;
+                &:hover {
+                    color: #555;
+                    text-decoration: underline;
+                }
+            }
         }
 
     }

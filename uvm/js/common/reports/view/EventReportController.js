@@ -135,7 +135,7 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         var grid = v.down('grid');
 
-        // me.getView().setLoading(true);
+        me.getView().setLoading(true);
         if (reps) { reps.getViewModel().set('fetching', true); }
 
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
@@ -148,7 +148,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
                 }
-                // me.getView().setLoading(false);
+                me.getView().setLoading(false);
                 if (reps) { reps.getViewModel().set('fetching', false); }
 
                 me.loadResultSet(result);
@@ -163,7 +163,7 @@ Ext.define('Ung.view.reports.EventReportController', {
             vm = me.getViewModel(),
             grid = me.getView().down('grid');
 
-        this.getView().setLoading(true);
+        // this.getView().setLoading(true);
         grid.getStore().setFields( grid.tableConfig.fields );
         var eventData = [];
         var result = [];
@@ -179,7 +179,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
         reader.closeConnection();
         vm.set('eventsData', eventData);
-        this.getView().setLoading(false);
+        // this.getView().setLoading(false);
     },
 
     onEventSelect: function (el, record) {
