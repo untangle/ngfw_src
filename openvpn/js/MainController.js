@@ -258,8 +258,8 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 this.setTitle('Download OpenVPN Client'.t() + ' | ' + record.data.name);
 
                 var windowsLink = this.down('[name="downloadWindowsInstaller"]');
-                var genericLink = this.down('[name="downloadGenericConfigurationFile"]');
                 var untangleLink = this.down('[name="downloadUntangleConfigurationFile"]');
+                var genericLink = this.down('[name="downloadGenericConfigurationFile"]');
                 var chromebookLink = this.down('[name="downloadChromebookConfigurationFile"]');
 
                 windowsLink.update('Loading...'.t());
@@ -273,22 +273,27 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
 
                 openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                     if (exception) { Util.handleException(exception); return; }
-                    windowsLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s Windows setup.exe file.'.t() + '</a>');
+                    windowsLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s Windows setup.exe file.'.t() + '</a>');
                     if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                 }, this), this.record.data.name, "exe" );
 
                 openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                     if (exception) { Util.handleException(exception); return; }
-                    chromebookLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration onc file for Chromebook.'.t() + '</a>');
+                    genericLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN clients or other OS\'s (apple/linux/etc).'.t() + '</a>');
                     if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "onc" );
+                }, this), this.record.data.name, "zip" );
 
                 openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                     if (exception) { Util.handleException(exception); return; }
-                    genericLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc).'.t() + '</a>');
-                    untangleLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.'.t() + '</a>');
+                    untangleLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline.'.t() + '</a>');
                     if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "zip" );
+                }, this), this.record.data.name, "ovpn" );
+
+                openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                    if (exception) { Util.handleException(exception); return; }
+                    chromebookLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration onc file for Chromebook.'.t() + '</a>');
+                    if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
+                }, this), this.record.data.name, "onc" );
             }
         });
 
