@@ -123,6 +123,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 gridLineWidth: 1,
                 gridLineDashStyle: 'dash',
                 gridLineColor: '#EEE',
+                tickPixelInterval: 60,
                 labels: {
                     style: {
                         color: '#333',
@@ -303,6 +304,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 
+        me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-gray"></i>');
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             vm.get('entry').getData(), // entry
             vm.get('startDate'), // start date
@@ -310,7 +312,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function (result) {
                 if (reps) { reps.getViewModel().set('fetching', false); }
-                // me.chart.hideLoading();
+                me.chart.hideLoading();
                 me.data = result.list;
 
                 // after data is fetched, generate chart series based on it's type

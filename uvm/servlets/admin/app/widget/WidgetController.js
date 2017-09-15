@@ -64,20 +64,20 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('entry')) {
             entryType = vm.get('entry.type');
             if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 248, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 250, widgetDisplay: true });
             }
 
             if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 248, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 250, widgetDisplay: true });
             }
 
             if (entryType === 'TEXT') {
-                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 248 });
+                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 250 });
             }
 
 
             if (entryType === 'EVENT_LIST') {
-                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 248 });
+                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 250 });
             }
         }
     },
