@@ -30,7 +30,7 @@ Ext.define('Ung.widget.Report', {
         cls: 'header',
         itemId: 'header',
         bind: {
-            html: '<h1>{entry.localizedTitle}</h1><p>{entry.category}</p>' +
+            html: '<h1><a href="#reports/{entry.url}">{entry.localizedTitle}</a></h1><p><a href="#reports/{entry.categorySlug}">{entry.category}</a></p>' +
                 '<div class="actions">' +
                     '<a class="action-btn"><i class="fa fa-info-circle fa-lg" data-action="info"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-cog fa-lg" data-action="settings"></i></a>' +

@@ -8,9 +8,11 @@ Ext.define('Ung.view.reports.TextReport', {
     border: false,
     bodyBorder: false,
 
-    padding: 10,
+    padding: '50 10',
 
-    style: {
-        fontSize: '14px'
+    bodyStyle: {
+        fontFamily: 'Roboto Condensed, Arial, sans-serif',
+        textAlign: 'center',
+        fontSize: '16px'
     }
 });
