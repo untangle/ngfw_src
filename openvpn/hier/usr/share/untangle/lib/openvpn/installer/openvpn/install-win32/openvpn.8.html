@@ -340,7 +340,7 @@ http-proxy 192.168.0.8 8080
 persist-key
 persist-tun
 pkcs12 client.p12
-ns-cert-type server
+remote-cert-tls server
 verb 3
 </B></PRE>
 
@@ -3338,6 +3338,35 @@ to the module initialization function.  Multiple
 plugin modules may be loaded into one OpenVPN
 process.
 <P>
+The
+<B>module-pathname</B>
+
+argument can be just a filename or a filename with a relative
+or absolute path.  The format of the filename and path defines
+if the plug-in will be loaded from a default plug-in directory
+or outside this directory.
+<P>
+<PRE>
+<B>--plugin path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Effective directory used</B>
+====================================================
+ myplug.so            DEFAULT_DIR/myplug.so
+ subdir/myplug.so     DEFAULT_DIR/subdir/myplug.so
+ ./subdir/myplug.so   CWD/subdir/myplug.so
+ /usr/lib/my/plug.so  /usr/lib/my/plug.so
+</PRE>
+
+<P>
+DEFAULT_DIR is replaced by the default plug-in directory,
+which is configured at the build time of OpenVPN.  CWD is the
+current directory where OpenVPN was started or the directory
+OpenVPN have swithed into via the
+<B>--cd</B>
+
+option before the
+<B>--plugin</B>
+
+option.
+<P>
 For more information and examples on how to build OpenVPN
 plug-in modules, see the README file in the
 <B>plugin</B>
@@ -4837,12 +4866,8 @@ to the challenge should be echoed.
 See management-notes.txt in the OpenVPN distribution for a
 description of the OpenVPN challenge/response protocol.
 
-<DT><B>--server-poll-timeout n</B>
-
-<DD>
-<B>--connect-timeout n</B>
-
-when connecting to a remote server do not wait for more than
+<DT><B>--server-poll-timeout n</B>, <B>--connect-timeout n</B><DD>
+When connecting to a remote server do not wait for more than
 <B>n</B>
 
 seconds waiting for a response before trying the next server.
@@ -5682,10 +5707,10 @@ and
 
 Not available with PolarSSL.
 
-<DT><B>--verify-hash hash</B>
+<DT><B>--verify-hash hash [algo]</B>
 
 <DD>
-Specify SHA1 fingerprint for level-1 cert.  The level-1 cert is the
+Specify SHA1 or SHA256 fingerprint for level-1 cert.  The level-1 cert is the
 CA (or intermediate cert) that signs the leaf certificate, and is
 one removed from the leaf certificate in the direction of the root.
 When accepting a connection from a peer, the level-1 cert
@@ -5693,7 +5718,17 @@ fingerprint must match
 <B>hash</B>
 
 or certificate verification will fail.  Hash is specified
-as XX:XX:...  For example: AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
+as XX:XX:... For example:
+<P>
+<PRE>
+<B>AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
+</B></PRE>
+
+<P>
+The
+<B>algo</B>
+
+flag can be either SHA1 or SHA256.  If not provided, it defaults to SHA1.
 
 <DT><B>--pkcs11-cert-private [0|1]...</B>
 
@@ -6165,6 +6200,33 @@ In contrast to
 does *not* require the user to set
 <B>--key-direction</B>.
 
+<P>
+<B>Security Considerations</B>
+
+<P>
+All peers use the same
+<B>--tls-crypt</B>
+
+pre-shared group key to authenticate and encrypt control channel messages.  To
+ensure that IV collisions remain unlikely, this key should not be used to
+encrypt more than 2^48 client-to-server or 2^48 server-to-client control
+channel messages.  A typical initial negotiation is about 10 packets in each
+direction.  Assuming both initial negotiation and renegotiations are at most
+2^16 (65536) packets (to be conservative), and (re)negotiations happen each
+minute for each user (24/7), this limits the tls-crypt key lifetime to 8171
+years divided by the number of users.  So a setup with 1000 users should rotate
+the key at least once each eight years.  (And a setup with 8000 users each
+year.)
+<P>
+If IV collisions were to occur, this could result in the security of
+<B>--tls-crypt</B>
+
+degrading to the same security as using
+<B>--tls-auth</B>.
+
+That is, the control channel still benefits from the extra protection against
+active man-in-the-middle-attacks and DoS attacks, but may no longer offer
+extra privacy and post-quantum security on top of what TLS itself offers.
 
 <DT><B>--askpass [file]</B>
 
@@ -6384,6 +6446,8 @@ option will match against the chosen
 
 instead of the Common Name.
 <P>
+Only the subjectAltName and issuerAltName X.509 extensions are supported.
+<P>
 <B>Please note:</B>
 
 This option has a feature which will convert an all-lowercase
@@ -6471,9 +6535,14 @@ as X509_&lt;depth&gt;_&lt;attribute&gt;=&lt;value&gt;.  Multiple
 
 options can be defined to track multiple attributes.
 
-<DT><B>--ns-cert-type client|server</B>
+<DT><B>--ns-cert-type client|server (DEPRECATED)</B>
 
 <DD>
+This option is deprecated.  Use the more modern equivalent
+<B>--remote-cert-tls</B>
+
+instead.  This option will be removed in OpenVPN 2.5.
+<P>
 Require that peer certificate was signed with an explicit
 <B>nsCertType</B>
 
@@ -6504,18 +6573,32 @@ or
 <B>--tls-verify.</B>
 
 
-<DT><B>--remote-cert-ku v...</B>
+<DT><B>--remote-cert-ku [v...]</B>
 
 <DD>
 Require that peer certificate was signed with an explicit
 <B>key usage.</B>
 
 <P>
-This is a useful security option for clients, to ensure that
-the host they connect to is a designated server.
+If present in the certificate, the keyUsage value is validated by the TLS
+library during the TLS handshake.  Specifying this option without arguments
+requires this extension to be present (so the TLS library will verify it).
 <P>
-The key usage should be encoded in hex, more than one key
-usage can be specified.
+If the list
+<B>v...</B>
+
+is also supplied, the keyUsage field must have
+<B>at least</B>
+
+the same bits set as the bits in
+<B>one of</B>
+
+the values supplied in the list
+<B>v...</B>
+
+<P>
+The key usage values in the list must be encoded in hex, e.g.
+&quot;--remote-cert-ku a0&quot;
 
 <DT><B>--remote-cert-eku oid</B>
 
@@ -6541,26 +6624,23 @@ and
 
 based on RFC3280 TLS rules.
 <P>
-This is a useful security option for clients, to ensure that
-the host they connect to is a designated server.
+This is a useful security option for clients, to ensure that the host they
+connect to is a designated server.  Or the other way around; for a server to
+verify that only hosts with a client certificate can connect.
 <P>
 The
 <B>--remote-cert-tls client</B>
 
 option is equivalent to
-<B>--remote-cert-ku 80 08 88 --remote-cert-eku &quot;TLS Web Client Authentication&quot;</B>
+<B>--remote-cert-ku --remote-cert-eku &quot;TLS Web Client Authentication&quot;</B>
 
-<P>
-The key usage is digitalSignature and/or keyAgreement.
 <P>
 The
 <B>--remote-cert-tls server</B>
 
 option is equivalent to
-<B>--remote-cert-ku a0 88 --remote-cert-eku &quot;TLS Web Server Authentication&quot;</B>
+<B>--remote-cert-ku --remote-cert-eku &quot;TLS Web Server Authentication&quot;</B>
 
-<P>
-The key usage is digitalSignature and ( keyEncipherment or keyAgreement ).
 <P>
 This is an important security precaution to protect against
 a man-in-the-middle attack where an authorized client
@@ -7102,10 +7182,7 @@ flag.
 
 <DD>
 Ask Windows to release the TAP adapter lease on shutdown.
-This option has the same caveats as
-<B>--dhcp-renew</B>
-
-above.
+This option has no effect now, as it is enabled by default starting with version 2.4.1.
 
 <DT><B>--register-dns</B>
 
@@ -8968,6 +9045,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 12:37:06 GMT, December 27, 2016
+Time: 13:22:54 GMT, July 14, 2017
 </BODY>
 </HTML>
