@@ -386,7 +386,7 @@ Ext.define('Ung.config.administration.MainController', {
             '/L='  + values.locality,
             '/O='  + values.organization,
         ];
-        if (values.organizationalUnit,length > 0) {
+        if (values.organizationalUnit.length > 0) {
             certSubject.push('/OU=' + values.organizationalUnit);
         }
         certSubject = certSubject.join('');
