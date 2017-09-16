@@ -32,10 +32,7 @@ SetCompressor lzma
 
 ; Default service settings
 !define OPENVPN_CONFIG_EXT   "ovpn"
-<<<<<<< HEAD
-=======
-!define UNTANGLE_SETTINGS_DIR "/usr/share/untangle/settings/untangle-node-openvpn"
->>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
+!define UNTANGLE_SETTINGS_DIR "/usr/share/untangle/settings/openvpn"
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
@@ -44,10 +41,6 @@ SetCompressor lzma
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
 
-; Should be passed on command line but check and use default if missing
-!ifndef OPENVPN_SETTINGS_DIR
-!define OPENVPN_SETTINGS_DIR "/usr/share/untangle/settings/openvpn"
-!endif
 ;--------------------------------
 ;Configuration
 
@@ -375,9 +368,9 @@ Function CoreSetup
 
         # Copy crt and key files
         SetOutPath "$INSTDIR\config\keys"
-        File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${OPENVPN_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
-        File /oname=${SITE_NAME}-${COMMON_NAME}.key "${OPENVPN_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
-        File /oname=${SITE_NAME}-${COMMON_NAME}-ca.crt "${OPENVPN_SETTINGS_DIR}/ca.crt"
+        File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
+        File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
+        File /oname=${SITE_NAME}-${COMMON_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
 
 	CreateDirectory "$INSTDIR\log"
 	FileOpen $R1 "$INSTDIR\log\README.txt" w
@@ -432,10 +425,6 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
         SetOutPath "$INSTDIR\bin"
         File "${OPENVPN_ROOT}\bin-win32\openvpn-gui.exe"
         ${EndIf}
-<<<<<<< HEAD
-
-	# !insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
-=======
         
         ; Look for legacy "RUNASADMIN" regkey and remove it as it is not needed any more
         ; If user have hade OpenVPN installed before where this regkey is set and has not uninstalled.
@@ -443,7 +432,6 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
 	${If} $R0 == "RUNASADMIN"
 	DeleteRegValue HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
         ${EndIf}
->>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
 
 	${If} ${SectionIsSelected} ${SecAddShortcutsWorkaround}
 		CreateDirectory "$SMPROGRAMS\${PACKAGE_NAME}"
@@ -642,15 +630,9 @@ Section -post
 	WriteRegExpandStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayIcon" "$INSTDIR\icon.ico"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayVersion" "${OPENVPN_VERSION}"
-<<<<<<< HEAD
-	
-	DetailPrint "Starting OpenVPN Interactive Service"
-	SimpleSC::StartService "OpenVPNServiceInteractive" "" 10
-=======
 
 
 
->>>>>>> e3925165b3df5a287c89be5d163b6a774bd4a50d
 SectionEnd
 
 ;--------------------------------
