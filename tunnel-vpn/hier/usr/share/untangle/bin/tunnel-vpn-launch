@@ -13,6 +13,7 @@ mkdir -p /run/tunnelvpn
 
 echo "Launching openvpn..."
 /usr/sbin/openvpn \
+    --keepalive 10 60 \
     --config ${conf_dir}/tunnel.conf \
     --writepid /run/tunnelvpn/${tunnel_name}.pid \
     --daemon ovpn-${tunnel_name} \
