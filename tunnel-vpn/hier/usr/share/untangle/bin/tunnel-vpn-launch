@@ -13,12 +13,13 @@ mkdir -p /run/tunnelvpn
 
 echo "Launching openvpn..."
 /usr/sbin/openvpn \
-    --keepalive 10 60 \
     --config ${conf_dir}/tunnel.conf \
     --writepid /run/tunnelvpn/${tunnel_name}.pid \
     --daemon ovpn-${tunnel_name} \
     --dev tun${tunnel_id} \
     --cd ${conf_dir} \
+    --ping 10 \
+    --ping-restart 120 \
     --log-append /var/log/uvm/tunnel.log \
     --auth-user-pass auth.txt \
     --script-security 2 \
