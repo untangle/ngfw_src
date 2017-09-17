@@ -906,7 +906,7 @@ Ext.define('Ung.Setup.Internet', {
         items: [
             { boxLabel: '<strong>' + 'Auto (DHCP)'.t() + '</strong>', inputValue: 'AUTO' },
             { boxLabel: '<strong>' + 'Static'.t() + '</strong>', inputValue: 'STATIC' },
-            { boxLabel: '<strong>' + 'PPPoE'.t() + '</strong>', inputValue: 'PPPoE' }
+            { boxLabel: '<strong>' + 'PPPoE'.t() + '</strong>', inputValue: 'PPPOE' }
         ],
         bind: {
             value: '{wan.v4ConfigType}'
