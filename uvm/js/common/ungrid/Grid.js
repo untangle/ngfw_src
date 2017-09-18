@@ -180,7 +180,8 @@ Ext.define('Ung.cmp.Grid', {
             Ext.apply( viewConfig, this.viewConfig );
         }
 
-        var columns = Ext.clone(this.columns), i;
+        var columns = [], i;
+        columns = Ext.merge(columns, this.columns);
 
         if( this.stateful &&
             ( this.itemId ||
