@@ -145,6 +145,22 @@ end
 
 task :install => [:devel, :i18n, :debian_init_files]
 
+task :javadocanalyzer do
+  sourcepaths = []
+  javaDirs = FileList["./**/*.java"].exclude(/^\.\/(dist|downloads|staging)/)
+  if ( javaDirs.length > 0 )
+    javaDirs.each do |d|
+      sourcepath=d.split("/")[1] + "/" + d.split("/")[2]
+      if sourcepaths.index(sourcepath) == nil
+        sourcepaths.push(sourcepath)
+      end
+    end
+  end
+
+  Kernel.exec('./buildtools/javadoc-analyzer.py',
+            '--path='+sourcepaths.join(','))
+end
+
 task :javadoc do
   sourcepaths = []
   javaDirs = FileList["./**/*.java"].exclude(/^\.\/(dist|downloads|staging)/)
