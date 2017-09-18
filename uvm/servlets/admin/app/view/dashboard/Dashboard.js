@@ -102,9 +102,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 }
             }, {
                 xtype: 'slider',
-                // fieldLabel: 'Timeframe'.t(),
+                bind: '{timeframe}',
                 reference: 'slider',
-                value: 1,
                 increment: 1,
                 minValue: 1,
                 maxValue: 24,

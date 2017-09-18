@@ -79,6 +79,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         // refresh the dashboard manager grid if the widgets were affected
         this.lookup('dashboardManager').getView().refresh();
+        vm.set('timeframe', Ung.dashboardSettings.timeframe);
 
         dashboard.removeAll(true);
         var widgetsCmp = [];
@@ -250,13 +251,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var me = this, vm = me.getViewModel();
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+        Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
         .then(function(result) {
             Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
             vm.set('managerVisible', false);
-            Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
 
             // refetch data for widgets
             var dashboard = me.getView().lookupReference('dashboard');
