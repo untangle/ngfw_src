@@ -389,6 +389,49 @@ class JsBuilder < Target
   end
 end
 
+class ScssBuilder < Target
+  include Rake::DSL if defined?(Rake::DSL)
+
+  @@WEB_DEST = "usr/share/untangle/web"
+  @@SASS_ARGS = "--sourcemap=none --no-cache --scss --style compressed --stdin"
+
+  def initialize(package, name, sourcePath, webDestDir)
+    @name = name
+    @path = sourcePath
+    @webDestDir = webDestDir
+    @targetName = "scss-builder:#{package.name}-#{@name}"
+
+    @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.css"
+
+    @deps = FileList["#{@path}/**/*.scss"]
+
+    @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
+
+    super(package, @deps, @targetName)
+  end
+
+  def all
+    info "[scssbuild] #{@name}: #{@path} -> #{@destPath}"
+    cmd = "cat #{@deps.join(' ')} | sass --load-path #{@path} #{@@SASS_ARGS} #{@destPath}"
+    if not Kernel.system(cmd) then
+      # even if sass errors out, it creates the dest file
+      FileUtils.rm(@destPath, :force => true)
+      raise "cssbuild failed while running #{cmd}"
+    end
+  end
+
+  def make_dependencies
+    file @destPath => @deps do 
+      all
+    end
+    stamptask self => @destPath
+  end
+
+  def to_s
+    @targetName
+  end
+end
+
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
     "#{BuildEnv::downloads}/#{n}"
