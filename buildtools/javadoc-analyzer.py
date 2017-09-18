@@ -347,5 +347,10 @@ def main(argv):
     print 
     print "Elapsed %4.2f s" % (time() - start_time)
 
+    if valid_count == required_count:
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
 if __name__ == "__main__":
     main( sys.argv[1:] )
