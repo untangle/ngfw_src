@@ -7,6 +7,8 @@ rescue LoadError
   require 'gettext/tools'
 end
 
+require 'open3'
+
 class Target
   attr_reader :package, :dependencies, :task
 
@@ -507,6 +509,7 @@ class JavaCompilerTarget < Target
     ## The com directory is like our source directory.
     ## we don't do any .net or .org stuff here.
     @javaFiles = FileList[@basepaths.map { |basepath| "#{basepath}/com/**/*.java"}]
+    @javaModifiedFiles = FileList[]
 
     @isEmpty = false
 
@@ -526,6 +529,7 @@ class JavaCompilerTarget < Target
 
       ## Make the classfile depend on the source itself
       file classFile => f do
+        @javaModifiedFiles.add(f)
         directory = File.dirname classFile
         ## XXX Hokey way to update the timestamp XXX
         FileUtils.mkdir_p directory if !File.exist?(directory)
@@ -549,6 +553,15 @@ class JavaCompilerTarget < Target
     debug jars
     debug cp
     JavaCompiler.compile(@destination, cp, @javaFiles)
+
+    # @javaModifiedFiles.each do |f|
+    #   directory = File.dirname f
+    #   filename = File.basename f
+    #   stdout, stderr, status = Open3.capture3('./buildtools/javadoc-analyzer.py --path=' + directory + " --filename=" + filename)
+    #   if status != 0
+    #     puts stdout
+    #   end
+    # end
   end
 
   def jars
