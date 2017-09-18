@@ -44,12 +44,27 @@ table[border="1"] {
 td, th {
   border:0;
 }
+caption {
+  font-size: .75em;
+  font-weight: bold;
+}
 .TableHeadingColor th, .TableSubHeadingColor th {
- border-bottom: 1px solid #999;
+ border-bottom: 1px solid #ccc;
  text-indent: 5px;
 }
 .TableRowColor th, .TableRowColor td {
    border-bottom: 1px solid #ccc;
+}
+.wikitable {
+  border: 1px solid #000;
+}
+.wikith {
+ border-bottom: 1px solid #000;
+ text-indent: 5px;
+}
+.wikitd {
+ border-bottom: 1px solid #000;
+ text-indent: 5px;
 }
 th {
   line-height: auto;
@@ -65,7 +80,10 @@ a:hover {
   color: #333;
 }
 ul {
-  margin: 10px 0 10px 100px;
+  margin: 5px 0 5px 25px;
+}
+ol {
+  margin: 5px 0 5px 25px;
 }
 li {
   line-height: 1.25em;
@@ -75,6 +93,7 @@ dt {
   margin-top: 1em;
 }
 dd {
+  margin: 5px 0 5px 25px;
   line-height: 1.25em;
 }
 .NavBarCell1 table{
