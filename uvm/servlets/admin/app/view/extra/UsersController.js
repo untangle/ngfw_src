@@ -59,8 +59,8 @@ Ext.define('Ung.view.extra.UsersController', {
                     }
                 });
                 store.isReordered = undefined;
-                list = Ext.Array.pluck(store.getRange(), 'data');
             }
+            list = Ext.Array.pluck(store.getRange(), 'data');
 
             filters.each( function(filter){
                 store.addFilter(filter);

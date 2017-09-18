@@ -470,20 +470,29 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostname()
     {
-        if (getHostnameDevice() != null)
-            return getHostnameDevice();
-        if (getHostnameReports() != null)
-            return getHostnameReports();
-        if (getHostnameDhcp() != null)
-            return getHostnameDhcp();
-        if (getHostnameDirectoryConnector() != null)
-            return getHostnameDirectoryConnector();
-        if (getHostnameDns() != null)
-            return getHostnameDns();
-        if (getHostnameOpenVpn() != null)
-            return getHostnameOpenVpn();
-        if (getHostnameDeviceLastKnown() != null)
-            return getHostnameDeviceLastKnown();
+        String s;
+        s = getHostnameDevice();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameReports();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDhcp();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDirectoryConnector();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDns();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameOpenVpn();
+        if (s != null && s.length() != 0)
+            return s;
+        s = getHostnameDeviceLastKnown();
+        if (s != null && s.length() != 0)
+            return s;
+
         return null;
     }
 
@@ -492,19 +501,27 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostnameSource()
     {
-        if (getHostnameDevice() != null)
+        String s;
+        s = getHostnameDevice();
+        if (s != null && s.length() != 0)
             return "Device";
-        if (getHostnameReports() != null)
+        s = getHostnameReports();
+        if (s != null && s.length() != 0)
             return "Reports";
-        if (getHostnameDhcp() != null)
+        s = getHostnameDhcp();
+        if (s != null && s.length() != 0)
             return "DHCP";
-        if (getHostnameDirectoryConnector() != null)
+        s = getHostnameDirectoryConnector();
+        if (s != null && s.length() != 0)
             return "Directory Connector";
-        if (getHostnameDns() != null)
+        s = getHostnameDns();
+        if (s != null && s.length() != 0)
             return "DHCP";
-        if (getHostnameOpenVpn() != null)
+        s = getHostnameOpenVpn();
+        if (s != null && s.length() != 0)
             return "OpenVPN";
-        if (getHostnameDevice() != null)
+        s = getHostnameDeviceLastKnown();
+        if (s != null && s.length() != 0)
             return "Device Last Known";
         return null;
     }

@@ -525,13 +525,7 @@ Ext.define('Ung.Setup.Interfaces', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.Interfaces',
     controller: 'interfaces',
-    viewModel: {
-        stores: {
-            interfaces: {
-                data: '{interfacesData}'
-            }
-        }
-    },
+
     title: 'Network Cards'.t(),
     layout: {
         type: 'vbox',
@@ -562,9 +556,6 @@ Ext.define('Ung.Setup.Interfaces', {
             clicksToEdit: 1
         },
 
-        bind: {
-            store: '{interfaces}'
-        },
 
         viewConfig: {
             plugins: {
@@ -577,7 +568,7 @@ Ext.define('Ung.Setup.Interfaces', {
                 }
             },
             listeners: {
-                drop: 'onDropInterface'
+                beforedrop: 'onBeforeDrop'
             }
         },
         columns: [{
@@ -718,7 +709,9 @@ Ext.define('Ung.Setup.InterfacesController', {
                     Ext.applyIf(intf, deviceStatusMap[intf.physicalDev]);
                 });
 
-                vm.set('interfacesData', interfaces);
+                // store data is not binded, so grid changes are not affecting the network settings
+                grid.getStore().loadData(Ext.clone(interfaces));
+                grid.getStore().commitChanges(); // so the grid is not dirty after initial data load
 
                 Ext.Array.each(interfaces, function (intf) {
                     me.physicalDevsStore.push([intf.physicalDev, intf.physicalDev]);
@@ -770,25 +763,52 @@ Ext.define('Ung.Setup.InterfacesController', {
         });
     },
 
-    // used when mapping by dragging
-    onDropInterface: function (app, data, overModel, dropPosition, eOpts) {
-        var me = this, vm = me.getViewModel(), i = 0;
+    // use the same mechanism as for drop downs
+    onBeforeDrop: function (node, data, overModel, dropPosition, dropHandlers, eOpts) {
+        dropHandlers.wait = true;
 
-        vm.getStore('interfaces').each(function( currentRow ) {
-            var intf = me.intfOrderArr[i];
-            currentRow.set({
-                interfaceId: intf.interfaceId,
-                name: intf.name
-            });
-            i++;
+        var sourceRecord = data.records[0],
+            targetRecord = overModel;
+
+        if (sourceRecord === null || targetRecord === null) {
+            dropHandlers.cancelDrop();
+            return;
+        }
+
+        // clone phantom records to manipulate (switch) data properly
+        var sourceRecordCopy = sourceRecord.copy(null),
+            targetRecordCopy = targetRecord.copy(null);
+
+        sourceRecord.set({
+            deviceName: targetRecordCopy.get('deviceName'),
+            physicalDev: targetRecordCopy.get('physicalDev'),
+            // systemDev:   targetRecordCopy.get('systemDev'),
+            // symbolicDev: targetRecordCopy.get('symbolicDev'),
+            macAddress:  targetRecordCopy.get('macAddress'),
+            duplex:      targetRecordCopy.get('duplex'),
+            vendor:      targetRecordCopy.get('vendor'),
+            mbit:        targetRecordCopy.get('mbit'),
+            connected:   targetRecordCopy.get('connected')
         });
+        targetRecord.set({
+            deviceName: sourceRecordCopy.get('deviceName'),
+            physicalDev: sourceRecordCopy.get('physicalDev'),
+            // systemDev:   sourceRecordCopy.get('systemDev'),
+            // symbolicDev: sourceRecordCopy.get('symbolicDev'),
+            macAddress:  sourceRecordCopy.get('macAddress'),
+            duplex:      sourceRecordCopy.get('duplex'),
+            vendor:      sourceRecordCopy.get('vendor'),
+            mbit:        sourceRecordCopy.get('mbit'),
+            connected:   sourceRecordCopy.get('connected')
+        });
+        dropHandlers.cancelDrop(); // cancel drop as we do not want to reorder rows but just to set physicalDev
     },
 
     // used when mapping from comboboxes
     setInterfacesMap: function (elem, newValue, oldValue) {
-        var vm = this.getViewModel(), sourceRecord = null, targetRecord = null;
+        var sourceRecord = null, targetRecord = null, grid = this.getView().down('grid');
 
-        vm.getStore('interfaces').each( function( currentRow ) {
+        grid.getStore().each( function( currentRow ) {
             if (oldValue === currentRow.get('physicalDev')) {
                 sourceRecord = currentRow;
             } else if (newValue === currentRow.get('physicalDev')) {
@@ -808,8 +828,8 @@ Ext.define('Ung.Setup.InterfacesController', {
         sourceRecord.set({
             deviceName: newValue,
             physicalDev: targetRecordCopy.get('physicalDev'),
-            systemDev:   targetRecordCopy.get('systemDev'),
-            symbolicDev: targetRecordCopy.get('symbolicDev'),
+            // systemDev:   targetRecordCopy.get('systemDev'),
+            // symbolicDev: targetRecordCopy.get('symbolicDev'),
             macAddress:  targetRecordCopy.get('macAddress'),
             duplex:      targetRecordCopy.get('duplex'),
             vendor:      targetRecordCopy.get('vendor'),
@@ -819,8 +839,8 @@ Ext.define('Ung.Setup.InterfacesController', {
         targetRecord.set({
             deviceName: oldValue,
             physicalDev: sourceRecordCopy.get('physicalDev'),
-            systemDev:   sourceRecordCopy.get('systemDev'),
-            symbolicDev: sourceRecordCopy.get('symbolicDev'),
+            // systemDev:   sourceRecordCopy.get('systemDev'),
+            // symbolicDev: sourceRecordCopy.get('symbolicDev'),
             macAddress:  sourceRecordCopy.get('macAddress'),
             duplex:      sourceRecordCopy.get('duplex'),
             vendor:      sourceRecordCopy.get('vendor'),
@@ -830,12 +850,21 @@ Ext.define('Ung.Setup.InterfacesController', {
     },
 
     save: function (cb) {
-        var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
+        var me = this, vm = me.getViewModel(), grid = me.getView().down('grid'), interfacesMap = {};
 
-        // if no remapping just skip to next step
-        if (grid.getStore().getModifiedRecords().length === 0) {
-            cb(); return;
-        }
+        // if no changes/remapping skip this step
+        if (grid.getStore().getModifiedRecords().length === 0) { cb(); return; }
+
+        grid.getStore().each(function (currentRow) {
+            interfacesMap[currentRow.get('interfaceId')] = currentRow.get('physicalDev');
+        });
+
+        // apply new physicalDev for each interface from initial Network Settings
+        Ext.Array.each(vm.get('networkSettings.interfaces.list'), function (intf, idx) {
+            if (!intf.isVlanInterface) {
+                intf.physicalDev = interfacesMap[intf.interfaceId];
+            }
+        });
 
         Ung.app.loading('Saving Settings'.t());
         rpc.networkManager.setNetworkSettings(function (result, ex) {
@@ -877,7 +906,7 @@ Ext.define('Ung.Setup.Internet', {
         items: [
             { boxLabel: '<strong>' + 'Auto (DHCP)'.t() + '</strong>', inputValue: 'AUTO' },
             { boxLabel: '<strong>' + 'Static'.t() + '</strong>', inputValue: 'STATIC' },
-            { boxLabel: '<strong>' + 'PPPoE'.t() + '</strong>', inputValue: 'PPPoE' }
+            { boxLabel: '<strong>' + 'PPPoE'.t() + '</strong>', inputValue: 'PPPOE' }
         ],
         bind: {
             value: '{wan.v4ConfigType}'

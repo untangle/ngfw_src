@@ -8,6 +8,7 @@ Ext.define('Ung.controller.Global', {
         'Ung.util.Util',
         'Ung.util.Metrics',
         'Ung.view.main.Main',
+        'Ung.overrides.controller.Container',
         'Ung.overrides.data.SortTypes',
         'Ung.overrides.form.field.VTypes',
         'Ung.overrides.LoadMask',
