@@ -33,6 +33,7 @@ Ext.define('Ung.view.reports.Reports', {
             xtype: 'breadcrumb',
             reference: 'breadcrumb',
             store: 'reportstree',
+            useSplitButtons: false,
             listeners: {
                 selectionchange: function (el, node) {
                     if (!node.get('slug')) { return; }
