@@ -11,6 +11,7 @@ import time
 from timeit import default_timer as time
 
 Debug = False
+Type_name = None
 
 class JavaParser:
     def __init__(self, file_path):
@@ -113,7 +114,8 @@ class JavaDocValidator:
 
         self.valid = False
 
-        self.validate()
+        if Type_name is None or Type_name == tree["name"]:
+            self.validate()
 
     def validate(self):
         if Debug:
@@ -123,7 +125,7 @@ class JavaDocValidator:
             return
 
         javadoc = javalang.javadoc.parse(self.tree["documentation"])
-        if "parameters" in self.tree:
+        if "parameters" in self.tree and len(self.tree["parameters"]) > 0:
             if len(javadoc.params) == 0:
                 self.parameters_missing = True
             elif len(javadoc.params) != len(self.tree["parameters"]):
@@ -137,7 +139,7 @@ class JavaDocValidator:
                 self.parameter_mismatch = True
 
         return_type = self.get_return_type()
-        if "return" in self.tree:
+        if "return_type" in self.tree and self.tree["return_type"]:
             if return_type == "void":
                 self.return_mismatch = True
         else:
@@ -248,14 +250,15 @@ def usage():
 
 def main(argv):
     global Debug
+    global Type_name
 
     path = "."
     ignore_paths = []
     filename = None
-    type_name = None
+    show_valid = False
 
     try:
-        opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "path=", "ignore_path=", "filename=", "debug", "type_name="] )
+        opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "path=", "ignore_path=", "filename=", "debug", "type_name=", "show_valid"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -273,7 +276,9 @@ def main(argv):
         if opt in ( "--filename"):
             filename = arg
         if opt in ( "--type_name"):
-            type_name = arg
+            Type_name = arg
+        if opt in ( "--show_valid"):
+            show_valid = True
 
     if Debug is True:
         print "path=" + path
@@ -307,9 +312,6 @@ def main(argv):
         validators[file_path] = []
 
         parser = JavaParser(file_path)
-        package = parser.get_package()
-        if package is not None:
-            validators[file_path].append( parser.get_package() )
         for cd in parser.get_classes():
             validators[file_path].append( cd )
         for md in parser.get_methods():
@@ -327,11 +329,12 @@ def main(argv):
         file_count += 1
         required_count += len(validators[file_path])
         for validator in validators[file_path]:
-            if type_name is not None and validator.tree["name"] != type_name:
+            if Type_name is not None and validator.tree["name"] != Type_name:
                 continue
-            print validator.get_definition()
             report = validator.get_report()
-            print "\t" + "\n\t".join(report)
+            if validator.valid is not True or show_valid is True:
+                print validator.get_definition()
+                print "\t" + "\n\t".join(report)
             if validator.valid is True:
                 valid_count += 1
             elif validator.missing is True:
