@@ -37,6 +37,7 @@ public class CaptivePortalSettings implements Serializable
     private boolean alwaysUseSecureCapture = false;
     private boolean sessionCookiesEnabled = false;
     private boolean redirectUsingHostname = false;
+    private boolean disableSecureRedirect = false;
     private boolean useMacAddress = false;
     private int sessionCookiesTimeout = 3600 * 24;
     private PageType pageType = PageType.BASIC_MESSAGE;
@@ -179,6 +180,16 @@ public class CaptivePortalSettings implements Serializable
     public void setRedirectUsingHostname(boolean newValue)
     {
         this.redirectUsingHostname = newValue;
+    }
+
+    public boolean getDisableSecureRedirect()
+    {
+        return this.disableSecureRedirect;
+    }
+
+    public void setDisableSecureRedirect(boolean newValue)
+    {
+        this.disableSecureRedirect = newValue;
     }
 
     public int getSessionCookiesTimeout()
