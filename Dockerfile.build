@@ -1,4 +1,4 @@
-FROM docker.untangle.int/ngfw:base
+FROM docker.untangle.int/ngfw/base
 MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
 
 RUN apt-get install --yes untangle-development-build
