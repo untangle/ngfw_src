@@ -125,6 +125,7 @@ class JavaDocValidator:
             return
 
         javadoc = javalang.javadoc.parse(self.tree["documentation"])
+
         if "parameters" in self.tree and len(self.tree["parameters"]) > 0:
             if len(javadoc.params) == 0:
                 self.parameters_missing = True
@@ -312,6 +313,9 @@ def main(argv):
         validators[file_path] = []
 
         parser = JavaParser(file_path)
+        package = parser.get_package()
+        if package is not None:
+            validators[file_path].append( parser.get_package() )
         for cd in parser.get_classes():
             validators[file_path].append( cd )
         for md in parser.get_methods():
