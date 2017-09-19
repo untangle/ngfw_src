@@ -412,6 +412,8 @@ class ScssBuilder < Target
 
   def all
     info "[cssbuild] #{@name}: #{@path} -> #{@relativeDestPath}"
+    dir = File.dirname(@destPath)
+    FileUtils.mkdir_p(dir) unless File::directory?(dir)
     cmd = "cat #{@deps.join(' ')} | sass --load-path #{@path} #{@@SASS_ARGS} #{@destPath}"
     if not Kernel.system(cmd) then
       # even if sass errors out, it creates the dest file
