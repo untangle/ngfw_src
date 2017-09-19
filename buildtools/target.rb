@@ -339,7 +339,7 @@ class JsBuilder < Target
   end
 
   def all
-    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
+    info "[jsbuild ] #{@name}: #{@path} -> #{@relativeDestPath}"
     # read all deps into memory, as an array of content
     data = @deps.map { |d| File.open(d).read() }
 
@@ -411,7 +411,7 @@ class ScssBuilder < Target
   end
 
   def all
-    info "[scssbuild] #{@name}: #{@path} -> #{@destPath}"
+    info "[cssbuild] #{@name}: #{@path} -> #{@relativeDestPath}"
     cmd = "cat #{@deps.join(' ')} | sass --load-path #{@path} #{@@SASS_ARGS} #{@destPath}"
     if not Kernel.system(cmd) then
       # even if sass errors out, it creates the dest file
