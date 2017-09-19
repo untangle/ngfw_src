@@ -272,7 +272,9 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 listeners:{
                     show: function(combo){
-                        combo.setValue(combo.getStore().first().get("field1"));
+                        if (combo.getStore().count() > 0) {
+                            combo.setValue(combo.getStore().first().get("field1"));
+                        }
                     }
                 }
             }, {
