@@ -371,11 +371,24 @@
             display: inline-block;
             text-align: left;
             line-height: 1;
+            margin-bottom: 3px;
         }
         .name {
+            font-family: $custom-font-condensed;
+            font-size: 16px;
             font-weight: 600;
-            margin: 5px 0;
+            margin: 3px 0;
             padding-left: 5px;
+            sup {
+                font-family: tahoma, arial, verdana, sans-serif;
+                font-size: 8px;
+                color: #fff;
+                background-color: #6d6d6d;
+                display: inline-block;
+                padding: 0 3px;
+                margin-left: 2px;
+                border-radius: 3px;
+            }
         }
         i {
             //width: 12px;
