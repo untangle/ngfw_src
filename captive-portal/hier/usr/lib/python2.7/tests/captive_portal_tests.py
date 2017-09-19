@@ -864,6 +864,40 @@ class CaptivePortalTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)
 
+    def test_071_checkSecureRedirectEnabled(self):
+        global app, appData
+
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        appData['disableSecureRedirect'] = False
+        app.setSettings(appData)
+
+        # check that basic captive page is show when secure redirection is enabled
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_071.out --insecure https://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_071.out")
+        assert (search == 0)
+
+    def test_072_checkSecureRedirectDisabled(self):
+        global app, appData
+
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        appData['disableSecureRedirect'] = True
+        app.setSettings(appData)
+
+        # check that the request times out when secure redirection is disabled
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_072.out --insecure https://test.untangle.com/")
+        assert (result != 0)
+
     @staticmethod
     def finalTearDown(self):
         global app, appAD, appWeb

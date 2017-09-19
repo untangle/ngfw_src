@@ -103,8 +103,9 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // the traffic needs to be blocked but we have detected SSL traffic
         // so we add a special global attachment that the https handler uses
-        // to detect sessions that need https-->http redirection
-        if (sessreq.getNewServerPort() == 443) {
+        // to detect sessions that need https-->http redirection but only if
+        // that feature is not disabled.
+        if ((app.getSettings().getDisableSecureRedirect() == false) && (sessreq.getNewServerPort() == 443)) {
             sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
