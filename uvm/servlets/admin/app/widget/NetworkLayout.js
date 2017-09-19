@@ -30,6 +30,7 @@ Ext.define('Ung.widget.NetworkLayout', {
     items: [{
         xtype: 'component',
         cls: 'header',
+        height: 40,
         itemId: 'header',
         html: '<h1>' + 'Network Layout'.t() + '</h1>' +
             '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
@@ -51,7 +52,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         }, {
             xtype: 'container',
             cls: 'ifaces',
-            height: 69,
+            height: 75,
             itemId: 'externalInterface'
         }, {
             xtype: 'component',
