@@ -9,16 +9,10 @@ Ext.define('Ung.view.reports.Reports', {
 
     viewModel: {
         data: {
-            fetching: false
+            fetching: false,
+            selection: null
         }
     },
-
-    // tbar: [{
-    //     xtype: 'component',
-    //     bind: {
-    //         html: '{categoryName} | {categories.selection} | {reportName} | {report}'
-    //     }
-    // }],
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -33,6 +27,7 @@ Ext.define('Ung.view.reports.Reports', {
             xtype: 'breadcrumb',
             reference: 'breadcrumb',
             store: 'reportstree',
+            useSplitButtons: false,
             listeners: {
                 selectionchange: function (el, node) {
                     if (!node.get('slug')) { return; }
@@ -154,14 +149,14 @@ Ext.define('Ung.view.reports.Reports', {
                 items: [{
                     hidden: true,
                     bind: {
-                        hidden: '{tree.selection}',
+                        hidden: '{selection}',
                         html: '<h1>{stats.categories.total}</h1>categories <p><span>{stats.categories.app} apps</span></p>'
                     }
                 }, {
                     hidden: true,
                     bind: {
-                        hidden: '{!tree.selection}',
-                        html: '<img src="{tree.selection.icon}"><br/> {tree.selection.text}'
+                        hidden: '{!selection}',
+                        html: '<img src="{selection.icon}"><br/> {selection.text}'
                     }
                 }, {
                     bind: {
@@ -178,7 +173,7 @@ Ext.define('Ung.view.reports.Reports', {
                 cls: 'pls',
                 html: 'select a report from a category',
                 bind: {
-                    html: 'select a report from {tree.selection.text || "a category"}'
+                    html: 'select a report from {selection.text || "a category"}'
                 }
             }]
         }, {
