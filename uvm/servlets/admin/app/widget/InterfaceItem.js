@@ -3,7 +3,7 @@ Ext.define('Ung.widget.InterfaceItem', {
     alias: 'widget.interfaceitem',
 
     bind: {
-        html: '<p class="name" style="display: {iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {iface.vrrpEnabled ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
+        html: '<p class="name" style="display: {iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {(iface.vrrpEnabled && iface.vrrpMaster) ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
             '<div class="speeds">' +
             '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{inbound} kB/s</span></div>' +
             '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{outbound} kB/s</span></div>' +
