@@ -75,6 +75,10 @@ Ext.define('Ung.widget.NetworkLayout', {
                 me.down('#internalInterface').removeAll();
                 Ext.each(result.interfaces.list, function (iface) {
                     if (iface.configType !== 'DISABLED') {
+                        iface.vrrpMaster = false;
+                        if (iface.vrrpEnabled) {
+                            iface.vrrpMaster = rpc.networkManager.isVrrpMaster(iface.interfaceId);
+                        }
                         if (iface.isWan) {
                             me.down('#externalInterface').add({
                                 xtype: 'interfaceitem',
