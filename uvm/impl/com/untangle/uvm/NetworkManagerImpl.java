@@ -2439,17 +2439,21 @@ public class NetworkManagerImpl implements NetworkManager
         int freeId;
         for (freeId = minimum ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
             boolean found = false;
-            for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
-                if ( freeId == intfSettings.getInterfaceId() ) {
-                    found = true;
-                    break;
+            if ( netSettings.getInterfaces() != null ) {
+                for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
+                    if ( freeId == intfSettings.getInterfaceId() ) {
+                        found = true;
+                        break;
+                    }
                 }
             }
             if (found) continue;
-            for (InterfaceSettings intfSettings : netSettings.getVirtualInterfaces()) {
-                if ( freeId == intfSettings.getInterfaceId() ) {
-                    found = true;
-                    break;
+            if ( netSettings.getVirtualInterfaces() != null ) {
+                for (InterfaceSettings intfSettings : netSettings.getVirtualInterfaces()) {
+                    if ( freeId == intfSettings.getInterfaceId() ) {
+                        found = true;
+                        break;
+                    }
                 }
             }
             if (found) continue;
