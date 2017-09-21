@@ -47,15 +47,14 @@ public class TunnelVpnManager
 {
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    private static final String TUNNEL_START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/tunnel-start";
-    private static final String TUNNEL_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/tunnel-stop";
     private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn";
     private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
     private static final String VALIDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-validate";
-    private static final String LAUNCH_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-launch";
 
     private final TunnelVpnApp app;
     private int newTunnelId = -1;
+
+    private HashMap<Integer, Process> processMap = new HashMap<Integer, Process>();
     
     protected TunnelVpnManager(TunnelVpnApp app)
     {
@@ -97,16 +96,36 @@ public class TunnelVpnManager
         insertIptablesRules();
 
         for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
-            if ( !tunnelSettings.getEnabled() ) {
-                logger.info("Tunnel " + tunnelSettings.getTunnelId() + " not enabled. Skipping...");
-                continue;
-            }
-            int tunnelId = tunnelSettings.getTunnelId();
-            String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec( LAUNCH_SCRIPT + " " + tunnelSettings.getTunnelId() + " " + directory);
+            launchProcess( tunnelSettings );
         }
     }
 
+    protected synchronized void launchProcess( TunnelVpnTunnelSettings tunnelSettings )
+    {
+        if ( !tunnelSettings.getEnabled() ) {
+            logger.info("Tunnel " + tunnelSettings.getTunnelId() + " not enabled. Skipping...");
+            return;
+        }
+        int tunnelId = tunnelSettings.getTunnelId();
+        String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
+        String tunnelName = "tunnel-" + tunnelId;
+    
+        String cmd = "/usr/sbin/openvpn ";
+        cmd += "--config " + directory + "/tunnel.conf ";
+        cmd += "--writepid /run/tunnelvpn/" + tunnelName + ".pid ";
+        cmd += "--dev tun" + tunnelId + " ";
+        cmd += "--cd " + directory + " ";
+        cmd += "--log-append /var/log/uvm/tunnel.log ";
+        cmd += "--auth-user-pass auth.txt ";
+        cmd += "--script-security 2 ";
+        cmd += "--up " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-up.sh ";
+        cmd += "--down " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-down.sh ";
+        cmd += "--management 127.0.0.1 " + (2000+tunnelId) + " ";
+
+        Process proc = UvmContextFactory.context().execManager().execEvilProcess( cmd );
+        processMap.put( tunnelId, proc );
+    }
+    
     protected synchronized void importTunnelConfig( String filename, String provider, int tunnelId )
     {
         if (filename==null || provider==null) {
