@@ -17,7 +17,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     onInit: function () {
-        var me = this, vm = me.getViewModel(), path = '';
+        var me = this, vm = me.getViewModel(), path = '', node;
         me.getView().setLoading(false);
 
         me.buildTablesStore();
@@ -26,16 +26,27 @@ Ext.define('Ung.view.reports.ReportsController', {
 
             if (Ung.app.servletContext === 'reports') {
                 path = '/reports/' + window.location.hash.replace('#', '');
+                node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#', ''));
             } else {
                 path = window.location.hash.replace('#', '');
+                node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#reports/', ''));
             }
+
+            // selected node icon/text for category stats
+            vm.set('selection', { icon: node.get('icon'), text: node.get('text') });
+
+            // breadcrumb selection
+            me.lookup('breadcrumb').setSelection(node);
+
+            // tree selection
             me.lookup('tree').collapseAll();
-            me.lookup('tree').selectPath(path, 'slug', '/', me.selectPath, me);
+            me.lookup('tree').selectPath(path, 'slug', '/', Ext.emptyFn, me);
+
+            me.showNode(node); // shows the selected report or category stats
         });
         vm.bind('{fetching}', function (val) {
             if (!val) { Ext.MessageBox.hide(); } // hide any loading message box
         });
-        me.buildStats();
     },
 
     buildTablesStore: function () {
@@ -60,16 +71,8 @@ Ext.define('Ung.view.reports.ReportsController', {
         }
     },
 
-    /**
-     * selects a tree node (report or category) based on location hash
-     * and updates viewmodel with the report entry
-     */
-    selectPath: function (success, node) {
+    showNode: function (node) {
         var me = this, vm = me.getViewModel(), record;
-
-        if (!success) { console.log('error'); return; }
-
-        me.lookup('breadcrumb').setSelection(node); // select node in breadcrumb
 
         if (node.isLeaf()) {
             // report node
@@ -83,12 +86,11 @@ Ext.define('Ung.view.reports.ReportsController', {
             me.lookup('cards').setActiveItem('report');
         } else {
             me.lookup('cards').setActiveItem('category');
-            me.buildStats();
+            me.buildStats(node);
             node.expand();
         }
-
-        // me.lookup('breadcrumb').setSelection(node);
     },
+
 
     /**
      * the tree item renderer used after filtering tree
@@ -141,14 +143,15 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         me.buildStats();
         me.lookup('cards').setActiveItem('category');
+        me.getViewModel().set('selection', null);
         me.getViewModel().set('hash', null);
     },
 
     /**
      * builds statistics for categories
      */
-    buildStats: function () {
-        var me = this, vm = me.getViewModel(), tree = me.lookup('tree'), selection,
+    buildStats: function (node) {
+        var me = this, vm = me.getViewModel(),
         stats = {
             set: false,
             reports: {
@@ -164,18 +167,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             }
         };
 
-        if (tree.getSelection().length === 0) {
-            selection = tree.getRootNode();
-        } else {
-            selection = tree.getSelection()[0];
-        }
+        if (!node) { node = Ext.getStore('reportstree').getRoot(); }
 
-        selection.cascadeBy(function (node) {
-            if (node.isRoot()) { return; }
-            if (node.isLeaf()) {
+        node.cascade(function (n) {
+            if (n.isRoot()) { return; }
+            if (n.isLeaf()) {
                 stats.reports.total += 1;
-                if (!node.get('readOnly')) { stats.reports.custom += 1; }
-                switch(node.get('type')) {
+                if (!n.get('readOnly')) { stats.reports.custom += 1; }
+                switch(n.get('type')) {
                     case 'TIME_GRAPH':
                     case 'TIME_GRAPH_DYNAMIC':
                     case 'PIE_GRAPH':
@@ -187,16 +186,11 @@ Ext.define('Ung.view.reports.ReportsController', {
                 }
             } else {
                 stats.categories.total += 1;
-                if (node.get('type') === 'app') {
+                if (n.get('type') === 'app') {
                     stats.categories.app += 1;
                 }
             }
         });
         vm.set('stats', stats);
-        // vm.notify();
-    },
-
-    // breadcrumbSelection: function (el, node) {
-    //     console.log(node);
-    // }
+    }
 });
