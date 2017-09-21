@@ -37,6 +37,18 @@ public interface ExecManager
     ExecManagerResultReader execEvil( String cmd ) throws IOException;
 
     /**
+     * Excecute the specified command and return the process
+     * Called "execEvil" because it calls fork which can cause issues
+     */
+    Process execEvilProcess(String cmd);
+
+    /**
+     * Excecute the specified command and return the process
+     * Called "execEvil" because it calls fork which can cause issues
+     */
+    Process execEvilProcess(String cmd[]);
+    
+    /**
      * Close this instance of exec manager
      * This shuts down the "launcher" process
      * after this this ExecManager can no longer be used

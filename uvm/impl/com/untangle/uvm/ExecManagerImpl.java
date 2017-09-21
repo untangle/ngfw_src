@@ -140,6 +140,34 @@ public class ExecManagerImpl implements ExecManager
         }
     }
 
+    public Process execEvilProcess(String cmd[])
+    {
+        if (logger.isInfoEnabled()) {
+            String cmdStr = new String();
+            for (int i = 0 ; i < cmd.length; i++) {
+                cmdStr = cmdStr.concat(cmd[i] + " ");
+            }
+            logger.info("ExecManager.execEvil( " + cmdStr + ")");
+        }
+        try {
+            return Runtime.getRuntime().exec(cmd, null, null);
+        } catch (IOException e) {
+            logger.warn("exec error:",e);
+            return null;
+        }
+    }
+
+    public Process execEvilProcess(String cmd)
+    {
+        StringTokenizer st = new StringTokenizer(cmd);
+        String[] cmdArray = new String[st.countTokens()];
+        for (int i = 0; i < cmdArray.length; i++) {
+            cmdArray[i] = st.nextToken();
+        }
+
+        return execEvilProcess(cmdArray);
+    }
+    
     public ExecManagerResultReader execEvil(String cmd) throws IOException
     {
         StringTokenizer st = new StringTokenizer(cmd);
