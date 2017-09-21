@@ -24,7 +24,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     controller: 'dashboard',
     viewModel: {
         data: {
-            managerVisible: false
+            managerVisible: false,
+            timeframe: 1
+        },
+        formulas: {
+            timeframeText: function (get) {
+                return get('timeframe') + ' ' + (get('timeframe') === 1 ? 'hour'.t() + ' (' + 'default'.t() + ')' : 'hours'.t());
+            }
         }
     },
 
@@ -87,7 +93,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'toolbar',
             dock: 'top',
-            padding: 5,
+            padding: 10,
             style: {
                 background: '#FFF'
             },
@@ -98,12 +104,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             items: [{
                 xtype: 'label',
                 bind: {
-                    html: '<strong>' + 'Timeframe'.t() + ': ' + '{slider.value} hour(s)' + '</strong>'
+                    html: '<strong>' + 'Timeframe'.t() + '</strong>: ' + '{timeframeText}'
                 }
             }, {
                 xtype: 'slider',
                 bind: '{timeframe}',
-                reference: 'slider',
                 increment: 1,
                 minValue: 1,
                 maxValue: 24,
