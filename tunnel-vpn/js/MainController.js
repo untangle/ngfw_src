@@ -223,6 +223,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
     getNextAvailableTunnelId: function(current){
         var found = false;
         var tunnel;
+        var vm = this.getViewModel();
         var tunnels = vm.get('settings.tunnels.list');
         var virtualInterfaces = rpc.networkManager.getNetworkSettings().virtualInterfaces.list;
 
