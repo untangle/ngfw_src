@@ -127,11 +127,11 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
         me.entry = vm.get('entry');
 
-        var startDate = vm.get('startDate');
-        var endDate = vm.get('tillNow') ? null : vm.get('endDate');
+        var startDate = Ext.Date.add(vm.get('startDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000));
+        var endDate = vm.get('tillNow') ? null : Ext.Date.add(vm.get('endDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000));
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            startDate = new Date(rpc.systemManager.getMilliseconds() - Ung.dashboardSettings.timeframe * 3600 * 1000);
-            endDate = new Date(rpc.systemManager.getMilliseconds());
+            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000 + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset);
+            endDate = null;
         }
 
         var grid = v.down('grid');

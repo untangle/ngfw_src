@@ -170,7 +170,7 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     value: '{_ed}',
                     hidden: '{tillNow}',
-                    minValue: '{_sd}',
+                    // minValue: '{_sd}', // this caused startDate to have wrong 00:00 hours
                     disabled: '{fetching}'
                 },
                 maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
