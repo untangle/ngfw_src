@@ -21,7 +21,8 @@ Ext.define('Ung.view.extra.UsersController', {
     resetView: function( btn ){
         var grid = this.getView().down('#usersgrid');
         Ext.state.Manager.clear(grid.stateId);
-        grid.filters.clearFilters();
+        this.getView().down('ungridfilter').setValue('');
+        grid.getStore().clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
 
