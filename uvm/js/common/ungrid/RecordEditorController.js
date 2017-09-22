@@ -270,6 +270,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
      * Adds a new condition for the edited rule
      */
     addCondition: function (menu, item) {
+        if( item === undefined){
+            return;
+        }
         var newCond = {
             conditionType: item.conditionType,
             invert: false,
