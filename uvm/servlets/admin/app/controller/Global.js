@@ -70,7 +70,7 @@ Ext.define('Ung.controller.Global', {
             'config/:configName/:configView/:subView': 'onConfig',
             'reports': { before: 'detectChanges', action: 'onReports' },
             'reports/:category': { before: 'detectChanges', action: 'onReports' },
-            'reports/:category/:entry': { before: 'detectChanges', action: 'onReports' },
+            'reports/:category/:entry': { before: 'detectChanges', action: 'onReports', conditions: { ':entry': '(.*)' } },
             'sessions': { before: 'detectChanges', action: 'onSessions' },
             'sessions/:params': {
                 action: 'onSessions',
