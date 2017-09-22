@@ -135,11 +135,13 @@ Ext.define('Ung.view.reports.ReportsController', {
      * resets the view to an initial state
      */
     resetView: function () {
-        var me = this, tree = me.lookup('tree');
+        var me = this, tree = me.lookup('tree'), breadcrumb = me.lookup('breadcrumb');
         tree.collapseAll();
         tree.getSelectionModel().deselectAll();
         tree.getStore().clearFilter();
         tree.down('textfield').setValue('');
+
+        breadcrumb.setSelection('root');
 
         me.buildStats();
         me.lookup('cards').setActiveItem('category');
