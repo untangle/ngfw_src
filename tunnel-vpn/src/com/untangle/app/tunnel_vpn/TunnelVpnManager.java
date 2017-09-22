@@ -95,6 +95,13 @@ public class TunnelVpnManager
 
         insertIptablesRules();
 
+        try {
+            File dir = new File("/run/tunnelvpn/");
+            dir.mkdir();
+        } catch (Exception e) {
+            logger.warn("Unable to create PID directory",e);
+        }
+
         for( TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels() ) {
             launchProcess( tunnelSettings );
         }
