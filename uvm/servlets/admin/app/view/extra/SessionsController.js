@@ -36,10 +36,14 @@ Ext.define('Ung.view.extra.SessionsController', {
     },
 
     resetView: function( btn ){
-        var grid = this.getView().down('#sessionsgrid');
+        var grid = this.getView().down('#sessionsgrid'),
+            store = grid.getStore();
+
         Ext.state.Manager.clear(grid.stateId);
+        store.getSorters().removeAll();
+        store.sort('bypassed', 'ASC');
         this.getView().down('ungridfilter').setValue('');
-        grid.getStore().clearFilter();
+        store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
 
@@ -83,8 +87,10 @@ Ext.define('Ung.view.extra.SessionsController', {
                 });
 
                 store.loadData( sessions );
-                store.sort('creationTime', 'DSC');
 
+                if(store.getSorters().items.length == 0){
+                    store.sort('bypassed', 'ASC');
+                }
 
                 v.down('ungridstatus').fireEvent('update');
 
