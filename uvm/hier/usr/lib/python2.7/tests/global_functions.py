@@ -422,11 +422,15 @@ def random_email(length=10):
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,  # SIOCGIFADDR
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+    try:
+        ifaddr = socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,  # SIOCGIFADDR
+            struct.pack('256s', ifname[:15])
+        )[20:24])
+    except IOError: # interface is present in routing tables but does not have any assigned IP
+        ifaddr ="0.0.0.0"
+    return ifaddr
 
 def __get_gateway(ifname):
     cmd = "route -n | grep '[ \t]" + ifname + "' | grep 'UH[ \t]' | awk '{print $1}'"
