@@ -18,7 +18,7 @@ defaultRackId = 1
 app = None
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname("test.untangle.com")
-dnsServer = "74.123.28.4"
+dnsServer = "8.8.8.8" # Google DNS
 
 def create_rule_single_condition( conditionType, value, blocked=True, flagged=True, invert=False ):
     conditionTypeStr = str(conditionType)
