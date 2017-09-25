@@ -216,28 +216,6 @@
                 "action": {
                     "actionType": "SET_PRIORITY",
                     "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
-                    "priority": 4
-                },
-                "conditions": {
-                    "javaClass": "java.util.LinkedList",
-                    "list": [
-                        {
-                            "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
-                            "value": "*dropbox.com"
-                        }
-                    ]
-                },
-                "description": "Deprioritize dropbox.net sync",
-                "enabled": true,
-                "id": 10,
-                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
-                "ruleId": 12345
-            },
-            {
-                "action": {
-                    "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -252,7 +230,7 @@
                 },
                 "description": "Prioritize pandora streaming audio",
                 "enabled": true,
-                "id": 11,
+                "id": 10,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -274,7 +252,7 @@
                 },
                 "description": "Prioritize last.fm streaming audio",
                 "enabled": true,
-                "id": 12,
+                "id": 11,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -296,7 +274,7 @@
                 },
                 "description": "Prioritize HTTP to Games sites",
                 "enabled": true,
-                "id": 13,
+                "id": 12,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -318,7 +296,7 @@
                 },
                 "description": "Prioritize Hulu streaming video",
                 "enabled": true,
-                "id": 14,
+                "id": 13,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -340,7 +318,7 @@
                 },
                 "description": "Prioritize Netflix streaming video",
                 "enabled": true,
-                "id": 15,
+                "id": 14,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -362,7 +340,7 @@
                 },
                 "description": "Limit dropbox.com sync",
                 "enabled": true,
-                "id": 16,
+                "id": 15,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -385,7 +363,7 @@
                 },
                 "description": "Do not Prioritize large HTTP downloads (>10meg)",
                 "enabled": true,
-                "id": 17,
+                "id": 16,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -407,7 +385,7 @@
                 },
                 "description": "Prioritize HTTP",
                 "enabled": true,
-                "id": 18,
+                "id": 17,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -429,7 +407,7 @@
                 },
                 "description": "Prioritize HTTPS",
                 "enabled": true,
-                "id": 19,
+                "id": 18,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             }
