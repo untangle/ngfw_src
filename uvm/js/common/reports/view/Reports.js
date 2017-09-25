@@ -30,7 +30,7 @@ Ext.define('Ung.view.reports.Reports', {
             useSplitButtons: false,
             listeners: {
                 selectionchange: function (el, node) {
-                    if (!node.get('slug')) { return; }
+                    if (!node.get('url')) { return; }
                     if (node) {
                         if (node.get('url')) {
                             Ung.app.redirectTo('#reports/' + node.get('url'));

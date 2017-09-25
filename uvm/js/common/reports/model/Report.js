@@ -47,7 +47,7 @@ Ext.define ('Ung.model.Report', {
             name: 'slug',
             calculate: function (entry) {
                 if (entry.title) {
-                    return entry.title.replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+                    return entry.title.replace(/\s+/g, '-').toLowerCase();
                 }
                 return '';
             }

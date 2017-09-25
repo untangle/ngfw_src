@@ -1139,7 +1139,7 @@ Ext.define('Ung.Setup.InternetController', {
 
         // before saving clear unwanted settings
         var wan = vm.get('wan');
-        if (wan.v4ConfigType === 'AUTO' || wan.v4ConfigType === 'PPPoE') {
+        if (wan.v4ConfigType === 'AUTO' || wan.v4ConfigType === 'PPPOE') {
             wan.v4StaticAddress = null;
             wan.v4StaticPrefix = null;
             wan.v4StaticGateway = null;
@@ -1149,7 +1149,7 @@ Ext.define('Ung.Setup.InternetController', {
         if (wan.v4ConfigType === 'STATIC') {
             wan.v4NatEgressTraffic = true;
         }
-        if (wan.v4ConfigType === 'PPPoE') {
+        if (wan.v4ConfigType === 'PPPOE') {
             wan.v4NatEgressTraffic = true;
             wan.v4PPPoEUsePeerDns = true;
         }

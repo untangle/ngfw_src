@@ -34,10 +34,14 @@ Ext.define('Ung.view.extra.HostsController', {
     },
 
     resetView: function( btn ){
-        var grid = this.getView().down('#hostsgrid');
+        var grid = this.getView().down('#hostsgrid'),
+            store = grid.getStore();
+
         Ext.state.Manager.clear(grid.stateId);
+        store.getSorters().removeAll();
+        store.sort('address', 'ASC');
         this.getView().down('ungridfilter').setValue('');
-        grid.getStore().clearFilter();
+        store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
 
@@ -69,7 +73,10 @@ Ext.define('Ung.view.extra.HostsController', {
             .then(function(result) {
                 grid.getView().setLoading(false);
                 store.loadData(result.list);
-                store.sort('address', 'DSC');
+
+                if(store.getSorters().items.length == 0){
+                    store.sort('address', 'ASC');
+                }
 
                 v.down('ungridstatus').fireEvent('update');
 

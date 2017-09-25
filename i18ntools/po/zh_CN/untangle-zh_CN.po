@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-03 21:33-0700\n"
-"PO-Revision-Date: 2017-06-27 10:41\n"
+"PO-Revision-Date: 2017-09-25 12:51\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -75,9 +75,6 @@ msgstr "主机"
 
 msgid "User"
 msgstr "用户"
-
-msgid "Time"
-msgstr "Time：时间"
 
 msgid "Destination Port"
 msgstr "目标端口"
@@ -2090,9 +2087,6 @@ msgstr "到服务器的连接已丢失。"
 msgid "Press OK to return to the login page."
 msgstr "按“确定”返回到登录页面。"
 
-msgid "An error has occurred"
-msgstr "发生了一个错误"
-
 msgid "An error has occurred."
 msgstr "发生了一个错误"
 
@@ -2113,9 +2107,6 @@ msgstr "异常JS堆"
 
 msgid "Build"
 msgstr "编译"
-
-msgid "TODO"
-msgstr "待办"
 
 msgid "Sunday"
 msgstr "星期天"
@@ -2156,17 +2147,11 @@ msgstr "兆字节"
 msgid "Gbytes"
 msgstr "千兆字节"
 
-msgid "Please Try Again"
-msgstr "请再试一次。"
-
 msgid "Edit"
 msgstr "编辑"
 
 msgid "Delete"
 msgstr "删除"
-
-msgid "Reorder"
-msgstr "记录器"
 
 msgid "Drag and drop to reorganize"
 msgstr "拖放到重组"
@@ -2177,20 +2162,11 @@ msgstr "刷新"
 msgid "Add"
 msgstr "添加"
 
-msgid "Add New Row"
-msgstr "添加新行"
-
 msgid "Import"
 msgstr "导入"
 
-msgid "Import From File"
-msgstr "从文件导入"
-
 msgid "Export"
 msgstr "输出"
-
-msgid "Export To File"
-msgstr "导出到文件"
 
 msgid "Import successful"
 msgstr "导入成功"
@@ -2209,9 +2185,6 @@ msgstr "导入失败。导入的文件包含{0}无效的记录，也没有有效
 
 msgid "Exporting Settings..."
 msgstr "正在加载设置。。。"
-
-msgid "Grid data loading is not yet completed."
-msgstr "网格数据加载尚未完成。"
 
 msgid "Import Settings"
 msgstr "导入设置"
@@ -2240,9 +2213,6 @@ msgstr "正在加载设置。。。"
 msgid "Import failed."
 msgstr "导入失败。"
 
-msgid "Import failed. No file chosen."
-msgstr "导入失败。没有选择文件。"
-
 msgid "Network"
 msgstr "网络"
 
@@ -2251,9 +2221,6 @@ msgstr "注定地方"
 
 msgid "Source MAC"
 msgstr "源MAC"
-
-msgid "Refreshing..."
-msgstr "刷新中。。。"
 
 msgid "Automatic 2.4 GHz"
 msgstr "自动的2.4 GHz"
@@ -2372,12 +2339,6 @@ msgstr "157  -  5.785 GHz的"
 msgid "161 - 5.805 GHz"
 msgstr "161  -  5.805 GHz的"
 
-msgid "165 - 5.825 GHz"
-msgstr "165  -  5.825 GHz的"
-
-msgid "Interface Status"
-msgstr "Internet状态"
-
 msgid "Device"
 msgstr "器"
 
@@ -2410,12 +2371,6 @@ msgstr "TX降"
 
 msgid "Type"
 msgstr "类型"
-
-msgid "Rx Bytes"
-msgstr "接收字节"
-
-msgid "Tx Bytes"
-msgstr "发送字节"
 
 msgid "Help"
 msgstr "帮助"
@@ -2499,20 +2454,8 @@ msgstr "测试连接性"
 msgid "Ping Test"
 msgstr "Ping测试"
 
-msgid "Loading device mapper..."
-msgstr "加载的Device Mapper ..."
-
-msgid "Refresh Device Status"
-msgstr "刷新设备状态"
-
-msgid "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
-msgstr "右键单击设备打开一个组合，并从列表中选择所需的设备。当选择另一台设备2设备切换。"
-
 msgid "Vendor"
 msgstr "供应商"
-
-msgid "Refreshing Device Status..."
-msgstr "刷新设备状态..."
 
 msgid "How to map Devices with Interfaces"
 msgstr "如何用映射接口的设备"
@@ -2525,9 +2468,6 @@ msgstr ""
 
 msgid "Interface configuration"
 msgstr "接口配置"
-
-msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
-msgstr "使用此页配置每个接口的配置和其映射到物理网卡。"
 
 msgid "[enter IPv4 address]"
 msgstr "[进入IPv4地址]"
@@ -2547,20 +2487,11 @@ msgstr "[输入值]"
 msgid "Edit Interface"
 msgstr "客户端界面"
 
-msgid "Is VLAN (802.1q) Interface"
-msgstr "为VLAN（802.1Q）接口"
-
-msgid "Is Wireless Interface"
-msgstr "是无线接口"
-
 msgid "Parent Interface"
 msgstr "客户端界面"
 
 msgid "802.1q Tag"
 msgstr "802.1Q标签"
-
-msgid "802.1q Tag must be a valid integer."
-msgstr "802.1Q标签必须是一个有效的整数。"
 
 msgid "Config Type"
 msgstr "配置类型"
@@ -2691,9 +2622,6 @@ msgstr "终止范围"
 msgid "Lease Duration"
 msgstr "租约期限"
 
-msgid "DHCP Advanced"
-msgstr "DHCP高级"
-
 msgid "DNS Override"
 msgstr "互联网(Web)覆盖"
 
@@ -2723,9 +2651,6 @@ msgstr "VRRP优先级必须在1和255之间的有效整数。"
 
 msgid "VRRP Aliases"
 msgstr "VRRP别名"
-
-msgid "Renewing DHCP Lease..."
-msgstr "续订DHCP租约..."
 
 msgid "(eg: gateway)"
 msgstr "（如：网关）"
@@ -2778,35 +2703,11 @@ msgstr "新目标"
 msgid "New Port"
 msgstr "新港"
 
-msgid "Port Forward Troubleshooter"
-msgstr "端口转发疑难解答"
-
-msgid "Troubleshooting Port Forwards"
-msgstr "故障排除端口转发"
-
-msgid "Test 1: Verify pinging the <b>new destination</b>"
-msgstr "测试1：验证查验<B>新目标</ B>"
-
-msgid "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>"
-msgstr "测试2：验证连接到新的目标<BR/> <I>此测试仅适用于TCP端口转发</ I>"
-
-msgid "Connect Test"
-msgstr "连接测试"
-
-msgid "Test 3: Watch traffic using the Packet Test"
-msgstr "测试3：采用分组测试看交通"
-
 msgid "Packet Test"
 msgstr "分组测试"
 
-msgid "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}"
-msgstr "如需更多帮助排除故障的端口转发查看<BR/> {0}端口转发故障排除指南{1}"
-
 msgid "Other"
 msgstr "其他"
-
-msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
-msgstr "端口转发规则转发会话匹配从一个公网IP的配置标准，以内部（NAT'd）网络上的IP。为了评估规则。"
 
 msgid "The following ports are currently reserved and can not be forwarded:"
 msgstr "目前下面的端口是保留的，不能被转发："
@@ -2859,9 +2760,6 @@ msgstr "旁路"
 msgid "Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed."
 msgstr "绕过规则控制哪些流量被扫描的应用程序。旁路流量跳过应用处理。为了评估规则。满足没有规则会话不会绕过。"
 
-msgid "Enable Bypass Rule"
-msgstr "启用绕过规则"
-
 msgid "Process"
 msgstr "流程"
 
@@ -2880,9 +2778,6 @@ msgstr "下一跳"
 msgid "Local interface"
 msgstr "本地接口"
 
-msgid "[1.2.3.0]"
-msgstr "[1.2.3.0]"
-
 msgid "If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address."
 msgstr "如果<B>下一跳</ b>是一个IP地址，网络将通过指定的IP地址进行路由。"
 
@@ -2897,9 +2792,6 @@ msgstr "静态路由是控制流量如何通过路由的目标地址的全球航
 
 msgid "Current Routes"
 msgstr "当前主机"
-
-msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
-msgstr "目前航线显示当前路由系统的配置以及所有的流量将被路由。"
 
 msgid "Static DNS Entries"
 msgstr "静态DNS条目"
@@ -2985,14 +2877,8 @@ msgstr "{0}注{1}在启用QoS的有效下载带宽和上传带宽限制，必须
 msgid "Upload Reservation"
 msgstr "上传预订"
 
-msgid "No reservation"
-msgstr "没有预订"
-
 msgid "Upload Limit"
 msgstr "上传限制"
-
-msgid "No limit"
-msgstr "没有限制"
 
 msgid "Download Reservation"
 msgstr "下载预约"
@@ -3051,26 +2937,14 @@ msgstr "自定义的dnsmasq选项。"
 msgid "Warning: Invalid syntax will halt all DHCP & DNS services."
 msgstr "警告：无效的语法将停止所有的DHCP和DNS服务。"
 
-msgid "Forward Filter Rules"
-msgstr "转发过滤规则"
-
 msgid "IPv6"
 msgstr "IPv6的"
-
-msgid "Input Filter Rules"
-msgstr "输入过滤规则"
 
 msgid "Filter Rules"
 msgstr "过滤规则"
 
-msgid "Enable Forward Filter Rule"
-msgstr "启用转发过滤规则"
-
 msgid "Enable IPv6 Support"
 msgstr "启用IPv6支持"
-
-msgid "Enable Input Filter Rule"
-msgstr "使能输入过滤规则"
 
 msgid "10000 Mbps, Full Duplex"
 msgstr "10000 Mbps的，全双工"
@@ -3129,32 +3003,11 @@ msgstr "网络测试"
 msgid "The <b>Connectivity Test</b> verifies a working connection to the Internet."
 msgstr "在<b>连接测试</ b>的验证工作连接到互联网。"
 
-msgid "Unable to complete the Connectivity Test."
-msgstr "无法完成连接测试。"
-
 msgid "Connectivity Test Output"
 msgstr "连通性测试输出"
 
-msgid "Testing Internet Connectivity"
-msgstr "测试互联网连接"
-
-msgid "Failed to connect to the Internet, DNS failed."
-msgstr "无法连接到互联网，DNS失败。"
-
-msgid "Failed to connect to the Internet, TCP failed."
-msgstr "无法连接到互联网，TCP失败。"
-
-msgid "Successfully connected to the Internet."
-msgstr "成功地连接到互联网。"
-
-msgid "Test Connectivity Result"
-msgstr "测试连接结果"
-
 msgid "The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"
 msgstr "在<b> Ping测试</ B>可以用来测试特定主机或客户端可以ping通"
-
-msgid "Unable to complete the Ping Test."
-msgstr "无法完成Ping测试。"
 
 msgid "Ping Test Output"
 msgstr "Ping测试输出"
@@ -3162,26 +3015,14 @@ msgstr "Ping测试输出"
 msgid "IP Address or Hostname"
 msgstr "服务器地址或主机名"
 
-msgid "Please enter a valid IP Address or Hostname"
-msgstr "请输入有效的IP地址或主机名"
-
 msgid "The <b>DNS Test</b> can be used to test DNS lookups"
 msgstr "在<b> DNS测试</ B>可以用来测试DNS查询"
-
-msgid "Unable to complete DNS test."
-msgstr "无法完成DNS测试。"
 
 msgid "DNS Test Output"
 msgstr "DNS测试输出"
 
-msgid "Please enter a valid Hostname"
-msgstr "请输入有效的主机名"
-
 msgid "The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."
 msgstr "在<b>连接测试</ b>的验证解开可以打开指定的主机或客户端上的TCP连接的端口。"
-
-msgid "Unable to complete Connection test."
-msgstr "无法完成连接测试。"
 
 msgid "Connection Test Output"
 msgstr "连接测试输出"
@@ -3189,35 +3030,20 @@ msgstr "连接测试输出"
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "在<b> Traceroute测试</ b>的跟踪路由到给定的主机或客户端。"
 
-msgid "Unable to complete the Traceroute Test."
-msgstr "无法完成Traceroute测试。"
-
 msgid "Traceroute Test Output"
 msgstr "Traceroute测试输出"
 
 msgid "The <b>Download Test</b> downloads a file."
 msgstr "在<b>下载测试</ B>下载文件。"
 
-msgid "Unable to complete the Download Test."
-msgstr "无法完成下载测试。"
-
 msgid "Download Test Output"
 msgstr "下载测试输出"
-
-msgid "Please enter a valid Url"
-msgstr "请输入有效的网址"
 
 msgid "The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."
 msgstr "在<b>分组测试</ B>可以用来在网络上线进行故障排除查看数据包。"
 
-msgid "Unable to complete the Packet Test."
-msgstr "无法完成数据包测试。"
-
 msgid "Packet Test Output"
 msgstr "分组测试输出"
-
-msgid "tcpdump arguments and expression"
-msgstr "tcpdump的观点和表达"
 
 msgid "5 seconds"
 msgstr "5秒"
@@ -3228,47 +3054,17 @@ msgstr "30秒"
 msgid "120 seconds"
 msgstr "120秒"
 
-msgid "Timeout:"
-msgstr "暂停："
-
 msgid "Basic"
 msgstr "基"
 
 msgid "Exporting Packet Dump..."
 msgstr "导出数据包转储..."
 
-msgid "A Domain Name must be specified."
-msgstr "域名必须指定。"
-
-msgid "A HTTPS port must be specified."
-msgstr "一个HTTPS端口必须被指定。"
-
-msgid "A HTTP port must be specified."
-msgstr "一个HTTP端口必须被指定。"
-
 msgid "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."
 msgstr "服务质量是启用。在广域网带宽请设置有效的下载带宽和上传带宽限制所有WAN接口。"
 
-msgid "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
-msgstr "在输入过滤规则块中的所有规则被禁用。这是危险的，不允许的！请参考文档。"
-
-msgid "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."
-msgstr "在输入过滤规则块中的所有规则缺失。这是危险的，不允许的！请参考文档。"
-
-msgid "The Allow SSH rule in Input Filter Rules has been enabled."
-msgstr "在输入过滤规则允许SSH规则已启用。"
-
-msgid "If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server."
-msgstr "如果管理员/超级用户口令选择不当，使SSH可以是非常危险的，会危及服务器的安全性。"
-
 msgid "Do you want to continue anyway?"
 msgstr "你要继续吗？"
-
-msgid "Applying Network Settings..."
-msgstr "应用网络设置..."
-
-msgid "Unable to run this Network Utility."
-msgstr "无法运行该网络实用工具。"
 
 msgid "Clear Output"
 msgstr "清除输出"
@@ -3282,9 +3078,6 @@ msgstr "测试完成"
 msgid "Current Hosts"
 msgstr "当前主机"
 
-msgid "This shows all current hosts."
-msgstr "这显示了当前主机。"
-
 msgid "MAC Vendor"
 msgstr "MAC供应商"
 
@@ -3294,32 +3087,8 @@ msgstr "上次访问时间"
 msgid "Last Session Time"
 msgstr "上次会话时间"
 
-msgid "Quota Remaining"
-msgstr "剩余配额"
-
-msgid "Quota Issue Time"
-msgstr "配额发行时间"
-
-msgid "Quota Expiration Time"
-msgstr "配额到期时间"
-
 msgid "User Agent"
 msgstr "user-agent="
-
-msgid "Authenticated"
-msgstr "经过身份验证"
-
-msgid "Current Quotas"
-msgstr "当前配额"
-
-msgid "This shows all hosts currently with quotas."
-msgstr "这显示所有主机当前配额。"
-
-msgid "Allocated"
-msgstr "分配"
-
-msgid "Expires"
-msgstr "到期"
 
 msgid "Refill Quota"
 msgstr "补充配额"
@@ -3339,17 +3108,8 @@ msgstr "升级"
 msgid "Checking for upgrades..."
 msgstr "检查升级..."
 
-msgid "Upgrades are available!"
-msgstr "可升级！"
-
 msgid "No upgrades available."
 msgstr "无可用升级。"
-
-msgid "Package: {0} of {1}<br/>Speed: {2}"
-msgstr "包装{0}的{1} <BR/>速度{2}"
-
-msgid "Downloading packages... Please wait"
-msgstr "下载升级...请稍候"
 
 msgid "Downloading upgrades failed."
 msgstr "正在下载更新。。。"
@@ -3363,9 +3123,6 @@ msgstr "自动升级"
 msgid "Automatically Install Upgrades"
 msgstr "自动安装升级补丁"
 
-msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
-msgstr "如果有新的升级补丁可用，系统将自动下载并安装。在升级补丁的安装过程中系统有可能会重新启动并造成短暂的连接中断。"
-
 msgid "Do Not Automatically Install Upgrades"
 msgstr "不要自动安装升级补丁"
 
@@ -3377,9 +3134,6 @@ msgstr "注意：禁止自动更新功能将不会影响到签名和列表的更
 
 msgid "Automatic Upgrade Schedule"
 msgstr "自动升级时间表"
-
-msgid "Summary"
-msgstr "概要"
 
 msgid "Administration"
 msgstr "管理"
@@ -3399,32 +3153,17 @@ msgstr "本地目录"
 msgid "Local Users"
 msgstr "本地用户"
 
-msgid "Cleanup expired users"
-msgstr "清理过期用户"
-
-msgid "user/login ID"
-msgstr "用户/登录ID"
-
 msgid "[enter login]"
 msgstr "[进入登录]"
 
 msgid "The field user/login ID can have only alphanumeric characters."
 msgstr "用户/登录ID栏只能是字母数字字符。"
 
-msgid "first name"
-msgstr "名"
-
 msgid "[enter first name]"
 msgstr "[输入名字]"
 
-msgid "last name"
-msgstr "姓"
-
 msgid "[last name]"
 msgstr "姓"
-
-msgid "email address"
-msgstr "电子邮件地址"
 
 msgid "[email address]"
 msgstr "电子邮件地址"
@@ -3434,9 +3173,6 @@ msgstr "密码"
 
 msgid "Unchanged"
 msgstr "不变"
-
-msgid "expiration time"
-msgstr "到期时间"
 
 msgid "User/Login ID"
 msgstr "用户/登录ID"
@@ -3455,33 +3191,6 @@ msgstr "电子邮件地址"
 
 msgid "(leave empty to keep the current password unchanged)"
 msgstr "（保留为空，以保持当前的密码不变）"
-
-msgid "The login name has already been taken:"
-msgstr "登录名称已被采取："
-
-msgid "The login name must not contain forward slash character."
-msgstr "行{0}的登录名不能包含任何正斜杠“/”字符。"
-
-msgid "row"
-msgstr "排"
-
-msgid "The first name must not contain any spaces."
-msgstr "第一名称不得包含任何空格。"
-
-msgid "The last name must not contain any spaces."
-msgstr "最后一个名称不能包含任何空格。"
-
-msgid "The password must contain at least 1 character."
-msgstr "密码必须包含至少1个字符。"
-
-msgid "The password must not contain any spaces."
-msgstr "密码不能包含任何空格。"
-
-msgid "Please save the changes before cleaning up expired users !"
-msgstr "请保存清理过期的用户之前的变化！"
-
-msgid "Cleaning up expired users..."
-msgstr "清理过期的用户..."
 
 msgid "Support"
 msgstr "客户支持"
@@ -3504,12 +3213,6 @@ msgstr "手动重启警告"
 msgid "The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."
 msgstr "您要手动重启。在{0}服务器完成自动重启之前通常的网络操作将会中断。这个过程可能会有几分钟。"
 
-msgid "Manual Reboot Failure Warning"
-msgstr "手动重启失败警告"
-
-msgid "Error: Unable to reboot {0} Server"
-msgstr "出错：无法重启{0}服务器"
-
 msgid "The {0} Server is rebooting."
 msgstr "{0}服务器正在重启。"
 
@@ -3528,20 +3231,11 @@ msgstr "手动关机警告"
 msgid "The {0} Server is about to shutdown.  This will stop all network operations."
 msgstr "该{0}服务器即将关闭。这将停止所有网络操作。"
 
-msgid "Manual Shutdown Failure Warning"
-msgstr "手动重启失败警告"
-
-msgid "Error: Unable to shutdown {0} Server"
-msgstr "出错：无法重启{0}服务器"
-
 msgid "The {0} Server is shutting down."
 msgstr "{0}服务器关闭。"
 
 msgid "Launch the Setup Wizard."
 msgstr "启动安装向导。"
-
-msgid "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"
-msgstr "安装向导即将重新运行。这可能会重新配置{0}服务器和{1}覆盖当前设置{2}"
 
 msgid "Factory Defaults"
 msgstr "出厂默认设置"
@@ -3561,14 +3255,8 @@ msgstr "这将所有设置复位到出厂默认值。目前所有的设置都将
 msgid "Resetting to factory defaults..."
 msgstr "重置到出厂默认值？"
 
-msgid "All settings have been reset to factory defaults."
-msgstr "所有设置被重置到出厂默认设置。"
-
 msgid "Backup"
 msgstr "备份"
-
-msgid "Downloading backup..."
-msgstr "下载备份..."
 
 msgid "Backup to File"
 msgstr "备份到文件"
@@ -3636,12 +3324,6 @@ msgstr "{0}禁用{1}web数据流处理。"
 msgid "SMTP timeout (seconds)"
 msgstr "SMTP超时（秒）"
 
-msgid "Allow TLS encryption over SMTP."
-msgstr "{0}允许TLS{1}在SMTP之上加密。"
-
-msgid "Stop TLS encryption over SMTP."
-msgstr "{0}允许TLS{1}在SMTP之上加密。"
-
 msgid "Protocols"
 msgstr "协议"
 
@@ -3699,29 +3381,11 @@ msgstr "语言"
 msgid "Upload"
 msgstr "上传"
 
-msgid "Please wait while your language pack is uploaded..."
-msgstr "您的语言包正在上传，请等待。。。"
-
 msgid "Succeeded"
 msgstr "成功"
 
-msgid "Upload language pack succeeded"
-msgstr "语言包上传成功"
-
-msgid "Upload language pack failed"
-msgstr "语言包上传失败"
-
-msgid "Invalid language pack; not a zip file"
-msgstr "无效的语言包；不是zip文件"
-
 msgid "Shield Rules"
 msgstr "盾规则"
-
-msgid "Enable Shield Rule"
-msgstr "启用屏蔽规则"
-
-msgid "Shield Settings"
-msgstr "盾设置"
 
 msgid "Enable Shield"
 msgstr "启用屏蔽"
@@ -3764,9 +3428,6 @@ msgstr "许可证"
 
 msgid "Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server."
 msgstr "许可证确定支付应用和服务的权利。单击“刷新”强制和解与许可证服务器。"
-
-msgid "The Current list of Licenses available on this Server."
-msgstr "该服务器上的可用许可证的当前列表。"
 
 msgid "App"
 msgstr "应用程序"
@@ -4542,9 +4203,6 @@ msgstr "该项工作在当您的{0}服务器有个公共静态IP地址时。"
 msgid "Use Hostname"
 msgstr "使用主机名"
 
-msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
-msgstr "如果{0}服务器的全称域名可以在内部和外部同时查找到其IP地址时推荐该项。"
-
 msgid "Use Manually Specified Address"
 msgstr "使用手工指定的IP"
 
@@ -4596,65 +4254,23 @@ msgstr "生成服务器证书"
 msgid "Country"
 msgstr "国家"
 
-msgid "Select the country in which your organization is legally registered."
-msgstr "选择您的组织是合法注册的国家。"
-
 msgid "State/Province"
 msgstr "州/省"
-
-msgid "Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate."
-msgstr "国家，省，地区，国土，您的组织所在的名称。请输入全名。不要缩写。"
 
 msgid "City/Locality"
 msgstr "城市/地区"
 
-msgid "Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate."
-msgstr "您的组织注册/所在的城市/地区的名称。请拼出城市/地区的名称。不要缩写。"
-
 msgid "Organization"
 msgstr "组织"
-
-msgid "The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."
-msgstr ""
-"下你的企业是依法登记注册的名称。列出的组织必须在证书申请域名的合法注册人。如果您在注册为小型企业/独资经营者，请在组织字段中输入证书申请者的名称和DBA在"
-"组织单位字段（做生意的）名字。"
-
-
-msgid "Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."
-msgstr "可选。使用该领域在组织内部部门之间进行区分。如果适用，您可以进入DBA（做业务）的名称在这个领域。"
 
 msgid "Common Name"
 msgstr "公司名称"
 
-msgid "The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."
-msgstr ""
-"在CN（通用名）字段中输入的名称必须是您将要使用的证书（example.com）网站的完全限定域名。不包含http：//或https：//前缀您的通用名称"
-"。不要在此字段中输入您的个人的名字。"
-
-
 msgid "Subject Alternative Names"
 msgstr "主题备用名称"
 
-msgid "Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."
-msgstr "可选。使用此字段输入了可以用于访问网站，您将使用该证书一个或多个可选主机名或IP地址的逗号分隔列表。"
-
 msgid "Generate"
 msgstr "生成"
-
-msgid "The Country field must not be empty"
-msgstr "Country字段不能为空"
-
-msgid "The State field must not be empty"
-msgstr "国家字段不能为空"
-
-msgid "The Locality field must not be empty"
-msgstr "当地字段不能为空"
-
-msgid "The Organization field must not be empty"
-msgstr "组织字段不能为空"
-
-msgid "The Common Name field must not be empty"
-msgstr "通用名称字段不能为空"
 
 msgid "Certificate Authority generation successfully completed. Click OK to continue."
 msgstr "证书颁发机构代成功完成。单击确定继续。"
@@ -4676,9 +4292,6 @@ msgstr "无效或丢失的文件"
 
 msgid "Please select a certificate to upload."
 msgstr "请选择一个要上传的文件。"
-
-msgid "Password is too short."
-msgstr "密码太短。"
 
 msgid "SNMP"
 msgstr "简单网络管理协议(SNMP)"
@@ -4715,9 +4328,6 @@ msgstr "我的_陷阱_组"
 
 msgid "An Trap Community must be specified."
 msgstr "必须指定一个陷阱“公共组”。"
-
-msgid "MY_TRAP_HOST"
-msgstr "我的_陷阱_主机"
 
 msgid "An Trap Host must be specified."
 msgstr "必须指定一个陷阱“主机”。"
@@ -4782,39 +4392,6 @@ msgstr "管理皮肤"
 msgid "Upload New Skin"
 msgstr "上传新皮肤"
 
-msgid "Please wait while your skin is uploaded..."
-msgstr "请等待您的皮肤上传完毕。。。"
-
-msgid "Upload Skin Succeeded"
-msgstr "上传皮肤成功"
-
-msgid "Upload Skin Failed"
-msgstr "上传皮肤失败"
-
-msgid "Invalid Skin"
-msgstr "无效的皮肤"
-
-msgid "The default skin can not be overwritten"
-msgstr "无法复写默认的皮肤"
-
-msgid "Error creating skin folder"
-msgstr "创建皮肤目录出错"
-
-msgid "The username"
-msgstr "用户名"
-
-msgid "already exists in row"
-msgstr "已存在于行"
-
-msgid "There must always be at least one valid account."
-msgstr "这里必须至少有一个有效的账户。"
-
-msgid "There must always be at least one non-read-only (writable) account."
-msgstr "这里必须至少有一个非只读（可写）的账户。"
-
-msgid "Saving..."
-msgstr "保存中。。。"
-
 msgid "Outgoing Server"
 msgstr "出站服务器"
 
@@ -4829,9 +4406,6 @@ msgstr "电子邮件测试"
 
 msgid "[enter email]"
 msgstr "[输入电子邮件]"
-
-msgid "Sending Email..."
-msgstr "发送电​​子邮件..."
 
 msgid "Outgoing Email Server"
 msgstr "出站电子邮件服务器(SMTP)"
@@ -4935,9 +4509,6 @@ msgstr "隔离列表所有者邮件地址(例：quarantinelistowner@example.com)
 msgid "Distribution List Address"
 msgstr "分发列表收件人邮件地址"
 
-msgid "Send To Address"
-msgstr "接收地址"
-
 msgid "Sender"
 msgstr "发件人"
 
@@ -4947,26 +4518,17 @@ msgstr "主题"
 msgid "Size (KB)"
 msgstr "大小(KB)"
 
-msgid "The port must be an integer number between 1 and 65535."
-msgstr "端口必须是一个{0}和{1}之间的整数。"
-
 msgid "A Password must be specified if a Login is specified."
 msgstr "如果指定了一个“登录”也必须同时指定一个“密码”。"
 
 msgid "A Login must be specified if a Password is specified."
 msgstr "如果指定了一个“密码”也必须同时指定一个“登录”。"
 
-msgid "A Server Address or Hostname must be specified for an SMTP server."
-msgstr "服务器地址或主机名，必须指定一个SMTP服务器。"
-
 msgid "A From Address must be specified."
 msgstr "必须指定一个“发件人地址”。"
 
 msgid "All Sessions"
 msgstr "TCP会话"
-
-msgid "Sessions for"
-msgstr "会话"
 
 msgid "Creation Time"
 msgstr "创建时间"
@@ -4976,30 +4538,6 @@ msgstr "客户端界面"
 
 msgid "Server Interface"
 msgstr "服务器接口"
-
-msgid "Client (Pre-NAT)"
-msgstr "客户（预NAT）"
-
-msgid "Server (Pre-NAT)"
-msgstr "服务器（预NAT）"
-
-msgid "Client Port (Pre-NAT)"
-msgstr "客户端端口（预NAT）"
-
-msgid "Server Port (Pre-NAT)"
-msgstr "服务器端口（前NAT）"
-
-msgid "Client (Post-NAT)"
-msgstr "客户端（后NAT）"
-
-msgid "Server (Post-NAT)"
-msgstr "服务器（-NAT后）"
-
-msgid "Client Port (Post-NAT)"
-msgstr "客户机端口（后NAT）"
-
-msgid "Server Port (Post-NAT)"
-msgstr "服务器端口（后NAT）"
 
 msgid "NATd"
 msgstr "NATD"
@@ -5031,23 +4569,8 @@ msgstr ","
 msgid "Confidence"
 msgstr "置信度"
 
-msgid "Client KB/s"
-msgstr "客户端KB / S"
-
-msgid "Server KB/s"
-msgstr "服务器KB / S"
-
-msgid "Total KB/s"
-msgstr "总KB / S"
-
 msgid "Current Sessions"
 msgstr "当前会话"
-
-msgid "This shows all current sessions."
-msgstr "这将显示所有当前的会话。"
-
-msgid "Chart"
-msgstr "图"
 
 msgid "Congratulations! {0} is ready to be configured."
 msgstr "恭喜{0}已准备好进行配置。"
@@ -5121,12 +4644,6 @@ msgstr "不是"
 msgid "True"
 msgstr "正确"
 
-msgid "Missing Editor"
-msgstr "失踪编辑器"
-
-msgid "Value is required."
-msgstr "值是必需的。"
-
 msgid "Auto Refresh"
 msgstr "自动刷新"
 
@@ -5136,29 +4653,8 @@ msgstr "过滤器："
 msgid "Case sensitive"
 msgstr "区分大小写"
 
-msgid "Clear Filters"
-msgstr "清除过滤器"
-
-msgid "Filters can be added by clicking on column headers arrow down menu and using Filters menu"
-msgstr "通过点击列标题，箭头下拉菜单，并使用过滤器“菜单可以添加过滤器"
-
-msgid "Clear Grouping"
-msgstr "清除分组"
-
-msgid "Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field"
-msgstr "分组可以通过点击列标题的下拉菜单箭头，然后单击此字段集团"
-
 msgid "Reset View"
 msgstr "视图复位"
-
-msgid "Restore default columns positions, widths and visibility"
-msgstr "恢复默认的列位置，宽度和可见性"
-
-msgid "Starting..."
-msgstr "正在开始。。。"
-
-msgid "Ok"
-msgstr "确定"
 
 msgid "Apps"
 msgstr "应用程序"
@@ -5168,9 +4664,6 @@ msgstr "我的帐户"
 
 msgid "Logout"
 msgstr "登出"
-
-msgid "Applying Upgrades..."
-msgstr "应用升级..."
 
 msgid "Upgrade in Progress"
 msgstr "正在进行升级"
@@ -5187,33 +4680,6 @@ msgstr "请耐心等待，这个过程将需要几分钟的时间。"
 msgid "After the upgrade is complete you will be able to log in again."
 msgstr "升级完成后，您将可以再次登录。"
 
-msgid "Default Policy"
-msgstr "默认机架/政策"
-
-msgid "The Default Policy"
-msgstr "默认机架/政策"
-
-msgid "For an optimal experience use Google Chrome or Mozilla Firefox."
-msgstr "为获得最佳体验，使用谷歌Chrome浏览器或Mozilla Firefox浏览器。"
-
-msgid "Internet Explorer 8 and prior are not supported for administration."
-msgstr "Internet Explorer 8和之前不支持进行管理。"
-
-msgid "Please upgrade to a newer browser."
-msgstr "请升级到一个新的浏览器。"
-
-msgid "Loading Config..."
-msgstr "正在加载配置。。。"
-
-msgid "Show Policy Manager"
-msgstr "显示策略管理器"
-
-msgid "Unknown Rack"
-msgstr "未知架"
-
-msgid "Determining Connectivity..."
-msgstr "确定的连接..."
-
 msgid "Yes, install the recommended apps."
 msgstr "是的，安装推荐的应用程序。"
 
@@ -5222,9 +4688,6 @@ msgstr "安装完成！"
 
 msgid "Thank you for using Untangle!"
 msgstr "感谢您使用Untangle"
-
-msgid "No, I will install the apps manually."
-msgstr "不，我将手动安装该应用程序。"
 
 msgid "Registration complete."
 msgstr "注册完成。"
@@ -5241,48 +4704,6 @@ msgstr "设置"
 msgid "Buy Now"
 msgstr "现在购买"
 
-msgid "The <B>Status Indicator</B> shows the current operating condition of a particular application."
-msgstr "<B>状态指示器</B> 显示出相对应软件的当前工作状态。"
-
-msgid "Green"
-msgstr "绿色"
-
-msgid "indicates that the application is ON and operating normally."
-msgstr "指示出该产品处于开机状态并且运行正常。"
-
-msgid "Red"
-msgstr "红色"
-
-msgid "indicates that the application is ON, but that an abnormal condition has occurred."
-msgstr "指示出该产品处于开机状态，但有异常情况发生。"
-
-msgid "Yellow"
-msgstr "黄色"
-
-msgid "indicates that the application is saving or refreshing settings."
-msgstr "指示出该产品正在保存或刷新设置。"
-
-msgid "Clear"
-msgstr "无"
-
-msgid "indicates that the application is OFF, and may be turned ON by the user."
-msgstr "指示出该产品处于关机状态，并处于可开机状态。"
-
-msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
-msgstr "<B>电源按钮</B>允许您启动和关闭一个产品。"
-
-msgid "This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack."
-msgstr "这个应用程序属于以上的父架。，<BR/>要访问这个应用程序的设置中，选择父架。"
-
-msgid "Unable to start {0}"
-msgstr "无法启动{0}"
-
-msgid "Loading Settings..."
-msgstr "正在加载设置。。。"
-
-msgid "Error: There is no settings class for the app '{0}'."
-msgstr "出错：该节点'{0}'没有安装类型。"
-
 msgid "Free trial expired!"
 msgstr "免费试用版过期了！"
 
@@ -5295,9 +4716,6 @@ msgstr "今天到期。"
 msgid "days remain."
 msgstr "剩余天数"
 
-msgid "System Busy"
-msgstr "系统繁忙"
-
 msgid "CPU Load"
 msgstr "CPU负载"
 
@@ -5306,75 +4724,6 @@ msgstr "内存"
 
 msgid "Disk"
 msgstr "磁盘"
-
-msgid "Tx:"
-msgstr "发送："
-
-msgid "Rx:"
-msgstr "接收："
-
-msgid "F:"
-msgstr "F:"
-
-msgid "U:"
-msgstr "U:"
-
-msgid "TX Speed:"
-msgstr "发送速度："
-
-msgid "RX Speed:"
-msgstr "接收速度："
-
-msgid "Total Sessions:"
-msgstr "总会话数："
-
-msgid "TCP Sessions:"
-msgstr "TCP会话"
-
-msgid "UDP Sessions:"
-msgstr "UDP会话"
-
-msgid "Number of Processors / Type / Speed:"
-msgstr "处理器个数/类型/速度："
-
-msgid "Load average (1 min , 5 min , 15 min):"
-msgstr "平均负载（1分钟/5分钟/15分钟）："
-
-msgid "Tasks (Processes)"
-msgstr "任务数（处理器）"
-
-msgid "Uptime:"
-msgstr "持续运行时间："
-
-msgid "Total Memory:"
-msgstr "总内存："
-
-msgid "Memory Used:"
-msgstr "内存使用："
-
-msgid "Memory Free:"
-msgstr "内存空闲："
-
-msgid "Swap Files:"
-msgstr "交换文件数："
-
-msgid "total swap space"
-msgstr "总交换空间"
-
-msgid "used"
-msgstr "使用的"
-
-msgid "Total Disk Space:"
-msgstr "总磁盘空间："
-
-msgid "Free Disk Space:"
-msgstr "空闲磁盘空间："
-
-msgid "Data read:"
-msgstr "数据读取："
-
-msgid "Data write:"
-msgstr "数据写入："
 
 msgid "low"
 msgstr "= 低"
@@ -5388,29 +4737,11 @@ msgstr "成本高"
 msgid "Day"
 msgstr " 日"
 
-msgid "Days"
-msgstr "天"
-
 msgid "Hour"
-msgstr "时"
-
-msgid "Hours"
 msgstr "时"
 
 msgid "Minute"
 msgstr "分"
-
-msgid "Minutes"
-msgstr "分"
-
-msgid "The app {0} has {1} metrics. The maximum number of metrics is {2}."
-msgstr "节点{0}有{1}个跃距。最大跃距数是{2}。"
-
-msgid "Please set up to four items."
-msgstr "请设置不超过4个项目。"
-
-msgid "Set up to four"
-msgstr "请设置不超过4个项目"
 
 msgid "View Report"
 msgstr "查看报告"
@@ -5433,26 +4764,8 @@ msgstr "列"
 msgid "Operator"
 msgstr "操作者"
 
-msgid "[enter column]"
-msgstr "[进入专栏]"
-
-msgid "(Columns list is loaded for the entered Table')"
-msgstr "（列列表加载输入表“）"
-
-msgid "[select operator]"
-msgstr "[选择运营商]"
-
-msgid "[no value]"
-msgstr "[无值]"
-
-msgid "[select category]"
-msgstr "[选择分类]"
-
 msgid "Title"
 msgstr "称号"
-
-msgid "[enter title]"
-msgstr "[输入标题]"
 
 msgid "Display Order"
 msgstr "显示顺序"
@@ -5460,20 +4773,11 @@ msgstr "显示顺序"
 msgid "Units"
 msgstr "单位"
 
-msgid "[no units]"
-msgstr "[无单位]"
-
 msgid "Table"
 msgstr "桌"
 
-msgid "[enter table]"
-msgstr "[进入表]"
-
 msgid "Text Columns"
 msgstr "文本列"
-
-msgid "(enter one column per row)"
-msgstr "（进入每行一列）"
 
 msgid "Text String"
 msgstr "文本字符串"
@@ -5496,12 +4800,6 @@ msgstr "线"
 msgid "Area"
 msgstr "范围"
 
-msgid "Bar"
-msgstr "酒吧"
-
-msgid "Bar Overlapped"
-msgstr "酒吧重叠"
-
 msgid "Time Data Interval"
 msgstr "时间数据间隔"
 
@@ -5520,14 +4818,8 @@ msgstr "时间数据列"
 msgid "Colors"
 msgstr "颜色"
 
-msgid "(enter one color per row)"
-msgstr "（进入每行一个颜色）"
-
 msgid "Order By Column"
 msgstr "排序列"
-
-msgid "Order Direction"
-msgstr "订单方向"
 
 msgid "Ascending"
 msgstr "升序"
@@ -5538,38 +4830,14 @@ msgstr "降序"
 msgid "Sql Conditions:"
 msgstr "SQL条件："
 
-msgid "Specify a Range"
-msgstr "指定范围"
-
 msgid "Start Time"
 msgstr "起始时间"
-
-msgid "Start Time - End Time"
-msgstr "开始时间 - 结束时间"
-
-msgid "Specify a Custom Value"
-msgstr "指定自定义值"
 
 msgid "Users"
 msgstr "用户"
 
-msgid "Selected"
-msgstr "已选择"
-
-msgid "Full Name"
-msgstr "全名"
-
-msgid "Specify Users"
-msgstr "指定用户"
-
 msgid "Groups"
 msgstr "[groups] "
-
-msgid "Specify Groups"
-msgstr "指定组"
-
-msgid "Field Name"
-msgstr "字段名称"
 
 msgid "Comparator"
 msgstr "比较"
@@ -5604,36 +4872,17 @@ msgstr "配置您的服务器"
 msgid "Choose a password for the admin account."
 msgstr "<b>为管理员帐号选择一个密码</b>"
 
-#, javascript-format
-msgid "The password is shorter than the minimum %d characters."
-msgstr "密码少于最少要求的%d个字符。"
-
-msgid "Configure administrator email."
-msgstr "配置管理员电子邮件。"
-
 msgid "Admin Email"
 msgstr "管理员电子邮件"
 
-msgid "Select a timezone."
-msgstr "选择时区。"
-
 msgid "Saving Settings"
 msgstr "保存设置"
-
-msgid "Unable to save Time Zone settings"
-msgstr "无法保存时区设置"
-
-msgid "Unable to save the admin password"
-msgstr "无法保存管理员密码"
 
 msgid "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced."
 msgstr "右键单击设备打开一个组合，并从列表中选择所需的设备。当选择anoter设备的2设备swithced。"
 
 msgid "Identify Network Cards"
 msgstr "标识网卡"
-
-msgid "Important:"
-msgstr "重点："
 
 msgid "Plug an active cable into one network card to determine which network card it is."
 msgstr "有源电缆插入到一个网络卡，以确定它是网络卡。"
@@ -5649,12 +4898,6 @@ msgstr "无法刷新接口。"
 
 msgid "New interfaces"
 msgstr "新接口"
-
-msgid "There are new interfaces, please restart the wizard."
-msgstr "这些是新的接口，请重新启动向导。"
-
-msgid "Refreshing Network Interfaces"
-msgstr "刷新网络接口"
 
 msgid "Missing interfaces"
 msgstr "失踪接口"
@@ -5695,12 +4938,6 @@ msgstr "配置类型"
 msgid "Internet Connection"
 msgstr "Internet连接"
 
-msgid "Unable to Test Connectivity"
-msgstr "无法测试连接性"
-
-msgid "Please complete all of the required fields."
-msgstr "请完成所有必须的栏。"
-
 msgid "Saving Settings..."
 msgstr "正在加载设置。。。"
 
@@ -5709,9 +4946,6 @@ msgstr "网络设置"
 
 msgid "Unable to complete connectivity test, please try again."
 msgstr "无法完成连接测试，请再试一次。"
-
-msgid "Warning! Internet and DNS tests failed."
-msgstr "警告！Internet和DNS失败。"
 
 msgid "Warning! DNS tests succeeded, but Internet tests failed."
 msgstr "警告！DNS无问题，但Internet失败。"
@@ -5764,41 +4998,14 @@ msgstr "建议，如果外部接口连接到了防火墙/路由器。应该桥�
 msgid "Internal Network"
 msgstr "内部网络"
 
-msgid "Select a value"
-msgstr "选择一个值"
-
-msgid "Please choose bridge or router."
-msgstr "请选择网桥或路由器。"
-
 msgid "Saving Internal Network Settings"
 msgstr "保存内部网络设置"
-
-msgid "Unable to save Local Network Settings"
-msgstr "无法保存本地网络设置"
-
-msgid "Redirect to the new setup address?"
-msgstr "重定向到新的设置地址？"
-
-msgid "When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"
-msgstr "当从路由器切换到透明桥接设置不再能够访问使用内部地址。相反，它可以使用外部地址可以访问{0}"
-
-msgid "If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."
-msgstr "如果你想被重定向到新的设置地址{0}请重新初始化您的网络设置，并按是。"
-
-msgid "Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."
-msgstr "点击No将阻止重定向，并会尝试使用当前的地址继续安装，但它可能无法再访问。"
-
-msgid "When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"
-msgstr "当从透明网桥不再向切换到路由器上的设置可能访问使用外部地址。相反，它可能会使用内部地址可以访问{0}"
 
 msgid "The Internal Address is changed to: {0}"
 msgstr "内部地址更改为{0}"
 
 msgid "The changes are applied and you will be redirected to the new setup address: {0}"
 msgstr "这些变化适用于，你将被重定向到新的设置地址{0}"
-
-msgid "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again."
-msgstr "如果新位置没有30秒后加载，请重新初始化您的网络设置，然后再试一次。"
 
 msgid "Configure Automatic Upgrade Settings"
 msgstr "配置自动升级设置"
@@ -6919,59 +6126,14 @@ msgstr "如果指定了“密码”或“登录”也必须同时指定一个“
 msgid "A Search Base must be specified."
 msgstr "必须指定一个“搜索库”。"
 
-msgid "Reports application is required for this feature. Please install and enable the Reports application."
-msgstr "报告应用程序需要使用此功能。请安装并启用报表应用程序。"
-
 msgid "Current Data"
 msgstr "当前数据"
-
-msgid "Export Data to File"
-msgstr "导出事件文件"
-
-msgid "Export Events to File"
-msgstr "导出事件文件"
 
 msgid "Events"
 msgstr "events {"
 
-msgid "One day ago"
-msgstr "一天前"
-
-msgid "Select Start date and time"
-msgstr "选择开始日期和时间"
-
 msgid "Present"
 msgstr "当下"
-
-msgid "Select End date and time"
-msgstr "选择结束日期和时间"
-
-msgid "Flush Events from Memory to Database and then Refresh"
-msgstr "冲洗活动从内存中的数据库，然后刷新"
-
-msgid "Auto Refresh every {0} seconds"
-msgstr "自动刷新每{0}秒"
-
-msgid "Start date and time"
-msgstr "开始日期和时间"
-
-msgid "start date and time"
-msgstr "开始日期和时间"
-
-msgid "End date and time"
-msgstr "结束日期及时间"
-
-msgid "end date and time"
-msgstr "结束日期和时间"
-
-msgid "Select Report"
-msgstr "选择报告"
-
-msgid "Customize"
-msgstr "自定义"
-
-msgid "Advanced report customization"
-msgstr "先进的报表定制"
 
 msgid "value"
 msgstr "数值"
@@ -6979,35 +6141,14 @@ msgstr "数值"
 msgid "Add Condition"
 msgstr "添加条件"
 
-msgid "Querying Database..."
-msgstr "查询数据库..."
-
-msgid "Fetching Events..."
-msgstr "刷新事件..."
-
 msgid "Exporting Events..."
 msgstr "导出事件..."
-
-msgid "Add a condition using report data:"
-msgstr "使用报表数据添加一个条件："
 
 msgid "Conditions: {0}"
 msgstr "条件{0}"
 
-msgid "Add New Condition"
-msgstr "添加新条件"
-
 msgid "Quick Add"
 msgstr "快速添加"
-
-msgid "Delete All"
-msgstr "删除所有"
-
-msgid "Delete All Conditions"
-msgstr "删除所有条件"
-
-msgid "Clear Value"
-msgstr "明确的价值"
 
 msgid "in Categories Block list"
 msgstr "在类别阻止列表"
@@ -7308,9 +6449,6 @@ msgstr "活动目录"
 
 msgid "RADIUS"
 msgstr "RADIUS"
-
-msgid "ICMP"
-msgstr "ICMP"
 
 msgid "End Time"
 msgstr "结束时间"
@@ -9003,10 +8141,6 @@ msgid "Quarantine Digest"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "A condition of this type already exists in this rule."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Information"
 msgstr ""
 
@@ -9043,15 +8177,7 @@ msgid "Known Devices"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Active Hosts:"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Power"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Disable"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9080,14 +8206,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Install Apps"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Tools"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Policy Manager"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9199,19 +8317,11 @@ msgid "Current Devices"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This shows all current devices."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "[no MAC Vendor]"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "[no hostname]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Device Username"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9227,10 +8337,6 @@ msgid "Last Seen Time"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This will clear the current changes."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "This will overwrite the current dashboard settings with the defaults."
 msgstr ""
 
@@ -9239,27 +8345,11 @@ msgid "Do you want to continue?"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter report]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Refresh Interval"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Leave blank for no Auto Refresh"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Timeframe"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "(hours)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The number of hours to query the latest data. Leave blank for last day."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9402,23 +8492,7 @@ msgid "From"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleted one Message"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Deleted {0} Messages"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Released one Message"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9426,15 +8500,7 @@ msgid "Released {0} Messages"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Safelisted one Address"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Safelisted {0} Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The account {0} doesn't have any quarantined messages."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9443,10 +8509,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Release to Inbox & Add Senders to Safe List"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleting..."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9474,19 +8536,7 @@ msgid "Save"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Delete one Address"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Delete {0} Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Delete Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleted one address"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9506,19 +8556,11 @@ msgid "Deleted forward address"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Deleted one Remap"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Deleted {0} Remaps"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Forward or Receive Quarantines"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Forward Quarantined Messages To"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9559,18 +8601,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Request"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Requesting Digest"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Successfully sent digest to '{0}'"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -9675,10 +8705,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Application Control Lite Summary"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Reports is not installed into your rack or it is not turned on."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10154,15 +9180,7 @@ msgid "Map Distribution"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Map distribution"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Resources"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "free"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10175,62 +9193,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Network Layout"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Loading"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "No data available yet!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Can not specify a port condition on port-less protocols:"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Countries"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "ISO Code"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Country Name"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Specify Countries"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "DONE"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Click to view Sessions"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Click to view Hosts"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Updating report"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "updated successfully"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Creating report"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "created successfully"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10279,10 +9241,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Service Apps"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Inherits"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10458,19 +9416,11 @@ msgid "Refresh Routes"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "The password must not contain any quotation marks."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Account Address"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Safe List Size"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Safe List Details for:"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10491,14 +9441,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Send to Address"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Interface [{0}]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Service App"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10527,10 +9469,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Reset"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "install required"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10591,10 +9529,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Email Alerts"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[no email address]"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10662,31 +9596,11 @@ msgid "Timezone changed"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "A reboot is needed for the Timezone change to take effect!"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Synchronize Language"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Downloading language..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Synchronize"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Last synchronized"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile MO file for entry"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile resource bundle for entry"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10726,19 +9640,7 @@ msgid "Wireless"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Loading Wireless Settings"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Wireless Password"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "You must choose a new and different wireless password."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Problem"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10758,27 +9660,7 @@ msgid "Remain securely connected to the {0} cloud for cloud management, hot fixe
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Unable to save Settings"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Authentication failed"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Select Category"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "All Categories"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Select a Category first"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Add to Dashboard"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10786,59 +9668,11 @@ msgid "Deleting this report will remove also the Widget from Dashboard!"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Remove from Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "was added to Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "was removed from Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Pie"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Donut"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Column"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Grouped Columns"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Overlapped Columns"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Loading report..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Refreshing report..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleting report"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "deleted successfully"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "more"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Exception"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11234,10 +10068,6 @@ msgid "Copy"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "copy"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Default Administration Username Text"
 msgstr ""
 
@@ -11247,14 +10077,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Use defaults"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "decimal_sep"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "thousand_sep"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11274,39 +10096,11 @@ msgid "Decimal Separator"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter decimal separator]"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Thousand Separator"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter thousand separator]"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Date Format"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[enter date format]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The date format name cannot be blank."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Timestamp Format"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[enter timestamp format]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The time format name cannot be blank."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11355,14 +10149,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "144 - 5.720 GHz"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "ARP Table"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Wireless Connections"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11502,10 +10288,6 @@ msgid "Start of week"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Daily Reports"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Recommended daily reports (default)"
 msgstr ""
 
@@ -11582,10 +10364,6 @@ msgid "Current Users"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This shows all current users."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "[no username]"
 msgstr ""
 
@@ -11602,19 +10380,11 @@ msgid "Hostname (Directory Connector)"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Hostname (OpenVpn)"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Hostname (Reports)"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Hostname (Device)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Hostname (Source)"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11672,10 +10442,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "The swap utilization over time as a percent of total swap size ."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "duplicate report entry title"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12076,27 +10842,11 @@ msgid "Stochastic Fairness Queueing (sfq)"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Input Filter Rules changed!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The Input Filter Rules have been changed!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Improperly configuring the Input Filter Rules can be very dangerous."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Read the documentation for more details."
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "SSH Access Enabled!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The 'Allow SSH' rule in Input Filter Rules has been enabled!"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12416,27 +11166,11 @@ msgid "Enable RADIUS Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Google Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable Google Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Google Drive Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Enable User Notification API"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Facebook Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable Facebook Authentication Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12517,14 +11251,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Active Custom File"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable ScoutIQ&trade; Cloud Scan"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Scan Options"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12617,10 +11343,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "[enter mg]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable BitDefender&reg; Scan"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12717,34 +11439,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Enable upload to Google Drive"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag access to sites associated with the specified category."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access for client networks regardless of matching policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access to the specified site regardless of matching policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag Sites"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag access to specific sites."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Web Monitor rules allow creating flexible flag and pass conditions."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13000,10 +11694,6 @@ msgid "Unknown Widget"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Select a install type."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Install Type"
 msgstr ""
 
@@ -13053,10 +11743,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "A Host Name must be specified."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13233,4 +11919,272 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Last name must be less than 24 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "All reports"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Another report within this category has this title"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This default report is read-only. Delete and Save are disabled."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Change Title to Save as New Report."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data is fetching..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Google Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Facebook Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Microsoft Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Week to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid subnet."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Restrict Administration Subnet(s)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Access Rules have been changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Improperly configuring the Access Rules can be very dangerous."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The 'Allow SSH' rule in Access Rules has been enabled!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "New Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Edit Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Address must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Client Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Server Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Filter Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Domain Name must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Access Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "<span style=\"color: red;\">[add email address here]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Contact Untangle Support"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No - Do Not Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Yes - Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Support Access is not enabled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enabling remote support access is recommended for better and fast support."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Would you like enable the support team to access your server remotely?"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid x500 attribute found"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Administrators receive email alerts and report summaries."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Install type determines the optimal default settings for this deployment."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Fetch interfaces..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Renew DHCP"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Saving settings ..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Internal Address is no longer accessible."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You will be redirected to the new setup address: {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The data usage by interface."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage (by interface)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Forward Quarantined Messages To:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Successfully sent digest to {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "A quarantine does not exist for {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host Entitled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Intrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to date data usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Active Directory Organizations"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter OU]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "all web traffic in violation of policy"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The fails tests of each interface over time."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "WAN Interface Outages"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This policy name already exists"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Configure Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any OAuth Provider"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "uses OAuth provider selection page"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Use hostname instead of IP address for the capture page redirect"
 msgstr ""
