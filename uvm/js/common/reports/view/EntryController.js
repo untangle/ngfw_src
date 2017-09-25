@@ -660,7 +660,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.get('report').copyFrom(entry);
                 vm.get('report').commit();
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
                 me.refreshData();
@@ -695,7 +695,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ext.getStore('reports').add(entry);
                 entry.commit();
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
                 me.refreshData();
