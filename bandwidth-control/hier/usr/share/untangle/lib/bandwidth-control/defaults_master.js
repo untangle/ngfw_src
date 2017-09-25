@@ -245,25 +245,6 @@
             "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRule",
             "enabled":true
         }, {
-            "set" : "standard",
-            "ruleId":12345,
-            "description":"Deprioritize dropbox.net sync",
-            "conditions":{
-                "javaClass":"java.util.LinkedList",
-                "list":[{
-                    "value":"*dropbox.com",
-                    "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
-                    "conditionType":"HTTP_HOST"
-                }]
-            },
-            "action":{
-                "priority":4,
-                "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
-                "actionType":"SET_PRIORITY"
-            },
-            "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRule",
-            "enabled":true
-        }, {
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Tag Bittorrent users for 30 minutes (requires Application Control)",

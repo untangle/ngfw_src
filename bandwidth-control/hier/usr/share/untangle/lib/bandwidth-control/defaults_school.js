@@ -240,28 +240,6 @@
             },
             {
                 "action": {
-                    "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
-                    "priority": 4
-                },
-                "conditions": {
-                    "javaClass": "java.util.LinkedList",
-                    "list": [
-                        {
-                            "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
-                            "value": "*dropbox.com"
-                        }
-                    ]
-                },
-                "description": "Deprioritize dropbox.net sync",
-                "enabled": true,
-                "id": 11,
-                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
-                "ruleId": 12345
-            },
-            {
-                "action": {
                     "actionType": "TAG_HOST",
                     "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "tagName": "penalty-box",
@@ -279,7 +257,7 @@
                 },
                 "description": "Tag Bittorrent users for 30 minutes (requires Application Control)",
                 "enabled": true,
-                "id": 12,
+                "id": 11,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -301,7 +279,7 @@
                 },
                 "description": "Deprioritize P2P traffic (requires Application Control Lite)",
                 "enabled": true,
-                "id": 13,
+                "id": 12,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -323,7 +301,7 @@
                 },
                 "description": "Deprioritize File Transfers (requires Application Control)",
                 "enabled": true,
-                "id": 14,
+                "id": 13,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -345,7 +323,7 @@
                 },
                 "description": "Deprioritize HTTP to Download Sites (requires Web Filter)",
                 "enabled": true,
-                "id": 15,
+                "id": 14,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -367,7 +345,7 @@
                 },
                 "description": "Limit dropbox.com sync",
                 "enabled": true,
-                "id": 16,
+                "id": 15,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -390,7 +368,7 @@
                 },
                 "description": "Do not Prioritize large HTTP downloads (>10meg)",
                 "enabled": true,
-                "id": 17,
+                "id": 16,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -412,7 +390,7 @@
                 },
                 "description": "Prioritize HTTP",
                 "enabled": true,
-                "id": 18,
+                "id": 17,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
@@ -434,7 +412,7 @@
                 },
                 "description": "Prioritize HTTPS",
                 "enabled": true,
-                "id": 19,
+                "id": 18,
                 "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             }
