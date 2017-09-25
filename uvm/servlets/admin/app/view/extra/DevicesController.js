@@ -45,17 +45,23 @@ Ext.define('Ung.view.extra.DevicesController', {
             .then(function(result) {
                 me.getView().setLoading(false);
                 store.loadData(result.list);
-                store.sort('macAddress', 'DSC');
+                if(store.getSorters().items.length == 0){
+                    store.sort('macAddress', 'ASC');
+                }
 
                 v.down('ungridstatus').fireEvent('update');
             });
     },
 
     resetView: function( btn ){
-        var grid = this.getView().down('#devicesgrid');
+        var grid = this.getView().down('#devicesgrid'),
+            store = grid.getStore();
+
         Ext.state.Manager.clear(grid.stateId);
+        store.getSorters().removeAll();
+        store.sort('macAddress', 'ASC');
         this.getView().down('ungridfilter').setValue('');
-        grid.getStore().clearFilter();
+        store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
 

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-04 11:26-0700\n"
-"PO-Revision-Date: 2017-06-27 10:41\n"
+"PO-Revision-Date: 2017-09-25 12:51\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -75,9 +75,6 @@ msgstr "Hôte"
 
 msgid "User"
 msgstr "Utilisateur"
-
-msgid "Time"
-msgstr "Heure"
 
 msgid "Destination Port"
 msgstr "Port de destination"
@@ -2538,9 +2535,6 @@ msgstr "La connexion au serveur a été perdue."
 msgid "Press OK to return to the login page."
 msgstr "Appuyez sur OK pour revenir à la page de connexion."
 
-msgid "An error has occurred"
-msgstr "Une erreur est survenue"
-
 msgid "An error has occurred."
 msgstr "Une erreur est survenue."
 
@@ -2561,9 +2555,6 @@ msgstr "Exception js pile"
 
 msgid "Build"
 msgstr "Build"
-
-msgid "TODO"
-msgstr "A FAIRE"
 
 msgid "Sunday"
 msgstr "Dimanche"
@@ -2604,17 +2595,11 @@ msgstr "Mo"
 msgid "Gbytes"
 msgstr "Go"
 
-msgid "Please Try Again"
-msgstr "SVP essayer à nouveau"
-
 msgid "Edit"
 msgstr "Editer"
 
 msgid "Delete"
 msgstr "Effacer"
-
-msgid "Reorder"
-msgstr "Réorganiser"
 
 msgid "Drag and drop to reorganize"
 msgstr "Glisser-déposer pour réorganiser"
@@ -2625,20 +2610,11 @@ msgstr "Rafraîchir"
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Add New Row"
-msgstr "Ajouter une nouvelle ligne"
-
 msgid "Import"
 msgstr "Importation"
 
-msgid "Import From File"
-msgstr "Importer à partir du fichier"
-
 msgid "Export"
 msgstr "Exportation"
-
-msgid "Export To File"
-msgstr "Exporter vers un fichier"
 
 msgid "Import successful"
 msgstr "Importation réussie"
@@ -2663,9 +2639,6 @@ msgstr ""
 
 msgid "Exporting Settings..."
 msgstr "Chargement des paramètres..."
-
-msgid "Grid data loading is not yet completed."
-msgstr "Chargement des données de la grille est pas encore terminée."
 
 msgid "Import Settings"
 msgstr "Réglages d'importation"
@@ -2694,9 +2667,6 @@ msgstr "Chargement des paramètres..."
 msgid "Import failed."
 msgstr "Échec de l'importation."
 
-msgid "Import failed. No file chosen."
-msgstr "Échec de l'importation. Aucun fichier choisi."
-
 msgid "Network"
 msgstr "Réseau"
 
@@ -2705,9 +2675,6 @@ msgstr "Destiné locale"
 
 msgid "Source MAC"
 msgstr "Source MAC"
-
-msgid "Refreshing..."
-msgstr "Rafraîchissement..."
 
 msgid "Automatic 2.4 GHz"
 msgstr "2,4 GHz automatique"
@@ -2826,12 +2793,6 @@ msgstr "157 - 5.785 GHz"
 msgid "161 - 5.805 GHz"
 msgstr "161 - 5,805 GHz"
 
-msgid "165 - 5.825 GHz"
-msgstr "165 - 5.825 GHz"
-
-msgid "Interface Status"
-msgstr "Etat Internet"
-
 msgid "Device"
 msgstr "Dispositif"
 
@@ -2864,12 +2825,6 @@ msgstr "Tx Goutte"
 
 msgid "Type"
 msgstr "type"
-
-msgid "Rx Bytes"
-msgstr "Rx Bytes"
-
-msgid "Tx Bytes"
-msgstr "Tx Bytes"
 
 msgid "Help"
 msgstr "Aide"
@@ -2954,24 +2909,8 @@ msgstr "Test de connectivité"
 msgid "Ping Test"
 msgstr "Test Ping"
 
-msgid "Loading device mapper..."
-msgstr "Chargement mappeur de périphériques ..."
-
-msgid "Refresh Device Status"
-msgstr "Actualiser l'état de l'appareil"
-
-msgid "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
-msgstr ""
-"Cliquez sur un appareil pour ouvrir une liste déroulante et choisissez "
-"l'appareil souhaité dans une liste. Quand un autre appareil est sélectionné, "
-"les 2 appareils sont en marche."
-
-
 msgid "Vendor"
 msgstr "Fournisseur"
-
-msgid "Refreshing Device Status..."
-msgstr "Rafraîchissant Device Status ..."
 
 msgid "How to map Devices with Interfaces"
 msgstr "Comment cartographier appareils avec des interfaces"
@@ -2987,12 +2926,6 @@ msgstr ""
 
 msgid "Interface configuration"
 msgstr "Configuration d'interface"
-
-msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
-msgstr ""
-"Utilisez cette page pour configurer la configuration de chaque interface et "
-"sa cartographie à une carte réseau physique."
-
 
 msgid "[enter IPv4 address]"
 msgstr "[pas d'adresse courriel]"
@@ -3012,20 +2945,11 @@ msgstr "[entrer la valeur]"
 msgid "Edit Interface"
 msgstr "Nouvelles interfaces"
 
-msgid "Is VLAN (802.1q) Interface"
-msgstr "Est-VLAN (802.1Q) Interface"
-
-msgid "Is Wireless Interface"
-msgstr "Est-Interface sans fil"
-
 msgid "Parent Interface"
 msgstr "Nouvelles interfaces"
 
 msgid "802.1q Tag"
 msgstr "802.1Q Tag"
-
-msgid "802.1q Tag must be a valid integer."
-msgstr "802.1Q Tag doit être un entier valide."
 
 msgid "Config Type"
 msgstr "Tapez config"
@@ -3156,9 +3080,6 @@ msgstr "Range End"
 msgid "Lease Duration"
 msgstr "Durée du bail"
 
-msgid "DHCP Advanced"
-msgstr "DHCP avancée"
-
 msgid "DNS Override"
 msgstr "Redéfinition WEB"
 
@@ -3188,9 +3109,6 @@ msgstr "VRRP priorité doit être un entier valide compris entre 1 et 255."
 
 msgid "VRRP Aliases"
 msgstr "Alias ​​VRRP"
-
-msgid "Renewing DHCP Lease..."
-msgstr "Renouveler le bail DHCP ..."
 
 msgid "(eg: gateway)"
 msgstr "(par exemple: la passerelle)"
@@ -3249,45 +3167,11 @@ msgstr "Nouvelle destination"
 msgid "New Port"
 msgstr "New Port"
 
-msgid "Port Forward Troubleshooter"
-msgstr "Port Forward Dépanneur"
-
-msgid "Troubleshooting Port Forwards"
-msgstr "Dépannage port transfère"
-
-msgid "Test 1: Verify pinging the <b>new destination</b>"
-msgstr "Test 1: Vérification de ping <b> nouvelle destination </ b>"
-
-msgid "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>"
-msgstr ""
-"Test 2:. Vérifiez la connexion à la nouvelle destination <br/> <i> Ce test "
-"applique uniquement aux TCP avant portuaires </ i>"
-
-
-msgid "Connect Test"
-msgstr "Connectez test"
-
-msgid "Test 3: Watch traffic using the Packet Test"
-msgstr "Test 3: Regardez trafic en utilisant le test Packet"
-
 msgid "Packet Test"
 msgstr "Packet test"
 
-msgid "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}"
-msgstr ""
-"Pour plus d'aide avant portuaires de dépannage voir l'<br/> {0} Port Guide "
-"de dépannage avant {1}"
-
-
 msgid "Other"
 msgstr "Autre"
-
-msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
-msgstr ""
-"Port Forward règles sessions à terme correspondant aux critères configurés à "
-"partir d'une adresse IP publique à une adresse IP sur un réseau (NAT'd) "
-"interne. Les règles sont évaluées dans l'ordre."
-
 
 msgid "The following ports are currently reserved and can not be forwarded:"
 msgstr "Les ports suivants sont réservés et ne peuvent être transmis:"
@@ -3351,9 +3235,6 @@ msgstr ""
 "contournées."
 
 
-msgid "Enable Bypass Rule"
-msgstr "Activer la règle Bypass"
-
 msgid "Process"
 msgstr "Processus"
 
@@ -3371,9 +3252,6 @@ msgstr "Hop Suivant"
 
 msgid "Local interface"
 msgstr "Interface locale"
-
-msgid "[1.2.3.0]"
-msgstr "[1.2.3.0]"
 
 msgid "If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address."
 msgstr ""
@@ -3399,12 +3277,6 @@ msgstr ""
 
 msgid "Current Routes"
 msgstr "Routes actuelles"
-
-msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
-msgstr ""
-"Routes actuelle montre la configuration du système de routage actuelle et "
-"comment tout le trafic seront acheminés."
-
 
 msgid "Static DNS Entries"
 msgstr "Statiques entrées DNS"
@@ -3498,14 +3370,8 @@ msgstr ""
 msgid "Upload Reservation"
 msgstr "Ajouter réservation"
 
-msgid "No reservation"
-msgstr "Aucune réservation"
-
 msgid "Upload Limit"
 msgstr "Ajouter limite"
-
-msgid "No limit"
-msgstr "Sans limites"
 
 msgid "Download Reservation"
 msgstr "Télécharger Réservation"
@@ -3567,26 +3433,14 @@ msgstr "Options de dnsmasq personnalisée."
 msgid "Warning: Invalid syntax will halt all DHCP & DNS services."
 msgstr "Attention: Syntaxe incorrecte mettra fin à tous les services DHCP et DNS."
 
-msgid "Forward Filter Rules"
-msgstr "Règles de filtre avant"
-
 msgid "IPv6"
 msgstr "IPv6"
-
-msgid "Input Filter Rules"
-msgstr "Règles de filtre d'entrée"
 
 msgid "Filter Rules"
 msgstr "Règles de filtrage"
 
-msgid "Enable Forward Filter Rule"
-msgstr "Activer Forward règle de filtrage"
-
 msgid "Enable IPv6 Support"
 msgstr "Activer le support IPv6"
-
-msgid "Enable Input Filter Rule"
-msgstr "Activer la règle de filtrage d'entrée"
 
 msgid "10000 Mbps, Full Duplex"
 msgstr "10000 Mbps, duplex intégral"
@@ -3645,26 +3499,8 @@ msgstr "Tests de réseau"
 msgid "The <b>Connectivity Test</b> verifies a working connection to the Internet."
 msgstr "Le <b> Test de connectivité </ b> vérifie une connexion active à l'Internet."
 
-msgid "Unable to complete the Connectivity Test."
-msgstr "Impossible de terminer le test de connectivité."
-
 msgid "Connectivity Test Output"
 msgstr "Tester la connectivité sortie"
-
-msgid "Testing Internet Connectivity"
-msgstr "Test de connectivité Internet"
-
-msgid "Failed to connect to the Internet, DNS failed."
-msgstr "Impossible de se connecter à l'Internet, DNS a échoué."
-
-msgid "Failed to connect to the Internet, TCP failed."
-msgstr "Impossible de se connecter à l'Internet, TCP a échoué."
-
-msgid "Successfully connected to the Internet."
-msgstr "Vous avez connecté à Internet."
-
-msgid "Test Connectivity Result"
-msgstr "Tester la connectivité Résultat"
 
 msgid "The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"
 msgstr ""
@@ -3672,29 +3508,17 @@ msgstr ""
 "particulier peuvent être vérifiées à"
 
 
-msgid "Unable to complete the Ping Test."
-msgstr "Impossible de terminer le test Ping."
-
 msgid "Ping Test Output"
 msgstr "Sortie Test Ping"
 
 msgid "IP Address or Hostname"
 msgstr "Adresse du serveur ou nom d'hôte"
 
-msgid "Please enter a valid IP Address or Hostname"
-msgstr "S'il vous plaît entrer une adresse IP valide ou nom d'hôte"
-
 msgid "The <b>DNS Test</b> can be used to test DNS lookups"
 msgstr "Le <b> Tester DNS </ b> peut être utilisé pour tester les recherches DNS"
 
-msgid "Unable to complete DNS test."
-msgstr "Impossible de terminer test DNS."
-
 msgid "DNS Test Output"
 msgstr "DNS Sortie de test"
-
-msgid "Please enter a valid Hostname"
-msgstr "S'il vous plaît entrer un nom d'hôte valide"
 
 msgid "The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."
 msgstr ""
@@ -3702,17 +3526,11 @@ msgstr ""
 "TCP vers un port sur l'hôte ou un client donné."
 
 
-msgid "Unable to complete Connection test."
-msgstr "Impossible de terminer test de connexion."
-
 msgid "Connection Test Output"
 msgstr "Tester la connexion de sortie"
 
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "Le <b> Traceroute test </ b> retrace la route à un hôte ou d'un client donné."
-
-msgid "Unable to complete the Traceroute Test."
-msgstr "Impossible de terminer le test Traceroute."
 
 msgid "Traceroute Test Output"
 msgstr "Sortie traceroute test"
@@ -3720,14 +3538,8 @@ msgstr "Sortie traceroute test"
 msgid "The <b>Download Test</b> downloads a file."
 msgstr "Le <b> télécharger l'essai </ b> télécharge un fichier."
 
-msgid "Unable to complete the Download Test."
-msgstr "Impossible de terminer l'essai de téléchargement."
-
 msgid "Download Test Output"
 msgstr "Sortie Télécharger Test"
-
-msgid "Please enter a valid Url"
-msgstr "S'il vous plaît entrer une URL valide"
 
 msgid "The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."
 msgstr ""
@@ -3735,14 +3547,8 @@ msgstr ""
 "fil de réseau pour le dépannage."
 
 
-msgid "Unable to complete the Packet Test."
-msgstr "Impossible de terminer le test Packet."
-
 msgid "Packet Test Output"
 msgstr "Sortie de test Packet"
-
-msgid "tcpdump arguments and expression"
-msgstr "arguments tcpdump et expression"
 
 msgid "5 seconds"
 msgstr "5 secondes"
@@ -3753,23 +3559,11 @@ msgstr "30 secondes"
 msgid "120 seconds"
 msgstr "120 secondes"
 
-msgid "Timeout:"
-msgstr "Temps libre:"
-
 msgid "Basic"
 msgstr "De base"
 
 msgid "Exporting Packet Dump..."
 msgstr "Exportation Packet Dump ..."
-
-msgid "A Domain Name must be specified."
-msgstr "Un \"Hôte\" doit être spécifié."
-
-msgid "A HTTPS port must be specified."
-msgstr "Un \"Hôte\" doit être spécifié."
-
-msgid "A HTTP port must be specified."
-msgstr "Un \"Hôte\" doit être spécifié."
 
 msgid "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."
 msgstr ""
@@ -3778,35 +3572,8 @@ msgstr ""
 "bande passante WAN pour tous les interfaces WAN."
 
 
-msgid "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
-msgstr ""
-"Le Block All règle dans Règles de filtrage d'entrée est désactivé. Ceci est "
-"dangereux et non autorisés! Reportez-vous à la documentation."
-
-
-msgid "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."
-msgstr ""
-"Le Block All règle dans Règles de filtrage d'entrée est manquant. Ceci est "
-"dangereux et non autorisés! Reportez-vous à la documentation."
-
-
-msgid "The Allow SSH rule in Input Filter Rules has been enabled."
-msgstr "La règle Autoriser SSH dans les règles de filtrage d'entrée a été activée."
-
-msgid "If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server."
-msgstr ""
-"Si le mot de passe admin / root est mal choisi, permettant SSH peut être "
-"très dangereux et compromettre la sécurité du serveur."
-
-
 msgid "Do you want to continue anyway?"
 msgstr "Voulez-vous continuer?"
-
-msgid "Applying Network Settings..."
-msgstr "Appliquer les paramètres réseau ..."
-
-msgid "Unable to run this Network Utility."
-msgstr "Impossible d'exécuter cette utilitaire réseau."
 
 msgid "Clear Output"
 msgstr "Effacer sortie"
@@ -3820,9 +3587,6 @@ msgstr "Essai Terminé"
 msgid "Current Hosts"
 msgstr "Hôtes en cours"
 
-msgid "This shows all current hosts."
-msgstr "Cela montre tous les hôtes actuels."
-
 msgid "MAC Vendor"
 msgstr "Fournisseur MAC"
 
@@ -3832,32 +3596,8 @@ msgstr "Dernier Temps d'accès"
 msgid "Last Session Time"
 msgstr "Dernière session Temps"
 
-msgid "Quota Remaining"
-msgstr "Quota restante"
-
-msgid "Quota Issue Time"
-msgstr "Quota heure d'émission"
-
-msgid "Quota Expiration Time"
-msgstr "Quota Heure d'expiration"
-
 msgid "User Agent"
 msgstr "Agent utilisateur"
-
-msgid "Authenticated"
-msgstr "Utiliser l'authentification"
-
-msgid "Current Quotas"
-msgstr "Les quotas actuels"
-
-msgid "This shows all hosts currently with quotas."
-msgstr "Cela montre tous les hôtes actuellement avec les quotas."
-
-msgid "Allocated"
-msgstr "Numéroté"
-
-msgid "Expires"
-msgstr "Expire"
 
 msgid "Refill Quota"
 msgstr "Quota Recharge"
@@ -3877,17 +3617,8 @@ msgstr "Mise à jour"
 msgid "Checking for upgrades..."
 msgstr "Vérification des mises à jour ..."
 
-msgid "Upgrades are available!"
-msgstr "Mises à jour sont disponibles!"
-
 msgid "No upgrades available."
 msgstr "Pas de mises à jour disponibles."
-
-msgid "Package: {0} of {1}<br/>Speed: {2}"
-msgstr "Package: {0} de {1} <br/> Vitesse: {2}"
-
-msgid "Downloading packages... Please wait"
-msgstr "Télécharger un paquet ... S'il vous plaît patienter"
 
 msgid "Downloading upgrades failed."
 msgstr "Téléchargement des mises à jour..."
@@ -3900,14 +3631,6 @@ msgstr "Mise à niveau automatique"
 
 msgid "Automatically Install Upgrades"
 msgstr "Installation automatique des mises à niveau"
-
-msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
-msgstr ""
-"Si de nouvelles mises à jour sont disponibles au moment de la mise à niveau "
-"spécifiée elles seront automatiquement téléchargées et installées. Au cours "
-"de l'installation le système peut-être redémarré résultant en une perte "
-"momentanée de connectivité."
-
 
 msgid "Do Not Automatically Install Upgrades"
 msgstr "Ne pas installer automatiquement les mises à niveau"
@@ -3928,9 +3651,6 @@ msgstr ""
 msgid "Automatic Upgrade Schedule"
 msgstr "Calendrier de mise à niveau automatique"
 
-msgid "Summary"
-msgstr "Sommaire"
-
 msgid "Administration"
 msgstr "Administration"
 
@@ -3949,12 +3669,6 @@ msgstr "Répertoire local"
 msgid "Local Users"
 msgstr "Utilisateurs Locaux"
 
-msgid "Cleanup expired users"
-msgstr "Nettoyage expiré utilisateurs"
-
-msgid "user/login ID"
-msgstr "utilisateur/identifiant de connexion"
-
 msgid "[enter login]"
 msgstr "[saisir de login]"
 
@@ -3964,20 +3678,11 @@ msgstr ""
 "caractères alphanumériques."
 
 
-msgid "first name"
-msgstr "prénom"
-
 msgid "[enter first name]"
 msgstr "[Entrez le prénom]"
 
-msgid "last name"
-msgstr "nom de famille"
-
 msgid "[last name]"
 msgstr "nom de famille"
-
-msgid "email address"
-msgstr "adresse courriel"
 
 msgid "[email address]"
 msgstr "adresse courriel"
@@ -3987,9 +3692,6 @@ msgstr "mot de passe"
 
 msgid "Unchanged"
 msgstr "Inchangé"
-
-msgid "expiration time"
-msgstr "délai d'expiration"
 
 msgid "User/Login ID"
 msgstr "Utilisateur/Identifiant de connexion"
@@ -4011,39 +3713,6 @@ msgstr "Adresse Courriel"
 
 msgid "(leave empty to keep the current password unchanged)"
 msgstr "(laisser vide pour garder le mot de passe actuel inchangé)"
-
-msgid "The login name has already been taken:"
-msgstr "Le nom de connexion a déjà été prise:"
-
-msgid "The login name must not contain forward slash character."
-msgstr ""
-"Le nom de connexion à la ligne {0} ne doit pas contenir le caractère barre "
-"de fraction."
-
-
-msgid "row"
-msgstr "rangée"
-
-msgid "The first name must not contain any spaces."
-msgstr "Le premier nom ne doit pas contenir d'espaces."
-
-msgid "The last name must not contain any spaces."
-msgstr "Le dernier nom ne doit pas contenir d'espaces."
-
-msgid "The password must contain at least 1 character."
-msgstr "Le mot de passe doit contenir au moins 1 caractère."
-
-msgid "The password must not contain any spaces."
-msgstr "Le mot de passe ne doit pas contenir d'espaces."
-
-msgid "Please save the changes before cleaning up expired users !"
-msgstr ""
-"S'il vous plaît enregistrer les modifications avant de nettoyer les "
-"utilisateurs expirés!"
-
-
-msgid "Cleaning up expired users..."
-msgstr "Nettoyage des utilisateurs expirés ..."
 
 msgid "Support"
 msgstr "Support"
@@ -4071,12 +3740,6 @@ msgstr ""
 "minutes."
 
 
-msgid "Manual Reboot Failure Warning"
-msgstr "Alerte d'Echec de Redémarrage Manuel"
-
-msgid "Error: Unable to reboot {0} Server"
-msgstr "Erreur: Impossible de redémarrer le Serveur {0}"
-
 msgid "The {0} Server is rebooting."
 msgstr "Le Serveur {0} est en cours de redémarrage."
 
@@ -4098,23 +3761,11 @@ msgstr ""
 "opérations du réseau."
 
 
-msgid "Manual Shutdown Failure Warning"
-msgstr "Alerte d'Echec d'Arrêt Manuel"
-
-msgid "Error: Unable to shutdown {0} Server"
-msgstr "Erreur: Impossible d'arrêter le Serveur {0}"
-
 msgid "The {0} Server is shutting down."
 msgstr "Le serveur {0} est en cours d'arret."
 
 msgid "Launch the Setup Wizard."
 msgstr "Lancez l'assistant de configuration."
-
-msgid "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"
-msgstr ""
-"L'assistant de configuration est sur le point d'être re-run. Cela peut "
-"reconfigurer le {0} Server et {1} remplacer vos paramètres actuels. {2}"
-
 
 msgid "Factory Defaults"
 msgstr "Paramètres usine"
@@ -4137,14 +3788,8 @@ msgstr ""
 msgid "Resetting to factory defaults..."
 msgstr "Réinitialisation des paramètres d'usine ..."
 
-msgid "All settings have been reset to factory defaults."
-msgstr "Tous les paramètres ont été réinitialisés aux valeurs par défaut."
-
 msgid "Backup"
 msgstr "Sauvegarde"
-
-msgid "Downloading backup..."
-msgstr "Téléchargement de sauvegarde ..."
 
 msgid "Backup to File"
 msgstr "Sauvegarde dans un Fichier"
@@ -4227,12 +3872,6 @@ msgstr "{0}Désactiver le Traitement{1} du trafic Web."
 msgid "SMTP timeout (seconds)"
 msgstr "Délai SMTP (secondes)"
 
-msgid "Allow TLS encryption over SMTP."
-msgstr "{0}Autoriser le cryptage TLS{1} sur SMTP."
-
-msgid "Stop TLS encryption over SMTP."
-msgstr "{0}Autoriser le cryptage TLS{1} sur SMTP."
-
 msgid "Protocols"
 msgstr "Protocoles"
 
@@ -4293,29 +3932,11 @@ msgstr "Langage"
 msgid "Upload"
 msgstr "Envoyer"
 
-msgid "Please wait while your language pack is uploaded..."
-msgstr "SVP attendez pendant que votre fichier de langage est envoyé..."
-
 msgid "Succeeded"
 msgstr "Réussi"
 
-msgid "Upload language pack succeeded"
-msgstr "Succès de l'envoi du fichier de langage"
-
-msgid "Upload language pack failed"
-msgstr "Echec de l'envoi du fichier de langage"
-
-msgid "Invalid language pack; not a zip file"
-msgstr "Fichier de langage invalide; ce n'est pas un fichier zip"
-
 msgid "Shield Rules"
 msgstr "Règles Bouclier"
-
-msgid "Enable Shield Rule"
-msgstr "Activer la règle Shield"
-
-msgid "Shield Settings"
-msgstr "Paramètres du Bouclier"
 
 msgid "Enable Shield"
 msgstr "Activer Shield"
@@ -4365,9 +3986,6 @@ msgstr ""
 "Cliquez sur Actualiser pour forcer la réconciliation avec le serveur de "
 "licences."
 
-
-msgid "The Current list of Licenses available on this Server."
-msgstr "La liste actuelle de licences disponibles sur ce serveur."
 
 msgid "App"
 msgstr "Applications"
@@ -5152,12 +4770,6 @@ msgstr "Cela fonctionne si votre serveur {0} a une adresse IP statique."
 msgid "Use Hostname"
 msgstr "Utiliser le nom d'hôte"
 
-msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
-msgstr ""
-"Cette méthode est recommandée si le nom de domaine pleinement qualifié du "
-"serveur {0} reponds à ses adresses IP interne et externe."
-
-
 msgid "Use Manually Specified Address"
 msgstr "Utiliser l'adresse IP spécifiée manuellement"
 
@@ -5225,89 +4837,23 @@ msgstr "Générer un certificat de serveur"
 msgid "Country"
 msgstr "Pays"
 
-msgid "Select the country in which your organization is legally registered."
-msgstr ""
-"Sélectionnez le pays dans lequel votre organisation est légalement "
-"enregistrée."
-
-
 msgid "State/Province"
 msgstr "Etat / Province"
-
-msgid "Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate."
-msgstr ""
-"Nom de l'État, province, région, territoire où se trouve votre organisation. "
-"S'il vous plaît entrer le nom complet. Ne pas abréger."
-
 
 msgid "City/Locality"
 msgstr "Ville / Localité"
 
-msgid "Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate."
-msgstr ""
-"Nom de la ville / localité dans laquelle votre organisation est inscrit / "
-"situé. S'il vous plaît épeler le nom de la ville / localité. Ne pas abréger."
-
-
 msgid "Organization"
 msgstr "Organisation"
-
-msgid "The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."
-msgstr ""
-"Le nom sous lequel votre entreprise est légalement enregistrée. "
-"L'organisation cotée doit être le titulaire légal du nom de domaine dans la "
-"demande de certificat. Si vous vous inscrivez en tant que propriétaire d'une "
-"petite entreprise / semelle, s'il vous plaît entrez le nom du demandeur de "
-"certificat dans le domaine de l'Organisation, et le DBA (faisant affaire "
-"sous) nom dans le champ de l'unité d'organisation."
-
-
-msgid "Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."
-msgstr ""
-"Optionnel. Utilisez ce champ pour différencier entre les divisions au sein "
-"d'une organisation. Le cas échéant, vous pouvez saisir le DBA (faisant "
-"affaire sous) nom dans ce champ."
-
 
 msgid "Common Name"
 msgstr "Nom de la société"
 
-msgid "The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."
-msgstr ""
-"Le nom entré dans le (nom commun) champ CN doit être le nom de domaine "
-"complet du site pour lequel vous allez utiliser le certificat (example.com). "
-"Ne pas inclure le http: // ou https: // dans votre préfixes nom commun. Ne "
-"pas entrer dans votre nom personnel dans ce domaine."
-
-
 msgid "Subject Alternative Names"
 msgstr "Subject Alternative Names"
 
-msgid "Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."
-msgstr ""
-"Optionnel. Utilisez ce champ pour entrer une virgule liste séparés d'un ou "
-"plusieurs noms d'hôte de remplacement ou les adresses IP qui peuvent être "
-"utilisés pour accéder au site pour lequel vous serez en utilisant le "
-"certificat."
-
-
 msgid "Generate"
 msgstr "Généré"
-
-msgid "The Country field must not be empty"
-msgstr "Le champ Pays doit pas être vide"
-
-msgid "The State field must not be empty"
-msgstr "Le champ de l'Etat ne doit pas être vide"
-
-msgid "The Locality field must not be empty"
-msgstr "Le champ Localité doit pas être vide"
-
-msgid "The Organization field must not be empty"
-msgstr "Le champ Organisation ne doit pas être vide"
-
-msgid "The Common Name field must not be empty"
-msgstr "Le champ Nom commun ne doit pas être vide"
 
 msgid "Certificate Authority generation successfully completed. Click OK to continue."
 msgstr ""
@@ -5335,9 +4881,6 @@ msgstr "Fichier non valide ou manquant"
 
 msgid "Please select a certificate to upload."
 msgstr "SVP sélectionnez un fichier à envoyer."
-
-msgid "Password is too short."
-msgstr "Mot de passe est trop court."
 
 msgid "SNMP"
 msgstr "SNMP"
@@ -5374,9 +4917,6 @@ msgstr "MA_COMMUNAUTE_DE_PIEGE"
 
 msgid "An Trap Community must be specified."
 msgstr "Une \"communauté\" de piége doit être spécifiée."
-
-msgid "MY_TRAP_HOST"
-msgstr "MON_HOTE_DE_PIEGE"
 
 msgid "An Trap Host must be specified."
 msgstr "Un \"Hôte\" de piège doit être spécifiée."
@@ -5441,39 +4981,6 @@ msgstr "Thème d'administration"
 msgid "Upload New Skin"
 msgstr "Envoyer un nouveau thème"
 
-msgid "Please wait while your skin is uploaded..."
-msgstr "SVP patienter pendant que votre thème est envoyé..."
-
-msgid "Upload Skin Succeeded"
-msgstr "Envoi du thème réussi"
-
-msgid "Upload Skin Failed"
-msgstr "Envoi du thème échoué"
-
-msgid "Invalid Skin"
-msgstr "Thème invalide"
-
-msgid "The default skin can not be overwritten"
-msgstr "Le thème par défaut ne peut pas être écrasé"
-
-msgid "Error creating skin folder"
-msgstr "Erreur pendant la création du dossier du thème"
-
-msgid "The username"
-msgstr "Le nom d'utilisateur"
-
-msgid "already exists in row"
-msgstr "existe déjà dans la rangée"
-
-msgid "There must always be at least one valid account."
-msgstr "Il doit toujours y avoir au moins un compte valide."
-
-msgid "There must always be at least one non-read-only (writable) account."
-msgstr "Il doit toujours y avoir au moins un compte non-lecture seule (écriture)."
-
-msgid "Saving..."
-msgstr "Sauvegarde en cours..."
-
 msgid "Outgoing Server"
 msgstr "Serveur sortant"
 
@@ -5492,9 +4999,6 @@ msgstr "Courriel de test"
 
 msgid "[enter email]"
 msgstr "[entrez votre email]"
-
-msgid "Sending Email..."
-msgstr "Envoi ..."
 
 msgid "Outgoing Email Server"
 msgstr "Serveur de courrier sortant (SMTP)"
@@ -5616,9 +5120,6 @@ msgstr "propriétairedelalistedequarantaine@example.com"
 msgid "Distribution List Address"
 msgstr "Adresse de la Liste de Distribution"
 
-msgid "Send To Address"
-msgstr "Envoyer A l'Adresse"
-
 msgid "Sender"
 msgstr "Emetteur"
 
@@ -5627,9 +5128,6 @@ msgstr "Sujet"
 
 msgid "Size (KB)"
 msgstr "Taille (Ko)"
-
-msgid "The port must be an integer number between 1 and 65535."
-msgstr "Le port doit être un nombre entier compris entre {0} et {1}."
 
 msgid "A Password must be specified if a Login is specified."
 msgstr ""
@@ -5643,20 +5141,11 @@ msgstr ""
 "spécifié."
 
 
-msgid "A Server Address or Hostname must be specified for an SMTP server."
-msgstr ""
-"Une adresse de serveur ou nom d'hôte doivent être spécifiés pour un serveur "
-"SMTP."
-
-
 msgid "A From Address must be specified."
 msgstr "Un \"depuis l'adresse\" doit être spécifié."
 
 msgid "All Sessions"
 msgstr "Sessions TCP"
-
-msgid "Sessions for"
-msgstr "Sessions pour"
 
 msgid "Creation Time"
 msgstr "Date de création"
@@ -5666,30 +5155,6 @@ msgstr "Nouvelles interfaces"
 
 msgid "Server Interface"
 msgstr "Interface de serveur"
-
-msgid "Client (Pre-NAT)"
-msgstr "Client (Pré-NAT)"
-
-msgid "Server (Pre-NAT)"
-msgstr "Server (pré-NAT)"
-
-msgid "Client Port (Pre-NAT)"
-msgstr "Port client (Pré-NAT)"
-
-msgid "Server Port (Pre-NAT)"
-msgstr "Port du serveur (Pré-NAT)"
-
-msgid "Client (Post-NAT)"
-msgstr "Client (Post-NAT)"
-
-msgid "Server (Post-NAT)"
-msgstr "Server (Post-NAT)"
-
-msgid "Client Port (Post-NAT)"
-msgstr "Port client (Post-NAT)"
-
-msgid "Server Port (Post-NAT)"
-msgstr "Port du serveur (Post-NAT)"
 
 msgid "NATd"
 msgstr "NATD"
@@ -5721,23 +5186,8 @@ msgstr "Type de contenu"
 msgid "Confidence"
 msgstr "Confiance"
 
-msgid "Client KB/s"
-msgstr "KB client / s"
-
-msgid "Server KB/s"
-msgstr "Serveur KB / s"
-
-msgid "Total KB/s"
-msgstr "KB Total / s"
-
 msgid "Current Sessions"
 msgstr "Sessions actuelles"
-
-msgid "This shows all current sessions."
-msgstr "Cela montre toutes les sessions en cours."
-
-msgid "Chart"
-msgstr "Graphique"
 
 msgid "Congratulations! {0} is ready to be configured."
 msgstr "Félicitations! {0} est prêt à être configuré."
@@ -5826,12 +5276,6 @@ msgstr "n'est pas"
 msgid "True"
 msgstr "Vrai"
 
-msgid "Missing Editor"
-msgstr "Editeur manquant"
-
-msgid "Value is required."
-msgstr "Valeur est requise."
-
 msgid "Auto Refresh"
 msgstr "Rafraîchissement automatique"
 
@@ -5841,35 +5285,8 @@ msgstr "Filtre:"
 msgid "Case sensitive"
 msgstr "Cas sensible"
 
-msgid "Clear Filters"
-msgstr "Effacer les filtres"
-
-msgid "Filters can be added by clicking on column headers arrow down menu and using Filters menu"
-msgstr ""
-"Les filtres peuvent être ajoutés en cliquant sur les en-têtes de colonnes "
-"flèche vers le bas en utilisant le menu et menu Filtres"
-
-
-msgid "Clear Grouping"
-msgstr "Effacer Groupement"
-
-msgid "Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field"
-msgstr ""
-"Le regroupement peut être utilisé en cliquant sur les en-têtes de colonnes "
-"flèche vers le bas et en cliquant sur le menu Groupe en ce domaine"
-
-
 msgid "Reset View"
 msgstr "Rétablir l'affichage"
-
-msgid "Restore default columns positions, widths and visibility"
-msgstr "Restaurer colonnes par défaut positions, largeurs et visibilité"
-
-msgid "Starting..."
-msgstr "Démarrage..."
-
-msgid "Ok"
-msgstr "Ok"
 
 msgid "Apps"
 msgstr "Applications"
@@ -5879,9 +5296,6 @@ msgstr "Mon Compte"
 
 msgid "Logout"
 msgstr "Déconnexion"
-
-msgid "Applying Upgrades..."
-msgstr "Application de la mise à niveau"
 
 msgid "Upgrade in Progress"
 msgstr "Mise à jour en cours."
@@ -5901,36 +5315,6 @@ msgstr ""
 "à nouveau."
 
 
-msgid "Default Policy"
-msgstr "Politique de défaut"
-
-msgid "The Default Policy"
-msgstr "La stratégie par défaut"
-
-msgid "For an optimal experience use Google Chrome or Mozilla Firefox."
-msgstr "Pour une expérience optimale utiliser Google Chrome ou Mozilla Firefox."
-
-msgid "Internet Explorer 8 and prior are not supported for administration."
-msgstr ""
-"Internet Explorer 8 et antérieur ne sont pas pris en charge pour "
-"l'administration."
-
-
-msgid "Please upgrade to a newer browser."
-msgstr "S'il vous plaît mettre à niveau vers un navigateur plus récent."
-
-msgid "Loading Config..."
-msgstr "Chargement de la configuration..."
-
-msgid "Show Policy Manager"
-msgstr "Montrer la gestion des politiques"
-
-msgid "Unknown Rack"
-msgstr "Rack Inconnu"
-
-msgid "Determining Connectivity..."
-msgstr "Détermination de la connectivité ..."
-
 msgid "Yes, install the recommended apps."
 msgstr "Oui, installer les applications recommandées."
 
@@ -5939,9 +5323,6 @@ msgstr "Installation complète!"
 
 msgid "Thank you for using Untangle!"
 msgstr "Merci d'utiliser Untangle"
-
-msgid "No, I will install the apps manually."
-msgstr "Non, je vais installer les applications manuellement."
 
 msgid "Registration complete."
 msgstr "Inscription complète."
@@ -5958,66 +5339,6 @@ msgstr "Paramètres"
 msgid "Buy Now"
 msgstr "Acheter maintenant"
 
-msgid "The <B>Status Indicator</B> shows the current operating condition of a particular application."
-msgstr ""
-"L'<B>indicateur d'état</B> montre les conditions courantes de fonctionnement "
-"d'une application particulière."
-
-
-msgid "Green"
-msgstr "Vert"
-
-msgid "indicates that the application is ON and operating normally."
-msgstr "indique que l'application est \"on\" et fonctionne normalement."
-
-msgid "Red"
-msgstr "Rouge"
-
-msgid "indicates that the application is ON, but that an abnormal condition has occurred."
-msgstr ""
-"indique que l'application est \"on\", mais qu'une situation anormale a eu "
-"lieu."
-
-
-msgid "Yellow"
-msgstr "Jaune"
-
-msgid "indicates that the application is saving or refreshing settings."
-msgstr ""
-"indique que l'application est en train de sauver ou d'actualiser les "
-"paramètres."
-
-
-msgid "Clear"
-msgstr "Grisé"
-
-msgid "indicates that the application is OFF, and may be turned ON by the user."
-msgstr ""
-"indique que l'application est \"off\", mais peut être mis sur \"on\" par "
-"l'utilisateur."
-
-
-msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
-msgstr ""
-"Le <B>Bouton Power</B> vous permet de mettre une application sur \"on\" et \""
-"off\"."
-
-
-msgid "This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack."
-msgstr ""
-"Ce nœud appartient au rack parent ci-dessus.<br/> Pour accéder aux "
-"paramètres de ce noeud, sélectionnez le rack parent."
-
-
-msgid "Unable to start {0}"
-msgstr "Impossible de démarrer {0}"
-
-msgid "Loading Settings..."
-msgstr "Chargement des paramètres..."
-
-msgid "Error: There is no settings class for the app '{0}'."
-msgstr "Erreur: Il n'y a pas de classe de paramètres pour le noeud '{0}'."
-
 msgid "Free trial expired!"
 msgstr "Essai gratuit expiré!"
 
@@ -6030,9 +5351,6 @@ msgstr "Expire aujourd'hui."
 msgid "days remain."
 msgstr "jours restent."
 
-msgid "System Busy"
-msgstr "Système occupé"
-
 msgid "CPU Load"
 msgstr "Charge CPU"
 
@@ -6041,75 +5359,6 @@ msgstr "Mémoire"
 
 msgid "Disk"
 msgstr "Disque"
-
-msgid "Tx:"
-msgstr "Transmis:"
-
-msgid "Rx:"
-msgstr "Reçus:"
-
-msgid "F:"
-msgstr "L:"
-
-msgid "U:"
-msgstr "U:"
-
-msgid "TX Speed:"
-msgstr "Vitesse de transmission:"
-
-msgid "RX Speed:"
-msgstr "Vitesse de réception:"
-
-msgid "Total Sessions:"
-msgstr "Sessions totales"
-
-msgid "TCP Sessions:"
-msgstr "Sessions TCP"
-
-msgid "UDP Sessions:"
-msgstr "Sessions UDP"
-
-msgid "Number of Processors / Type / Speed:"
-msgstr "Nombre de processeurs / Type / Vitesse:"
-
-msgid "Load average (1 min , 5 min , 15 min):"
-msgstr "Charge moyenne (1 min , 5 min , 15 min):"
-
-msgid "Tasks (Processes)"
-msgstr "Tâches (Procédés)"
-
-msgid "Uptime:"
-msgstr "Temps de fonctionnement:"
-
-msgid "Total Memory:"
-msgstr "Mémoire totale:"
-
-msgid "Memory Used:"
-msgstr "Mémoire utilisée:"
-
-msgid "Memory Free:"
-msgstr "Mémoire disponible:"
-
-msgid "Swap Files:"
-msgstr "Fichiers de pagination:"
-
-msgid "total swap space"
-msgstr "Espace total de pagination"
-
-msgid "used"
-msgstr "utilisé"
-
-msgid "Total Disk Space:"
-msgstr "Espace disque total:"
-
-msgid "Free Disk Space:"
-msgstr "Espace disque libre:"
-
-msgid "Data read:"
-msgstr "Données lues:"
-
-msgid "Data write:"
-msgstr "Données écrites:"
 
 msgid "low"
 msgstr "faible"
@@ -6123,29 +5372,11 @@ msgstr "élevé"
 msgid "Day"
 msgstr "Jour"
 
-msgid "Days"
-msgstr "Jours"
-
 msgid "Hour"
 msgstr "Heure"
 
-msgid "Hours"
-msgstr "Heures"
-
 msgid "Minute"
 msgstr "Minute"
-
-msgid "Minutes"
-msgstr "Minutes"
-
-msgid "The app {0} has {1} metrics. The maximum number of metrics is {2}."
-msgstr "Le noeud {0} a {1} métrique(s). Le nombre maximum de métriques est de {2}."
-
-msgid "Please set up to four items."
-msgstr "SVP paramétrer jusqu'à quatre éléments."
-
-msgid "Set up to four"
-msgstr "Paramétrer jusqu'à quatre"
 
 msgid "View Report"
 msgstr "Voir le Rapport"
@@ -6168,26 +5399,8 @@ msgstr "Colonne"
 msgid "Operator"
 msgstr "Opérateur"
 
-msgid "[enter column]"
-msgstr "[enter colonne]"
-
-msgid "(Columns list is loaded for the entered Table')"
-msgstr "(Liste Colonnes est chargé pour la Table entré ')"
-
-msgid "[select operator]"
-msgstr "[sélectionnez l'opérateur]"
-
-msgid "[no value]"
-msgstr "[aucune valeur]"
-
-msgid "[select category]"
-msgstr "[Choisir une catégorie]"
-
 msgid "Title"
 msgstr "Titre"
-
-msgid "[enter title]"
-msgstr "[entrer le titre]"
 
 msgid "Display Order"
 msgstr "Ordre d'affichage"
@@ -6195,20 +5408,11 @@ msgstr "Ordre d'affichage"
 msgid "Units"
 msgstr "Unités"
 
-msgid "[no units]"
-msgstr "[aucun] unités"
-
 msgid "Table"
 msgstr "Table"
 
-msgid "[enter table]"
-msgstr "[enter tableau]"
-
 msgid "Text Columns"
 msgstr "Colonnes de texte"
-
-msgid "(enter one column per row)"
-msgstr "(entrez une colonne par rangée)"
 
 msgid "Text String"
 msgstr "Chaîne de texte"
@@ -6231,12 +5435,6 @@ msgstr "Ligne"
 msgid "Area"
 msgstr "Région"
 
-msgid "Bar"
-msgstr "Bar"
-
-msgid "Bar Overlapped"
-msgstr "Bar avec chevauchement"
-
 msgid "Time Data Interval"
 msgstr "Temps intervalle de données"
 
@@ -6255,14 +5453,8 @@ msgstr "Colonnes Temps données"
 msgid "Colors"
 msgstr "Couleurs"
 
-msgid "(enter one color per row)"
-msgstr "(entrez une couleur par ligne)"
-
 msgid "Order By Column"
 msgstr "Colonne ORDER BY"
-
-msgid "Order Direction"
-msgstr "Afin Direction"
 
 msgid "Ascending"
 msgstr "Croissant"
@@ -6273,38 +5465,14 @@ msgstr "Décroissant"
 msgid "Sql Conditions:"
 msgstr "SQL Conditions:"
 
-msgid "Specify a Range"
-msgstr "Spécifier une plage"
-
 msgid "Start Time"
 msgstr "Heure de Début"
-
-msgid "Start Time - End Time"
-msgstr "Heure de début - heure de fin"
-
-msgid "Specify a Custom Value"
-msgstr "Pour spécifier une valeur personnalisée"
 
 msgid "Users"
 msgstr "Utilisateurs"
 
-msgid "Selected"
-msgstr "Sélectionné"
-
-msgid "Full Name"
-msgstr "Nom complet"
-
-msgid "Specify Users"
-msgstr "Spécifier les utilisateurs"
-
 msgid "Groups"
 msgstr "Groupes"
-
-msgid "Specify Groups"
-msgstr "Spécifiez Groupes"
-
-msgid "Field Name"
-msgstr "Nom de domaine"
 
 msgid "Comparator"
 msgstr "Comparateur"
@@ -6345,27 +5513,11 @@ msgstr "Configurer votre serveur"
 msgid "Choose a password for the admin account."
 msgstr "<b>Choisir un mot de passe pour le compte admin</b>"
 
-#, javascript-format
-msgid "The password is shorter than the minimum %d characters."
-msgstr "Le mot de passe est plus petit que le minimum de %d caractères."
-
-msgid "Configure administrator email."
-msgstr "Configurez l'administrateur email."
-
 msgid "Admin Email"
 msgstr "Administrateur Email"
 
-msgid "Select a timezone."
-msgstr "Sélectionnez un fuseau horaire."
-
 msgid "Saving Settings"
 msgstr "Sauvegarde des paramètres"
-
-msgid "Unable to save Time Zone settings"
-msgstr "Impossible d'enregistrer les paramètres de fuseau horaire"
-
-msgid "Unable to save the admin password"
-msgstr "Impossible de sauvegarder le mot de passe admin"
 
 msgid "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced."
 msgstr ""
@@ -6376,9 +5528,6 @@ msgstr ""
 
 msgid "Identify Network Cards"
 msgstr "Identifier les cartes réseaux"
-
-msgid "Important:"
-msgstr "Important:"
 
 msgid "Plug an active cable into one network card to determine which network card it is."
 msgstr ""
@@ -6400,12 +5549,6 @@ msgstr "Impossible de rafraîchir les interfaces."
 
 msgid "New interfaces"
 msgstr "Nouvelles interfaces"
-
-msgid "There are new interfaces, please restart the wizard."
-msgstr "De nouvelles interfaces ont été détectées, SVP redémarrer l'assistant."
-
-msgid "Refreshing Network Interfaces"
-msgstr "Rafraîchissement des cartes réseaux"
 
 msgid "Missing interfaces"
 msgstr "Interfaces manquantes"
@@ -6449,12 +5592,6 @@ msgstr "Type de configuration"
 msgid "Internet Connection"
 msgstr "Connexion Internet"
 
-msgid "Unable to Test Connectivity"
-msgstr "Impossible de tester la connectivité"
-
-msgid "Please complete all of the required fields."
-msgstr "SVP remplissez tous les champs obligatoires."
-
 msgid "Saving Settings..."
 msgstr "Chargement des paramètres..."
 
@@ -6463,9 +5600,6 @@ msgstr "Paramètres réseaux"
 
 msgid "Unable to complete connectivity test, please try again."
 msgstr "Impossible de terminer le test de connectivité, recommencez plus tard."
-
-msgid "Warning! Internet and DNS tests failed."
-msgstr "Attention! Internet et le DNS ont échoué."
 
 msgid "Warning! DNS tests succeeded, but Internet tests failed."
 msgstr "Attention! DNS réussi, mais pas Internet."
@@ -6528,47 +5662,8 @@ msgstr ""
 msgid "Internal Network"
 msgstr "Réseau interne"
 
-msgid "Select a value"
-msgstr "Sélectionner une valeur"
-
-msgid "Please choose bridge or router."
-msgstr "SVP choisir Pont ou Routeur"
-
 msgid "Saving Internal Network Settings"
 msgstr "Sauvegarde des paramètres du réseau interne"
-
-msgid "Unable to save Local Network Settings"
-msgstr "Impossible de sauvegarder les paramètres Réseau Local"
-
-msgid "Redirect to the new setup address?"
-msgstr "Redirection vers la nouvelle adresse de l'installation?"
-
-msgid "When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"
-msgstr ""
-"Lors du passage de routeur pont transparent de la configuration est plus "
-"accessible en utilisant l'adresse interne. Au lieu de cela, il pourrait être "
-"accessible en utilisant l'adresse externe: {0}"
-
-
-msgid "If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."
-msgstr ""
-"Si vous voulez être redirigé vers la nouvelle adresse de configuration: {0} "
-"s'il vous plaît réinitialiser vos paramètres réseau et appuyez sur Oui."
-
-
-msgid "Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."
-msgstr ""
-"En cliquant sur Non empêchera redirection et va essayer de continuer "
-"l'installation en utilisant l'adresse actuelle, mais il pourrait ne plus "
-"être accessibles."
-
-
-msgid "When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"
-msgstr ""
-"Lors du passage à partir de pont transparent à la configuration du routeur "
-"pourrait ne plus accessible à l'aide adresses externe. Au lieu de cela, il "
-"pourrait être accessible en utilisant l'adresse interne: {0}"
-
 
 msgid "The Internal Address is changed to: {0}"
 msgstr "L'adresse interne est modifiée pour: {0}"
@@ -6577,12 +5672,6 @@ msgid "The changes are applied and you will be redirected to the new setup addre
 msgstr ""
 "Les modifications sont appliquées et vous serez redirigés vers la nouvelle "
 "adresse de configuration: {0}"
-
-
-msgid "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again."
-msgstr ""
-"Si le nouvel emplacement est pas chargé après 30 secondes s'il vous plaît "
-"réinitialiser vos paramètres de réseau et réessayer."
 
 
 msgid "Configure Automatic Upgrade Settings"
@@ -7870,62 +6959,14 @@ msgstr ""
 msgid "A Search Base must be specified."
 msgstr "Une \"Base de Recherche\" doit être spécifiée."
 
-msgid "Reports application is required for this feature. Please install and enable the Reports application."
-msgstr ""
-"Rapports application est nécessaire pour cette fonction. S'il vous plaît "
-"installer et activer l'application Rapports."
-
-
 msgid "Current Data"
 msgstr "Données actuelles"
-
-msgid "Export Data to File"
-msgstr "Exporter des données vers un fichier"
-
-msgid "Export Events to File"
-msgstr "Exporter des évènements de fichier"
 
 msgid "Events"
 msgstr "Événements"
 
-msgid "One day ago"
-msgstr "Un jour, il ya"
-
-msgid "Select Start date and time"
-msgstr "Sélectionner une date et heure de démarrage"
-
 msgid "Present"
 msgstr "Présent"
-
-msgid "Select End date and time"
-msgstr "Sélectionner une date et une heure de fin"
-
-msgid "Flush Events from Memory to Database and then Refresh"
-msgstr "Evénements Rincer De la mémoire à base de données puis Actualiser"
-
-msgid "Auto Refresh every {0} seconds"
-msgstr "Auto Refresh tous les {0} secondes"
-
-msgid "Start date and time"
-msgstr "Date et heure de commencer"
-
-msgid "start date and time"
-msgstr "Date et heure de commencer"
-
-msgid "End date and time"
-msgstr "Date et l'heure de fin"
-
-msgid "end date and time"
-msgstr "Date et heure de fin"
-
-msgid "Select Report"
-msgstr "Sélectionnez Rapport"
-
-msgid "Customize"
-msgstr "Personnaliser"
-
-msgid "Advanced report customization"
-msgstr "Rapport Personnalisation avancée"
 
 msgid "value"
 msgstr "valeur"
@@ -7933,35 +6974,14 @@ msgstr "valeur"
 msgid "Add Condition"
 msgstr "Ajouter une condition"
 
-msgid "Querying Database..."
-msgstr "Interrogation de la base de données ..."
-
-msgid "Fetching Events..."
-msgstr "Evénements Obtention ..."
-
 msgid "Exporting Events..."
 msgstr "Evénements Exportation ..."
-
-msgid "Add a condition using report data:"
-msgstr "Ajouter une condition à l'aide des données du rapport:"
 
 msgid "Conditions: {0}"
 msgstr "Conditions: {0}"
 
-msgid "Add New Condition"
-msgstr "Ajouter un nouveau État"
-
 msgid "Quick Add"
 msgstr "Ajout rapide"
-
-msgid "Delete All"
-msgstr "Supprimer tout"
-
-msgid "Delete All Conditions"
-msgstr "Supprimer toutes les conditions"
-
-msgid "Clear Value"
-msgstr "Clear Value"
 
 msgid "in Categories Block list"
 msgstr "Catégories dans la liste rouge"
@@ -8262,9 +7282,6 @@ msgstr "Active Directory"
 
 msgid "RADIUS"
 msgstr "RADIUS"
-
-msgid "ICMP"
-msgstr "ICMP"
 
 msgid "End Time"
 msgstr "Heure de Fin"
@@ -10041,10 +9058,6 @@ msgid "Quarantine Digest"
 msgstr "Résumé des Quarantaines"
 
 #: Status: UNVERIFIED
-msgid "A condition of this type already exists in this rule."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Information"
 msgstr ""
 
@@ -10081,15 +9094,7 @@ msgid "Known Devices"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Active Hosts:"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Power"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Disable"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10118,14 +9123,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Install Apps"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Tools"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Policy Manager"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10237,19 +9234,11 @@ msgid "Current Devices"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This shows all current devices."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "[no MAC Vendor]"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "[no hostname]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Device Username"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10265,10 +9254,6 @@ msgid "Last Seen Time"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This will clear the current changes."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "This will overwrite the current dashboard settings with the defaults."
 msgstr ""
 
@@ -10277,27 +9262,11 @@ msgid "Do you want to continue?"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter report]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Refresh Interval"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Leave blank for no Auto Refresh"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Timeframe"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "(hours)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The number of hours to query the latest data. Leave blank for last day."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10440,23 +9409,7 @@ msgid "From"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleted one Message"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Deleted {0} Messages"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Released one Message"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10464,15 +9417,7 @@ msgid "Released {0} Messages"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Safelisted one Address"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Safelisted {0} Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The account {0} doesn't have any quarantined messages."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10481,10 +9426,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Release to Inbox & Add Senders to Safe List"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleting..."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10512,19 +9453,7 @@ msgid "Save"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Delete one Address"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Delete {0} Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Delete Addresses"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleted one address"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10544,19 +9473,11 @@ msgid "Deleted forward address"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Deleted one Remap"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Deleted {0} Remaps"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Forward or Receive Quarantines"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Forward Quarantined Messages To"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10597,18 +9518,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Request"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Requesting Digest"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Successfully sent digest to '{0}'"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -10713,10 +9622,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Application Control Lite Summary"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Reports is not installed into your rack or it is not turned on."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11192,15 +10097,7 @@ msgid "Map Distribution"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Map distribution"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Resources"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "free"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11213,62 +10110,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Network Layout"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Loading"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "No data available yet!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Can not specify a port condition on port-less protocols:"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Countries"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "ISO Code"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Country Name"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Specify Countries"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "DONE"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Click to view Sessions"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Click to view Hosts"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Updating report"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "updated successfully"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Creating report"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "created successfully"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11317,10 +10158,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Service Apps"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Inherits"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11496,19 +10333,11 @@ msgid "Refresh Routes"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "The password must not contain any quotation marks."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Account Address"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Safe List Size"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Safe List Details for:"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11529,14 +10358,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Send to Address"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Interface [{0}]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Service App"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11565,10 +10386,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Reset"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "install required"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11629,10 +10446,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Email Alerts"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[no email address]"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11700,31 +10513,11 @@ msgid "Timezone changed"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "A reboot is needed for the Timezone change to take effect!"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Synchronize Language"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Downloading language..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Synchronize"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Last synchronized"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile MO file for entry"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile resource bundle for entry"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11764,19 +10557,7 @@ msgid "Wireless"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Loading Wireless Settings"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Wireless Password"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "You must choose a new and different wireless password."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Problem"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11796,27 +10577,7 @@ msgid "Remain securely connected to the {0} cloud for cloud management, hot fixe
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Unable to save Settings"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Authentication failed"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Select Category"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "All Categories"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Select a Category first"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Add to Dashboard"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -11824,59 +10585,11 @@ msgid "Deleting this report will remove also the Widget from Dashboard!"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Remove from Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "was added to Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "was removed from Dashboard"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Pie"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Donut"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "3D Column"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Grouped Columns"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Overlapped Columns"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Loading report..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Refreshing report..."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Deleting report"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "deleted successfully"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "more"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Exception"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12280,10 +10993,6 @@ msgid "Copy"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "copy"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Default Administration Username Text"
 msgstr ""
 
@@ -12296,14 +11005,6 @@ msgid "Use defaults"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "decimal_sep"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "thousand_sep"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Override"
 msgstr ""
 
@@ -12312,39 +11013,11 @@ msgid "Decimal Separator"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter decimal separator]"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Thousand Separator"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "[enter thousand separator]"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Date Format"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[enter date format]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The date format name cannot be blank."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Timestamp Format"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "[enter timestamp format]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The time format name cannot be blank."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12393,14 +11066,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "144 - 5.720 GHz"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "ARP Table"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Wireless Connections"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12540,10 +11205,6 @@ msgid "Start of week"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Daily Reports"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Recommended daily reports (default)"
 msgstr ""
 
@@ -12620,10 +11281,6 @@ msgid "Current Users"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "This shows all current users."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "[no username]"
 msgstr ""
 
@@ -12640,19 +11297,11 @@ msgid "Hostname (Directory Connector)"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Hostname (OpenVpn)"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Hostname (Reports)"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Hostname (Device)"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Hostname (Source)"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -12710,10 +11359,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "The swap utilization over time as a percent of total swap size ."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "duplicate report entry title"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13114,27 +11759,11 @@ msgid "Stochastic Fairness Queueing (sfq)"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Input Filter Rules changed!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The Input Filter Rules have been changed!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Improperly configuring the Input Filter Rules can be very dangerous."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Read the documentation for more details."
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "SSH Access Enabled!"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "The 'Allow SSH' rule in Input Filter Rules has been enabled!"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13454,27 +12083,11 @@ msgid "Enable RADIUS Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Google Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable Google Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Google Drive Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Enable User Notification API"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Facebook Authentication Connector"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable Facebook Authentication Connector"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13555,14 +12168,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Active Custom File"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable ScoutIQ&trade; Cloud Scan"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Scan Options"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13655,10 +12260,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "[enter mg]"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Enable BitDefender&reg; Scan"
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -13755,34 +12356,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Enable upload to Google Drive"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag access to sites associated with the specified category."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access for client networks regardless of matching policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access to the specified site regardless of matching policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag Sites"
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Flag access to specific sites."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "Web Monitor rules allow creating flexible flag and pass conditions."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -14038,10 +12611,6 @@ msgid "Unknown Widget"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid "Select a install type."
-msgstr ""
-
-#: Status: UNVERIFIED
 msgid "Install Type"
 msgstr ""
 
@@ -14091,10 +12660,6 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
-msgstr ""
-
-#: Status: UNVERIFIED
-msgid "A Host Name must be specified."
 msgstr ""
 
 #: Status: UNVERIFIED
@@ -14271,4 +12836,272 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Last name must be less than 24 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "All reports"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Another report within this category has this title"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This default report is read-only. Delete and Save are disabled."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Change Title to Save as New Report."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data is fetching..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Google Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Facebook Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Microsoft Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Week to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid subnet."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Restrict Administration Subnet(s)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Access Rules have been changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Improperly configuring the Access Rules can be very dangerous."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The 'Allow SSH' rule in Access Rules has been enabled!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "New Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Edit Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Address must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Client Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Server Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Filter Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Domain Name must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Access Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "<span style=\"color: red;\">[add email address here]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Contact Untangle Support"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No - Do Not Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Yes - Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Support Access is not enabled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enabling remote support access is recommended for better and fast support."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Would you like enable the support team to access your server remotely?"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid x500 attribute found"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Administrators receive email alerts and report summaries."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Install type determines the optimal default settings for this deployment."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Fetch interfaces..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Renew DHCP"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Saving settings ..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Internal Address is no longer accessible."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You will be redirected to the new setup address: {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The data usage by interface."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage (by interface)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Forward Quarantined Messages To:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Successfully sent digest to {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "A quarantine does not exist for {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host Entitled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Intrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to date data usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Active Directory Organizations"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter OU]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "all web traffic in violation of policy"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The fails tests of each interface over time."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "WAN Interface Outages"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This policy name already exists"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Configure Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any OAuth Provider"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "uses OAuth provider selection page"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Use hostname instead of IP address for the capture page redirect"
 msgstr ""

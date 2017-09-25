@@ -168,17 +168,11 @@ msgstr "XErrorX"
 msgid "Reports"
 msgstr "XReportsX"
 
-msgid "Reports application is required for this feature. Please install and enable the Reports application."
-msgstr "XReports application is required for this feature. Please install and enable the Reports application.X"
-
 msgid "Current Data"
 msgstr "XCurrent DataX"
 
 msgid "Export"
 msgstr "XExportX"
-
-msgid "Export Data to File"
-msgstr "XExport Data to FileX"
 
 msgid "Filter:"
 msgstr "XFilter:X"
@@ -186,68 +180,20 @@ msgstr "XFilter:X"
 msgid "Case sensitive"
 msgstr "XCase sensitiveX"
 
-msgid "Clear Filters"
-msgstr "XClear FiltersX"
-
-msgid "Filters can be added by clicking on column headers arrow down menu and using Filters menu"
-msgstr "XFilters can be added by clicking on column headers arrow down menu and using Filters menuX"
-
-msgid "Export Events to File"
-msgstr "XExport Events to FileX"
-
 msgid "Events"
 msgstr "XEventsX"
-
-msgid "One day ago"
-msgstr "XOne day agoX"
-
-msgid "Select Start date and time"
-msgstr "XSelect Start date and timeX"
 
 msgid "Present"
 msgstr "XPresentX"
 
-msgid "Select End date and time"
-msgstr "XSelect End date and timeX"
-
 msgid "Refresh"
 msgstr "XRefreshX"
-
-msgid "Flush Events from Memory to Database and then Refresh"
-msgstr "XFlush Events from Memory to Database and then RefreshX"
 
 msgid "Auto Refresh"
 msgstr "XAuto RefreshX"
 
-msgid "Auto Refresh every {0} seconds"
-msgstr "XAuto Refresh every {0} secondsX"
-
 msgid "Reset View"
 msgstr "XReset ViewX"
-
-msgid "Restore default columns positions, widths and visibility"
-msgstr "XRestore default columns positions, widths and visibilityX"
-
-msgid "Start date and time"
-msgstr "XStart date and timeX"
-
-msgid "start date and time"
-msgstr "Xstart date and timeX"
-
-msgid "End date and time"
-msgstr "XEnd date and timeX"
-
-msgid "end date and time"
-msgstr "Xend date and timeX"
-
-msgid "Select Report"
-msgstr "XSelect ReportX"
-
-msgid "Customize"
-msgstr "XCustomizeX"
-
-msgid "Advanced report customization"
-msgstr "XAdvanced report customizationX"
 
 msgid "Download"
 msgstr "XDownloadX"
@@ -273,29 +219,11 @@ msgstr "XLineX"
 msgid "Area"
 msgstr "XAreaX"
 
-msgid "Bar"
-msgstr "XBarX"
-
-msgid "Bar Overlapped"
-msgstr "XBar OverlappedX"
-
-msgid "Querying Database..."
-msgstr "XQuerying Database...X"
-
-msgid "Fetching Events..."
-msgstr "XFetching Events...X"
-
 msgid "Please wait"
 msgstr "XPlease waitX"
 
 msgid "Exporting Events..."
 msgstr "XExporting Events...X"
-
-msgid "Add a condition using report data:"
-msgstr "XAdd a condition using report data:X"
-
-msgid "[no value]"
-msgstr "X[no value]X"
 
 msgid "Conditions: {0}"
 msgstr "XConditions: {0}X"
@@ -303,32 +231,14 @@ msgstr "XConditions: {0}X"
 msgid "None"
 msgstr "XNoneX"
 
-msgid "Add New Condition"
-msgstr "XAdd New ConditionX"
-
 msgid "Quick Add"
 msgstr "XQuick AddX"
-
-msgid "Delete All"
-msgstr "XDelete AllX"
-
-msgid "Delete All Conditions"
-msgstr "XDelete All ConditionsX"
-
-msgid "[enter column]"
-msgstr "X[enter column]X"
 
 msgid "Delete"
 msgstr "XDeleteX"
 
-msgid "Time"
-msgstr "XTimeX"
-
 msgid "Done"
 msgstr "XDoneX"
-
-msgid "Clear Value"
-msgstr "XClear ValueX"
 
 msgid "Cancel"
 msgstr "XCancelX"
@@ -809,9 +719,6 @@ msgstr "XDestination AddressX"
 msgid "Destination port"
 msgstr "XDestination portX"
 
-msgid "ICMP"
-msgstr "XICMPX"
-
 msgid "UDP"
 msgstr "XUDPX"
 
@@ -1161,17 +1068,11 @@ msgstr "XEditX"
 msgid "Loading..."
 msgstr "XLoading...X"
 
-msgid "Reorder"
-msgstr "XReorderX"
-
 msgid "Drag and drop to reorganize"
 msgstr "XDrag and drop to reorganizeX"
 
 msgid "Add"
 msgstr "XAddX"
-
-msgid "Add New Row"
-msgstr "XAdd New RowX"
 
 #: Status: UNVERIFIED
 msgid "{0} All"
@@ -1179,12 +1080,6 @@ msgstr "X{0} AllX"
 
 msgid "Import"
 msgstr "XImportX"
-
-msgid "Import From File"
-msgstr "XImport From FileX"
-
-msgid "Export To File"
-msgstr "XExport To FileX"
 
 msgid "Import successful"
 msgstr "XImport successfulX"
@@ -1206,9 +1101,6 @@ msgstr "XImport failed. Imported file contains {0} invalid records and no valid 
 
 msgid "Exporting Settings..."
 msgstr "XExporting Settings...X"
-
-msgid "Grid data loading is not yet completed."
-msgstr "XGrid data loading is not yet completed.X"
 
 msgid "Import Settings"
 msgstr "XImport SettingsX"
@@ -1237,9 +1129,6 @@ msgstr "XImporting Settings...X"
 msgid "Import failed."
 msgstr "XImport failed.X"
 
-msgid "Import failed. No file chosen."
-msgstr "XImport failed. No file chosen.X"
-
 msgid "View Report"
 msgstr "XView ReportX"
 
@@ -1265,20 +1154,8 @@ msgstr "XColumnX"
 msgid "Operator"
 msgstr "XOperatorX"
 
-msgid "(Columns list is loaded for the entered Table')"
-msgstr "X(Columns list is loaded for the entered Table')X"
-
-msgid "[select operator]"
-msgstr "X[select operator]X"
-
-msgid "[select category]"
-msgstr "X[select category]X"
-
 msgid "Title"
 msgstr "XTitleX"
-
-msgid "[enter title]"
-msgstr "X[enter title]X"
 
 msgid "[no description]"
 msgstr "X[no description]X"
@@ -1292,20 +1169,11 @@ msgstr "XDisplay OrderX"
 msgid "Units"
 msgstr "XUnitsX"
 
-msgid "[no units]"
-msgstr "X[no units]X"
-
 msgid "Table"
 msgstr "XTableX"
 
-msgid "[enter table]"
-msgstr "X[enter table]X"
-
 msgid "Text Columns"
 msgstr "XText ColumnsX"
-
-msgid "(enter one column per row)"
-msgstr "X(enter one column per row)X"
 
 msgid "Text String"
 msgstr "XText StringX"
@@ -1372,14 +1240,8 @@ msgstr "XSeries RendererX"
 msgid "Colors"
 msgstr "XColorsX"
 
-msgid "(enter one color per row)"
-msgstr "X(enter one color per row)X"
-
 msgid "Order By Column"
 msgstr "XOrder By ColumnX"
-
-msgid "Order Direction"
-msgstr "XOrder DirectionX"
 
 msgid "Ascending"
 msgstr "XAscendingX"
@@ -1390,38 +1252,14 @@ msgstr "XDescendingX"
 msgid "Sql Conditions:"
 msgstr "XSql Conditions:X"
 
-msgid "Specify a Range"
-msgstr "XSpecify a RangeX"
-
-msgid "Start Time - End Time"
-msgstr "XStart Time - End TimeX"
-
 msgid "to"
 msgstr "XtoX"
-
-msgid "Specify a Custom Value"
-msgstr "XSpecify a Custom ValueX"
 
 msgid "Users"
 msgstr "XUsersX"
 
-msgid "Selected"
-msgstr "XSelectedX"
-
-msgid "Full Name"
-msgstr "XFull NameX"
-
-msgid "Specify Users"
-msgstr "XSpecify UsersX"
-
 msgid "Groups"
 msgstr "XGroupsX"
-
-msgid "Specify Groups"
-msgstr "XSpecify GroupsX"
-
-msgid "Field Name"
-msgstr "XField NameX"
 
 msgid "Comparator"
 msgstr "XComparatorX"
@@ -1435,48 +1273,6 @@ msgstr "XHelpX"
 msgid "Buy Now"
 msgstr "XBuy NowX"
 
-msgid "The <B>Status Indicator</B> shows the current operating condition of a particular application."
-msgstr "XThe <B>Status Indicator</B> shows the current operating condition of a particular application.X"
-
-msgid "Green"
-msgstr "XGreenX"
-
-msgid "indicates that the application is ON and operating normally."
-msgstr "Xindicates that the application is ON and operating normally.X"
-
-msgid "Red"
-msgstr "XRedX"
-
-msgid "indicates that the application is ON, but that an abnormal condition has occurred."
-msgstr "Xindicates that the application is ON, but that an abnormal condition has occurred.X"
-
-msgid "Yellow"
-msgstr "XYellowX"
-
-msgid "indicates that the application is saving or refreshing settings."
-msgstr "Xindicates that the application is saving or refreshing settings.X"
-
-msgid "Clear"
-msgstr "XClearX"
-
-msgid "indicates that the application is OFF, and may be turned ON by the user."
-msgstr "Xindicates that the application is OFF, and may be turned ON by the user.X"
-
-msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
-msgstr "XThe <B>Power Button</B> allows you to turn a application ON and OFF.X"
-
-msgid "This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack."
-msgstr "XThis app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.X"
-
-msgid "Unable to start {0}"
-msgstr "XUnable to start {0}X"
-
-msgid "Loading Settings..."
-msgstr "XLoading Settings...X"
-
-msgid "Error: There is no settings class for the app '{0}'."
-msgstr "XError: There is no settings class for the app '{0}'.X"
-
 msgid "Free trial expired!"
 msgstr "XFree trial expired!X"
 
@@ -1488,9 +1284,6 @@ msgstr "XExpires today.X"
 
 msgid "days remain."
 msgstr "Xdays remain.X"
-
-msgid "System Busy"
-msgstr "XSystem BusyX"
 
 msgid "Network"
 msgstr "XNetworkX"
@@ -1507,79 +1300,6 @@ msgstr "XMemoryX"
 msgid "Disk"
 msgstr "XDiskX"
 
-msgid "Tx:"
-msgstr "XTx:X"
-
-msgid "Rx:"
-msgstr "XRx:X"
-
-msgid "F:"
-msgstr "XF:X"
-
-msgid "U:"
-msgstr "XU:X"
-
-msgid "TX Speed:"
-msgstr "XTX Speed:X"
-
-msgid "RX Speed:"
-msgstr "XRX Speed:X"
-
-msgid "Total Sessions:"
-msgstr "XTotal Sessions:X"
-
-msgid "TCP Sessions:"
-msgstr "XTCP Sessions:X"
-
-msgid "UDP Sessions:"
-msgstr "XUDP Sessions:X"
-
-#: Status: UNVERIFIED
-msgid "Active Hosts:"
-msgstr "XActive Hosts:X"
-
-msgid "Number of Processors / Type / Speed:"
-msgstr "XNumber of Processors / Type / Speed:X"
-
-msgid "Load average (1 min , 5 min , 15 min):"
-msgstr "XLoad average (1 min , 5 min , 15 min):X"
-
-msgid "Tasks (Processes)"
-msgstr "XTasks (Processes)X"
-
-msgid "Uptime:"
-msgstr "XUptime:X"
-
-msgid "Total Memory:"
-msgstr "XTotal Memory:X"
-
-msgid "Memory Used:"
-msgstr "XMemory Used:X"
-
-msgid "Memory Free:"
-msgstr "XMemory Free:X"
-
-msgid "Swap Files:"
-msgstr "XSwap Files:X"
-
-msgid "total swap space"
-msgstr "Xtotal swap spaceX"
-
-msgid "used"
-msgstr "XusedX"
-
-msgid "Total Disk Space:"
-msgstr "XTotal Disk Space:X"
-
-msgid "Free Disk Space:"
-msgstr "XFree Disk Space:X"
-
-msgid "Data read:"
-msgstr "XData read:X"
-
-msgid "Data write:"
-msgstr "XData write:X"
-
 msgid "low"
 msgstr "XlowX"
 
@@ -1589,51 +1309,14 @@ msgstr "XmediumX"
 msgid "high"
 msgstr "XhighX"
 
-msgid "Days"
-msgstr "XDaysX"
-
-msgid "Hours"
-msgstr "XHoursX"
-
-msgid "Minutes"
-msgstr "XMinutesX"
-
-msgid "The app {0} has {1} metrics. The maximum number of metrics is {2}."
-msgstr "XThe app {0} has {1} metrics. The maximum number of metrics is {2}.X"
-
-msgid "Please set up to four items."
-msgstr "XPlease set up to four items.X"
-
-msgid "Set up to four"
-msgstr "XSet up to fourX"
-
-msgid "Ok"
-msgstr "XOkX"
-
 msgid "is"
 msgstr "XisX"
 
 msgid "is NOT"
 msgstr "Xis NOTX"
 
-#: Status: UNVERIFIED
-msgid "A condition of this type already exists in this rule."
-msgstr "XA condition of this type already exists in this rule.X"
-
 msgid "True"
 msgstr "XTrueX"
-
-msgid "Missing Editor"
-msgstr "XMissing EditorX"
-
-msgid "Value is required."
-msgstr "XValue is required.X"
-
-msgid "Clear Grouping"
-msgstr "XClear GroupingX"
-
-msgid "Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field"
-msgstr "XGrouping can be used by clicking on column headers arrow down menu and clicking Group by this fieldX"
 
 msgid "Invalid IP Address."
 msgstr "XInvalid IP Address.X"
@@ -1677,9 +1360,6 @@ msgstr "XTotal SessionsX"
 msgid "Known Devices"
 msgstr "XKnown DevicesX"
 
-msgid "Starting..."
-msgstr "XStarting...X"
-
 #: Status: UNVERIFIED
 msgid "Dashboard"
 msgstr "XDashboardX"
@@ -1700,13 +1380,6 @@ msgstr "XLogoutX"
 msgid "Install Apps"
 msgstr "XInstall AppsX"
 
-#: Status: UNVERIFIED
-msgid "Tools"
-msgstr "XToolsX"
-
-msgid "Applying Upgrades..."
-msgstr "XApplying Upgrades...X"
-
 msgid "Upgrade in Progress"
 msgstr "XUpgrade in ProgressX"
 
@@ -1721,12 +1394,6 @@ msgstr "XPlease be patient this process will take a few minutes.X"
 
 msgid "After the upgrade is complete you will be able to log in again."
 msgstr "XAfter the upgrade is complete you will be able to log in again.X"
-
-msgid "Default Policy"
-msgstr "XDefault PolicyX"
-
-msgid "The Default Policy"
-msgstr "XThe Default PolicyX"
 
 msgid "Administration"
 msgstr "XAdministrationX"
@@ -1743,33 +1410,8 @@ msgstr "XSystemX"
 msgid "About"
 msgstr "XAboutX"
 
-#: Status: UNVERIFIED
-msgid "Policy Manager"
-msgstr "XPolicy ManagerX"
-
-msgid "For an optimal experience use Google Chrome or Mozilla Firefox."
-msgstr "XFor an optimal experience use Google Chrome or Mozilla Firefox.X"
-
-msgid "Internet Explorer 8 and prior are not supported for administration."
-msgstr "XInternet Explorer 8 and prior are not supported for administration.X"
-
-msgid "Please upgrade to a newer browser."
-msgstr "XPlease upgrade to a newer browser.X"
-
-msgid "Loading Config..."
-msgstr "XLoading Config...X"
-
 msgid "Services"
 msgstr "XServicesX"
-
-msgid "Show Policy Manager"
-msgstr "XShow Policy ManagerX"
-
-msgid "Unknown Rack"
-msgstr "XUnknown RackX"
-
-msgid "Determining Connectivity..."
-msgstr "XDetermining Connectivity...X"
 
 msgid "Yes, install the recommended apps."
 msgstr "XYes, install the recommended apps.X"
@@ -1779,9 +1421,6 @@ msgstr "XInstallation Complete!X"
 
 msgid "Thank you for using Untangle!"
 msgstr "XThank you for using Untangle!X"
-
-msgid "No, I will install the apps manually."
-msgstr "XNo, I will install the apps manually.X"
 
 msgid "Registration complete."
 msgstr "XRegistration complete.X"
@@ -1797,9 +1436,6 @@ msgstr "XThere are unsaved settings which will be lost. Do you want to continue?
 
 msgid "One or more fields contain invalid values. Settings cannot be saved until these problems are resolved."
 msgstr "XOne or more fields contain invalid values. Settings cannot be saved until these problems are resolved.X"
-
-msgid "Saving..."
-msgstr "XSaving...X"
 
 msgid "Remove"
 msgstr "XRemoveX"
@@ -1851,9 +1487,6 @@ msgstr "XThe connection to the server has been lost.X"
 msgid "Press OK to return to the login page."
 msgstr "XPress OK to return to the login page.X"
 
-msgid "An error has occurred"
-msgstr "XAn error has occurredX"
-
 msgid "An error has occurred."
 msgstr "XAn error has occurred.X"
 
@@ -1874,9 +1507,6 @@ msgstr "XException js stackX"
 
 msgid "Build"
 msgstr "XBuildX"
-
-msgid "TODO"
-msgstr "XTODOX"
 
 msgid "Sunday"
 msgstr "XSundayX"
@@ -1936,12 +1566,6 @@ msgstr "XMbytes/sX"
 msgid "Gbytes/s"
 msgstr "XGbytes/sX"
 
-msgid "Please Try Again"
-msgstr "XPlease Try AgainX"
-
-msgid "Summary"
-msgstr "XSummaryX"
-
 msgid "Configuration"
 msgstr "XConfigurationX"
 
@@ -1953,9 +1577,6 @@ msgstr "XApplicationsX"
 
 msgid "Current Hosts"
 msgstr "XCurrent HostsX"
-
-msgid "This shows all current hosts."
-msgstr "XThis shows all current hosts.X"
 
 msgid "IP"
 msgstr "XIPX"
@@ -1978,35 +1599,11 @@ msgstr "XActiveX"
 msgid "Quota Size"
 msgstr "XQuota SizeX"
 
-msgid "Quota Remaining"
-msgstr "XQuota RemainingX"
-
-msgid "Quota Issue Time"
-msgstr "XQuota Issue TimeX"
-
-msgid "Quota Expiration Time"
-msgstr "XQuota Expiration TimeX"
-
 msgid "User Agent"
 msgstr "XUser AgentX"
 
-msgid "Authenticated"
-msgstr "XAuthenticatedX"
-
 msgid "IP Address"
 msgstr "XIP AddressX"
-
-msgid "Current Quotas"
-msgstr "XCurrent QuotasX"
-
-msgid "This shows all hosts currently with quotas."
-msgstr "XThis shows all hosts currently with quotas.X"
-
-msgid "Allocated"
-msgstr "XAllocatedX"
-
-msgid "Expires"
-msgstr "XExpiresX"
 
 msgid "Refill Quota"
 msgstr "XRefill QuotaX"
@@ -2023,17 +1620,8 @@ msgstr "XRemoving Quota...X"
 msgid "Checking for upgrades..."
 msgstr "XChecking for upgrades...X"
 
-msgid "Upgrades are available!"
-msgstr "XUpgrades are available!X"
-
 msgid "No upgrades available."
 msgstr "XNo upgrades available.X"
-
-msgid "Package: {0} of {1}<br/>Speed: {2}"
-msgstr "XPackage: {0} of {1}<br/>Speed: {2}X"
-
-msgid "Downloading packages... Please wait"
-msgstr "XDownloading packages... Please waitX"
 
 msgid "Downloading upgrades failed."
 msgstr "XDownloading upgrades failed.X"
@@ -2046,9 +1634,6 @@ msgstr "XAutomatic UpgradeX"
 
 msgid "Automatically Install Upgrades"
 msgstr "XAutomatically Install UpgradesX"
-
-msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
-msgstr "XIf new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.X"
 
 msgid "Do Not Automatically Install Upgrades"
 msgstr "XDo Not Automatically Install UpgradesX"
@@ -2821,9 +2406,6 @@ msgstr "XThis works if your {0} Server has a routable public static IP address.X
 msgid "Use Hostname"
 msgstr "XUse HostnameX"
 
-msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
-msgstr "XThis is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally.X"
-
 msgid "Use Manually Specified Address"
 msgstr "XUse Manually Specified AddressX"
 
@@ -2881,59 +2463,23 @@ msgstr "XGenerate Server CertificateX"
 msgid "Country"
 msgstr "XCountryX"
 
-msgid "Select the country in which your organization is legally registered."
-msgstr "XSelect the country in which your organization is legally registered.X"
-
 msgid "State/Province"
 msgstr "XState/ProvinceX"
-
-msgid "Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate."
-msgstr "XName of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.X"
 
 msgid "City/Locality"
 msgstr "XCity/LocalityX"
 
-msgid "Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate."
-msgstr "XName of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.X"
-
 msgid "Organization"
 msgstr "XOrganizationX"
-
-msgid "The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."
-msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field.X"
-
-msgid "Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."
-msgstr "XOptional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field.X"
 
 msgid "Common Name"
 msgstr "XCommon NameX"
 
-msgid "The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."
-msgstr "XThe name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field.X"
-
 msgid "Subject Alternative Names"
 msgstr "XSubject Alternative NamesX"
 
-msgid "Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."
-msgstr "XOptional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate.X"
-
 msgid "Generate"
 msgstr "XGenerateX"
-
-msgid "The Country field must not be empty"
-msgstr "XThe Country field must not be emptyX"
-
-msgid "The State field must not be empty"
-msgstr "XThe State field must not be emptyX"
-
-msgid "The Locality field must not be empty"
-msgstr "XThe Locality field must not be emptyX"
-
-msgid "The Organization field must not be empty"
-msgstr "XThe Organization field must not be emptyX"
-
-msgid "The Common Name field must not be empty"
-msgstr "XThe Common Name field must not be emptyX"
 
 msgid "Certificate Authority generation successfully completed. Click OK to continue."
 msgstr "XCertificate Authority generation successfully completed. Click OK to continue.X"
@@ -2958,9 +2504,6 @@ msgstr "XInvalid or missing FileX"
 
 msgid "Please select a certificate to upload."
 msgstr "XPlease select a certificate to upload.X"
-
-msgid "Password is too short."
-msgstr "XPassword is too short.X"
 
 msgid "SNMP"
 msgstr "XSNMPX"
@@ -2997,9 +2540,6 @@ msgstr "XMY_TRAP_COMMUNITYX"
 
 msgid "An Trap Community must be specified."
 msgstr "XAn Trap Community must be specified.X"
-
-msgid "MY_TRAP_HOST"
-msgstr "XMY_TRAP_HOSTX"
 
 msgid "An Trap Host must be specified."
 msgstr "XAn Trap Host must be specified.X"
@@ -3070,41 +2610,11 @@ msgstr "XUpload New SkinX"
 msgid "Upload"
 msgstr "XUploadX"
 
-msgid "Please wait while your skin is uploaded..."
-msgstr "XPlease wait while your skin is uploaded...X"
-
 msgid "Succeeded"
 msgstr "XSucceededX"
 
-msgid "Upload Skin Succeeded"
-msgstr "XUpload Skin SucceededX"
-
-msgid "Upload Skin Failed"
-msgstr "XUpload Skin FailedX"
-
-msgid "Invalid Skin"
-msgstr "XInvalid SkinX"
-
-msgid "The default skin can not be overwritten"
-msgstr "XThe default skin can not be overwrittenX"
-
-msgid "Error creating skin folder"
-msgstr "XError creating skin folderX"
-
 msgid "Failed"
 msgstr "XFailedX"
-
-msgid "The username"
-msgstr "XThe usernameX"
-
-msgid "already exists in row"
-msgstr "Xalready exists in rowX"
-
-msgid "There must always be at least one valid account."
-msgstr "XThere must always be at least one valid account.X"
-
-msgid "There must always be at least one non-read-only (writable) account."
-msgstr "XThere must always be at least one non-read-only (writable) account.X"
 
 msgid "Outgoing Server"
 msgstr "XOutgoing ServerX"
@@ -3120,9 +2630,6 @@ msgstr "XEmail AddressX"
 
 msgid "[enter email]"
 msgstr "X[enter email]X"
-
-msgid "Sending Email..."
-msgstr "XSending Email...X"
 
 msgid "Outgoing Email Server"
 msgstr "XOutgoing Email ServerX"
@@ -3171,9 +2678,6 @@ msgstr "XShow DetailX"
 
 msgid "Global Safe List"
 msgstr "XGlobal Safe ListX"
-
-msgid "email address"
-msgstr "Xemail addressX"
 
 msgid "Per User Safe Lists"
 msgstr "XPer User Safe ListsX"
@@ -3241,9 +2745,6 @@ msgstr "Xquarantinelistowner@example.comX"
 msgid "Distribution List Address"
 msgstr "XDistribution List AddressX"
 
-msgid "Send To Address"
-msgstr "XSend To AddressX"
-
 msgid "Date"
 msgstr "XDateX"
 
@@ -3253,53 +2754,20 @@ msgstr "XSize (KB)X"
 msgid "Phish"
 msgstr "XPhishX"
 
-msgid "The port must be an integer number between 1 and 65535."
-msgstr "XThe port must be an integer number between 1 and 65535.X"
-
 msgid "A Password must be specified if a Login is specified."
 msgstr "XA Password must be specified if a Login is specified.X"
 
 msgid "A Login must be specified if a Password is specified."
 msgstr "XA Login must be specified if a Password is specified.X"
 
-msgid "A Server Address or Hostname must be specified for an SMTP server."
-msgstr "XA Server Address or Hostname must be specified for an SMTP server.X"
-
 msgid "A From Address must be specified."
 msgstr "XA From Address must be specified.X"
-
-msgid "Sessions for"
-msgstr "XSessions forX"
 
 msgid "Creation Time"
 msgstr "XCreation TimeX"
 
 msgid "Policy"
 msgstr "XPolicyX"
-
-msgid "Client (Pre-NAT)"
-msgstr "XClient (Pre-NAT)X"
-
-msgid "Server (Pre-NAT)"
-msgstr "XServer (Pre-NAT)X"
-
-msgid "Client Port (Pre-NAT)"
-msgstr "XClient Port (Pre-NAT)X"
-
-msgid "Server Port (Pre-NAT)"
-msgstr "XServer Port (Pre-NAT)X"
-
-msgid "Client (Post-NAT)"
-msgstr "XClient (Post-NAT)X"
-
-msgid "Server (Post-NAT)"
-msgstr "XServer (Post-NAT)X"
-
-msgid "Client Port (Post-NAT)"
-msgstr "XClient Port (Post-NAT)X"
-
-msgid "Server Port (Post-NAT)"
-msgstr "XServer Port (Post-NAT)X"
 
 msgid "NATd"
 msgstr "XNATdX"
@@ -3334,15 +2802,6 @@ msgstr "XProductivityX"
 msgid "Risk"
 msgstr "XRiskX"
 
-msgid "Client KB/s"
-msgstr "XClient KB/sX"
-
-msgid "Server KB/s"
-msgstr "XServer KB/sX"
-
-msgid "Total KB/s"
-msgstr "XTotal KB/sX"
-
 #: Status: UNVERIFIED
 msgid "Pipeline"
 msgstr "XPipelineX"
@@ -3350,20 +2809,8 @@ msgstr "XPipelineX"
 msgid "Interface {0}"
 msgstr "XInterface {0}X"
 
-msgid "This shows all current sessions."
-msgstr "XThis shows all current sessions.X"
-
-msgid "Chart"
-msgstr "XChartX"
-
 msgid "Local Users"
 msgstr "XLocal UsersX"
-
-msgid "Cleanup expired users"
-msgstr "XCleanup expired usersX"
-
-msgid "user/login ID"
-msgstr "Xuser/login IDX"
 
 msgid "[enter login]"
 msgstr "X[enter login]X"
@@ -3371,14 +2818,8 @@ msgstr "X[enter login]X"
 msgid "The field user/login ID can have only alphanumeric characters."
 msgstr "XThe field user/login ID can have only alphanumeric characters.X"
 
-msgid "first name"
-msgstr "Xfirst nameX"
-
 msgid "[enter first name]"
 msgstr "X[enter first name]X"
-
-msgid "last name"
-msgstr "Xlast nameX"
 
 msgid "[last name]"
 msgstr "X[last name]X"
@@ -3391,9 +2832,6 @@ msgstr "XpasswordX"
 
 msgid "Unchanged"
 msgstr "XUnchangedX"
-
-msgid "expiration time"
-msgstr "Xexpiration timeX"
 
 msgid "Never"
 msgstr "XNeverX"
@@ -3415,33 +2853,6 @@ msgstr "X(leave empty to keep the current password unchanged)X"
 
 msgid "Expiration Time"
 msgstr "XExpiration TimeX"
-
-msgid "The login name has already been taken:"
-msgstr "XThe login name has already been taken:X"
-
-msgid "The login name must not contain forward slash character."
-msgstr "XThe login name must not contain forward slash character.X"
-
-msgid "row"
-msgstr "XrowX"
-
-msgid "The first name must not contain any spaces."
-msgstr "XThe first name must not contain any spaces.X"
-
-msgid "The last name must not contain any spaces."
-msgstr "XThe last name must not contain any spaces.X"
-
-msgid "The password must contain at least 1 character."
-msgstr "XThe password must contain at least 1 character.X"
-
-msgid "The password must not contain any spaces."
-msgstr "XThe password must not contain any spaces.X"
-
-msgid "Please save the changes before cleaning up expired users !"
-msgstr "XPlease save the changes before cleaning up expired users !X"
-
-msgid "Cleaning up expired users..."
-msgstr "XCleaning up expired users...X"
 
 msgid "Do not publicly post or share the UID or account information."
 msgstr "XDo not publicly post or share the UID or account information.X"
@@ -3479,9 +2890,6 @@ msgstr "XLicensesX"
 msgid "Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server."
 msgstr "XLicenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.X"
 
-msgid "The Current list of Licenses available on this Server."
-msgstr "XThe Current list of Licenses available on this Server.X"
-
 msgid "App"
 msgstr "XAppX"
 
@@ -3514,9 +2922,6 @@ msgstr "XDestination InterfaceX"
 
 msgid "Source MAC"
 msgstr "XSource MACX"
-
-msgid "Refreshing..."
-msgstr "XRefreshing...X"
 
 msgid "Automatic 2.4 GHz"
 msgstr "XAutomatic 2.4 GHzX"
@@ -3635,12 +3040,6 @@ msgstr "X157 - 5.785 GHzX"
 msgid "161 - 5.805 GHz"
 msgstr "X161 - 5.805 GHzX"
 
-msgid "165 - 5.825 GHz"
-msgstr "X165 - 5.825 GHzX"
-
-msgid "Interface Status"
-msgstr "XInterface StatusX"
-
 msgid "Device"
 msgstr "XDeviceX"
 
@@ -3671,12 +3070,6 @@ msgstr "XTx ErrorsX"
 
 msgid "Tx Drop"
 msgstr "XTx DropX"
-
-msgid "Rx Bytes"
-msgstr "XRx BytesX"
-
-msgid "Tx Bytes"
-msgstr "XTx BytesX"
 
 msgid "full-duplex"
 msgstr "Xfull-duplexX"
@@ -3758,20 +3151,8 @@ msgstr "XTest ConnectivityX"
 msgid "Ping Test"
 msgstr "XPing TestX"
 
-msgid "Loading device mapper..."
-msgstr "XLoading device mapper...X"
-
-msgid "Refresh Device Status"
-msgstr "XRefresh Device StatusX"
-
-msgid "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
-msgstr "XClick on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.X"
-
 msgid "Vendor"
 msgstr "XVendorX"
-
-msgid "Refreshing Device Status..."
-msgstr "XRefreshing Device Status...X"
 
 msgid "How to map Devices with Interfaces"
 msgstr "XHow to map Devices with InterfacesX"
@@ -3781,9 +3162,6 @@ msgstr "X<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interfa
 
 msgid "Interface configuration"
 msgstr "XInterface configurationX"
-
-msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
-msgstr "XUse this page to configure each interface's configuration and its mapping to a physical network card.X"
 
 msgid "[enter IPv4 address]"
 msgstr "X[enter IPv4 address]X"
@@ -3806,20 +3184,11 @@ msgstr "X[enter value]X"
 msgid "Edit Interface"
 msgstr "XEdit InterfaceX"
 
-msgid "Is VLAN (802.1q) Interface"
-msgstr "XIs VLAN (802.1q) InterfaceX"
-
-msgid "Is Wireless Interface"
-msgstr "XIs Wireless InterfaceX"
-
 msgid "Parent Interface"
 msgstr "XParent InterfaceX"
 
 msgid "802.1q Tag"
 msgstr "X802.1q TagX"
-
-msgid "802.1q Tag must be a valid integer."
-msgstr "X802.1q Tag must be a valid integer.X"
 
 msgid "Config Type"
 msgstr "XConfig TypeX"
@@ -3947,9 +3316,6 @@ msgstr "XLease DurationX"
 msgid "(seconds)"
 msgstr "X(seconds)X"
 
-msgid "DHCP Advanced"
-msgstr "XDHCP AdvancedX"
-
 msgid "DNS Override"
 msgstr "XDNS OverrideX"
 
@@ -3979,9 +3345,6 @@ msgstr "XVRRP Priority must be a valid integer between 1 and 255.X"
 
 msgid "VRRP Aliases"
 msgstr "XVRRP AliasesX"
-
-msgid "Renewing DHCP Lease..."
-msgstr "XRenewing DHCP Lease...X"
 
 msgid "(eg: gateway)"
 msgstr "X(eg: gateway)X"
@@ -4028,35 +3391,11 @@ msgstr "XNew DestinationX"
 msgid "New Port"
 msgstr "XNew PortX"
 
-msgid "Port Forward Troubleshooter"
-msgstr "XPort Forward TroubleshooterX"
-
-msgid "Troubleshooting Port Forwards"
-msgstr "XTroubleshooting Port ForwardsX"
-
-msgid "Test 1: Verify pinging the <b>new destination</b>"
-msgstr "XTest 1: Verify pinging the <b>new destination</b>X"
-
-msgid "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>"
-msgstr "XTest 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>X"
-
-msgid "Connect Test"
-msgstr "XConnect TestX"
-
-msgid "Test 3: Watch traffic using the Packet Test"
-msgstr "XTest 3: Watch traffic using the Packet TestX"
-
 msgid "Packet Test"
 msgstr "XPacket TestX"
 
-msgid "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}"
-msgstr "XFor more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}X"
-
 msgid "Other"
 msgstr "XOtherX"
-
-msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
-msgstr "XPort Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.X"
 
 msgid "The following ports are currently reserved and can not be forwarded:"
 msgstr "XThe following ports are currently reserved and can not be forwarded:X"
@@ -4112,9 +3451,6 @@ msgstr "XBypassX"
 msgid "Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed."
 msgstr "XBypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.X"
 
-msgid "Enable Bypass Rule"
-msgstr "XEnable Bypass RuleX"
-
 msgid "Local on {0} ({1})"
 msgstr "XLocal on {0} ({1})X"
 
@@ -4130,9 +3466,6 @@ msgstr "XNext HopX"
 msgid "Local interface"
 msgstr "XLocal interfaceX"
 
-msgid "[1.2.3.0]"
-msgstr "X[1.2.3.0]X"
-
 msgid "If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address."
 msgstr "XIf <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.X"
 
@@ -4147,9 +3480,6 @@ msgstr "XStatic Routes are global routes that control how traffic is routed by d
 
 msgid "Current Routes"
 msgstr "XCurrent RoutesX"
-
-msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
-msgstr "XCurrent Routes shows the current routing system's configuration and how all traffic will be routed.X"
 
 msgid "Static DNS Entries"
 msgstr "XStatic DNS EntriesX"
@@ -4250,14 +3580,8 @@ msgstr "X{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandw
 msgid "Upload Reservation"
 msgstr "XUpload ReservationX"
 
-msgid "No reservation"
-msgstr "XNo reservationX"
-
 msgid "Upload Limit"
 msgstr "XUpload LimitX"
-
-msgid "No limit"
-msgstr "XNo limitX"
 
 msgid "Download Reservation"
 msgstr "XDownload ReservationX"
@@ -4313,29 +3637,17 @@ msgstr "XCustom dnsmasq options.X"
 msgid "Warning: Invalid syntax will halt all DHCP & DNS services."
 msgstr "XWarning: Invalid syntax will halt all DHCP & DNS services.X"
 
-msgid "Forward Filter Rules"
-msgstr "XForward Filter RulesX"
-
 msgid "Block"
 msgstr "XBlockX"
 
-msgid "Input Filter Rules"
-msgstr "XInput Filter RulesX"
-
 msgid "Filter Rules"
 msgstr "XFilter RulesX"
-
-msgid "Enable Forward Filter Rule"
-msgstr "XEnable Forward Filter RuleX"
 
 msgid "Enable IPv6 Support"
 msgstr "XEnable IPv6 SupportX"
 
 msgid "Pass"
 msgstr "XPassX"
-
-msgid "Enable Input Filter Rule"
-msgstr "XEnable Input Filter RuleX"
 
 msgid "10000 Mbps, Full Duplex"
 msgstr "X10000 Mbps, Full DuplexX"
@@ -4394,32 +3706,11 @@ msgstr "XNetwork TestsX"
 msgid "The <b>Connectivity Test</b> verifies a working connection to the Internet."
 msgstr "XThe <b>Connectivity Test</b> verifies a working connection to the Internet.X"
 
-msgid "Unable to complete the Connectivity Test."
-msgstr "XUnable to complete the Connectivity Test.X"
-
 msgid "Connectivity Test Output"
 msgstr "XConnectivity Test OutputX"
 
-msgid "Testing Internet Connectivity"
-msgstr "XTesting Internet ConnectivityX"
-
-msgid "Failed to connect to the Internet, DNS failed."
-msgstr "XFailed to connect to the Internet, DNS failed.X"
-
-msgid "Failed to connect to the Internet, TCP failed."
-msgstr "XFailed to connect to the Internet, TCP failed.X"
-
-msgid "Successfully connected to the Internet."
-msgstr "XSuccessfully connected to the Internet.X"
-
-msgid "Test Connectivity Result"
-msgstr "XTest Connectivity ResultX"
-
 msgid "The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"
 msgstr "XThe <b>Ping Test</b> can be used to test that a particular host or client can be pingedX"
-
-msgid "Unable to complete the Ping Test."
-msgstr "XUnable to complete the Ping Test.X"
 
 msgid "Ping Test Output"
 msgstr "XPing Test OutputX"
@@ -4427,26 +3718,14 @@ msgstr "XPing Test OutputX"
 msgid "IP Address or Hostname"
 msgstr "XIP Address or HostnameX"
 
-msgid "Please enter a valid IP Address or Hostname"
-msgstr "XPlease enter a valid IP Address or HostnameX"
-
 msgid "The <b>DNS Test</b> can be used to test DNS lookups"
 msgstr "XThe <b>DNS Test</b> can be used to test DNS lookupsX"
-
-msgid "Unable to complete DNS test."
-msgstr "XUnable to complete DNS test.X"
 
 msgid "DNS Test Output"
 msgstr "XDNS Test OutputX"
 
-msgid "Please enter a valid Hostname"
-msgstr "XPlease enter a valid HostnameX"
-
 msgid "The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."
 msgstr "XThe <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client.X"
-
-msgid "Unable to complete Connection test."
-msgstr "XUnable to complete Connection test.X"
 
 msgid "Connection Test Output"
 msgstr "XConnection Test OutputX"
@@ -4454,35 +3733,20 @@ msgstr "XConnection Test OutputX"
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "XThe <b>Traceroute Test</b> traces the route to a given host or client.X"
 
-msgid "Unable to complete the Traceroute Test."
-msgstr "XUnable to complete the Traceroute Test.X"
-
 msgid "Traceroute Test Output"
 msgstr "XTraceroute Test OutputX"
 
 msgid "The <b>Download Test</b> downloads a file."
 msgstr "XThe <b>Download Test</b> downloads a file.X"
 
-msgid "Unable to complete the Download Test."
-msgstr "XUnable to complete the Download Test.X"
-
 msgid "Download Test Output"
 msgstr "XDownload Test OutputX"
-
-msgid "Please enter a valid Url"
-msgstr "XPlease enter a valid UrlX"
 
 msgid "The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."
 msgstr "XThe <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting.X"
 
-msgid "Unable to complete the Packet Test."
-msgstr "XUnable to complete the Packet Test.X"
-
 msgid "Packet Test Output"
 msgstr "XPacket Test OutputX"
-
-msgid "tcpdump arguments and expression"
-msgstr "Xtcpdump arguments and expressionX"
 
 msgid "5 seconds"
 msgstr "X5 secondsX"
@@ -4493,47 +3757,17 @@ msgstr "X30 secondsX"
 msgid "120 seconds"
 msgstr "X120 secondsX"
 
-msgid "Timeout:"
-msgstr "XTimeout:X"
-
 msgid "Basic"
 msgstr "XBasicX"
 
 msgid "Exporting Packet Dump..."
 msgstr "XExporting Packet Dump...X"
 
-msgid "A Domain Name must be specified."
-msgstr "XA Domain Name must be specified.X"
-
-msgid "A HTTPS port must be specified."
-msgstr "XA HTTPS port must be specified.X"
-
-msgid "A HTTP port must be specified."
-msgstr "XA HTTP port must be specified.X"
-
 msgid "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."
 msgstr "XQoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.X"
 
-msgid "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
-msgstr "XThe Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.X"
-
-msgid "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."
-msgstr "XThe Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation.X"
-
-msgid "The Allow SSH rule in Input Filter Rules has been enabled."
-msgstr "XThe Allow SSH rule in Input Filter Rules has been enabled.X"
-
-msgid "If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server."
-msgstr "XIf the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server.X"
-
 msgid "Do you want to continue anyway?"
 msgstr "XDo you want to continue anyway?X"
-
-msgid "Applying Network Settings..."
-msgstr "XApplying Network Settings...X"
-
-msgid "Unable to run this Network Utility."
-msgstr "XUnable to run this Network Utility.X"
 
 msgid "Run Test"
 msgstr "XRun TestX"
@@ -4613,12 +3847,6 @@ msgstr "XManual Reboot WarningX"
 msgid "The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."
 msgstr "XThe server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.X"
 
-msgid "Manual Reboot Failure Warning"
-msgstr "XManual Reboot Failure WarningX"
-
-msgid "Error: Unable to reboot {0} Server"
-msgstr "XError: Unable to reboot {0} ServerX"
-
 msgid "The {0} Server is rebooting."
 msgstr "XThe {0} Server is rebooting.X"
 
@@ -4637,12 +3865,6 @@ msgstr "XManual Shutdown WarningX"
 msgid "The {0} Server is about to shutdown.  This will stop all network operations."
 msgstr "XThe {0} Server is about to shutdown.  This will stop all network operations.X"
 
-msgid "Manual Shutdown Failure Warning"
-msgstr "XManual Shutdown Failure WarningX"
-
-msgid "Error: Unable to shutdown {0} Server"
-msgstr "XError: Unable to shutdown {0} ServerX"
-
 msgid "The {0} Server is shutting down."
 msgstr "XThe {0} Server is shutting down.X"
 
@@ -4654,9 +3876,6 @@ msgstr "XLaunch the Setup Wizard.X"
 
 msgid "Setup Wizard Warning"
 msgstr "XSetup Wizard WarningX"
-
-msgid "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"
-msgstr "XThe Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}X"
 
 msgid "Factory Defaults"
 msgstr "XFactory DefaultsX"
@@ -4676,14 +3895,8 @@ msgstr "XThis will RESET ALL SETTINGS to factory defaults. ALL current settings 
 msgid "Resetting to factory defaults..."
 msgstr "XResetting to factory defaults...X"
 
-msgid "All settings have been reset to factory defaults."
-msgstr "XAll settings have been reset to factory defaults.X"
-
 msgid "Backup"
 msgstr "XBackupX"
-
-msgid "Downloading backup..."
-msgstr "XDownloading backup...X"
 
 msgid "Backup to File"
 msgstr "XBackup to FileX"
@@ -4754,12 +3967,6 @@ msgstr "XDisable processing of SMTP traffic.X"
 msgid "SMTP timeout (seconds)"
 msgstr "XSMTP timeout (seconds)X"
 
-msgid "Allow TLS encryption over SMTP."
-msgstr "XAllow TLS encryption over SMTP.X"
-
-msgid "Stop TLS encryption over SMTP."
-msgstr "XStop TLS encryption over SMTP.X"
-
 msgid "Protocols"
 msgstr "XProtocolsX"
 
@@ -4814,26 +4021,8 @@ msgstr "XTimezoneX"
 msgid "Language"
 msgstr "XLanguageX"
 
-msgid "Please wait while your language pack is uploaded..."
-msgstr "XPlease wait while your language pack is uploaded...X"
-
-msgid "Upload language pack succeeded"
-msgstr "XUpload language pack succeededX"
-
-msgid "Upload language pack failed"
-msgstr "XUpload language pack failedX"
-
-msgid "Invalid language pack; not a zip file"
-msgstr "XInvalid language pack; not a zip fileX"
-
 msgid "Shield Rules"
 msgstr "XShield RulesX"
-
-msgid "Enable Shield Rule"
-msgstr "XEnable Shield RuleX"
-
-msgid "Shield Settings"
-msgstr "XShield SettingsX"
 
 msgid "Enable Shield"
 msgstr "XEnable ShieldX"
@@ -4913,36 +4102,17 @@ msgstr "XConfigure the ServerX"
 msgid "Choose a password for the admin account."
 msgstr "XChoose a password for the admin account.X"
 
-#, javascript-format
-msgid "The password is shorter than the minimum %d characters."
-msgstr "XThe password is shorter than the minimum %d characters.X"
-
-msgid "Configure administrator email."
-msgstr "XConfigure administrator email.X"
-
 msgid "Admin Email"
 msgstr "XAdmin EmailX"
 
-msgid "Select a timezone."
-msgstr "XSelect a timezone.X"
-
 msgid "Saving Settings"
 msgstr "XSaving SettingsX"
-
-msgid "Unable to save Time Zone settings"
-msgstr "XUnable to save Time Zone settingsX"
-
-msgid "Unable to save the admin password"
-msgstr "XUnable to save the admin passwordX"
 
 msgid "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced."
 msgstr "XClick on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced.X"
 
 msgid "Identify Network Cards"
 msgstr "XIdentify Network CardsX"
-
-msgid "Important:"
-msgstr "XImportant:X"
 
 msgid "Plug an active cable into one network card to determine which network card it is."
 msgstr "XPlug an active cable into one network card to determine which network card it is.X"
@@ -4958,12 +4128,6 @@ msgstr "XUnable to refresh the interfaces.X"
 
 msgid "New interfaces"
 msgstr "XNew interfacesX"
-
-msgid "There are new interfaces, please restart the wizard."
-msgstr "XThere are new interfaces, please restart the wizard.X"
-
-msgid "Refreshing Network Interfaces"
-msgstr "XRefreshing Network InterfacesX"
 
 msgid "Missing interfaces"
 msgstr "XMissing interfacesX"
@@ -5004,12 +4168,6 @@ msgstr "XConfiguration TypeX"
 msgid "Internet Connection"
 msgstr "XInternet ConnectionX"
 
-msgid "Unable to Test Connectivity"
-msgstr "XUnable to Test ConnectivityX"
-
-msgid "Please complete all of the required fields."
-msgstr "XPlease complete all of the required fields.X"
-
 msgid "Saving Settings..."
 msgstr "XSaving Settings...X"
 
@@ -5018,9 +4176,6 @@ msgstr "XNetwork SettingsX"
 
 msgid "Unable to complete connectivity test, please try again."
 msgstr "XUnable to complete connectivity test, please try again.X"
-
-msgid "Warning! Internet and DNS tests failed."
-msgstr "XWarning! Internet and DNS tests failed.X"
 
 msgid "Warning! DNS tests succeeded, but Internet tests failed."
 msgstr "XWarning! DNS tests succeeded, but Internet tests failed.X"
@@ -5070,41 +4225,14 @@ msgstr "XThis is recommended if the external port is plugged into a firewall/rou
 msgid "Internal Network"
 msgstr "XInternal NetworkX"
 
-msgid "Select a value"
-msgstr "XSelect a valueX"
-
-msgid "Please choose bridge or router."
-msgstr "XPlease choose bridge or router.X"
-
 msgid "Saving Internal Network Settings"
 msgstr "XSaving Internal Network SettingsX"
-
-msgid "Unable to save Local Network Settings"
-msgstr "XUnable to save Local Network SettingsX"
-
-msgid "Redirect to the new setup address?"
-msgstr "XRedirect to the new setup address?X"
-
-msgid "When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"
-msgstr "XWhen switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}X"
-
-msgid "If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."
-msgstr "XIf you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.X"
-
-msgid "Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."
-msgstr "XClicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.X"
-
-msgid "When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"
-msgstr "XWhen switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}X"
 
 msgid "The Internal Address is changed to: {0}"
 msgstr "XThe Internal Address is changed to: {0}X"
 
 msgid "The changes are applied and you will be redirected to the new setup address: {0}"
 msgstr "XThe changes are applied and you will be redirected to the new setup address: {0}X"
-
-msgid "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again."
-msgstr "XIf the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again.X"
 
 msgid "Configure Automatic Upgrade Settings"
 msgstr "XConfigure Automatic Upgrade SettingsX"
@@ -5226,56 +4354,20 @@ msgid "Request"
 msgstr "XRequestX"
 
 #: Status: UNVERIFIED
-msgid "Requesting Digest"
-msgstr "XRequesting DigestX"
-
-#: Status: UNVERIFIED
-msgid "Successfully sent digest to '{0}'"
-msgstr "XSuccessfully sent digest to '{0}'X"
-
-#: Status: UNVERIFIED
-msgid "A quarantine does not exist for '{0}'"
-msgstr "XA quarantine does not exist for '{0}'X"
-
-#: Status: UNVERIFIED
 msgid "Quarantine Request"
 msgstr "XQuarantine RequestX"
-
-#: Status: UNVERIFIED
-msgid "Releasing and adding Senders to Safe List..."
-msgstr "XReleasing and adding Senders to Safe List...X"
-
-#: Status: UNVERIFIED
-msgid "No sender address to be added to safelist."
-msgstr "XNo sender address to be added to safelist.X"
-
-#: Status: UNVERIFIED
-msgid "Deleted one Message"
-msgstr "XDeleted one MessageX"
 
 #: Status: UNVERIFIED
 msgid "Deleted {0} Messages"
 msgstr "XDeleted {0} MessagesX"
 
 #: Status: UNVERIFIED
-msgid "Released one Message"
-msgstr "XReleased one MessageX"
-
-#: Status: UNVERIFIED
 msgid "Released {0} Messages"
 msgstr "XReleased {0} MessagesX"
 
 #: Status: UNVERIFIED
-msgid "Safelisted one Address"
-msgstr "XSafelisted one AddressX"
-
-#: Status: UNVERIFIED
 msgid "Safelisted {0} Addresses"
 msgstr "XSafelisted {0} AddressesX"
-
-#: Status: UNVERIFIED
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "XThe account {0} doesn't have any quarantined messages.X"
 
 #: Status: UNVERIFIED
 msgid "Release to Inbox"
@@ -5284,10 +4376,6 @@ msgstr "XRelease to InboxX"
 #: Status: UNVERIFIED
 msgid "Release to Inbox & Add Senders to Safe List"
 msgstr "XRelease to Inbox & Add Senders to Safe ListX"
-
-#: Status: UNVERIFIED
-msgid "Deleting..."
-msgstr "XDeleting...X"
 
 #: Status: UNVERIFIED
 msgid "From"
@@ -5318,20 +4406,8 @@ msgid "Save"
 msgstr "XSaveX"
 
 #: Status: UNVERIFIED
-msgid "Delete one Address"
-msgstr "XDelete one AddressX"
-
-#: Status: UNVERIFIED
-msgid "Delete {0} Addresses"
-msgstr "XDelete {0} AddressesX"
-
-#: Status: UNVERIFIED
 msgid "Delete Addresses"
 msgstr "XDelete AddressesX"
-
-#: Status: UNVERIFIED
-msgid "Deleted one address"
-msgstr "XDeleted one addressX"
 
 #: Status: UNVERIFIED
 msgid "Deleted {0} addresses"
@@ -5350,20 +4426,12 @@ msgid "Deleted forward address"
 msgstr "XDeleted forward addressX"
 
 #: Status: UNVERIFIED
-msgid "Deleted one Remap"
-msgstr "XDeleted one RemapX"
-
-#: Status: UNVERIFIED
 msgid "Deleted {0} Remaps"
 msgstr "XDeleted {0} RemapsX"
 
 #: Status: UNVERIFIED
 msgid "Forward or Receive Quarantines"
 msgstr "XForward or Receive QuarantinesX"
-
-#: Status: UNVERIFIED
-msgid "Forward Quarantined Messages To"
-msgstr "XForward Quarantined Messages ToX"
 
 #: Status: UNVERIFIED
 msgid "Set forward address"
@@ -7017,10 +6085,6 @@ msgstr "XTestsX"
 
 msgid "has online access, but no password is set."
 msgstr "Xhas online access, but no password is set.X"
-
-#: Status: UNVERIFIED
-msgid "Reports is not installed into your rack or it is not turned on."
-msgstr "XReports is not installed into your rack or it is not turned on.X"
 
 msgid "Low (Threshold: 5.0)"
 msgstr "XLow (Threshold: 5.0)X"
@@ -9553,10 +8617,6 @@ msgid "Power"
 msgstr "XPowerX"
 
 #: Status: UNVERIFIED
-msgid "Disable"
-msgstr "XDisableX"
-
-#: Status: UNVERIFIED
 msgid "License"
 msgstr "XLicenseX"
 
@@ -9605,20 +8665,12 @@ msgid "Current Devices"
 msgstr "XCurrent DevicesX"
 
 #: Status: UNVERIFIED
-msgid "This shows all current devices."
-msgstr "XThis shows all current devices.X"
-
-#: Status: UNVERIFIED
 msgid "[no MAC Vendor]"
 msgstr "X[no MAC Vendor]X"
 
 #: Status: UNVERIFIED
 msgid "[no hostname]"
 msgstr "X[no hostname]X"
-
-#: Status: UNVERIFIED
-msgid "Device Username"
-msgstr "XDevice UsernameX"
 
 #: Status: UNVERIFIED
 msgid "[no device username]"
@@ -9631,10 +8683,6 @@ msgstr "X[no HTTP user agent]X"
 #: Status: UNVERIFIED
 msgid "Last Seen Time"
 msgstr "XLast Seen TimeX"
-
-#: Status: UNVERIFIED
-msgid "This will clear the current changes."
-msgstr "XThis will clear the current changes.X"
 
 #: Status: UNVERIFIED
 msgid "Last Completed TCP Session Time"
@@ -9985,50 +9033,6 @@ msgid "Style"
 msgstr "XStyleX"
 
 #: Status: UNVERIFIED
-msgid "Countries"
-msgstr "XCountriesX"
-
-#: Status: UNVERIFIED
-msgid "ISO Code"
-msgstr "XISO CodeX"
-
-#: Status: UNVERIFIED
-msgid "Country Name"
-msgstr "XCountry NameX"
-
-#: Status: UNVERIFIED
-msgid "Specify Countries"
-msgstr "XSpecify CountriesX"
-
-#: Status: UNVERIFIED
-msgid "DONE"
-msgstr "XDONEX"
-
-#: Status: UNVERIFIED
-msgid "Click to view Sessions"
-msgstr "XClick to view SessionsX"
-
-#: Status: UNVERIFIED
-msgid "Click to view Hosts"
-msgstr "XClick to view HostsX"
-
-#: Status: UNVERIFIED
-msgid "Select Category"
-msgstr "XSelect CategoryX"
-
-#: Status: UNVERIFIED
-msgid "All Categories"
-msgstr "XAll CategoriesX"
-
-#: Status: UNVERIFIED
-msgid "Select a Category first"
-msgstr "XSelect a Category firstX"
-
-#: Status: UNVERIFIED
-msgid "Add to Dashboard"
-msgstr "XAdd to DashboardX"
-
-#: Status: UNVERIFIED
 msgid "Deleting this report will remove also the Widget from Dashboard!"
 msgstr "XDeleting this report will remove also the Widget from Dashboard!X"
 
@@ -10037,44 +9041,8 @@ msgid "Do you want to continue?"
 msgstr "XDo you want to continue?X"
 
 #: Status: UNVERIFIED
-msgid "Remove from Dashboard"
-msgstr "XRemove from DashboardX"
-
-#: Status: UNVERIFIED
-msgid "3D Pie"
-msgstr "X3D PieX"
-
-#: Status: UNVERIFIED
-msgid "3D Donut"
-msgstr "X3D DonutX"
-
-#: Status: UNVERIFIED
-msgid "3D Column"
-msgstr "X3D ColumnX"
-
-#: Status: UNVERIFIED
-msgid "Grouped Columns"
-msgstr "XGrouped ColumnsX"
-
-#: Status: UNVERIFIED
 msgid "Overlapped Columns"
 msgstr "XOverlapped ColumnsX"
-
-#: Status: UNVERIFIED
-msgid "Loading report..."
-msgstr "XLoading report...X"
-
-#: Status: UNVERIFIED
-msgid "Refreshing report..."
-msgstr "XRefreshing report...X"
-
-#: Status: UNVERIFIED
-msgid "Can not specify a port condition on port-less protocols:"
-msgstr "XCan not specify a port condition on port-less protocols:X"
-
-#: Status: UNVERIFIED
-msgid "No data available yet!"
-msgstr "XNo data available yet!X"
 
 #: Status: UNVERIFIED
 msgid "Back"
@@ -10109,10 +9077,6 @@ msgid "Service Apps"
 msgstr "XService AppsX"
 
 #: Status: UNVERIFIED
-msgid "Inherits"
-msgstr "XInheritsX"
-
-#: Status: UNVERIFIED
 msgid "Google Drive requires Directory Connector application."
 msgstr "XGoogle Drive requires Directory Connector application.X"
 
@@ -10121,36 +9085,16 @@ msgid "The recommended applications have successfully been installed."
 msgstr "XThe recommended applications have successfully been installed.X"
 
 #: Status: UNVERIFIED
-msgid "Interface [{0}]"
-msgstr "XInterface [{0}]X"
-
-#: Status: UNVERIFIED
 msgid "Email Alerts"
 msgstr "XEmail AlertsX"
-
-#: Status: UNVERIFIED
-msgid "[no email address]"
-msgstr "X[no email address]X"
 
 #: Status: UNVERIFIED
 msgid "Organizational Unit"
 msgstr "XOrganizational UnitX"
 
 #: Status: UNVERIFIED
-msgid "Safe List Details for:"
-msgstr "XSafe List Details for:X"
-
-#: Status: UNVERIFIED
 msgid "Email Quarantine Details for:"
 msgstr "XEmail Quarantine Details for:X"
-
-#: Status: UNVERIFIED
-msgid "Service App"
-msgstr "XService AppX"
-
-#: Status: UNVERIFIED
-msgid "The password must not contain any quotation marks."
-msgstr "XThe password must not contain any quotation marks.X"
 
 #: Status: UNVERIFIED
 msgid "Client Country"
@@ -10181,28 +9125,12 @@ msgid "Reset"
 msgstr "XResetX"
 
 #: Status: UNVERIFIED
-msgid "[enter report]"
-msgstr "X[enter report]X"
-
-#: Status: UNVERIFIED
-msgid "Refresh Interval"
-msgstr "XRefresh IntervalX"
-
-#: Status: UNVERIFIED
-msgid "Leave blank for no Auto Refresh"
-msgstr "XLeave blank for no Auto RefreshX"
-
-#: Status: UNVERIFIED
 msgid "Timeframe"
 msgstr "XTimeframeX"
 
 #: Status: UNVERIFIED
 msgid "(hours)"
 msgstr "X(hours)X"
-
-#: Status: UNVERIFIED
-msgid "The number of hours to query the latest data. Leave blank for last day."
-msgstr "XThe number of hours to query the latest data. Leave blank for last day.X"
 
 #: Status: UNVERIFIED
 msgid "Connect to {0} cloud"
@@ -10231,14 +9159,6 @@ msgstr "XLog Referer in HTTP events.X"
 #: Status: UNVERIFIED
 msgid "Time synchronization failed. Return code:"
 msgstr "XTime synchronization failed. Return code:X"
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile MO file for entry"
-msgstr "XCouldn't compile MO file for entryX"
-
-#: Status: UNVERIFIED
-msgid "Couldn't compile resource bundle for entry"
-msgstr "XCouldn't compile resource bundle for entryX"
 
 #: Status: UNVERIFIED
 msgid "This step identifies the external, internal, and other network cards."
@@ -10271,10 +9191,6 @@ msgstr "XConnect to {0} CloudX"
 #: Status: UNVERIFIED
 msgid "Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access."
 msgstr "XRemain securely connected to the {0} cloud for cloud management, hot fixes, and support access.X"
-
-#: Status: UNVERIFIED
-msgid "Unable to save Settings"
-msgstr "XUnable to save SettingsX"
 
 #: Status: UNVERIFIED
 msgid "This category contains rules that are looking for vulnerabilities via portscans."
@@ -10783,22 +9699,6 @@ msgid "Virgin Islands, U.S."
 msgstr "XVirgin Islands, U.S.X"
 
 #: Status: UNVERIFIED
-msgid "Exception"
-msgstr "XExceptionX"
-
-#: Status: UNVERIFIED
-msgid "Map distribution"
-msgstr "XMap distributionX"
-
-#: Status: UNVERIFIED
-msgid "was added to Dashboard"
-msgstr "Xwas added to DashboardX"
-
-#: Status: UNVERIFIED
-msgid "was removed from Dashboard"
-msgstr "Xwas removed from DashboardX"
-
-#: Status: UNVERIFIED
 msgid "Stacked Area"
 msgstr "XStacked AreaX"
 
@@ -10807,28 +9707,8 @@ msgid "Stacked Columns"
 msgstr "XStacked ColumnsX"
 
 #: Status: UNVERIFIED
-msgid "Deleting report"
-msgstr "XDeleting reportX"
-
-#: Status: UNVERIFIED
 msgid "deleted successfully"
 msgstr "Xdeleted successfullyX"
-
-#: Status: UNVERIFIED
-msgid "Updating report"
-msgstr "XUpdating reportX"
-
-#: Status: UNVERIFIED
-msgid "updated successfully"
-msgstr "Xupdated successfullyX"
-
-#: Status: UNVERIFIED
-msgid "Creating report"
-msgstr "XCreating reportX"
-
-#: Status: UNVERIFIED
-msgid "created successfully"
-msgstr "Xcreated successfullyX"
 
 #: Status: UNVERIFIED
 msgid "Event List"
@@ -10901,14 +9781,6 @@ msgstr "XSend to AddressX"
 #: Status: UNVERIFIED
 msgid "Synchronize Language"
 msgstr "XSynchronize LanguageX"
-
-#: Status: UNVERIFIED
-msgid "Downloading language..."
-msgstr "XDownloading language...X"
-
-#: Status: UNVERIFIED
-msgid "Synchronize"
-msgstr "XSynchronizeX"
 
 #: Status: UNVERIFIED
 msgid "Last synchronized"
@@ -11027,22 +9899,6 @@ msgid "version"
 msgstr "XversionX"
 
 #: Status: UNVERIFIED
-msgid "free"
-msgstr "XfreeX"
-
-#: Status: UNVERIFIED
-msgid "Loading"
-msgstr "XLoadingX"
-
-#: Status: UNVERIFIED
-msgid "more"
-msgstr "XmoreX"
-
-#: Status: UNVERIFIED
-msgid "install required"
-msgstr "Xinstall requiredX"
-
-#: Status: UNVERIFIED
 msgid "in Rules list"
 msgstr "Xin Rules listX"
 
@@ -11065,10 +9921,6 @@ msgstr "XMap DistributionX"
 #: Status: UNVERIFIED
 msgid "Copy"
 msgstr "XCopyX"
-
-#: Status: UNVERIFIED
-msgid "copy"
-msgstr "XcopyX"
 
 #: Status: UNVERIFIED
 msgid "Administrator Warning"
@@ -11135,24 +9987,12 @@ msgid "Timezone changed"
 msgstr "XTimezone changedX"
 
 #: Status: UNVERIFIED
-msgid "A reboot is needed for the Timezone change to take effect!"
-msgstr "XA reboot is needed for the Timezone change to take effect!X"
-
-#: Status: UNVERIFIED
 msgid "Regional Formats"
 msgstr "XRegional FormatsX"
 
 #: Status: UNVERIFIED
 msgid "Use defaults"
 msgstr "XUse defaultsX"
-
-#: Status: UNVERIFIED
-msgid "decimal_sep"
-msgstr ","
-
-#: Status: UNVERIFIED
-msgid "thousand_sep"
-msgstr "."
 
 #: Status: UNVERIFIED
 msgid "date_fmt"
@@ -11171,40 +10011,12 @@ msgid "Decimal Separator"
 msgstr "XDecimal SeparatorX"
 
 #: Status: UNVERIFIED
-msgid "[enter decimal separator]"
-msgstr "X[enter decimal separator]X"
-
-#: Status: UNVERIFIED
 msgid "Thousand Separator"
 msgstr "XThousand SeparatorX"
 
 #: Status: UNVERIFIED
-msgid "[enter thousand separator]"
-msgstr "X[enter thousand separator]X"
-
-#: Status: UNVERIFIED
 msgid "Date Format"
 msgstr "XDate FormatX"
-
-#: Status: UNVERIFIED
-msgid "[enter date format]"
-msgstr "X[enter date format]X"
-
-#: Status: UNVERIFIED
-msgid "The date format name cannot be blank."
-msgstr "XThe date format name cannot be blank.X"
-
-#: Status: UNVERIFIED
-msgid "Timestamp Format"
-msgstr "XTimestamp FormatX"
-
-#: Status: UNVERIFIED
-msgid "[enter timestamp format]"
-msgstr "X[enter timestamp format]X"
-
-#: Status: UNVERIFIED
-msgid "The time format name cannot be blank."
-msgstr "XThe time format name cannot be blank.X"
 
 #: Status: UNVERIFIED
 msgid "Login or Create an Account"
@@ -11249,14 +10061,6 @@ msgstr "X\"Confirm password\" must match the \"Password\" field.X"
 #: Status: UNVERIFIED
 msgid "Local Address"
 msgstr "XLocal AddressX"
-
-#: Status: UNVERIFIED
-msgid "ARP Table"
-msgstr "XARP TableX"
-
-#: Status: UNVERIFIED
-msgid "Wireless Connections"
-msgstr "XWireless ConnectionsX"
 
 #: Status: UNVERIFIED
 msgid "Public Address Configuration"
@@ -11307,20 +10111,8 @@ msgid "Wireless"
 msgstr "XWirelessX"
 
 #: Status: UNVERIFIED
-msgid "Loading Wireless Settings"
-msgstr "XLoading Wireless SettingsX"
-
-#: Status: UNVERIFIED
-msgid "Wireless Password"
-msgstr "XWireless PasswordX"
-
-#: Status: UNVERIFIED
 msgid "You must choose a new and different wireless password."
 msgstr "XYou must choose a new and different wireless password.X"
-
-#: Status: UNVERIFIED
-msgid "Problem"
-msgstr "XProblemX"
 
 #: Status: UNVERIFIED
 msgid "This is the recommended choice for most sites."
@@ -11427,10 +10219,6 @@ msgid "Start of week"
 msgstr "XStart of weekX"
 
 #: Status: UNVERIFIED
-msgid "Daily Reports"
-msgstr "XDaily ReportsX"
-
-#: Status: UNVERIFIED
 msgid "Recommended daily reports (default)"
 msgstr "XRecommended daily reports (default)X"
 
@@ -11523,10 +10311,6 @@ msgid "Current Users"
 msgstr "XCurrent UsersX"
 
 #: Status: UNVERIFIED
-msgid "This shows all current users."
-msgstr "XThis shows all current users.X"
-
-#: Status: UNVERIFIED
 msgid "[no username]"
 msgstr "X[no username]X"
 
@@ -11543,20 +10327,12 @@ msgid "Hostname (Directory Connector)"
 msgstr "XHostname (Directory Connector)X"
 
 #: Status: UNVERIFIED
-msgid "Hostname (OpenVpn)"
-msgstr "XHostname (OpenVpn)X"
-
-#: Status: UNVERIFIED
 msgid "Hostname (Reports)"
 msgstr "XHostname (Reports)X"
 
 #: Status: UNVERIFIED
 msgid "Hostname (Device)"
 msgstr "XHostname (Device)X"
-
-#: Status: UNVERIFIED
-msgid "Hostname (Source)"
-msgstr "XHostname (Source)X"
 
 #: Status: UNVERIFIED
 msgid "Username Source"
@@ -11614,10 +10390,6 @@ msgstr "XSwap Usage BytesX"
 #: Status: UNVERIFIED
 msgid "The swap utilization over time as a percent of total swap size ."
 msgstr "XThe swap utilization over time as a percent of total swap size .X"
-
-#: Status: UNVERIFIED
-msgid "duplicate report entry title"
-msgstr "Xduplicate report entry titleX"
 
 #: Status: UNVERIFIED
 msgid "API Usage"
@@ -12017,28 +10789,12 @@ msgid "Stochastic Fairness Queueing (sfq)"
 msgstr "XStochastic Fairness Queueing (sfq)X"
 
 #: Status: UNVERIFIED
-msgid "Input Filter Rules changed!"
-msgstr "XInput Filter Rules changed!X"
-
-#: Status: UNVERIFIED
-msgid "The Input Filter Rules have been changed!"
-msgstr "XThe Input Filter Rules have been changed!X"
-
-#: Status: UNVERIFIED
-msgid "Improperly configuring the Input Filter Rules can be very dangerous."
-msgstr "XImproperly configuring the Input Filter Rules can be very dangerous.X"
-
-#: Status: UNVERIFIED
 msgid "Read the documentation for more details."
 msgstr "XRead the documentation for more details.X"
 
 #: Status: UNVERIFIED
 msgid "SSH Access Enabled!"
 msgstr "XSSH Access Enabled!X"
-
-#: Status: UNVERIFIED
-msgid "The 'Allow SSH' rule in Input Filter Rules has been enabled!"
-msgstr "XThe 'Allow SSH' rule in Input Filter Rules has been enabled!X"
 
 #: Status: UNVERIFIED
 msgid "If the admin/root password is poorly chosen, enabling SSH is very dangerous."
@@ -12357,28 +11113,12 @@ msgid "Enable RADIUS Connector"
 msgstr "XEnable RADIUS ConnectorX"
 
 #: Status: UNVERIFIED
-msgid "Google Authentication Connector"
-msgstr "XGoogle Authentication ConnectorX"
-
-#: Status: UNVERIFIED
-msgid "Enable Google Authentication Connector"
-msgstr "XEnable Google Authentication ConnectorX"
-
-#: Status: UNVERIFIED
 msgid "Google Drive Connector"
 msgstr "XGoogle Drive ConnectorX"
 
 #: Status: UNVERIFIED
 msgid "Enable User Notification API"
 msgstr "XEnable User Notification APIX"
-
-#: Status: UNVERIFIED
-msgid "Facebook Authentication Connector"
-msgstr "XFacebook Authentication ConnectorX"
-
-#: Status: UNVERIFIED
-msgid "Enable Facebook Authentication Connector"
-msgstr "XEnable Facebook Authentication ConnectorX"
 
 #: Status: UNVERIFIED
 msgid "Warning: Interface <i>{0}</i> needs a test configured!"
@@ -12459,14 +11199,6 @@ msgstr "XUpload Custom Captive Page ZIP FileX"
 #: Status: UNVERIFIED
 msgid "Active Custom File"
 msgstr "XActive Custom FileX"
-
-#: Status: UNVERIFIED
-msgid "Enable ScoutIQ&trade; Cloud Scan"
-msgstr "XEnable ScoutIQ&trade; Cloud ScanX"
-
-#: Status: UNVERIFIED
-msgid "Scan Options"
-msgstr "XScan OptionsX"
 
 #: Status: UNVERIFIED
 msgid "Invalid values"
@@ -12559,10 +11291,6 @@ msgstr "X{0}Note:{1} {2} continues to maintain the default signature settings th
 #: Status: UNVERIFIED
 msgid "[enter mg]"
 msgstr "X[enter mg]X"
-
-#: Status: UNVERIFIED
-msgid "Enable BitDefender&reg; Scan"
-msgstr "XEnable BitDefender&reg; ScanX"
 
 #: Status: UNVERIFIED
 msgid "NOTE: Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution."
@@ -12659,34 +11387,6 @@ msgstr "XThe Google Connector must be configured in order to backup to Google Dr
 #: Status: UNVERIFIED
 msgid "Enable upload to Google Drive"
 msgstr "XEnable upload to Google DriveX"
-
-#: Status: UNVERIFIED
-msgid "Flag access to sites associated with the specified category."
-msgstr "XFlag access to sites associated with the specified category.X"
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access for client networks regardless of matching policies."
-msgstr "XAllow unflagged access for client networks regardless of matching policies.X"
-
-#: Status: UNVERIFIED
-msgid "Allow unflagged access to the specified site regardless of matching policies."
-msgstr "XAllow unflagged access to the specified site regardless of matching policies.X"
-
-#: Status: UNVERIFIED
-msgid "Flag Sites"
-msgstr "XFlag SitesX"
-
-#: Status: UNVERIFIED
-msgid "Flag access to specific sites."
-msgstr "XFlag access to specific sites.X"
-
-#: Status: UNVERIFIED
-msgid "Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies."
-msgstr "XWeb Monitor scans and categorizes web traffic to monitor and enforce network usage policies.X"
-
-#: Status: UNVERIFIED
-msgid "Web Monitor rules allow creating flexible flag and pass conditions."
-msgstr "XWeb Monitor rules allow creating flexible flag and pass conditions.X"
 
 #: Status: UNVERIFIED
 msgid "Traffic"
@@ -12941,10 +11641,6 @@ msgid "Unknown Widget"
 msgstr "XUnknown WidgetX"
 
 #: Status: UNVERIFIED
-msgid "Select a install type."
-msgstr "XSelect a install type.X"
-
-#: Status: UNVERIFIED
 msgid "Install Type"
 msgstr "XInstall TypeX"
 
@@ -12995,10 +11691,6 @@ msgstr "XLast name must be at least 2 characters.X"
 #: Status: UNVERIFIED
 msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity."
 msgstr "XIf new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivity.X"
-
-#: Status: UNVERIFIED
-msgid "A Host Name must be specified."
-msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Delete VLAN Interface"
@@ -13174,4 +11866,272 @@ msgstr ""
 
 #: Status: UNVERIFIED
 msgid "Last name must be less than 24 characters."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "All reports"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Another report within this category has this title"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This default report is read-only. Delete and Save are disabled."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Change Title to Save as New Report."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data is fetching..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Google Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Facebook Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Microsoft Account"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Week to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to Date"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid subnet."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Restrict Administration Subnet(s)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Access Rules have been changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Improperly configuring the Access Rules can be very dangerous."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The 'Allow SSH' rule in Access Rules has been enabled!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "New Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Edit Port Forward Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Address must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Client Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Server Tagged"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Filter Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Domain Name must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Access Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Access Rule"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "<span style=\"color: red;\">[add email address here]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host must be specified."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Contact Untangle Support"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No - Do Not Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Yes - Enable Support Access"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Support Access is not enabled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enabling remote support access is recommended for better and fast support."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Would you like enable the support team to access your server remotely?"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid x500 attribute found"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Administrators receive email alerts and report summaries."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Install type determines the optimal default settings for this deployment."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Fetch interfaces..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Renew DHCP"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Saving settings ..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Internal Address is no longer accessible."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You will be redirected to the new setup address: {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The data usage by interface."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage (by interface)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Forward Quarantined Messages To:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Successfully sent digest to {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "A quarantine does not exist for {0}"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host Entitled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Intrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Data Usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Month to date data usage"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Active Directory Organizations"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter OU]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "all web traffic in violation of policy"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The fails tests of each interface over time."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "WAN Interface Outages"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This policy name already exists"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Configure Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any OAuth Provider"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "uses OAuth provider selection page"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Use hostname instead of IP address for the capture page redirect"
 msgstr ""
