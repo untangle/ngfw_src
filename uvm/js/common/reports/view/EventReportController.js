@@ -119,7 +119,8 @@ Ext.define('Ung.view.reports.EventReportController', {
         var me = this,
             v = me.getView(),
             vm = me.getViewModel(),
-            reps = me.getView().up('#reports');
+            reps = me.getView().up('#reports'),
+            startDate, endDate;
 
         var limit = 1000;
         if( me.getView().up('reports-entry') ){
@@ -127,11 +128,22 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
         me.entry = vm.get('entry');
 
-        var startDate = Ext.Date.add(vm.get('startDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000));
-        var endDate = vm.get('tillNow') ? null : Ext.Date.add(vm.get('endDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000));
-        if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000 + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset);
+        // startDate
+        if (!me.getView().renderInReports) {
+            // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
+            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000);
+        } else {
+            // if it's a report, convert UI client start date to server date
+            startDate = Util.clientToServerDate(vm.get('startDate'));
+        }
+
+        // endDate
+        if (vm.get('tillNow') || !me.getView().renderInReports) {
+            // if showing reports till current time
             endDate = null;
+        } else {
+            // otherwise, in reports, convert UI client end date to server date
+            endDate = Util.clientToServerDate(vm.get('endDate'));
         }
 
         var grid = v.down('grid');
