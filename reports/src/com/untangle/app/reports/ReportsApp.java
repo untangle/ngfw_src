@@ -56,7 +56,7 @@ import org.apache.commons.codec.binary.Base64;
 public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
-    
+
     private static final Logger logger = Logger.getLogger(ReportsApp.class);
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
@@ -917,6 +917,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 ReportEntry query = (ReportEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
                 SqlCondition[] conditions;
                 String columnListStr = arg4;
+
                 Date startDate = getDate(arg5);
                 Date endDate = getDate(arg6);
 
@@ -930,7 +931,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                     return;
                 }
 
-                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
+                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + " startDate: " + startDate + " endDate: " + endDate + " )");
 
                 ReportsApp reports = (ReportsApp) UvmContextFactory.context().appManager().app("reports");
                 if (reports == null) {
