@@ -756,7 +756,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     exportEventsHandler: function () {
-        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [];
+        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], startDate, endDate;
         if (!entry) { return; }
 
         var grid = me.getView().down('eventreport > ungrid');
@@ -778,15 +778,20 @@ Ext.define('Ung.view.reports.EntryController', {
             conditions.push(cnd);
         });
 
+        // startDate converted from UI to server date
+        startDate = Util.clientToServerDate(vm.get('startDate'));
+        // endDate converted from UI to server date
+        endDate = Util.clientToServerDate(vm.get('endDate'));
+
         Ext.MessageBox.wait('Exporting Events...'.t(), 'Please wait'.t());
         var downloadForm = document.getElementById('downloadForm');
         downloadForm['type'].value = 'eventLogExport';
-        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(new Date(), 'd.m.Y-Hi')).replace(/ /g, '_');
+        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(vm.get('startDate'), 'd.m.Y-H:i') + '-' + Ext.Date.format(vm.get('endDate'), 'd.m.Y-H:i')).replace(/ /g, '_');
         downloadForm['arg2'].value = Ext.encode(entry);
         downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
         downloadForm['arg4'].value = columns.join(',');
-        downloadForm['arg5'].value = vm.get('_sd') ? vm.get('_sd').getTime() : -1;
-        downloadForm['arg6'].value = vm.get('_ed') ? vm.get('_ed').getTime() : -1;
+        downloadForm['arg5'].value = startDate ? startDate.getTime() : -1;
+        downloadForm['arg6'].value = endDate ? endDate.getTime() : -1;
         downloadForm.submit();
         Ext.MessageBox.hide();
     },
