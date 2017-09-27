@@ -20,7 +20,7 @@ from uvm import Manager
 from uvm import Uvm
 
 UNTANGLE_CMD_PORTS   = [80,443,993,4443,587,995,8080,53,25]
-UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", "74.123.28.18", "cmd.metaloft.com"]
+UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", "cmd.metaloft.com"]
 RETRY_TIME_LONG = 10
 RETRY_TIME_SHORT = 5
 CERTS_FILE = '/tmp/pyconnector/certs.pem'
