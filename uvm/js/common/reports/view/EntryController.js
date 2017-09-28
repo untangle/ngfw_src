@@ -74,6 +74,10 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
 
+            // set initial time or text data columns
+            vm.set('textDataColumns', Ext.Array.map(entry.get('textColumns') || [], function (col) { return { str: col }; }));
+            vm.set('timeDataColumns', Ext.Array.map(entry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
+
             // set the _sqlConditions data as for the sql conditions grid store
             vm.set('_sqlConditions', entry.get('conditions') || []);
             // set combo store conditions

@@ -10,6 +10,8 @@ Ext.define('Ung.view.reports.EntryModel', {
         _currentData: [],
         sqlFilterData: [],
         autoRefresh: false,
+        timeDataColumns: [],
+        textDataColumns: []
         // fetching: false // set in Reports ViewModel
     },
 
@@ -182,24 +184,8 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         isTextEntry: function (get)  {
             return get('entry.type') === 'TEXT';
-        },
-
-        timeDataColumns: function (get) {
-            var columns = get('entry.timeDataColumns'), arr = [];
-            if (!columns || !Ext.isArray(columns)) { return []; }
-            Ext.Array.each(columns, function (column) {
-                arr.push({ str: column });
-            });
-            return arr;
-        },
-        textDataColumns: function (get) {
-            var columns = get('entry.textColumns'), arr = [];
-            if (!columns || !Ext.isArray(columns)) { return []; }
-            Ext.Array.each(columns, function (column) {
-                arr.push({ str: column });
-            });
-            return arr;
         }
+
     }
 
 });
