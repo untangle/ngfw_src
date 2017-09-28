@@ -4,8 +4,8 @@ Ext.define('Ung.view.apps.SimpleItem', {
 
     baseCls: 'simpleitem',
 
-    width: 140,
-    height: 140,
+    width: 135,
+    height: 135,
 
     viewModel: {
         formulas: {
