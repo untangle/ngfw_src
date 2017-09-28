@@ -22,6 +22,7 @@
     width: 450px;
     height: 300px;
     flex-grow: 1;
+    -webkit-flex-grow: 1;
     overflow: hidden;
     position: relative;
     transition: transform .3s cubic-bezier(0.23, 1, 0.32, 1), opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
@@ -305,7 +306,7 @@
 }
 .info-actions {
     margin: 10px;
-    text-align: center; display: flex; flex-direction: row;
+    text-align: center; display: flex; display: -webkit-flex; flex-direction: row; -webkit-flex-direction: row;
 }
 
 .wg-wrapper.resources .info-box p {
@@ -339,6 +340,8 @@
     font-weight: 600;
     cursor: pointer;
     transition: all ease-in-out .15s;
+    flex: 1;
+    -webkit-flex: 1;
     &:hover {
         background-color: rgba(61,186,235,.85);
     }

@@ -38,8 +38,8 @@ Ext.define('Ung.widget.NetworkInformation', {
                 '<div class="info-item">' + 'Maximum Active'.t() + '<br/><span>{stats.maxActiveHosts}</span></div>' +
                 '<div class="info-item">' + 'Known Devices'.t() + '<br/><span>{stats.knownDevices}</span></div>' +
                 '<div class="info-actions">' +
-                '<a class="wg-button" href="#hosts" style="flex: 1;">' + 'Hosts'.t() + '</a>' +
-                '<a class="wg-button" href="#devices" style="flex: 1;">' + 'Devices'.t() + '</a>' +
+                '<a class="wg-button" href="#hosts">' + 'Hosts'.t() + '</a>' +
+                '<a class="wg-button" href="#devices">' + 'Devices'.t() + '</a>' +
                 '</div>' +
                 '</div>'
             }
@@ -51,7 +51,7 @@ Ext.define('Ung.widget.NetworkInformation', {
                 '<div class="info-item">' + 'Scanned Sessions'.t() + '<br/><span>{sessions.scannedSessions}</span></div>' +
                 '<div class="info-item">' + 'Bypassed Sessions'.t() + '<br/><span>{sessions.bypassedSessions}</span></div>' +
                 '<div class="info-actions">' +
-                '<a class="wg-button" href="#sessions" style="flex: 1;">' + 'Sessions'.t() + '</a> ' +
+                '<a class="wg-button" href="#sessions">' + 'Sessions'.t() + '</a> ' +
                 '</div>' +
                 '</div>'
             }
