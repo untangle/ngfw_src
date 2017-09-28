@@ -43,8 +43,21 @@ Ext.define('Ung.apps.openvpn.MainController', {
             }
 
             vm.set('settings', result);
-            me.getActiveClients();
-            me.getActiveServers();
+        });
+
+        // trigger active clients/servers fetching when instance run state changes
+        vm.bind('{instance.runState}', function (runstate) {
+            // get clients and servers only when instance is RUNNING
+            if (runstate === 'RUNNING') {
+                me.getActiveClients();
+                me.getActiveServers();
+            } else {
+            // if not RUNNING, empty clients/servers grid
+                vm.set({
+                    clientStatusData: [],
+                    serverStatusData: []
+                });
+            }
         });
     },
 
