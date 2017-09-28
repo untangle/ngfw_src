@@ -8,7 +8,8 @@ Ext.define('Ung.cmp.GridFilterController', {
             v = me.getView(),
             grid = v.up('panel').down('grid'),
             cols = grid.getVisibleColumns(),
-            routeFilter = v.up('panel').routeFilter;
+            routeFilter = v.up('panel').routeFilter,
+            gridStatus = v.up('panel').down('ungridstatus');
 
         grid.getStore().clearFilter();
 
@@ -19,6 +20,9 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         if (!value) {
             field.getTrigger('clear').hide();
+            if( gridStatus ){
+                gridStatus.fireEvent('update');
+            }
             return;
         }
 
@@ -45,7 +49,6 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         field.getTrigger('clear').show();
 
-        var gridStatus = v.up('panel').down('ungridstatus');
         if( gridStatus ){
             gridStatus.fireEvent('update');
         }
