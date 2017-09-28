@@ -74,7 +74,7 @@ Ext.define('Ung.apps.openvpn.Main', {
             cls: 'view-reports',
             autoEl: {
                 tag: 'a',
-                href: '#reports/open-vpn',
+                href: '#reports/openvpn',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
             },
             hidden: true,
