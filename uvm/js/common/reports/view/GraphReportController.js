@@ -303,7 +303,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000 + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset));
         }
 
-        me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-gray"></i>');
+        me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             vm.get('entry').getData(), // entry
             Ext.Date.add(vm.get('startDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000)), // start date
