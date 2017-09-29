@@ -17,7 +17,8 @@ cite {
 .x-btn-icon-left > .x-btn-inner-default-small,
 .x-btn-icon-right > .x-btn-inner-default-toolbar-small,
 .x-btn-icon-left > .x-btn-inner-default-toolbar-small {
-    max-width: calc(100% - 15px);
+    // max-width: calc(100% - 15px);
+    max-width: none;
 }
 
 .x-btn-icon-el {
