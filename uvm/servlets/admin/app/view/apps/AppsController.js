@@ -187,7 +187,15 @@ Ext.define('Ung.view.apps.AppsController', {
             me.lookup('policyBtn').setMenu({
                 plain: true,
                 mouseLeaveDelay: 0,
-                items: menuItems
+                items: menuItems,
+                listeners: {
+                    click: function (menu, item) {
+                        // for touch devices this hack is required
+                        if (Ext.supports.Touch) {
+                            Ung.app.redirectTo(item.href);
+                        }
+                    }
+                }
             });
 
             var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
