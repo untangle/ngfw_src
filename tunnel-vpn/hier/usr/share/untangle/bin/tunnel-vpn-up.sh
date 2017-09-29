@@ -36,3 +36,4 @@ fi
 /sbin/iptables -t mangle -I tunnel-vpn-any -j ACCEPT -m comment --comment "Set destination interface to use tunnel ${interface_id}"
 /sbin/iptables -t mangle -I tunnel-vpn-any -j MARK --set-mark $((${interface_id}<<8))/0xff00 -m comment --comment "Set destination interface to use tunnel ${interface_id}"
 
+exit 0

@@ -9,7 +9,6 @@ if [ -z "${dev}" ] ; then
     exit 1
 fi
 
-
 interface_id="`echo ${dev} | sed -e 's/[a-zA-Z]//g'`"
 if [ -z "${interface_id}" ] ; then
     echo "Missing ID!"

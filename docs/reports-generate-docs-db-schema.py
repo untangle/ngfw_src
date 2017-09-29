@@ -264,6 +264,14 @@ dict['ipsec_tunnel_stats'].update({
     'out_bytes' : 'The number of bytes transmitted during this time frame',
 })
 
+dict['tunnel_vpn_stats'] = copy.deepcopy(generic)
+dict['tunnel_vpn_stats'].update({
+    'table_description' : 'This table stores Tunnel VPN tunnel statistics.',
+    'tunnel_name' : 'The name of the Tunnel VPN tunnel',
+    'in_bytes' : 'The number of bytes received during this time frame',
+    'out_bytes' : 'The number of bytes transmitted during this time frame',
+})
+
 dict['smtp_tarpit_events'] = copy.deepcopy(generic)
 dict['smtp_tarpit_events'].update({
     'table_description' : 'This table stores SMTP tarpit events.',
@@ -593,10 +601,10 @@ for line in iter(p.stdout.readline, ''):
         print "\nMissing description for table \"%s\"" % ( table_name  )
         sys.exit(1)
 
-    print 
+    print
     print "== %s == " % table_name
     print "<section begin='%s' />" % table_name
-    print 
+    print
     print "{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\""
     print "!Column Name"
     print "!Human Name"
@@ -631,8 +639,7 @@ for line in iter(p.stdout.readline, ''):
         print "|%s" % type
         print "|%s" % description
         print "|-"
-        
+
     print "|}"
     print "<section end='%s' />" % table_name
-    print 
-
+    print

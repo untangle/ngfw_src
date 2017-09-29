@@ -48,7 +48,7 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
             cls: 'view-reports',
             autoEl: {
                 tag: 'a',
-                href: '#reports/open-vpn',
+                href: '#reports/tunnel-vpn',
                 html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
             },
             hidden: true,
