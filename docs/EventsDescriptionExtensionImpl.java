@@ -47,6 +47,7 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("StatisticEvent","These events are created by the base system and inserted to the the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
         classDescriptions.put("SystemStatEvent","These events are created by the base system and inserted to the [[Database_Schema#server_events|server_events]] table periodically.");
         classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
+        classDescriptions.put("TunnelVpnStatusEvent","These events are created by [[Tunnel VPN]] and inserted to the [[Database_Schema#tunnel_vpn_stats|tunnel_vpn_stats]] table periodically.");
         classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
         classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.");
         classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Database_Schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
@@ -76,7 +77,7 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.");
         classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.");
         classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Database_Schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
-        
+
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
 
@@ -235,7 +236,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("sensorId","The sensor ID");
         attributeDescriptions.put("signatureId","The signature ID");
         attributeDescriptions.put("signatureRevision","The signature revision");
-        attributeDescriptions.put("sportItype","The sportItype"); // FIXME 
+        attributeDescriptions.put("sportItype","The sportItype"); // FIXME
         attributeDescriptions.put("vlanId","The VLAN Id"); // FIXME
         attributeDescriptions.put("method","The method");
         attributeDescriptions.put("term","The search term/phrase");
@@ -279,7 +280,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("txBytes","The number of TX (transmitted) bytes");
 
         HashMap<String,String> specificDescriptions;
-        
+
         specificDescriptions = new HashMap<String,String>();
         specificDescriptions.put("action","The action (1=Quota Given, 2=Quota Exceeded)");
         classSpecificAttributeDescriptions.put("QuotaEvent",specificDescriptions);
@@ -307,12 +308,12 @@ public class ExtensionImpl implements Runnable
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
     }
 
-    
+
     public static ExtensionImpl instance()
     {
         return new ExtensionImpl();
     }
-    
+
     public final void run()
     {
         String result = UvmContextFactory.context().execManager().execOutput("find " + System.getProperty("uvm.lib.dir") + " -name '*Event.class' | xargs grep -l 'logging.LogEvent' | sed -e 's|.*com/\\(.*\\)|com/\\1|' -e 's|/|.|g' -e 's/.class//'");
@@ -343,7 +344,7 @@ public class ExtensionImpl implements Runnable
         //System.out.println(fullName);
         System.out.println("    " + shortName + ": {");
         System.out.println("    description: \"" + classDescription + "\",");
-        
+
         Class clazz;
         try {
             clazz = Class.forName(fullName);
@@ -374,7 +375,7 @@ public class ExtensionImpl implements Runnable
             return;
 
         String shortName = clazz.getName().replaceAll(".*\\.","");
-        
+
         try {
             for(PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()){
                 Method method = propertyDescriptor.getReadMethod();
@@ -402,11 +403,11 @@ public class ExtensionImpl implements Runnable
                      ) {
                     printFields( returnTypeClazz, prefix + methodName + "." );
                     continue;
-                } 
+                }
                 returnType = returnType.replaceAll(".*\\.","");
 
                 String description = null;
-                
+
                 HashMap<String, String> specificDescriptions = classSpecificAttributeDescriptions.get(shortName);
                 if ( specificDescriptions != null )
                     description = specificDescriptions.get( methodName );
