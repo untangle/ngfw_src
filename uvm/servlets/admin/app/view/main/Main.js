@@ -143,7 +143,19 @@ Ext.define('Ung.view.main.Main', {
                     text: 'Logout'.t(),
                     iconCls: 'fa fa-sign-out fa-lg',
                     href: '/auth/logout?url=/admin&realm=Administrator'
-                }]
+                }],
+                listeners: {
+                    click: function (menu, item) {
+                        // for touch devices this hack is required
+                        if (Ext.supports.Touch) {
+                            if (item.hrefTarget === '_blank') {
+                                window.open(item.href);
+                            } else {
+                                document.location.href = item.href;
+                            }
+                        }
+                    }
+                }
             }
         }]
     }]
