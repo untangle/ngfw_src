@@ -238,6 +238,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.app.tunnel_vpn">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.app.phish_blocker">
     <priority value="INFO"/>
   </category>

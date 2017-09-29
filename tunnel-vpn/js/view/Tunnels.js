@@ -134,6 +134,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
                 name: 'upload_file',
                 buttonText: 'Select VPN Config File'.t(),
                 buttonOnly: true,
+                margin: '10 0 10 0',
                 listeners: {
                     change: 'uploadFile'
                 },

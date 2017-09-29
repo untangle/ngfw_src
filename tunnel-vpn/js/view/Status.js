@@ -61,9 +61,33 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                 width: 150,
                 flex: 1
             }, {
+                header: 'Elapsed Time'.t(),
+                dataIndex: 'uptime',
+                width: 180,
+                renderer: function(value) {
+                    var total = parseInt(value / 1000,10);
+                    var hours = (parseInt(total / 3600,10) % 24);
+                    var minutes = (parseInt(total / 60,10) % 60);
+                    var seconds = parseInt(total % 60,10);
+                    var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+                    return result;
+                }
+            }, {
+                header: 'Rx Data'.t(),
+                dataIndex: 'rxbytes',
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
+            }, {
+                header: 'Tx Data'.t(),
+                dataIndex: 'txbytes',
+                width: Renderer.sizeWidth,
+                renderer: Renderer.datasize,
+                filter: Renderer.numericFilter
+            }, {
                 header: 'Tunnel Status'.t(),
                 dataIndex: 'state',
-                width: 180,
+                width: 180
             }],
             bbar: [{
                 text: 'Refresh'.t(),

@@ -2781,6 +2781,115 @@ Ext.define('TableConfig', {
                 }
             }]
         },
+        tunnel_vpn_events: {
+            fields: [{
+                name: 'time_stamp',
+                sortType: 'asTimestamp'
+            }, {
+                name: 'type'
+            }, {
+                name: 'tunnel_name',
+                type: 'string'
+            }, {
+                name: 'server_address',
+                sortType: 'asIp'
+            }, {
+                name: 'local_address',
+                sortType: 'asIp'
+            }],
+            columns: [{
+                header: 'Timestamp'.t(),
+                width: Renderer.timestampWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
+            }, {
+                header: 'Type'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'event_type'
+            }, {
+                header: 'Tunnel Name'.t(),
+                width: Renderer.usernameWidth,
+                sortable: true,
+                flex: 1,
+                filter: Renderer.stringFilter,
+                dataIndex: 'tunnel_name'
+            }, {
+                header: 'Server Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'server_address'
+            }, {
+                header: 'Local Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'local_address'
+            }]
+        },
+        tunnel_vpn_stats: {
+            fields: [{
+                name: 'time_stamp',
+                sortType: 'asTimestamp'
+            }, {
+                name: 'in_bytes',
+                sortType: 'asInt'
+            }, {
+                name: 'out_bytes',
+                sortType: 'asInt'
+            }, {
+                name: 'tunnel_name',
+                type: 'string'
+            }, {
+                name: 'event_id',
+                sortType: 'asInt'
+            }],
+            columns: [{
+                header: 'Event Id'.t(),
+                width: Renderer.idWidth,
+                sortable: true,
+                filter: Renderer.numericFilter,
+                dataIndex: 'event_id'
+            }, {
+                header: 'Timestamp'.t(),
+                width: Renderer.timestampWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
+            }, {
+                header: 'Tunnel Name'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                flex: 1,
+                filter: Renderer.stringFilter,
+                dataIndex: 'tunnel_name'
+            }, {
+                header: 'In Bytes'.t(),
+                width: Renderer.sizeWidth,
+                sortable: true,
+                filter: Renderer.numericFilter,
+                dataIndex: 'in_bytes',
+                renderer: function(value) {
+                    var kb = value/1024;
+                    return (Math.round( kb*10 )/10).toString() + ' KB';
+                }
+            }, {
+                header: 'Out Bytes'.t(),
+                width: Renderer.sizeWidth,
+                sortable: true,
+                filter: Renderer.numericFilter,
+                dataIndex: 'out_bytes',
+                renderer: function(value) {
+                    var kb = value/1024;
+                    return (Math.round( kb*10 )/10).toString() + ' KB';
+                }
+            }]
+        },
         interface_stat_events: {
             fields: [{
                 name: 'time_stamp',

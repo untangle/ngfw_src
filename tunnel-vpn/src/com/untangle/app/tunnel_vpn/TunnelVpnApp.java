@@ -44,20 +44,23 @@ public class TunnelVpnApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final PipelineConnector[] connectors = new PipelineConnector[] { };
+    private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
-    private static final String TUNNEL_LOG = "/var/log/uvm/tunnel.log";
+    public static final String TUNNEL_LOG = "/var/log/uvm/tunnel.log";
+    public static final int BASE_MGMT_PORT = 2000;
 
     private TunnelVpnSettings settings = null;
     private TunnelVpnManager tunnelVpnManager = new TunnelVpnManager(this);
+    private TunnelVpnMonitor tunnelVpnMonitor;
 
     private final TunnelVpnNetworkHookCallback networkHookCallback = new TunnelVpnNetworkHookCallback();
-    
-    public TunnelVpnApp( AppSettings appSettings, AppProperties appProperties )
+
+    public TunnelVpnApp(AppSettings appSettings, AppProperties appProperties)
     {
-        super( appSettings, appProperties );
+        super(appSettings, appProperties);
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new TunnelUploadHandler());
+        tunnelVpnMonitor = new TunnelVpnMonitor(this, tunnelVpnManager);
     }
 
     public TunnelVpnSettings getSettings()
@@ -156,6 +159,11 @@ public class TunnelVpnApp extends AppBase
         
     }
 
+    public TunnelVpnTunnelStatus getTunnelStatus(int tunnelId)
+    {
+        return (tunnelVpnMonitor.getTunnelStatus(tunnelId));
+    }
+
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -163,37 +171,41 @@ public class TunnelVpnApp extends AppBase
     }
 
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
     }
 
     @Override
-    protected void postStart( boolean isPermanentTransition )
+    protected void postStart(boolean isPermanentTransition)
     {
         insertIptablesRules();
         this.tunnelVpnManager.launchProcesses();
+        this.tunnelVpnMonitor.start();
+        this.tunnelVpnMonitor.enable();
     }
 
     @Override
-    protected void preStop( boolean isPermanentTransition )
+    protected void preStop(boolean isPermanentTransition)
     {
+        this.tunnelVpnMonitor.disable();
+        this.tunnelVpnMonitor.stop();
         this.tunnelVpnManager.killProcesses();
     }
 
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
     }
 
     @Override
     protected void postDestroy()
     {
-        syncToSystem( false );
+        syncToSystem(false);
         removeAllTunnelVirtualInterfaces();
     }
-        
+
     @Override
     protected void postInit()
     {
@@ -203,11 +215,11 @@ public class TunnelVpnApp extends AppBase
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/tunnel-vpn/" + "settings_" + appID + ".js";
 
         try {
-            readSettings = settingsManager.load( TunnelVpnSettings.class, settingsFilename );
+            readSettings = settingsManager.load(TunnelVpnSettings.class, settingsFilename);
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:",e);
+            logger.warn("Failed to load settings:", e);
         }
-        
+
         /**
          * If there are still no settings, just initialize
          */
@@ -215,22 +227,22 @@ public class TunnelVpnApp extends AppBase
             logger.warn("No settings found - Initializing new settings.");
 
             this.initializeSettings();
-        }
-        else {
+        } else {
             logger.info("Loading Settings...");
 
             /**
-             * If the settings file date is newer than the system files, re-sync them
+             * If the settings file date is newer than the system files, re-sync
+             * them
              */
-            if ( ! UvmContextFactory.context().isDevel() ) {
-                File settingsFile = new File( settingsFilename );
+            if (!UvmContextFactory.context().isDevel()) {
+                File settingsFile = new File(settingsFilename);
                 File outputFile = new File("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
-                if (settingsFile.lastModified() > outputFile.lastModified() ) {
+                if (settingsFile.lastModified() > outputFile.lastModified()) {
                     logger.warn("Settings file newer than interfaces files, Syncing...");
-                    this.setSettings( readSettings );
-                } 
+                    this.setSettings(readSettings);
+                }
             }
-            
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -244,7 +256,7 @@ public class TunnelVpnApp extends AppBase
 
         setSettings(settings);
     }
-    
+
     public int getNewTunnelId()
     {
         return this.tunnelVpnManager.getNewTunnelId();
@@ -252,11 +264,10 @@ public class TunnelVpnApp extends AppBase
 
     public String getLogFile()
     {
-        File f = new File( TUNNEL_LOG );
+        File f = new File(TUNNEL_LOG);
         if (f.exists()) {
             String output = UvmContextFactory.context().execManager().execOutput("tail -n 200 " + TUNNEL_LOG);
-            if ( output == null )
-                return null;
+            if (output == null) return null;
 
             // remove strings that we don't want to show the users
             // these are strings/errors that are normal but scary to the user
@@ -265,14 +276,12 @@ public class TunnelVpnApp extends AppBase
             Collections.addAll(list, lines);
             for (Iterator<String> i = list.iterator(); i.hasNext();) {
                 String str = i.next();
-                if (str.contains("unable to redirect default gateway -- Cannot read current default gateway from system"))
-                    i.remove();
-                if (str.contains("MANAGEMENT:"))
-                    i.remove();
+                if (str.contains("unable to redirect default gateway -- Cannot read current default gateway from system")) i.remove();
+                if (str.contains("MANAGEMENT:")) i.remove();
             }
             String finalstr = list.stream().collect(Collectors.joining("\n"));
             return finalstr;
-        }else{
+        } else {
             return null;
         }
     }
@@ -287,7 +296,7 @@ public class TunnelVpnApp extends AppBase
         TunnelVpnRule rule;
         List<TunnelVpnRuleCondition> conditions;
         TunnelVpnRuleCondition condition1;
-        
+
         rule = new TunnelVpnRule();
         rule.setEnabled(false);
         rule.setDescription("Route all traffic over any available Tunnel.");
@@ -301,7 +310,7 @@ public class TunnelVpnApp extends AppBase
         rule.setDescription("Example: Route all hosts tagged with \"tunnel\" over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
         conditions = new LinkedList<TunnelVpnRuleCondition>();
-        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"tunnel");
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED, "tunnel");
         conditions.add(condition1);
         rule.setConditions(conditions);
         rules.add(rule);
@@ -311,7 +320,7 @@ public class TunnelVpnApp extends AppBase
         rule.setDescription("Example: Route all hosts tagged with \"bittorrent-usage\" over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
         conditions = new LinkedList<TunnelVpnRuleCondition>();
-        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED,"bittorrent-usage");
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED, "bittorrent-usage");
         conditions.add(condition1);
         rule.setConditions(conditions);
         rules.add(rule);
@@ -321,29 +330,31 @@ public class TunnelVpnApp extends AppBase
         rule.setDescription("Example: Route TCP port 80 and port 443 over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
         conditions = new LinkedList<TunnelVpnRuleCondition>();
-        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.DST_PORT,"80,443");
+        condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.DST_PORT, "80,443");
         conditions.add(condition1);
         rule.setConditions(conditions);
         rules.add(rule);
-        
+
         settings.setRules(rules);
         return settings;
     }
 
     public void importTunnelConfig(String filename, String provider, int tunnelId)
     {
-        this.tunnelVpnManager.importTunnelConfig( filename, provider, tunnelId);
+        this.tunnelVpnManager.importTunnelConfig(filename, provider, tunnelId);
+
+        if (this.getRunState() == AppSettings.AppState.RUNNING) this.tunnelVpnManager.restartProcesses();
     }
 
     public List<org.json.JSONObject> getTunnelStates()
     {
         return this.tunnelVpnManager.getTunnelStates();
     }
-        
+
     /**
-     * This finds all the tunnels that do not have corresponding virtual interfaces
-     * in the current network settings.
-     *
+     * This finds all the tunnels that do not have corresponding virtual
+     * interfaces in the current network settings.
+     * 
      * @returns a list of the tunnels missing virtual interfaces (never null)
      */
     private List<TunnelVpnTunnelSettings> findTunnelsMissingFromNetworkSettings()
@@ -363,9 +374,10 @@ public class TunnelVpnApp extends AppBase
     }
 
     /**
-     * This finds all the tunnel virtual interfaces in the current network settings
-     * That do not have corresponding tunnel settings in the tunnel VPN settings
-     *
+     * This finds all the tunnel virtual interfaces in the current network
+     * settings That do not have corresponding tunnel settings in the tunnel VPN
+     * settings
+     * 
      * @returns a list of the extra virtual interfaces (never null)
      */
     private List<InterfaceSettings> findExtraVirtualInterfaces()
@@ -397,30 +409,29 @@ public class TunnelVpnApp extends AppBase
         networkSettings.setVirtualInterfaces(nonTunnelInterfaces);
         UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
     }
-    
+
     /**
      * Sync the settings to the filesystem
      */
-    private void syncToSystem( boolean enabled )
+    private void syncToSystem(boolean enabled)
     {
         logger.info("syncToSystem()...");
 
         /**
-         * First we write a new 350-tunnel-vpn iptables script with the current settings
+         * First we write a new 350-tunnel-vpn iptables script with the current
+         * settings
          */
         String appID = this.getAppSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_"  + appID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_" + appID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
-        if ( !enabled )
-            output += " -d";
+        if (!enabled) output += " -d";
         String lines[] = output.split("\\r?\\n");
-        for ( String line : lines )
+        for (String line : lines)
             logger.info("Sync Settings: " + line);
 
-        if ( enabled )
-            insertIptablesRules();
+        if (enabled) insertIptablesRules();
     }
 
     private void insertIptablesRules()
@@ -430,20 +441,19 @@ public class TunnelVpnApp extends AppBase
          */
         String output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
         String lines[] = output.split("\\r?\\n");
-        for ( String line : lines )
+        for (String line : lines)
             logger.info("Adding tunnel-vpn iptables: " + line);
 
     }
 
-    private void networkSettingsEvent( NetworkSettings settings ) throws Exception
+    private void networkSettingsEvent(NetworkSettings settings) throws Exception
     {
         // refresh iptables rules in case WAN config has changed
         logger.info("Network Settings have changed. Restarting tunnels...");
 
-        if(this.getRunState() == AppSettings.AppState.RUNNING)
-            this.tunnelVpnManager.restartProcesses();
+        if (this.getRunState() == AppSettings.AppState.RUNNING) this.tunnelVpnManager.restartProcesses();
     }
-    
+
     private class TunnelUploadHandler implements UploadHandler
     {
         @Override
@@ -456,64 +466,65 @@ public class TunnelVpnApp extends AppBase
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
             if (fileItem == null) {
-                logger.info( "UploadTunnel is missing the file." );
+                logger.info("UploadTunnel is missing the file.");
                 return new ExecManagerResult(1, "Tunnel VPN is missing the file" + ": " + fileItem.getName());
             }
 
             InputStream inputStream = fileItem.getInputStream();
-            if ( inputStream == null ) {
-                logger.info( "UploadTunnel is missing the file." );
+            if (inputStream == null) {
+                logger.info("UploadTunnel is missing the file.");
                 return new ExecManagerResult(1, "Tunnel VPN is missing the file" + ": " + fileItem.getName());
             }
 
-            logger.info("Uploaded new tunnel config: " + fileItem.getName() + " " + argument );
-            
+            logger.info("Uploaded new tunnel config: " + fileItem.getName() + " " + argument);
+
             /* Write out the file. */
             File temp = null;
             OutputStream outputStream = null;
             try {
                 String filename = fileItem.getName();
-                if ( filename.endsWith(".zip") ) {
-                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".zip" );
-                } else if ( filename.endsWith(".conf") ) {
-                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".conf" );
-                } else if ( filename.endsWith(".ovpn") ) {
-                    temp = File.createTempFile( "tunnel-vpn-newconfig-", ".ovpn" );
+                if (filename.endsWith(".zip")) {
+                    temp = File.createTempFile("tunnel-vpn-newconfig-", ".zip");
+                } else if (filename.endsWith(".conf")) {
+                    temp = File.createTempFile("tunnel-vpn-newconfig-", ".conf");
+                } else if (filename.endsWith(".ovpn")) {
+                    temp = File.createTempFile("tunnel-vpn-newconfig-", ".ovpn");
                 } else {
                     return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN" + ": " + fileItem.getName());
                 }
 
                 temp.deleteOnExit();
-                outputStream = new FileOutputStream( temp );
-            
+                outputStream = new FileOutputStream(temp);
+
                 byte[] data = new byte[1024];
                 int len = 0;
-                while (( len = inputStream.read( data )) > 0 ) outputStream.write( data, 0, len );
-            } catch ( IOException e ) {
-                logger.warn( "Unable to validate client file.", e  );
-                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName() );
+                while ((len = inputStream.read(data)) > 0)
+                    outputStream.write(data, 0, len);
+            } catch (IOException e) {
+                logger.warn("Unable to validate client file.", e);
+                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName());
             } finally {
                 try {
-                    if ( outputStream != null ) outputStream.close();
-                } catch ( Exception e ) {
-                    logger.warn( "Error closing output stream", e );
+                    if (outputStream != null) outputStream.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing output stream", e);
                 }
 
                 try {
-                    if ( inputStream != null ) inputStream.close();
-                } catch ( Exception e ) {
-                    logger.warn( "Error closing input stream", e );
+                    if (inputStream != null) inputStream.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing input stream", e);
                 }
             }
 
             try {
-                tunnelVpnManager.validateTunnelConfig( temp.getPath(), argument );
-            } catch ( Exception e ) {
-                logger.warn( "Unable to validate the client configuration", e );
-                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName() );
+                tunnelVpnManager.validateTunnelConfig(temp.getPath(), argument);
+            } catch (Exception e) {
+                logger.warn("Unable to validate the client configuration", e);
+                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName());
             }
-            
-            return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + fileItem.getName() );
+
+            return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + fileItem.getName());
         }
     }
 
@@ -524,19 +535,19 @@ public class TunnelVpnApp extends AppBase
             return "tunnel-vpn-network-settings-change-hook";
         }
 
-        public void callback( Object... args )
+        public void callback(Object... args)
         {
             Object o = args[0];
-            if ( ! (o instanceof NetworkSettings) ) {
-                logger.warn( "Invalid network settings: " + o);
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
                 return;
             }
 
             try {
-                NetworkSettings settings = (NetworkSettings)o;
-                networkSettingsEvent( settings );
-            } catch( Exception e ) {
-                logger.error( "Unable to reconfigure the NAT app" );
+                NetworkSettings settings = (NetworkSettings) o;
+                networkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the NAT app");
             }
         }
     }
