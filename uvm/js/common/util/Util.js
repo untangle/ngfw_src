@@ -57,6 +57,16 @@ Ext.define('Ung.util.Util', {
         'live-support': 'Live Support provides on-demand help for any technical issues.'.t()
     },
 
+    // adds timezone computation to ensure dates showing in UI are showing actual server date
+    serverToClientDate: function (serverDate) {
+        return Ext.Date.add(serverDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000);
+    },
+
+    // extracts the timezone computation from UI dates before requesting new data from server
+    clientToServerDate: function (clientDate) {
+        return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000);
+    },
+
     bytesToHumanReadable: function (bytes, si) {
         var thresh = si ? 1000 : 1024;
         if(Math.abs(bytes) < thresh) {

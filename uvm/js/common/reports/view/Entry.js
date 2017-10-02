@@ -133,7 +133,6 @@ Ext.define('Ung.view.reports.Entry', {
                 disabled: true,
                 bind: {
                     value: '{_sd}',
-                    maxValue: '{_ed}',
                     disabled: '{fetching}'
                 }
             }, {
@@ -145,7 +144,6 @@ Ext.define('Ung.view.reports.Entry', {
                 disabled: true,
                 bind: {
                     value: '{_st}',
-                    // maxValue: '{_ed}'
                     disabled: '{fetching}'
                 }
             }, {
@@ -170,7 +168,6 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     value: '{_ed}',
                     hidden: '{tillNow}',
-                    // minValue: '{_sd}', // this caused startDate to have wrong 00:00 hours
                     disabled: '{fetching}'
                 },
                 maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
@@ -185,7 +182,6 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     value: '{_et}',
                     hidden: '{tillNow}',
-                    // minValue: '{_sd}'
                     disabled: '{fetching}'
                 },
                 // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))

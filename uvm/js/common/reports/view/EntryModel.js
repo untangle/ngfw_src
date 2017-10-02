@@ -4,8 +4,10 @@ Ext.define('Ung.view.reports.EntryModel', {
 
 
     data: {
-        startDate: new Date((Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000  - 3600 * 24 * 1000) + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset),
-        endDate: new Date((Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000) + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset),
+        // rounded to nearest 10 minutes minus 24 hours
+        startDate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - 24 * 3600 *1000)),
+        // rounded to nearest 10 minutes
+        endDate:  Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000))),
         tillNow: true,
         _currentData: [],
         sqlFilterData: [],
