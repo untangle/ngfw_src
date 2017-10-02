@@ -1019,7 +1019,7 @@ Ext.define('Ung.Setup.Internet', {
                 }]
             }]
         }, {
-            itemId: 'PPPoE',
+            itemId: 'PPPOE',
             items: [{
                 xtype: 'fieldset',
                 title: 'PPPoE Settings'.t(),
