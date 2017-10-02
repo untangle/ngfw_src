@@ -29,20 +29,34 @@ Ext.define('Ung.view.reports.TextReportController', {
     },
 
     fetchData: function (reset, cb) {
-        var me = this, vm = this.getViewModel(), reps = me.getView().up('#reports');
+        var me = this, vm = this.getViewModel(), reps = me.getView().up('#reports'), startDate, endDate;
         me.entry = vm.get('entry');
 
         if (reps) { reps.getViewModel().set('fetching', true); }
 
-        if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000 + (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset));
+        // startDate
+        if (!me.getView().renderInReports) {
+            // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
+            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000);
+        } else {
+            // if it's a report, convert UI client start date to server date
+            startDate = Util.clientToServerDate(vm.get('startDate'));
+        }
+
+        // endDate
+        if (vm.get('tillNow') || !me.getView().renderInReports) {
+            // if showing reports till current time
+            endDate = null;
+        } else {
+            // otherwise, in reports, convert UI client end date to server date
+            endDate = Util.clientToServerDate(vm.get('endDate'));
         }
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             vm.get('entry').getData(), // entry
-            Ext.Date.add(vm.get('startDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000)), // start date
-            (vm.get('tillNow') || !me.getView().renderInReports) ? null : Ext.Date.add(vm.get('endDate'), Ext.Date.MINUTE, -(new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000)), // end date
+            startDate,
+            endDate,
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function(result) {
                 me.getView().setLoading(false);
