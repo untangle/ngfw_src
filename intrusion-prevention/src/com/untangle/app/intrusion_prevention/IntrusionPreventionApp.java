@@ -1,10 +1,6 @@
 /**
  * $Id: IntrusionPreventionApp.java 38584 2014-09-03 23:23:07Z dmorris $
  */
-
-/*
- * The major difference between this module and others is configuration management.
- */
 package com.untangle.app.intrusion_prevention;
 
 import java.io.BufferedReader;
@@ -52,6 +48,16 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
 
+/**
+ * Manage Intrusion Prevention configuration.
+ *
+ * The major difference between this and other applications is that configuration is handled through
+ * special upload/downloaders.  This is due to the size of IPS settings which:
+ *
+ * * Are not used by uvm at all so they take up 20+MB of memory.
+ * * Deallocating that much memory causes uvm to cause garbage collection errors.
+ *
+ */
 public class IntrusionPreventionApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -79,6 +85,12 @@ public class IntrusionPreventionApp extends AppBase
     private List<IPMaskedAddress> homeNetworks = null;
     private List<String> interfaceIds = null;
 
+    /**
+     * Setup IPS application
+     *
+     * @param appSettings       Application settings.
+     * @param appProperties     Application properties
+     */
     public IntrusionPreventionApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -110,12 +122,22 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Get the pineliene connector(???)
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Post IPS initialization
+     *
+     * @return PipelineConector
+     */
     @Override
     protected void postInit()
     {
@@ -124,6 +146,11 @@ public class IntrusionPreventionApp extends AppBase
         readAppSettings();
     }
 
+    /**
+     * Pre IPS stop. Register callback?
+     *
+     * @param isPermanentTransition  ???
+     */
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
@@ -135,6 +162,11 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Post IPS stop.  Shut down snort.  Run IPS rules to remove.
+     *
+     * @param isPermanentTransition  ???
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
@@ -142,6 +174,11 @@ public class IntrusionPreventionApp extends AppBase
         iptablesRules();
     }
 
+    /**
+     * Pre IPS start. Check setup wizard, start snort, unregister calllback hook.
+     *
+     * @param isPermanentTransition  ???
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -155,6 +192,11 @@ public class IntrusionPreventionApp extends AppBase
         this.ipsEventMonitor.start();
     }
 
+    /**
+     * Post  IPS start. Start IPS rules.
+     *
+     * @param isPermanentTransition  ???
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
@@ -162,6 +204,9 @@ public class IntrusionPreventionApp extends AppBase
 
     }
 
+    /**
+     * Reconfigure IPS.
+     */
     public void reconfigure()
     {
 
@@ -202,6 +247,11 @@ public class IntrusionPreventionApp extends AppBase
         start();
     }
 
+    /**
+     * Get the last time signarures were updated.
+     *
+     * @return Last signature update.
+     */
     public Date getLastUpdate()
     {
         try {
@@ -215,6 +265,11 @@ public class IntrusionPreventionApp extends AppBase
         } 
     }
 
+    /**
+     * Get the last time signarures were checked.  An update may not have occured if signures didn't change.
+     *
+     * @return Last signature update.
+     */
     public Date getLastUpdateCheck()
     {
         try {
@@ -230,6 +285,9 @@ public class IntrusionPreventionApp extends AppBase
 
     // private methods ---------------------------------------------------------
 
+    /**
+     * Determine the settings filename to use.
+     */
     private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -239,16 +297,31 @@ public class IntrusionPreventionApp extends AppBase
 
     }
 
+    /**
+     * Set the scan count to the specified value.
+     *
+     * @param value     New scan count value
+     */
     public void setScanCount( long value )
     {
         this.setMetric(STAT_SCAN, value);
     }
 
+    /**
+     * Set the detect count to the specified value.
+     *
+     * @param value     New detect count value
+     */
     public void setDetectCount( long value)
     {
         this.setMetric(STAT_DETECT, value);
     }
 
+    /**
+     * Set the block count to the specified value.
+     *
+     * @param value     New block count value
+     */
     public void setBlockCount( long value )
     {
         this.setMetric(STAT_BLOCK, value);
@@ -280,6 +353,11 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Insert or remove iptables rules if snort daemon is running
+     *
+     * @return  true if wizard has been run, false if not.
+     */
     private Boolean wizardCompleted()
     {
         String settingsFileName = getSettingsFileName();
@@ -293,17 +371,30 @@ public class IntrusionPreventionApp extends AppBase
         return false;
     }
 
+    /**
+     * Get settings filename
+     *
+     * @return  Settings filename.
+     */
     public String getSettingsFileName()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
     }
 
+    /**
+     * Get default settings filename
+     *
+     * @return  default Settings filename.
+     */
     public String getDefaultsSettingsFileName()
     {
         return DEFAULTS_SETTINGS;
     }
 
+    /**
+     * Initialize settings.
+     */
     public void initializeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -335,6 +426,11 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Save settings.
+     *
+     * @param tempFileName  Temporary filename.
+     */
     public void saveSettings( String tempFileName )
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -346,21 +442,37 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Set the update settings flag.
+     *
+     * @param updatedSettingsFlag Boolean value
+     */
     public void setUpdatedSettingsFlag( boolean updatedSettingsFlag )
     {
         this.updatedSettingsFlag = updatedSettingsFlag;
     }
 
+    /**
+     * Get the update settings flag.
+     *
+     * @returns true updated set, false not updated..
+     */
     public boolean getUpdatedSettingsFlag()
     {
         return this.updatedSettingsFlag;
     }
 
+    /**
+     * Tell the ips monitor to reload the event map.
+     */
     public void reloadEventMonitorMap()
     {
         this.ipsEventMonitor.unified2Parser.reloadEventMap();
     }
 
+    /**
+     * Force stats to restart by stopping and restarting.
+     */
     public void forceUpdateStats()
     {
         this.ipsEventMonitor.stop();
@@ -368,7 +480,7 @@ public class IntrusionPreventionApp extends AppBase
         try { Thread.sleep( 2000 ); } catch ( InterruptedException e ) {}
     }
 
-    /*
+    /**
      * IPS settings are very large, around 30MB.  Managing this through uvm's
      * standard settings management causes Java garbage collection to go nuts
      * and almost always causes uvm to reload.
@@ -386,12 +498,23 @@ public class IntrusionPreventionApp extends AppBase
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * IPS download/upload handler.
+         *
+         * @return Name of the download handler.
+         */
         @Override
         public String getName()
         {
             return "IntrusionPreventionSettings";
         }
         
+        /**
+         * Handle upload/download.
+         *
+         * @param req   HTTP request
+         * @param resp  HTTP response.
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
 
@@ -609,8 +732,12 @@ public class IntrusionPreventionApp extends AppBase
      * network changes.  Only if HOME_NET changes will a reconfigure occur.
      */
 
-    /*
+    /**
      * Build non-WAN networks
+     *
+     * @param networkSettings   Network settings.
+     * @param getWan            Get the WAN address
+     * @return List of IP addresses.
      */
     private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings, boolean getWan )
     {
@@ -698,8 +825,11 @@ public class IntrusionPreventionApp extends AppBase
         return addresses; 
     }
 
-    /*
+    /**
      * Build active interface identifiers.
+     *
+     * @param networkSettings   Network settings.
+     * @return List of IP addresses.
      */
     private List<String> calculateInterfaces( NetworkSettings networkSettings )
     {
@@ -713,9 +843,12 @@ public class IntrusionPreventionApp extends AppBase
         return interfaces; 
     }
 
-    /*
+    /**
      * Compare currently known non-WAN addresses to new addresses.  
      * If they're different, trigger a reconfigure event.
+     *
+     * @param networkSettings   Network settings.
+     * @throws Exception Exception if something happens.
      */
     private void networkSettingsEvent( NetworkSettings networkSettings ) throws Exception
     {
@@ -740,13 +873,24 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Hook into network setting saves.
+     */
     private class IntrusionPreventionNetworkSettingsHook implements HookCallback
     {
+        /**
+        * @return Name of callback hook
+        */
         public String getName()
         {
             return "intrusion-prevention-network-settings-change-hook";
         }
 
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
         public void callback( Object... args )
         {
             Object o = args[0];
