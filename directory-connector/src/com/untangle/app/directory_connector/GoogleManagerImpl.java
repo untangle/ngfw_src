@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: GoogleManagerImpl.java 41234 2015-09-12 00:47:13Z dmorris $
  */
 package com.untangle.app.directory_connector;
@@ -55,6 +55,21 @@ public class GoogleManagerImpl
         setSettings(settings);
     }
 
+    /**
+     * Get Google Authenticator settings.
+     *
+     * @return Google autenticator settings
+     */
+    public GoogleSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Configure Google authenticator settings.
+     *
+     * @param settings  Google authenticator settings.
+     */
     public void setSettings( GoogleSettings settings )
     {
         this.settings = settings;
@@ -84,14 +99,10 @@ public class GoogleManagerImpl
         }
     }
 
-    public GoogleSettings getSettings()
-    {
-        return this.settings;
-    }
-
     /**
-     * This returns true if google drive is configured.
-     * False otherwise
+     * Determine if Google drive is connection.
+     *
+     * @return true if Google drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
@@ -111,6 +122,10 @@ public class GoogleManagerImpl
      * Once the user clicks the allow button, they will be redirected to Untangle with the redirect_url. The untangle redirect_url
      * will redirect them to their local server oauth servlet (the IP is passed in the state variable).
      * The servlet will later call provideDriveCode() with the token
+     *
+     * @param windowProtocol TCP/IP protocol to use.
+     * @param windowLocation domain/hostname
+     * @return Built URL
      */
     public String getAuthorizationUrl( String windowProtocol, String windowLocation )
     {
@@ -154,7 +169,8 @@ public class GoogleManagerImpl
      *
      * This also reads the refershToken and saves it in settings.
      *
-     * Returns null on success or the error string
+     * @param code the code to send.
+     * @return null on success or the error string
      */
     public String provideDriveCode( String code )
     {
@@ -205,6 +221,9 @@ public class GoogleManagerImpl
         return null;
     }
 
+    /**
+     * Disconnect Google drive
+     */
     public void disconnectGoogleDrive()
     {
         DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
@@ -212,6 +231,11 @@ public class GoogleManagerImpl
         directoryConnector.setSettings( directoryConnectorSettings );
     }
     
+    /**
+     * Start Google authorization process
+     * 
+     * @param dir Directory to use
+     */
     private void startAuthorizationProcess( String dir )
     {
         if (driveProcIn != null || driveProcOut != null || driveProc != null) {
@@ -235,6 +259,9 @@ public class GoogleManagerImpl
         driveProcIn  = new BufferedReader(new InputStreamReader(driveProc.getInputStream()));
     }
 
+    /**
+     * Stop the authorization process.
+     */
     private void stopAuthorizationProcess()
     {
         try { driveProcIn.close(); } catch (Exception ex) { }

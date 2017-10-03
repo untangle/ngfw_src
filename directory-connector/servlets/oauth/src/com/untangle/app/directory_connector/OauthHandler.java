@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: OauthHandler.java 41234 2015-09-12 00:47:13Z dmorris $
  */
 package com.untangle.app.directory_connector;
@@ -24,11 +24,22 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.app.directory_connector.DirectoryConnectorApp;
 import com.untangle.app.directory_connector.LoginEvent;
 
+/**
+ * Oauth http servelet class
+ */
 @SuppressWarnings("serial")
 public class OauthHandler extends HttpServlet
 {
     private final Logger logger = Logger.getLogger( this.getClass() );
 
+    /**
+     * Perform HTTP GET operation
+     *
+     * @param request HTTP request
+     * @param response HTTP response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
         DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
