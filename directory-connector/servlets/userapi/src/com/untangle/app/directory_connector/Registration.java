@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -24,6 +24,9 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.app.directory_connector.DirectoryConnectorApp;
 import com.untangle.app.directory_connector.LoginEvent;
 
+/**
+ * Registration
+ */
 @SuppressWarnings("serial")
 public class Registration extends HttpServlet
 {
