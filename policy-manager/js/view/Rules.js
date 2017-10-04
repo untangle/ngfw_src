@@ -104,6 +104,7 @@ Ext.define('Ung.apps.policymanager.view.Rules', {
             {name:'SERVER_QUOTA_ATTAINMENT',displayName: 'Server Quota Attainment'.t(), type: 'textfield', visible: rpc.isExpertMode},
             {name:'HOST_ENTITLED',displayName: 'Host Entitled'.t(), type: 'boolean', visible: true},
             {name:'DIRECTORY_CONNECTOR_GROUP',displayName: 'Directory Connector: User in Group'.t(), type: "directorygroupfield", visible: true},
+            {name:'DIRECTORY_CONNECTOR_DOMAIN',displayName: 'Directory Connector: User in Domain'.t(), type: 'directorydomainfield', visible: true},
             {name:'HTTP_USER_AGENT',displayName: 'HTTP: Client User Agent'.t(), type: 'textfield', visible: true},
             {name:'HTTP_USER_AGENT_OS',displayName: 'HTTP: Client User OS'.t(), type: 'textfield', visible: false},
             {name:'CLIENT_COUNTRY',displayName: 'Client Country'.t(), type: "countryfield", visible: true},
