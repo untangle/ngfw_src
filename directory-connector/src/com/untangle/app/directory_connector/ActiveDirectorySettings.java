@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -14,6 +14,43 @@ import java.util.LinkedList;
 @SuppressWarnings("serial")
 public class ActiveDirectorySettings implements java.io.Serializable, JSONString
 {
+    private boolean isEnabled = false;
+    private LinkedList<ActiveDirectoryServer> servers = new LinkedList<ActiveDirectoryServer>();
+
+    /**
+     * Returns true if active directory  is enabled.
+     *
+     * @return true if active directory is enabled, otherwise false
+     */
+    public boolean getEnabled() { return isEnabled; }
+    /**
+     * Sets whether active directory is enabled.
+     *
+     * @param isEnabled true if active directory is enabled, otherwise false
+     */
+    public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
+
+    /**
+     * Returns list of active directory servers.
+     *
+     * @return List of ActiveDirectoryServer for all defined AD servers.
+     */
+    public LinkedList<ActiveDirectoryServer> getServers() { return servers; }
+    /**
+     * Sets list of active directory servers.
+     *
+     * @param servers List of ActiveDirectoryServer for all defined AD servers.
+     */
+    public void setServers( LinkedList<ActiveDirectoryServer> servers ) { this.servers = servers; }
+
+    /**
+    * Constructor
+    */
+    public ActiveDirectorySettings() { }
+
+    /*
+     * Everything below will be removed.
+     */
     private String superuser;
     private String superuserPass;
     private String domain;
@@ -22,9 +59,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     private String ouFilter = "";
     private List<String> ouFilters = new LinkedList<String>();
     private int ldapPort;
-    private boolean isEnabled = false;
 
-    public ActiveDirectorySettings() { }
 
     public ActiveDirectorySettings(String superuser, String superuserPass, String domain, String ldapHost, int ldapPort, boolean ldapSecure)
     {
@@ -36,9 +71,6 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
         this.ldapSecure = ldapSecure;
         this.ouFilters = new LinkedList<String>();
     }
-
-    public boolean getEnabled() { return isEnabled; }
-    public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
 
     public String getSuperuser() { return superuser; }
     public void setSuperuser(String dn) { this.superuser = dn; }

@@ -3,6 +3,10 @@ Ext.define('Ung.apps.directoryconnector.Main', {
     alias: 'widget.app-directory-connector',
     controller: 'app-directory-connector',
 
+    viewModel: {
+        type: 'app-directory-connector',
+    },
+
     tabBar: {
         items: [{
             xtype: 'component',
