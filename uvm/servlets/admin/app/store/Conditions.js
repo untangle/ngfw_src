@@ -71,6 +71,7 @@ Ext.define('Ung.store.Conditions', {
         {name:'WEB_FILTER_CATEGORY',displayName: 'Web Filter: Category'.t(), editorType: 'textfield', visible: true},
         {name:'WEB_FILTER_CATEGORY_DESCRIPTION',displayName: 'Web Filter: Category Description'.t(), editorType: 'textfield', visible: true},
         {name:'WEB_FILTER_FLAGGED',displayName: 'Web Filter: Website is Flagged'.t(), editorType: 'boolean', visible: true},
+        {name:'DIRECTORY_CONNECTOR_DOMAIN',displayName: 'Directory Connector: User in Domain'.t(), type: 'directorydomainfield', visible: true},
         {name:'DIRECTORY_CONNECTOR_GROUP',displayName: 'Directory Connector: User in Group'.t(), type: 'editor', /*editor: Ext.create('Ung.GroupEditorWindow',{}),*/ visible: true},
         {name:'REMOTE_HOST_COUNTRY',displayName: 'Remote Host Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true},
         {name:'CLIENT_COUNTRY',displayName: 'Client Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true},
