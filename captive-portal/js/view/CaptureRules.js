@@ -100,6 +100,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
         {name:'HOST_ENTITLED',displayName: 'Host Entitled'.t(), type: 'boolean', visible: true},
         {name:"SERVER_QUOTA_ATTAINMENT",displayName: "Server Quota Attainment".t(), type: "textfield", visible: rpc.isExpertMode},
         {name:"DIRECTORY_CONNECTOR_GROUP",displayName: "Directory Connector: User in Group".t(), type: "directorygroupfield", visible: true},
+        {name:'DIRECTORY_CONNECTOR_DOMAIN',displayName: 'Directory Connector: User in Domain'.t(), type: 'directorydomainfield', visible: true},
         {name:'HTTP_HOST', displayName: 'HTTP: Hostname'.t(), type: 'textfield', visible: true },
         {name:'HTTP_REFERER', displayName: 'HTTP: Referer'.t(), type: 'textfield', visible: true },
         {name:'HTTP_URI', displayName: 'HTTP: URI'.t(), type: 'textfield', visible: true },
