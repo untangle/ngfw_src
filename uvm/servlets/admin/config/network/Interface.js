@@ -111,9 +111,10 @@ Ext.define('Ung.config.network.Interface', {
                     hidden: '{!isAddressed}'
                 },
                 listeners: {
-                    change: function (ck, newValue) {
+                    // dirty change will fire whenever the checkbox is checked/unchecked
+                    dirtychange: function (ck) {
                         var win = ck.up('window');
-                        if (!newValue) {
+                        if (!ck.getValue()) {
                             // not WAN
                             win.down('#ipv4ConfigType').setValue('STATIC');
                             win.down('#ipv6ConfigType').setValue('STATIC');
