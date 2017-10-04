@@ -46,10 +46,28 @@ def create_ad_settings(ldap_secure=False):
                 "list": []
             },
             "domain": AD_DOMAIN,
-            "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
-            "superuserPass": AD_PASSWORD
+            "superuserPass": AD_PASSWORD,
+            "enabled": True,
+            "servers": {
+                "javaClass": "java.util.LinkedList",
+                "list": [{
+                    "LDAPHost": global_functions.adServer,
+                    "LDAPSecure": ldap_secure,
+                    "LDAPPort": ldap_port,
+                    "OUFilter": "",
+                    "OUFilters": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "domain": AD_DOMAIN,
+                    "enabled": True,
+                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
+                    "superuser": AD_ADMIN,
+                    "superuserPass": AD_PASSWORD
+                }]
+            }
         },
         "radiusSettings": {
             "port": 1812,
@@ -73,19 +91,37 @@ def create_radius_settings():
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-            "enabled": False,
-            "superuserPass": AD_PASSWORD,
-            "LDAPSecure": True,
-            "LDAPPort": "636",
-            "OUFilter": "",
-            "OUFilters": {
+                    "LDAPHost": global_functions.adServer,
+                    "LDAPSecure": True,
+                    "LDAPPort": "636",
+                    "OUFilter": "",
+                    "OUFilters": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "domain": AD_DOMAIN,
+                    "enabled": True,
+                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
+                    "superuser": AD_ADMIN,
+                    "superuserPass": AD_PASSWORD,
+            "servers": {
                 "javaClass": "java.util.LinkedList",
-                "list": []
-            },
-            "domain": AD_DOMAIN,
-            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "LDAPHost": global_functions.adServer,
-            "superuser": AD_ADMIN
+                "list": [{
+                    "LDAPHost": global_functions.adServer,
+                    "LDAPSecure": True,
+                    "LDAPPort": "636",
+                    "OUFilter": "",
+                    "OUFilters": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "domain": AD_DOMAIN,
+                    "enabled": True,
+                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
+                    "superuser": AD_ADMIN,
+                    "superuserPass": AD_PASSWORD
+                }]
+            }
         },
         "radiusSettings": {
             "port": 1812,
@@ -118,7 +154,7 @@ def add_ad_settings(ldap_secure=False):
     Add Active Directory Settings, with or without secure enabled
     """
     # test the settings before saving them.
-    test_result_string = app.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(create_ad_settings(ldap_secure))
+    test_result_string = app.getActiveDirectoryManager().getStatusForSettings(create_ad_settings(ldap_secure)["activeDirectorySettings"]["servers"]["list"][0])
     print 'AD test_result_string %s' % test_result_string
     if ("success" in test_result_string):
         # settings are good so save them
@@ -322,9 +358,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        appData = app.getSettings()
+        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
-        appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
+        appADData = appAD.getStatusForSettings(appData)  # if settings are successful
         found = appADData.count(string_to_find)
 
         assert (found)
@@ -340,9 +376,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        appData = app.getSettings()
+        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
-        appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
+        appADData = appAD.getStatusForSettings(appData)  # if settings are successful
         found = appADData.count(string_to_find)
 
         assert (found)
@@ -359,9 +395,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'result %s' % result
         assert (result == 0)
 
-        appData = app.getSettings()
+        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
-        appADData = appAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
+        appADData = appAD.getUsers(None)  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
@@ -383,9 +419,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'result %s' % result
         assert (result == 0)
 
-        appData = app.getSettings()
+        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
-        appADData = appAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
+        appADData = appAD.getUsers(None)  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
