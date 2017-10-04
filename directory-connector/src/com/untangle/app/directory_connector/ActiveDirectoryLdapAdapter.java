@@ -44,7 +44,7 @@ import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.app.directory_connector.GroupEntry;
-import com.untangle.app.directory_connector.ActiveDirectorySettings;
+import com.untangle.app.directory_connector.ActiveDirectoryServer;
 import com.untangle.app.directory_connector.UserEntry;
 import com.untangle.uvm.servlet.ServletUtils;
 
@@ -56,7 +56,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 {
     private final Logger logger = Logger.getLogger(ActiveDirectoryLdapAdapter.class);
 
-    private ActiveDirectorySettings settings;
+    private ActiveDirectoryServer settings;
 
     private String userAccountControl;
     
@@ -67,55 +67,95 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
      * Construct a new AD adapter with the given settings
      * 
      * @param settings
-     *            the settings
+     *      AD server settings
      */
-    public ActiveDirectoryLdapAdapter(ActiveDirectorySettings settings)
+    public ActiveDirectoryLdapAdapter(ActiveDirectoryServer settings)
     {
         this.settings = settings;
     }
 
+    /**
+     * Get AD server settings.
+     *
+     * @return ActiveDirectoryServer settings.
+     */
     @Override
-    protected final ActiveDirectorySettings getSettings()
+    protected final ActiveDirectoryServer getSettings()
     {
         return settings;
     }
 
+    /**
+     * Get user class type.
+     *
+     * @return String of user class type.
+     */
     @Override
     protected String[] getUserClassType()
     {
         return USER_CLASS_TYPE;
     }
 
+    /**
+     * Get group class type.
+     *
+     * @return String of group class type.
+     */
     @Override
     protected String[] getGroupClassType()
     {
         return GROUP_CLASS_TYPE;
     }
 
+    /**
+     * Get mail attribute name.
+     *
+     * @return fixed string "mail".
+     */
     @Override
     protected String getMailAttributeName()
     {
         return "mail";
     }
     
+    /**
+     * Get primary group id attribute.
+     *
+     * @return fixed string "primaryGroupID".
+     */
     @Override
     protected String getPrimaryGroupIDAttribute()
     {
         return "primaryGroupID";
     }
 
+    /**
+     * Get full name attribute name.
+     *
+     * @return fixed string "cn".
+     */
     @Override
     protected String getFullNameAttributeName()
     {
         return "cn";
     }
 
+    /**
+     * Get UID attribute name.
+     *
+     * @return fixed string "sAMAccountName".
+     */
     @Override
     protected String getUIDAttributeName()
     {
         return "sAMAccountName";// Dated, but seems to be what windows uses
     }
 
+    /**
+     * Get AD SuperUser DN
+     *
+     * @return String in format of user@domain.
+     */
     @Override
     public String getSuperuserDN()
     {
@@ -127,6 +167,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         return sustring + "@" + settings.getDomain();
     }
 
+    /**
+     * Get search bases
+     *
+     * @return List of strings with ou filters.
+     */
     @Override
     public List<String> getSearchBases()
     {
@@ -147,12 +192,29 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         return bases;
     }
 
+    /**
+     * Detmine if GID is filtered (below 1 million)
+     *
+     * @param gid
+     *      Group ID to test.
+     * @return true if below limit, false otherise.
+     */
     @Override
     protected boolean filterGID(int gid)
     {
         return gid < 1000000;
     }
 
+    /**
+     * Authenticate user.
+     *
+     * @param uid
+     *      UID to authenticate.
+     * @param pwd
+     *      Password
+     * @return true if authenciated, false otherwise.
+     * @throws ServiceUnavailableException
+     */
     @Override
     public boolean authenticate(String uid, String pwd)
             throws ServiceUnavailableException
@@ -190,8 +252,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
     /**
      * Get all of the groups that are available for this adapter.
-     * @param fetchMembersOf Set to true to indicate that the entries should include the list of groups that the group is a member of.
-     * @return
+     *
+     * @param fetchMembersOf 
+     *      Set to true to indicate that the entries should include the list of groups that the group is a member of.
+     * @return List of all groups
+     * @throws ServiceUnavailableException if unable to access server.
      */
     @Override
     public List<GroupEntry> listAllGroups( boolean fetchMembersOf ) 
@@ -224,6 +289,16 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
     }
     
+    /**
+     * Return string for group search.
+     *
+     * @param group
+     *      Group ID to test.
+     * @param fetchMembersOf
+     *      true to get users, false otherwise.
+     * @return GroupEntry containing group information.
+     * @throws ServiceUnavailableException if unable to access AD server.
+     */
     public GroupEntry getGroupEntry( String group, boolean fetchMembersOf ) throws ServiceUnavailableException
     {
         StringBuilder sb = new StringBuilder();
@@ -236,8 +311,10 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         
     /**
      * Get all of the groups that a user belongs to.
-     * @param user The username to query.
+     * @param
+     *      user The username to query.
      * @return A List of all of the groups that a user belongs to.
+     * @throws ServiceUnavailableException if cannot access server.
      */
     public List<GroupEntry> listUserGroups( String user ) throws ServiceUnavailableException
     {
@@ -278,8 +355,10 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     
     /**
      * Get all of the users that belong to a group.
-     * @param group Name of the group to query.
+     * @param group
+     *      Name of the group to query.
      * @return A list of all of the users that belong to a group.
+     * @throws ServiceUnavailableException if unable to access server.
      */
     @Override
     public List<UserEntry> listGroupUsers( String group ) throws ServiceUnavailableException
@@ -316,7 +395,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }        
     }
     
-    
+    /**
+     * Build LDAP query to get all users.
+     *
+     * @return LDAP query to get all users.
+     */
     @Override
     protected String getListAllUsersSearchString()
     {
@@ -333,6 +416,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         return sb.toString();
     }
 
+    /**
+     * Build LDAP query to get all groups.
+     *
+     * @return LDAP query to get all groups.
+     */
     protected String getListAllGroupsSearchString()
     {
         // TODO Some way to filter-out the system groups from AD?!?
@@ -347,7 +435,16 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
         return sb.toString();
     }
-    
+
+    /**
+     * Get LDAP query to get users for the specified group.
+     *
+     * @param grooup
+     *      Group to search.
+     * @param objectClasses
+     *      List of object classes to query.
+     * @return LDAP query string.
+     */
     private String getListUsersSearchString(GroupEntry group, String [] objectClasses)
     {
         StringBuilder sb = new StringBuilder();
@@ -370,6 +467,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         return sb.toString();
     }
     
+    /**
+     * Build query for account control.
+     *
+     * @return LDAP query.
+     */
     private String getUserAccountControl()
     {
         // We want to select the following:
@@ -417,8 +519,14 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     }
     
     /**
-     * Returns null if not found.  If more than one found (!),
-     * first is returned.
+     * Get group entry for search.
+     *
+     * @param searchStr
+     *      Search string.
+     * @param fetchMembersOf
+     *      true to fetch members of, false otherwise.
+     * @return Return null if not found.  If more than one found (!), first is returned.
+     * @throws ServiceUnavailableException if server unavailable
      */
     private GroupEntry getGroupEntryWithSearchString(String searchStr, boolean fetchMembersOf)
         throws ServiceUnavailableException
@@ -442,6 +550,13 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
     }
 
+    /**
+     * Get LDAP query for groups for the specified user.
+     *
+     * @param userEntry
+     *      User record to search.
+     * @return LDAP query.
+     */
     private String getListGroupsSearchString(UserEntry userEntry)
     {
         StringBuilder sb = new StringBuilder();
@@ -485,6 +600,12 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
     /**
      * Get the DN from email address. Returns null if none found.
+     *
+     * @param email
+     *      Email address to search.
+     * @return LDAP query for user search.
+     * @throws
+     *  ServiceUnavailableException
      */
     private String getDNFromEmail(String email)
             throws ServiceUnavailableException
@@ -507,6 +628,11 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     /**
      * Get the Distinguished Name from the uid (which we map to
      * "sAMAccountName"). Returns null if none found.
+     *
+     * @param uid
+     *      Username to search.
+     * @return LDAP result for query, null if not found.
+     * @throws ServiceUnavailableException if server not reachable.
      */
     private String getDNFromUID(String uid) throws ServiceUnavailableException
     {
@@ -525,8 +651,20 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
     }
 
-    // Unfortunately the existing query mechanism is focused on attributes, but
-    // we need the first SearchResult itself, so that we can extract its DN.
+    /**
+     * Perform LDAP query as superuser.
+     *
+     * Unfortunately the existing query mechanism is focused on attributes, but
+     * we need the first SearchResult itself, so that we can extract its DN.
+     *
+     * @param searchBases
+     *      List of searchbases
+     * @param searchFilter
+     *      Optional filter.
+     * @return Result of query.
+     * @throws NamingException if 
+     * @throws ServiceUnavailableException if server not available.
+     */
     private SearchResult queryFirstAsSuperuser(List<String> searchBases, String searchFilter)
         throws NamingException, ServiceUnavailableException
     {
@@ -565,18 +703,36 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         return result;
     }
 
+    /**
+     * LDAP Tester (still used?)
+     */
     private static class LDAPTester
     {
-        private ActiveDirectorySettings testerSettings;
+        // private ActiveDirectorySettings testerSettings;
+        private ActiveDirectoryServer testerSettings;
         private ActiveDirectoryLdapAdapter adapter;
         private final JSONSerializer serializer = new JSONSerializer();
 
+        /**
+         * Constructor
+         *
+         * @throws Exception if failed.
+         */
         private LDAPTester() throws Exception
         {
             ServletUtils.getInstance().registerSerializers(serializer);
         }
 
-        private ActiveDirectorySettings parseSettings(String fileName)
+        /**
+         * Server
+         *
+         * @param fileName
+         *      name of file to read
+         * @return ActiveDirectoryServer setttings.
+         * @throws IOException
+         * @throws UnmarshallException
+         */
+        private ActiveDirectoryServer parseSettings(String fileName)
                 throws IOException, UnmarshallException
         {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -591,15 +747,28 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             } finally {
                 reader.close();
             }
-            this.testerSettings = (ActiveDirectorySettings) serializer.fromJSON(sb.toString());
+            this.testerSettings = (ActiveDirectoryServer) serializer.fromJSON(sb.toString());
             return this.testerSettings;
         }
 
+        /**
+         * Build AD adapter for this object.
+         */
         private void buildAdapter()
         {
             this.adapter = new ActiveDirectoryLdapAdapter(this.testerSettings);
         }
 
+        /**
+         * Run command.
+         *
+         * @param methodName 
+         *      Method to run from adapter.
+         * @param params 
+         *      Parameters for method.
+         * @return Object from invocation.
+         * @throws Exception
+         */
         @SuppressWarnings({"unchecked","rawtypes"})
         private Object runCommand(String methodName, String params)
                 throws Exception
@@ -625,6 +794,13 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             return m.invoke(this.adapter, args);
         }
         
+        /**
+         * Show the object in in JSON format.
+         *
+         * @param o
+         *      Object to dump.
+         * @throws Exception
+         */
         @SuppressWarnings("unchecked")
         private void dumpObject( Object o ) throws Exception
         {

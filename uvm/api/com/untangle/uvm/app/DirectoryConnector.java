@@ -15,13 +15,23 @@ public interface DirectoryConnector
     /**
      * Query if a user is a member of a group (Currently this only applies to Active Directory)
      */
-    public boolean isMemberOf( String username, String group );
+    public boolean isMemberOfGroup( String username, String group );
 
     /**
      * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
      */
-    public List<String> memberOf(String user);
-    
+    public List<String> memberOfGroup(String user);
+
+    /**
+     * Query if a user is a member of a group (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfDomain( String username, String group );
+
+    /**
+     * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
+     */
+    public List<String> memberOfDomain(String user);
+
     /**
      * Authenticate a user against Active Directory
      */
@@ -36,7 +46,7 @@ public interface DirectoryConnector
      * Authenticate a user using any authentication method
      */
     public boolean anyAuthenticate( String username, String group );
-    
+
     /**
      * Return true if Google Drive is configured, false otherwise
      */

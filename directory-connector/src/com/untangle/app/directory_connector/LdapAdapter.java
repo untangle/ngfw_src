@@ -35,9 +35,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.Pair;
 import com.untangle.app.directory_connector.GroupEntry;
-import com.untangle.app.directory_connector.ActiveDirectorySettings;
+import com.untangle.app.directory_connector.ActiveDirectoryServer;
 import com.untangle.app.directory_connector.UserEntry;
-
 
 
 /**
@@ -55,7 +54,7 @@ abstract class LdapAdapter
      *
      * @return the settings
      */
-    protected abstract ActiveDirectorySettings getSettings();
+    protected abstract ActiveDirectoryServer getSettings();
 
     /**
      * Get the type of object used to describe "people"
@@ -130,6 +129,7 @@ abstract class LdapAdapter
             }
 
             for(Map<String, String[]> map : list) {
+                // logger.warn("listAll:" + map);
                 UserEntry entry = toUserEntry(map);
                 if(entry != null) {
                     ret.add(entry);
@@ -357,7 +357,8 @@ abstract class LdapAdapter
         throws Exception
     {
 
-        ActiveDirectorySettings settings = getSettings();
+        // ActiveDirectorySettings settings = getSettings();
+        ActiveDirectoryServer settings = getSettings();
 
         try {
             return createSuperuserContext();
@@ -513,7 +514,8 @@ abstract class LdapAdapter
     protected final DirContext createSuperuserContext()
         throws CommunicationException, AuthenticationException, NamingException
     {
-        ActiveDirectorySettings settings = getSettings();
+        // ActiveDirectorySettings settings = getSettings();
+        ActiveDirectoryServer settings = getSettings();
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),
@@ -766,7 +768,8 @@ abstract class LdapAdapter
                                          getFirstEntryOrNull(map.get(getGroupTypeName())),
                                          getFirstEntryOrNull(map.get(getGroupDescriptionName())),
                                          getFirstEntryOrNull(map.get("dn=")),
-                                         memberOfSet);
+                                         memberOfSet,
+                                         getSettings().getDomain());
         
         entry.setPrimaryGroupToken(getFirstEntryOrNull(map.get("primaryGroupToken")));
         return entry;

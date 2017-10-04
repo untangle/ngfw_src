@@ -17,7 +17,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
-         });
+        });
 
         var googleDrive = new Ung.cmp.GoogleDrive();
         vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
@@ -38,8 +38,9 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         v.setLoading(true);
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
-            if( grid.listProperty &&
-                ( store.getModifiedRecords().length > 0 ) ||
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
                 store.isReordered) {
                 store.each(function (record) {
                     if (record.get('markedForDelete')) {
@@ -47,18 +48,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
                     }
                 });
                 store.isReordered = undefined;
-                store.commitChanges();
-                var listValues = [];
-                Ext.Array.pluck(store.getRange(), 'data').forEach( function(recordData){
-                    if( !grid.emptyRow ||
-                        !grid.emptyRow.gridjavaClass){
-                        listValues.push(recordData['field1']);
-                    }else{
-                        listValues.push(recordData);
-                    }
-                });
-                vm.set(grid.listProperty, listValues );
-                store.remove(store.getRange());
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
             }
         });
 
@@ -75,8 +65,11 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         window.open("../userapi/");
     },
 
-    activeDirectoryPortChanger: function(elem){
+    portChanger: function(elem){
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        console.log(vm);
+        console.log(vm.get('record'));
 
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
@@ -117,80 +110,61 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         return this.rpc.radiusManager;
     },
 
-    activeDirectoryTest: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        Ext.MessageBox.wait( "Testing...".t(), "Active Directory Test".t());
-        this.getActiveDirectoryManager().getActiveDirectoryStatusForSettings( Ext.bind(function(result, exception) {
-            if (exception) { Util.handleException(ex); return; }
-            var message = result.t();
-            Ext.MessageBox.alert( "Active Directory Test".t(), message);
-        }, this), vm.get("settings"));
+    closeWindow: function (button) {
+        button.up('window').close();
     },
 
-    activeDirectoryUsers: function(){
+
+    activeDirectoryUsers: function(domain){
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if(typeof(domain) == "object"){
+            domain = null;
+        }
+
         Ext.MessageBox.wait( "Obtaining users...".t(), "Active Directory Users".t());
-        this.getActiveDirectoryManager().getActiveDirectoryUserEntries( Ext.bind(function( result, exception ) {
-            if (exception) { Util.handleException(ex); return; }
-
-            var userEntries = result.list;
-            var usersList = "";
-            var usersArray = [];
-            var i;
-            for(i=0; i<userEntries.length; i++) {
-                if( userEntries[i] == null ) {
-                    continue;
-                }
-                var uid = userEntries[i].uid != null ? userEntries[i].uid: '[any]'.t();
-                usersArray.push(( uid + "\r\n"));
-            }
-            usersArray.sort(function(a,b) {
-                a = String(a).toLowerCase();
-                b = String(b).toLowerCase();
-                try {
-                    if(a < b) {
-                        return -1;
-                    }
-                    if (a > b) {
-                        return 1;
-                    }
-                    return 0;
-                } catch(e) {
-                    return 0;
-                }
-            });
-
-            usersList += '[any]'.t() +"\r\n";
-            for (i = 0 ; i < usersArray.length ; i++) {
-                usersList += usersArray[i];
-            }
-
-            v.down("[name=activeDirectoryUsersTextarea]").setValue(usersList).setVisible(true);
+        var dialog = v.add({
+            xtype: 'app-directory-connector-activedirectoryusers',
+            title: domain ? domain + ' ' + 'Users'.t(): 'All Users'.t()
+        });
+        this.getActiveDirectoryManager().getUsers( Ext.bind(function( result, exception ) {
+            if (exception) { Util.handleException(exception); return; }
+            dialog.show();
+            dialog.down("[name=mapGrid]").getStore().loadData(result);
             Ext.MessageBox.close();
-        }, this));
+            dialog.down('ungridstatus').fireEvent('update');
+        }, this), domain);
+
     },
 
-    activeDirectoryGroupMap: function(){
+    activeDirectoryGroupMap: function(domain){
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if(typeof(domain) == "object"){
+            domain = null;
+        }
 
         Ext.MessageBox.wait( "Obtaining user group map...".t(), "Active Directory Users".t());
+        var dialog = v.add({
+            xtype: 'app-directory-connector-activedirectorygroups',
+            title: 'All Groups'.t()
+        });
         this.getActiveDirectoryManager().getUserGroupMap( Ext.bind(function(result, exception) {
             if (exception) { Util.handleException(ex); return; }
-            var users = [];
-            for ( var k in result.map) {
-                users.push({name: k, groups: result.map[k]});
-            }
-            v.down("[name=groupMapGrid]").getStore().loadData(users);
-            v.down("[name=groupMapGrid]").setVisible(true);
+            dialog.show();
+            dialog.down("[name=mapGrid]").getStore().loadData(result);
             Ext.MessageBox.close();
-        },this));
+            dialog.down('ungridstatus').fireEvent('update');
+        },this), domain);
 
     },
 
     activeDirectoryGroupRefreshCache: function(){
         var me = this, v = this.getView(), vm = this.getViewModel();
+        Ext.MessageBox.wait( "Refreshing Group Cache...".t(), "Refresh Group Cache".t());
         v.appManager.refreshGroupCache(Ext.bind(function(result, exception) {
             if (exception) { Util.handleException(ex); return; }
+            Ext.MessageBox.close();
         }, this));
     },
 
@@ -278,4 +252,101 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         vm.set('settings.googleSettings.authenticationEnabled', false);
     }
 
+});
+
+Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unadserversgrid',
+
+    ouFilterRenderer: function(u,cell,record){
+        return record.get('OUFilters').list.join(', ');
+    },
+
+    portChanger: function(elem, rowIndex, checked){
+        var record;
+        if( typeof(rowIndex) == 'object'){
+            record = rowIndex;
+        }else{
+            record = elem.getView().getRecord(rowIndex);
+        }
+
+        var secureValue;
+        if(checked === undefined){
+            secureValue = elem.getValue();
+        }else{
+            secureValue = checked;
+        }
+
+        var currentPortValue = record.get('LDAPPort');
+        if( secureValue ){
+            if( currentPortValue == "389"){
+                record.set('LDAPPort', '636');
+            }
+        }else{
+            if( currentPortValue == "636"){
+                record.set('LDAPPort', '389');
+            }
+        }
+    },
+
+    serverTest: function( element, rowIndex, columnIndex, column, pos, record){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        Ext.MessageBox.wait( record.data.domain + "<br/><br/>" + "Testing...".t(), "Active Directory Test".t());
+        v.up('[itemId=appCard]').getController().getActiveDirectoryManager().getStatusForSettings( Ext.bind(function(result, exception) {
+            if (exception) { Util.handleException(ex); return; }
+            Ext.WindowManager.bringToFront(Ext.MessageBox.alert( "Active Directory Test".t(), record.data.domain + "<br/><br/>" + result.t() ));
+        }, this), record.data);
+    },
+
+    serverUsers: function( element, rowIndex, columnIndex, column, pos, record){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.up('[itemId=appCard]').getController().activeDirectoryUsers(record.get('domain'));
+    },
+
+    serverGroupMap: function( element, rowIndex, columnIndex, column, pos, record){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.up('[itemId=appCard]').getController().activeDirectoryGroupMap(record.get('domain'));
+    }
+
+});
+
+Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unactivedirectoryserverrecordeditor',
+
+    controller: 'unactivedirectoryserverrecordeditorcontroller'
+
+});
+
+Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unactivedirectoryserverrecordeditorcontroller',
+
+    onApply: function () {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        v.query('[itemId=unoufiltergrid]').forEach( function( grid ){
+            var ouFiltersData = vm.get('record').get('OUFilters');
+            var ouFilters = [];
+            grid.getStore().each( function(record){
+                if (record.get('markedForDelete')){
+                    return;
+                }
+                ouFilters.push(record.get('field1'));
+            });
+            ouFiltersData.list = ouFilters;
+            vm.get('record').set('OUFilters', ouFiltersData);
+        });
+        v.close();
+    },
+
+    portChanger: function(element){
+        this.getView().up('grid').getController().portChanger(element, this.getViewModel().get('record') );
+    },
+
+    serverTest: function(element){
+        this.getView().up('grid').getController().serverTest( element, 0, 0, null, null, this.getViewModel().get('record'));
+    }
 });
