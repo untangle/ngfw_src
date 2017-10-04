@@ -26,6 +26,9 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * Directory connector application
+ */
 public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.app.DirectoryConnector
 {
     private static final String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Directory Connector\n# service. If you modify this file manually, your changes may be overridden.\n\n";
@@ -63,12 +66,26 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      * The Google Manager
      */
     private GoogleManagerImpl googleManager = null;
-    
+
+    /**
+     * Directory Connector app constructor
+     *
+     * @param appSettings Application settings
+     * @param appProperties Application properties
+     */
     public DirectoryConnectorApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
     }
 
+    /**
+     * Load servlets for:
+     * * Oauth
+     * * API
+     * * Old API
+     *
+     * @param isPermanentTransition true if permanant transition
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
@@ -78,6 +95,14 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP_OLD, USERAPI_WEBAPP); //load the old URL for backwards compat
     }
 
+    /**
+     * Shutdown servlets for:
+     * * Oauth
+     * * API
+     * * Old API
+     *
+     * @param isPermanentTransition true if permanant transition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
@@ -86,6 +111,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
     }
 
+    /**
+     * Load settings and perform setting conversions.
+     */
     @Override
     protected void postInit()
     {
@@ -125,7 +153,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 readSettings.getActiveDirectorySettings().setOUFilter("");
                 setSettings( readSettings );
             }
-            
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -133,17 +161,34 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         this.reconfigure();
     }
 
+    /**
+     * Return connectors.
+     *
+     * @return PipelineConnector[]  Array of connectors
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Get directory connector settings.
+     *
+     * @return DirectoryConnectorSettings
+     *
+     */
     public DirectoryConnectorSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Set directory connector settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
     public void setSettings(final DirectoryConnectorSettings newSettings)
     {
         if (newSettings.getActiveDirectorySettings() == null) {
@@ -177,34 +222,66 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         this.reconfigure();
     }
 
+    /**
+     * Get Active Directory manager.
+     *
+     * @return Active Directory manager
+     */
     public ActiveDirectoryManagerImpl getActiveDirectoryManager()
     {
         return this.activeDirectoryManager;
     }
 
+    /**
+     * Get RADIUS manager.
+     *
+     * @return RADIUS manager
+     */
     public RadiusManagerImpl getRadiusManager()
     {
         return this.radiusManager;
     }
 
+    /**
+     * Get Google manager.
+     *
+     * @return Google  manager
+     */
     public GoogleManagerImpl getGoogleManager()
     {
         return this.googleManager;
     }
 
-    public List<UserEntry> getUserEntries()
+    /**
+     * Get all users from all AD servers for rule condtions
+     *
+     * @returns List of users.
+     */
+    public List<UserEntry> getRuleConditonalUserEntries()
     {
         LinkedList<UserEntry> users = new LinkedList<UserEntry>();
 
         /* add all AD users */
+        boolean found;
         try{
-            List<UserEntry> adUsers = activeDirectoryManager.getActiveDirectoryUserEntries();
-            users.addAll(adUsers);
+            List<UserEntry> adUsers = activeDirectoryManager.getUserEntries(null);
+            for(UserEntry adUser: adUsers){
+                found = false;
+                for(UserEntry user: users ){
+                    if(user.getUid().equals(adUser.getUid())){
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(found == false){
+                    users.add(adUser);
+                }
+            }
         }
         catch( Exception e ){
             logger.warn(e.getMessage());
         }
-
 
         /* add all "standard" users */
         users.addFirst(new UserEntry("[unauthenticated]", "", "", ""));
@@ -214,17 +291,55 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return users;
     }
 
-    public List<GroupEntry> getGroupEntries()
+    // ????? should we be adding these "standard"?  Group adds them manually?
+
+    /**
+     * Get all groups from all AD for rule conditions
+     *
+     * @returns List of groups.
+     */
+    public List<GroupEntry> getRuleConditionalGroupEntries()
     {
         LinkedList<GroupEntry> groups = new LinkedList<GroupEntry>();
 
         /* add all AD groups */
-        List<GroupEntry> adGroups = activeDirectoryManager.getActiveDirectoryGroupEntries(true);
-        groups.addAll(adGroups);
+        boolean found;
+        List<GroupEntry> adGroups = activeDirectoryManager.getGroupEntries(null, true);
+        for(GroupEntry adGroup: adGroups){
+            found = false;
+            for( GroupEntry group : groups){
+                if(group.getCN().equals(adGroup.getCN())){
+                    found = true;
+                    break;
+                }
+            }
+            if( found == false ){
+                groups.add(adGroup);
+            }
+        }
 
         return groups;
     }
 
+    /**
+     * Get all domains from all AD for rule conditions
+     *
+     * @returns List of groups.
+     */
+    public List<String> getRuleConditionalDomainEntries()
+    {
+        return activeDirectoryManager.getDomains();
+    }
+
+    /**
+     * Authenticate against all servers.
+     *
+     * @param username
+     *      Username to authenticate.
+     * @param pwd
+     *      Username password.
+     * @returns true if user authenticated.
+     */
     public boolean authenticate(String username, String pwd)
     {
         if (activeDirectoryAuthenticate(username, pwd)) return true;
@@ -233,6 +348,15 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return false;
     }
 
+    /**
+     * Authenticate only against active Directory servers.
+     *
+     * @param username
+     *      Username to authenticate.
+     * @param pwd
+     *      Username password.
+     * @returns true if user authenticated.
+     */
     public boolean activeDirectoryAuthenticate(String username, String pwd)
     {
         if (!isLicenseValid()) 
@@ -245,6 +369,15 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return this.activeDirectoryManager.authenticate(username, pwd);
     }
 
+    /**
+     * Authenticate only against Radius server.
+     *
+     * @param username
+     *      Username to authenticate.
+     * @param pwd
+     *      Username password.
+     * @returns true if user authenticated.
+     */
     public boolean radiusAuthenticate(String username, String pwd)
     {
         if (!isLicenseValid())
@@ -257,6 +390,15 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return this.radiusManager.authenticate(username, pwd);
     }
 
+    /**
+     * Authenticate against any server including local.
+     *
+     * @param username
+     *      Username to authenticate.
+     * @param pwd
+     *      Username password.
+     * @returns true if user authenticated.
+     */
     public boolean anyAuthenticate(String username, String pwd)
     {
         if (!isLicenseValid())
@@ -277,35 +419,89 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         } catch (Exception e) {}
         return false;
     }
-    
-    public boolean isMemberOf(String user, String group)
-    {
+
+    /**
+     * Determine if user is part of a domain
+     */
+    public boolean isMemberOfDomain(String user, String domain){
         if (!isLicenseValid()) {
             return false;
         }
-
-        return this.groupManager.isMemberOf(user, group);
+        return this.groupManager.isMemberOfDomain(user, domain);
     }
 
-    public List<String> memberOf(String user)
+    /**
+     * Determine if user is part of any domain.
+     *
+     * @param user
+     *      Username to check.
+     * @returns true if user is member, fale otherwise.
+     */
+    // membeOfDomain makes more sense
+    public List<String> memberOfDomain(String user)
     {
         if (!isLicenseValid()) {
             return new LinkedList<String>();
         }
 
-        return this.groupManager.memberOf(user);
+        return this.groupManager.memberOfDomain(user);
     }
 
+    /**
+     * Determine if user is part of a group.
+     *
+     * @param user
+     *      Username to check.
+     * @param group
+     *      Name of group to check.
+     * @returns true if user is member, fale otherwise.
+     */
+    public boolean isMemberOfGroup(String user, String group)
+    {
+        if (!isLicenseValid()) {
+            return false;
+        }
+
+        return this.groupManager.isMemberOfGroup(user, group);
+    }
+
+    /**
+     * Determine if user is part of any group.
+     *
+     * @param user
+     *      Username to check.
+     * @returns true if user is member, fale otherwise.
+     */
+    public List<String> memberOfGroup(String user)
+    {
+        if (!isLicenseValid()) {
+            return new LinkedList<String>();
+        }
+
+        return this.groupManager.memberOfGroup(user);
+    }
+
+    /**
+     * Refresh group cache by querying servers.
+     */
     public void refreshGroupCache()
     {
         this.groupManager.refreshGroupCache();
     }
 
+    /**
+     * Determine if Google drive is configured.
+     *
+     * @returns true if Google Drive is configured, false otherwise.
+     */
     public boolean isGoogleDriveConnected()
     {
         return getGoogleManager().isGoogleDriveConnected();
     }
 
+    /**
+     * Initalize Directory Connector settings.
+     */
     @Override
     public void initializeSettings()
     {
@@ -317,6 +513,12 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         setSettings(this.settings);
     }
 
+    /**
+     * Convert v1 to v2 settings.
+     *
+     * @param settings
+     *      Settings to convert.
+     */
     private void convertV1toV2Settings( DirectoryConnectorSettings settings )
     {
         if (settings.getVersion() != 1) {
@@ -330,7 +532,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          */
         settings.setApiManualAddressAllowed( true );
     }
-    
+
+    /**
+     * Reconfigure Directory Connector and all connections.
+     */
     private synchronized void reconfigure()
     {
         /**
@@ -339,8 +544,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          */
         if (activeDirectoryManager == null) {
             this.activeDirectoryManager = new ActiveDirectoryManagerImpl(settings.getActiveDirectorySettings(), this);
-        } else
+        } else{
             this.activeDirectoryManager.setSettings(settings.getActiveDirectorySettings());
+        }
 
         /**
          * Initialize the Radius manager (or update settings on current)
@@ -369,6 +575,12 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         this.updateRadiusClient(settings.getRadiusSettings());
     }
 
+    /**
+     * Update Radius client with new settings.
+     *
+     * @param radiusSettings
+     *      New Radius settings to configure client.
+     */
     private void updateRadiusClient(RadiusSettings radiusSettings)
     {
         /**
@@ -408,7 +620,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 client.write("login_local      " + "/bin/login" + RET);
                 client.write("authserver       " + radiusSettings.getServer() + ":" + String.valueOf(radiusSettings.getAuthPort()) + RET);
                 client.write("acctserver       " + radiusSettings.getServer() + ":" + String.valueOf(radiusSettings.getAcctPort()) + RET);
-                
+
                 xauth.write("eap-radius {" + RET);
                 xauth.write(TAB + "servers {" + RET);
                 xauth.write(TAB + TAB + "untangle {" + RET);
@@ -418,7 +630,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 xauth.write(TAB + TAB  + "}" + RET);
                 xauth.write(TAB + "}" + RET);
                 xauth.write("}" + RET);
-            
+
                 switch(radiusSettings.getAuthenticationMethod())
                 {
                 case "PAP":

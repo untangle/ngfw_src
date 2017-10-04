@@ -29,6 +29,7 @@ import com.untangle.uvm.app.IntMatcher;
 import com.untangle.uvm.app.IntfMatcher;
 import com.untangle.uvm.app.UserMatcher;
 import com.untangle.uvm.app.GroupMatcher;
+import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.app.ProtocolMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 import com.untangle.uvm.app.DirectoryConnector;
@@ -130,6 +131,7 @@ public class RuleCondition implements JSONString, Serializable
         APPLICATION_CONTROL_PRODUCTIVITY, /* productivity index */
         APPLICATION_CONTROL_RISK, /* risk index */
         DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
+        DIRECTORY_CONNECTOR_DOMAIN, /* server.ad.domain.com or "*" */
         WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
         WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
         WEB_FILTER_FLAGGED, /* boolean */
@@ -154,6 +156,7 @@ public class RuleCondition implements JSONString, Serializable
     private IntfMatcher      intfMatcher      = null;
     private UserMatcher      userMatcher      = null;
     private GroupMatcher     groupMatcher     = null;
+    private DomainMatcher    domainMatcher    = null;
     private GlobMatcher      globMatcher      = null;
     private ProtocolMatcher  protocolMatcher  = null;
     private TimeOfDayMatcher timeOfDayMatcher = null;
@@ -321,6 +324,10 @@ public class RuleCondition implements JSONString, Serializable
 
             case DIRECTORY_CONNECTOR_GROUP:
                 this.groupMatcher = new GroupMatcher(this.value);
+                break;
+
+            case DIRECTORY_CONNECTOR_DOMAIN:
+                this.domainMatcher = new DomainMatcher(this.value);
                 break;
             
             case TIME_OF_DAY:
@@ -803,6 +810,7 @@ public class RuleCondition implements JSONString, Serializable
             return false;
 
         case DIRECTORY_CONNECTOR_GROUP:
+        case DIRECTORY_CONNECTOR_DOMAIN:
             String username = sess.user();
             if (username == null)
                 return false;
@@ -810,20 +818,41 @@ public class RuleCondition implements JSONString, Serializable
             DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
             boolean isMemberOf = false;
 
-            if (directoryConnector.isMemberOf( username, value )) 
-                isMemberOf = true;
-
-            if (!isMemberOf) {
-                List<String> groupNames = directoryConnector.memberOf( username );
-                for (String groupName : groupNames) {
-                    if ( this.groupMatcher.isMatch( groupName ) ) {
+            switch(this.matcherType){
+                case DIRECTORY_CONNECTOR_GROUP:
+                    if (directoryConnector.isMemberOfGroup( username, value )) 
                         isMemberOf = true;
-                        break;
+
+                    if (!isMemberOf) {
+                        List<String> groupNames = directoryConnector.memberOfGroup( username );
+                        for (String groupName : groupNames) {
+                            if ( this.groupMatcher.isMatch( groupName ) ) {
+                                isMemberOf = true;
+                                break;
+                            }
+                        }
                     }
-                }
+
+                    logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
+                    break;
+
+                case DIRECTORY_CONNECTOR_DOMAIN:
+                    if (directoryConnector.isMemberOfDomain( username, value )) 
+                        isMemberOf = true;
+
+                    if (!isMemberOf) {
+                        List<String> domainNames = directoryConnector.memberOfDomain( username );
+                        for (String domainName : domainNames) {
+                            if ( this.domainMatcher.isMatch( domainName ) ) {
+                                isMemberOf = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    logger.debug("Checking if " + username + " is in domain \"" + value + "\" : " + isMemberOf);
+                    break;
             }
-            
-            logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
 
         case APPLICATION_CONTROL_APPLICATION:
@@ -1261,6 +1290,7 @@ public class RuleCondition implements JSONString, Serializable
             return dayOfWeekMatcher.isMatch();
 
         case DIRECTORY_CONNECTOR_GROUP:
+        case DIRECTORY_CONNECTOR_DOMAIN:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if ( hostEntry == null )
                 return false;
@@ -1271,20 +1301,40 @@ public class RuleCondition implements JSONString, Serializable
             DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
             boolean isMemberOf = false;
 
-            if (directoryConnector.isMemberOf( tmpStr, value )) 
-                isMemberOf = true;
-
-            if (!isMemberOf) {
-                List<String> groupNames = directoryConnector.memberOf( tmpStr );
-                for (String groupName : groupNames) {
-                    if ( this.groupMatcher.isMatch(groupName) ) {
+            switch(this.matcherType){
+                case DIRECTORY_CONNECTOR_GROUP:
+                    if (directoryConnector.isMemberOfGroup( tmpStr, value )) 
                         isMemberOf = true;
-                        break;
+
+                    if (!isMemberOf) {
+                        List<String> groupNames = directoryConnector.memberOfGroup( tmpStr );
+                        for (String groupName : groupNames) {
+                            if ( this.groupMatcher.isMatch(groupName) ) {
+                                isMemberOf = true;
+                                break;
+                            }
+                        }
                     }
-                }
+
+                    logger.debug("Checking if " + tmpStr + " is in group \"" + value + "\" : " + isMemberOf);
+                    break;
+                case DIRECTORY_CONNECTOR_DOMAIN:
+                    if (directoryConnector.isMemberOfDomain( tmpStr, value )) 
+                        isMemberOf = true;
+
+                    if (!isMemberOf) {
+                        List<String> domainNames = directoryConnector.memberOfDomain( tmpStr );
+                        for (String domainName : domainNames) {
+                            if ( this.domainMatcher.isMatch(domainName) ) {
+                                isMemberOf = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    logger.debug("Checking if " + tmpStr + " is in domain \"" + value + "\" : " + isMemberOf);
+                    break;
             }
-            
-            logger.debug("Checking if " + tmpStr + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
 
         case HTTP_USER_AGENT_OS:

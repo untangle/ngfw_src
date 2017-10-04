@@ -429,7 +429,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                             Util.handleException(e);
                         }
                         if (app) {
-                            data = app.getUserEntries().list;
+                            data = app.getRuleCondtionalUserEntries().list;
                         } else {
                             data.push({ firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'});
                             data.push({ firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'});
@@ -478,9 +478,56 @@ Ext.define('Ung.cmp.RecordEditorController', {
                             Util.handleException(e);
                         }
                         if (app) {
-                            data = app.getGroupEntries().list;
+                            data = app.getRuleConditionalGroupEntries().list;
                         }
                         data.push({ SAMAccountName: '*', CN: 'Any Group'});
+
+                        field.getStore().loadData(data);
+                        field.setValue(record.get('value'));
+                    },
+                    change: function (field, newValue) {
+                        if (newValue.length > 0) {
+                            record.set('value', newValue.join(','));
+                        } else {
+                            record.set('value', '');
+                        }
+                    }
+                }
+            });
+            break;
+        case 'directorydomainfield':
+            container.add({
+                xtype: 'tagfield',
+                flex: 1,
+                emptyText: 'Select a domain or specify a custom value ...',
+                store: { data: [] },
+                filterPickList: true,
+                forceSelection: false,
+                queryMode: 'local',
+                selectOnFocus: false,
+                growMax: 60,
+                createNewOnEnter: true,
+                createNewOnBlur: true,
+                displayField: 'value',
+                valueField: 'description',
+                listConfig: {
+                    itemTpl: ['<div>{value} <strong>[{description}]</strong></div>']
+                },
+                listeners: {
+                    afterrender: function (field) {
+                        var app, data = [];
+                        try {
+                            app = rpc.appManager.app('directory-connector');
+                        } catch (e) {
+                            Util.handleException(e);
+                        }
+                        if (app) {
+                            var list = app.getRuleConditionalDomainEntries().list;
+                            for(var i = 0; i < list.length; i++){
+                                data.push({value: list[i], description: list[i]});
+                            }
+                        }
+                        data.unshift({ value: '*', description: 'Any Domain'});
 
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
