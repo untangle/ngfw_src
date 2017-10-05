@@ -68,9 +68,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     portChanger: function(elem){
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        console.log(vm);
-        console.log(vm.get('record'));
-
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
         if( secureValue ){
@@ -338,6 +335,7 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditorCo
             });
             ouFiltersData.list = ouFilters;
             vm.get('record').set('OUFilters', ouFiltersData);
+            v.up('grid').getView().refresh();
         });
         v.close();
     },
