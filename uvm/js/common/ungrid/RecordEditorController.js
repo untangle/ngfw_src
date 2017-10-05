@@ -508,8 +508,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 growMax: 60,
                 createNewOnEnter: true,
                 createNewOnBlur: true,
-                displayField: 'value',
-                valueField: 'description',
+                displayField: 'description',
+                valueField: 'value',
                 listConfig: {
                     itemTpl: ['<div>{value} <strong>[{description}]</strong></div>']
                 },
