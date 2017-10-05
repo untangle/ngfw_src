@@ -1,8 +1,13 @@
 Ext.define ('Ung.model.Report', {
     extend: 'Ext.data.Model' ,
     fields: [
-        'category', 'colors', 'conditions', 'defaultColumns', 'description',
-        'displayOrder', 'enabled',
+        'category',
+        'colors',
+        'conditions',
+        'defaultColumns',
+        'description',
+        'displayOrder',
+        'enabled',
         'javaClass',
         'orderByColumn',
         'orderDesc',
@@ -27,7 +32,7 @@ Ext.define ('Ung.model.Report', {
         'timeDataInterval',
         'timeStyle',
         'title',
-        'type',
+        'type', // TEXT, PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC, EVENT_LIST
         'uniqueId',
         'units',
 

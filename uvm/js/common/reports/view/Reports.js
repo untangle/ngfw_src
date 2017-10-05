@@ -45,6 +45,160 @@ Ext.define('Ung.view.reports.Reports', {
             wide: { hidden: true },
             tall: { hidden: false }
         }
+    }, {
+        xtype: 'toolbar',
+        itemId: 'actionsToolbar',
+        ui: 'footer',
+        dock: 'bottom',
+        // border: true,
+        style: {
+            background: '#F5F5F5'
+        },
+        // hidden: true,
+        // bind: {
+        //     hidden: '{!entry}'
+        // },
+        items: [{
+            xtype: 'combo',
+            itemId: 'eventsLimitSelector',
+            hidden: true,
+            disabled: true,
+            bind: {
+                hidden: '{entry.type !== "EVENT_LIST"}',
+                disabled: '{fetching}'
+            },
+            editable: false,
+            value: 1000,
+            store: [
+                [1000, '1000 ' + 'Events'.t()],
+                [10000, '10000 ' + 'Events'.t()],
+                [50000, '50000 ' + 'Events'.t()]
+            ],
+            queryMode: 'local',
+            listeners: {
+                change: 'refreshData'
+            }
+        }, {
+            xtype: 'label',
+            margin: '0 5',
+            text: 'From'.t() + ':'
+        }, {
+            xtype: 'datefield',
+            format: 'date_fmt'.t(),
+            editable: false,
+            width: 100,
+            disabled: true,
+            bind: {
+                value: '{_sd}',
+                disabled: '{fetching}'
+            }
+        }, {
+            xtype: 'timefield',
+            increment: 10,
+            // format: 'date_fmt'.t(),
+            editable: false,
+            width: 80,
+            disabled: true,
+            bind: {
+                value: '{_st}',
+                disabled: '{fetching}'
+            }
+        }, {
+            xtype: 'label',
+            margin: '0 5',
+            text: 'till'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Present'.t(),
+            disabled: true,
+            bind: {
+                value: '{tillNow}',
+                disabled: '{fetching}'
+            }
+        }, {
+            xtype: 'datefield',
+            format: 'date_fmt'.t(),
+            editable: false,
+            width: 100,
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_ed}',
+                hidden: '{tillNow}',
+                disabled: '{fetching}'
+            },
+            maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+        }, {
+            xtype: 'timefield',
+            increment: 10,
+            // format: 'date_fmt'.t(),
+            editable: false,
+            width: 80,
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_et}',
+                hidden: '{tillNow}',
+                disabled: '{fetching}'
+            },
+            // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+        }, '->', {
+            xtype: 'component',
+            html: '<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>',
+            hidden: true,
+            bind: {
+                hidden: '{!fetching}'
+            }
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Auto Refresh'.t(),
+            disabled: true,
+            bind: {
+                value: '{autoRefresh}',
+                disabled: '{!autoRefresh && fetching}'
+            },
+            handler: 'setAutoRefresh'
+        }, {
+            text: 'Refresh'.t(),
+            iconCls: 'fa fa-refresh',
+            itemId: 'refreshBtn',
+            handler: 'refreshData',
+            bind: {
+                disabled: '{autoRefresh || fetching}'
+            }
+        }, {
+            text: 'Reset View'.t(),
+            iconCls: 'fa fa-refresh',
+            itemId: 'resetBtn',
+            handler: 'resetView',
+            disabled: true,
+            bind: {
+                hidden: '{entry.type !== "EVENT_LIST"}',
+                disabled: '{fetching}'
+            }
+        }, {
+            itemId: 'downloadBtn',
+            text: 'Download'.t(),
+            iconCls: 'fa fa-download',
+            handler: 'downloadGraph',
+            hidden: true,
+            disabled: true,
+            bind: {
+                hidden: '{!isGraphEntry}',
+                disabled: '{fetching}'
+            }
+        }, '-', {
+            itemId: 'dashboardBtn',
+            hidden: true,
+            disabled: true,
+            bind: {
+                iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
+                text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
+                hidden: '{context !== "admin"}',
+                disabled: '{fetching}'
+            },
+            handler: 'dashboardAddRemove'
+        }]
     }],
 
     items: [{
@@ -96,6 +250,18 @@ Ext.define('Ung.view.reports.Reports', {
                 change: 'filterTree',
                 buffer: 100
             }
+        }, {
+            xtype: 'toolbar',
+            dock: 'bottom',
+            ui: 'footer',
+            layout: 'fit',
+            items: [{
+                xtype: 'button',
+                iconCls: 'fa fa-magic',
+                scale: 'medium',
+                text: 'Create New Report'.t(),
+                handler: 'newReportWizard'
+            }]
         }],
 
         columns: [{
@@ -125,6 +291,7 @@ Ext.define('Ung.view.reports.Reports', {
             border: false,
             bodyBorder: false
         },
+        activeItem: 'graphreport',
         items: [{
             itemId: 'category',
             layout: { type: 'vbox', align: 'stretch' },
@@ -177,11 +344,17 @@ Ext.define('Ung.view.reports.Reports', {
                 }
             }]
         }, {
-            xtype: 'reports-entry',
-            itemId: 'report',
-            bind: {
-                html: '<h3>{selectedReport.localizedTitle}</h3>',
-            }
+            xtype: 'graphreport',
+            itemId: 'graphreport',
+            renderInReports: true
+        }, {
+            xtype: 'eventreport',
+            itemId: 'eventreport',
+            renderInReports: true
+        }, {
+            xtype: 'textreport',
+            itemId: 'textreport',
+            renderInReports: true
         }]
-    }]
+    }],
 });
