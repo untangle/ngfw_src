@@ -12,7 +12,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DirectoryConnectorSettings implements java.io.Serializable, JSONString
 {
-    private int version = 2;
+    private int version = 3;
 
     private boolean apiEnabled = false;
     private String apiSecretKey = null;
@@ -29,7 +29,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get active directory settings.
      *
-     * @return Active Directory settings.
+     * @return
+     *      Active Directory settings.
      */
     public ActiveDirectorySettings getActiveDirectorySettings() { return this.activeDirectorySettings; }
     /**
@@ -43,7 +44,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get Radius settings.
      *
-     * @return Radius settings.
+     * @return
+     *      Radius settings.
      */
     public RadiusSettings getRadiusSettings() { return radiusSettings; }
     /**
@@ -57,7 +59,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get Google settings.
      *
-     * @return Google settings.
+     * @return
+     *      Google settings.
      */
     public GoogleSettings getGoogleSettings() { return googleSettings; }
     /**
@@ -71,7 +74,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get settings version.
      *
-     * @return Current settings version.
+     * @return
+     *      Current settings version.
      */
     public int getVersion() { return this.version; }
     /**
@@ -85,7 +89,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get whether API is enabled.
      *
-     * @return true if enabled, false otherwise.
+     * @return
+     *      true if enabled, false otherwise.
      */
     public boolean getApiEnabled() { return this.apiEnabled; };
     /**
@@ -99,7 +104,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Get API secret key.
      *
-     * @return API secret key.
+     * @return
+     *      API secret key.
      */
     public String getApiSecretKey() { return this.apiSecretKey; };
     /**
@@ -118,7 +124,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
      * However on old installs we allowed manual specification of the address with no secret key
      * So on upgrade this was set to true
      *
-     * @return true if address is allowed, false otherwise.
+     * @return
+     *      true if address is allowed, false otherwise.
      */
     public boolean getApiManualAddressAllowed() { return this.apiManualAddressAllowed; };
     /**
@@ -137,7 +144,8 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     /**
      * Convert settings to JSON string.
      *
-     * @return JSON string.
+     * @return
+     *      JSON string.
      */
     public String toJSONString()
     {
