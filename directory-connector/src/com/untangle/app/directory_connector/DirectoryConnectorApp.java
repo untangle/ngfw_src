@@ -297,11 +297,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             logger.warn(e.getMessage());
         }
 
-        /* add all "standard" users */
-        users.addFirst(new UserEntry("[unauthenticated]", "", "", ""));
-        users.addFirst(new UserEntry("[authenticated]", "", "", ""));
-        users.addFirst(new UserEntry("[any]", "", "", ""));
-
         return users;
     }
 

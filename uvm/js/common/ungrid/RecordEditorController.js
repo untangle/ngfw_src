@@ -429,12 +429,11 @@ Ext.define('Ung.cmp.RecordEditorController', {
                             Util.handleException(e);
                         }
                         if (app) {
-                            data = app.getRuleCondtionalUserEntries().list;
-                        } else {
-                            data.push({ firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'});
-                            data.push({ firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'});
-                            data.push({ firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'});
+                            data = app.getRuleConditonalUserEntries().list;
                         }
+                        data.unshift({ firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'});
+                        data.unshift({ firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'});
+                        data.unshift({ firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'});
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
                     },
@@ -456,14 +455,11 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 store: { data: [] },
                 filterPickList: true,
                 forceSelection: false,
-                // typeAhead: true,
                 queryMode: 'local',
                 selectOnFocus: false,
-                // anyMatch: true,
                 growMax: 60,
                 createNewOnEnter: true,
                 createNewOnBlur: true,
-                // value: record.get('value'),
                 displayField: 'CN',
                 valueField: 'SAMAccountName',
                 listConfig: {
@@ -480,7 +476,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                         if (app) {
                             data = app.getRuleConditionalGroupEntries().list;
                         }
-                        data.push({ SAMAccountName: '*', CN: 'Any Group'});
+                        data.unshift({ SAMAccountName: '*', CN: 'Any Group'});
 
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
