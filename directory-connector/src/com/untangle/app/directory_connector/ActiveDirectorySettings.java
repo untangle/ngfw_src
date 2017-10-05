@@ -48,7 +48,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     */
     public ActiveDirectorySettings() { }
 
-    /*
+    /**
      * Everything below will be removed.
      */
     private String superuser;
@@ -90,13 +90,18 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     public boolean getLDAPSecure() { return ldapSecure; }
     public void setLDAPSecure(boolean secure) { this.ldapSecure = secure; }
 
-    /* Remove after 13.1 release */
     public String getOUFilter() { return ouFilter; }
     public void setOUFilter(String ouFilter) { this.ouFilter = ouFilter; }
 
     public List<String> getOUFilters() { return ouFilters; }
     public void setOUFilters(List<String> ouFilters) { this.ouFilters = ouFilters; }
 
+    /**
+     * Returns settings as a JSON string.
+     *
+     * @return
+     *      Server settings in JSON form.
+     */
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
