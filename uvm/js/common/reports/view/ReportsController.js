@@ -83,7 +83,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                     entry: record.copy(null) // report reference copy on which modifications are made
                 });
             }
-            me.lookup('cards').setActiveItem('report');
+            me.lookup('cards').setActiveItem('graphreport');
         } else {
             me.lookup('cards').setActiveItem('category');
             me.buildStats(node);
@@ -194,5 +194,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             }
         });
         vm.set('stats', stats);
+    },
+
+    newReportWizard: function () {
+        var me = this;
+        var wizard = me.getView().add({
+            xtype: 'reportwizard',
+            tableConfig: me.tableConfig
+        });
+        wizard.show();
     }
 });

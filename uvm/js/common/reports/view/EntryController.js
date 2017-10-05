@@ -58,14 +58,14 @@ Ext.define('Ung.view.reports.EntryController', {
 
             if (entry.get('type') === 'EVENT_LIST') {
                 me.lookupReference('dataBtn').setPressed(false);
-                me.getView().down('#tableColumns').removeAll();
-                me.getView().down('#tableColumns').add(me.tableConfig.checkboxes);
-                me.getView().down('#tableColumns').setValue(entry.get('defaultColumns') ? entry.get('defaultColumns').join() : '');
+                // me.getView().down('#tableColumns').removeAll();
+                // me.getView().down('#tableColumns').add(me.tableConfig.checkboxes);
+                // me.getView().down('#tableColumns').setValue(entry.get('defaultColumns') ? entry.get('defaultColumns').join() : '');
                 // me.lookup('filterfield').fireEvent('change');
                 me.lookup('filterfield').setValue('');
             } else {
-                me.getView().down('#tableColumns').removeAll();
-                me.getView().down('#tableColumns').setValue({});
+                // me.getView().down('#tableColumns').removeAll();
+                // me.getView().down('#tableColumns').setValue({});
             }
 
             // check if widget in admin context
@@ -79,13 +79,13 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('timeDataColumns', Ext.Array.map(entry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
 
             // set the _sqlConditions data as for the sql conditions grid store
-            vm.set('_sqlConditions', entry.get('conditions') || []);
+            // vm.set('_sqlConditions', entry.get('conditions') || []);
             // set combo store conditions
-            me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
-            me.getView().down('#sqlConditionsCombo').setValue(null);
+            // me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
+            // me.getView().down('#sqlConditionsCombo').setValue(null);
 
-            me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
-            me.getView().down('#sqlFilterCombo').setValue(null);
+            // me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
+            // me.getView().down('#sqlFilterCombo').setValue(null);
 
         });
 
