@@ -109,7 +109,7 @@ Summary
 </td>
 <td>
 {% for interface in networkManager.getEnabledInterfaces %}
-{% if interface.getDisabled == false %}
+{% if interface.igetDisabled == false %}
 {% if interface.getIsWan == true %}
 {% with interfaceId=interface.getInterfaceId %}
 {% with status=networkManager.getInterfaceStatus,interface.getInterfaceId %}
