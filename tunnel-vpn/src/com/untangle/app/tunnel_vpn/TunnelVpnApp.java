@@ -347,6 +347,11 @@ public class TunnelVpnApp extends AppBase
         return this.tunnelVpnMonitor.getTunnelStatusList();
     }
 
+    public TunnelVpnTunnelStatus getTunnelStatus(int tunnelId)
+    {
+        return this.tunnelVpnMonitor.getTunnelStatus(tunnelId);
+    }
+
     public void recycleTunnel(int tunnelId)
     {
         tunnelVpnManager.recycleTunnel(tunnelId);

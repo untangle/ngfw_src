@@ -19,7 +19,7 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
 {
     public enum EventType
     {
-        CONNECT, DISCONNECT
+        CONNECT, DISCONNECT, RECYCLE
     };
 
     private InetAddress serverAddress;
