@@ -11,14 +11,22 @@ var rpc = {}; // global rpc object
 
     initRpc: function () {
         // initialize rpc
-        if (this.servletContext === 'ADMIN' || this.servletContext === 'REPORTS') {
+        if (this.servletContext === 'ADMIN')  {
             var startUpInfo;
             rpc = new JSONRpcClient('/admin/JSON-RPC');
             try { startUpInfo = rpc.UvmContext.getWebuiStartupInfo(); } catch (ex) { alert(ex); }
             Ext.apply(rpc, startUpInfo);
         }
-
-        if (this.servletContext === 'QUARANTINE') {
+        else if (this.servletContext === 'REPORTS') {
+            rpc = new JSONRpcClient('/reports/JSON-RPC');
+            //FIXME NGFW-11140
+            //FIXME
+            //FIXME
+            //FIXME
+            //FIXME
+            //FIXME
+        }
+        else if (this.servletContext === 'QUARANTINE') {
             rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
         }
     },
