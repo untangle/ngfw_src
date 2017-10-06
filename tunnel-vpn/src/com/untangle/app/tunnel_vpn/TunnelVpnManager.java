@@ -208,18 +208,20 @@ public class TunnelVpnManager
         for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
             if (tunnelSettings.getTunnelId() == null) continue;
             if (tunnelSettings.getTunnelId() != tunnelId) continue;
+
+            TunnelVpnTunnelStatus status = app.getTunnelStatus(tunnelId);
+
             try {
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
                 String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
                 logger.info("Recycling tunnel connection: " + tunnelSettings.getName() + "PID:" + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
-                pidFile.delete();
+                UvmContextFactory.context().execManager().execOutput("kill -HUP " + pidData);
+                TunnelVpnEvent event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnelSettings.getName(), TunnelVpnEvent.EventType.RECYCLE);
+                app.logEvent(event);
+                logger.debug("TunnelVpnEvent(logEvent) " + event.toSummaryString());
             } catch (Exception exn) {
                 logger.warn("Exception attempting to recycle tunnel");
             }
-
-            launchProcess(tunnelSettings);
         }
     }
 
