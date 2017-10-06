@@ -365,16 +365,21 @@ class TunnelVpnMonitor implements Runnable
          * and we restart openvpn, so we look for values less than we saw on the
          * previous check and handle accordingly. Once we calculate the number
          * of XMIT and RECV bytes since the last check, we update the last
-         * values and write the stat record to the database.
+         * values and write the stat record to the database. If the tunnel is
+         * not connected we skip the calculation because openvpn may give
+         * garbage values.
          */
-        if (status.getXmitTotal() < status.getXmitLast()) xmitBytes = status.getXmitTotal();
-        else xmitBytes = (status.getXmitTotal() - status.getXmitLast());
 
-        if (status.getRecvTotal() < status.getRecvLast()) recvBytes = status.getRecvTotal();
-        else recvBytes = (status.getRecvTotal() - status.getRecvLast());
+        if (status.getStateInfo().equals(TunnelVpnTunnelStatus.STATE_CONNECTED)) {
+            if (status.getXmitTotal() < status.getXmitLast()) xmitBytes = status.getXmitTotal();
+            else xmitBytes = (status.getXmitTotal() - status.getXmitLast());
 
-        status.setXmitLast(status.getXmitTotal());
-        status.setRecvLast(status.getRecvTotal());
+            if (status.getRecvTotal() < status.getRecvLast()) recvBytes = status.getRecvTotal();
+            else recvBytes = (status.getRecvTotal() - status.getRecvLast());
+
+            status.setXmitLast(status.getXmitTotal());
+            status.setRecvLast(status.getRecvTotal());
+        }
 
         /*
          * don't bother logging an event if there was no traffic
