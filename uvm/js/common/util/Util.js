@@ -693,6 +693,17 @@ Ext.define('Ung.util.Util', {
         return utftext;
     },
 
+    findLicense: function(licenseMap, appName) {
+        for (var licenseName in licenseMap) {
+            if (licenseMap.hasOwnProperty(licenseName)) {
+                if (licenseName.startsWith(appName)) {
+                    return licenseMap[licenseName];
+                }
+            }
+        }
+        return null;
+    },
+
     getLicenseMessage: function (license) {
         var message = '';
         if (!license) {
