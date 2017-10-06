@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.tunnel_vpn;
 
 import java.util.List;
@@ -157,11 +158,6 @@ public class TunnelVpnApp extends AppBase
                 this.tunnelVpnManager.restartProcesses();
         }
         
-    }
-
-    public TunnelVpnTunnelStatus getTunnelStatus(int tunnelId)
-    {
-        return (tunnelVpnMonitor.getTunnelStatus(tunnelId));
     }
 
     @Override
@@ -346,9 +342,15 @@ public class TunnelVpnApp extends AppBase
         if (this.getRunState() == AppSettings.AppState.RUNNING) this.tunnelVpnManager.restartProcesses();
     }
 
-    public List<org.json.JSONObject> getTunnelStates()
+    public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
     {
-        return this.tunnelVpnManager.getTunnelStates();
+        return this.tunnelVpnMonitor.getTunnelStatusList();
+    }
+
+    public void recycleTunnel(int tunnelId)
+    {
+        tunnelVpnManager.recycleTunnel(tunnelId);
+        tunnelVpnMonitor.clearTunnelStatus(tunnelId);
     }
 
     /**

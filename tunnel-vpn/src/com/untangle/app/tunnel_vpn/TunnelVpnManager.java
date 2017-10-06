@@ -55,10 +55,22 @@ public class TunnelVpnManager
         this.app = app;
     }
 
-    protected synchronized void restartProcesses()
+    protected synchronized void launchProcesses()
     {
-        killProcesses();
-        launchProcesses();
+        logger.info("Launching OpenVPN processes...");
+
+        insertIptablesRules();
+
+        try {
+            File dir = new File("/run/tunnelvpn/");
+            dir.mkdir();
+        } catch (Exception e) {
+            logger.warn("Unable to create PID directory", e);
+        }
+
+        for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
+            launchProcess(tunnelSettings);
+        }
     }
 
     protected synchronized void killProcesses()
@@ -78,6 +90,8 @@ public class TunnelVpnManager
                     String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)", "");
                     logger.info("Killing OpenVPN process: " + pid);
                     UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
+                    UvmContextFactory.context().execManager().execOutput("kill -TERM " + pid);
+                    f.delete();
                 }
             }
         } catch (Exception e) {
@@ -85,22 +99,10 @@ public class TunnelVpnManager
         }
     }
 
-    protected synchronized void launchProcesses()
+    protected synchronized void restartProcesses()
     {
-        logger.info("Launching OpenVPN processes...");
-
-        insertIptablesRules();
-
-        try {
-            File dir = new File("/run/tunnelvpn/");
-            dir.mkdir();
-        } catch (Exception e) {
-            logger.warn("Unable to create PID directory", e);
-        }
-
-        for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
-            launchProcess(tunnelSettings);
-        }
+        killProcesses();
+        launchProcesses();
     }
 
     protected synchronized void launchProcess(TunnelVpnTunnelSettings tunnelSettings)
@@ -201,47 +203,24 @@ public class TunnelVpnManager
         return this.newTunnelId;
     }
 
-    public List<JSONObject> getTunnelStates()
+    public void recycleTunnel(int tunnelId)
     {
-        List<JSONObject> states = new LinkedList<JSONObject>();
-
-        if (app.getSettings() == null || app.getSettings().getTunnels() == null) return states;
-
-        try {
-            for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
-                org.json.JSONObject json = new org.json.JSONObject();
-                if (tunnelSettings.getTunnelId() == null) continue;
-                json.put("tunnelId", tunnelSettings.getTunnelId());
-                json.put("name", tunnelSettings.getName());
-                json.put("provider", tunnelSettings.getProvider());
-
-                TunnelVpnTunnelStatus status = app.getTunnelStatus(tunnelSettings.getTunnelId());
-
-                if (status != null) {
-                    json.put("rxbytes", status.recvTotal);
-                    json.put("txbytes", status.xmitTotal);
-                } else {
-                    json.put("rxbytes", 0);
-                    json.put("txbytes", 0);
-                }
-
-                if (app.getRunState() != AppSettings.AppState.RUNNING) {
-                    json.put("state", "OFF");
-                    json.put("uptime", "0");
-                } else if (!tunnelSettings.getEnabled()) {
-                    json.put("state", "DISABLED");
-                    json.put("uptime", "0");
-                } else {
-                    json.put("state", status == null ? "UNKNOWN" : status.stateInfo);
-                    json.put("uptime", System.currentTimeMillis() - status.connectStamp);
-                }
-                states.add(json);
+        for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
+            if (tunnelSettings.getTunnelId() == null) continue;
+            if (tunnelSettings.getTunnelId() != tunnelId) continue;
+            try {
+                File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
+                String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
+                logger.info("Recycling tunnel connection: " + tunnelSettings.getName() + "PID:" + pidData);
+                UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
+                UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
+                pidFile.delete();
+            } catch (Exception exn) {
+                logger.warn("Exception attempting to recycle tunnel");
             }
-        } catch (Exception e) {
-            logger.error("Error generating tunnel status", e);
-        }
 
-        return states;
+            launchProcess(tunnelSettings);
+        }
     }
 
     private void writeFile(String fileName, StringBuilder sb)

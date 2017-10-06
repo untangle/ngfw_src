@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.tunnel_vpn;
 
 import java.io.Serializable;
