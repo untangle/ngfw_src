@@ -492,7 +492,8 @@ public class AppManagerImpl implements AppManager
         List<App> visibleApps = nm.visibleApps( policyId );
         for (App app : visibleApps) {
             String n = app.getAppProperties().getName();
-            licenseMap.put(n, lm.getLicense(n));
+            //exactMatch = false so we accept any license that starts with n
+            licenseMap.put(n, lm.getLicense(n,false));
         }
 
         /**
