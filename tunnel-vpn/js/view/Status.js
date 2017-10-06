@@ -3,7 +3,6 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
     alias: 'widget.app-tunnel-vpn-status',
     itemId: 'status',
     title: 'Status'.t(),
-
     viewModel: true,
 
     layout: 'border',
@@ -29,11 +28,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
         }, {
             xtype: 'grid',
             title: 'Tunnel Status'.t(),
-            itemId: 'tunnelStates',
+            itemId: 'tunnelStatus',
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-
             minHeight: 150,
             maxHeight: 250,
             margin: '10 0 10 0',
@@ -47,8 +45,9 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
             collapsible: true,
             hideCollapseTool: true,
             animCollapse: false,
+            recordJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnStatusRecord',
             bind: {
-                store: '{tunnelStatesList}'
+                store: '{tunnelStatusList}'
             },
 
             columns: [{
@@ -57,12 +56,12 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                 width: 75
             }, {
                 header: 'Tunnel Name'.t(),
-                dataIndex: 'name',
+                dataIndex: 'tunnelName',
                 width: 150,
                 flex: 1
             }, {
                 header: 'Elapsed Time'.t(),
-                dataIndex: 'uptime',
+                dataIndex: 'elapsedTime',
                 width: 180,
                 renderer: function(value) {
                     var total = parseInt(value / 1000,10);
@@ -74,25 +73,32 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                 }
             }, {
                 header: 'Rx Data'.t(),
-                dataIndex: 'rxbytes',
+                dataIndex: 'recvTotal',
                 width: Renderer.sizeWidth,
                 renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'Tx Data'.t(),
-                dataIndex: 'txbytes',
+                dataIndex: 'xmitTotal',
                 width: Renderer.sizeWidth,
                 renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'Tunnel Status'.t(),
-                dataIndex: 'state',
+                dataIndex: 'stateInfo',
                 width: 180
+            }, {
+                header: 'Recycle'.t(),
+                xtype: 'actioncolumn',
+                width: 80,
+                align: 'center',
+                iconCls: 'fa fa-recycle',
+                handler: 'recycleTunnel',
             }],
             bbar: [{
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
-                handler: 'getTunnelStates'
+                handler: 'getTunnelStatus'
             }]
 
         }, {
