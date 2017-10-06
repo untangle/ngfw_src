@@ -172,6 +172,11 @@ public class GroupManager
 
     public boolean isMemberOfGroup( String user, String group )
     {
+        return isMemberOfGroup(user, group, null);
+    }
+
+    public boolean isMemberOfGroup( String user, String group, String targetDomain )
+    {
         if ( ! isLicenseValid() ) {
             return false;
         }
@@ -204,19 +209,25 @@ public class GroupManager
             return false;
         }
 
+        boolean userFound = false;
         for( String domain : domains){
+            if(targetDomain != null && !domain.equals(targetDomain)){
+                continue;
+            }
 
-            // Map<String,Boolean> thisGroupsUsers = this.domainsGroupsUsersMap.get(group);
             Map<String,Boolean> thisGroupsUsers = this.domainsGroupsUsersMap.get(domain).get(group);
 
             /* These are updated in a refresh cache. */
             if ( thisGroupsUsers == null ) {
-                return false;
+                continue;
             }
 
             /* This caches if the user is in and out of the group. */
             Boolean isMember = thisGroupsUsers.get(user);
             if ( isMember != null ) {
+                if(userFound == false){
+                    userFound = isMember;
+                }
                 return isMember;
             }
 
@@ -246,22 +257,34 @@ public class GroupManager
                     }
                 }
             }
+        }
 
-            /**
-            * If it hasn't been found at this point
-            * This user is not in the group nor any parents
-            * Cache the fact that the user is not in the group.
-            */
-            if ( this.cacheCount < CACHE_COUNT_MAX ) {
-                synchronized( this ) {
-                    this.cacheCount++;
+        if(userFound == false){
+            for( String domain : domains){
+                Map<String,Boolean> thisGroupsUsers = this.domainsGroupsUsersMap.get(domain).get(group);
+                if ( thisGroupsUsers == null ) {
+                    continue;
                 }
-                thisGroupsUsers.put(user, false);
+                if(targetDomain != null && !domain.equals(targetDomain)){
+                    continue;
+                }
+                /**
+                 * If it hasn't been found at this point
+                 * This user is not in the group nor any parents
+                 * Cache the fact that the user is not in the group.
+                 */
+                if ( this.cacheCount < CACHE_COUNT_MAX ) {
+                    synchronized( this ) {
+                        this.cacheCount++;
+                    }
+                    thisGroupsUsers.put(user, false);
+                }
             }
         }
 
         return false;
     }
+
 
     public List<String> memberOfGroup(String user)
     {
@@ -284,6 +307,46 @@ public class GroupManager
             for ( String group : allGroups ) {
                 if (isMemberOfGroup(user, group)) {
                     myGroups.add(group);
+                }
+            }
+        }
+
+        return myGroups;
+    }
+
+    public List<String> memberOfGroup(String user, String targetDomain)
+    {
+        List<String> myGroups = new LinkedList<String>();
+
+        if (this.domainsGroupsUsersMap == null)
+            return myGroups;
+
+        List<String> domains = null;
+        try {
+            domains = app.getActiveDirectoryManager().getDomains();
+        } catch ( Exception ex ) {
+            logger.warn("Unable to retrieve the domains", ex);
+            return myGroups;
+        }
+
+        boolean found;
+        for( String domain : domains){
+            if(targetDomain != null && !domain.equals(targetDomain)){
+                continue;
+            }
+            Set<String> allGroups = this.domainsGroupsUsersMap.get(domain).keySet();
+
+            for ( String group : allGroups ) {
+                if (isMemberOfGroup(user, group, domain)) {
+                    found = false;
+                    for(String myGroup: myGroups){
+                        if(myGroup.equals(group)){
+                            found = true;
+                        }
+                    }
+                    if(found == false){
+                        myGroups.add(group);
+                    }
                 }
             }
         }
