@@ -254,7 +254,6 @@ public class ActiveDirectoryManagerImpl
             username = domainUsername[0];
             domain = domainUsername[1];
         }
-        logger.warn("authenticate: username=" + username + ", domain=" + domain + ", password=" + pwd);
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
@@ -270,7 +269,6 @@ public class ActiveDirectoryManagerImpl
                 }
             }
 
-            logger.warn("authenticate:" + adAdapter.getSettings().getDomain() );
             try {
                 if(adAdapter.authenticate(username, pwd)) {
                     return true;
@@ -384,7 +382,7 @@ public class ActiveDirectoryManagerImpl
                         JSONObject jsonUser = new JSONObject();
                         jsonUser.put("uid", user.getUid());
                         jsonUser.put("domain", adAdapter.getSettings().getDomain());
-                        jsonUser.put("groups", listToString(app.memberOfGroup(user.getUid())));
+                        jsonUser.put("groups", listToString(app.memberOfGroup(user.getUid(), domain)));
                         result.put(jsonUser);
                     } catch (Exception x){
                         logger.warn("Unable to query Active Directory Users.",x);

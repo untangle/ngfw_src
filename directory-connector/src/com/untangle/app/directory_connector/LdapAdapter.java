@@ -129,7 +129,6 @@ abstract class LdapAdapter
             }
 
             for(Map<String, String[]> map : list) {
-                // logger.warn("listAll:" + map);
                 UserEntry entry = toUserEntry(map);
                 if(entry != null) {
                     ret.add(entry);
