@@ -101,7 +101,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     route: null
                 });
             }
-            var license = Util.findLicense(policy.licenseMap.map, appVm.get('app.name'));
+            var license = policy.licenseMap.map[appVm.get('app.name')];
             var licenseMessage = Util.getLicenseMessage(license);
             //console.log("license: " + license + " licenseMessage: " + licenseMessage);
             appVm.set({
