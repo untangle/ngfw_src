@@ -502,6 +502,23 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Determine if user is part of any group.
+     *
+     * @param user
+     *      Username to check.
+     * @returns
+     *      String list of groups  this username belongs in.
+     */
+    public List<String> memberOfGroup(String user, String domain)
+    {
+        if (!isLicenseValid()) {
+            return new LinkedList<String>();
+        }
+
+        return this.groupManager.memberOfGroup(user, domain);
+    }
+
+    /**
      * Refresh group cache by querying servers.
      */
     public void refreshGroupCache()
