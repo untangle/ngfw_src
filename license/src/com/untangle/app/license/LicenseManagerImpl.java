@@ -191,13 +191,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         License license = null;
 
         /**
-         * Look for an existing perfect match
-         */
-        license = this.licenseMap.get(identifier);
-        if (license != null)
-            return license;
-
-        /**
          * If there is no perfect match,
          * Look for one that the prefix matches
          * example: identifer "virus-blocker" should accept "virus-blocker-cloud"
@@ -207,10 +200,17 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 if (name.startsWith(identifier))
                     logger.debug("getLicense(" + identifier + ") = " + license );
                 license = this.licenseMap.get(name);
-                if (license != null)
+                if (license != null && license.getValid())
                     return license;
             }
         }
+
+        /**
+         * Look for an existing perfect match
+         */
+        license = this.licenseMap.get(identifier);
+        if (license != null)
+            return license;
 
         /**
          * Special for development environment
