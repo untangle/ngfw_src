@@ -9,6 +9,8 @@ import smtplib
 import re
 import ipaddr
 import inspect
+import os
+import base64
 from datetime import datetime
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -61,7 +63,7 @@ def create_firewall_rule( conditionType, value, blocked=True ):
             }
         }
 
-def create_reports_user(profile_email=test_email_address, email_template_id=1):
+def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False)):
     return  {
             "emailAddress": profile_email,
             "emailSummaries": True,
@@ -73,8 +75,8 @@ def create_reports_user(profile_email=test_email_address, email_template_id=1):
                 ]
             },
             "javaClass": "com.untangle.app.reports.ReportsUser",
-            "onlineAccess": False,
-            "passwordHashBase64": ""
+            "onlineAccess": access,
+            "passwordHashBase64": base64.b64encode('passwd')
     }
 
 def create_admin_user(useremail=test_email_address):
@@ -433,7 +435,22 @@ class ReportsTests(unittest2.TestCase):
         assert(email_found)
         for result in results:
             assert(result == 0)
-             
+
+    def test_110_verify_report_users(self):
+        # Test report only user can login and report serlvet displays 
+        # add report user with test_email_address
+        settings = app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email='test', access=True))  # password = passwd
+        app.setSettings(settings)
+        adminURL = global_functions.get_http_url()
+        print "URL %s" % adminURL
+        resultLoginPage = os.system("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login")
+        assert (resultLoginPage == 0)
+        
+        resultLoginPage = os.system("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=test&password=passwd" 2>&1 | grep -q Report')
+        assert (resultLoginPage == 0)
+        
     @staticmethod
     def finalTearDown(self):
         global app
