@@ -63,7 +63,7 @@ def create_firewall_rule( conditionType, value, blocked=True ):
             }
         }
 
-def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False)):
+def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False):
     return  {
             "emailAddress": profile_email,
             "emailSummaries": True,
