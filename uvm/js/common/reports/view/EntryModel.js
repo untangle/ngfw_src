@@ -44,7 +44,8 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
-        _reportCard: function (get) {
+        // active report view switch from 3 types: text, graph, events
+        activeReportType: function (get) {
             if (get('entry.type') === 'TEXT') { return 'textreport'; }
             if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
             return 'graphreport';
@@ -153,9 +154,9 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         reportHeading: function (get) {
             if (get('entry.readOnly')) {
-                return '<h2>' + get('entry.title').t() + '</h2><p>' + get('entry.description').t() + '</p>';
+                return '<h1><span style="color: #CCC;">' + get('entry.category') + '/</span>' + get('entry.title').t() + '</h1>';
             }
-            return '<h2>' + get('entry.title') + '</h2><p>' + get('entry.description') + '</p>';
+            return '<h2>' + get('entry.title') + '</h2>';
         },
         // enableIcon: function (get) {
         //     return get('entry.enabled') ? 'fa-green' : 'fa-flip-horizontal fa-grey';
