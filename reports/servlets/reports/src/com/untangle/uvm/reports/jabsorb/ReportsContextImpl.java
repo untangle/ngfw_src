@@ -53,12 +53,16 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return this.languageManager;
     }
 
+    public long getMilliseconds()
+    {
+        return System.currentTimeMillis();
+    }
+
     static UtJsonRpcServlet.ReportsContext makeReportsContext()
     {
         UvmContext uvm = UvmContextFactory.context();
         return new ReportsContextImpl( uvm );
     }
-
     
     /**
      * This proxy object is used so the reports servlet does not have access to setSettings and related methods
