@@ -94,7 +94,7 @@ Ext.define('Ung.Application', {
     mainView: 'Ung.view.Main',
     launch: function () {
         try {
-            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+            rpc.reportsManager = rpc.ReportsContext.reportsManager();
         } catch (ex) {
             console.error(ex);
         }

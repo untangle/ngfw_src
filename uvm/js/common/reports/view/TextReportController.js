@@ -37,7 +37,7 @@ Ext.define('Ung.view.reports.TextReportController', {
         // startDate
         if (!me.getView().renderInReports) {
             // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
-            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000);
+            startDate = new Date(Util.getMilliseconds() - (vm.get('widget.timeframe') || 3600) * 1000);
         } else {
             // if it's a report, convert UI client start date to server date
             startDate = Util.clientToServerDate(vm.get('startDate'));

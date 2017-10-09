@@ -4,7 +4,7 @@
 
 var rpc = {}; // global rpc object
 
- Ext.define('Bootstrap', {
+Ext.define('Bootstrap', {
     singleton: true,
 
     servletContext: 'ADMIN',
@@ -19,12 +19,6 @@ var rpc = {}; // global rpc object
         }
         else if (this.servletContext === 'REPORTS') {
             rpc = new JSONRpcClient('/reports/JSON-RPC');
-            //FIXME NGFW-11140
-            //FIXME
-            //FIXME
-            //FIXME
-            //FIXME
-            //FIXME
         }
         else if (this.servletContext === 'QUARANTINE') {
             rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
@@ -33,16 +27,39 @@ var rpc = {}; // global rpc object
 
     initTranslations: function () {
         // initialize translations
+        var languageManager, languageSettings, lang;
 
-        // if not defined (e.g. quarantine)
-        if (!rpc.translations) { String.prototype.t = function() { return this.valueOf(); }; return; }
+        // QUARANTINE does not seem to have access to translations
+        if (this.servletContext === 'QUARANTINE') {
+            String.prototype.t = function() { return this.valueOf(); };
+            return;
+        }
 
-        if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-        if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-        if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-        if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
+        // set languageManager
+        if (this.servletContext === 'ADMIN') {
+            languageManager = rpc.UvmContext.languageManager();
+        }
+        if (this.servletContext === 'REPORTS') {
+            languageManager = rpc.ReportsContext.languageManager();
+        }
 
-        var lang = rpc.languageSettings.language;
+        // set languageSettings
+        languageSettings = languageManager.getLanguageSettings();
+        lang = languageSettings.language;
+
+        // for REPORTS need to fetch translations as for ADMIN there are already set
+        if (this.servletContext === 'REPORTS') {
+            rpc.translations = languageManager.getTranslations(lang).map;
+        }
+
+        // apply special date / time / number formatting overrides, otherwise use some defaults
+        Ext.apply(rpc.translations, {
+            decimal_sep: languageSettings.overrideDecimalSep || '.',
+            thousand_sep: languageSettings.overrideThousandSep || ',',
+            date_fmt: languageSettings.overrideDateFmt || 'Y-m-d',
+            timestamp_fmt: languageSettings.overrideTimestampFmt || 'Y-m-d h:i:s a'
+        });
+
         String.prototype.t = function() {
             // special case formatters needed for all languages
             if (Ext.Array.contains(['decimal_sep', 'thousand_sep', 'date_fmt', 'timestamp_fmt'], this.valueOf())) {
@@ -121,7 +138,7 @@ var rpc = {}; // global rpc object
             return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex) {
                 console.log(ex);
                 Util.handleException(ex);
-            throw ex;
+                throw ex;
             });
         };
 
@@ -148,4 +165,4 @@ var rpc = {}; // global rpc object
             cb(err);
         });
     }
- });
+});
