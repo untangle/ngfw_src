@@ -67,6 +67,12 @@ Ext.define('Ung.util.Util', {
         return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000);
     },
 
+    // returns milliseconds depending of the servlet ADMIN or REPORTS
+    // for REPORTS the date range based on client date won't reflect server timezone properly
+    getMilliseconds: function () {
+        return rpc.systemManager ? rpc.systemManager.getMilliseconds() : new Date().getTime();
+    },
+
     bytesToHumanReadable: function (bytes, si) {
         var thresh = si ? 1000 : 1024;
         if(Math.abs(bytes) < thresh) {

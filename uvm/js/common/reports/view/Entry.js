@@ -170,7 +170,7 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{tillNow}',
                     disabled: '{fetching}'
                 },
-                maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+                maxValue: new Date(Util.getMilliseconds())
             }, {
                 xtype: 'timefield',
                 increment: 10,
@@ -184,7 +184,7 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{tillNow}',
                     disabled: '{fetching}'
                 },
-                // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+                // maxValue: new Date(Util.getMilliseconds())
             }, '->', {
                 xtype: 'component',
                 html: '<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>',

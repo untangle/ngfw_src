@@ -5,9 +5,9 @@ Ext.define('Ung.view.reports.EntryModel', {
 
     data: {
         // rounded to nearest 10 minutes minus 24 hours
-        startDate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - 24 * 3600 *1000)),
+        startDate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - 24 * 3600 *1000)),
         // rounded to nearest 10 minutes
-        endDate:  Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000))),
+        endDate:  Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000))),
         tillNow: true,
         _currentData: [],
         sqlFilterData: [],
@@ -60,7 +60,7 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         _sqlConditions: {
             get: function (get) {
-               return get('entry.conditions') || [];
+                return get('entry.conditions') || [];
             },
             set: function (value) {
                 this.set('entry.conditions', value);
