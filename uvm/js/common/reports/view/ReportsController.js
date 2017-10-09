@@ -83,7 +83,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                     entry: record.copy(null) // report reference copy on which modifications are made
                 });
             }
-            me.lookup('cards').setActiveItem('graphreport');
+            me.lookup('cards').setActiveItem('report');
         } else {
             me.lookup('cards').setActiveItem('category');
             me.buildStats(node);

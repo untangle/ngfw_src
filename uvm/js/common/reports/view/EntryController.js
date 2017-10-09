@@ -42,7 +42,12 @@ Ext.define('Ung.view.reports.EntryController', {
 
         vm.set('context', Ung.app.servletContext);
 
+
+        /**
+         * each time report selection changes
+         */
         vm.bind('{entry}', function (entry) {
+            console.log(entry);
             vm.set('disableSave', entry.readOnly);
             vm.set('disableNewSave', true);
             vm.set('_currentData', []);
@@ -55,6 +60,10 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid.setLoading(true);
 
             me.tableConfig = TableConfig.generate(entry.get('table'));
+
+            var tableColumns = me.tableConfig.comboItems;
+            tableColumns.unshift({ text: 'No selection...', value: '' });
+            vm.set('tableColumns', tableColumns);
 
             if (entry.get('type') === 'EVENT_LIST') {
                 me.lookupReference('dataBtn').setPressed(false);
@@ -88,57 +97,6 @@ Ext.define('Ung.view.reports.EntryController', {
             // me.getView().down('#sqlFilterCombo').setValue(null);
 
         });
-
-        // vm.bind('{_defaultColors}', function (val) {
-        //     console.log('colors');
-        //     var colors, colorBtns = [];
-
-        //     if (val) {
-        //         vm.set('entry.colors', null);
-        //     } else {
-        //         colors = vm.get('entry.colors') || Util.defaultColors;
-        //         me.getView().down('#colors').removeAll();
-        //         colors.forEach(function (color, i) {
-        //             colorBtns.push({
-        //                 xtype: 'button',
-        //                 margin: '0 1',
-        //                 idx: i,
-        //                 arrowVisible: false,
-        //                 menu: {
-        //                     plain: true,
-        //                     xtype: 'colormenu',
-        //                     colors: me.colorPalette,
-        //                     height: 200,
-        //                     listeners: {
-        //                         select: 'updateColor'
-        //                     },
-        //                     dockedItems: [{
-        //                         xtype: 'toolbar',
-        //                         dock: 'bottom',
-        //                         // ui: 'footer',
-        //                         items: [{
-        //                             // text: 'Remove'.t(),
-        //                             iconCls: 'fa fa-ban',
-        //                             tooltip: 'Remove'.t()
-        //                         }, {
-        //                             text: 'OK'.t(),
-        //                             iconCls: 'fa fa-check',
-        //                             listeners: {
-        //                                 click: function (btn) {
-        //                                     btn.up('button').hideMenu();
-        //                                 }
-        //                             }
-        //                         }]
-
-        //                     }]
-        //                 },
-        //                 text: '<i class="fa fa-square" style="color: ' + color + '"></i>',
-        //             });
-        //         });
-        //         me.getView().down('#colors').add(colorBtns);
-        //     }
-        // });
-
     },
 
     closeSide: function () {
@@ -356,9 +314,9 @@ Ext.define('Ung.view.reports.EntryController', {
     refreshData: function () {
         var me = this, vm = me.getViewModel(), ctrl, reps = me.getView().up('#reports');
         switch(vm.get('entry.type')) {
-            case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
-            case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
-            default: ctrl = this.getView().down('graphreport').getController();
+        case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
+        case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
+        default: ctrl = this.getView().down('graphreport').getController();
         }
 
         if (!ctrl) {
@@ -391,7 +349,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         grid.getColumns().forEach( function(column){
             if( column.xtype == 'actioncolumn'){
-                 return;
+                return;
             }
             column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
             if( column.columns ){

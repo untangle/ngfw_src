@@ -23,38 +23,53 @@ Ext.define('Ung.view.reports.GraphReportController', {
         if (!me.getView().up('reportwidget')) {
             // whatch when report entry is changed or modified
 
-            vm.bind('{entry}', function (entry) {
-                // if it's not a graph report, do nothing
-                if (entry.get('type').indexOf('GRAPH') < 0) { return; }
-
-                if (modFields.uniqueId !== entry.get('uniqueId')) {
-                    modFields = {
-                        uniqueId: entry.get('uniqueId'),
-                        timeDataInterval: entry.get('timeDataInterval'),
-                        pieNumSlices: entry.get('pieNumSlices'),
-                        timeStyle: entry.get('timeStyle'),
-                        pieStyle: entry.get('pieStyle'),
-                        approximation: entry.get('approximation'),
-                        colors: entry.get('colors')
-                    };
-                    // fetch report data first time
-                    me.fetchData(true);
-                    return;
+            vm.bind('{entry.type}', function (type) {
+                if (type === 'PIE_GRAPH') {
+                    // set some PIE_GRAPH defaults in case they are not set
+                    vm.set('entry.pieStyle', vm.get('entry.pieStyle') || 'PIE');
+                    vm.set('entry.pieNumSlices', vm.get('entry.pieNumSlices') || 10);
+                    me.setPieSeries();
                 }
-
-                // based on which fields are modified do some specific actions
-                Ext.Object.each(modFields, function (key, value) {
-                    if (key === 'uniqueId') { return; }
-                    if (value !== entry.get(key)) {
-                        modFields[key] = entry.get(key);
-                        if (key === 'timeDataInterval') { me.fetchData(false); }
-                        if (key === 'pieNumSlices') { me.setPieSeries(); }
-                        if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
-                    }
-                });
-            }, me, {
-                deep: true
+                if (type === 'TIME_GRAPH') {
+                    me.setTimeSeries();
+                }
+                me.fetchData(true);
             });
+
+            // vm.bind('{entry}', function (entry) {
+            //     console.log(entry);
+            //     // if it's not a graph report, do nothing
+            //     if (entry.get('type').indexOf('GRAPH') < 0) { return; }
+
+            //     if (modFields.uniqueId !== entry.get('uniqueId')) {
+            //         modFields = {
+            //             uniqueId: entry.get('uniqueId'),
+            //             timeDataInterval: entry.get('timeDataInterval'),
+            //             pieNumSlices: entry.get('pieNumSlices'),
+            //             timeStyle: entry.get('timeStyle'),
+            //             pieStyle: entry.get('pieStyle'),
+            //             approximation: entry.get('approximation'),
+            //             colors: entry.get('colors'),
+            //             type: entry.get('type')
+            //         };
+            //         // fetch report data first time
+            //         me.fetchData(true);
+            //         return;
+            //     }
+
+            //     // based on which fields are modified do some specific actions
+            //     // Ext.Object.each(modFields, function (key, value) {
+            //     //     if (key === 'uniqueId') { return; }
+            //     //     if (value !== entry.get(key)) {
+            //     //         modFields[key] = entry.get(key);
+            //     //         if (key === 'timeDataInterval') { me.fetchData(false); }
+            //     //         if (key === 'pieNumSlices') { me.setPieSeries(); }
+            //     //         if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
+            //     //     }
+            //     // });
+            // }, me, {
+            //     deep: true
+            // });
         } else {
             me.isWidget = true;
             // DashboardQueue.add(me.getView());
@@ -535,7 +550,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             }
         }
         if (entry.get('type') === 'PIE_GRAPH') {
-            if (entry.get('pieStyle').indexOf('COLUMN') >= 0) {
+            if (entry.get('pieStyle') && entry.get('pieStyle').indexOf('COLUMN') >= 0) {
                 type = 'column';
             } else {
                 type = 'pie';
