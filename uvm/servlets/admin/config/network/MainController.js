@@ -60,7 +60,7 @@ Ext.define('Ung.config.network.MainController', {
             var accessRulesLength = me.getAccessRulesCount(vm.get('settings'));
             vm.set('accessRulesLength', accessRulesLength);
 
-            me.setPortForwardSimples();
+            // me.setPortForwardSimples(); // commented out as it should work withou ti
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
 
