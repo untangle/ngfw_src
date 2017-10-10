@@ -705,7 +705,7 @@ public class IntrusionPreventionApp extends AppBase
     {
         List<String> interfaces = new LinkedList<String>();
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if (interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.DISABLED) {
+            if (interfaceSettings.getConfigType() == InterfaceSettings.ConfigType.DISABLED) {
                 continue;
             }
             interfaces.add( interfaceSettings.getSystemDev() );
