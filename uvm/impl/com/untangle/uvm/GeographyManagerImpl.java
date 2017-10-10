@@ -52,6 +52,7 @@ public class GeographyManagerImpl implements GeographyManager
 
     protected GeographyManagerImpl()
     {
+        checkForDatabaseUpdate(false);
         openDatabaseInstance();
         databaseChecker = new Pulse("GeographyManagerUpdater", new DatabaseUpdateChecker(this), DATABASE_CHECK_FREQUENCY);
         databaseChecker.start();
@@ -176,7 +177,7 @@ public class GeographyManagerImpl implements GeographyManager
         }
     }
 
-    public boolean checkForDatabaseUpdate()
+    public boolean checkForDatabaseUpdate(boolean loadFlag)
     {
         // check for update file and return false if not found
         File updateFile = new File(GEOIP_UPDATE_FILE);
@@ -203,8 +204,8 @@ public class GeographyManagerImpl implements GeographyManager
         // move the update database file to the active database file
         UvmContextFactory.context().execManager().exec("/bin/mv " + GEOIP_UPDATE_FILE + " " + GEOIP_DATABASE_FILE);
 
-        // open the new database
-        openDatabaseInstance();
+        // open the new database if the load flag is true
+        if (loadFlag) openDatabaseInstance();
         return (true);
     }
 
@@ -302,7 +303,7 @@ public class GeographyManagerImpl implements GeographyManager
 
         public void run()
         {
-            owner.checkForDatabaseUpdate();
+            owner.checkForDatabaseUpdate(true);
         }
     }
 }
