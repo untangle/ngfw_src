@@ -16,6 +16,9 @@ Ext.define('Ung.view.reports.Entry', {
         dock: 'top',
         cls: 'report-header',
         padding: 5,
+        style: {
+            background: '#FFF'
+        },
         layout: {
             type: 'vbox',
             align: 'stretch'
@@ -23,7 +26,7 @@ Ext.define('Ung.view.reports.Entry', {
         items: [{
             xtype: 'component',
             bind: {
-                html: '{reportHeading}'
+                html: '<h1><span>{entry.category} /</span> {entry.title}</h1>'
             }
         }]
     }, {
@@ -53,23 +56,6 @@ Ext.define('Ung.view.reports.Entry', {
                 disabled: '{fetching}'
             }
         }, {
-            xtype: 'checkbox',
-            boxLabel: 'Auto Refresh'.t(),
-            disabled: true,
-            bind: {
-                value: '{autoRefresh}',
-                disabled: '{!autoRefresh && fetching}'
-            },
-            handler: 'setAutoRefresh'
-        }, {
-            text: 'Refresh'.t(),
-            iconCls: 'fa fa-refresh',
-            itemId: 'refreshBtn',
-            handler: 'refreshData',
-            bind: {
-                disabled: '{autoRefresh || fetching}'
-            }
-        }, {
             text: 'Reset View'.t(),
             iconCls: 'fa fa-refresh',
             itemId: 'resetBtn',
@@ -79,7 +65,7 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: '{entry.type !== "EVENT_LIST"}',
                 disabled: '{fetching}'
             }
-        }, {
+        }, '-', {
             itemId: 'downloadBtn',
             text: 'Download Graph'.t(),
             iconCls: 'fa fa-download',
@@ -90,7 +76,7 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: '{!isGraphEntry}',
                 disabled: '{fetching}'
             }
-        }, '-', {
+        }, {
             itemId: 'dashboardBtn',
             hidden: true,
             disabled: true,
@@ -110,25 +96,16 @@ Ext.define('Ung.view.reports.Entry', {
             bind: {
                 hidden: '{entry.type !== "EVENT_LIST"}'
             }
-        }, {
-            itemId: 'exportGraphData',
-            text: 'Export Data'.t(),
-            iconCls: 'fa fa-external-link-square',
-            handler: 'exportGraphData',
-            hidden: true,
-            bind: {
-                hidden: '{!isGraphEntry}',
-            }
-        }, {
+        }, '-', {
             text: 'Settings'.t(),
             reference: 'settingsBtn',
-            enableToggle: true,
-            toggleGroup: 'side',
+            // enableToggle: true,
             iconCls: 'fa fa-cog',
             hidden: true,
             bind: {
                 hidden: '{!entry}'
-            }
+            },
+            handler: 'editEntry'
         }]
     }, {
         xtype: 'toolbar',
@@ -155,7 +132,7 @@ Ext.define('Ung.view.reports.Entry', {
         // itemId: 'entryContainer',
         layout: 'card',
         bind: {
-            activeItem: '{activeReportType}'
+            activeItem: '{f_activeReportType}'
         },
         items: [{
             xtype: 'graphreport',
@@ -268,17 +245,41 @@ Ext.define('Ung.view.reports.Entry', {
                     disabled: '{fetching}'
                 },
                 // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+            }, {
+                xtype: 'component',
+                width: 50
+            }, {
+                xtype: 'checkbox',
+                boxLabel: 'Auto Refresh'.t(),
+                disabled: true,
+                bind: {
+                    value: '{autoRefresh}',
+                    disabled: '{!autoRefresh && fetching}'
+                },
+                handler: 'setAutoRefresh'
+            }, {
+                text: 'Refresh'.t(),
+                iconCls: 'fa fa-refresh',
+                itemId: 'refreshBtn',
+                handler: 'refreshData',
+                bind: {
+                    disabled: '{autoRefresh || fetching}'
+                }
             }]
         }]
 
     }, {
         region: 'east',
-        width: 300,
+        width: 350,
         weight: 20,
         split: true,
         layout: {
             type: 'vbox',
             align: 'stretch'
+        },
+        hidden: true,
+        bind: {
+            hidden: '{!eEntry}'
         },
         // border: false,
         defaults: {
@@ -299,8 +300,12 @@ Ext.define('Ung.view.reports.Entry', {
             items: [{
                 xtype: 'textfield',
                 fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
-                bind: '{entry.title}',
-                anchor: '100%'
+                anchor: '100%',
+                hidden: true,
+                bind: {
+                    value: '{eEntry.title}',
+                    hidden: '{!eEntry}'
+                }
             }, {
                 xtype: 'combo',
                 itemId: 'categoryCombo',
@@ -313,15 +318,21 @@ Ext.define('Ung.view.reports.Entry', {
                      '</tpl></ul>',
                 store: 'categories',
                 queryMode: 'local',
+                hidden: true,
                 bind: {
-                    value: '{entry.category}'
+                    value: '{eEntry.category}',
+                    hidden: '{!eEntry}'
                 }
             }, {
                 xtype: 'textarea',
                 grow: true,
                 fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
-                bind: '{entry.description}',
-                anchor: '100%'
+                anchor: '100%',
+                hidden: true,
+                bind: {
+                    value: '{eEntry.description}',
+                    hidden: '{!eEntry}'
+                }
             }, {
                 xtype: 'combo',
                 fieldLabel: '<strong>' + 'Report Type'.t() + '</strong>',
@@ -340,26 +351,11 @@ Ext.define('Ung.view.reports.Entry', {
                         { name: 'Event List'.t(), value: 'EVENT_LIST' },
                     ]
                 },
+                hidden: true,
                 bind: {
-                    value: '{entry.type}'
+                    value: '{eEntry.type}',
+                    hidden: '{!eEntry}'
                 }
-                // xtype: 'radiogroup',
-                // simpleValue: true,
-                // fieldLabel: '<strong>' + 'Report Type'.t() + '</strong>',
-                // layout: {
-                //     type: 'vbox',
-                //     // align: 'stretch'
-                // },
-                // items: [
-                //     { boxLabel: '<i class="fa fa-align-left"></i> <strong>' + 'Text'.t() + '</strong>', name: 'rt', inputValue: 'TEXT' },
-                //     { boxLabel: '<i class="fa fa-pie-chart"></i> <strong>'  + 'Pie Graph'.t() + '</strong>', name: 'rt', inputValue: 'PIE_GRAPH' },
-                //     { boxLabel: '<i class="fa fa-line-chart"></i> <strong>' + 'Time Graph'.t() + '</strong>', name: 'rt', inputValue: 'TIME_GRAPH' },
-                //     { boxLabel: '<i class="fa fa-line-chart"></i> <strong>' + 'Time Graph Dynamic'.t() + '</strong>', name: 'rt', inputValue: 'TIME_GRAPH_DYNAMIC' },
-                //     { boxLabel: '<i class="fa fa-list-ul"></i> <strong>'    + 'Event List'.t()  + '</strong>', name: 'rt', inputValue: 'EVENT_LIST' }
-                // ],
-                // bind: {
-                //     value: '{entry.type}'
-                // }
             }]
         }, {
             // style properties
@@ -367,6 +363,7 @@ Ext.define('Ung.view.reports.Entry', {
             title: '<i class="fa fa-paint-brush"></i> ' + 'Graph/View Options'.t(),
             flex: 1,
             layout: 'anchor',
+            border: false,
             defaults: {
                 labelAlign: 'top',
                 anchor: '100%'
@@ -387,8 +384,8 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    value: '{entry.pieStyle}',
-                    hidden: '{entry.type !== "PIE_GRAPH"}'
+                    value: '{eEntry.pieStyle}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}'
                 }
             }, {
                 // PIE_GRAPH
@@ -400,8 +397,8 @@ Ext.define('Ung.view.reports.Entry', {
                 allowBlank: false,
                 hidden: true,
                 bind: {
-                    value: '{entry.pieNumSlices}',
-                    hidden: '{entry.type !== "PIE_GRAPH"}'
+                    value: '{eEntry.pieNumSlices}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}'
                 }
             }, {
                 // TIME_GRAPH, TIME_GRAPH_DYNAMIC
@@ -419,8 +416,8 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    value: '{entry.timeStyle}',
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{eEntry.timeStyle}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
             }, {
                 // TIME_GRAPH, TIME_GRAPH_DYNAMIC
@@ -439,8 +436,8 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    value: '{entry.timeDataInterval}',
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{eEntry.timeDataInterval}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
             }, {
                 // TIME_GRAPH, TIME_GRAPH_DYNAMIC
@@ -456,8 +453,8 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    value: '{entry.approximation}',
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{f_approximation}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
             }, {
                 // PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC
@@ -466,7 +463,7 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: true,
                 bind: {
                     value: '{_colorsStr}',
-                    hidden: '{entry.type !== "PIE_GRAPH" && entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    hidden: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
             }, {
                 xtype: 'fieldcontainer',
@@ -481,30 +478,49 @@ Ext.define('Ung.view.reports.Entry', {
                 }, {
                     xtype: 'numberfield',
                     width: 70,
-                    bind: '{entry.displayOrder}'
+                    bind: '{eEntry.displayOrder}'
                 }, {
                     xtype: 'component',
                     padding: '0 5',
                     html: '<i class="fa fa-info-circle fa-gray" data-qtip="The order to display this report entry (relative to others)"></i>'
-                }]
+                }],
+                hidden: true,
+                bind: {
+                    hidden: '{!eEntry}'
+                }
             }]
         }],
         dockedItems: [{
             xtype: 'toolbar',
             dock: 'bottom',
             ui: 'footer',
-            defaults: {
-                xtype: 'button',
-                scale: 'medium',
-                margin: '5 0 0 0'
-            },
             layout: { type: 'vbox', align: 'stretch' },
             items: [{
-                text: 'Preview'
+                xtype: 'button',
+                text: 'Preview/Refresh'.t(),
+                iconCls: 'fa fa-refresh fa-lg',
+                scale: 'medium'
             }, {
-                text: 'Save'
+                xtype: 'component',
+                height: 5
             }, {
-                text: 'Save as New ...'
+                xtype: 'segmentedbutton',
+                allowToggle: false,
+                flex: 1,
+                defaults: {
+                    scale: 'medium'
+                },
+                items: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-lg',
+                    handler: 'cancelEdit'
+                }, {
+                    text: 'Save'.t(),
+                    iconCls: 'fa fa-floppy-o fa-lg',
+                }, {
+                    text: 'Save as New'.t(),
+                    iconCls: 'fa fa-floppy-o fa-lg',
+                }]
             }]
         }]
     }, {
@@ -512,6 +528,10 @@ Ext.define('Ung.view.reports.Entry', {
         height: 300,
         split: true,
         layout: 'border',
+        hidden: true,
+        bind: {
+            hidden: '{!eEntry}'
+        },
         items: [{
             region: 'west',
             title: '<i class="fa fa-database"></i> ' + 'Data Source'.t(),
@@ -539,14 +559,11 @@ Ext.define('Ung.view.reports.Entry', {
                     fieldLabel: 'Data Table'.t(),
                     labelAlign: 'right',
                     bind: {
-                        value: '{entry.table}',
+                        value: '{eEntry.table}',
                         store: '{tables}'
                     },
                     editable: false,
                     queryMode: 'local'
-                }, {
-                    xtype: 'button',
-                    text: 'View Columns'.t()
                 }]
             }, {
                 // ALL GRAPHS
@@ -555,7 +572,7 @@ Ext.define('Ung.view.reports.Entry', {
                 ui: 'footer',
                 hidden: true,
                 bind: {
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC" && entry.type !== "PIE_GRAPH"}'
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
                 },
                 items: [{
                     xtype: 'combo',
@@ -570,7 +587,7 @@ Ext.define('Ung.view.reports.Entry', {
                     valueField: 'value',
                     bind: {
                         store: { data: '{tableColumns}' },
-                        value: '{entry.orderByColumn}'
+                        value: '{eEntry.orderByColumn}'
                     },
                     displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
                     listConfig: {
@@ -583,7 +600,7 @@ Ext.define('Ung.view.reports.Entry', {
                         { text: '', iconCls: 'fa fa-arrow-down' , value: false, tooltip: 'Descending'.t() }
                     ],
                     bind: {
-                        value: '{entry.orderDesc}',
+                        value: '{eEntry.orderDesc}',
                     }
                 }]
             }],
@@ -617,11 +634,12 @@ Ext.define('Ung.view.reports.Entry', {
                     ptype: 'cellediting',
                     clicksToEdit: 1
                 }],
+                hidden: true,
                 bind: {
                     store: {
                         data: '{textDataColumns}'
                     },
-                    hidden: '{entry.type !== "TEXT"}'
+                    hidden: '{eEntry.type !== "TEXT"}'
                 },
                 columns: [{
                     dataIndex: 'str',
@@ -650,8 +668,8 @@ Ext.define('Ung.view.reports.Entry', {
                 fieldLabel: 'Text String'.t(),
                 hidden: true,
                 bind: {
-                    value: '{entry.textString}',
-                    hidden: '{entry.type !== "TEXT"}'
+                    value: '{eEntry.textString}',
+                    hidden: '{eEntry.type !== "TEXT"}'
                 }
             }, {
                 // PIE_GRAPH
@@ -664,10 +682,11 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 displayField: 'value',
                 valueField: 'value',
+                hidden: true,
                 bind: {
                     store: { data: '{tableColumns}' },
-                    value: '{entry.pieGroupColumn}',
-                    hidden: '{entry.type !== "PIE_GRAPH"}'
+                    value: '{eEntry.pieGroupColumn}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}'
                 },
                 displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
                 listConfig: {
@@ -682,7 +701,7 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'textfield',
                     anchor: '60%',
                     bind: {
-                        value: '{entry.pieSumColumn}'
+                        value: '{eEntry.pieSumColumn}'
                     }
                 }, {
                     xtype: 'component',
@@ -691,7 +710,7 @@ Ext.define('Ung.view.reports.Entry', {
                 }],
                 hidden: true,
                 bind: {
-                    hidden: '{entry.type !== "PIE_GRAPH"}'
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}'
                 }
             }, {
                 // TIME_GRAPH
@@ -723,11 +742,12 @@ Ext.define('Ung.view.reports.Entry', {
                     ptype: 'cellediting',
                     clicksToEdit: 1
                 }],
+                hidden: true,
                 bind: {
                     store: {
                         data: '{timeDataColumns}'
                     },
-                    hidden: '{entry.type !== "TIME_GRAPH"}'
+                    hidden: '{eEntry.type !== "TIME_GRAPH"}'
                 },
                 columns: [{
                     dataIndex: 'str',
@@ -760,10 +780,11 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 displayField: 'value',
                 valueField: 'value',
+                hidden: true,
                 bind: {
                     store: { data: '{tableColumns}' },
-                    value: '{entry.timeDataDynamicColumn}',
-                    hidden: '{entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{eEntry.timeDataDynamicColumn}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
                 displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
                 listConfig: {
@@ -780,10 +801,11 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 displayField: 'value',
                 valueField: 'value',
+                hidden: true,
                 bind: {
                     store: { data: '{tableColumns}' },
-                    value: '{entry.timeDataDynamicValue}',
-                    hidden: '{entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{eEntry.timeDataDynamicValue}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 },
                 displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
                 listConfig: {
@@ -798,7 +820,7 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'numberfield',
                     width: 50,
                     bind: {
-                        value: '{entry.timeDataDynamicLimit}'
+                        value: '{eEntry.timeDataDynamicLimit}'
                     }
                 }, {
                     xtype: 'component',
@@ -807,7 +829,7 @@ Ext.define('Ung.view.reports.Entry', {
                 }],
                 hidden: true,
                 bind: {
-                    hidden: '{entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 }
             }, {
                 // TIME_GRAPH_DYNAMIC
@@ -823,8 +845,8 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    value: '{entry.timeDataDynamicAggregationFunction}',
-                    hidden: '{entry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    value: '{eEntry.timeDataDynamicAggregationFunction}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
                 }
             }, {
                 // ALL GRAPHS
@@ -835,7 +857,7 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'textfield',
                     anchor: '60%',
                     bind: {
-                        value: '{entry.units}'
+                        value: '{eEntry.units}'
                     }
                 }, {
                     xtype: 'component',
@@ -844,7 +866,7 @@ Ext.define('Ung.view.reports.Entry', {
                 }],
                 hidden: true,
                 bind: {
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC" && entry.type !== "PIE_GRAPH"}'
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
                 }
             }, {
                 // ALL GRAPHS
@@ -853,8 +875,8 @@ Ext.define('Ung.view.reports.Entry', {
                 fieldLabel: 'Series Renderer'.t(),
                 hidden: true,
                 bind: {
-                    value: '{entry.seriesRenderer}',
-                    hidden: '{entry.type !== "TIME_GRAPH" && entry.type !== "TIME_GRAPH_DYNAMIC" && entry.type !== "PIE_GRAPH"}'
+                    value: '{eEntry.seriesRenderer}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
                 }
             }]
         }, {
@@ -965,7 +987,13 @@ Ext.define('Ung.view.reports.Entry', {
         store: { data: [] },
         bind: {
             hidden: '{!dataBtn.checked}',
-        }
+        },
+        bbar: ['->', {
+            itemId: 'exportGraphData',
+            text: 'Export Data'.t(),
+            iconCls: 'fa fa-external-link-square',
+            handler: 'exportGraphData'
+        }]
     }, {
         /**
          * Global conditions which apply to all reports

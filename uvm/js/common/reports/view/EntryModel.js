@@ -4,6 +4,8 @@ Ext.define('Ung.view.reports.EntryModel', {
 
 
     data: {
+        eEntry: null, // editable entry, copy of the selected entry
+        // eError: false, // true/false if errors while fetching report data based on editing options
         // rounded to nearest 10 minutes minus 24 hours
         startDate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - 24 * 3600 *1000)),
         // rounded to nearest 10 minutes
@@ -45,19 +47,19 @@ Ext.define('Ung.view.reports.EntryModel', {
 
     formulas: {
         // active report view switch from 3 types: text, graph, events
-        activeReportType: function (get) {
+        f_activeReportType: function (get) {
             if (get('entry.type') === 'TEXT') { return 'textreport'; }
             if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
             return 'graphreport';
         },
 
 
-        _approximation: {
+        f_approximation: {
             get: function (get) {
-                return get('entry.approximation') || 'sum';
+                return get('eEntry.approximation') || 'sum';
             },
             set: function (value) {
-                this.set('entry.approximation', value !== 'sum' ? value : null);
+                this.set('eEntry.approximation', value !== 'sum' ? value : null);
             }
         },
 
@@ -152,12 +154,13 @@ Ext.define('Ung.view.reports.EntryModel', {
         },
 
 
-        reportHeading: function (get) {
-            if (get('entry.readOnly')) {
-                return '<h1><span style="color: #CCC;">' + get('entry.category') + '/</span>' + get('entry.title').t() + '</h1>';
-            }
-            return '<h2>' + get('entry.title') + '</h2>';
-        },
+        // f_reportHeader: function (get) {
+        //     var entry = get('eEntry') || get('entry');
+        //     if (entry.get('readOnly')) {
+        //         return '<h1><span style="color: #CCC;">' + entry.get('category') + '/</span>' + entry.get('title').t() + '</h1>';
+        //     }
+        //     return '<h2>' + entry.get('title') + '</h2>';
+        // },
         // enableIcon: function (get) {
         //     return get('entry.enabled') ? 'fa-green' : 'fa-flip-horizontal fa-grey';
         // },

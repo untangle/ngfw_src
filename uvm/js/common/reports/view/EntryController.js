@@ -48,6 +48,9 @@ Ext.define('Ung.view.reports.EntryController', {
          */
         vm.bind('{entry}', function (entry) {
             console.log(entry);
+
+            vm.set('eEntry', null); // reset editing entry
+
             vm.set('disableSave', entry.readOnly);
             vm.set('disableNewSave', true);
             vm.set('_currentData', []);
@@ -95,7 +98,10 @@ Ext.define('Ung.view.reports.EntryController', {
 
             // me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
             // me.getView().down('#sqlFilterCombo').setValue(null);
+        });
 
+        vm.bind('{eEntry}', function (eEntry) {
+            me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
         });
     },
 
@@ -844,5 +850,15 @@ Ext.define('Ung.view.reports.EntryController', {
         }
 
     },
+
+
+    editEntry: function () {
+        var me = this, vm = me.getViewModel();
+        vm.set('eEntry', vm.get('entry').copy(null));
+    },
+
+    cancelEdit: function () {
+        this.getViewModel().set('eEntry', null);
+    }
 
 });
