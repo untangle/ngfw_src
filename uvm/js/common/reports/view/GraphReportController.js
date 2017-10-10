@@ -23,17 +23,34 @@ Ext.define('Ung.view.reports.GraphReportController', {
         if (!me.getView().up('reportwidget')) {
             // whatch when report entry is changed or modified
 
-            vm.bind('{entry.type}', function (type) {
+            vm.bind('{entry}', function (entry) {
+                // if (entry.get('type') === 'PIE_GRAPH') {
+                //     me.setPieSeries();
+                // }
+                // if (entry.get('type') === 'TIME_GRAPH') {
+                //     me.setTimeSeries();
+                // }
+                me.fetchData(true);
+            });
+
+            vm.bind('{eEntry.type}', function (type) {
                 if (type === 'PIE_GRAPH') {
                     // set some PIE_GRAPH defaults in case they are not set
-                    vm.set('entry.pieStyle', vm.get('entry.pieStyle') || 'PIE');
-                    vm.set('entry.pieNumSlices', vm.get('entry.pieNumSlices') || 10);
-                    me.setPieSeries();
+                    vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+                    vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+
                 }
                 if (type === 'TIME_GRAPH') {
                     me.setTimeSeries();
                 }
                 me.fetchData(true);
+            });
+
+            vm.bind('{eEntry.pieStyle}', function () {
+                me.setPieSeries();
+            });
+            vm.bind('{eEntry.pieNumSlices}', function () {
+                me.setPieSeries();
             });
 
             // vm.bind('{entry}', function (entry) {
@@ -89,7 +106,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * builds an empty chart (no data) and adds it to the container (this is done once)
      */
     buildChart: function () {
-        var me = this, entry = me.getViewModel().get('entry'), widgetDisplay = me.getView().widgetDisplay;
+        var me = this, widgetDisplay = me.getView().widgetDisplay;
 
         me.chart = new Highcharts.StockChart({
             chart: {
@@ -296,9 +313,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
     fetchData: function (reset, cb) {
         var me = this,
             vm = this.getViewModel(),
-            entryType = vm.get('entry.type'),
+            entry = vm.get('eEntry') || vm.get('entry'),
+            entryType = entry.get('type'),
             reps = me.getView().up('#reports'),
             startDate, endDate;
+
+        vm.set('eError', false);
 
         if (reset) {
             // if report entry changed, reset the chart first
@@ -335,13 +355,11 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-            vm.get('entry').getData(), // entry
+            entry.getData(), // entry
             startDate,
             endDate,
             vm.get('sqlFilterData'), -1) // sql filters
             .then(function (result) {
-                if (reps) { reps.getViewModel().set('fetching', false); }
-                me.chart.hideLoading();
                 me.data = result.list;
 
                 // after data is fetched, generate chart series based on it's type
@@ -358,9 +376,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     // vm.set('_currentData', []);
                     var ctrl = me.getView().up('reports-entry').getController();
                     switch (entryType) {
-                        case 'TIME_GRAPH':         ctrl.formatTimeData(me.data); break;
-                        case 'TIME_GRAPH_DYNAMIC': ctrl.formatTimeDynamicData(me.data); break;
-                        case 'PIE_GRAPH':          ctrl.formatPieData(me.data); break;
+                    case 'TIME_GRAPH':         ctrl.formatTimeData(me.data); break;
+                    case 'TIME_GRAPH_DYNAMIC': ctrl.formatTimeDynamicData(me.data); break;
+                    case 'PIE_GRAPH':          ctrl.formatPieData(me.data); break;
                     }
                 } else {
                     // is widget
@@ -371,6 +389,13 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     // }, me.refreshIntervalSec * 1000);
 
                 }
+            }, function () {
+                console.log('here');
+                vm.set('eError', true);
+            })
+            .always(function () {
+                if (reps) { reps.getViewModel().set('fetching', false); }
+                me.chart.hideLoading();
             });
     },
 
@@ -465,23 +490,25 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * set serie fro the pie chart
      */
     setPieSeries: function () {
-        var me = this, vm = this.getViewModel(), seriesName,
+        var me = this, vm = this.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'),
+            seriesName,
             slicesData = [], restValue = 0, seriesRenderer = null, i;
 
         if (!me.data) { return; }
 
-        if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
-            seriesRenderer = Renderer[vm.get('entry.seriesRenderer')];
+        if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
+            seriesRenderer = Renderer[entry.get('seriesRenderer')];
         }
 
         for (i = 0; i < me.data.length; i += 1) {
             if (!seriesRenderer) {
-                seriesName = me.data[i][vm.get('entry.pieGroupColumn')] !== undefined ? me.data[i][vm.get('entry.pieGroupColumn')] : 'None'.t();
+                seriesName = me.data[i][entry.get('pieGroupColumn')] !== undefined ? me.data[i][entry.get('pieGroupColumn')] : 'None'.t();
             } else {
-                seriesName = seriesRenderer(me.data[i][vm.get('entry.seriesRenderer')]);
+                seriesName = seriesRenderer(me.data[i][entry.get('pieGroupColumn')]);
             }
 
-            if (i < vm.get('entry.pieNumSlices')) {
+            if (i < entry.get('pieNumSlices')) {
                 slicesData.push({
                     name: seriesName,
                     y: me.data[i].value,
@@ -504,7 +531,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         }
 
         me.chart.addSeries({
-            name: vm.get('entry.units').t(),
+            name: entry.get('units').t(),
             data: slicesData,
             tooltip: {
                 pointFormatter: function () {
@@ -563,11 +590,11 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * sets/updates the chart styles based on entry and data
      */
     setStyles: function () {
-        var me = this, entry = this.getViewModel().get('entry'),
-        widgetDisplay = me.getView().widgetDisplay,
+        var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
+            widgetDisplay = me.getView().widgetDisplay,
 
-        isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
-        isPieColumn = false, isDonut = false, isPie = false, is3d = false;
+            isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
+            isPieColumn = false, isDonut = false, isPie = false, is3d = false;
 
         var isPieGraph = entry.get('type') === 'PIE_GRAPH';
         var isTimeGraph = entry.get('type').indexOf('TIME_GRAPH') >= 0;

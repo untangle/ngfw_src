@@ -10,7 +10,8 @@ Ext.define('Ung.view.reports.Reports', {
     viewModel: {
         data: {
             fetching: false,
-            selection: null
+            selection: null,
+            editing: false
         }
     },
 
@@ -56,12 +57,17 @@ Ext.define('Ung.view.reports.Reports', {
         split: true,
         border: false,
 
-        hidden: true,
+        // hidden: true,
         // singleExpand: true,
         useArrows: true,
         rootVisible: false,
         plugins: 'responsive',
         store: 'reportstree',
+
+        hidden: true,
+        bind: {
+            hidden: '{editing}'
+        },
 
         viewConfig: {
             selectionModel: {
@@ -71,17 +77,6 @@ Ext.define('Ung.view.reports.Reports', {
         },
 
         dockedItems: [{
-            xtype: 'toolbar',
-            border: false,
-            dock: 'top',
-            cls: 'report-header',
-            height: 53,
-            padding: '0 10',
-            items: [{
-                xtype: 'component',
-                html: '<h2>Select Report</h2><p>Find or select a report</p>'
-            }]
-        }, {
             xtype: 'textfield',
             margin: '1',
             emptyText: 'Filter reports ...',
