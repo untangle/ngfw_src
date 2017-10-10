@@ -68,9 +68,17 @@ Ext.define('Ung.util.Util', {
     },
 
     // returns milliseconds depending of the servlet ADMIN or REPORTS
-    // for REPORTS the date range based on client date won't reflect server timezone properly
     getMilliseconds: function () {
-        return rpc.systemManager ? rpc.systemManager.getMilliseconds() : new Date().getTime();
+        // UvmContext
+        if (rpc.systemManager) {
+            return rpc.systemManager.getMilliseconds();
+        }
+        // ReportsContext
+        if (rpc.ReportsContext) {
+            return rpc.ReportsContext.getMilliseconds();
+        }
+        // otherwise return client millis
+        return new Date().getTime();
     },
 
     bytesToHumanReadable: function (bytes, si) {

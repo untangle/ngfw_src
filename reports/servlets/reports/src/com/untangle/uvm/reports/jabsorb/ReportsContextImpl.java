@@ -3,6 +3,10 @@
  */
 package com.untangle.uvm.reports.jabsorb;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +32,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private final Logger logger = Logger.getLogger(getClass());
 
     private final UvmContext context;
+    private static final String TIMEZONE_FILE = "/etc/timezone";
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
@@ -36,6 +41,21 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private ReportsContextImpl( UvmContext context )
     {
         this.context = context;
+    }
+
+    private TimeZone getTimeZone()
+    {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            String str = in.readLine();
+            str = str.trim();
+            in.close();
+            TimeZone current = TimeZone.getTimeZone(str);
+            return current;
+        } catch (Exception x) {
+            logger.warn("Unable to get timezone, using java default:" , x);
+            return TimeZone.getDefault();
+        }
     }
 
     public ReportsManager reportsManager()
@@ -58,12 +78,21 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return System.currentTimeMillis();
     }
 
+    public Integer getTimeZoneOffset()
+    {
+        TimeZone tz = getTimeZone();
+        Calendar cal = Calendar.getInstance(tz);
+        Integer offset = tz.getOffset(cal.getTimeInMillis());
+        logger.info("getTimeZoneOffset calculated value = " + offset);
+        return(offset);
+    }
+
     static UtJsonRpcServlet.ReportsContext makeReportsContext()
     {
         UvmContext uvm = UvmContextFactory.context();
         return new ReportsContextImpl( uvm );
     }
-    
+
     /**
      * This proxy object is used so the reports servlet does not have access to setSettings and related methods
      */
@@ -87,7 +116,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         public List<LocaleInfo> getLanguagesList() { return context.languageManager().getLanguagesList(); }
         public Map<String, String> getTranslations(String module) { return context.languageManager().getTranslations(module); }
     }
-    
+
     /**
      * This class is used extend ReportsManagerImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
      */
