@@ -33,7 +33,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     private JSONRPCBridge bridge;
     private UtCallbackController callback;
-    
+
     // HttpServlet methods ----------------------------------------------------
 
     @SuppressWarnings("unchecked") //getAttribute
@@ -47,7 +47,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         bridge = new JSONRPCBridge();
         callback = new UtCallbackController( bridge );
         bridge.setCallbackController( callback );
-        
+
         try {
             ServletUtils.getInstance().registerSerializers(bridge);
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
         return jsonBridge;
     }
-    
+
     public interface ReportsContext
     {
         public ReportsManager reportsManager();
@@ -108,5 +108,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         public SkinManager skinManager();
 
         public LanguageManager languageManager();
+
+        public long getMilliseconds();
+
+        public Integer getTimeZoneOffset();
     }
 }

@@ -19,6 +19,8 @@ Ext.define('Bootstrap', {
         }
         else if (this.servletContext === 'REPORTS') {
             rpc = new JSONRpcClient('/reports/JSON-RPC');
+            // add timezone offset to rpc
+            rpc.timeZoneOffset = rpc.ReportsContext.getTimeZoneOffset();
         }
         else if (this.servletContext === 'QUARANTINE') {
             rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
