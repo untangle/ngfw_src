@@ -57,7 +57,6 @@ Ext.define('Ung.view.reports.Reports', {
         split: true,
         border: false,
 
-        // hidden: true,
         // singleExpand: true,
         useArrows: true,
         rootVisible: false,
