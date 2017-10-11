@@ -33,25 +33,25 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 me.fetchData(true);
             });
 
-            vm.bind('{eEntry.type}', function (type) {
-                if (type === 'PIE_GRAPH') {
-                    // set some PIE_GRAPH defaults in case they are not set
-                    vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-                    vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+            // vm.bind('{eEntry.type}', function (type) {
+            //     if (type === 'PIE_GRAPH') {
+            //         // set some PIE_GRAPH defaults in case they are not set
+            //         vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+            //         vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
 
-                }
-                if (type === 'TIME_GRAPH') {
-                    me.setTimeSeries();
-                }
-                me.fetchData(true);
-            });
+            //     }
+            //     if (type === 'TIME_GRAPH') {
+            //         me.setTimeSeries();
+            //     }
+            //     me.fetchData(true);
+            // });
 
-            vm.bind('{eEntry.pieStyle}', function () {
-                me.setPieSeries();
-            });
-            vm.bind('{eEntry.pieNumSlices}', function () {
-                me.setPieSeries();
-            });
+            // vm.bind('{eEntry.pieStyle}', function () {
+            //     me.setPieSeries();
+            // });
+            // vm.bind('{eEntry.pieNumSlices}', function () {
+            //     me.setPieSeries();
+            // });
 
             // vm.bind('{entry}', function (entry) {
             //     console.log(entry);

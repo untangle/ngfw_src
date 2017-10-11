@@ -14,26 +14,29 @@ Ext.define('Ung.view.reports.EntryModel', {
         _currentData: [],
         sqlFilterData: [],
         autoRefresh: false,
+
+        textColumns: [],
+        textColumnsCount: 0, // used for grids validation
         timeDataColumns: [],
-        textDataColumns: []
+        timeDataColumnsCount: 0 // used for grids validation
         // fetching: false // set in Reports ViewModel
     },
 
     stores: {
-        timeDataColumnsStore: {
-            data: '{timeDataColumns}', // defined as a formula
-            proxy: {
-                type: 'memory',
-                reader: { type: 'json' }
+        textColumnsStore: {
+            data: '{textColumns}',
+            listeners: {
+                datachanged: 'onTextColumnsChanged',
+                update: 'onTextColumnsChanged'
             }
         },
-        textDataColumnsStore: {
-            data: '{textDataColumns}', // defined as a formula
-            proxy: {
-                type: 'memory',
-                reader: { type: 'json' }
+        timeDataColumnsStore: {
+            data: '{timeDataColumns}',
+            listeners: {
+                datachanged: 'onTimeDataColumnsChanged',
+                update: 'onTimeDataColumnsChanged'
             }
-        }
+        },
         // _sqlConditionsStore: {
         //     data: '{_sqlConditions}',
         //     proxy: {
@@ -52,8 +55,9 @@ Ext.define('Ung.view.reports.EntryModel', {
             if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
             return 'graphreport';
         },
-
-
+        f_textColumnsCount: function (get) {
+            return get('textColumns').length;
+        },
         f_approximation: {
             get: function (get) {
                 return get('eEntry.approximation') || 'sum';
