@@ -13,7 +13,7 @@ Ext.define ('Ung.model.Report', {
         'orderDesc',
 
         'pieGroupColumn',
-        'pieNumSlices',
+        { name: 'pieNumSlices', defaultValue: 10 },
         'pieStyle',
         'pieSumColumn',
 
@@ -21,7 +21,7 @@ Ext.define ('Ung.model.Report', {
         'seriesRenderer',
         'table',
         'textColumns',
-        'textString',
+        { name: 'textString', type: 'string' },
 
         'timeDataColumns',
         'timeDataDynamicAggregationFunction',
@@ -31,7 +31,9 @@ Ext.define ('Ung.model.Report', {
         'timeDataDynamicValue',
         'timeDataInterval',
         'timeStyle',
-        'title',
+        { name: 'title', type: 'string', validate: function(v, s, e, r) {
+            return true;
+        } },
         'type', // TEXT, PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC, EVENT_LIST
         'uniqueId',
         'units',
@@ -94,6 +96,7 @@ Ext.define ('Ung.model.Report', {
                 case 'TIME_GRAPH':
                 case 'TIME_GRAPH_DYNAMIC':
                     icon = 'fa-line-chart';
+                    if (!entry.timeStyle) { return icon; }
                     if (entry.timeStyle.indexOf('BAR') >= 0) {
                         icon = 'fa-bar-chart';
                     } else {

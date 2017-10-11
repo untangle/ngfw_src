@@ -49,7 +49,7 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.bind('{entry}', function (entry) {
             console.log(entry);
 
-            vm.set('eEntry', null); // reset editing entry
+            if (vm.get('eEntry')) { vm.set('eEntry', null); } // reset editing entry
 
             vm.set('disableSave', entry.readOnly);
             vm.set('disableNewSave', true);
@@ -87,8 +87,8 @@ Ext.define('Ung.view.reports.EntryController', {
             }
 
             // set initial time or text data columns
-            vm.set('textDataColumns', Ext.Array.map(entry.get('textColumns') || [], function (col) { return { str: col }; }));
-            vm.set('timeDataColumns', Ext.Array.map(entry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
+            // vm.set('textColumns', Ext.Array.map(entry.get('textColumns') || [], function (col) { return { str: col }; }));
+            // vm.set('timeDataColumns', Ext.Array.map(entry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
 
             // set the _sqlConditions data as for the sql conditions grid store
             // vm.set('_sqlConditions', entry.get('conditions') || []);
@@ -102,6 +102,24 @@ Ext.define('Ung.view.reports.EntryController', {
 
         vm.bind('{eEntry}', function (eEntry) {
             me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
+
+            if (!eEntry) { return; }
+
+            vm.set('textColumns', Ext.Array.map(eEntry.get('textColumns') || [], function (col) { return { str: col }; }));
+            vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
+        });
+
+        vm.bind('{eEntry.type}', function (type) {
+            // when changing type populate some fields (combos) with default values if not set
+            if (type === 'PIE_GRAPH') {
+                vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+                vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+            }
+            if (type === 'TIME_GRAPH' || type === 'TIME_GRAPH_DYNAMIC') {
+                vm.set('eEntry.timeStyle', vm.get('eEntry.timeStyle') || 'AREA');
+                vm.set('eEntry.timeDataInterval', vm.get('eEntry.timeDataInterval') || 'MINUTE');
+            }
+            Ext.defer(function () { me.getView().down('form').isValid(); }, 300);
         });
     },
 
@@ -616,7 +634,7 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('entry.timeDataColumns', tdc);
         }
         if (entry.get('type') === 'TEXT') {
-            tdcg = v.down('#textDataColumnsGrid');
+            tdcg = v.down('#textColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
             vm.set('entry.textColumns', tdc);
         }
@@ -651,7 +669,7 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('entry.timeDataColumns', tdc);
         }
         if (entry.get('type') === 'TEXT') {
-            tdcg = v.down('#textDataColumnsGrid');
+            tdcg = v.down('#textColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
             vm.set('entry.textColumns', tdc);
         }
@@ -855,10 +873,75 @@ Ext.define('Ung.view.reports.EntryController', {
     editEntry: function () {
         var me = this, vm = me.getViewModel();
         vm.set('eEntry', vm.get('entry').copy(null));
+        vm.notify();
     },
 
     cancelEdit: function () {
         this.getViewModel().set('eEntry', null);
-    }
+    },
+
+    previewReport: function() {
+        var me = this, form = me.getView().down('form').getForm();
+
+        console.log(me.isValidReport());
+        // Ext.Array.each(form.getFields().items, function (f) {
+        //     // console.log(f);
+        //     console.log(f.validate(), f.getId());
+        // });
+        // console.log();
+        //console.log(form.isValid());
+    },
+
+    onTextColumnsChanged: function (store) {
+        var vm = this.getViewModel(), tdc = [];
+        // update validation counter
+        vm.set('textColumnsCount', store.getCount());
+        // update the actual entry
+        store.each(function (col) { tdc.push(col.get('str')); });
+        vm.set('eEntry.textColumns', tdc);
+    },
+
+    onTimeDataColumnsChanged: function (store) {
+        var vm = this.getViewModel(), tdc = [];
+        // update validation counter
+        vm.set('timeDataColumnsCount', store.getCount());
+        // update the actual entry
+        store.each(function (col) { tdc.push(col.get('str')); });
+        vm.set('eEntry.timeDataColumns', tdc);
+    },
+
+    isValidReport: function () {
+        var me = this, vm = me.getViewModel(),
+            form = me.getView().down('form').getForm(),
+            entry = vm.get('eEntry');
+
+        if (!entry || !form.isValid()) { return false; }
+
+        if (entry.get('type') === 'TEXT') {
+            if (me.getView().down('#textColumnsGrid').getStore().getCount() === 0) {
+                return false;
+            }
+        }
+
+        if (entry.get('type') === 'TIME_GRAPH') {
+            if (me.getView().down('#timeDataColumnsGrid').getStore().getCount() === 0) {
+                return false;
+            }
+        }
+        return true;
+    },
+
+    removeTimeDataColumn: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
+        store.remove(record);
+        // vm.set('timeDataColumns', Ext.Array.removeAt(vm.get('timeDataColumns'), rowIndex));
+        // store.commitChanges();
+        // store.reload();
+        // record.drop();
+        // store.each(function (col) { tdc.push(col.get('str')); });
+        // vm.set('eEntry.timeDataColumns', tdc);
+    },
+
+
 
 });
