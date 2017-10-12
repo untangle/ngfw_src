@@ -215,10 +215,25 @@ public class TunnelVpnManager
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
                 String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
                 logger.info("Recycling tunnel connection: " + tunnelSettings.getName() + "PID:" + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -HUP " + pidData);
+                pidFile.delete();
+
+                /*
+                 * We get called when the user clicks recycle from the web
+                 * interface so we send three signals to make sure the process
+                 * goes away as quickly and cleanly as possible. The first will
+                 * interrupt any system call in progress. The second lets the
+                 * daemon know to terminate and hopefully begin a clean
+                 * shutdown. The third tells it we do not want to wait.
+                 */
+                UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
+                UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
+                UvmContextFactory.context().execManager().execOutput("kill -KILL " + pidData);
+
                 TunnelVpnEvent event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnelSettings.getName(), TunnelVpnEvent.EventType.RECYCLE);
                 app.logEvent(event);
                 logger.debug("TunnelVpnEvent(logEvent) " + event.toSummaryString());
+
+                launchProcess(tunnelSettings);
             } catch (Exception exn) {
                 logger.warn("Exception attempting to recycle tunnel");
             }

@@ -79,8 +79,6 @@ class TunnelVpnMonitor implements Runnable
 
         logger.debug("Starting");
 
-        long now = System.currentTimeMillis();
-
         while (true) {
             if (!isAlive) break;
             try {
@@ -161,22 +159,18 @@ class TunnelVpnMonitor implements Runnable
 
             TunnelVpnTunnelStatus status = tunnelStatus.get(tunnel.getTunnelId());
 
+            if (status == null) {
+                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId());
+                status.setTunnelName(tunnel.getName());
+                tunnelStatus.put(tunnel.getTunnelId(), status);
+            }
+
             logger.debug("Checking tunnel " + tunnel.getName() + " (" + tunnel.getTunnelId() + ")");
 
             try {
                 File pidFile = new File("/var/run/tunnelvpn/tunnel-" + tunnel.getTunnelId() + ".pid");
                 if (!pidFile.exists()) {
-                    /* process does not exist so we start it here */
-                    logger.warn("OpenVPN process for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") missing. Restarting...");
-
-                    /*
-                     * update the tunnel state and force stats to generate the
-                     * event
-                     */
-                    status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
-                    generateTunnelStatistics();
-
-                    manager.launchProcess(tunnel);
+                    restartDeadTunnel("missing", tunnel, status);
                     continue;
                 }
 
@@ -198,17 +192,7 @@ class TunnelVpnMonitor implements Runnable
                 File procFile = new File("/proc/" + pid);
 
                 if (!procFile.exists()) {
-                    /* process isn't running so we restart it here */
-                    logger.warn("OpenVPN process for " + tunnel.getName() + " (PID:" + pid + ") died. Restarting...");
-
-                    /*
-                     * update the tunnel state and force stats to generate the
-                     * event
-                     */
-                    status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
-                    generateTunnelStatistics();
-
-                    manager.launchProcess(tunnel);
+                    restartDeadTunnel("dead", tunnel, status);
                     continue;
                 }
 
@@ -230,11 +214,8 @@ class TunnelVpnMonitor implements Runnable
             try {
                 status = updateTunnelStatus(tunnel);
 
-            } catch (ConnectException exn) {
-                logger.warn("Unable to get status for " + tunnel.getName());
-
             } catch (Exception exn) {
-                logger.warn("Failed to get status for " + tunnel.getName(), exn);
+                logger.warn("Failed to get status for " + tunnel.getName() + " [" + exn.getMessage() + "]");
             }
 
             if (status == null) status = getTunnelStatus(tunnel.getTunnelId());
@@ -244,6 +225,8 @@ class TunnelVpnMonitor implements Runnable
 
             if (status.getStateInfo().equals(TunnelVpnTunnelStatus.STATE_CONNECTED)) {
                 event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnel.getName(), TunnelVpnEvent.EventType.CONNECT);
+                status.restartCount = 0;
+                status.restartStamp = 0;
             } else {
                 event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnel.getName(), TunnelVpnEvent.EventType.DISCONNECT);
             }
@@ -391,6 +374,37 @@ class TunnelVpnMonitor implements Runnable
         logger.debug("updateTunnelStatus(logEvent) " + event.toString());
 
         return (status);
+    }
+
+    private void restartDeadTunnel(String reason, TunnelVpnTunnelSettings tunnel, TunnelVpnTunnelStatus status)
+    {
+        long currentTime = (System.currentTimeMillis() / 1000);
+        long futureTime = 0;
+
+        // first time here we initialize the throttling logic and log the event
+        if (status.restartCount == 0) {
+            logger.debug("Initializing retry throttling for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ")");
+            status.restartStamp = currentTime;
+
+            // change the state to disconnected so stats will log an event
+            status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
+            generateTunnelStatistics();
+        }
+
+        futureTime = (status.restartStamp + (status.restartCount * SLEEP_TIME_MSEC) / 1000);
+
+        // if not yet time to restart again just return
+        if (currentTime < futureTime) {
+            logger.debug("Throttling retry for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") COUNT:" + status.restartCount + " CUR:" + currentTime + " FUT:" + futureTime);
+            return;
+        }
+
+        // double the throttling delay after each attempt
+        if (status.restartCount == 0) status.restartCount = 1;
+        status.restartCount = (status.restartCount * 2);
+
+        logger.warn("Restarting OpenVPN process for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") Reason: " + reason);
+        manager.launchProcess(tunnel);
     }
 
     public void clearTunnelStatus(int tunnelId)
