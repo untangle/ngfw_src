@@ -18,7 +18,8 @@ Ext.define('Ung.view.reports.EntryModel', {
         textColumns: [],
         textColumnsCount: 0, // used for grids validation
         timeDataColumns: [],
-        timeDataColumnsCount: 0 // used for grids validation
+        timeDataColumnsCount: 0, // used for grids validation
+        // validEntryForm: true // when editing, before fetching data check if form is valid
         // fetching: false // set in Reports ViewModel
     },
 
@@ -50,11 +51,14 @@ Ext.define('Ung.view.reports.EntryModel', {
 
     formulas: {
         // active report view switch from 3 types: text, graph, events
-        f_activeReportType: function (get) {
-            if (get('entry.type') === 'TEXT') { return 'textreport'; }
-            if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
-            return 'graphreport';
-        },
+        // f_activeReportType: function (get) {
+        //     var entry = get('entry.type');
+        //     console.log(entry);
+        //     // if (!get('validEntryFrom')) { return 'invalidreport'; }
+        //     if (entry === 'TEXT') { return 'textreport'; }
+        //     if (entry === 'EVENT_LIST') { return 'eventreport'; }
+        //     return 'graphreport';
+        // },
         f_textColumnsCount: function (get) {
             return get('textColumns').length;
         },

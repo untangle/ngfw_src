@@ -22,6 +22,14 @@ Ext.define('Ung.view.reports.TextReportController', {
                 me.isWidget = true;
             }
         });
+
+        vm.bind('{eEntry.type}', function (type) {
+            if (type !== 'TEXT') { return; }
+            Ext.defer(function () {
+                me.fetchData(true);
+            }, 300);
+        });
+
     },
 
     onDeactivate: function () {
@@ -30,7 +38,7 @@ Ext.define('Ung.view.reports.TextReportController', {
 
     fetchData: function (reset, cb) {
         var me = this, vm = this.getViewModel(), reps = me.getView().up('#reports'), startDate, endDate;
-        me.entry = vm.get('entry');
+        var entry = vm.get('eEntry') || vm.get('entry');
 
         if (reps) { reps.getViewModel().set('fetching', true); }
 
@@ -54,7 +62,7 @@ Ext.define('Ung.view.reports.TextReportController', {
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-            vm.get('entry').getData(), // entry
+            entry.getData(), // entry
             startDate,
             endDate,
             vm.get('sqlFilterData'), -1) // sql filters
@@ -75,7 +83,8 @@ Ext.define('Ung.view.reports.TextReportController', {
 
         var v = this.getView(),
             vm = this.getViewModel(),
-            textColumns = vm.get('entry.textColumns'), i, columnName, values = [];
+            entry = vm.get('eEntry') || vm.get('entry'),
+            textColumns = entry.get('textColumns'), i, columnName, values = [];
 
         if (data.length > 0 && textColumns && textColumns.length > 0) {
             Ext.Array.each(textColumns, function (column) {
@@ -83,7 +92,7 @@ Ext.define('Ung.view.reports.TextReportController', {
                 values.push(data[0][columnName] || 0);
             });
 
-            v.setHtml(Ext.String.format.apply(Ext.String.format, [vm.get('entry.textString')].concat(values)));
+            v.setHtml(Ext.String.format.apply(Ext.String.format, [entry.get('textString')].concat(values)));
             // todo: send data to the datagrid for TEXT report
         }
     }

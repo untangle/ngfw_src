@@ -33,18 +33,37 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 me.fetchData(true);
             });
 
-            // vm.bind('{eEntry.type}', function (type) {
-            //     if (type === 'PIE_GRAPH') {
-            //         // set some PIE_GRAPH defaults in case they are not set
-            //         vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-            //         vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+            vm.bind('{eEntry.type}', function (type) {
 
-            //     }
-            //     if (type === 'TIME_GRAPH') {
-            //         me.setTimeSeries();
-            //     }
-            //     me.fetchData(true);
-            // });
+                if (type === 'TEXT' || type === 'EVENT_LIST') { return; }
+
+                Ext.defer(function () {
+                    me.fetchData(true);
+                    // var invalidEntryForm =
+                    // vm.set('invalidEntryForm', me.getView().up('form').isValid());
+                    // if () {
+                    //     me.fetchData(true);
+                    // } else {
+                    //     me.resetChart();
+                    // }
+                }, 300);
+
+
+
+                // if (type === 'TEXT' || type === 'EVENT_ENTRY') {
+                //     // me.resetChart();
+                // }
+                // if (type === 'PIE_GRAPH') {
+                //     // me.setPieSeries();
+                //     // // set some PIE_GRAPH defaults in case they are not set
+                //     // vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+                //     // vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+                // }
+                // // if (type === 'TIME_GRAPH') {
+                // //     me.setTimeSeries();
+                // // }
+                // me.fetchData(true);
+            });
 
             // vm.bind('{eEntry.pieStyle}', function () {
             //     me.setPieSeries();
@@ -599,13 +618,13 @@ Ext.define('Ung.view.reports.GraphReportController', {
         var isPieGraph = entry.get('type') === 'PIE_GRAPH';
         var isTimeGraph = entry.get('type').indexOf('TIME_GRAPH') >= 0;
 
-        if (entry.get('timeStyle')) {
+        if (isTimeGraph) {
             isTimeColumn = entry.get('timeStyle').indexOf('BAR') >= 0;
             isColumnStacked = entry.get('timeStyle').indexOf('STACKED') >= 0;
             isColumnOverlapped = entry.get('timeStyle').indexOf('OVERLAPPED') >= 0;
         }
 
-        if (entry.get('pieStyle')) {
+        if (isPieGraph) {
             isPieColumn = entry.get('pieStyle').indexOf('COLUMN') >= 0;
             isPie = entry.get('pieStyle').indexOf('COLUMN') < 0;
             isDonut = entry.get('pieStyle').indexOf('DONUT') >= 0;
@@ -648,6 +667,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     alpha: isPieColumn ? 30 : 50,
                     beta: isPieColumn ? 5 : 0
                 }
+            },
+            subtitle: {
+                text: null
             },
             colors: colors,
             // scrollbar: {
@@ -734,9 +756,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
             },
             legend: {
                 enabled: !(widgetDisplay && isPie),
-                layout: isPie ? 'vertical' : 'horizontal',
-                align: isPie ? 'left' : 'center',
-                verticalAlign: isPie ? 'top' : 'bottom'
+                layout: (isPieGraph && isPie) ? 'vertical' : 'horizontal',
+                align: (isPieGraph && isPie) ? 'left' : 'center',
+                verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
             }
             // tooltip: {
             //     split: isTimeGraph && !isTimeColumn

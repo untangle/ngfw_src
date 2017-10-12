@@ -133,23 +133,35 @@ Ext.define('Ung.view.reports.Entry', {
             region: 'center',
             border: false,
             // bodyBorder: false,
-            // itemId: 'entryContainer',
+            itemId: 'reportCard',
             layout: 'card',
             bind: {
-                activeItem: '{f_activeReportType}'
+                activeItem: '{activeReportCard}'
             },
             items: [{
                 xtype: 'graphreport',
+                // region: 'west',
+                // width: 300,
                 itemId: 'graphreport',
                 renderInReports: true
             }, {
                 xtype: 'eventreport',
+                // region: 'center',
                 itemId: 'eventreport',
                 renderInReports: true
             }, {
                 xtype: 'textreport',
+                // region: 'east',
+                // width: 300,
                 itemId: 'textreport',
                 renderInReports: true
+            }, {
+                itemId: 'invalidreport',
+                layout: 'center',
+                items: [{
+                    xtype: 'component',
+                    html: '<div style="text-align: center; font-size: 14px;"><i class="fa fa-exclamation-triangle fa-2x fa-orange"></i><p>Fill all the required settings then click "Preview/Refresh"!</p></div>'
+                }]
             }],
 
             dockedItems: [{
@@ -604,24 +616,13 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
                     },
                     items: [{
-                        xtype: 'combo',
+                        xtype: 'textfield',
                         fieldLabel: 'Order By Column'.t(),
                         // emptyText: 'No selection. Select a Column ...',
                         flex: 1,
-                        publishes: 'value',
-                        value: '',
-                        editable: false,
-                        queryMode: 'local',
-                        displayField: 'value',
-                        valueField: 'value',
                         bind: {
-                            store: { data: '{tableColumns}' },
                             value: '{eEntry.orderByColumn}'
-                        },
-                        displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
-                        listConfig: {
-                            itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
-                        },
+                        }
                     }, {
                         xtype: 'segmentedbutton',
                         items: [
