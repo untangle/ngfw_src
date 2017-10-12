@@ -25,6 +25,9 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
     private long recvLast = 0;
     private int tunnelId = 0;
 
+    protected long restartCount = 0;
+    protected long restartStamp = 0;
+
     public static final String STATE_DISCONNECTED = "DISCONNECTED";
     public static final String STATE_CONNECTED = "CONNECTED";
 
