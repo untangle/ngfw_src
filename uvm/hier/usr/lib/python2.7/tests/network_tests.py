@@ -22,7 +22,7 @@ import global_functions
 
 ftp_file_name = ""
 dyn_hostname = ""
-dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
+dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net'];
 
 defaultRackId = 1
 orig_netsettings = None
@@ -30,7 +30,7 @@ test_untangle_com_ip = socket.gethostbyname(global_functions.testServerHost)
 run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
-dyndns_resolver = "216.146.35.35"
+dyndns_resolver = "8.8.8.8"
 office_ftp_client = "10.111.5.20"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
 
@@ -395,7 +395,7 @@ def setDynDNS(login,password,hostname):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dynamicDnsServiceEnabled'] = True
     netsettings['dynamicDnsServiceHostnames'] = hostname
-    netsettings['dynamicDnsServiceName'] = "dyndns"
+    netsettings['dynamicDnsServiceName'] = "google"
     netsettings['dynamicDnsServiceUsername'] = login
     netsettings['dynamicDnsServicePassword'] = password
     uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -864,7 +864,7 @@ class NetworkTests(unittest2.TestCase):
         # we need a name never used or name with cache IP different than in the cache
         for i in range(0,10):
             try:
-                result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" checkip.dyndns.com", shell=True)
+                result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" http://test.untangle.com/cgi-bin/myipaddress.py", shell=True)
             except subprocess.CalledProcessError, e:
                 print e.output
                 time.sleep(1)
@@ -877,7 +877,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping since all dyndns names already used')
         else:
             print "Using name: %s" % dyn_hostname
-        dynDNSUserName, dynDNSPassword = global_functions.get_live_account_info("Dyndns")
+        dynDNSUserName, dynDNSPassword = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
         if dynDNSUserName == "message":
             raise unittest2.SkipTest('no dyn user')
