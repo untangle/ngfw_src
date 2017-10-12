@@ -162,21 +162,12 @@ task :javadocanalyzer do
 end
 
 task :javadoc do
-  sourcepaths = []
-  javaDirs = FileList["./**/*.java"].exclude(/^\.\/(dist|downloads|staging)/)
-  if ( javaDirs.length > 0 )
-    javaDirs.each do |d|
-      sourcepath=d.split("/")[1] + "/" + d.split("/")[2]
-      if sourcepaths.index(sourcepath) == nil
-        sourcepaths.push(sourcepath)
-      end
-    end
-  end
-  puts sourcepaths
+  javaDirs = FileList["./**/*.java"].exclude(%r{#{BuildEnv::downloads}})
+  sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(':')
+  puts sourcepath
 
-  sourcepath = sourcepaths.join(':')
   subpackages = 'com.untangle'
-  cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
+  cpath = (FileList["#{BuildEnv::SRC.devel}/*"] + FileList["#{BuildEnv::downloads}/**/*jar"]).join(':')
   css = "./buildtools/javadoc.css"
 
   Kernel.exec('javadoc',
