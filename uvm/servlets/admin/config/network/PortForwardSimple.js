@@ -15,15 +15,24 @@ Ext.define('Ung.config.network.PortForwardSimple', {
         formulas: {
             _protocol: {
                 get: function (get) {
-                    return Ext.Array.findBy(get('record.conditions.list'), function (cond) {
+                    var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'PROTOCOL';
-                    }).value;
+                    });
+
+                    if(condition == null){
+                        return -1;
+                    }
+
+                    return condition.value;
+
                 },
                 set: function (value) {
                     var condition = Ext.Array.findBy(this.get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'PROTOCOL';
                     });
-                    condition.value = value;
+                    if( condition != null ){
+                        condition.value = value;
+                    }
                 }
             },
             _port: {
@@ -31,6 +40,9 @@ Ext.define('Ung.config.network.PortForwardSimple', {
                     var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'DST_PORT';
                     });
+                    if(condition == null){
+                        return -1;
+                    }
 
                     if (Ext.Array.indexOf([21, 25, 53, 80, 110, 143, 443, 1723], parseInt(condition.value, 10)) < 0) {
                         return -1;
@@ -44,9 +56,15 @@ Ext.define('Ung.config.network.PortForwardSimple', {
             },
             _portNo: {
                 get: function (get) {
-                    return Ext.Array.findBy(get('record.conditions.list'), function (cond) {
+                    var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'DST_PORT';
-                    }).value;
+                    });
+
+                    if(condition == null){
+                        return -1;
+                    }
+
+                    return condition.value;
                 }
             }
         }
@@ -192,7 +210,7 @@ Ext.define('Ung.config.network.PortForwardSimple', {
             var condition = Ext.Array.findBy(vm.get('record.conditions.list'), function (cond) {
                 return cond.conditionType === 'DST_PORT';
             });
-            if (val !== -1) {
+            if (val !== -1 && condition != null) {
                 condition.value = val;
                 vm.set('record.newPort', val);
             }
