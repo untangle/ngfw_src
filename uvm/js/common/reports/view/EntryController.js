@@ -51,6 +51,17 @@ Ext.define('Ung.view.reports.EntryController', {
 
             if (vm.get('eEntry')) { vm.set('eEntry', null); } // reset editing entry
 
+            switch(entry.get('type')) {
+            case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
+            case 'PIE_GRAPH':
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
+                vm.set('activeReportCard', 'graphreport'); break;
+            case 'EVENT_LIST':
+                vm.set('activeReportCard', 'eventreport'); break;
+            }
+
+
             vm.set('disableSave', entry.readOnly);
             vm.set('disableNewSave', true);
             vm.set('_currentData', []);
@@ -110,6 +121,32 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         vm.bind('{eEntry.type}', function (type) {
+
+            Ext.defer(function () {
+                if (!me.getView().down('form').isValid()) {
+                    vm.set('activeReportCard', 'invalidreport');
+                } else {
+                    switch(type) {
+                    case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
+                    case 'PIE_GRAPH':
+                    case 'TIME_GRAPH':
+                    case 'TIME_GRAPH_DYNAMIC':
+                        vm.set('activeReportCard', 'graphreport'); break;
+                    case 'EVENT_LIST':
+                        vm.set('activeReportCard', 'eventreport'); break;
+                    }
+                }
+                // if (type !== 'TEXT' || !valid) { return; }
+                // console.log('OKKKK');
+                // me.fetchData();
+            }, 300);
+
+
+
+
+            // console.log(me.getView().down('form').isValid());
+            // vm.set('validReport', me.getView().down('form').isValid());
+
             // when changing type populate some fields (combos) with default values if not set
             if (type === 'PIE_GRAPH') {
                 vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
@@ -580,45 +617,45 @@ Ext.define('Ung.view.reports.EntryController', {
         var sameReport = false;
         Rpc.asyncData('rpc.reportsManager.getReportEntries')
             .then(function(result) {
-            result.list.forEach( function(reportEntry){
-                if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
-                    titleConflictSave = true;
-                    titleConflictSaveNew = true;
+                result.list.forEach( function(reportEntry) {
+                    if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
+                        titleConflictSave = true;
+                        titleConflictSaveNew = true;
 
-                    if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
-                        sameReport = true;
+                        if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
+                            sameReport = true;
+                        }
+                        if( sameReport &&
+                            currentRecord.get('readOnly') == false){
+                            sameCustomizableReport = true;
+                            titleConflictSave = false;
+                        }
                     }
-                    if( sameReport &&
-                        currentRecord.get('readOnly') == false){
-                        sameCustomizableReport = true;
-                        titleConflictSave = false;
+                });
+
+                if (control){
+                    if( titleConflictSave && !sameReport ){
+                        control.setValidation("Another report within this category has this title".t());
+                    }else{
+                        control.setValidation(true);
                     }
+                }
+
+                var messages = [];
+                if(currentRecord.get('readOnly')){
+                    messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
+                }
+                if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
+                    messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
+                }
+                vm.set('reportMessages',  messages.join('<br>'));
+
+                vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
+                vm.set('disableNewSave', titleConflictSaveNew );
+                if(!titleConflictSave){
+                    vm.set('entry.title', newValue);
                 }
             });
-
-            if(control){
-                if( titleConflictSave && !sameReport ){
-                    control.setValidation("Another report within this category has this title".t());
-                }else{
-                    control.setValidation(true);
-                }
-            }
-
-            var messages = [];
-            if(currentRecord.get('readOnly')){
-                messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
-            }
-            if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
-                messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
-            }
-            vm.set('reportMessages',  messages.join('<br>'));
-
-            vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
-            vm.set('disableNewSave', titleConflictSaveNew );
-            if(!titleConflictSave){
-                vm.set('entry.title', newValue);
-            }
-        });
     },
 
     updateReport: function () {
@@ -881,9 +918,35 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     previewReport: function() {
-        var me = this, form = me.getView().down('form').getForm();
+        var me = this, vm = me.getViewModel();
+        // if (me.getView().down('form').isValid()) {
 
-        console.log(me.isValidReport());
+        // }
+        switch(vm.get('eEntry.type')) {
+        case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
+        case 'PIE_GRAPH':
+        case 'TIME_GRAPH':
+        case 'TIME_GRAPH_DYNAMIC':
+            vm.set('activeReportCard', 'graphreport'); break;
+        case 'EVENT_LIST':
+            vm.set('activeReportCard', 'eventreport'); break;
+        }
+
+
+        switch(vm.get('eEntry.type')) {
+        case 'TEXT':
+            me.getView().down('textreport').getController().fetchData(true);
+            break;
+        case 'EVENT_LIST':
+            me.getView().down('eventreport').getController().fetchData(true);
+            break;
+        default:
+            me.getView().down('graphreport').getController().fetchData(true);
+        }
+
+        // console.log(me.getView().down('#reportCard').getLayout().getActiveItem().getController());
+
+        // console.log(me.isValidReport());
         // Ext.Array.each(form.getFields().items, function (f) {
         //     // console.log(f);
         //     console.log(f.validate(), f.getId());
