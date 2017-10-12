@@ -447,6 +447,22 @@ Ext.define('Ung.util.Util', {
         return res ? true : 'Url missing or in wrong format!'.t();
     },
 
+    ipValidator: function (val) {
+        var res = val.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+        return res ? true : 'Url missing or in wrong format!'.t();
+    },
+
+    urlIpValidator: function (val) {
+        if (Util.urlValidator(val) === true) {
+            return true;
+        } else {
+            if (Util.ipValidator(val) === true) {
+                return true;
+            }
+        }
+        return 'Url missing or in wrong format!'.t();
+    },
+
     /**
      * Helper method that lists the order in which classes are loaded
      */
