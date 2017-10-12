@@ -39,7 +39,7 @@ Ext.define('Ung.apps.virusblockerlite.view.PassSites', {
             xtype: 'textfield',
             emptyText: '[enter site]'.t(),
             allowBlank: false,
-            validator: Util.urlValidator
+            validator: Util.urlIpValidator
         }
     }, {
         xtype: 'checkcolumn',
@@ -64,7 +64,7 @@ Ext.define('Ung.apps.virusblockerlite.view.PassSites', {
         emptyText: '[enter site]'.t(),
         allowBlank: false,
         width: 400,
-        validator: Util.urlValidator
+        validator: Util.urlIpValidator
     }, {
         xtype: 'checkbox',
         bind: '{record.enabled}',
