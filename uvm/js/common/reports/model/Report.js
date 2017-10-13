@@ -1,43 +1,40 @@
 Ext.define ('Ung.model.Report', {
     extend: 'Ext.data.Model' ,
     fields: [
-        'category',
-        'colors',
-        'conditions',
-        'defaultColumns',
-        'description',
-        'displayOrder',
-        'enabled',
-        'javaClass',
-        'orderByColumn',
-        'orderDesc',
+        { name: 'approximation', type: 'string', defaultValue: '' },
+        { name: 'category', type: 'string', defaultValue: '' },
+        { name: 'colors', type: 'auto', defaultValue: null },
+        { name: 'conditions', type: 'auto', defaultValue: null },
+        { name: 'defaultColumns' }, //???
+        { name: 'description', type: 'string', defaultValue: '' },
+        { name: 'displayOrder', type: 'int' },
+        { name: 'enabled', type: 'boolean', defaultValue: true },
+        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.app.reports.ReportEntry' },
+        { name: 'orderByColumn', type: 'string', defaultValue: null },
+        { name: 'orderDesc', type: 'boolean', defaultValue: false },
+        { name: 'pieGroupColumn', type: 'string', defaultValue: null },
+        { name: 'pieNumSlices', type: 'int', defaultValue: 10 },
+        { name: 'pieStyle' },
+        { name: 'pieSumColumn', type: 'string', defaultValue: null },
+        { name: 'readOnly', type: 'boolean', defaultValue: false },
+        { name: 'seriesRenderer', type: 'string', defaultValue: '' },
+        { name: 'table', type: 'string', defaultValue: null },
+        { name: 'textColumns', type: 'auto', defaultValue: null },
+        { name: 'textString', type: 'string', defaultValue: '' },
+        { name: 'timeDataColumns', type: 'auto', defaultValue: null },
+        { name: 'timeDataDynamicAggregationFunction', type: 'string', defaultValue: '' },
+        { name: 'timeDataDynamicAllowNull', type: 'boolean', defaultValue: false },
+        { name: 'timeDataDynamicColumn', type: 'string', defaultValue: '' },
+        { name: 'timeDataDynamicLimit', type: 'int', defaultValue: 0 },
+        { name: 'timeDataDynamicValue', type: 'string', defaultValue: '' },
+        { name: 'timeDataInterval' },
+        { name: 'timeStyle' },
+        { name: 'title', type: 'string', defaultValue: '' },
+        { name: 'type', type: 'string', defaultValue: 'TEXT' }, // TEXT, PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC, EVENT_LIST
+        { name: 'uniqueId', type: 'string', defaultValue: null },
+        { name: 'units', type: 'string', defaultValue: null },
 
-        'pieGroupColumn',
-        { name: 'pieNumSlices', defaultValue: 10 },
-        'pieStyle',
-        'pieSumColumn',
-
-        'readOnly',
-        'seriesRenderer',
-        'table',
-        'textColumns',
-        { name: 'textString', type: 'string' },
-
-        'timeDataColumns',
-        'timeDataDynamicAggregationFunction',
-        'timeDataDynamicAllowNull',
-        'timeDataDynamicColumn',
-        'timeDataDynamicLimit',
-        'timeDataDynamicValue',
-        'timeDataInterval',
-        'timeStyle',
-        { name: 'title', type: 'string', validate: function(v, s, e, r) {
-            return true;
-        } },
-        'type', // TEXT, PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC, EVENT_LIST
-        'uniqueId',
-        'units',
-
+        // computed fields
         {
             name: 'localizedTitle',
             calculate: function (entry) {

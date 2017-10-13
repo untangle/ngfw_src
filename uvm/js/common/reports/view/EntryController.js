@@ -36,8 +36,7 @@ Ext.define('Ung.view.reports.EntryController', {
     // ],
 
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel(), widget,
-            entryContainer = me.getView().down('#entryContainer'),
+        var me = this, vm = this.getViewModel(),
             dataGrid = this.getView().down('#currentData');
 
         vm.set('context', Ung.app.servletContext);
@@ -47,7 +46,7 @@ Ext.define('Ung.view.reports.EntryController', {
          * each time report selection changes
          */
         vm.bind('{entry}', function (entry) {
-            console.log(entry);
+            // console.log(entry);
 
             if (vm.get('eEntry')) { vm.set('eEntry', null); } // reset editing entry
 
@@ -73,55 +72,35 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid.setColumns([]);
             dataGrid.setLoading(true);
 
-            me.tableConfig = TableConfig.generate(entry.get('table'));
-
-            var tableColumns = me.tableConfig.comboItems;
-            tableColumns.unshift({ text: 'No selection...', value: '' });
-            vm.set('tableColumns', tableColumns);
-
-            if (entry.get('type') === 'EVENT_LIST') {
-                me.lookupReference('dataBtn').setPressed(false);
-                // me.getView().down('#tableColumns').removeAll();
-                // me.getView().down('#tableColumns').add(me.tableConfig.checkboxes);
-                // me.getView().down('#tableColumns').setValue(entry.get('defaultColumns') ? entry.get('defaultColumns').join() : '');
-                // me.lookup('filterfield').fireEvent('change');
-                me.lookup('filterfield').setValue('');
-            } else {
-                // me.getView().down('#tableColumns').removeAll();
-                // me.getView().down('#tableColumns').setValue({});
-            }
+            // if (entry.get('type') === 'EVENT_LIST') {
+            //     me.lookup('filterfield').setValue('');
+            // }
 
             // check if widget in admin context
             if (Ung.app.servletContext === 'admin') {
-                widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
+                // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
-
-            // set initial time or text data columns
-            // vm.set('textColumns', Ext.Array.map(entry.get('textColumns') || [], function (col) { return { str: col }; }));
-            // vm.set('timeDataColumns', Ext.Array.map(entry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
-
-            // set the _sqlConditions data as for the sql conditions grid store
-            // vm.set('_sqlConditions', entry.get('conditions') || []);
-            // set combo store conditions
-            // me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
-            // me.getView().down('#sqlConditionsCombo').setValue(null);
-
-            // me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
-            // me.getView().down('#sqlFilterCombo').setValue(null);
         });
 
         vm.bind('{eEntry}', function (eEntry) {
-            me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
+            if (!vm.get('entry')) {
+                return;
+            } else {
+                if (!eEntry) {
+                    me.refreshData();
+                    return;
+                }
+            }
 
-            if (!eEntry) { return; }
+            me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
 
             vm.set('textColumns', Ext.Array.map(eEntry.get('textColumns') || [], function (col) { return { str: col }; }));
             vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
         });
 
         vm.bind('{eEntry.type}', function (type) {
-
+            if (!type) { return; }
             Ext.defer(function () {
                 if (!me.getView().down('form').isValid()) {
                     vm.set('activeReportCard', 'invalidreport');
@@ -140,10 +119,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 // console.log('OKKKK');
                 // me.fetchData();
             }, 300);
-
-
-
-
             // console.log(me.getView().down('form').isValid());
             // vm.set('validReport', me.getView().down('form').isValid());
 
@@ -156,18 +131,24 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.set('eEntry.timeStyle', vm.get('eEntry.timeStyle') || 'AREA');
                 vm.set('eEntry.timeDataInterval', vm.get('eEntry.timeDataInterval') || 'MINUTE');
             }
-            Ext.defer(function () { me.getView().down('form').isValid(); }, 300);
+        });
+
+        /**
+         * update tableColumns when table is changed
+         */
+        vm.bind('{eEntry.table}', function (table) {
+            if (!table) {
+                vm.set('tableColumns', []);
+                return;
+            }
+            var tableConfig = TableConfig.generate(table);
+            vm.set('tableColumns', tableConfig.comboItems);
         });
     },
 
-    closeSide: function () {
-        this.lookupReference('dataBtn').setPressed(false);
-        this.lookupReference('settingsBtn').setPressed(false);
-    },
-
     formatTimeData: function (data) {
-        var entry = this.getViewModel().get('entry'),
-            vm = this.getViewModel(),
+        var vm = this.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'),
             dataGrid = this.getView().down('#currentData'), i, column;
 
         dataGrid.setLoading(false);
@@ -185,7 +166,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 return (!val) ? 0 : Util.timestampFormat(val);
             }
         }];
-        var seriesRenderer = null, title;
+        var title;
 
         for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
             column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
@@ -252,8 +233,8 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     formatPieData: function (data) {
-        var me = this, entry = me.getViewModel().get('entry'),
-            vm = me.getViewModel(),
+        var me = this, vm = me.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'),
             dataGrid = me.getView().down('#currentData');
 
         dataGrid.setLoading(false);
@@ -314,11 +295,11 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     formatTextData: function (data) {
-        var entry = this.getViewModel().get('entry'),
-            vm = this.getViewModel(),
-            dataGrid = this.getView().down('#currentData');
-        dataGrid.setLoading(false);
+        var vm = this.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'),
+            dataGrid = this.getView().down('#currentData'), column, i;
 
+        dataGrid.setLoading(false);
         dataGrid.setColumns([{
             dataIndex: 'data',
             header: 'data'.t(),
@@ -373,11 +354,12 @@ Ext.define('Ung.view.reports.EntryController', {
     // },
 
     refreshData: function () {
-        var me = this, vm = me.getViewModel(), ctrl, reps = me.getView().up('#reports');
-        switch(vm.get('entry.type')) {
-        case 'TEXT': ctrl = this.getView().down('textreport').getController(); break;
-        case 'EVENT_LIST': ctrl = this.getView().down('eventreport').getController(); break;
-        default: ctrl = this.getView().down('graphreport').getController();
+        var me = this, vm = me.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'), ctrl;
+        switch(entry.get('type')) {
+        case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
+        case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
+        default: ctrl = me.getView().down('graphreport').getController();
         }
 
         if (!ctrl) {
@@ -427,7 +409,7 @@ Ext.define('Ung.view.reports.EntryController', {
         this.getViewModel().set('entry.defaultColumns', value.split(','));
     },
 
-    addSqlCondition: function (btn) {
+    addSqlCondition: function () {
         var me = this, vm = me.getViewModel(),
             conds = vm.get('_sqlConditions') || [];
 
@@ -523,7 +505,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     sqlFilterQuickItems: function (btn) {
-        var me = this, menuItem, menuItems = [], col;
+        var menuItem, menuItems = [];
         Rpc.asyncData('rpc.reportsManager.getConditionQuickAddHints').then(function (result) {
             Ext.Object.each(result, function (key, vals) {
                 menuItem = {
@@ -580,7 +562,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
 
     // // DASHBOARD ACTION
-    dashboardAddRemove: function (btn) {
+    dashboardAddRemove: function () {
         var vm = this.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry'), action;
 
         if (!widget) {
@@ -604,10 +586,8 @@ Ext.define('Ung.view.reports.EntryController', {
         });
     },
 
-    titleChange: function( control, newValue, oldValue){
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
+    titleChange: function( control, newValue) {
+        var me = this, vm = me.getViewModel();
 
         var currentRecord = vm.get('entry');
 
@@ -635,7 +615,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
                 if (control){
                     if( titleConflictSave && !sameReport ){
-                        control.setValidation("Another report within this category has this title".t());
+                        control.setValidation('Another report within this category has this title'.t());
                     }else{
                         control.setValidation(true);
                     }
@@ -678,7 +658,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
-            .then(function(result) {
+            .then(function() {
                 v.setLoading(false);
                 vm.get('report').copyFrom(entry);
                 vm.get('report').commit();
@@ -713,7 +693,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
-            .then(function(result) {
+            .then(function() {
                 v.setLoading(false);
                 Ext.getStore('reports').add(entry);
                 entry.commit();
@@ -726,8 +706,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     removeReport: function () {
-        var me = this, v = this.getView(),
-            vm = this.getViewModel(),
+        var me = this, vm = this.getViewModel(),
             entry = vm.get('entry');
 
         if (vm.get('widget')) {
@@ -751,7 +730,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
     removeReportAction: function (entry) {
         Rpc.asyncData('rpc.reportsManager.removeReportEntry', entry)
-            .then(function (result) {
+            .then(function () {
                 Ung.app.redirectTo('#reports/' + entry.category.replace(/ /g, '-').toLowerCase());
                 Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
 
@@ -766,9 +745,9 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     downloadGraph: function () {
-        var view = this.getView(), vm = this.getViewModel(), now = new Date();
+        var me = this, vm = me.getViewModel(), now = new Date();
         try {
-            this.getView().down('#graphreport').getController().chart.exportChart({
+            me.getView().down('#graphreport').getController().chart.exportChart({
                 filename: (vm.get('entry.category') + '-' + vm.get('entry.title') + '-' + Ext.Date.format(now, 'd.m.Y-Hi')).replace(/ /g, '_'),
                 type: 'image/png'
             });
@@ -820,7 +799,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     exportGraphData: function (btn) {
-        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], headers = [];
+        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], headers = [], j;
         if (!entry) { return; }
 
         var grid = btn.up('grid'), csv = [];
@@ -847,7 +826,7 @@ Ext.define('Ung.view.reports.EntryController', {
         });
         csv.push(processRow(headers));
 
-        grid.getStore().each(function (row, idx) {
+        grid.getStore().each(function (row) {
             var r = [];
             for (j = 0; j < columns.length; j += 1) {
                 if (columns[j] === 'time_trunc') {
@@ -914,7 +893,20 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     cancelEdit: function () {
-        this.getViewModel().set('eEntry', null);
+        var me = this, vm = me.getViewModel();
+        vm.set('eEntry', null);
+
+        Ext.defer(function() {
+            switch(vm.get('entry.type')) {
+            case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
+            case 'PIE_GRAPH':
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
+                vm.set('activeReportCard', 'graphreport'); break;
+            case 'EVENT_LIST':
+                vm.set('activeReportCard', 'eventreport'); break;
+            }
+        }, 200);
     },
 
     previewReport: function() {
@@ -994,6 +986,12 @@ Ext.define('Ung.view.reports.EntryController', {
         return true;
     },
 
+    removeTextColumn: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
+        store.remove(record);
+        view.refresh();
+    },
+
     removeTimeDataColumn: function (view, rowIndex, colIndex, item, e, record) {
         var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
         store.remove(record);
@@ -1005,6 +1003,17 @@ Ext.define('Ung.view.reports.EntryController', {
         // vm.set('eEntry.timeDataColumns', tdc);
     },
 
-
-
+    // /**
+    //  * validates if eEntry timeDataDynamicColumn found in current table columns
+    //  */
+    // timeDataDynamicColumnValidator: function (val) {
+    //     console.log(val);
+    //     var tc = this.getViewModel().get('tableColumns');
+    //     console.log(tc);
+    //     var foundColumn = Ext.Array.findBy(tc, function (col) {
+    //         return col.value === val;
+    //     });
+    //     console.log(foundColumn);
+    //     return foundColumn ? true : false;
+    // }
 });

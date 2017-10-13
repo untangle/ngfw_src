@@ -19,97 +19,118 @@ Ext.define('Ung.view.reports.GraphReportController', {
         // build the empty chart
         me.buildChart();
 
-
-        if (!me.getView().up('reportwidget')) {
-            // whatch when report entry is changed or modified
-
-            vm.bind('{entry}', function (entry) {
-                // if (entry.get('type') === 'PIE_GRAPH') {
-                //     me.setPieSeries();
-                // }
-                // if (entry.get('type') === 'TIME_GRAPH') {
-                //     me.setTimeSeries();
-                // }
-                me.fetchData(true);
-            });
-
-            vm.bind('{eEntry.type}', function (type) {
-
-                if (type === 'TEXT' || type === 'EVENT_LIST') { return; }
-
-                Ext.defer(function () {
-                    me.fetchData(true);
-                    // var invalidEntryForm =
-                    // vm.set('invalidEntryForm', me.getView().up('form').isValid());
-                    // if () {
-                    //     me.fetchData(true);
-                    // } else {
-                    //     me.resetChart();
-                    // }
-                }, 300);
-
-
-
-                // if (type === 'TEXT' || type === 'EVENT_ENTRY') {
-                //     // me.resetChart();
-                // }
-                // if (type === 'PIE_GRAPH') {
-                //     // me.setPieSeries();
-                //     // // set some PIE_GRAPH defaults in case they are not set
-                //     // vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-                //     // vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
-                // }
-                // // if (type === 'TIME_GRAPH') {
-                // //     me.setTimeSeries();
-                // // }
-                // me.fetchData(true);
-            });
-
-            // vm.bind('{eEntry.pieStyle}', function () {
-            //     me.setPieSeries();
-            // });
-            // vm.bind('{eEntry.pieNumSlices}', function () {
-            //     me.setPieSeries();
-            // });
-
-            // vm.bind('{entry}', function (entry) {
-            //     console.log(entry);
-            //     // if it's not a graph report, do nothing
-            //     if (entry.get('type').indexOf('GRAPH') < 0) { return; }
-
-            //     if (modFields.uniqueId !== entry.get('uniqueId')) {
-            //         modFields = {
-            //             uniqueId: entry.get('uniqueId'),
-            //             timeDataInterval: entry.get('timeDataInterval'),
-            //             pieNumSlices: entry.get('pieNumSlices'),
-            //             timeStyle: entry.get('timeStyle'),
-            //             pieStyle: entry.get('pieStyle'),
-            //             approximation: entry.get('approximation'),
-            //             colors: entry.get('colors'),
-            //             type: entry.get('type')
-            //         };
-            //         // fetch report data first time
-            //         me.fetchData(true);
-            //         return;
-            //     }
-
-            //     // based on which fields are modified do some specific actions
-            //     // Ext.Object.each(modFields, function (key, value) {
-            //     //     if (key === 'uniqueId') { return; }
-            //     //     if (value !== entry.get(key)) {
-            //     //         modFields[key] = entry.get(key);
-            //     //         if (key === 'timeDataInterval') { me.fetchData(false); }
-            //     //         if (key === 'pieNumSlices') { me.setPieSeries(); }
-            //     //         if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
-            //     //     }
-            //     // });
-            // }, me, {
-            //     deep: true
-            // });
-        } else {
+        if (me.getView().up('reportwidget')) {
             me.isWidget = true;
-            // DashboardQueue.add(me.getView());
+            return;
         }
+
+        vm.bind('{entry}', function () {
+            me.fetchData(true);
+        });
+
+        vm.bind('{eEntry.timeStyle}', function () { me.setStyles(); });
+        vm.bind('{eEntry.pieStyle}', function () { me.setStyles(); });
+        vm.bind('{eEntry.pieNumSlices}', function () { me.setPieSeries(); });
+        vm.bind('{eEntry.timeDataInterval}', function () {
+            // me.fetchData();
+        });
+        // vm.bind('{eEntry.timeDataInterval}', function () { me.setStyles(); });
+
+
+        // vm.bind('{eEntry}', function (eEntry) {
+        //     if (!eEntry || eEntry.get('type') === 'TEXT' || eEntry.get('type') === 'EVENT_LIST') {
+        //         return;
+        //     }
+        //     console.log(eEntry);
+        // }, me, { deep: true });
+
+        // if (!me.getView().up('reportwidget')) {
+        //     // whatch when report entry is changed or modified
+
+        //     vm.bind('{entry}', function () {
+        //         me.fetchData(true);
+        //     });
+
+
+
+
+        //     // vm.bind('{eEntry.type}', function (type) {
+
+        //     //     if (type === 'TEXT' || type === 'EVENT_LIST') { return; }
+
+        //     //     // Ext.defer(function () {
+        //     //     //     me.fetchData(true);
+        //     //     //     // var invalidEntryForm =
+        //     //     //     // vm.set('invalidEntryForm', me.getView().up('form').isValid());
+        //     //     //     // if () {
+        //     //     //     //     me.fetchData(true);
+        //     //     //     // } else {
+        //     //     //     //     me.resetChart();
+        //     //     //     // }
+        //     //     // }, 300);
+
+
+
+        //     //     // if (type === 'TEXT' || type === 'EVENT_ENTRY') {
+        //     //     //     // me.resetChart();
+        //     //     // }
+        //     //     // if (type === 'PIE_GRAPH') {
+        //     //     //     // me.setPieSeries();
+        //     //     //     // // set some PIE_GRAPH defaults in case they are not set
+        //     //     //     // vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+        //     //     //     // vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+        //     //     // }
+        //     //     // // if (type === 'TIME_GRAPH') {
+        //     //     // //     me.setTimeSeries();
+        //     //     // // }
+        //     //     // me.fetchData(true);
+        //     // });
+
+        //     // vm.bind('{eEntry.pieStyle}', function () {
+        //     //     me.setPieSeries();
+        //     // });
+        //     // vm.bind('{eEntry.pieNumSlices}', function () {
+        //     //     me.setPieSeries();
+        //     // });
+
+        //     // vm.bind('{entry}', function (entry) {
+        //     //     console.log(entry);
+        //     //     // if it's not a graph report, do nothing
+        //     //     if (entry.get('type').indexOf('GRAPH') < 0) { return; }
+
+        //     //     if (modFields.uniqueId !== entry.get('uniqueId')) {
+        //     //         modFields = {
+        //     //             uniqueId: entry.get('uniqueId'),
+        //     //             timeDataInterval: entry.get('timeDataInterval'),
+        //     //             pieNumSlices: entry.get('pieNumSlices'),
+        //     //             timeStyle: entry.get('timeStyle'),
+        //     //             pieStyle: entry.get('pieStyle'),
+        //     //             approximation: entry.get('approximation'),
+        //     //             colors: entry.get('colors'),
+        //     //             type: entry.get('type')
+        //     //         };
+        //     //         // fetch report data first time
+        //     //         me.fetchData(true);
+        //     //         return;
+        //     //     }
+
+        //     //     // based on which fields are modified do some specific actions
+        //     //     // Ext.Object.each(modFields, function (key, value) {
+        //     //     //     if (key === 'uniqueId') { return; }
+        //     //     //     if (value !== entry.get(key)) {
+        //     //     //         modFields[key] = entry.get(key);
+        //     //     //         if (key === 'timeDataInterval') { me.fetchData(false); }
+        //     //     //         if (key === 'pieNumSlices') { me.setPieSeries(); }
+        //     //     //         if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
+        //     //     //     }
+        //     //     // });
+        //     // }, me, {
+        //     //     deep: true
+        //     // });
+        // } else {
+        //     me.isWidget = true;
+        //     // DashboardQueue.add(me.getView());
+        // }
     },
 
     /**
@@ -422,13 +443,14 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * set chart series for the timeseries
      */
     setTimeSeries: function () {
-        var me = this, vm = this.getViewModel(),
-            timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
-            colors = (vm.get('entry.colors') && vm.get('entry.colors').length > 0) ? vm.get('entry.colors') : Util.defaultColors,
-            i, j, seriesData, series = [], seriesRenderer = null, column,
-            units = vm.get('entry.units');
+        var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry');
 
-        if (!me.data) { return; }
+        if ((entry.get('type') !== 'TIME_GRAPH' && entry.get('type') !== 'TIME_GRAPH_DYNAMIC') || !me.data) { return; }
+
+        var timeDataColumns = Ext.clone(entry.get('timeDataColumns')),
+            colors = (entry.get('colors') && entry.get('colors').length > 0) ? entry.get('colors') : Util.defaultColors,
+            i, j, seriesData, series = [], seriesRenderer = null, column,
+            units = entry.get('units');
 
         // get or generate series names based on time data columns
         if (!timeDataColumns) {
@@ -441,8 +463,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 }
             }
 
-            if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
-                seriesRenderer = Renderer[vm.get('entry.seriesRenderer')];
+            if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
+                seriesRenderer = Renderer[entry.get('seriesRenderer')];
             }
 
         } else {
@@ -514,7 +536,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             seriesName,
             slicesData = [], restValue = 0, seriesRenderer = null, i;
 
-        if (!me.data) { return; }
+        if (entry.get('type') !== 'PIE_GRAPH' || !me.data) { return; }
 
         if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
             seriesRenderer = Renderer[entry.get('seriesRenderer')];
@@ -555,7 +577,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             tooltip: {
                 pointFormatter: function () {
                     var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
-                    if (vm.get('entry.units') === "bytes" || vm.get('entry.units') === "bytes/s") {
+                    if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
                         str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
                     } else {
                         str += ': <b>' + this.y + '</b>';

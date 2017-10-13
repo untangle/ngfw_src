@@ -73,10 +73,10 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         _sqlConditions: {
             get: function (get) {
-               return get('entry.conditions') || [];
+                return get('eEntry.conditions') || [];
             },
             set: function (value) {
-                this.set('entry.conditions', value);
+                this.set('eEntry.conditions', value);
                 this.set('_sqlTitle', '<i class="fa fa-filter"></i> ' + 'Sql Conditions:'.t() + ' (' + value.length + ')');
                // return get('entry.conditions') || [];
             },
@@ -161,6 +161,14 @@ Ext.define('Ung.view.reports.EntryModel', {
             }
         },
 
+        f_tableColumnsSource: function (get) {
+            var columns = get('tableColumns'), source = {};
+            if (!columns || columns.length === 0) { return {}; }
+            Ext.Array.each(columns, function (column) {
+                source[column.text] = column.value;
+            });
+            return source;
+        },
 
         // f_reportHeader: function (get) {
         //     var entry = get('eEntry') || get('entry');
