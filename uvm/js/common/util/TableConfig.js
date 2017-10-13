@@ -139,6 +139,7 @@ Ext.define('TableConfig', {
 
         if (!tableConfig) {
             console.log('Table not found!');
+            return;
         }
 
         // generate checkboxes and menu
