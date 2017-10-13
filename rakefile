@@ -146,7 +146,7 @@ end
 task :install => [:devel, :i18n, :debian_init_files]
 
 task :javadocanalyzer do
-  javaDirs = FileList["./**/*.java"].exclude(%r{#{BuildEnv::downloads}})
+  javaDirs = FileList["./**/*.java"].exclude(%r{downloads/})
   sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(',')
   puts sourcepath
 
@@ -155,7 +155,7 @@ task :javadocanalyzer do
 end
 
 task :javadoc do
-  javaDirs = FileList["./**/*.java"].exclude(%r{#{BuildEnv::downloads}})
+  javaDirs = FileList["./**/*.java"].exclude(%r{downloads/})
   sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(':')
   puts sourcepath
 
