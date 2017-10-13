@@ -98,7 +98,6 @@ public class ActiveDirectoryManagerImpl
                 userList.addAll(adAdapter.listAll());
             } catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Users.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
 
@@ -154,7 +153,6 @@ public class ActiveDirectoryManagerImpl
                 return adAdapter.listGroupUsers(groupName);
             }  catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Groups.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
 
@@ -343,7 +341,6 @@ public class ActiveDirectoryManagerImpl
 
             } catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Users.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
         return result;
@@ -391,7 +388,6 @@ public class ActiveDirectoryManagerImpl
 
             } catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Users.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
 
