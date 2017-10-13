@@ -196,6 +196,12 @@ Ext.define('Ung.view.reports.ReportsController', {
         vm.set('stats', stats);
     },
 
+    newReport: function () {
+        var me = this,
+            newReport = Ext.create('Ung.model.Report');
+        me.getView().down('reports-entry').getViewModel().set('eEntry', newReport);
+    },
+
     newReportWizard: function () {
         var me = this;
         var wizard = me.getView().add({

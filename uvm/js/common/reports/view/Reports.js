@@ -63,10 +63,10 @@ Ext.define('Ung.view.reports.Reports', {
         plugins: 'responsive',
         store: 'reportstree',
 
-        hidden: true,
-        bind: {
-            hidden: '{editing}'
-        },
+        // hidden: true,
+        // bind: {
+        //     hidden: '{editing}'
+        // },
 
         viewConfig: {
             selectionModel: {
@@ -105,6 +105,14 @@ Ext.define('Ung.view.reports.Reports', {
         listeners: {
             beforeselect: 'beforeSelectReport'
         },
+
+        bbar: [{
+            text: 'Create New Report'.t(),
+            iconCls: 'fa fa-magic fa-lg',
+            flex: 1,
+            scale: 'medium',
+            handler: 'newReport'
+        }]
 
         // responsiveConfig: {
         //     wide: { hidden: false },
