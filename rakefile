@@ -167,7 +167,7 @@ task :javadoc do
   puts sourcepath
 
   subpackages = 'com.untangle'
-  cpath = (FileList["#{BuildEnv::SRC.devel}/*"] + FileList["#{BuildEnv::downloads}/**/*jar"]).join(':')
+  cpath = FileList["#{BuildEnv::SRC.devel}/*","#{BuildEnv::downloads}/**/*jar"].join(':')
   css = "./buildtools/javadoc.css"
 
   Kernel.exec('javadoc',
