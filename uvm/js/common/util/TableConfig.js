@@ -1764,7 +1764,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'spam_blocker_lite_score'
+                name: 'spam_blocker_lite_score',
+                sortType: 'asFloat'
             }, {
                 name: 'spam_blocker_lite_is_spam'
             }, {
@@ -1774,7 +1775,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'spam_blocker_score'
+                name: 'spam_blocker_score',
+                sortType: 'asFloat'
             }, {
                 name: 'spam_blocker_is_spam'
             }, {
@@ -1784,7 +1786,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'phish_blocker_score'
+                name: 'phish_blocker_score',
+                sortType: 'asFloat'
             }, {
                 name: 'phish_blocker_is_spam'
             }, {
@@ -2145,15 +2148,20 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'load_1'
+                name: 'load_1',
+                sortType: 'asFloat'
             }, {
-                name: 'load_5'
+                name: 'load_5',
+                sortType: 'asFloat'
             }, {
-                name: 'load_15'
+                name: 'load_15',
+                sortType: 'asFloat'
             }, {
-                name: 'cpu_user'
+                name: 'cpu_user',
+                sortType: 'asFloat'
             }, {
-                name: 'cpu_system'
+                name: 'cpu_system',
+                sortType: 'asFloat'
             }, {
                 name: 'mem_total',
                 sortType: 'asInt'
