@@ -16,6 +16,8 @@ Ext.define('Ung.config.events.view.Alerts', {
         listProperty: 'settings.alertRules.list',
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',
+        copyAppendField: 'description',
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
         bind:{

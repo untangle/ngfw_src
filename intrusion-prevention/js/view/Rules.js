@@ -28,6 +28,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
+    copyId: 'sid',
+    copyIdPreserve: true,
+    copyAppendField: 'msg',
 
     bbar: [ 'Search'.t(), {
         xtype: 'textfield',
