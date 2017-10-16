@@ -46,8 +46,10 @@ Ext.define('Ung.view.reports.EventReport', {
         reference: 'eventsProperties',
         region: 'east',
         title: 'Details'.t(),
+        collapsible: true,
         collapsed: true,
-
+        animCollapse: false,
+        titleCollapse: true,
         bind: {
             source: '{eventProperty}',
         }

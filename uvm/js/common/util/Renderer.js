@@ -44,6 +44,11 @@ Ext.define('Ung.util.Renderer', {
     // Username
     usernameWidth: 120,
 
+    /**
+     * Array store with renderers used in Reports Settings
+     */
+    forReports: [['', 'None'.t()], ['interface', 'Interface'], ['protocol', 'Protocol'.t()]],
+
     /*
      * Grid filters
      */
@@ -363,6 +368,7 @@ Ext.define('Ung.util.Renderer', {
         141: 'WESP [141]',
         142: 'ROHC [142]'
     },
+
     protocol: function (value) {
         return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
     },

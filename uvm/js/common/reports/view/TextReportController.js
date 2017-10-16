@@ -25,12 +25,12 @@ Ext.define('Ung.view.reports.TextReportController', {
 
         // needed on Create New
 
-        vm.bind('{eEntry.type}', function (type) {
-            if (type !== 'TEXT') { return; }
-            Ext.defer(function () {
-                me.fetchData(true);
-            }, 300);
-        });
+        // vm.bind('{eEntry.type}', function (type) {
+        //     if (type !== 'TEXT') { return; }
+        //     Ext.defer(function () {
+        //         me.fetchData(true);
+        //     }, 300);
+        // });
 
     },
 
@@ -78,6 +78,9 @@ Ext.define('Ung.view.reports.TextReportController', {
 
                 if (cb) { cb(); }
 
+            })
+            .always(function() {
+                if (reps) { reps.getViewModel().set('fetching', false); }
             });
     },
 

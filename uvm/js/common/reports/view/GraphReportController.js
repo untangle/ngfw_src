@@ -28,12 +28,20 @@ Ext.define('Ung.view.reports.GraphReportController', {
             me.fetchData(true);
         });
 
-        vm.bind('{eEntry.timeStyle}', function () { me.setStyles(); });
-        vm.bind('{eEntry.pieStyle}', function () { me.setStyles(); });
-        vm.bind('{eEntry.pieNumSlices}', function () { me.setPieSeries(); });
-        vm.bind('{eEntry.timeDataInterval}', function () {
-            // me.fetchData();
-        });
+        // vm.bind('{eEntry}', function (eEntry) {
+            // needed to reflow chart to avoid broken graph due to binding lag time
+            // if (!eEntry && me.chart) {
+            //     Ext.defer(function() {
+            //         console.log('reflow');
+            //         me.chart.reflow();
+            //     }, 500);
+            // }
+        // });
+
+        // vm.bind('{eEntry.timeStyle}', function () { me.setStyles(); });
+        // vm.bind('{eEntry.pieStyle}', function () { me.setStyles(); });
+        // vm.bind('{eEntry.pieNumSlices}', function () { me.setPieSeries(); });
+        // vm.bind('{eEntry.timeDataInterval}', function () { // me.fetchData(); });
         // vm.bind('{eEntry.timeDataInterval}', function () { me.setStyles(); });
 
 
@@ -45,7 +53,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         // }, me, { deep: true });
 
         // if (!me.getView().up('reportwidget')) {
-        //     // whatch when report entry is changed or modified
+        //     // watch when report entry is changed or modified
 
         //     vm.bind('{entry}', function () {
         //         me.fetchData(true);
