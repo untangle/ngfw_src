@@ -254,7 +254,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
-        time.sleep(1)
+        time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') != None )
@@ -270,7 +270,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
-        time.sleep(1)
+        time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') != None )
@@ -281,7 +281,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
-        time.sleep(1)
+        time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') == None or "test-tag" not in entry.get('tagsString'))
@@ -296,7 +296,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
-        time.sleep(1)
+        time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         assert( entry.get('tagsString') != None )
@@ -312,7 +312,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
-        time.sleep(1)
+        time.sleep(4)
 
         events = global_functions.get_events('Events','Alert Events',None,10)
         assert(events != None)
