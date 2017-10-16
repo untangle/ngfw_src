@@ -8,7 +8,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
-
+    copyId: 'templateId',
     copyAppendField: 'title',
 
     emptyRow: {
