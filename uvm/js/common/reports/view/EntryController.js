@@ -84,6 +84,8 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         vm.bind('{eEntry}', function (eEntry) {
+            me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
+
             if (!vm.get('entry')) {
                 return;
             } else {
@@ -92,8 +94,6 @@ Ext.define('Ung.view.reports.EntryController', {
                     return;
                 }
             }
-
-            me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
 
             vm.set('textColumns', Ext.Array.map(eEntry.get('textColumns') || [], function (col) { return { str: col }; }));
             vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
@@ -123,14 +123,14 @@ Ext.define('Ung.view.reports.EntryController', {
             // vm.set('validReport', me.getView().down('form').isValid());
 
             // when changing type populate some fields (combos) with default values if not set
-            if (type === 'PIE_GRAPH') {
-                vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-                vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
-            }
-            if (type === 'TIME_GRAPH' || type === 'TIME_GRAPH_DYNAMIC') {
-                vm.set('eEntry.timeStyle', vm.get('eEntry.timeStyle') || 'AREA');
-                vm.set('eEntry.timeDataInterval', vm.get('eEntry.timeDataInterval') || 'MINUTE');
-            }
+            // if (type === 'PIE_GRAPH') {
+            //     vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
+            //     vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
+            // }
+            // if (type === 'TIME_GRAPH' || type === 'TIME_GRAPH_DYNAMIC') {
+            //     vm.set('eEntry.timeStyle', vm.get('eEntry.timeStyle') || 'AREA');
+            //     vm.set('eEntry.timeDataInterval', vm.get('eEntry.timeDataInterval') || 'MINUTE');
+            // }
         });
 
         /**
@@ -895,6 +895,12 @@ Ext.define('Ung.view.reports.EntryController', {
     cancelEdit: function () {
         var me = this, vm = me.getViewModel();
         vm.set('eEntry', null);
+
+        // if New Entry was initiated from a category view
+        if (!vm.get('entry')) {
+            me.getView().up('#reports').lookup('cards').setActiveItem('category');
+            return;
+        }
 
         Ext.defer(function() {
             switch(vm.get('entry.type')) {
