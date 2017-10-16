@@ -25,6 +25,7 @@ import intrusion_prevention
 
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
+FORCE_SYNC = False
 
 class Update:
     """
@@ -81,7 +82,7 @@ class Update:
         ##
         nm = AppManager(uvmContext)
         for instance in nm.get_instances():
-            if instance[1] == "intrusion-prevention" and instance[3] == "RUNNING":
+            if instance[1] == "intrusion-prevention" and ( instance[3] == "RUNNING" or FORCE_SYNC):
                 self.app_ids.append(instance[0])
         
         return True
@@ -322,10 +323,10 @@ def main(argv):
     Main
     """
     global DEBUG
+    global FORCE_SYNC
     rules_template_directory = "/usr/share/untangle-snort-config"
     url = "https://ids.untangle.com/snortrules.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
-    force_sync = False
     force_download = False
 	
     try:
@@ -341,7 +342,7 @@ def main(argv):
         elif opt in ( "-d", "--debug"):
             DEBUG = True
         elif opt in ( "-s", "--force_sync"):
-            force_sync = True
+            FORCE_SYNC = True
         elif opt in ( "-s", "--force_download"):
             force_download = True
         elif opt in ( "-r", "--rules_template_directory"):
@@ -355,7 +356,7 @@ def main(argv):
 
     update = Update( rules_template_directory, url )
     update.setup()
-    if force_sync is True:
+    if FORCE_SYNC is True:
         update.synchronize()
     else:
         if ( force_download or len(update.app_ids) > 0 ) and update.download() == True and update.validate() and update.install():
