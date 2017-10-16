@@ -11,7 +11,8 @@ Ext.define('Ung.view.reports.Reports', {
         data: {
             fetching: false,
             selection: null,
-            editing: false
+            editing: false,
+            eEntry: null
         }
     },
 
@@ -63,10 +64,10 @@ Ext.define('Ung.view.reports.Reports', {
         plugins: 'responsive',
         store: 'reportstree',
 
-        // hidden: true,
-        // bind: {
-        //     hidden: '{editing}'
-        // },
+        disabled: true,
+        bind: {
+            disabled: '{editing}'
+        },
 
         viewConfig: {
             selectionModel: {
@@ -182,10 +183,7 @@ Ext.define('Ung.view.reports.Reports', {
             }]
         }, {
             xtype: 'reports-entry',
-            itemId: 'report',
-            bind: {
-                html: '<h3>{selectedReport.localizedTitle}</h3>',
-            }
+            itemId: 'report'
         }]
     }]
 });

@@ -4,7 +4,7 @@ Ext.define('Ung.view.reports.EntryModel', {
 
 
     data: {
-        eEntry: null, // editable entry, copy of the selected entry
+        // eEntry: null, // editable entry, copy of the selected entry
         // eError: false, // true/false if errors while fetching report data based on editing options
         // rounded to nearest 10 minutes minus 24 hours
         startDate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - 24 * 3600 *1000)),
@@ -50,6 +50,10 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
+        f_heading: function (get) {
+            return '<h1><span>' + (get('entry.category')) + ' / </span>' + (get('entry.title')) + '</h1>';
+        },
+
         // active report view switch from 3 types: text, graph, events
         // f_activeReportType: function (get) {
         //     var entry = get('entry.type');
