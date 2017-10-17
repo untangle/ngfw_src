@@ -66,7 +66,7 @@ Ext.define('Ung.view.reports.Reports', {
 
         disabled: true,
         bind: {
-            disabled: '{editing}'
+            disabled: '{editing}',
         },
 
         viewConfig: {
@@ -182,7 +182,7 @@ Ext.define('Ung.view.reports.Reports', {
                 }
             }]
         }, {
-            xtype: 'reports-entry',
+            xtype: 'entry',
             itemId: 'report'
         }]
     }]

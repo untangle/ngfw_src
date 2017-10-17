@@ -1,19 +1,20 @@
 Ext.define('Ung.view.reports.Entry', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.reports-entry',
+    alias: 'widget.entry',
 
-    controller: 'reports-entry',
-
+    controller: 'entry',
     viewModel: {
-        type: 'reports-entry'
+        type: 'entry'
     },
 
     layout: 'fit',
 
     items: [{
+        /**
+         * using a formpanel to help validate when editing entry settings
+         */
         xtype: 'form',
         layout: 'border',
-        // modelValidation: true,
         dockedItems: [{
             xtype: 'toolbar',
             border: false,
@@ -27,20 +28,42 @@ Ext.define('Ung.view.reports.Entry', {
                 type: 'vbox',
                 align: 'stretch'
             },
+            // using 2 headings, 1 for selected entry, other for editing entry
             items: [{
                 xtype: 'component',
+                hidden: true,
                 bind: {
-                    html: '<h1><span>{entry.category} /</span> {entry.title}</h1>'
+                    html: '<h1><span>{entry.category} /</span> {entry.title}</h1>',
+                    hidden: '{eEntry}'
+                }
+            }, {
+                xtype: 'component',
+                hidden: true,
+                bind: {
+                    html: '<h1><span>{eEntry.category || "category"} /</span> {eEntry.title || "title"}</h1>',
+                    hidden: '{!eEntry}'
                 }
             }]
         }, {
+            /**
+             * top toolbar containing report entry available actions
+             */
             xtype: 'toolbar',
             dock: 'top',
             ui: 'footer',
             items: [{
                 xtype: 'component',
+                hidden: true,
                 bind: {
-                    html: '{entry.description}'
+                    html: '{entry.description}',
+                    hidden: '{eEntry}'
+                }
+            }, {
+                xtype: 'component',
+                hidden: true,
+                bind: {
+                    html: '{eEntry.description}',
+                    hidden: '{!eEntry}'
                 }
             }, '->', {
                 xtype: 'component',
@@ -130,14 +153,12 @@ Ext.define('Ung.view.reports.Entry', {
                 xtype: 'ungridstatus'
             }]
         }],
-
         items: [{
             /**
-             * region containing the actual report (text, graph, events)
+             * cards region containing the actual report (text, graph, events, invalid report message)
              */
             region: 'center',
             border: false,
-            // bodyBorder: false,
             itemId: 'reportCard',
             layout: 'card',
             bind: {
@@ -145,23 +166,19 @@ Ext.define('Ung.view.reports.Entry', {
             },
             items: [{
                 xtype: 'graphreport',
-                // region: 'west',
-                // width: 300,
                 itemId: 'graphreport',
                 renderInReports: true
             }, {
                 xtype: 'eventreport',
-                // region: 'center',
                 itemId: 'eventreport',
                 renderInReports: true
             }, {
                 xtype: 'textreport',
-                // region: 'east',
-                // width: 300,
                 itemId: 'textreport',
                 renderInReports: true
             }, {
                 itemId: 'invalidreport',
+                border: false,
                 layout: 'center',
                 items: [{
                     xtype: 'component',
@@ -170,6 +187,9 @@ Ext.define('Ung.view.reports.Entry', {
             }],
 
             dockedItems: [{
+                /**
+                 * Notification for readonly or custom report
+                 */
                 xtype: 'component',
                 dock: 'top',
                 padding: '10',
@@ -182,135 +202,121 @@ Ext.define('Ung.view.reports.Entry', {
                 },
                 html: '<i class="fa fa-info-circle fa-lg"></i> ' + 'This is a default <strong>read-only</strong> report. Any changes can be saved as a New Report with a different title.'
             }, {
+                /**
+                 * Date Range / Refresh toolbar
+                 * visible only when viewing reports but not when editing them
+                 */
                 xtype: 'toolbar',
                 itemId: 'actionsToolbar',
                 ui: 'footer',
                 dock: 'bottom',
-                // border: true,
                 style: {
                     background: '#F5F5F5'
                 },
                 hidden: true,
                 bind: {
-                    hidden: '{!entry}'
+                    hidden: '{!entry || eEntry}'
                 },
                 items: [{
+                    xtype: 'component',
+                    html: 'Since'.t() + ':'
+                }, {
+                    // range till now in hours
                     xtype: 'combo',
-                    itemId: 'eventsLimitSelector',
-                    hidden: true,
-                    disabled: true,
-                    bind: {
-                        hidden: '{entry.type !== "EVENT_LIST"}',
-                        disabled: '{fetching}'
-                    },
+                    reference: 'sinceDate',
+                    publishes: 'value',
+                    // fieldLabel: 'Since'.t(),
+                    // labelWidth: 'auto',
+                    width: 100,
+                    margin: '0 10 0 0',
+                    value: 24,
                     editable: false,
-                    value: 1000,
                     store: [
-                        [1000, '1000 ' + 'Events'.t()],
-                        [10000, '10000 ' + 'Events'.t()],
-                        [50000, '50000 ' + 'Events'.t()]
+                        [1, '1 hour'.t()],
+                        [3, '3 hours'.t()],
+                        [6, '6 hours'.t()],
+                        [12, '12 hours'.t()],
+                        [24, '1 day'.t()],
+                        [24 * 3, '3 days'.t()],
+                        [24 * 7, '1 week'.t()],
+                        [24 * 14, '2 weeks'.t()],
+                        [24 * 30, '1 month'.t()]
                     ],
                     queryMode: 'local',
-                    listeners: {
-                        change: 'refreshData'
-                    }
-                }, {
-                    xtype: 'label',
-                    margin: '0 5',
-                    text: 'From'.t() + ':'
-                }, {
-                    xtype: 'datefield',
-                    format: 'date_fmt'.t(),
-                    editable: false,
-                    width: 100,
                     disabled: true,
                     bind: {
-                        value: '{_sd}',
-                        disabled: '{fetching}'
+                        disabled: '{customRange.value}'
                     }
-                }, {
-                    xtype: 'timefield',
-                    increment: 10,
-                    // format: 'date_fmt'.t(),
-                    editable: false,
-                    width: 80,
-                    disabled: true,
-                    bind: {
-                        value: '{_st}',
-                        disabled: '{fetching}'
-                    }
-                }, {
-                    xtype: 'label',
-                    margin: '0 5',
-                    text: 'till'
                 }, {
                     xtype: 'checkbox',
-                    boxLabel: 'Present'.t(),
-                    disabled: true,
-                    bind: {
-                        value: '{tillNow}',
-                        disabled: '{fetching}'
-                    }
+                    reference: 'customRange',
+                    publishes: 'value',
+                    boxLabel: 'Custom Date Range'.t()
                 }, {
                     xtype: 'datefield',
+                    reference: 'startDate',
+                    publishes: 'value',
                     format: 'date_fmt'.t(),
                     editable: false,
                     width: 100,
+                    value: Util.serverToClientDate(Ext.Date.subtract(new Date(rpc.systemManager.getMilliseconds()), Ext.Date.DAY, 1)),
                     hidden: true,
-                    disabled: true,
                     bind: {
-                        value: '{_ed}',
-                        hidden: '{tillNow}',
-                        disabled: '{fetching}'
-                    },
-                    maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
-                }, {
-                    xtype: 'timefield',
-                    increment: 10,
-                    // format: 'date_fmt'.t(),
-                    editable: false,
-                    width: 80,
-                    hidden: true,
-                    disabled: true,
-                    bind: {
-                        value: '{_et}',
-                        hidden: '{tillNow}',
-                        disabled: '{fetching}'
-                    },
-                    // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+                        maxValue: '{endDate.value}',
+                        hidden: '{!customRange.value}'
+                    }
                 }, {
                     xtype: 'component',
-                    margin: '0 10',
-                    html: '&vert;',
+                    html: '<i class="fa fa-long-arrow-right"></i>',
+                    hidden: true,
+                    bind: {
+                        hidden: '{!customRange.value}'
+                    }
+                }, {
+                    xtype: 'datefield',
+                    reference: 'endDate',
+                    publishes: 'value',
+                    format: 'date_fmt'.t(),
+                    editable: false,
+                    width: 100,
+                    value: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
+                    maxValue: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
+                    hidden: true,
+                    bind: {
+                        minValue: '{startDate.value}',
+                        hidden: '{!customRange.value}'
+                    }
+
+                }, '->', {
+                    xtype: 'segmentedbutton',
+                    allowToggle: false,
+                    items: [{
+                        text: 'Refresh'.t(),
+                        iconCls: 'fa fa-refresh',
+                        itemId: 'refreshBtn',
+                        handler: 'refreshData',
+                        disabled: true,
+                        bind: {
+                            disabled: '{autoRefresh || fetching}'
+                        }
+                    }, {
+                        text: 'Auto'.t(),
+                        enableToggle: true,
+                        bind: {
+                            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                        },
+                        handler: 'setAutoRefresh'
+                    }],
                     hidden: true,
                     bind: {
                         hidden: '{eEntry}'
                     }
-                }, {
-                    xtype: 'checkbox',
-                    boxLabel: 'Auto Refresh'.t(),
-                    disabled: true,
-                    hidden: true,
-                    bind: {
-                        value: '{autoRefresh}',
-                        hidden: '{eEntry}',
-                        disabled: '{(!autoRefresh && fetching)}'
-                    },
-                    handler: 'setAutoRefresh'
-                }, {
-                    text: 'Refresh'.t(),
-                    iconCls: 'fa fa-refresh',
-                    itemId: 'refreshBtn',
-                    handler: 'refreshData',
-                    hidden: true,
-                    bind: {
-                        hidden: '{eEntry}',
-                        disabled: '{autoRefresh || fetching}'
-                    }
                 }]
             }]
-
         }, {
+            /**
+             * east border ragion with entry editing fields
+             */
             region: 'east',
             width: 350,
             weight: 20,
@@ -324,16 +330,12 @@ Ext.define('Ung.view.reports.Entry', {
             bind: {
                 hidden: '{!eEntry}'
             },
-            // border: false,
             defaults: {
-                // border: false,
                 bodyBorder: false,
                 bodyPadding: 10
             },
             items: [{
                 // generic report properties
-                xtype: 'panel',
-                // bodyStyle: { background: '#DDD' },
                 title: 'General'.t(),
                 border: false,
                 defaults: {
@@ -349,6 +351,7 @@ Ext.define('Ung.view.reports.Entry', {
                         value: '{eEntry.title}',
                         hidden: '{!eEntry}'
                     },
+                    valuePublishEvent: 'blur', // update binding on blur only
                     allowBlank: false,
                     emptyText: 'Enter Report Title ...'.t()
                 }, {
@@ -377,7 +380,8 @@ Ext.define('Ung.view.reports.Entry', {
                     anchor: '100%',
                     hidden: true,
                     // allowBlank: false,
-                    // emptyText: 'Add a description ...'.t(),
+                    emptyText: 'Add a description ...'.t(),
+                    valuePublishEvent: 'blur',
                     bind: {
                         value: '{eEntry.description}',
                         hidden: '{!eEntry}'
@@ -414,26 +418,6 @@ Ext.define('Ung.view.reports.Entry', {
                     bind: '{eEntry.displayOrder}',
                     hidden: false,
                     disabled: false
-                    // xtype: 'fieldcontainer',
-                    // // fieldLabel: 'Display Order'.t(),
-                    // // labelAlign: 'right',
-                    // layout: { type: 'hbox', align: 'middle' },
-                    // padding: '0 10',
-                    // items: [{
-                    //     xtype: 'label',
-                    //     margin: '0 5 0 0',
-                    //     html: 'Display Order'.t() + ':'
-                    // }, {
-                    //     xtype: 'numberfield',
-                    //     width: 70,
-                    //     bind: '{eEntry.displayOrder}'
-                    // }, {
-                    //     xtype: 'component',
-                    //     padding: '0 5',
-                    //     html: '<i class="fa fa-info-circle fa-gray" data-qtip="The order to display this report entry (relative to others)"></i>'
-                    // }],
-                    // hidden: false,
-                    // disabled: false
                 }]
             }, {
                 // style properties
@@ -624,8 +608,10 @@ Ext.define('Ung.view.reports.Entry', {
                 }]
             }]
         }, {
+            /**
+             * south border region width entry data source and sql conditions etc...
+             */
             region: 'south',
-            // title: '<i class="fa fa-database"></i> ' + 'Data Source'.t(),
             height: 300,
             split: true,
             layout: 'border',
@@ -1122,15 +1108,6 @@ Ext.define('Ung.view.reports.Entry', {
                         align: 'center',
                         iconCls: 'fa fa-minus-circle',
                         handler: 'removeSqlCondition'
-                        // xtype: 'widgetcolumn',
-                        // width: 22,
-                        // align: 'center',
-                        // widget: {
-                        //     xtype: 'button',
-                        //     width: 20,
-                        //     iconCls: 'fa fa-minus-circle',
-                        //     handler: 'removeSqlCondition'
-                        // }
                     }]
                 }]
             }]

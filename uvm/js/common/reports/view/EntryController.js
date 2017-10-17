@@ -1,6 +1,6 @@
 Ext.define('Ung.view.reports.EntryController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.reports-entry',
+    alias: 'controller.entry',
 
     control: {
         '#': {
@@ -39,6 +39,7 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = this.getViewModel(),
             dataGrid = this.getView().down('#currentData');
 
+        // set the context (Admin or Reports)
         vm.set('context', Ung.app.servletContext);
 
 
@@ -48,7 +49,7 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.bind('{entry}', function (entry) {
             // console.log(entry);
 
-            if (vm.get('eEntry')) { vm.set('eEntry', null); } // reset editing entry
+            vm.set('eEntry', null); // reset editing entry
 
             switch(entry.get('type')) {
             case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
@@ -60,9 +61,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.set('activeReportCard', 'eventreport'); break;
             }
 
-
-            vm.set('disableSave', entry.readOnly);
-            vm.set('disableNewSave', true);
             vm.set('_currentData', []);
             vm.set('autoRefresh', false); // reset auto refresh
             if (me.refreshTimeout) {
@@ -144,6 +142,10 @@ Ext.define('Ung.view.reports.EntryController', {
             var tableConfig = TableConfig.generate(table);
             vm.set('tableColumns', tableConfig.comboItems);
         });
+
+        // when switching between since date and custom reange date, refresh the report
+        vm.bind('{sinceDate.value}', function () { me.refreshData(); });
+        vm.bind('{customRange.value}', function () { me.refreshData(); });
     },
 
     formatTimeData: function (data) {
@@ -356,6 +358,9 @@ Ext.define('Ung.view.reports.EntryController', {
     refreshData: function () {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
+
+        if (!entry) { return; }
+
         switch(entry.get('type')) {
         case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
         case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
@@ -630,8 +635,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 }
                 vm.set('reportMessages',  messages.join('<br>'));
 
-                vm.set('disableSave', currentRecord.get('readOnly') || ( titleConflictSaveNew && !sameCustomizableReport ) );
-                vm.set('disableNewSave', titleConflictSaveNew );
                 if(!titleConflictSave){
                     vm.set('entry.title', newValue);
                 }
@@ -870,12 +873,12 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    setAutoRefresh: function (ck, val) {
+    setAutoRefresh: function (btn) {
         var me = this,
             vm = this.getViewModel();
-        vm.set('autoRefresh', val);
+        vm.set('autoRefresh', btn.pressed);
 
-        if (val) {
+        if (btn.pressed) {
             me.refreshData();
         } else {
             if (me.refreshTimeout) {
