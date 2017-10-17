@@ -1247,6 +1247,75 @@ class Ping(Screen):
             uvm.exec_and_get_output("ping -c 5 " + address, self )
             uvm = None
 
+class RemoteSupport(Form):
+    """
+    Toggle remote support
+    """
+    modes = ["configure", "confirm"]
+    title = "Remote Support"
+
+    configure_selections = [{
+        "text": "Enable",
+        "value": True
+    },{
+        "text": "Disable",
+        "value": False
+    }]
+
+    def __init__(self, stdscreen):
+        """
+        Get Remote support setting
+        """
+        super(RemoteSupport, self).__init__(stdscreen)
+
+        uvm = UvmContext()
+        system_settings = uvm.context.systemManager().getSettings()
+        self.remote_support = system_settings["supportEnabled"]
+        uvm = None
+
+    def display_form(self):
+        """
+        Display current setting
+        """
+        self.message("Allow secure remote access to support team")
+        if self.remote_support is True:
+            self.message("Currently enabled")
+        else:
+            self.message("Currently disabled")
+        self.window.refresh()
+
+    def display_configure(self, show_selected_only=False):
+        """
+        Select Enable or Disable
+        """
+        self.y_pos += 1
+        self.display_title( "Change" )
+
+        for index, configure in enumerate(self.configure_selections):
+            if show_selected_only:
+                select_mode = curses.A_NORMAL
+                if configure != self.mode_selected_item['configure']:
+                    continue
+                self.window.addstr( self.y_pos, self.x_pos, configure["text"], select_mode)
+            else:
+                if index == self.mode_menu_pos[self.current_mode]:
+                    select_mode = curses.A_REVERSE
+                else:
+                    select_mode = curses.A_NORMAL
+                self.window.addstr( self.y_pos + index, self.x_pos, configure["text"], select_mode)
+
+    def action_confirm(self):
+        self.window.clear()
+        self.message("Changing remote support...")
+        self.window.refresh()
+
+        uvm = UvmContext()
+        system_settings = uvm.context.systemManager().getSettings()
+        system_settings["supportEnabled"] = self.mode_selected_item["configure"]["value"]
+        system_settings = uvm.context.systemManager().setSettings(system_settings)
+        uvm = None
+        return False
+
 class Upgrade(Form):
     """
     Upgrade system software
@@ -1290,6 +1359,7 @@ class Upgrade(Form):
         uvm.context.systemManager().upgrade()
         uvm = None
         return False
+
 
 class Reboot(Form):
     """
@@ -1471,6 +1541,9 @@ class UiApp(object):
             },{
                 "text": "Ping",
                 "class": Ping
+            },{
+                "text": "Remote Suppport",
+                "class": RemoteSupport
             },{
                 "text": "Upgrade",
                 "class": Upgrade,
