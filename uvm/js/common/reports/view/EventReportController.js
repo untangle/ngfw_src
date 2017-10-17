@@ -10,7 +10,7 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel(), i;
+        var me = this, vm = this.getViewModel();
 
         me.modFields = { uniqueId: null };
 
@@ -36,7 +36,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 var visibleColumns = Ext.clone(me.defaultColumns);
 
                 // check if in Reports view otherwise it freezes when in widget editor (NGFW-10854)
-                if (me.getView().up('reports-entry')) {
+                if (me.getView().up('entry')) {
                     var identifier = 'eventsGrid-' + entry.get('uniqueId');
                     grid.itemId = identifier;
                     grid.stateId = identifier;
@@ -117,36 +117,26 @@ Ext.define('Ung.view.reports.EventReportController', {
 
     fetchData: function (reset, cb) {
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel(),
             reps = me.getView().up('#reports'),
             startDate, endDate;
 
         var limit = 1000;
-        if( me.getView().up('reports-entry') ){
-            limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
+        if( me.getView().up('entry') ){
+            limit = me.getView().up('entry').down('#eventsLimitSelector').getValue();
         }
         me.entry = vm.get('entry');
 
-        // startDate
+        // date range setup
         if (!me.getView().renderInReports) {
             // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
             startDate = new Date(rpc.systemManager.getMilliseconds() - (Ung.dashboardSettings.timeframe * 3600 || 3600) * 1000);
-        } else {
-            // if it's a report, convert UI client start date to server date
-            startDate = Util.clientToServerDate(vm.get('startDate'));
-        }
-
-        // endDate
-        if (vm.get('tillNow') || !me.getView().renderInReports) {
-            // if showing reports till current time
             endDate = null;
         } else {
-            // otherwise, in reports, convert UI client end date to server date
-            endDate = Util.clientToServerDate(vm.get('endDate'));
+            // if it's a report, convert UI client start date to server date
+            startDate = Util.clientToServerDate(vm.get('f_startdate'));
+            endDate = Util.clientToServerDate(vm.get('f_enddate'));
         }
-
-        var grid = v.down('grid');
 
         me.getView().setLoading(true);
         if (reps) { reps.getViewModel().set('fetching', true); }
@@ -158,8 +148,8 @@ Ext.define('Ung.view.reports.EventReportController', {
                         startDate, // start date
                         endDate) // end date
             .then(function(result) {
-                if (me.getView().up('reports-entry')) {
-                    me.getView().up('reports-entry').down('#currentData').setLoading(false);
+                if (me.getView().up('entry')) {
+                    me.getView().up('entry').down('#currentData').setLoading(false);
                 }
                 me.getView().setLoading(false);
                 if (reps) { reps.getViewModel().set('fetching', false); }
@@ -209,8 +199,8 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         vm.set('propsData', propsData);
         // when selecting an event hide Settings if open
-        if (me.getView().up('reports-entry')) {
-            me.getView().up('reports-entry').lookupReference('settingsBtn').setPressed(false);
+        if (me.getView().up('entry')) {
+            me.getView().up('entry').lookupReference('settingsBtn').setPressed(false);
         }
 
     },

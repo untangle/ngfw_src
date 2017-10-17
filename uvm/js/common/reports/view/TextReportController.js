@@ -44,22 +44,15 @@ Ext.define('Ung.view.reports.TextReportController', {
 
         if (reps) { reps.getViewModel().set('fetching', true); }
 
-        // startDate
+        // date range setup
         if (!me.getView().renderInReports) {
             // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
             startDate = new Date(rpc.systemManager.getMilliseconds() - (Ung.dashboardSettings.timeframe * 3600 || 3600) * 1000);
-        } else {
-            // if it's a report, convert UI client start date to server date
-            startDate = Util.clientToServerDate(vm.get('startDate'));
-        }
-
-        // endDate
-        if (vm.get('tillNow') || !me.getView().renderInReports) {
-            // if showing reports till current time
             endDate = null;
         } else {
-            // otherwise, in reports, convert UI client end date to server date
-            endDate = Util.clientToServerDate(vm.get('endDate'));
+            // if it's a report, convert UI client start date to server date
+            startDate = Util.clientToServerDate(vm.get('f_startdate'));
+            endDate = Util.clientToServerDate(vm.get('f_enddate'));
         }
 
         me.getView().setLoading(true);
@@ -72,8 +65,8 @@ Ext.define('Ung.view.reports.TextReportController', {
                 me.getView().setLoading(false);
                 if (reps) { reps.getViewModel().set('fetching', false); }
                 me.processData(result.list);
-                if (me.getView().up('reports-entry')) {
-                    me.getView().up('reports-entry').getController().formatTextData(result.list);
+                if (me.getView().up('entry')) {
+                    me.getView().up('entry').getController().formatTextData(result.list);
                 }
 
                 if (cb) { cb(); }
@@ -89,7 +82,7 @@ Ext.define('Ung.view.reports.TextReportController', {
         var v = this.getView(),
             vm = this.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'),
-            textColumns = entry.get('textColumns'), i, columnName, values = [];
+            textColumns = entry.get('textColumns'), columnName, values = [];
 
         if (data.length > 0 && textColumns && textColumns.length > 0) {
             Ext.Array.each(textColumns, function (column) {
