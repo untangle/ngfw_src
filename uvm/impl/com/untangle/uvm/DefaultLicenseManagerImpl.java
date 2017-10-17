@@ -58,6 +58,11 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         return new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, I18nUtil.marktr("No License Found"));
     }
 
+    public License getLicense( String productIdentifier, boolean exactMatch )
+    {
+        return getLicense(productIdentifier, true);
+    }
+    
     public List<License> getLicenses()
     {
         return this.licenses;
