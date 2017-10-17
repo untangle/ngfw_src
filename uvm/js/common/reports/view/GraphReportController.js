@@ -9,140 +9,24 @@ Ext.define('Ung.view.reports.GraphReportController', {
         }
     },
 
-    /**
-     * initializes graph report
-     */
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel(),
-            modFields = { uniqueId: null }; // keeps some of the entry modified fields needed for dynamic styling
+        var me = this, vm = this.getViewModel();
+        me.buildChart(); // builds an empy chart
 
-        // build the empty chart
-        me.buildChart();
-
+        // check if reports is rendered inside a widget
         if (me.getView().up('reportwidget')) {
             me.isWidget = true;
             return;
         }
 
+        // fetch data when report entry is set or changed
         vm.bind('{entry}', function () {
             me.fetchData(true);
         });
-
-        // vm.bind('{eEntry}', function (eEntry) {
-            // needed to reflow chart to avoid broken graph due to binding lag time
-            // if (!eEntry && me.chart) {
-            //     Ext.defer(function() {
-            //         console.log('reflow');
-            //         me.chart.reflow();
-            //     }, 500);
-            // }
-        // });
-
-        // vm.bind('{eEntry.timeStyle}', function () { me.setStyles(); });
-        // vm.bind('{eEntry.pieStyle}', function () { me.setStyles(); });
-        // vm.bind('{eEntry.pieNumSlices}', function () { me.setPieSeries(); });
-        // vm.bind('{eEntry.timeDataInterval}', function () { // me.fetchData(); });
-        // vm.bind('{eEntry.timeDataInterval}', function () { me.setStyles(); });
-
-
-        // vm.bind('{eEntry}', function (eEntry) {
-        //     if (!eEntry || eEntry.get('type') === 'TEXT' || eEntry.get('type') === 'EVENT_LIST') {
-        //         return;
-        //     }
-        //     console.log(eEntry);
-        // }, me, { deep: true });
-
-        // if (!me.getView().up('reportwidget')) {
-        //     // watch when report entry is changed or modified
-
-        //     vm.bind('{entry}', function () {
-        //         me.fetchData(true);
-        //     });
-
-
-
-
-        //     // vm.bind('{eEntry.type}', function (type) {
-
-        //     //     if (type === 'TEXT' || type === 'EVENT_LIST') { return; }
-
-        //     //     // Ext.defer(function () {
-        //     //     //     me.fetchData(true);
-        //     //     //     // var invalidEntryForm =
-        //     //     //     // vm.set('invalidEntryForm', me.getView().up('form').isValid());
-        //     //     //     // if () {
-        //     //     //     //     me.fetchData(true);
-        //     //     //     // } else {
-        //     //     //     //     me.resetChart();
-        //     //     //     // }
-        //     //     // }, 300);
-
-
-
-        //     //     // if (type === 'TEXT' || type === 'EVENT_ENTRY') {
-        //     //     //     // me.resetChart();
-        //     //     // }
-        //     //     // if (type === 'PIE_GRAPH') {
-        //     //     //     // me.setPieSeries();
-        //     //     //     // // set some PIE_GRAPH defaults in case they are not set
-        //     //     //     // vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-        //     //     //     // vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
-        //     //     // }
-        //     //     // // if (type === 'TIME_GRAPH') {
-        //     //     // //     me.setTimeSeries();
-        //     //     // // }
-        //     //     // me.fetchData(true);
-        //     // });
-
-        //     // vm.bind('{eEntry.pieStyle}', function () {
-        //     //     me.setPieSeries();
-        //     // });
-        //     // vm.bind('{eEntry.pieNumSlices}', function () {
-        //     //     me.setPieSeries();
-        //     // });
-
-        //     // vm.bind('{entry}', function (entry) {
-        //     //     console.log(entry);
-        //     //     // if it's not a graph report, do nothing
-        //     //     if (entry.get('type').indexOf('GRAPH') < 0) { return; }
-
-        //     //     if (modFields.uniqueId !== entry.get('uniqueId')) {
-        //     //         modFields = {
-        //     //             uniqueId: entry.get('uniqueId'),
-        //     //             timeDataInterval: entry.get('timeDataInterval'),
-        //     //             pieNumSlices: entry.get('pieNumSlices'),
-        //     //             timeStyle: entry.get('timeStyle'),
-        //     //             pieStyle: entry.get('pieStyle'),
-        //     //             approximation: entry.get('approximation'),
-        //     //             colors: entry.get('colors'),
-        //     //             type: entry.get('type')
-        //     //         };
-        //     //         // fetch report data first time
-        //     //         me.fetchData(true);
-        //     //         return;
-        //     //     }
-
-        //     //     // based on which fields are modified do some specific actions
-        //     //     // Ext.Object.each(modFields, function (key, value) {
-        //     //     //     if (key === 'uniqueId') { return; }
-        //     //     //     if (value !== entry.get(key)) {
-        //     //     //         modFields[key] = entry.get(key);
-        //     //     //         if (key === 'timeDataInterval') { me.fetchData(false); }
-        //     //     //         if (key === 'pieNumSlices') { me.setPieSeries(); }
-        //     //     //         if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
-        //     //     //     }
-        //     //     // });
-        //     // }, me, {
-        //     //     deep: true
-        //     // });
-        // } else {
-        //     me.isWidget = true;
-        //     // DashboardQueue.add(me.getView());
-        // }
     },
 
     /**
-     * when container is resized the chart needs to adapt to the new size
+     * used to refresh the chart when it's container size changes
      */
     onResize: function () {
         if (this.chart) {
@@ -161,6 +45,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 type: 'spline',
                 renderTo: me.getView().lookupReference('graph').getEl().dom,
                 animation: false,
+                marginRight: widgetDisplay ? undefined : 20,
                 spacing: widgetDisplay ? [5, 5, 10, 5] : [10, 10, 15, 10],
                 style: { fontFamily: 'Source Sans Pro', fontSize: '12px' },
                 backgroundColor: 'transparent'
@@ -196,13 +81,13 @@ Ext.define('Ung.view.reports.GraphReportController', {
             // colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
 
             xAxis: {
-                alternateGridColor: 'rgba(220, 220, 220, 0.1)',
+                // alternateGridColor: 'rgba(220, 220, 220, 0.1)',
                 lineColor: '#C0D0E0',
                 lineWidth: 1,
                 tickLength: 3,
-                gridLineWidth: 1,
-                gridLineDashStyle: 'dash',
-                gridLineColor: '#EEE',
+                // gridLineWidth: 0,
+                // gridLineDashStyle: 'dash',
+                // gridLineColor: '#EEE',
                 tickPixelInterval: 60,
                 labels: {
                     style: {
@@ -217,8 +102,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 events: {
                     // afterSetExtremes: function () {
                     //     // filters the current data grid based on the zoom range
-                    //     if (me.getView().up('reports-entry')) {
-                    //         me.getView().up('reports-entry').getController().filterData(this.getExtremes().min, this.getExtremes().max);
+                    //     if (me.getView().up('entry')) {
+                    //         me.getView().up('entry').getController().filterData(this.getExtremes().min, this.getExtremes().max);
                     //     }
                     // }
                 }
@@ -340,7 +225,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 lineHeight: 12,
                 itemDistance: 10,
                 itemStyle: {
-                    fontSize: '11px',
+                    fontSize: '12px',
                     fontWeight: 600,
                     width: '120px',
                     whiteSpace: 'nowrap',
@@ -383,23 +268,17 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         if (reps) { reps.getViewModel().set('fetching', true); }
 
-        // startDate
+        // date range setup
         if (!me.getView().renderInReports) {
             // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
             startDate = new Date(rpc.systemManager.getMilliseconds() - (Ung.dashboardSettings.timeframe * 3600 || 3600) * 1000);
-        } else {
-            // if it's a report, convert UI client start date to server date
-            startDate = Util.clientToServerDate(vm.get('startDate'));
-        }
-
-        // endDate
-        if (vm.get('tillNow') || !me.getView().renderInReports) {
-            // if showing reports till current time
             endDate = null;
         } else {
-            // otherwise, in reports, convert UI client end date to server date
-            endDate = Util.clientToServerDate(vm.get('endDate'));
+            // if it's a report, convert UI client start date to server date
+            startDate = Util.clientToServerDate(vm.get('f_startdate'));
+            endDate = Util.clientToServerDate(vm.get('f_enddate'));
         }
+
 
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
@@ -420,9 +299,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
                 if (cb) { cb(); }
                 // if graph rendered inside reports, format and add data in current data grid
-                if (!me.isWidget && me.getView().up('reports-entry')) {
+                if (!me.isWidget && me.getView().up('entry')) {
                     // vm.set('_currentData', []);
-                    var ctrl = me.getView().up('reports-entry').getController();
+                    var ctrl = me.getView().up('entry').getController();
                     switch (entryType) {
                     case 'TIME_GRAPH':         ctrl.formatTimeData(me.data); break;
                     case 'TIME_GRAPH_DYNAMIC': ctrl.formatTimeDynamicData(me.data); break;
@@ -495,7 +374,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             if( seriesRenderer ){
                 renderedName = seriesRenderer(column);
                 if(renderedName.substr(-1) != ']'){
-                    renderedName += " [" + column + "]";
+                    renderedName += ' [' + column + ']';
                 }
             }
             series.push({
@@ -511,7 +390,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 tooltip: {
                     pointFormatter: function () {
                         var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
-                        if (units === "bytes" || units === "bytes/s") {
+                        if (units === 'bytes' || units === 'bytes/s') {
                             str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
                         } else {
                             str += ': <b>' + this.y + '</b> ' + units;
@@ -803,7 +682,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             });
             me.chart.redraw();
         } else {
-            Ext.Array.each(me.chart.series, function (serie, idx) {
+            Ext.Array.each(me.chart.series, function (serie) {
                 serie.update({
                     pointPadding: 0.1
                 }, false);

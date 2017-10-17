@@ -199,7 +199,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     newReport: function () {
         var me = this,
             newReport = Ext.create('Ung.model.Report');
-        me.getView().down('reports-entry').getViewModel().set('eEntry', newReport);
+        me.getView().down('entry').getViewModel().set('eEntry', newReport);
         me.lookup('cards').setActiveItem('report');
     },
 
