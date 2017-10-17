@@ -65,7 +65,7 @@ public class AppManagerImpl implements AppManager
     /**
      * This stores the count of apps currently being loaded
      */
-    private volatile int appsBeingLoaded = 0;
+    private ConcurrentHashMap<Long,AppProperties> appsBeingLoaded = new ConcurrentHashMap<Long,AppProperties>();
 
     private AppManagerSettings settings = null;
 
@@ -492,7 +492,8 @@ public class AppManagerImpl implements AppManager
         List<App> visibleApps = nm.visibleApps( policyId );
         for (App app : visibleApps) {
             String n = app.getAppProperties().getName();
-            licenseMap.put(n, lm.getLicense(n));
+            //exactMatch = false so we accept any license that starts with n
+            licenseMap.put(n, lm.getLicense(n,false));
         }
 
         /**
@@ -739,12 +740,19 @@ public class AppManagerImpl implements AppManager
             }
         }
 
-        while ( unloadedAppsMap.size() > 0 || appsBeingLoaded > 0 ) {
+        while ( unloadedAppsMap.size() > 0 || appsBeingLoaded.size() > 0 ) {
             passCount++;
             List<AppSettings> loadable = getLoadable();
-            logger.info("Loading pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded + " loadable.size(): " + loadable.size());
+            String appsLoadingStr = "";
+            if ( appsBeingLoaded.size() > 0 ) {
+                appsLoadingStr = " loading: ";
+                for ( Long appId : appsBeingLoaded.keySet() ) {
+                    appsLoadingStr += appId + " ";
+                }
+            }
+            logger.info("Loading pass[" + passCount + "]: " + "loadable.size(): " + loadable.size() +" unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded.size() + appsLoadingStr);
 
-            if ( appsBeingLoaded < 1 && loadable.size() == 0 && unloadedAppsMap.size() > 0 ) {
+            if ( appsBeingLoaded.size() < 1 && loadable.size() == 0 && unloadedAppsMap.size() > 0 ) {
                 // if nothing is being loaded and nothing is loadeable but there is more to be loaded
                 // then something is wrong. This should never happen
                 logger.error("No apps loadable but not finished! Continuing...");
@@ -759,7 +767,7 @@ public class AppManagerImpl implements AppManager
 
             try { startSemaphore.tryAcquire(300,java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) { continue; }
         }
-        logger.info("Loaded! pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded);
+        logger.info("Loaded! pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded.size());
 
         long t1 = System.currentTimeMillis();
         logger.info("Time to restart apps: " + (t1 - t0) + " millis");
@@ -802,7 +810,7 @@ public class AppManagerImpl implements AppManager
                             } finally {
 
                                 // alert the main thread that a app is done loading
-                                appsBeingLoaded--;
+                                appsBeingLoaded.remove(appSettings.getId());
                                 startSemaphore.release();
 
                             }
@@ -813,7 +821,7 @@ public class AppManagerImpl implements AppManager
                         }
                     };
                 // remove from unloaded apps
-                appsBeingLoaded++;
+                appsBeingLoaded.put(appSettings.getId(),appProps);
                 unloadedAppsMap.remove( appSettings.getId() );
 
                 restarters.add(r);

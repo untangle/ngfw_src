@@ -216,6 +216,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
     },
 
     onCancel: function () {
+        if (this.getView().record) { // discard changes on cancel
+            this.getView().record.reject();
+        }
         this.getView().close();
     },
 
@@ -585,8 +588,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
                             view.down('#hours2').setValue('13');
                             view.down('#minutes2').setValue('30');
                         } else {
-                            startTime = record.get('value').split('-')[0];
-                            endTime = record.get('value').split('-')[1];
+                            var startTime = record.get('value').split('-')[0];
+                            var endTime = record.get('value').split('-')[1];
                             view.down('#hours1').setValue(startTime.split(':')[0]);
                             view.down('#minutes1').setValue(startTime.split(':')[1]);
                             view.down('#hours2').setValue(endTime.split(':')[0]);

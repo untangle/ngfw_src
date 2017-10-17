@@ -12,48 +12,27 @@ Ext.define('Ung.config.network.PortForwardSimple', {
     closable: false,
 
     viewModel: {
-        data: {
-            record: Ext.create('Ung.model.Rule', {
-                ruleId: -1,
-                javaClass: 'com.untangle.uvm.network.PortForwardRule',
-                description: '',
-                enabled: true,
-                newDestination: '',
-                newPort: 21,
-                simple: true,
-                conditions: {
-                    javaClass: 'java.util.LinkedList',
-                    list: [{
-                        conditionType: 'DST_LOCAL',
-                        invert: false,
-                        value: 'true',
-                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                    }, {
-                        conditionType: 'PROTOCOL',
-                        invert: false,
-                        value: 'TCP',
-                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                    }, {
-                        conditionType: 'DST_PORT',
-                        invert: false,
-                        value: 21,
-                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                    }]
-                }
-            })
-        },
         formulas: {
             _protocol: {
                 get: function (get) {
-                    return Ext.Array.findBy(get('record.conditions.list'), function (cond) {
+                    var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'PROTOCOL';
-                    }).value;
+                    });
+
+                    if(condition == null){
+                        return -1;
+                    }
+
+                    return condition.value;
+
                 },
                 set: function (value) {
                     var condition = Ext.Array.findBy(this.get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'PROTOCOL';
                     });
-                    condition.value = value;
+                    if( condition != null ){
+                        condition.value = value;
+                    }
                 }
             },
             _port: {
@@ -61,6 +40,9 @@ Ext.define('Ung.config.network.PortForwardSimple', {
                     var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'DST_PORT';
                     });
+                    if(condition == null){
+                        return -1;
+                    }
 
                     if (Ext.Array.indexOf([21, 25, 53, 80, 110, 143, 443, 1723], parseInt(condition.value, 10)) < 0) {
                         return -1;
@@ -74,9 +56,15 @@ Ext.define('Ung.config.network.PortForwardSimple', {
             },
             _portNo: {
                 get: function (get) {
-                    return Ext.Array.findBy(get('record.conditions.list'), function (cond) {
+                    var condition = Ext.Array.findBy(get('record.conditions.list'), function (cond) {
                         return cond.conditionType === 'DST_PORT';
-                    }).value;
+                    });
+
+                    if(condition == null){
+                        return -1;
+                    }
+
+                    return condition.value;
                 }
             }
         }
@@ -201,11 +189,17 @@ Ext.define('Ung.config.network.PortForwardSimple', {
         control: {
             '#': {
                 afterrender: function (view) {
-                    var vm = view.getViewModel();
+                    var vm = view.getViewModel(),
+                        grid = view.up('ungrid');
 
                     if (view.record) {
-                        vm.set('record', view.record);
+                        // editing existing rule
+                        vm.set('record', view.record.copy(null));
                         view.setTitle('Edit Port Forward Rule'.t());
+                    } else {
+                        // create new rule
+                        vm.set('record', Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(grid.emptyRow)));
+                        view.setTitle('Add Port Forward Rule'.t());
                     }
                     view.down('form').isValid();
                 }
@@ -216,18 +210,23 @@ Ext.define('Ung.config.network.PortForwardSimple', {
             var condition = Ext.Array.findBy(vm.get('record.conditions.list'), function (cond) {
                 return cond.conditionType === 'DST_PORT';
             });
-            if (val !== -1) {
+            if (val !== -1 && condition != null) {
                 condition.value = val;
                 vm.set('record.newPort', val);
             }
         },
         onApply: function () {
             var me = this, vm = me.getViewModel(),
-                grid = me.getView().up('ungrid'),
-                record = vm.get('record');
+                grid = me.getView().up('ungrid');
 
-            record.set('markedForNew', true);
-            grid.getStore().add(record);
+            if (me.getView().record) {
+                // copy data into edited record
+                me.getView().record.set(vm.get('record').getData());
+            } else {
+                // or add a new record
+                vm.set('record.markedForNew', true);
+                grid.getStore().add(vm.get('record'));
+            }
             me.getView().close();
         },
 
@@ -240,9 +239,9 @@ Ext.define('Ung.config.network.PortForwardSimple', {
                 grid = me.getView().up('ungrid'),
                 record = vm.get('record');
             record.set('simple', false);
-
-            if (me.getView().record) { // editing
-                grid.getController().editorWin(record);
+            if (me.getView().record) {
+                me.getView().record.set(vm.get('record').getData());
+                grid.getController().editorWin(me.getView().record);
             } else {
                 grid.getController().editorWin(null);
             }

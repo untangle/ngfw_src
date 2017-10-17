@@ -94,7 +94,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * This is where the fully evaluated license are stored
      * This map stores the evaluated (validated) licenses
      */
-    private Map<String, License> licenseMap = new ConcurrentHashMap<String, License>();
+    private ConcurrentHashMap<String, License> licenseMap = new ConcurrentHashMap<String, License>();
 
     /**
      * A list of all known licenses
@@ -179,7 +179,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     @Override
-    public final License getLicense(String identifier)
+    public final License getLicense(String identifier, boolean exactMatch)
     {
         if (isGPLApp(identifier))
             return null;
@@ -190,8 +190,25 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         License license = null;
 
+        /**
+         * If there is no perfect match,
+         * Look for one that the prefix matches
+         * example: identifer "virus-blocker" should accept "virus-blocker-cloud"
+         */
+        if (!exactMatch) {
+            for (String name : this.licenseMap.keySet()) {
+                if (name.startsWith(identifier))
+                    logger.debug("getLicense(" + identifier + ") = " + license );
+                license = this.licenseMap.get(name);
+                if (license != null && license.getValid())
+                    return license;
+            }
+        }
+
+        /**
+         * Look for an existing perfect match
+         */
         license = this.licenseMap.get(identifier);
-        logger.debug("getLicense(" + identifier + ") = " + license );
         if (license != null)
             return license;
 
@@ -219,6 +236,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return license;
     }
 
+    @Override
+    public final License getLicense(String identifier)
+    {
+        return getLicense(identifier, true);
+    }
+    
     @Override
     public final boolean isLicenseValid(String identifier)
     {
@@ -703,7 +726,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private synchronized void _mapLicenses()
     {
         /* Create a new map of all of the valid licenses */
-        Map<String, License> newMap = new ConcurrentHashMap<String, License>();
+        ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<String, License>();
         LinkedList<License> newList = new LinkedList<License>();
         License license = null;
         
