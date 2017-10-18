@@ -706,7 +706,7 @@ public class AppManagerImpl implements AppManager
             if ( f.isDirectory() ) {
                 findAllAppProperties( appProps, f );
             } else {
-                if ( "appProperties.js".equals( f.getName() ) ) {
+                if ( "appProperties.json".equals( f.getName() ) ) {
                     try {
                         AppProperties np = getAppPropertiesFilename( f.getAbsolutePath() );
                         appProps.add( np );
@@ -973,7 +973,7 @@ public class AppManagerImpl implements AppManager
      */
     private AppProperties getAppProperties( String name )
     {
-        String fileName = System.getProperty("uvm.lib.dir") + "/" + name + "/" + "appProperties.js";
+        String fileName = System.getProperty("uvm.lib.dir") + "/" + name + "/" + "appProperties.json";
         return getAppPropertiesFilename( fileName );
     }
 
