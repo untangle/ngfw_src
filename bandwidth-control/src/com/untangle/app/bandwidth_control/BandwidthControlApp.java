@@ -164,13 +164,13 @@ public class BandwidthControlApp extends AppBase
         logger.info("Loading new Configuration: " + defaultConfiguration);
         
         try {
-            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.lib.dir") + "/bandwidth-control/defaults_" + defaultConfiguration + ".js" );
+            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.lib.dir") + "/bandwidth-control/defaults_" + defaultConfiguration + ".json" );
         } catch (SettingsManager.SettingsException e) {
             e.printStackTrace();
         }
 
         if (readSettings == null) {
-            logger.warn("Configuration not found: name:" + defaultConfiguration + " file: " + System.getProperty("uvm.lib.dir") + "/" + "bandwidth-control/" + "defaults_" + defaultConfiguration + ".js");
+            logger.warn("Configuration not found: name:" + defaultConfiguration + " file: " + System.getProperty("uvm.lib.dir") + "/" + "bandwidth-control/" + "defaults_" + defaultConfiguration + ".json");
         }
         else {
             logger.info("Loading new Defaults..." + defaultConfiguration);
