@@ -144,8 +144,24 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         // when switching between since date and custom reange date, refresh the report
-        vm.bind('{sinceDate.value}', function () { me.refreshData(); });
-        vm.bind('{customRange.value}', function () { me.refreshData(); });
+        vm.bind('{sinceDate.value}', function () {
+            if (!vm.get('customRange.value')) {
+                vm.set({
+                    f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
+                    f_enddate: null
+                });
+            }
+            me.refreshData();
+        });
+        vm.bind('{customRange.value}', function (checked) {
+            vm.set({
+                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
+                f_enddate: null
+            });
+            if (!checked) { me.refreshData(); }
+        });
+        // vm.bind('{f_startdate}', function () { me.refreshData(); });
+        // vm.bind('{f_enddate}', function () { me.refreshData(); });
     },
 
     formatTimeData: function (data) {

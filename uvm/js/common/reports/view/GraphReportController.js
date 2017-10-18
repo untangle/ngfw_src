@@ -154,9 +154,31 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 enabled: true,
                 animation: false,
                 shared: true,
+                followPointer: true,
                 // distance: 30,
-                padding: 5,
+                padding: 10,
                 hideDelay: 0,
+                backgroundColor: 'rgba(247, 247, 247, 0.95)',
+                useHTML: true,
+                style: {
+                    fontSize: widgetDisplay ? '12px' : '14px'
+                },
+                headerFormat: '<p style="margin: 0 0 5px 0;">{point.key}</p>',
+                // dateTimeLabelsFormats: {
+                //     millisecond: '%b %e',
+                //     second: '%b %e',
+                //     minute: '%b %e',
+                //     hour: '%b %e',
+                //     day: '%b %e',
+                //     week: '%b %e',
+                //     month: '%b %e',
+                //     year: '%Y'
+                // },
+                // xDateFormat: '%Y-%m-%d'
+                // formatter: function () {
+                //     var s = this.x;
+                //     return s;
+                // }
             },
             plotOptions: {
                 column: {

@@ -245,49 +245,28 @@ Ext.define('Ung.view.reports.Entry', {
                     queryMode: 'local',
                     disabled: true,
                     bind: {
-                        disabled: '{customRange.value}'
+                        disabled: '{customRange.value || fetching}'
                     }
                 }, {
                     xtype: 'checkbox',
                     reference: 'customRange',
                     publishes: 'value',
-                    boxLabel: 'Custom Date Range'.t()
-                }, {
-                    xtype: 'datefield',
-                    reference: 'startDate',
-                    publishes: 'value',
-                    format: 'date_fmt'.t(),
-                    editable: false,
-                    width: 100,
-                    value: Util.serverToClientDate(Ext.Date.subtract(new Date(rpc.systemManager.getMilliseconds()), Ext.Date.DAY, 1)),
-                    hidden: true,
+                    boxLabel: 'Date Range'.t(),
+                    disabled: true,
                     bind: {
-                        maxValue: '{endDate.value}',
-                        hidden: '{!customRange.value}'
+                        disabled: '{fetching}'
                     }
                 }, {
-                    xtype: 'component',
-                    html: '<i class="fa fa-long-arrow-right"></i>',
+                    xtype: 'daterange',
                     hidden: true,
+                    disabled: true,
                     bind: {
-                        hidden: '{!customRange.value}'
+                        startDate: '{f_startdate}',
+                        endDate: '{f_enddate}',
+                        hidden: '{!customRange.value}',
+                        disabled: '{fetching}'
                     }
                 }, {
-                    xtype: 'datefield',
-                    reference: 'endDate',
-                    publishes: 'value',
-                    format: 'date_fmt'.t(),
-                    editable: false,
-                    width: 100,
-                    value: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
-                    maxValue: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
-                    hidden: true,
-                    bind: {
-                        minValue: '{startDate.value}',
-                        hidden: '{!customRange.value}'
-                    }
-
-                }, '->', {
                     xtype: 'segmentedbutton',
                     allowToggle: false,
                     items: [{
