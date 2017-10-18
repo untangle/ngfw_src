@@ -8,6 +8,9 @@ Ext.define('Ung.view.reports.EntryModel', {
         sqlFilterData: [],
         autoRefresh: false,
 
+        f_startdate: null,
+        f_enddate: null,
+
         textColumns: [],
         textColumnsCount: 0, // used for grids validation
         timeDataColumns: [],
@@ -32,18 +35,23 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
-        f_startdate: function (get) {
-            if (!get('customRange.value')) {
-                return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
-            }
-            return Ext.Date.clearTime(get('startDate.value'));
-        },
-        f_enddate: function (get) {
-            if (!get('customRange.value')) {
-                return null;
-            }
-            return Ext.Date.clearTime(get('endDate.value'));
-        },
+        // f_startdate: function (get) {
+        //     if (!get('customRange.value')) {
+        //         return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
+        //     }
+        // },
+        // f_startdate: {
+        //     get: function (get) {
+        //         return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
+        //     },
+        //     // set: function (date) {}
+        // },
+        // f_enddate: function (get) {
+        //     if (!get('customRange.value')) {
+        //         return null;
+        //     }
+        //     // return Ext.Date.clearTime(get('endDate.value'));
+        // },
 
         f_textColumnsCount: function (get) {
             return get('textColumns').length;
