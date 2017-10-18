@@ -20,6 +20,9 @@ import remote_control
 import test_registry
 import global_functions
 from global_functions import uvmContext
+import email
+from HTMLParser import HTMLParser
+from htmlentitydefs import name2codepoint
 
 default_policy_id = 1
 app = None
@@ -30,6 +33,17 @@ orig_mailsettings = None
 syslog_server_host = ""
 test_email_address = ""
 # pdb.set_trace()
+
+class ContentIdParser(HTMLParser):
+    content_ids = []
+    cid_src_regex = re.compile(r'^cid:(.*)')
+    def handle_startendtag(self, tag, attrs):
+        if tag == "img":
+            for attr in attrs:
+                if attr[0] == "src":
+                    matches = self.cid_src_regex.match(attr[1])
+                    if matches is not None and len(matches.groups()) > 0:
+                        self.content_ids.append(matches.group(1))                    
 
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
@@ -280,6 +294,23 @@ class ReportsTests(unittest2.TestCase):
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
+
+        ## Verify that all images are intact.
+        fp = open("/tmp/test_100_email_report_admin_file")
+        msg = email.message_from_file(fp)
+        fp.close()
+
+        mime_content_ids = []
+        parser = ContentIdParser();
+        for part in msg.walk():
+            if part.get_content_maintype() == "image":
+                for index, key in enumerate(part.keys()):
+                    if key == "Content-ID":
+                        mime_content_ids.append(part.values()[index])
+            elif part.get_content_maintype() == "text":
+                parser.feed(part.get_payload(decode=True))
+
+        assert(len(parser.content_ids) == len(mime_content_ids))
 
     def test_101_email_admin_override_custom_report(self):
         """
