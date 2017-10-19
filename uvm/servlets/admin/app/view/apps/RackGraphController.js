@@ -152,7 +152,7 @@ Ext.define('Ung.view.apps.RackGraphController', {
     },
 
     setMetrics: function () {
-        var me = this, metricsCmps = [], stats = [], i;
+        var me = this, metricsCmps = [], stats = [], i,
             metrics = me.getViewModel().get('metrics');
 
         if (!metrics || metrics.length == 0){

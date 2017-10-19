@@ -72,7 +72,7 @@ Ext.define('Ung.view.reports.EntryModel', {
             },
             set: function (value) {
                 this.set('eEntry.conditions', value);
-                this.set('_sqlTitle', '<i class="fa fa-filter"></i> ' + 'Sql Conditions:'.t() + ' (' + value.length + ')');
+                this.set('_sqlTitle', '<i class="fa fa-filter"></i> ' + 'SQL Conditions:'.t() + ' (' + value.length + ')');
                // return get('entry.conditions') || [];
             },
         },
