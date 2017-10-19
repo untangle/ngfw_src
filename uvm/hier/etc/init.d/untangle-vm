@@ -9,7 +9,8 @@
 # Short-Description: Untangle Virtual Machine
 ### END INIT INFO
 
-. /lib/lsb/init-functions
+# FIXME: deal with this later in stretch
+grep -qE '^9' /etc/debian_version || . /lib/lsb/init-functions
 
 OEM_NAME="Untangle"
 DESC="${OEM_NAME} VM"
