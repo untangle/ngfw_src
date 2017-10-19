@@ -218,6 +218,29 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{!entry || eEntry}'
                 },
                 items: [{
+                    xtype: 'combo',
+                    itemId: 'eventsLimitSelector',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{entry.type !== "EVENT_LIST"}',
+                        disabled: '{fetching}'
+                    },
+                    editable: false,
+                    value: 1000,
+                    store: [
+                        [100, '100 ' + 'Events'.t()],
+                        [500, '500 ' + 'Events'.t()],
+                        [1000, '1000 ' + 'Events'.t()],
+                        [5000, '5000 ' + 'Events'.t()],
+                        [10000, '10000 ' + 'Events'.t()],
+                        [50000, '50000 ' + 'Events'.t()],
+                    ],
+                    queryMode: 'local',
+                    listeners: {
+                        change: 'refreshData'
+                    }
+                }, {
                     xtype: 'component',
                     html: 'Since'.t() + ':'
                 }, {
@@ -332,7 +355,17 @@ Ext.define('Ung.view.reports.Entry', {
                     },
                     valuePublishEvent: 'blur', // update binding on blur only
                     allowBlank: false,
-                    emptyText: 'Enter Report Title ...'.t()
+                    emptyText: 'Enter Report Title ...'.t(),
+                    validator: function (title) {
+                        var vm = this.up('entry').getViewModel();
+                        if (vm.get('eEntry.readOnly')) {
+                            if (Ext.getStore('reports').find('title', title.trim(), 0, false, false, true) > 0) {
+                                return 'Choose a unique report title!'.t();
+                            }
+                            return true;
+                        }
+                        return true;
+                    }
                 }, {
                     xtype: 'combo',
                     itemId: 'categoryCombo',
@@ -410,6 +443,10 @@ Ext.define('Ung.view.reports.Entry', {
                     anchor: '100%',
                     hidden: true,
                     disabled: true
+                },
+                hidden: true,
+                bind: {
+                    hidden: '{eEntry.type === "TEXT" || eEntry.type === "EVENT_LIST"}'
                 },
                 items: [{
                     // PIE_GRAPH
@@ -603,6 +640,7 @@ Ext.define('Ung.view.reports.Entry', {
             },
             items: [{
                 region: 'west',
+                itemId: 'tableColumns',
                 xtype: 'grid',
                 title: '<i class="fa fa-database"></i> ' + 'Data Source'.t(),
                 width: '40%',
@@ -614,12 +652,27 @@ Ext.define('Ung.view.reports.Entry', {
                 viewConfig: {
                     enableTextSelection: true
                 },
+                // selType: 'checkboxmodel',
                 bind: {
                     store: {
-                        data: '{tableColumns}'
+                        data: '{tableColumns}',
+                        listeners: {
+                            update: function (grid, column) {
+                                Ext.fireEvent('defaultcolumnschange', column);
+                            }
+                        }
                     }
                 },
                 columns: [{
+                    xtype: 'checkcolumn',
+                    header: '',
+                    dataIndex: 'isDefault',
+                    width: 25,
+                    hidden: true,
+                    bind: {
+                        hidden: '{eEntry.type !== "EVENT_LIST"}'
+                    }
+                }, {
                     header: 'Column Name'.t(),
                     dataIndex: 'text',
                     width: 250
@@ -651,23 +704,33 @@ Ext.define('Ung.view.reports.Entry', {
                         allowBlank: false,
                         emptyText: 'Select a Table for Report data ...'.t()
                     }]
+                }, {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    padding: 5,
+                    items: [{
+                        xtype: 'component',
+                        html: ' <i class="fa fa-level-down fa-rotate-180 fa-lg"></i> ' + 'Select the default columns to show in report'.t()
+                    }],
+                    hidden: true,
+                    bind: {
+                        hidden: '{eEntry.type !== "EVENT_LIST"}'
+                    }
                 }]
             }, {
                 region: 'center',
                 xtype: 'tabpanel',
                 items: [{
-                    title: '<i class="fa fa-database"></i> ' + 'Data Settings'.t(),
+                    title: '<i class="fa fa-cogs"></i> ' + 'Data Settings'.t(),
                     layout: {
                         type: 'anchor'
                     },
-                    // bodyPadding: 10,
                     scrollable: true,
                     defaults: {
                         labelWidth: 200,
                         labelAlign: 'right',
                         disabled: true,
-                        hidden: true,
-                        // labelStyle: 'font-weight: 600'
+                        hidden: true
                     },
                     items: [{
                         // used for validating text columns
@@ -775,6 +838,7 @@ Ext.define('Ung.view.reports.Entry', {
                         allowBlank: false,
                         emptyText: 'Enter a Column Id or a custom value ...'
                     }, {
+                        // PIE_GRAPH
                         xtype: 'combo',
                         fieldLabel: 'Pie Sum Column'.t(),
                         margin: '5 0',
@@ -867,7 +931,7 @@ Ext.define('Ung.view.reports.Entry', {
                         anchor: '70%',
                         publishes: 'value',
                         allowBlank: false,
-                        emptyText: 'Select Columns ...'.t(),
+                        emptyText: 'Select Column ...'.t(),
                         editable: false,
                         queryMode: 'local',
                         displayField: 'value',
@@ -884,16 +948,23 @@ Ext.define('Ung.view.reports.Entry', {
                         }
                     }, {
                         // TIME_GRAPH_DYNAMIC
-                        xtype: 'textfield',
+                        xtype: 'combo',
                         fieldLabel: 'Time Data Dynamic Value'.t(),
+                        margin: '5 0',
+                        typeAhead: true,
+                        hideTrigger: true,
                         anchor: '70%',
-                        allowBlank: false,
-                        emptyText: 'Enter a Column Id or custom value ...'.t(),
+                        displayField: 'value',
+                        valueField: 'value',
                         bind: {
+                            store: { data: '{tableColumns}' },
                             value: '{eEntry.timeDataDynamicValue}',
                             hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
                             disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                        }
+                        },
+                        queryMode: 'local',
+                        allowBlank: false,
+                        emptyText: 'Enter a Column Id or a custom value ...'
                     }, {
                         // TIME_GRAPH_DYNAMIC
                         xtype: 'fieldcontainer',
@@ -950,6 +1021,7 @@ Ext.define('Ung.view.reports.Entry', {
                             disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
                         }
                     }, {
+                        // PIE_GRAPH
                         xtype: 'fieldcontainer',
                         fieldLabel: 'Order By Column'.t(),
                         anchor: '70%',
@@ -989,6 +1061,14 @@ Ext.define('Ung.view.reports.Entry', {
                             value: '{eEntry.seriesRenderer}',
                             hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
                             disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
+                        }
+                    }, {
+                        // EVENT_LIST
+                        xtype: 'component',
+                        html: '<h1 style="text-align: center;">No Settings!</h1>',
+                        hidden: true,
+                        bind: {
+                            hidden: '{eEntry.type !== "EVENT_LIST"}'
                         }
                     }]
                 }, {

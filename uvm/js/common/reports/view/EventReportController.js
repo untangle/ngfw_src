@@ -9,6 +9,12 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
     },
 
+    listen: {
+        global: {
+            defaultcolumnschange: 'onDefaultColumn'
+        }
+    },
+
     onAfterRender: function () {
         var me = this, vm = this.getViewModel();
 
@@ -20,94 +26,67 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
 
         vm.bind('{entry}', function (entry) {
-
             if (entry.get('type') !== 'EVENT_LIST') { return; }
+            me.setupGrid(entry);
+        });
+    },
 
-            if (me.modFields.uniqueId !== entry.get('uniqueId')) {
-                me.modFields = {
-                    uniqueId: entry.get('uniqueId'),
-                    defaultColumns: entry.get('defaultColumns')
-                };
+    setupGrid: function (entry) {
+        var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
 
-                var grid = me.getView().down('grid');
+        if (me.getView().up('reportwidget')) {
+            me.isWidget = true;
+        }
 
-                me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-                me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
-                var visibleColumns = Ext.clone(me.defaultColumns);
+        me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
+        me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
 
-                // check if in Reports view otherwise it freezes when in widget editor (NGFW-10854)
-                if (me.getView().up('entry')) {
-                    var identifier = 'eventsGrid-' + entry.get('uniqueId');
-                    grid.itemId = identifier;
-                    grid.stateId = identifier;
-                    var currentStorage = Ext.state.Manager.provider.get(identifier);
-                    if( currentStorage ){
-                        currentStorage.columns.forEach( function( column ){
-                            if( ( column.hidden !== undefined ) &&
-                                ( column.hidden === false ) ){
-                                visibleColumns.push(column.id);
-                            }
-                        });
-                    }
-                }
-
-                me.tableConfig.columns.forEach( function(column){
-                    if( column.columns ){
-                        /*
-                         * Grouping
-                         */
-                        column.columns.forEach( Ext.bind( function( subColumn ){
-                            grid.initComponentColumn( subColumn );
-                        }, this ) );
-                    }
-                    grid.initComponentColumn( column );
-                });
-                me.tableConfig.fields.forEach( function(field){
-                    if( !field.sortType ){
-                        field.sortType = 'asUnString';
-                    }
-                });
-
-                grid.tableConfig = me.tableConfig;
-                grid.visibleColumns = visibleColumns;
-                grid.setColumns(me.tableConfig.columns);
-
-                grid.getColumns().forEach( function(column){
-                    if( column.xtype == 'actioncolumn'){
-                        return;
-                    }
-                    column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
-                    if( column.columns ){
-                        column.columns.forEach( Ext.bind( function( subColumn ){
-                            subColumn.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
-                        }, this ) );
-                    }
-                });
-                // Force state processing for this renamed grid
-                grid.mixins.state.constructor.call(grid);
-
-                var propertygrid = me.getView().down('#eventsProperties');
-                vm.set( 'eventProperty', null );
-                propertygrid.fireEvent('beforerender');
-                propertygrid.fireEvent('beforeexpand');
-
-                if (!me.getView().up('reportwidget')) {
-                    me.fetchData();
-                } else {
-                    me.isWidget = true;
-                }
-                return;
+        Ext.Array.each(me.tableConfig.fields, function (field) {
+            if (!field.sortType) {
+                field.sortType = 'asUnString';
             }
+        });
 
-        }, me, { deep: true });
+        Ext.Array.each(me.tableConfig.columns, function (column) {
+            if (!Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
+                column.hidden = true;
+            }
+            // TO REVISIT THIS BECASE OF STATEFUL
+            // grid.initComponentColumn(column);
+            if (column.rtype) {
+                column.renderer = 'columnRenderer';
+            }
+        });
 
-        // clear grid selection (hide event side data) when settings are open
-        vm.bind('{settingsBtn.pressed}', function (pressed) {
-            if (pressed) {
-                me.getView().down('grid').getSelectionModel().deselectAll();
+        grid.reconfigure(me.tableConfig.columns);
+
+        var propertygrid = me.getView().down('#eventsProperties');
+        vm.set('eventProperty', null);
+        propertygrid.fireEvent('beforerender');
+        propertygrid.fireEvent('beforeexpand');
+
+        me.fetchData();
+        // if (!me.getView().up('reportwidget')) {
+        //     me.fetchData();
+        // }
+    },
+
+    onDefaultColumn: function (defaultColumn) {
+        var me = this, vm = me.getViewModel(), grid = me.getView().down('ungrid'), entry = vm.get('eEntry');
+        if (!entry) { return; }
+        Ext.Array.each(grid.getColumns(), function (column) {
+            if (column.dataIndex === defaultColumn.get('value')) {
+                column.setHidden(!defaultColumn.get('isDefault'));
+                if (defaultColumn.get('isDefault')) {
+                    entry.get('defaultColumns').push(column.dataIndex);
+                } else {
+                    Ext.Array.remove(entry.get('defaultColumns'), column.dataIndex);
+                }
+
             }
         });
     },
+
 
     onDeactivate: function () {
         this.modFields = { uniqueId: null };
@@ -125,7 +104,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         if( me.getView().up('entry') ){
             limit = me.getView().up('entry').down('#eventsLimitSelector').getValue();
         }
-        me.entry = vm.get('entry');
+        me.entry = vm.get('eEntry') || vm.get('entry');
 
         // date range setup
         if (!me.getView().renderInReports) {
@@ -142,7 +121,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         if (reps) { reps.getViewModel().set('fetching', true); }
 
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
-                        vm.get('entry').getData(), // entry
+                        me.entry.getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
                         limit,
                         startDate, // start date
@@ -167,7 +146,7 @@ Ext.define('Ung.view.reports.EventReportController', {
             grid = me.getView().down('grid');
 
         // this.getView().setLoading(true);
-        grid.getStore().setFields( grid.tableConfig.fields );
+        grid.getStore().setFields( me.tableConfig.fields );
         var eventData = [];
         var result = [];
         while( true ){
