@@ -197,11 +197,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         if (!exactMatch) {
             for (String name : this.licenseMap.keySet()) {
-                if (name.startsWith(identifier))
+                if (name.startsWith(identifier)) {
                     logger.debug("getLicense(" + identifier + ") = " + license );
-                license = this.licenseMap.get(name);
-                if (license != null && license.getValid())
-                    return license;
+                    license = this.licenseMap.get(name);
+                    if (license != null && license.getValid())
+                        return license;
+                }
             }
         }
 
