@@ -46,7 +46,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 renderTo: me.getView().lookupReference('graph').getEl().dom,
                 animation: false,
                 marginRight: widgetDisplay ? undefined : 20,
-                spacing: widgetDisplay ? [5, 5, 10, 5] : [10, 10, 15, 10],
+                spacing: widgetDisplay ? [5, 5, 10, 5] : [30, 10, 15, 10],
                 style: { fontFamily: 'Source Sans Pro', fontSize: '12px' },
                 backgroundColor: 'transparent'
             },
@@ -88,14 +88,14 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 // gridLineWidth: 0,
                 // gridLineDashStyle: 'dash',
                 // gridLineColor: '#EEE',
-                tickPixelInterval: 60,
+                tickPixelInterval: 80,
                 labels: {
                     style: {
                         color: '#333',
-                        fontSize: '11px',
+                        fontSize: widgetDisplay ? '11px' : '12px',
                         fontWeight: 600
                     },
-                    y: 12
+                    y: widgetDisplay ? 12 : 15
                 },
                 maxPadding: 0,
                 minPadding: 0,
@@ -106,6 +106,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     //         me.getView().up('entry').getController().filterData(this.getExtremes().min, this.getExtremes().max);
                     //     }
                     // }
+                },
+                dateTimeLabelFormats: {
+                    second: '%l:%M:%S %p',
+                    minute: '%l:%M %p',
+                    hour: '%l:%M %p',
+                    day: '%Y-%m-%d'
                 }
             },
             yAxis: {
@@ -131,7 +137,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     padding: 0,
                     style: {
                         color: '#333',
-                        fontSize: '11px',
+                        fontSize: widgetDisplay ? '11px' : '12px',
                         fontWeight: 600
                     },
                     x: -10,
@@ -145,7 +151,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     textAlign: 'left',
                     style: {
                         color: '#555',
-                        fontSize: '12px',
+                        fontSize: widgetDisplay ? '12px' : '14px',
                         fontWeight: 600
                     }
                 }
@@ -163,22 +169,14 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 style: {
                     fontSize: widgetDisplay ? '12px' : '14px'
                 },
-                headerFormat: '<p style="margin: 0 0 5px 0;">{point.key}</p>',
-                // dateTimeLabelsFormats: {
-                //     millisecond: '%b %e',
-                //     second: '%b %e',
-                //     minute: '%b %e',
-                //     hour: '%b %e',
-                //     day: '%b %e',
-                //     week: '%b %e',
-                //     month: '%b %e',
-                //     year: '%Y'
+                headerFormat: '<p style="margin: 0 0 5px 0;">{point.key}</p>'
+                // dateTimeLabelFormats: {
+                //     second: '%l:%M:%S %p',
+                //     minute: '%l:%M %p',
+                //     hour: '%l:%M %p',
+                //     day: '%Y-%m-%d'
                 // },
-                // xDateFormat: '%Y-%m-%d'
-                // formatter: function () {
-                //     var s = this.x;
-                //     return s;
-                // }
+                // xDateFormat: '%Y'
             },
             plotOptions: {
                 column: {
@@ -242,12 +240,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
             },
             legend: {
                 margin: 0,
-                y: widgetDisplay ? 5 : 0,
+                y: widgetDisplay ? 5 : 10,
                 // useHTML: true,
                 lineHeight: 12,
                 itemDistance: 10,
                 itemStyle: {
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontWeight: 600,
                     width: '120px',
                     whiteSpace: 'nowrap',
@@ -361,8 +359,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
             i, j, seriesData, series = [], seriesRenderer = null, column,
             units = entry.get('units');
 
-        // get or generate series names based on time data columns
-        if (!timeDataColumns) {
+        // get or generate series names based on timeDataColumns for TIME_GRAPH or data form TIME_GRAPH_DYNAMIC
+        if (!timeDataColumns || (Ext.isArray(timeDataColumns) && timeDataColumns.length === 0)) {
             timeDataColumns = [];
             for (i = 0; i < me.data.length; i += 1) {
                 for (var _column in me.data[i]) {
@@ -375,7 +373,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
             if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
                 seriesRenderer = Renderer[entry.get('seriesRenderer')];
             }
-
         } else {
             for (i = 0; i < timeDataColumns.length; i += 1) {
                 timeDataColumns[i] = timeDataColumns[i].split(' ').splice(-1)[0];
@@ -432,6 +429,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         series.forEach(function (serie) {
             me.chart.addSeries(serie, false, false);
         });
+        // console.log(series);
         me.setStyles();
         me.chart.redraw();
     },

@@ -42,13 +42,10 @@ Ext.define('Ung.view.reports.EntryController', {
         // set the context (Admin or Reports)
         vm.set('context', Ung.app.servletContext);
 
-
         /**
          * each time report selection changes
          */
         vm.bind('{entry}', function (entry) {
-            // console.log(entry);
-
             vm.set('eEntry', null); // reset editing entry
 
             switch(entry.get('type')) {
@@ -82,6 +79,7 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         vm.bind('{eEntry}', function (eEntry) {
+
             me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
 
             if (!vm.get('entry')) {
@@ -92,7 +90,10 @@ Ext.define('Ung.view.reports.EntryController', {
                     return;
                 }
             }
-
+            // if readOnly alter the title to avoid initial validation error
+            if (eEntry.get('readOnly')) {
+                eEntry.set('title', eEntry.get('title') + ' ' + '[new]'.t());
+            }
             vm.set('textColumns', Ext.Array.map(eEntry.get('textColumns') || [], function (col) { return { str: col }; }));
             vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
         });
@@ -113,22 +114,7 @@ Ext.define('Ung.view.reports.EntryController', {
                         vm.set('activeReportCard', 'eventreport'); break;
                     }
                 }
-                // if (type !== 'TEXT' || !valid) { return; }
-                // console.log('OKKKK');
-                // me.fetchData();
             }, 300);
-            // console.log(me.getView().down('form').isValid());
-            // vm.set('validReport', me.getView().down('form').isValid());
-
-            // when changing type populate some fields (combos) with default values if not set
-            // if (type === 'PIE_GRAPH') {
-            //     vm.set('eEntry.pieStyle', vm.get('eEntry.pieStyle') || 'PIE');
-            //     vm.set('eEntry.pieNumSlices', vm.get('eEntry.pieNumSlices') || 10);
-            // }
-            // if (type === 'TIME_GRAPH' || type === 'TIME_GRAPH_DYNAMIC') {
-            //     vm.set('eEntry.timeStyle', vm.get('eEntry.timeStyle') || 'AREA');
-            //     vm.set('eEntry.timeDataInterval', vm.get('eEntry.timeDataInterval') || 'MINUTE');
-            // }
         });
 
         /**
@@ -139,8 +125,28 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.set('tableColumns', []);
                 return;
             }
-            var tableConfig = TableConfig.generate(table);
+            var tableConfig = TableConfig.generate(table),
+                defaultColumns = Ext.clone(vm.get('eEntry.defaultColumns'));
+
+            // initially set none as default
+            Ext.Array.each(tableConfig.comboItems, function (item) {
+                item.isDefault = false;
+            });
+
+            Ext.Array.each(vm.get('eEntry.defaultColumns'), function (defaultColumn) {
+                var col = Ext.Array.findBy(tableConfig.comboItems, function (item) {
+                    return item.value === defaultColumn;
+                });
+                // remove default columns if not in TableConfig
+                if (!col) {
+                    vm.set('eEntry.defaultColumns', Ext.Array.remove(defaultColumns, defaultColumn));
+                } else {
+                    // otherwise set it as default
+                    col.isDefault = true;
+                }
+            });
             vm.set('tableColumns', tableConfig.comboItems);
+            me.refreshData();
         });
 
         // when switching between since date and custom reange date, refresh the report
@@ -388,6 +394,10 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
+        if (entry.get('type') === 'EVENT_LIST') {
+            ctrl.setupGrid(entry);
+        }
+
         // if (reps) { reps.getViewModel().set('fetching', true); }
         ctrl.fetchData(false, function () {
             // if (reps) { reps.getViewModel().set('fetching', false); }
@@ -400,9 +410,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 clearTimeout(me.refreshTimeout);
             }
         });
-
-        me.titleChange( null, vm.get('entry.title'), '');
-
     },
 
     resetView: function(){
@@ -607,55 +614,55 @@ Ext.define('Ung.view.reports.EntryController', {
         });
     },
 
-    titleChange: function( control, newValue) {
-        var me = this, vm = me.getViewModel();
+    // titleChange: function( control, newValue) {
+    //     var me = this, vm = me.getViewModel();
 
-        var currentRecord = vm.get('entry');
+    //     var currentRecord = vm.get('entry');
 
-        var titleConflictSave = false;
-        var titleConflictSaveNew = false;
-        var sameCustomizableReport = false;
-        var sameReport = false;
-        Rpc.asyncData('rpc.reportsManager.getReportEntries')
-            .then(function(result) {
-                result.list.forEach( function(reportEntry) {
-                    if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
-                        titleConflictSave = true;
-                        titleConflictSaveNew = true;
+    //     var titleConflictSave = false;
+    //     var titleConflictSaveNew = false;
+    //     var sameCustomizableReport = false;
+    //     var sameReport = false;
+    //     Rpc.asyncData('rpc.reportsManager.getReportEntries')
+    //         .then(function(result) {
+    //             result.list.forEach( function(reportEntry) {
+    //                 if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
+    //                     titleConflictSave = true;
+    //                     titleConflictSaveNew = true;
 
-                        if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
-                            sameReport = true;
-                        }
-                        if( sameReport &&
-                            currentRecord.get('readOnly') == false){
-                            sameCustomizableReport = true;
-                            titleConflictSave = false;
-                        }
-                    }
-                });
+    //                     if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
+    //                         sameReport = true;
+    //                     }
+    //                     if( sameReport &&
+    //                         currentRecord.get('readOnly') == false){
+    //                         sameCustomizableReport = true;
+    //                         titleConflictSave = false;
+    //                     }
+    //                 }
+    //             });
 
-                if (control){
-                    if( titleConflictSave && !sameReport ){
-                        control.setValidation('Another report within this category has this title'.t());
-                    }else{
-                        control.setValidation(true);
-                    }
-                }
+    //             if (control){
+    //                 if( titleConflictSave && !sameReport ){
+    //                     control.setValidation('Another report within this category has this title'.t());
+    //                 }else{
+    //                     control.setValidation(true);
+    //                 }
+    //             }
 
-                var messages = [];
-                if(currentRecord.get('readOnly')){
-                    messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
-                }
-                if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
-                    messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
-                }
-                vm.set('reportMessages',  messages.join('<br>'));
+    //             var messages = [];
+    //             if(currentRecord.get('readOnly')){
+    //                 messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
+    //             }
+    //             if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
+    //                 messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
+    //             }
+    //             vm.set('reportMessages',  messages.join('<br>'));
 
-                if(!titleConflictSave){
-                    vm.set('entry.title', newValue);
-                }
-            });
-    },
+    //             if(!titleConflictSave){
+    //                 vm.set('entry.title', newValue);
+    //             }
+    //         });
+    // },
 
     updateReport: function () {
         var me = this,
@@ -955,21 +962,12 @@ Ext.define('Ung.view.reports.EntryController', {
             me.getView().down('textreport').getController().fetchData(true);
             break;
         case 'EVENT_LIST':
-            me.getView().down('eventreport').getController().fetchData(true);
+            me.refreshData();
+            // me.getView().down('eventreport').getController().fetchData(true);
             break;
         default:
             me.getView().down('graphreport').getController().fetchData(true);
         }
-
-        // console.log(me.getView().down('#reportCard').getLayout().getActiveItem().getController());
-
-        // console.log(me.isValidReport());
-        // Ext.Array.each(form.getFields().items, function (f) {
-        //     // console.log(f);
-        //     console.log(f.validate(), f.getId());
-        // });
-        // console.log();
-        //console.log(form.isValid());
     },
 
     onTextColumnsChanged: function (store) {
@@ -990,27 +988,6 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.set('eEntry.timeDataColumns', tdc);
     },
 
-    isValidReport: function () {
-        var me = this, vm = me.getViewModel(),
-            form = me.getView().down('form').getForm(),
-            entry = vm.get('eEntry');
-
-        if (!entry || !form.isValid()) { return false; }
-
-        if (entry.get('type') === 'TEXT') {
-            if (me.getView().down('#textColumnsGrid').getStore().getCount() === 0) {
-                return false;
-            }
-        }
-
-        if (entry.get('type') === 'TIME_GRAPH') {
-            if (me.getView().down('#timeDataColumnsGrid').getStore().getCount() === 0) {
-                return false;
-            }
-        }
-        return true;
-    },
-
     removeTextColumn: function (view, rowIndex, colIndex, item, e, record) {
         var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
         store.remove(record);
@@ -1026,19 +1003,5 @@ Ext.define('Ung.view.reports.EntryController', {
         // record.drop();
         // store.each(function (col) { tdc.push(col.get('str')); });
         // vm.set('eEntry.timeDataColumns', tdc);
-    },
-
-    // /**
-    //  * validates if eEntry timeDataDynamicColumn found in current table columns
-    //  */
-    // timeDataDynamicColumnValidator: function (val) {
-    //     console.log(val);
-    //     var tc = this.getViewModel().get('tableColumns');
-    //     console.log(tc);
-    //     var foundColumn = Ext.Array.findBy(tc, function (col) {
-    //         return col.value === val;
-    //     });
-    //     console.log(foundColumn);
-    //     return foundColumn ? true : false;
-    // }
+    }
 });

@@ -109,7 +109,7 @@ Ext.define('Ung.cmp.DateRangePicker', {
                 }]
             }],
             bbar: ['->', {
-                text: 'OK'.t(),
+                text: 'Done'.t(),
                 iconCls: 'fa fa-check',
                 handler: function () {
                     me.collapse();
