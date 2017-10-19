@@ -20,7 +20,7 @@ UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID_FILE="/var/run/uvm.pid"
 UVM_STATUS_FILE="/var/run/uvm.status"
-UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
+UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER"
 UVM_TIMEOUT=300
 
 # if in the build
