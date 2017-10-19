@@ -13,7 +13,7 @@ class Ngfw:
     """
     NGFW
     """
-    file_name = "ngfw.js"
+    file_name = "ngfw.json"
     path = "ngfw"
 
     directories = []
