@@ -169,14 +169,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 style: {
                     fontSize: widgetDisplay ? '12px' : '14px'
                 },
-                headerFormat: '<p style="margin: 0 0 5px 0;">{point.key}</p>'
-                // dateTimeLabelFormats: {
-                //     second: '%l:%M:%S %p',
-                //     minute: '%l:%M %p',
-                //     hour: '%l:%M %p',
-                //     day: '%Y-%m-%d'
-                // },
-                // xDateFormat: '%Y'
+                headerFormat: '<p style="margin: 0 0 5px 0; color: #555;">{point.key}</p>'
             },
             plotOptions: {
                 column: {
@@ -235,6 +228,15 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     },
                     marker: {
                         radius: 2,
+                    },
+                    dataGrouping: {
+                        dateTimeLabelFormats: {
+                            millisecond: ['%Y-%m-%d, %l:%M:%S %p', '%Y-%m-%d, %l:%M:%S %p', '-%l:%M:%S %p'],
+                            second: ['%Y-%m-%d, %l:%M:%S %p', '%Y-%m-%d, %l:%M:%S %p', '-%l:%M:%S %p'],
+                            minute: ['%Y-%m-%d, %l:%M %p', '%Y-%m-%d, %l:%M %p', '-%l:%M %p'],
+                            hour: ['%Y-%m-%d, %l:%M %p', '%Y-%m-%d, %l:%M %p', '%Y-%m-%d, %l:%M %p'],
+                            day: ['%Y-%m-%d']
+                        }
                     }
                 }
             },
@@ -407,6 +409,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     ]
                 },
                 tooltip: {
+                    dateTimeLabelFormats: {
+                        second: '%Y-%m-%d, %l:%M:%S %p, %l:%M:%S %p',
+                        minute: '%Y-%m-%d, %l:%M %p',
+                        hour: '%Y-%m-%d, %l:%M %p',
+                        day: '%Y-%m-%d'
+                    },
                     pointFormatter: function () {
                         var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
                         if (units === 'bytes' || units === 'bytes/s') {
