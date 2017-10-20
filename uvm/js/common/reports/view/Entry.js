@@ -161,9 +161,9 @@ Ext.define('Ung.view.reports.Entry', {
             border: false,
             itemId: 'reportCard',
             layout: 'card',
-            bind: {
-                activeItem: '{activeReportCard}'
-            },
+            // bind: {
+            //     activeItem: '{f_activeReportCard}'
+            // },
             items: [{
                 xtype: 'graphreport',
                 itemId: 'graphreport',
@@ -177,13 +177,18 @@ Ext.define('Ung.view.reports.Entry', {
                 itemId: 'textreport',
                 renderInReports: true
             }, {
-                itemId: 'invalidreport',
-                border: false,
-                layout: 'center',
-                items: [{
-                    xtype: 'component',
-                    html: '<div style="text-align: center; font-size: 14px;"><i class="fa fa-exclamation-triangle fa-2x fa-orange"></i><p>Fill all the required settings then click "Preview/Refresh"!</p></div>'
-                }]
+                // itemId: 'invalidreport',
+                xtype: 'component',
+                cls: 'invalidreport',
+                // border: false,
+                // layout: 'center',
+                // items: [{
+                //     xtype: 'component',
+                html: '<i class="fa fa-exclamation-triangle fa-2x fa-orange"></i><p>Fill all the required settings then click "Preview/Refresh"!</p>',
+                bind: {
+                    userCls: '{!validForm ? "invalid" : ""}'
+                }
+                // }]
             }],
 
             dockedItems: [{
@@ -238,7 +243,7 @@ Ext.define('Ung.view.reports.Entry', {
                     ],
                     queryMode: 'local',
                     listeners: {
-                        change: 'refreshData'
+                        change: 'reload'
                     }
                 }, {
                     xtype: 'component',
@@ -268,11 +273,11 @@ Ext.define('Ung.view.reports.Entry', {
                     queryMode: 'local',
                     disabled: true,
                     bind: {
-                        disabled: '{customRange.value || fetching}'
+                        disabled: '{r_customRangeCk.value || fetching}'
                     }
                 }, {
                     xtype: 'checkbox',
-                    reference: 'customRange',
+                    reference: 'r_customRangeCk',
                     publishes: 'value',
                     boxLabel: 'Date Range'.t(),
                     disabled: true,
@@ -286,7 +291,7 @@ Ext.define('Ung.view.reports.Entry', {
                     bind: {
                         startDate: '{f_startdate}',
                         endDate: '{f_enddate}',
-                        hidden: '{!customRange.value}',
+                        hidden: '{!r_customRangeCk.value}',
                         disabled: '{fetching}'
                     }
                 }, {
@@ -296,18 +301,22 @@ Ext.define('Ung.view.reports.Entry', {
                         text: 'Refresh'.t(),
                         iconCls: 'fa fa-refresh',
                         itemId: 'refreshBtn',
-                        handler: 'refreshData',
+                        handler: 'reload',
                         disabled: true,
                         bind: {
                             disabled: '{autoRefresh || fetching}'
                         }
                     }, {
-                        text: 'Auto'.t(),
+                        text: 'Auto'.t() + ' (5 sec)',
+                        reference: 'r_autoRefreshBtn',
                         enableToggle: true,
+                        publishes: 'pressed',
+                        disabled: true,
                         bind: {
-                            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                        },
-                        handler: 'setAutoRefresh'
+                            iconCls: '{r_autoRefreshBtn.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                            disabled: '{r_customRangeCk.value}'
+                        }
+                        // handler: 'setAutoRefresh'
                     }],
                     hidden: true,
                     bind: {
@@ -588,7 +597,7 @@ Ext.define('Ung.view.reports.Entry', {
                     text: 'Preview/Refresh'.t(),
                     iconCls: 'fa fa-refresh fa-lg',
                     scale: 'medium',
-                    handler: 'previewReport',
+                    handler: 'reload',
                     formBind: true
                 }, {
                     xtype: 'component',
@@ -655,7 +664,7 @@ Ext.define('Ung.view.reports.Entry', {
                 // selType: 'checkboxmodel',
                 bind: {
                     store: {
-                        data: '{tableColumns}',
+                        data: '{f_tableColumns}',
                         listeners: {
                             update: function (grid, column) {
                                 Ext.fireEvent('defaultcolumnschange', column);
@@ -829,7 +838,7 @@ Ext.define('Ung.view.reports.Entry', {
                         displayField: 'value',
                         valueField: 'value',
                         bind: {
-                            store: { data: '{tableColumns}' },
+                            store: { data: '{f_tableColumns}' },
                             value: '{eEntry.pieGroupColumn}',
                             hidden: '{eEntry.type !== "PIE_GRAPH"}',
                             disabled: '{eEntry.type !== "PIE_GRAPH"}'
@@ -848,7 +857,7 @@ Ext.define('Ung.view.reports.Entry', {
                         displayField: 'value',
                         valueField: 'value',
                         bind: {
-                            store: { data: '{tableColumns}' },
+                            store: { data: '{f_tableColumns}' },
                             value: '{eEntry.pieSumColumn}',
                             hidden: '{eEntry.type !== "PIE_GRAPH"}',
                             disabled: '{eEntry.type !== "PIE_GRAPH"}'
@@ -937,7 +946,7 @@ Ext.define('Ung.view.reports.Entry', {
                         displayField: 'value',
                         valueField: 'value',
                         bind: {
-                            store: { data: '{tableColumns}' },
+                            store: { data: '{f_tableColumns}' },
                             value: '{eEntry.timeDataDynamicColumn}',
                             hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
                             disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
@@ -957,7 +966,7 @@ Ext.define('Ung.view.reports.Entry', {
                         displayField: 'value',
                         valueField: 'value',
                         bind: {
-                            store: { data: '{tableColumns}' },
+                            store: { data: '{f_tableColumns}' },
                             value: '{eEntry.timeDataDynamicValue}',
                             hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
                             disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
@@ -1035,6 +1044,7 @@ Ext.define('Ung.view.reports.Entry', {
                             xtype: 'textfield',
                             flex: 1,
                             emptyText: 'Enter a Column Id or a custom value ...',
+                            allowBlank: false,
                             bind: {
                                 value: '{eEntry.orderByColumn}'
                             }
@@ -1089,7 +1099,7 @@ Ext.define('Ung.view.reports.Entry', {
                     disabled: true,
                     bind: {
                         title: '{_sqlTitle}',
-                        disabled: '{!tableColumns}',
+                        disabled: '{!f_tableColumns}',
                         store: {
                             data: '{_sqlConditions}'
                         }
@@ -1116,7 +1126,7 @@ Ext.define('Ung.view.reports.Entry', {
                             fieldStyle: 'font-weight: bold',
                             bind: {
                                 store: {
-                                    data: '{tableColumns}'
+                                    data: '{f_tableColumns}'
                                 }
                             },
                             displayTpl: '<tpl for=".">{text} [{value}]</tpl>',

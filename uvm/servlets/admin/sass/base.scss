@@ -872,3 +872,25 @@ a.view-reports {
 .tag-cell .x-grid-cell-inner {
     padding: 1px;
 }
+
+
+.invalidreport {
+    // visibility: visible !important;
+    position: absolute;
+    box-sizing: border-box;
+    top: 100px !important;
+    left: 50%;
+    margin-left: -200px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px 10px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    p { margin: 10px 10px 0 10px; };
+    // display: none;
+    &.invalid {
+        visibility: visible !important;
+    }
+}

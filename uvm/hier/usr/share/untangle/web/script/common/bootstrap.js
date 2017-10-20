@@ -4,7 +4,7 @@
 
 var rpc = {}; // global rpc object
 
- Ext.define('Bootstrap', {
+Ext.define('Bootstrap', {
     singleton: true,
 
     servletContext: 'ADMIN',
