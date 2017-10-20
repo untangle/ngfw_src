@@ -4,12 +4,12 @@ Ext.define('Ung.view.reports.TextReportController', {
 
     control: {
         '#': {
-            beforerender: 'onBeforeRender',
+            afterrender: 'onAfterRender',
             deactivate: 'onDeactivate'
         }
     },
 
-    onBeforeRender: function () {
+    onAfterRender: function () {
         var me = this, vm = this.getViewModel();
 
         vm.bind('{entry}', function (entry) {

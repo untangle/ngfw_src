@@ -27,19 +27,61 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         vm.bind('{entry}', function (entry) {
             if (entry.get('type') !== 'EVENT_LIST') { return; }
-            me.setupGrid(entry);
+            vm.set('eventsData', []);
+            me.fetchData();
         });
+
+        // // update tableColumns when table is changed
+        // vm.bind('{eEntry.table}', function (table) {
+        //     console.log(table);
+        //     if (!table) {
+        //         vm.set('tableColumns', []);
+        //         return;
+        //     }
+        //     var tableConfig = TableConfig.generate(table);
+
+        //     if (vm.get('eEntry.type') !== 'EVENT_LIST') {
+        //         vm.set('tableColumns', tableConfig.comboItems);
+        //         return;
+        //     }
+
+        //     // for EVENT_LIST setup the columns
+        //     var defaultColumns = Ext.clone(vm.get('eEntry.defaultColumns'));
+
+        //     // initially set none as default
+        //     Ext.Array.each(tableConfig.comboItems, function (item) {
+        //         item.isDefault = false;
+        //     });
+
+        //     Ext.Array.each(vm.get('eEntry.defaultColumns'), function (defaultColumn) {
+        //         var col = Ext.Array.findBy(tableConfig.comboItems, function (item) {
+        //             return item.value === defaultColumn;
+        //         });
+        //         // remove default columns if not in TableConfig
+        //         if (!col) {
+        //             vm.set('eEntry.defaultColumns', Ext.Array.remove(defaultColumns, defaultColumn));
+        //         } else {
+        //             // otherwise set it as default
+        //             col.isDefault = true;
+        //         }
+        //     });
+        //     console.log(tableConfig.comboItems);
+        //     vm.set('tableColumns', tableConfig.comboItems);
+        //     me.fetchData();
+        // });
     },
 
-    setupGrid: function (entry) {
+    setupGrid: function () {
         var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
+
+        if (!me.entry) { return; }
 
         if (me.getView().up('reportwidget')) {
             me.isWidget = true;
         }
 
-        me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-        me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
+        me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
+        me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : me.entry.get('defaultColumns'); // widget or report columns
 
         Ext.Array.each(me.tableConfig.fields, function (field) {
             if (!field.sortType) {
@@ -65,14 +107,16 @@ Ext.define('Ung.view.reports.EventReportController', {
         propertygrid.fireEvent('beforerender');
         propertygrid.fireEvent('beforeexpand');
 
-        me.fetchData();
+        // me.fetchData();
         // if (!me.getView().up('reportwidget')) {
         //     me.fetchData();
         // }
     },
 
     onDefaultColumn: function (defaultColumn) {
-        var me = this, vm = me.getViewModel(), grid = me.getView().down('ungrid'), entry = vm.get('eEntry');
+        var me = this, vm = me.getViewModel(),
+            grid = me.getView().down('ungrid'),
+            entry = vm.get('eEntry');
         if (!entry) { return; }
         Ext.Array.each(grid.getColumns(), function (column) {
             if (column.dataIndex === defaultColumn.get('value')) {
@@ -100,11 +144,16 @@ Ext.define('Ung.view.reports.EventReportController', {
             reps = me.getView().up('#reports'),
             startDate, endDate;
 
+
         var limit = 1000;
         if( me.getView().up('entry') ){
             limit = me.getView().up('entry').down('#eventsLimitSelector').getValue();
         }
+        // console.log(vm.get('eEntry'));
+        // console.log(vm.get('entry'));
         me.entry = vm.get('eEntry') || vm.get('entry');
+
+        me.setupGrid();
 
         // date range setup
         if (!me.getView().renderInReports) {

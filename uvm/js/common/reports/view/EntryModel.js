@@ -11,10 +11,14 @@ Ext.define('Ung.view.reports.EntryModel', {
         f_startdate: null,
         f_enddate: null,
 
+        tableColumns: [],
+
         textColumns: [],
         textColumnsCount: 0, // used for grids validation
         timeDataColumns: [],
         timeDataColumnsCount: 0, // used for grids validation
+
+        validForm: true
     },
 
     stores: {
@@ -35,8 +39,61 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
+        // f_activeReportCard: function (get) {
+        //     var reportCard = 'textreport', type;
+        //     if (get('eEntry.type')) {
+        //         type = get('eEntry.type');
+        //     } else {
+        //         type = get('entry.type');
+        //     }
+        //     console.log(type);
+        //     switch(type) {
+        //     case 'TEXT': reportCard = 'textreport'; break;
+        //     case 'PIE_GRAPH': reportCard = 'graphreport'; break;
+        //     case 'TIME_GRAPH': reportCard = 'graphreport'; break;
+        //     case 'TIME_GRAPH_DYNAMIC': reportCard = 'graphreport'; break;
+        //     case 'EVENT_LIST': reportCard = 'eventreport'; break;
+        //     }
+        //     return reportCard;
+        // },
+
+        f_tableColumns: function (get) {
+            var table = get('eEntry.table'), tableConfig, defaultColumns;
+
+            if (!table) { return []; }
+
+            tableConfig = TableConfig.generate(table);
+
+            if (get('eEntry.type') !== 'EVENT_LIST') {
+                return tableConfig.comboItems;
+            }
+
+            // for EVENT_LIST setup the columns
+            defaultColumns = Ext.clone(get('eEntry.defaultColumns'));
+
+            // initially set none as default
+            Ext.Array.each(tableConfig.comboItems, function (item) {
+                item.isDefault = false;
+            });
+
+            Ext.Array.each(get('eEntry.defaultColumns'), function (defaultColumn) {
+                var col = Ext.Array.findBy(tableConfig.comboItems, function (item) {
+                    return item.value === defaultColumn;
+                });
+                // remove default columns if not in TableConfig
+                if (!col) {
+                    // vm.set('eEntry.defaultColumns', Ext.Array.remove(defaultColumns, defaultColumn));
+                } else {
+                    // otherwise set it as default
+                    col.isDefault = true;
+                }
+            });
+            console.log(tableConfig.comboItems);
+            return tableConfig.comboItems;
+            // me.fetchData();
+        },
         // f_startdate: function (get) {
-        //     if (!get('customRange.value')) {
+        //     if (!get('r_customRangeCk.value')) {
         //         return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
         //     }
         // },
@@ -47,7 +104,7 @@ Ext.define('Ung.view.reports.EntryModel', {
         //     // set: function (date) {}
         // },
         // f_enddate: function (get) {
-        //     if (!get('customRange.value')) {
+        //     if (!get('r_customRangeCk.value')) {
         //         return null;
         //     }
         //     // return Ext.Date.clearTime(get('endDate.value'));
