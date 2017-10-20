@@ -207,7 +207,7 @@ class SnortRules:
         #
         # Add/modify rules
         #
-        for rid in added_rule_rids:
+        for rid in added_rule_rids + modified_rule_rids:
             if self.get_rules().has_key(rid):
                 #
                 # Replace modified rule
