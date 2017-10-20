@@ -46,26 +46,13 @@ Ext.define('Ung.view.reports.EntryController', {
          * each time report selection changes
          */
         vm.bind('{entry}', function (entry) {
-            vm.set('eEntry', null); // reset editing entry
-
-            switch(entry.get('type')) {
-            case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
-            case 'PIE_GRAPH':
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                vm.set('activeReportCard', 'graphreport'); break;
-            case 'EVENT_LIST':
-                vm.set('activeReportCard', 'eventreport'); break;
-            }
-
+            vm.set('eEntry', null);
             vm.set('_currentData', []);
-            vm.set('autoRefresh', false); // reset auto refresh
-            if (me.refreshTimeout) {
-                clearInterval(me.refreshTimeout);
-            }
+            me.setReportCard(entry.get('type'));
 
-            dataGrid.setColumns([]);
-            dataGrid.setLoading(true);
+
+            // dataGrid.setColumns([]);
+            // dataGrid.setLoading(true);
 
             // if (entry.get('type') === 'EVENT_LIST') {
             //     me.lookup('filterfield').setValue('');
@@ -78,96 +65,113 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
+        // each time the eEntry changes by selecting 'Settings'
         vm.bind('{eEntry}', function (eEntry) {
-
             me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
-
-            if (!vm.get('entry')) {
-                return;
-            } else {
+            if (!vm.get('entry')) { return; }
+            else {
+                // on cancel when eEntry turns null reloads the selected entry if exists
                 if (!eEntry) {
-                    me.refreshData();
+                    me.reload();
                     return;
                 }
             }
-            // if readOnly alter the title to avoid initial validation error
+
+            // if eEntry is readOnly, alter the title to avoid initial validation error
             if (eEntry.get('readOnly')) {
                 eEntry.set('title', eEntry.get('title') + ' ' + '[new]'.t());
             }
+
+            // if not defaultColumns initialize with [] to avoid editing errors
+            if (!eEntry.get('defaultColumns')) {
+                eEntry.set('defaultColumns', []);
+            }
+
+            // transform eEntry text and time data columns to usable data for the stores
             vm.set('textColumns', Ext.Array.map(eEntry.get('textColumns') || [], function (col) { return { str: col }; }));
             vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
         });
 
+        // each time the eEntry type is changed check valid edit form
         vm.bind('{eEntry.type}', function (type) {
+            // console.log('TYPE', type);
             if (!type) { return; }
+            me.setReportCard(type);
             Ext.defer(function () {
-                if (!me.getView().down('form').isValid()) {
-                    vm.set('activeReportCard', 'invalidreport');
+                if (me.getView().down('form').isValid()) {
+                    vm.set('validForm', true);
+                    me.reload();
                 } else {
-                    switch(type) {
-                    case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
-                    case 'PIE_GRAPH':
-                    case 'TIME_GRAPH':
-                    case 'TIME_GRAPH_DYNAMIC':
-                        vm.set('activeReportCard', 'graphreport'); break;
-                    case 'EVENT_LIST':
-                        vm.set('activeReportCard', 'eventreport'); break;
-                    }
+                    vm.set('validForm', false);
+                    me.reset();
                 }
-            }, 300);
+            }, 100);
+
+
+
+
+            // delay a bit the valid form check so the hidden/visible fields are set
+            // Ext.defer(function () {
+            //     if (!me.getView().down('form').isValid()) {
+            //         console.log('invalid');
+            //         vm.set('f_activeReportCard', 'invalidreport');
+            //     }
+            // }, 100);
         });
 
-        /**
-         * update tableColumns when table is changed
-         */
-        vm.bind('{eEntry.table}', function (table) {
-            if (!table) {
-                vm.set('tableColumns', []);
-                return;
-            }
-            var tableConfig = TableConfig.generate(table),
-                defaultColumns = Ext.clone(vm.get('eEntry.defaultColumns'));
-
-            // initially set none as default
-            Ext.Array.each(tableConfig.comboItems, function (item) {
-                item.isDefault = false;
-            });
-
-            Ext.Array.each(vm.get('eEntry.defaultColumns'), function (defaultColumn) {
-                var col = Ext.Array.findBy(tableConfig.comboItems, function (item) {
-                    return item.value === defaultColumn;
-                });
-                // remove default columns if not in TableConfig
-                if (!col) {
-                    vm.set('eEntry.defaultColumns', Ext.Array.remove(defaultColumns, defaultColumn));
-                } else {
-                    // otherwise set it as default
-                    col.isDefault = true;
-                }
-            });
-            vm.set('tableColumns', tableConfig.comboItems);
-            me.refreshData();
-        });
-
-        // when switching between since date and custom reange date, refresh the report
+        // watch since date switching and reload the report
         vm.bind('{sinceDate.value}', function () {
-            if (!vm.get('customRange.value')) {
-                vm.set({
-                    f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
-                    f_enddate: null
-                });
-            }
-            me.refreshData();
-        });
-        vm.bind('{customRange.value}', function (checked) {
             vm.set({
                 f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
                 f_enddate: null
             });
-            if (!checked) { me.refreshData(); }
+            me.reload();
         });
-        // vm.bind('{f_startdate}', function () { me.refreshData(); });
-        // vm.bind('{f_enddate}', function () { me.refreshData(); });
+
+        // watch custom range switch on/off
+        vm.bind('{r_customRangeCk.value}', function (checked) {
+            vm.set({
+                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
+                f_enddate: null
+            });
+            if (checked) {
+                // when checked, disable autorefresh because of the fixed range
+                me.lookup('r_autoRefreshBtn').setPressed(false);
+            } else {
+                // when unckecked, reload the current data from Since
+                me.reload();
+            }
+        });
+
+        // watch auto refresh button switch on/off
+        vm.bind('{r_autoRefreshBtn.pressed}', function (pressed) {
+            if (pressed) {
+                me.reload();
+            } else {
+                if (me.refreshTimeout) {
+                    clearTimeout(me.refreshTimeout);
+                    me.refreshTimeout = null;
+                }
+            }
+        });
+
+        // vm.bind('{f_startdate}', function () { me.reload(); });
+        // vm.bind('{f_enddate}', function () { me.reload(); });
+    },
+
+    /**
+     * sets active card based on report type
+     */
+    setReportCard: function (type) {
+        var me = this, reportCard = '';
+        switch(type) {
+        case 'TEXT': reportCard = 'textreport'; break;
+        case 'PIE_GRAPH':
+        case 'TIME_GRAPH':
+        case 'TIME_GRAPH_DYNAMIC': reportCard = 'graphreport'; break;
+        case 'EVENT_LIST': reportCard = 'eventreport'; break;
+        }
+        me.getView().down('#reportCard').setActiveItem(reportCard);
     },
 
     formatTimeData: function (data) {
@@ -315,7 +319,7 @@ Ext.define('Ung.view.reports.EntryController', {
         gridFilters.setCollapsed(false);
         gridFilters.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         gridFilters.getStore().reload();
-        me.refreshData();
+        me.reload();
     },
 
     formatTextData: function (data) {
@@ -377,7 +381,7 @@ Ext.define('Ung.view.reports.EntryController', {
     //     // vm.set('report.colors', colors);
     // },
 
-    refreshData: function () {
+    reload: function () {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
@@ -394,42 +398,57 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
-        if (entry.get('type') === 'EVENT_LIST') {
-            ctrl.setupGrid(entry);
-        }
-
         // if (reps) { reps.getViewModel().set('fetching', true); }
         ctrl.fetchData(false, function () {
             // if (reps) { reps.getViewModel().set('fetching', false); }
-
-            if (vm.get('autoRefresh')) {
+            // if autorefresh enabled refetch data in 5 seconds
+            if (vm.get('r_autoRefreshBtn.pressed')) {
                 me.refreshTimeout = setTimeout(function () {
-                    me.refreshData();
+                    me.reload();
                 }, 5000);
-            } else {
-                clearTimeout(me.refreshTimeout);
             }
         });
     },
 
-    resetView: function(){
-        var grid = this.getView().down('grid');
-        Ext.state.Manager.clear(grid.stateId);
-        grid.filters.clearFilters();
-        grid.reconfigure(null, grid.tableConfig.columns);
+    reset: function () {
+        var me = this, vm = me.getViewModel(),
+            entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
-        grid.getColumns().forEach( function(column){
-            if( column.xtype == 'actioncolumn'){
-                return;
-            }
-            column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
-            if( column.columns ){
-                column.columns.forEach( Ext.bind( function( subColumn ){
-                    subColumn.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
-                }, this ) );
-            }
-        });
+        if (!entry) { return; }
+
+        switch(entry.get('type')) {
+        case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
+        case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
+        default: ctrl = me.getView().down('graphreport').getController();
+        }
+
+        if (!ctrl) {
+            console.error('Entry controller not found!');
+            return;
+        }
+        if (Ext.isFunction(ctrl.reset)) {
+            ctrl.reset();
+        }
     },
+
+    // resetView: function(){
+    //     var grid = this.getView().down('grid');
+    //     Ext.state.Manager.clear(grid.stateId);
+    //     grid.filters.clearFilters();
+    //     grid.reconfigure(null, grid.tableConfig.columns);
+
+    //     grid.getColumns().forEach( function(column){
+    //         if( column.xtype == 'actioncolumn'){
+    //             return;
+    //         }
+    //         column.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
+    //         if( column.columns ){
+    //             column.columns.forEach( Ext.bind( function( subColumn ){
+    //                 subColumn.setHidden( Ext.Array.indexOf(grid.visibleColumns, column.dataIndex) < 0 );
+    //             }, this ) );
+    //         }
+    //     });
+    // },
 
 
     // TABLE COLUMNS / CONDITIONS
@@ -490,7 +509,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
-        me.refreshData();
+        me.reload();
     },
 
     removeSqlFilter: function (table, rowIndex) {
@@ -501,7 +520,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
-        me.refreshData();
+        me.reload();
     },
 
     onColumnChange: function (cmp, newValue) {
@@ -582,7 +601,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
-        me.refreshData();
+        me.reload();
 
     },
 
@@ -692,7 +711,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
-                me.refreshData();
+                me.reload();
             });
     },
 
@@ -727,7 +746,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
-                me.refreshData();
+                me.reload();
             });
     },
 
@@ -896,22 +915,6 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    setAutoRefresh: function (btn) {
-        var me = this,
-            vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
-
-        if (btn.pressed) {
-            me.refreshData();
-        } else {
-            if (me.refreshTimeout) {
-                clearInterval(me.refreshTimeout);
-            }
-        }
-
-    },
-
-
     editEntry: function () {
         var me = this, vm = me.getViewModel();
         vm.set('eEntry', vm.get('entry').copy(null));
@@ -921,6 +924,8 @@ Ext.define('Ung.view.reports.EntryController', {
     cancelEdit: function () {
         var me = this, vm = me.getViewModel();
         vm.set('eEntry', null);
+        vm.set('validForm', true);
+        vm.notify();
 
         // if New Entry was initiated from a category view
         if (!vm.get('entry')) {
@@ -928,46 +933,7 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
-        Ext.defer(function() {
-            switch(vm.get('entry.type')) {
-            case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
-            case 'PIE_GRAPH':
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                vm.set('activeReportCard', 'graphreport'); break;
-            case 'EVENT_LIST':
-                vm.set('activeReportCard', 'eventreport'); break;
-            }
-        }, 200);
-    },
-
-    previewReport: function() {
-        var me = this, vm = me.getViewModel();
-        // if (me.getView().down('form').isValid()) {
-
-        // }
-        switch(vm.get('eEntry.type')) {
-        case 'TEXT': vm.set('activeReportCard', 'textreport'); break;
-        case 'PIE_GRAPH':
-        case 'TIME_GRAPH':
-        case 'TIME_GRAPH_DYNAMIC':
-            vm.set('activeReportCard', 'graphreport'); break;
-        case 'EVENT_LIST':
-            vm.set('activeReportCard', 'eventreport'); break;
-        }
-
-
-        switch(vm.get('eEntry.type')) {
-        case 'TEXT':
-            me.getView().down('textreport').getController().fetchData(true);
-            break;
-        case 'EVENT_LIST':
-            me.refreshData();
-            // me.getView().down('eventreport').getController().fetchData(true);
-            break;
-        default:
-            me.getView().down('graphreport').getController().fetchData(true);
-        }
+        me.setReportCard(vm.get('entry.type'));
     },
 
     onTextColumnsChanged: function (store) {

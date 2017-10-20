@@ -5,7 +5,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
     control: {
         '#': {
             afterrender: 'onAfterRender',
-            resize: 'onResize'
+            resize: 'onResize',
+            deactivate: 'reset'
         }
     },
 
@@ -21,16 +22,24 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         // fetch data when report entry is set or changed
         vm.bind('{entry}', function () {
+            me.reset();
             me.fetchData(true);
         });
+        // vm.bind('{eEntry.type}', function () {
+        //     me.reset();
+        // });
     },
 
     /**
      * used to refresh the chart when it's container size changes
      */
     onResize: function () {
-        if (this.chart) {
-            this.chart.reflow();
+        var me = this;
+        if (me.chart) {
+            Ext.defer(function () {
+                me.chart.reflow();
+            }, 200);
+
         }
     },
 
@@ -169,7 +178,13 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 style: {
                     fontSize: widgetDisplay ? '12px' : '14px'
                 },
-                headerFormat: '<p style="margin: 0 0 5px 0; color: #555;">{point.key}</p>'
+                headerFormat: '<p style="margin: 0 0 5px 0; color: #555;">{point.key}</p>',
+                dateTimeLabelFormats: {
+                    second: '%Y-%m-%d, %l:%M:%S %p, %l:%M:%S %p',
+                    minute: '%Y-%m-%d, %l:%M %p',
+                    hour: '%Y-%m-%d, %l:%M %p',
+                    day: '%Y-%m-%d'
+                }
             },
             plotOptions: {
                 column: {
@@ -262,6 +277,20 @@ Ext.define('Ung.view.reports.GraphReportController', {
         });
     },
 
+
+    reset: function () {
+        var me = this;
+        while(me.chart.series.length > 0) {
+            me.chart.series[0].remove(true);
+        }
+        me.chart.update({
+            xAxis: { visible: false },
+            yAxis: { visible: false }
+        });
+        me.chart.redraw();
+        me.chart.zoomOut();
+    },
+
     /**
      * fetches the report data
      */
@@ -274,19 +303,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
             startDate, endDate;
 
         vm.set('eError', false);
-
-        if (reset) {
-            // if report entry changed, reset the chart first
-            while(me.chart.series.length > 0) {
-                me.chart.series[0].remove(true);
-            }
-            me.chart.update({
-                xAxis: { visible: false },
-                yAxis: { visible: false }
-            });
-            me.chart.redraw();
-            me.chart.zoomOut();
-        }
 
         if (reps) { reps.getViewModel().set('fetching', true); }
 
@@ -301,7 +317,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             endDate = Util.clientToServerDate(vm.get('f_enddate'));
         }
 
-
+        me.reset();
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             entry.getData(), // entry
@@ -344,6 +360,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             })
             .always(function () {
                 if (reps) { reps.getViewModel().set('fetching', false); }
+                me.chart.reflow();
                 me.chart.hideLoading();
             });
     },
@@ -409,12 +426,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     ]
                 },
                 tooltip: {
-                    dateTimeLabelFormats: {
-                        second: '%Y-%m-%d, %l:%M:%S %p, %l:%M:%S %p',
-                        minute: '%Y-%m-%d, %l:%M %p',
-                        hour: '%Y-%m-%d, %l:%M %p',
-                        day: '%Y-%m-%d'
-                    },
                     pointFormatter: function () {
                         var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
                         if (units === 'bytes' || units === 'bytes/s') {
