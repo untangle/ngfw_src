@@ -178,13 +178,11 @@ public class TunnelVpnApp extends AppBase
         insertIptablesRules();
         this.tunnelVpnManager.launchProcesses();
         this.tunnelVpnMonitor.start();
-        this.tunnelVpnMonitor.enable();
     }
 
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
-        this.tunnelVpnMonitor.disable();
         this.tunnelVpnMonitor.stop();
         this.tunnelVpnManager.killProcesses();
     }
@@ -347,15 +345,10 @@ public class TunnelVpnApp extends AppBase
         return this.tunnelVpnMonitor.getTunnelStatusList();
     }
 
-    public TunnelVpnTunnelStatus getTunnelStatus(int tunnelId)
-    {
-        return this.tunnelVpnMonitor.getTunnelStatus(tunnelId);
-    }
-
     public void recycleTunnel(int tunnelId)
     {
         tunnelVpnManager.recycleTunnel(tunnelId);
-        tunnelVpnMonitor.clearTunnelStatus(tunnelId);
+        tunnelVpnMonitor.recycleTunnel(tunnelId);
     }
 
     /**
