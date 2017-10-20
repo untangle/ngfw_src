@@ -19,7 +19,7 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
 {
     public enum EventType
     {
-        CONNECT, DISCONNECT, RECYCLE
+        CONNECT, DISCONNECT
     };
 
     private InetAddress serverAddress;
@@ -69,12 +69,15 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
         "values " +
         "( ?, ?, ?, ?, ? ) ";
 
-        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
+
+        String serverAddress = (getServerAddress() == null ? "unknown" : getServerAddress().getHostAddress().toString());
+        String localAddress = (getLocalAddress() == null ? "unknown" : getLocalAddress().getHostAddress().toString());
 
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
-        pstmt.setObject(++i, getServerAddress().getHostAddress(), java.sql.Types.OTHER);
-        pstmt.setObject(++i, getLocalAddress().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setObject(++i, serverAddress, java.sql.Types.OTHER);
+        pstmt.setObject(++i, localAddress, java.sql.Types.OTHER);
         pstmt.setString(++i, getTunnelName());
         pstmt.setString(++i, getEventType().toString());
 
