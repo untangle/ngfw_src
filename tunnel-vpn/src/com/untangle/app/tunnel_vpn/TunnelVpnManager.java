@@ -208,8 +208,7 @@ public class TunnelVpnManager
         for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
             if (tunnelSettings.getTunnelId() == null) continue;
             if (tunnelSettings.getTunnelId() != tunnelId) continue;
-
-            TunnelVpnTunnelStatus status = app.getTunnelStatus(tunnelId);
+            if (!tunnelSettings.getEnabled()) continue;
 
             try {
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
@@ -228,10 +227,6 @@ public class TunnelVpnManager
                 UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
                 UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
                 UvmContextFactory.context().execManager().execOutput("kill -KILL " + pidData);
-
-                TunnelVpnEvent event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnelSettings.getName(), TunnelVpnEvent.EventType.RECYCLE);
-                app.logEvent(event);
-                logger.debug("TunnelVpnEvent(logEvent) " + event.toSummaryString());
 
                 launchProcess(tunnelSettings);
             } catch (Exception exn) {
