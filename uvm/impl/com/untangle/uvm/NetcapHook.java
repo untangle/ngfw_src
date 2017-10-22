@@ -172,7 +172,10 @@ public abstract class NetcapHook implements Runnable
                 username = hostEntry.getUsername();
                 sessionGlobalState.addTags( hostEntry.getTags() );
 
-                if ( clientIntf != hostEntry.getInterfaceId() ) {
+                // if the local host is creating the session
+                // and the source interface does not equal the host's current interface
+                // correct it
+                if ( clientAddr.equals(hostEntry.getAddress()) && clientIntf != hostEntry.getInterfaceId() ) {
                     hostEntry.setInterfaceId( clientIntf );
                 }
                 if ( ! hostEntry.getEntitled() ) {
@@ -193,7 +196,10 @@ public abstract class NetcapHook implements Runnable
             if ( deviceEntry != null ) {
                 deviceEntry.setLastSessionTime( System.currentTimeMillis() );
                 sessionGlobalState.addTags( deviceEntry.getTags() );
-                if ( clientIntf != deviceEntry.getInterfaceId() ) {
+                // if the local host is creating the session
+                // and the source interface does not equal the host's current interface
+                // correct it
+                if ( clientAddr.equals(hostEntry.getAddress()) && clientIntf != deviceEntry.getInterfaceId() ) {
                     deviceEntry.setInterfaceId( clientIntf );
                 }
                 if ( username == null ) /* if we don't know if from the host entry, use the device entry */
