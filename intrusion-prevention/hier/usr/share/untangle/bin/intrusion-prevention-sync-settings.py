@@ -27,13 +27,13 @@ def usage():
     """
     Show usage
     """
-    print "usage..."
-    print "help\t\tusage"
-    print "settings\tSettings configuration file name"
-    print "conf\t\tSnort configuration file name"
-    print "rules\t\tSnort rule file name"
-    print "app\t\tApp identifier"
-    print "debug\t\tEnable debugging"
+    print("usage...")
+    print("help\t\tusage")
+    print("settings\tSettings configuration file name")
+    print("conf\t\tSnort configuration file name")
+    print("rules\t\tSnort rule file name")
+    print("app\t\tApp identifier")
+    print("debug\t\tEnable debugging")
         
 def main(argv):
     """
@@ -78,7 +78,7 @@ def main(argv):
             export_mode = True
 
     if app_id == None:
-        print "Missing app_id"
+        print("Missing app_id")
         sys.exit(1)
 
     # if current_rules_path == None:
@@ -92,13 +92,13 @@ def main(argv):
 
     if _debug == True:
         if current_rules_path != None :
-            print "current_rules_path = " + current_rules_path
+            print("current_rules_path = " + current_rules_path)
         if previous_rules_path != None:
-            print "previous_rules_path = " + previous_rules_path
+            print("previous_rules_path = " + previous_rules_path)
         if settings_file_name != None:
-            print "settings_file_name = " + settings_file_name
-        print "app = " + app_id
-        print "_debug = ",  _debug
+            print("settings_file_name = " + settings_file_name)
+        print("app = " + app_id)
+        print("_debug = ",  _debug)
 
     defaults = intrusion_prevention.IntrusionPreventionDefaults()
     defaults.load()
