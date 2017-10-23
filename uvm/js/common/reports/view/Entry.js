@@ -591,45 +591,49 @@ Ext.define('Ung.view.reports.Entry', {
                 xtype: 'toolbar',
                 dock: 'bottom',
                 ui: 'footer',
-                layout: { type: 'vbox', align: 'stretch' },
-                items: [{
+                defaults: {
                     xtype: 'button',
-                    text: 'Preview/Refresh'.t(),
+                    scale: 'medium',
+                },
+                items: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-lg',
+                    handler: 'cancelEdit'
+                }, '->' , {
+                    iconCls: 'fa fa-trash fa-red fa-lg',
+                    // text: 'Delete'.t(),
+                    handler: 'removeReport',
+                    hidden: true,
+                    bind: {
+                        hidden: '{eEntry.readOnly || !eEntry.uniqueId}'
+                    }
+                }, {
+                    text: 'Update'.t(),
+                    iconCls: 'fa fa-floppy-o fa-lg',
+                    formBind: true,
+                    handler: 'updateReport',
+                    hidden: true,
+                    bind: {
+                        hidden: '{eEntry.readOnly || !eEntry.uniqueId}'
+                    }
+                }, {
+                    text: 'Create New'.t(),
+                    iconCls: 'fa fa-floppy-o fa-lg',
+                    formBind: true,
+                    handler: 'saveNewReport'
+                }]
+            }, {
+                xtype: 'toolbar',
+                dock: 'bottom',
+                // layout: { type: 'hbox', align: 'stretch' },
+                // ui: 'footer',
+                items: [{
+                    text: '<strong>' + 'Preview/Refresh'.t() + '</strong>',
                     iconCls: 'fa fa-refresh fa-lg',
+                    flex: 1,
                     scale: 'medium',
                     handler: 'reload',
                     formBind: true
-                }, {
-                    xtype: 'component',
-                    height: 5
-                }, {
-                    xtype: 'segmentedbutton',
-                    allowToggle: false,
-                    flex: 1,
-                    defaults: {
-                        scale: 'medium'
-                    },
-                    items: [{
-                        text: 'Cancel'.t(),
-                        iconCls: 'fa fa-ban fa-lg',
-                        handler: 'cancelEdit'
-                    }, {
-                        text: 'Save'.t(),
-                        iconCls: 'fa fa-floppy-o fa-lg',
-                        formBind: true,
-                        hidden: true,
-                        bind: {
-                            hidden: '{eEntry.readOnly}'
-                        }
-                    }, {
-                        text: 'Save as New'.t(),
-                        iconCls: 'fa fa-floppy-o fa-lg',
-                        formBind: true,
-                        hidden: true,
-                        bind: {
-                            hidden: '{!eEntry.uniqueId}' // hide if creating New Report
-                        }
-                    }]
                 }]
             }]
         }, {

@@ -319,6 +319,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         me.reset();
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
+
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
             entry.getData(), // entry
             startDate,

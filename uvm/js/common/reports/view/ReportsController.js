@@ -51,7 +51,7 @@ Ext.define('Ung.view.reports.ReportsController', {
 
     buildTablesStore: function () {
         if (!rpc.reportsManager) { return; }
-        var me = this; vm = me.getViewModel();
+        var me = this, vm = me.getViewModel();
         Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
             vm.set('tables', result); // used in advanced report settings table name
         });
@@ -79,8 +79,8 @@ Ext.define('Ung.view.reports.ReportsController', {
             record = Ext.getStore('reports').findRecord('url', node.get('url'));
             if (record) {
                 vm.set({
-                    report: record, // main reference from the store
-                    entry: record.copy(null) // report reference copy on which modifications are made
+                    // report: record, // main reference from the store
+                    entry: record // report reference copy on which modifications are made
                 });
             }
             me.lookup('cards').setActiveItem('report');
@@ -154,20 +154,20 @@ Ext.define('Ung.view.reports.ReportsController', {
      */
     buildStats: function (node) {
         var me = this, vm = me.getViewModel(),
-        stats = {
-            set: false,
-            reports: {
-                total: 0,
-                custom: 0,
-                chart: 0,
-                event: 0,
-                info: 0
-            },
-            categories: {
-                total: 0,
-                app: 0
-            }
-        };
+            stats = {
+                set: false,
+                reports: {
+                    total: 0,
+                    custom: 0,
+                    chart: 0,
+                    event: 0,
+                    info: 0
+                },
+                categories: {
+                    total: 0,
+                    app: 0
+                }
+            };
 
         if (!node) { node = Ext.getStore('reportstree').getRoot(); }
 
@@ -177,14 +177,14 @@ Ext.define('Ung.view.reports.ReportsController', {
                 stats.reports.total += 1;
                 if (!n.get('readOnly')) { stats.reports.custom += 1; }
                 switch(n.get('type')) {
-                    case 'TIME_GRAPH':
-                    case 'TIME_GRAPH_DYNAMIC':
-                    case 'PIE_GRAPH':
-                        stats.reports.chart += 1; break;
-                    case 'EVENT_LIST':
-                        stats.reports.event += 1; break;
-                    case 'TEXT':
-                        stats.reports.info += 1; break;
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                case 'PIE_GRAPH':
+                    stats.reports.chart += 1; break;
+                case 'EVENT_LIST':
+                    stats.reports.event += 1; break;
+                case 'TEXT':
+                    stats.reports.info += 1; break;
                 }
             } else {
                 stats.categories.total += 1;
