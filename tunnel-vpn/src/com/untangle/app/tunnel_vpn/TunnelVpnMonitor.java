@@ -30,6 +30,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 class TunnelVpnMonitor implements Runnable
@@ -389,15 +390,18 @@ class TunnelVpnMonitor implements Runnable
 
     public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
     {
-        checkTunnelProcesses();
-        generateTunnelStatistics();
-
         LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
 
-        for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
-            Integer key = entry.getKey();
-            TunnelVpnTunnelStatus value = entry.getValue();
-            statusList.add(value);
+        // only call the process and stats functions if the app is running
+        if (app.getRunState() == AppSettings.AppState.RUNNING) {
+            checkTunnelProcesses();
+            generateTunnelStatistics();
+
+            for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
+                Integer key = entry.getKey();
+                TunnelVpnTunnelStatus value = entry.getValue();
+                statusList.add(value);
+            }
         }
 
         return (statusList);
