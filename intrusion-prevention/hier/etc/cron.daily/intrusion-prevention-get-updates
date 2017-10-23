@@ -52,7 +52,7 @@ class Update:
         Setup working directory
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] ))
             
         if os.path.isdir( self.working_directory ) == True:
             try:
@@ -92,7 +92,7 @@ class Update:
         Download
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] ))
 
         ## Get file size to determine if we need to download
         if os.path.isfile( self.live_rules_file_name  ) == True:
@@ -123,7 +123,7 @@ class Update:
 
         if live_rules_file_size == url_file_size:
             if self.debug:
-                print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] )
+                print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] ))
             return False
 
         try:
@@ -173,7 +173,7 @@ class Update:
         Validate
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] ))
             
         try:
             tar = tarfile.open( self.url_file_name )
@@ -193,7 +193,7 @@ class Update:
         Install to live
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] ))
             
         live_new_directory =  self.base_directory + "/new"
         live_previous_directory =  self.base_directory + "/previous"
@@ -314,9 +314,9 @@ def usage():
     """
     Usage
     """
-    print "usage"
-    print "help\t\tusage"
-    print "rules_template_directory\t\tSnort rule template directory"
+    print("usage")
+    print("help\t\tusage")
+    print("rules_template_directory\t\tSnort rule template directory")
         
 def main(argv):
     """
@@ -351,8 +351,8 @@ def main(argv):
             url = arg
 
     if DEBUG == True:
-        print "rules_template_directory = " + rules_template_directory
-        print "url = " + url
+        print("rules_template_directory = " + rules_template_directory)
+        print("url = " + url)
 
     update = Update( rules_template_directory, url )
     update.setup()
@@ -374,7 +374,7 @@ def main(argv):
         th.close()
 
     if len( update.errors ):
-        print update.errors
+        print(update.errors)
     sys.exit()
 
 if __name__ == "__main__":
