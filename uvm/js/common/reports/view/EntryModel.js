@@ -88,9 +88,7 @@ Ext.define('Ung.view.reports.EntryModel', {
                     col.isDefault = true;
                 }
             });
-            console.log(tableConfig.comboItems);
             return tableConfig.comboItems;
-            // me.fetchData();
         },
         // f_startdate: function (get) {
         //     if (!get('r_customRangeCk.value')) {
@@ -134,9 +132,9 @@ Ext.define('Ung.view.reports.EntryModel', {
             },
         },
 
-        _props: function (get) {
-            return get('entry').getData();
-        },
+        // _props: function (get) {
+        //     return get('entry').getData();
+        // },
 
         // _colorsStr: {
         //     get: function (get) {

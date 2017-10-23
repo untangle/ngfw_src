@@ -121,19 +121,19 @@ Ext.define('Ung.view.reports.EntryController', {
 
         // watch since date switching and reload the report
         vm.bind('{sinceDate.value}', function () {
-            vm.set({
-                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
-                f_enddate: null
-            });
+            // vm.set({
+            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
+            //     f_enddate: null
+            // });
             me.reload();
         });
 
         // watch custom range switch on/off
         vm.bind('{r_customRangeCk.value}', function (checked) {
-            vm.set({
-                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
-                f_enddate: null
-            });
+            // vm.set({
+            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
+            //     f_enddate: null
+            // });
             if (checked) {
                 // when checked, disable autorefresh because of the fixed range
                 me.lookup('r_autoRefreshBtn').setPressed(false);
@@ -384,6 +384,15 @@ Ext.define('Ung.view.reports.EntryController', {
     reload: function () {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
+
+        vm.set('validForm', true); // te remove the valid warning
+
+        if (!vm.get('r_customRangeCk.value')) {
+            vm.set({
+                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
+                f_enddate: null
+            });
+        }
 
         if (!entry) { return; }
 
@@ -687,30 +696,35 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry'), tdcg, tdc = [];
+            entry = vm.get('eEntry'), tdcg, tdc = [];
 
         // update timeDataColumns or textColumns
         if (entry.get('type') === 'TIME_GRAPH') {
             tdcg = v.down('#timeDataColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            vm.set('entry.timeDataColumns', tdc);
+            entry.set('timeDataColumns', tdc);
         }
         if (entry.get('type') === 'TEXT') {
             tdcg = v.down('#textColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            vm.set('entry.textColumns', tdc);
+            entry.set('textColumns', tdc);
         }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
             .then(function() {
                 v.setLoading(false);
-                vm.get('report').copyFrom(entry);
-                vm.get('report').commit();
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
-                Ext.getStore('reportstree').build(); // rebuild tree after save new
+                var updatedRec = Ext.getStore('reports').findRecord('uniqueId', entry.get('uniqueId'));
+                if (updatedRec) {
+                    updatedRec.copyFrom(entry);
+                    updatedRec.commit();
+                    Ext.getStore('reportstree').build();
+                }
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
+
+                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
+                vm.set('eEntry', null);
                 me.reload();
             });
     },
@@ -719,7 +733,7 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('entry'), tdcg, tdc = [];
+            entry = vm.get('eEntry'), tdcg, tdc = [];
 
         entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         entry.set('readOnly', false);
@@ -728,12 +742,12 @@ Ext.define('Ung.view.reports.EntryController', {
         if (entry.get('type') === 'TIME_GRAPH') {
             tdcg = v.down('#timeDataColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            vm.set('entry.timeDataColumns', tdc);
+            entry.set('timeDataColumns', tdc);
         }
         if (entry.get('type') === 'TEXT') {
             tdcg = v.down('#textColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            vm.set('entry.textColumns', tdc);
+            entry.set('textColumns', tdc);
         }
 
         v.setLoading(true);
@@ -741,7 +755,6 @@ Ext.define('Ung.view.reports.EntryController', {
             .then(function() {
                 v.setLoading(false);
                 Ext.getStore('reports').add(entry);
-                entry.commit();
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
@@ -754,31 +767,32 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = this.getViewModel(),
             entry = vm.get('entry');
 
-        if (vm.get('widget')) {
-            Ext.MessageBox.confirm('Warning'.t(),
-                'Deleting this report will remove also the Widget from Dashboard!'.t() + '<br/><br/>' +
-                'Do you want to continue?'.t(),
-                function (btn) {
-                    if (btn === 'yes') {
-                        // remove it from dashboard first
-                        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
-                            vm.set('widget', wg);
-                            me.removeReportAction(entry.getData());
-                        });
-                    }
-                });
-        } else {
-            me.removeReportAction(entry.getData());
-        }
+        Ext.MessageBox.confirm('Warning'.t(),
+            'Deleting this report will also remove Dashboard widgets containing this report!'.t() + '<br/><br/>' +
+            'Do you want to continue?'.t(),
+        function (btn) {
+            if (btn === 'yes') {
+                if (vm.get('widget')) {
+                    // remove it from dashboard first
+                    Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
+                        vm.set('widget', wg);
+                        me.removeReportAction(entry.getData());
+                    });
+                } else {
+                    me.removeReportAction(entry.getData());
+                }
+            }
+        });
 
     },
 
     removeReportAction: function (entry) {
+        var vm = this.getViewModel();
         Rpc.asyncData('rpc.reportsManager.removeReportEntry', entry)
             .then(function () {
                 Ung.app.redirectTo('#reports/' + entry.category.replace(/ /g, '-').toLowerCase());
                 Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
-
+                vm.set('eEntry', null);
                 var removableRec = Ext.getStore('reports').findRecord('uniqueId', entry.uniqueId);
                 if (removableRec) {
                     Ext.getStore('reports').remove(removableRec); // remove record
