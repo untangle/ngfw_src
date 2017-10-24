@@ -1,92 +1,72 @@
 /**
- * GlobalFilter
- * todo: check if really works properly
+ * The messages global filter
  */
-Ext.define('Ung.grid.feature.GlobalFilter', {
-    extend: 'Ext.grid.feature.Feature',
-    useVisibleColumns: true,
-    useFields: null,
-    init: function(grid) {
-        this.grid = grid;
-        this.globalFilter = Ext.create('Ext.util.Filter', {
-            regExpProtect : /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
-            disabled : true,
-            regExpMode : false,
-            caseSensitive : false,
-            regExp : null,
-            stateId : 'globalFilter',
-            searchFields : {},
-            filterFn : function(record) {
-                if (!this.regExp) {
-                    return true;
-                }
-                var datas = record.getData(), key, val;
-                for (key in this.searchFields) {
-                    if (datas[key] !== undefined) {
-                        val = datas[key];
-                        if (val == null) {
-                            continue;
-                        }
-                        if (typeof val == 'boolean' || typeof val == 'number') {
-                            val = val.toString();
-                        } else if (typeof val == 'object') {
-                            if (val.time != null) {
-                                val = Util.timestampFormat(val);
-                            }
-                        }
-                        if (typeof val == 'string') {
-                            if (this.regExp.test(val)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            },
-            getSearchValue : function(value) {
-                if (value === '' || value === '^' || value === '$') {
-                    return null;
-                }
-                if (!this.regExpMode) {
-                    value = value.replace(this.regExpProtect, function(m) {
-                        return '\\' + m;
-                    });
-                } else {
-                    try {
-                        new RegExp(value);
-                    } catch (error) {
-                        return null;
-                    }
-                }
-                return value;
-            },
-            buildSearch : function(value, caseSensitive, searchFields) {
-                this.searchFields = searchFields;
-                this.setCaseSensitive(caseSensitive);
-                var searchValue = this.getSearchValue(value);
-                this.regExp = searchValue == null ? null : new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
-                this.setDisabled(this.regExp == null);
-            }
-        });
-        this.callParent(arguments);
-    },
-    updateGlobalFilter : function(value, caseSensitive) {
-        var me = this, searchFields = {}, i, col;
-        if (me.useVisibleColumns) {
-            var visibleColumns = this.grid.getVisibleColumns();
-            for (i = 0; i < visibleColumns.length; i++) {
-                col = visibleColumns[i];
-                if (col.dataIndex) {
-                    searchFields[col.dataIndex] = true;
+Ext.define('Ung.grid.Filter', {
+    extend: 'Ext.form.FieldContainer',
+    alias: 'widget.gridfilter',
+
+    layout: { type: 'hbox' },
+
+    items: [{
+        xtype: 'textfield',
+        reference: 'filterfield',
+        // fieldLabel: 'Filter'.t(),
+        emptyText: 'Filter data ...'.t(),
+        enableKeyEvents: true,
+
+        triggers: {
+            clear: {
+                cls: 'x-form-clear-trigger',
+                hidden: true,
+                handler: function (field) {
+                    field.setValue('');
                 }
             }
-        } else if (me.searchFields !== null) {
-            for (i = 0; i < me.searchFields.length; i++) {
-                searchFields[me.searchFields[i]] = true;
-            }
+        },
+
+        listeners: {
+            change: 'filterList',
+            buffer: 100
         }
-        me.globalFilter.buildSearch(value, caseSensitive, searchFields);
-        me.grid.getStore().getFilters().notify('endupdate');
+    }, {
+        xtype: 'checkbox',
+        margin: '0 0 0 5',
+        boxLabel: 'Case sensitive'.t(),
+        listeners: {
+            change: 'filterList'
+        }
+    }],
+
+    controller: {
+        filterList: function () {
+            var me = this, v = me.getView(), grid = v.up('grid'),
+                tf = v.down('textfield'), // filter field
+                cs = v.down('checkbox'), // case sensitive
+                cols = grid.getVisibleColumns();
+
+            grid.getStore().clearFilter();
+
+            if (!tf.getValue()) {
+                tf.getTrigger('clear').hide();
+                return;
+            }
+
+            // create the regex val, start, end, ignoreCase
+            var regex = Ext.String.createRegex(tf.getValue(), false, false, !cs.getValue());
+
+            grid.getStore().getFilters().add(function (item) {
+                var str = [], filtered = false;
+
+                Ext.Array.each(cols, function (col) {
+                    var val = item.get(col.dataIndex);
+                    if (!val) { return; }
+                    str.push(val.toString());
+                });
+                if (regex.test(str.join('|'))) { filtered = true; }
+                return filtered;
+            });
+            tf.getTrigger('clear').show();
+        },
     }
 });
 
@@ -132,23 +112,16 @@ Ext.define('Ung.view.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.main',
 
-    onAfterRender: function (view) {
-        var me = this, vm = me.getViewModel(), messagesGrid = view.down('messages');
+    onAfterRender: function () {
+        var me = this;
         me.token = Ung.app.conf.token;
         me.refreshQuarantineGrid();
-
-        // and store populate add globalfilter
-        vm.bind('mails', function() {
-            if (messagesGrid.getStore().filters.length === 0) {
-                messagesGrid.getStore().addFilter(messagesGrid.features[0].globalFilter);
-            }
-        });
-
     },
 
     refreshQuarantineGrid: function () {
         var me = this, vm = me.getViewModel();
         rpc.getInboxRecords(function (result, ex) {
+            console.log(result);
             if (ex) { Util.handleException(ex); return; }
             var mails = [];
             Ext.Array.each(result.list, function (mail) {
@@ -229,17 +202,6 @@ Ext.define('Ung.view.MainController', {
             }
         }, me.token, mids);
     },
-
-    filterMessages: function (field, value) {
-        var grid = field.up('grid'), cs = grid.down('#casesensitive');
-        if (!value) {
-            field.getTrigger('clear').hide();
-        } else {
-            field.getTrigger('clear').show();
-        }
-        grid.features[0].updateGlobalFilter(value, cs.getValue());
-    },
-
 
     // Safe List actions
     addSafeListAddress: function(btn) {
@@ -378,7 +340,6 @@ Ext.define('Ung.view.Messages', {
             },
         }
     },
-    features: [Ext.create('Ung.grid.feature.GlobalFilter', {})],
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -411,25 +372,8 @@ Ext.define('Ung.view.Messages', {
             disabled: true,
             bind: { disabled: '{!messagesGrid.selection}' },
             handler: 'purgeMessages'
-        }, '->', 'Filter:'.t(), {
-            xtype: 'textfield',
-            enableKeyEvents: true,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    hidden: true,
-                    handler: function (field) {
-                        field.setValue('');
-                    }
-                }
-            },
-            listeners: {
-                change: 'filterMessages'
-            }
-        }, {
-            xtype: 'checkbox',
-            itemId: 'casesensitive',
-            boxLabel: 'Case sensitive'.t()
+        }, '->', {
+            xtype: 'gridfilter'
         }]
     }],
     bind: {
@@ -456,6 +400,13 @@ Ext.define('Ung.view.Messages', {
                         d = Ext.util.Format.date(date, 'm/d/Y');
                         t = Ext.util.Format.date(date, 'g:i a');
                         return d + ' ' + t;
+                    }
+                },
+                {
+                    name: 'quarantineSizeKb',
+                    calculate: function(data) {
+                        if (!data.quarantineSize) { return 0; }
+                        return Math.round(((data.quarantineSize + 0.0) / 1024) * 10) / 10;
                     }
                 }
             ]
@@ -505,10 +456,7 @@ Ext.define('Ung.view.Messages', {
         }
     }, {
         header: 'Size (KB)'.t(),
-        dataIndex: 'quarantineSize',
-        renderer: function(value) {
-            return Math.round(((value + 0.0) / 1024) * 10) / 10;
-        },
+        dataIndex: 'quarantineSizeKb',
         width: 70,
         filter: { type : 'numeric' }
     }]
