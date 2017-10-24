@@ -30,12 +30,13 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 class TunnelVpnMonitor implements Runnable
 {
-    /* Poll every 60 seconds */
-    private static final long SLEEP_TIME_MSEC = 60 * 1000;
+    private static final long TRAFFIC_CHECK_INTERVAL = (60 * 1000);
+    private static final long PROCESS_RESTART_DELAY = (30 * 1000);
 
     /* Delay a second while the thread is joining */
     private static final long THREAD_JOIN_TIME_MSEC = 1000;
@@ -51,18 +52,13 @@ class TunnelVpnMonitor implements Runnable
 
     protected static final Logger logger = Logger.getLogger(TunnelVpnMonitor.class);
 
-    private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatus = new ConcurrentHashMap<Integer, TunnelVpnTunnelStatus>();
+    private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<Integer, TunnelVpnTunnelStatus>();
     private final TunnelVpnManager manager;
     private final TunnelVpnApp app;
 
-    /* The thread the monitor is running on */
     private Thread thread = null;
-
-    /* Status of the monitor */
     private volatile boolean isAlive = true;
-
-    /* Whether or not the monitor is enabled */
-    private volatile boolean isEnabled = false;
+    private volatile long lastTrafficCheck = 0;
 
     protected TunnelVpnMonitor(TunnelVpnApp app, TunnelVpnManager manager)
     {
@@ -79,15 +75,13 @@ class TunnelVpnMonitor implements Runnable
 
         logger.debug("Starting");
 
-        long now = System.currentTimeMillis();
-
-        while (true) {
-            if (!isAlive) break;
+        while (isAlive) {
             try {
-                Thread.sleep(SLEEP_TIME_MSEC);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 logger.info("tunnelvpn monitor was interrupted");
             }
+
             if (!isAlive) break;
 
             /* check that all the enabled tunnels are running and active */
@@ -103,7 +97,6 @@ class TunnelVpnMonitor implements Runnable
     public synchronized void start()
     {
         isAlive = true;
-        isEnabled = false;
 
         logger.debug("Starting TunnelVpn monitor");
 
@@ -118,16 +111,6 @@ class TunnelVpnMonitor implements Runnable
 
         thread = UvmContextFactory.context().newThread(this);
         thread.start();
-    }
-
-    public synchronized void enable()
-    {
-        isEnabled = true;
-    }
-
-    public synchronized void disable()
-    {
-        isEnabled = false;
     }
 
     public synchronized void stop()
@@ -156,27 +139,20 @@ class TunnelVpnMonitor implements Runnable
     {
         for (TunnelVpnTunnelSettings tunnel : app.getSettings().getTunnels()) {
 
+            TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnel.getTunnelId());
+
+            if (status == null) {
+                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId(), tunnel.getName());
+                tunnelStatusList.put(tunnel.getTunnelId(), status);
+            }
+
             // ignore tunnels that are not enabled
             if (!tunnel.getEnabled()) continue;
-
-            TunnelVpnTunnelStatus status = tunnelStatus.get(tunnel.getTunnelId());
-
-            logger.debug("Checking tunnel " + tunnel.getName() + " (" + tunnel.getTunnelId() + ")");
 
             try {
                 File pidFile = new File("/var/run/tunnelvpn/tunnel-" + tunnel.getTunnelId() + ".pid");
                 if (!pidFile.exists()) {
-                    /* process does not exist so we start it here */
-                    logger.warn("OpenVPN process for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") missing. Restarting...");
-
-                    /*
-                     * update the tunnel state and force stats to generate the
-                     * event
-                     */
-                    status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
-                    generateTunnelStatistics();
-
-                    manager.launchProcess(tunnel);
+                    restartDeadTunnel("missing", tunnel, status);
                     continue;
                 }
 
@@ -198,17 +174,7 @@ class TunnelVpnMonitor implements Runnable
                 File procFile = new File("/proc/" + pid);
 
                 if (!procFile.exists()) {
-                    /* process isn't running so we restart it here */
-                    logger.warn("OpenVPN process for " + tunnel.getName() + " (PID:" + pid + ") died. Restarting...");
-
-                    /*
-                     * update the tunnel state and force stats to generate the
-                     * event
-                     */
-                    status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
-                    generateTunnelStatistics();
-
-                    manager.launchProcess(tunnel);
+                    restartDeadTunnel("dead", tunnel, status);
                     continue;
                 }
 
@@ -218,79 +184,74 @@ class TunnelVpnMonitor implements Runnable
         }
     }
 
+    /**
+     * Connects to the openvpn management port for every active tunnel to get
+     * the connection and traffic stats. We also watch for transitions between
+     * CONNECTED and DISCONNECTED and generate log events as required.
+     */
     protected void generateTunnelStatistics()
     {
         TunnelVpnTunnelStatus status = null;
-        TunnelVpnEvent event;
+        TunnelVpnEvent event = null;
 
         for (TunnelVpnTunnelSettings tunnel : app.getSettings().getTunnels()) {
 
-            if (!tunnel.getEnabled()) continue;
+            status = tunnelStatusList.get(tunnel.getTunnelId());
 
-            try {
-                status = updateTunnelStatus(tunnel);
-
-            } catch (ConnectException exn) {
-                logger.warn("Unable to get status for " + tunnel.getName());
-
-            } catch (Exception exn) {
-                logger.warn("Failed to get status for " + tunnel.getName(), exn);
+            if (status == null) {
+                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId(), tunnel.getName());
+                tunnelStatusList.put(tunnel.getTunnelId(), status);
             }
 
-            if (status == null) status = getTunnelStatus(tunnel.getTunnelId());
-            if (status == null) continue;
+            // if the tunnel is enabled grab the stats from the daemon
+            if (tunnel.getEnabled()) {
+                try {
+                    status = updateTunnelStatus(tunnel, status);
 
+                } catch (Exception exn) {
+                    logger.warn("Failed to get status for " + tunnel.getName() + " [" + exn.getMessage() + "]");
+                }
+
+            }
+
+            // the tunnel is not enabled so clear the stats
+            else {
+                status.clearTunnelStatus();
+            }
+
+            // if the state has not changed we do nothing
             if (status.getStateInfo().equals(status.getStateLast())) continue;
+
+            /*
+             * The state has changed so we log connect or disconnect events and
+             * update the last state so we can detect the next change
+             */
 
             if (status.getStateInfo().equals(TunnelVpnTunnelStatus.STATE_CONNECTED)) {
                 event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnel.getName(), TunnelVpnEvent.EventType.CONNECT);
-            } else {
+                status.restartCount = 0;
+                status.restartStamp = 0;
+            }
+            if (status.getStateInfo().equals(TunnelVpnTunnelStatus.STATE_DISCONNECTED)) {
                 event = new TunnelVpnEvent(status.getServerAddress(), status.getLocalAddress(), tunnel.getName(), TunnelVpnEvent.EventType.DISCONNECT);
             }
 
-            app.logEvent(event);
-            logger.debug("TunnelVpnEvent(logEvent) " + event.toSummaryString());
             status.setStateLast(status.getStateInfo());
+
+            if (event != null) {
+                app.logEvent(event);
+                logger.debug("logEvent(connect_event) " + event.toSummaryString());
+            }
         }
     }
 
-    public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
-    {
-        generateTunnelStatistics();
-
-        LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
-
-        for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatus.entrySet()) {
-            Integer key = entry.getKey();
-            TunnelVpnTunnelStatus value = entry.getValue();
-            statusList.add(value);
-        }
-
-        return (statusList);
-    }
-
-    public TunnelVpnTunnelStatus getTunnelStatus(int tunnelId)
-    {
-        return tunnelStatus.get(tunnelId);
-    }
-
-    private TunnelVpnTunnelStatus updateTunnelStatus(TunnelVpnTunnelSettings tunnel) throws Exception
+    private TunnelVpnTunnelStatus updateTunnelStatus(TunnelVpnTunnelSettings tunnel, TunnelVpnTunnelStatus status) throws Exception
     {
         Socket socket = null;
         BufferedReader in = null;
         BufferedWriter out = null;
         long xmitBytes = 0;
         long recvBytes = 0;
-
-        /* get the tunnel status object for the argumented tunnel */
-        TunnelVpnTunnelStatus status = tunnelStatus.get(tunnel.getTunnelId());
-
-        /* if status object not found create and add to hashmap */
-        if (status == null) {
-            status = new TunnelVpnTunnelStatus(tunnel.getTunnelId());
-            status.setTunnelName(tunnel.getName());
-            tunnelStatus.put(tunnel.getTunnelId(), status);
-        }
 
         try {
             /* Connect to the management port */
@@ -310,7 +271,6 @@ class TunnelVpnMonitor implements Runnable
 
             while (true) {
                 String line = in.readLine().trim();
-                logger.debug("STATE: " + line);
                 if (line.equalsIgnoreCase(END_MARKER)) break;
 
                 /*
@@ -332,7 +292,6 @@ class TunnelVpnMonitor implements Runnable
 
             while (true) {
                 String line = in.readLine().trim();
-                logger.debug("STATUS: " + line);
                 if (line.equalsIgnoreCase(END_MARKER)) break;
 
                 String array[] = line.split(",");
@@ -353,12 +312,17 @@ class TunnelVpnMonitor implements Runnable
             if (socket != null) socket.close();
         }
 
-        logger.debug("STATUS: " + status.toString());
-
         /*
-         * if neither value changed there is nothing to log so just return
+         * If neither value changed there is nothing to log so just return
          */
         if ((status.getXmitLast() == status.getXmitTotal()) && (status.getRecvLast() == status.getRecvTotal())) return (status);
+
+        /*
+         * If not time to write a traffic stats record just return
+         */
+        long currentTime = System.currentTimeMillis();
+        if (currentTime < (lastTrafficCheck + TRAFFIC_CHECK_INTERVAL)) return (status);
+        lastTrafficCheck = currentTime;
 
         /*
          * The stats for each the tunnel will be cleared if the connection dies
@@ -388,13 +352,65 @@ class TunnelVpnMonitor implements Runnable
 
         TunnelVpnStatusEvent event = new TunnelVpnStatusEvent(tunnel.getName(), recvBytes, xmitBytes);
         app.logEvent(event);
-        logger.debug("updateTunnelStatus(logEvent) " + event.toString());
+        logger.debug("logEvent(traffic_event) " + event.toString());
 
         return (status);
     }
 
-    public void clearTunnelStatus(int tunnelId)
+    private void restartDeadTunnel(String reason, TunnelVpnTunnelSettings tunnel, TunnelVpnTunnelStatus status)
     {
-        tunnelStatus.remove(tunnelId);
+        long currentTime = System.currentTimeMillis();
+        long futureTime = 0;
+
+        // first time here we initialize the throttling logic and log the event
+        if (status.restartCount == 0) {
+            logger.debug("Initializing retry throttling for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ")");
+            status.restartStamp = currentTime;
+
+            // change the state to disconnected so stats will log an event
+            status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
+            generateTunnelStatistics();
+        }
+
+        futureTime = (status.restartStamp + (status.restartCount * PROCESS_RESTART_DELAY));
+
+        // if not yet time to restart again just return
+        if (currentTime < futureTime) {
+            logger.debug("Throttling retry for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") COUNT:" + status.restartCount + " CUR:" + currentTime + " FUT:" + futureTime);
+            return;
+        }
+
+        // double the throttling delay after each attempt
+        if (status.restartCount == 0) status.restartCount = 1;
+        status.restartCount = (status.restartCount * 2);
+
+        logger.warn("Restarting OpenVPN process for " + tunnel.getName() + " (" + tunnel.getTunnelId() + ") Reason: " + reason);
+        manager.launchProcess(tunnel);
+    }
+
+    public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
+    {
+        LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
+
+        // only call the process and stats functions if the app is running
+        if (app.getRunState() == AppSettings.AppState.RUNNING) {
+            checkTunnelProcesses();
+            generateTunnelStatistics();
+
+            for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
+                Integer key = entry.getKey();
+                TunnelVpnTunnelStatus value = entry.getValue();
+                statusList.add(value);
+            }
+        }
+
+        return (statusList);
+    }
+
+    public void recycleTunnel(int tunnelId)
+    {
+        TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnelId);
+        status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
+        generateTunnelStatistics();
     }
 }

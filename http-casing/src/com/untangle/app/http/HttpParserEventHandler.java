@@ -647,6 +647,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     try {
                         // extract the full file path ignoring all params
                         fpath = (new URI(path)).toString();
+                        fname = fpath;
 
                         // find the last slash to extract the file name
                         loc = fpath.lastIndexOf("/");

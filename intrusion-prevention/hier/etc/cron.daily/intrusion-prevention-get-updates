@@ -25,6 +25,7 @@ import intrusion_prevention
 
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
+FORCE_SYNC = False
 
 class Update:
     """
@@ -51,7 +52,7 @@ class Update:
         Setup working directory
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] ))
             
         if os.path.isdir( self.working_directory ) == True:
             try:
@@ -81,7 +82,7 @@ class Update:
         ##
         nm = AppManager(uvmContext)
         for instance in nm.get_instances():
-            if instance[1] == "intrusion-prevention" and instance[3] == "RUNNING":
+            if instance[1] == "intrusion-prevention" and ( instance[3] == "RUNNING" or FORCE_SYNC):
                 self.app_ids.append(instance[0])
         
         return True
@@ -91,7 +92,7 @@ class Update:
         Download
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] ))
 
         ## Get file size to determine if we need to download
         if os.path.isfile( self.live_rules_file_name  ) == True:
@@ -122,7 +123,7 @@ class Update:
 
         if live_rules_file_size == url_file_size:
             if self.debug:
-                print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] )
+                print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] ))
             return False
 
         try:
@@ -172,7 +173,7 @@ class Update:
         Validate
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] ))
             
         try:
             tar = tarfile.open( self.url_file_name )
@@ -192,7 +193,7 @@ class Update:
         Install to live
         """
         if self.debug == True:
-            print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] )
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] ))
             
         live_new_directory =  self.base_directory + "/new"
         live_previous_directory =  self.base_directory + "/previous"
@@ -313,22 +314,23 @@ def usage():
     """
     Usage
     """
-    print "usage"
-    print "help\t\tusage"
-    print "rules_template_directory\t\tSnort rule template directory"
+    print("usage")
+    print("help\t\tusage")
+    print("rules_template_directory\t\tSnort rule template directory")
         
 def main(argv):
     """
     Main
     """
     global DEBUG
+    global FORCE_SYNC
     rules_template_directory = "/usr/share/untangle-snort-config"
     url = "https://ids.untangle.com/snortrules.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
-    force_sync = False
+    force_download = False
 	
     try:
-        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "force_sync", "debug"] )
+        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "force_sync", "debug", "force_download"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -340,22 +342,24 @@ def main(argv):
         elif opt in ( "-d", "--debug"):
             DEBUG = True
         elif opt in ( "-s", "--force_sync"):
-            force_sync = True
+            FORCE_SYNC = True
+        elif opt in ( "-s", "--force_download"):
+            force_download = True
         elif opt in ( "-r", "--rules_template_directory"):
             rules_template_directory = arg
         elif opt in ( "-u", "--url"):
             url = arg
 
     if DEBUG == True:
-        print "rules_template_directory = " + rules_template_directory
-        print "url = " + url
+        print("rules_template_directory = " + rules_template_directory)
+        print("url = " + url)
 
     update = Update( rules_template_directory, url )
     update.setup()
-    if force_sync:
+    if FORCE_SYNC is True:
         update.synchronize()
     else:
-        if len(update.app_ids) > 0 and update.download() == True and update.validate() and update.install():
+        if ( force_download or len(update.app_ids) > 0 ) and update.download() == True and update.validate() and update.install():
             update.synchronize()
 
     """
@@ -370,7 +374,7 @@ def main(argv):
         th.close()
 
     if len( update.errors ):
-        print update.errors
+        print(update.errors)
     sys.exit()
 
 if __name__ == "__main__":

@@ -208,7 +208,9 @@ public class NotificationManagerImpl implements NotificationManager
         try {
             int percentUsed = Integer.parseInt(result);
             if (percentUsed > 75)
-                notificationList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
+                //notificationList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
+                //remove percent because of NGFW-11150
+                notificationList.add( i18nUtil.tr("Free Disk space is low.") );
         } catch (Exception e) {
             logger.warn("Unable to determine free disk space",e);
         }

@@ -181,13 +181,15 @@ Ext.define('Ung.view.MainController', {
 
     // Quarantined Messages actions
     releaseMessages: function (btn) {
-        var me = this, mids = [];
-        Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
+        var me = this, mids = [],
+            selectedRecords = btn.up('grid').getSelection();
+        Ext.Array.each(selectedRecords, function (rec) {
             mids.push(rec.get('mailID'));
         });
         rpc.releaseMessages(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
             if (result.releaseCount > 0) {
+                btn.up('grid').getStore().remove(selectedRecords);
                 Util.successToast(Ext.String.format('Released {0} Messages'.t(), result.releaseCount));
             }
         }, me.token, mids);
@@ -214,13 +216,15 @@ Ext.define('Ung.view.MainController', {
     },
 
     purgeMessages: function (btn) {
-        var me = this, mids = [];
-        Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
+        var me = this, mids = [],
+            selectedRecords = btn.up('grid').getSelection();
+        Ext.Array.each(selectedRecords, function (rec) {
             mids.push(rec.get('mailID'));
         });
         rpc.purgeMessages(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
             if (result.purgeCount > 0) {
+                btn.up('grid').getStore().remove(selectedRecords);
                 Util.successToast(Ext.String.format('Deleted {0} Messages'.t(), result.purgeCount));
             }
         }, me.token, mids);

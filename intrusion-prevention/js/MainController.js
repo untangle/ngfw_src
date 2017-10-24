@@ -235,7 +235,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         for( var i = 0; i < keys.length; i++){
             if( ( keys[i] == "rules" ) ||
                 ( keys[i] == "variables" ) ||
-                ( keys[i] == "activeGroups" && !this.wizardCompleted ) ){
+                ( keys[i] == "activeGroups") ){
                 continue;
             }
             changedDataSet[keys[i]] = settings[keys[i]];
@@ -247,7 +247,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return changedDataSet;
     },
 
-    setSettings: function () {
+    setSettings: function (additionalChanged) {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         if (!Util.validateForms(v)) {
@@ -256,9 +256,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
+        var changedData = me.getChangedData();
+        if(additionalChanged){
+            changedData= Ext.Object.merge(changedData,additionalChanged);
+        }
+
         Ext.Ajax.request({
             url: "/admin/download",
-            jsonData: me.getChangedData(),
+            jsonData: changedData,
             method: 'POST',
             params: {
                 type: "IntrusionPreventionSettings",

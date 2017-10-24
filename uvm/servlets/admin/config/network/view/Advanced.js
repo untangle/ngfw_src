@@ -472,6 +472,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
+                    //DST_LOCAL makes no sense on Access Rules because definitionally they are destined local
+                    //However, we used to allow users to add it so we keep this here so it renders correctly
+                    //but visible is false so it will not appear when creating new rules.
+                    {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: false},
                     {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
                     {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
                     {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},

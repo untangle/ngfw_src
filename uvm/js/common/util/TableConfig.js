@@ -265,13 +265,17 @@ Ext.define('TableConfig', {
             }, {
                 name: 'server_longitude'
             }, {
-                name: 'c2p_bytes'
+                name: 'c2p_bytes',
+                sortType: 'asInt'
             }, {
-                name: 'p2c_bytes'
+                name: 'p2c_bytes',
+                sortType: 'asInt'
             }, {
-                name: 's2p_bytes'
+                name: 's2p_bytes',
+                sortType: 'asInt'
             }, {
-                name: 'p2s_bytes'
+                name: 'p2s_bytes',
+                sortType: 'asInt'
             }, {
                 name: 'filter_prefix',
                 type: 'string',
@@ -749,13 +753,17 @@ Ext.define('TableConfig', {
             }, {
                 name: 'server_longitude'
             }, {
-                name: 'c2p_bytes'
+                name: 'c2p_bytes',
+                sortType: 'asInt'
             }, {
-                name: 'p2c_bytes'
+                name: 'p2c_bytes',
+                sortType: 'asInt'
             }, {
-                name: 's2p_bytes'
+                name: 's2p_bytes',
+                sortType: 'asInt'
             }, {
-                name: 'p2s_bytes'
+                name: 'p2s_bytes',
+                sortType: 'asInt'
             }, {
                 name: 'filter_prefix'
             }, {
@@ -1765,7 +1773,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'spam_blocker_lite_score'
+                name: 'spam_blocker_lite_score',
+                sortType: 'asFloat'
             }, {
                 name: 'spam_blocker_lite_is_spam'
             }, {
@@ -1775,7 +1784,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'spam_blocker_score'
+                name: 'spam_blocker_score',
+                sortType: 'asFloat'
             }, {
                 name: 'spam_blocker_is_spam'
             }, {
@@ -1785,7 +1795,8 @@ Ext.define('TableConfig', {
                 type: 'string',
                 convert: Converter.emailAction
             }, {
-                name: 'phish_blocker_score'
+                name: 'phish_blocker_score',
+                sortType: 'asFloat'
             }, {
                 name: 'phish_blocker_is_spam'
             }, {
@@ -2146,15 +2157,20 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'load_1'
+                name: 'load_1',
+                sortType: 'asFloat'
             }, {
-                name: 'load_5'
+                name: 'load_5',
+                sortType: 'asFloat'
             }, {
-                name: 'load_15'
+                name: 'load_15',
+                sortType: 'asFloat'
             }, {
-                name: 'cpu_user'
+                name: 'cpu_user',
+                sortType: 'asFloat'
             }, {
-                name: 'cpu_system'
+                name: 'cpu_system',
+                sortType: 'asFloat'
             }, {
                 name: 'mem_total',
                 sortType: 'asInt'
@@ -2626,9 +2642,11 @@ Ext.define('TableConfig', {
             },{
                 name: 'net_process'
             },{
-                name: 'rx_bytes'
+                name: 'rx_bytes',
+                sortType: 'asInt'
             },{
-                name: 'tx_bytes'
+                name: 'tx_bytes',
+                sortType: 'asInt'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -2695,26 +2713,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'rx_bytes',
-                renderer: function(value) {
-                    if ((value === undefined) || (value === null) || (value === '')) {
-                        return('');
-                    }
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             },{
                 header: 'TX Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'tx_bytes',
                 filter: Renderer.numericFilter,
-                renderer: function(value) {
-                    if ((value === undefined) || (value === null) || (value === '')) {
-                        return('');
-                    }
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             },{
                 header: 'Process'.t(),
                 width: Renderer.messageWidth,
@@ -2766,20 +2772,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'in_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             }, {
                 header: 'Out Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'out_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             }]
         },
         tunnel_vpn_events: {
@@ -2875,20 +2875,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'in_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             }, {
                 header: 'Out Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'out_bytes',
-                renderer: function(value) {
-                    var kb = value/1024;
-                    return (Math.round( kb*10 )/10).toString() + ' KB';
-                }
+                rtype: 'datasize'
             }]
         },
         interface_stat_events: {
@@ -3005,9 +2999,11 @@ Ext.define('TableConfig', {
             }, {
                 name: 'systems'
             }, {
-                name: 'hit_bytes'
+                name: 'hit_bytes',
+                sortType: 'asInt'
             }, {
-                name: 'miss_bytes'
+                name: 'miss_bytes',
+                sortType: 'asInt'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -3051,14 +3047,16 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'hit_bytes',
-                filter: Renderer.numericFilter
+                filter: Renderer.numericFilter,
+                rtype: 'datasize'
             }, {
                 header: 'Miss Bytes'.t(),
                 width: Renderer.sizeWidth,
                 flex: 1,
                 sortable: true,
                 dataIndex: 'miss_bytes',
-                filter: Renderer.numericFilter
+                filter: Renderer.numericFilter,
+                rtype: 'datasize'
             }]
         },
         captive_portal_user_events: {

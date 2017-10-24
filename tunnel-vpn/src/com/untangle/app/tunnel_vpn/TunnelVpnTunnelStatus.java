@@ -15,9 +15,9 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
 {
     private InetAddress serverAddress;
     private InetAddress localAddress;
-    private String tunnelName = "UNKNOWN";
-    private String stateInfo = "UNKNOWN";
-    private String stateLast = "UNKNOWN";
+    private String tunnelName;
+    private String stateInfo = STATE_DISCONNECTED;
+    private String stateLast = STATE_DISCONNECTED;
     private long connectStamp = 0;
     private long xmitTotal = 0;
     private long xmitLast = 0;
@@ -25,12 +25,16 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
     private long recvLast = 0;
     private int tunnelId = 0;
 
+    protected long restartCount = 0;
+    protected long restartStamp = 0;
+
     public static final String STATE_DISCONNECTED = "DISCONNECTED";
     public static final String STATE_CONNECTED = "CONNECTED";
 
-    public TunnelVpnTunnelStatus(int tunnelId)
+    public TunnelVpnTunnelStatus(int tunnelId, String tunnelName)
     {
         this.tunnelId = tunnelId;
+        this.tunnelName = tunnelName;
     }
 
 // THIS IS FOR ECLIPSE - @formatter:off
@@ -75,11 +79,21 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
             return (System.currentTimeMillis() - connectStamp * 1000);
         }
 
+        public void clearTunnelStatus()
+        {
+            stateInfo = STATE_DISCONNECTED;
+            connectStamp = 0;
+            xmitTotal = xmitLast = 0;
+            recvTotal = recvLast = 0;
+            restartCount = restartStamp = 0;
+        }
+
 // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toString()
     {
         String string = new String();
+        string += (" TUNNEL:" + tunnelName + "(" + Integer.toString(getTunnelId()) + ")");
         string += (" STAMP:" + Long.toString(connectStamp));
         string += (" SERVER:" + (serverAddress == null ? "x.x.x.x" : serverAddress.getHostAddress().toString()));
         string += (" LOCAL:" + (localAddress == null ? "x.x.x.x" : localAddress.getHostAddress().toString()));

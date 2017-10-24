@@ -20,7 +20,7 @@ def usage():
     """
     Show usage
     """
-    print "usage"
+    print("usage")
 
 def main(argv):
     """
@@ -65,12 +65,12 @@ def main(argv):
             default_interfaces = arg.split(",")
 
     if _debug == True:
-        print "app_id = " + app_id
-        print "_debug = ",  _debug
+        print("app_id = " + app_id)
+        print("_debug = ",  _debug)
 
     settings = intrusion_prevention.IntrusionPreventionSettings( app_id )
     if settings.exists() == False:
-        print "cannot find settings file"
+        print("cannot find settings file")
         sys.exit()
     settings.load()
 
