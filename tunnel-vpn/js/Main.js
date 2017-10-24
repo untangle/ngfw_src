@@ -22,7 +22,7 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
             tunnelProviderInstructions: '',
             tunnelUsernameHidden: true,
             tunnelPasswordHidden: true,
-            tunnelStatesData: []
+            tunnelStatusData: []
         },
         stores: {
             tunnels: {
@@ -35,8 +35,8 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
                 fields: [ 'index', 'name' ],
                 data: '{destinationTunnelData}'
             },
-            tunnelStatesList: {
-                data: '{tunnelStatesData}'
+            tunnelStatusList: {
+                data: '{tunnelStatusData}'
             }
         },
     },
