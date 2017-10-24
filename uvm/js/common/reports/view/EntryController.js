@@ -10,37 +10,10 @@ Ext.define('Ung.view.reports.EntryController', {
 
     refreshTimeout: null,
 
-    // colorPalette: [
-    //     // red
-    //     'B71C1C', 'C62828', 'D32F2F', 'E53935', 'F44336', 'EF5350', 'E57373', 'EF9A9A',
-    //     // pink
-    //     '880E4F', 'AD1547', 'C2185B', 'D81B60', 'E91E63', 'EC407A', 'F06292', 'F48FB1',
-    //     // purple
-    //     '4A148C', '6A1B9A', '7B1FA2', '8E24AA', '9C27B0', 'AB47BC', 'BA68C8', 'CE93D8',
-    //     // blue
-    //     '0D47A1', '1565C0', '1976D2', '1E88E5', '2196F3', '42A5F5', '64B5F6', '90CAF9',
-    //     // teal`
-    //     '004D40', '00695C', '00796B', '00897B', '009688', '26A69A', '4DB6AC', '80CBC4',
-    //     // green
-    //     '1B5E20', '2E7D32', '388E3C', '43A047', '4CAF50', '66BB6A', '81C784', 'A5D6A7',
-    //     // limE
-    //     '827717', '9E9D24', 'AFB42B', 'C0CA33', 'CDDC39', 'D4E157', 'DCE775', 'E6EE9C',
-    //     // yellow
-    //     'F57F17', 'F9A825', 'FBC02D', 'FDD835', 'FFEB3B', 'FFEE58', 'FFF176', 'FFF59D',
-    //     // orange
-    //     'E65100', 'EF6C00', 'F57C00', 'FB8C00', 'FF9800', 'FFA726', 'FFB74D', 'FFCC80',
-    //     // brown
-    //     '3E2723', '4E342E', '5D4037', '6D4C41', '795548', '8D6E63', 'A1887F', 'BCAAA4',
-    //     // grey
-    //     '212121', '424242', '616161', '757575', '9E9E9E', 'BDBDBD', 'E0E0E0', 'EEEEEE',
-    // ],
 
     onAfterRender: function () {
         var me = this, vm = this.getViewModel(),
             dataGrid = this.getView().down('#currentData');
-
-        // set the context (Admin or Reports)
-        vm.set('context', Ung.app.servletContext);
 
         /**
          * each time report selection changes
@@ -59,7 +32,7 @@ Ext.define('Ung.view.reports.EntryController', {
             // }
 
             // check if widget in admin context
-            if (Ung.app.servletContext === 'admin') {
+            if (Ung.app.context === 'ADMIN') {
                 // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
@@ -106,23 +79,12 @@ Ext.define('Ung.view.reports.EntryController', {
                     me.reset();
                 }
             }, 100);
-
-
-
-
-            // delay a bit the valid form check so the hidden/visible fields are set
-            // Ext.defer(function () {
-            //     if (!me.getView().down('form').isValid()) {
-            //         console.log('invalid');
-            //         vm.set('f_activeReportCard', 'invalidreport');
-            //     }
-            // }, 100);
         });
 
         // watch since date switching and reload the report
         vm.bind('{sinceDate.value}', function () {
             // vm.set({
-            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
+            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
             //     f_enddate: null
             // });
             me.reload();
@@ -131,7 +93,7 @@ Ext.define('Ung.view.reports.EntryController', {
         // watch custom range switch on/off
         vm.bind('{r_customRangeCk.value}', function (checked) {
             // vm.set({
-            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
+            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
             //     f_enddate: null
             // });
             if (checked) {
@@ -389,7 +351,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         if (!vm.get('r_customRangeCk.value')) {
             vm.set({
-                f_startdate: Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
+                f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
                 f_enddate: null
             });
         }

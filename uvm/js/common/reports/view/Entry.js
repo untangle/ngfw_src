@@ -111,7 +111,7 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
                     text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
-                    hidden: '{context !== "admin" || eEntry}',
+                    hidden: '{context !== "ADMIN" || eEntry}',
                     disabled: '{fetching}'
                 },
                 handler: 'dashboardAddRemove'
@@ -134,7 +134,7 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{!entry || eEntry}',
+                    hidden: '{!entry || eEntry || context !== "ADMIN"}',
                     disabled: '{fetching}'
                 },
                 handler: 'editEntry'

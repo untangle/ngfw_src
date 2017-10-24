@@ -40,7 +40,7 @@ Ext.define('Ung.cmp.DateRangePicker', {
                     value: me.startDate,
                     showToday: false,
                     margin: '5 5 0 5',
-                    maxDate: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
+                    maxDate: Util.serverToClientDate(new Date(Util.getMilliseconds())),
                     listeners: {
                         select: function (el, date) {
                             me.startDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
@@ -75,7 +75,7 @@ Ext.define('Ung.cmp.DateRangePicker', {
                     value: me.endDate,
                     showToday: false,
                     margin: '5 5 0 0',
-                    maxDate: Util.serverToClientDate(new Date(rpc.systemManager.getMilliseconds())),
+                    maxDate: Util.serverToClientDate(new Date(Util.getMilliseconds())),
                     listeners: {
                         select: function (el, date) {
                             me.endDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
@@ -153,7 +153,7 @@ Ext.define('Ung.cmp.DateRangePicker', {
     setValue: function () {
         var me = this, value;
         if (!me.endDate) {
-            me.endDate = Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000)));
+            me.endDate = Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/60000) * 60000)));
         }
         value = Ext.Date.format(me.startDate, 'Y-m-d') + ', ' +
                 Ext.Date.format(me.startDate, 'h:i A') + ' \u0020\u2794\u0020 ' +

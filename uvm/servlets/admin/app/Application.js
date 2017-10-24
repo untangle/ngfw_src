@@ -14,6 +14,8 @@ Ext.define('Ung.Application', {
 
     mainView: 'Ung.view.main.Main',
 
+    context: 'ADMIN', // set the context
+
     launch: function () {
         window.document.title = rpc.companyName + (rpc.hostname ? ' - ' + rpc.hostname : '');
         Ext.get('app-loader').destroy();

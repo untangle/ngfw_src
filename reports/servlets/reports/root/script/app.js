@@ -67,7 +67,7 @@ Ext.define('Ung.controller.Global', {
         routes: {
             '': 'onMain',
             ':category': 'onMain',
-            ':category/:entry': 'onMain'
+            ':category/:entry': { action: 'onMain', conditions: { ':entry': '(.*)' } },
         }
     },
 
@@ -92,6 +92,7 @@ Ext.define('Ung.Application', {
     controllers: ['Global'],
     defaultToken : '',
     mainView: 'Ung.view.Main',
+    context: 'REPORTS',
     launch: function () {
         try {
             rpc.reportsManager = rpc.ReportsContext.reportsManager();
