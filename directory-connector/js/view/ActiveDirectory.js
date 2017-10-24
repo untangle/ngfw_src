@@ -38,10 +38,6 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
-                // active columns for:
-                // get users
-                // get group
-
                 listProperty: 'settings.activeDirectorySettings.servers.list',
                 ruleJavaClass: 'com.untangle.app.directory_connector.ActiveDirectoryServer',
 
@@ -143,15 +139,21 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 {
                     xtype: 'textfield',
                     fieldLabel: 'Domain'.t(),
-                    bind: '{record.domain}'
+                    bind: '{record.domain}',
+                    emptyText: '[no domain]'.t(),
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: 'Host'.t(),
-                    bind: '{record.LDAPHost}'
+                    bind: '{record.LDAPHost}',
+                    emptyText: '[no host]'.t(),
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: 'Port'.t(),
-                    bind: '{record.LDAPPort}'
+                    bind: '{record.LDAPPort}',
+                    emptyText: '[no port]'.t(),
+                    allowBlank: false
                 },{
                     xtype: 'checkbox',
                     fieldLabel: 'Secure'.t(),
@@ -203,11 +205,14 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     xtype: 'textfield',
                     fieldLabel: 'Authentication Login'.t(),
                     bind: '{record.superuser}',
+                    emptyText: '[no authentication login]'.t(),
+                    allowBlank: false
                 }, {
                     xtype: 'textfield',
                     inputType: 'password',
                     fieldLabel: 'Authentication Password'.t(),
-                    bind: '{record.superuserPass}'
+                    bind: '{record.superuserPass}',
+                    allowBlank: false
                 },{
                     xtype: 'container',
                     layout: 'column',

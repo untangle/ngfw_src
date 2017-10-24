@@ -324,6 +324,14 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditorCo
     onApply: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!this.action) {
+            for (var fieldName in vm.get('record').modified) {
+                v.record.set(fieldName, vm.get('record').get(fieldName));
+            }
+        }else if (this.action === 'add') {
+            this.mainGrid.getStore().add(v.record);
+        }
+
         v.query('[itemId=unoufiltergrid]').forEach( function( grid ){
             var ouFiltersData = vm.get('record').get('OUFilters');
             var ouFilters = [];
