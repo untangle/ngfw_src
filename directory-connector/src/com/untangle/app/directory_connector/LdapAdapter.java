@@ -356,7 +356,6 @@ abstract class LdapAdapter
         throws Exception
     {
 
-        // ActiveDirectorySettings settings = getSettings();
         ActiveDirectoryServer settings = getSettings();
 
         try {
@@ -513,7 +512,6 @@ abstract class LdapAdapter
     protected final DirContext createSuperuserContext()
         throws CommunicationException, AuthenticationException, NamingException
     {
-        // ActiveDirectorySettings settings = getSettings();
         ActiveDirectoryServer settings = getSettings();
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),

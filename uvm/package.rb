@@ -120,7 +120,7 @@ JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
 
 ## SCSS
 ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
-ScssBuilder.new(uvm_lib, "reports-all", "./uvm/js/common/reports/sass", "script/common")
+ScssBuilder.new(uvm, "reports-all", "./uvm/js/common/reports/sass", "script/common")
 
 ## i18n
 poFiles = FileList["./i18ntools/po/**/*.po"]

@@ -16,8 +16,6 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             v = this.getView(),
             vm = this.getViewModel();
 
-        // vm.set('nextBtnText', this.getView().getLayout().getNext().getTitle());
-
         Ext.MessageBox.wait( "Determining recommended settings...".t(), "Please wait".t() );
         Ext.Ajax.request({
             url: "/admin/download",
@@ -194,7 +192,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             vm.set('settings', settings);
 
             var app = this.getView().up('#appCard');
-            app.getController().setSettings();
+            app.getController().setSettings({activeGroups: activeGroups});
 
             app.down('appstate').down('button[cls=power-btn]').click();
         }

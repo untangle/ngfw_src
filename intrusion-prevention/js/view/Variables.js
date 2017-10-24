@@ -20,6 +20,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
 
     emptyRow: {
         'variable': '',

@@ -79,7 +79,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
             target.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
         } else {
-            target.setHost(host);
+            target.setHost(host.split(":")[0]);
         }
 
         // set the path of the capture handler

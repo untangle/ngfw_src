@@ -11,6 +11,7 @@ import ipaddr
 import inspect
 import os
 import base64
+import calendar
 from datetime import datetime
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -20,9 +21,13 @@ import remote_control
 import test_registry
 import global_functions
 from global_functions import uvmContext
+import email
+from HTMLParser import HTMLParser
+from htmlentitydefs import name2codepoint
 
 default_policy_id = 1
 app = None
+webApp = None
 can_relay = None
 can_syslog = None
 orig_settings = None
@@ -30,6 +35,17 @@ orig_mailsettings = None
 syslog_server_host = ""
 test_email_address = ""
 # pdb.set_trace()
+
+class ContentIdParser(HTMLParser):
+    content_ids = []
+    cid_src_regex = re.compile(r'^cid:(.*)')
+    def handle_startendtag(self, tag, attrs):
+        if tag == "img":
+            for attr in attrs:
+                if attr[0] == "src":
+                    matches = self.cid_src_regex.match(attr[1])
+                    if matches is not None and len(matches.groups()) > 0:
+                        self.content_ids.append(matches.group(1))                    
 
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
@@ -147,6 +163,9 @@ class ReportsTests(unittest2.TestCase):
         reportSettings = app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
+        if (uvmContext.appManager().isInstantiated(self.webAppName())):
+            raise Exception('app %s already instantiated' % self.webAppName())
+        webApp = uvmContext.appManager().instantiate(self.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
@@ -240,6 +259,41 @@ class ReportsTests(unittest2.TestCase):
             
         assert(found_count == len(strings_to_find))
 
+    def test_050_export_report_events(self):
+        """
+        Test export of events to CSV file
+        """
+        # Delete any old csv file if it exists
+        csv_tmp = "/tmp/test_50_export_report_events.csv"
+        subprocess.call(('rm %s' % csv_tmp), shell=True)
+
+        remote_control.run_command("wget -q -O /dev/null http://test.untangle.com")
+        remote_control.run_command("wget -q -O /dev/null http://www.untangle.com")
+        remote_control.run_command("wget -q -O /dev/null http://news.google.com")
+        remote_control.run_command("wget -q -O /dev/null http://www.yahoo.com")
+        remote_control.run_command("wget -q -O /dev/null http://www.reddit.com")
+        app.flushEvents()
+        time.sleep(5)
+        
+        # Get CSV export of events
+        current_epoch = calendar.timegm(time.gmtime())
+        current_epoch += 1200  # add twenty minutes to get all events
+        current_epoch *= 1000
+        an_hour_ago_epoch = current_epoch - 360000 # one day milliseconds
+        post_data = "type=eventLogExport"  # CSV file title/name
+        post_data += "&arg1=Web_Filter-download"
+        post_data += '&arg2={"javaClass":"com.untangle.app.reports.ReportEntry","displayOrder":1010,"description":"Shows+all+scanned+web+requests.","units":null,"orderByColumn":null,"title":"All+Web+Events","colors":null,"enabled":true,"defaultColumns":["time_stamp","c_client_addr","s_server_addr","s_server_port","username","hostname","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category"],"pieNumSlices":null,"seriesRenderer":null,"timeDataDynamicAggregationFunction":null,"pieStyle":null,"pieSumColumn":null,"timeDataDynamicAllowNull":null,"orderDesc":null,"table":"http_events","approximation":null,"timeDataInterval":null,"timeStyle":null,"timeDataDynamicValue":null,"readOnly":true,"timeDataDynamicLimit":null,"timeDataDynamicColumn":null,"pieGroupColumn":null,"timeDataColumns":null,"textColumns":null,"category":"Web+Filter","conditions":[],"uniqueId":"web-filter-SRSZBBKXLN","textString":null,"type":"EVENT_LIST","localizedTitle":"All+Web+Events","localizedDescription":"Shows+all+scanned+web+requests.","slug":"all-web-events","url":"web-filter/all-web-events","icon":"fa-list-ul","_id":"Ung.model.Report-390"}'
+        post_data += "&arg3="
+        post_data += "&arg4=time_stamp,c_client_addr,s_server_addr,s_server_port,username,hostname,host,uri,web_filter_blocked,web_filter_flagged,web_filter_reason,web_filter_category"
+        post_data += "&arg5=" + str(an_hour_ago_epoch)  # epoch start time
+        post_data += "&arg6=" + str(current_epoch)  # epach end time
+        # print post_data
+        
+        subprocess.call(("wget -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
+        result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
+        print "Result of wc on %s : %s" % (csv_tmp,str(result))
+        assert(result > 3)
+
     def test_100_email_report_admin(self):
         """
         The "default" configuration test:
@@ -280,6 +334,23 @@ class ReportsTests(unittest2.TestCase):
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
+
+        ## Verify that all images are intact.
+        fp = open("/tmp/test_100_email_report_admin_file")
+        msg = email.message_from_file(fp)
+        fp.close()
+
+        mime_content_ids = []
+        parser = ContentIdParser();
+        for part in msg.walk():
+            if part.get_content_maintype() == "image":
+                for index, key in enumerate(part.keys()):
+                    if key == "Content-ID":
+                        mime_content_ids.append(part.values()[index])
+            elif part.get_content_maintype() == "text":
+                parser.feed(part.get_payload(decode=True))
+
+        assert(len(parser.content_ids) == len(mime_content_ids))
 
     def test_101_email_admin_override_custom_report(self):
         """
@@ -456,6 +527,9 @@ class ReportsTests(unittest2.TestCase):
         global app
         if app != None:
             app.setSettings(orig_settings)
+        if webApp != None:
+            uvmContext.appManager().destroy( webApp.getAppSettings()["id"] )
+            webApp = None
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
         app = None

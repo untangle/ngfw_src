@@ -51,7 +51,16 @@ Ext.define('Ung.cmp.GridController', {
         this.simpleEditorWin(null);
     },
 
-    regexId :  /^([^_]).*(id|Id)$/,
+    /**
+     * Copy a record and mark it as new.
+     *
+     * If specified in the view, copyId specifies a unique identifier to update.
+     * This identifier defaults to the value of -1 unless copyIdPreserve is specified
+     * where the current value is preserved (e.g.,-1 is bad valuefor snort rules).
+     *
+     * If specified, the copyAppendField is a text field that will have thhe " (copy)"
+     * identifier appended.
+     */
     copyRecord: function (view, rowIndex, colIndex, item, e, record) {
         var me = this,
             v = me.getView(),
@@ -63,16 +72,12 @@ Ext.define('Ung.cmp.GridController', {
         newRecord.data._id = newRecordData_Id;
         newRecord.set('markedForNew', true);
 
-        var id = null;
-        for( var key in record.data){
-            var idMatches = me.regexId.exec( key );
-            if( idMatches ) {
-                var value = record.get(key);
-                if( isNaN(value) == false ){
-                    newRecord.set(key, -1);
-                }
-                break;
+        if( v.copyId ){
+            var value = -1;
+            if( v.copyIdPreserve ){
+                value = newRecord.get( v.copyId );
             }
+            newRecord.set( v.copyId, value );
         }
 
         if( v.copyAppendField ){

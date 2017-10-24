@@ -89,6 +89,7 @@ public class License implements Serializable
         this.valid = orig.valid;
         this.status = orig.status;
         this.seats = orig.seats;
+        this.seatsDisplay = orig.seatsDisplay;
     }
     
     public License( String name, String uid, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid, String status )

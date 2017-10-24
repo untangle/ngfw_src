@@ -12,7 +12,7 @@ class Languages:
     """
     Languages
     """
-    file_name = "languages.js"
+    file_name = "languages.json"
 
     def __init__(self):
         """

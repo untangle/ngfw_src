@@ -133,7 +133,7 @@ public class Registration extends HttpServlet
             
         } else if (action.equals("login")) {
             String eventAction;
-            
+
             logger.debug( "register user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true );
 
@@ -150,6 +150,9 @@ public class Registration extends HttpServlet
             /* If the hostname was specified and is not already known - set it */
             if ( hostname != null )
                 entry.setHostnameDirectoryConnector( hostname );
+        } else if (action.equals("groupcache")) {
+            logger.debug( "refresh groupcache: " + username + " clientIp: " + clientIp );
+            directoryConnector.refreshGroupCache();
         }
         
     }

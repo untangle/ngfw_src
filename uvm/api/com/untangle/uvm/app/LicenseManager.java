@@ -23,6 +23,13 @@ public interface LicenseManager
     public License getLicense( String productIdentifier );
 
     /**
+     * Get the status of a license on a product.
+     * if exactMatch is true it looks for an exact match of productIndentifier
+     * if exactMatch is false, it will accept any license whose identifier starts with productIndentifier
+     */
+    public License getLicense( String productIdentifier, boolean exactMatch );
+    
+    /**
      * Checks is a the license for a given product exists and is currently valid
      */
     public boolean isLicenseValid( String productIdentifier );

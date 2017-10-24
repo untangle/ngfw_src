@@ -254,7 +254,7 @@ Ext.define('Ung.controller.Global', {
                                     // policyId: policyId,
                                     instance: appInstance,
                                     props: appProps,
-                                    license: policy.get('licenseMap').map[app],
+                                    license: policy.get('licenseMap')[app],
                                     urlName: app
                                 }
                             },
