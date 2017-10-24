@@ -223,9 +223,15 @@ def _write_login_form(req, title, host, error_msg):
     if not type(host) is str:
         host = cgi.escape(host).encode("utf-8")
 
-    default_username = get_uvm_settings_item('admin','defaultUsername')
-    if default_username == None:
-        default_username = "admin"
+    try:
+        default_username = get_uvm_settings_item('admin','defaultUsername')
+        if default_username == None:
+            default_username = "admin"
+        else:
+            default_username = str(default_username)
+    except:
+        default_username = ""
+
     focus_field_id = "password"
     if default_username == "":
         focus_field_id = "username"
