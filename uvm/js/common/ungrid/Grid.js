@@ -11,6 +11,8 @@ Ext.define('Ung.cmp.Grid', {
         import: { text: 'Import'.t(), iconCls: 'fa fa-arrow-down', handler: 'importData' },
         export: { text: 'Export'.t(), iconCls: 'fa fa-arrow-up', handler: 'exportData' },
         replace: { text: 'Import'.t(), iconCls: 'fa fa-arrow-down', handler: 'replaceData' },
+        refresh: { text: 'Refresh'.t(), iconCls: 'fa fa-refresh', handler: 'refresh'},
+        reset: { text: 'Reset View'.t(), iconCls: 'fa fa-undo', handler: 'resetView'}
         // moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
         // moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
     },
