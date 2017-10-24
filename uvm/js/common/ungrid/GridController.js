@@ -505,6 +505,55 @@ Ext.define('Ung.cmp.GridController', {
         return true;
     },
 
+    refresh: function(){
+        var view = this.getView(),
+            parentController = null;
+
+        // In parent controller, look for method as <itemId>Refresh (e.g.,wanStatusRefresh)
+        // or default to just refresh.
+        var method = ( view.itemId ? view.itemId  + 'Refresh': 'refresh' );
+
+        while( view != null){
+            parentController = view.getController();
+
+            if( parentController && parentController[method]){
+                break;
+            }
+            view = view.up();
+        }
+        if (!parentController) {
+            console.log('Unable to get the extra controller for method ' + method);
+            return;
+        }
+
+        parentController[method].apply(parentController, arguments);
+
+    },
+
+    resetView: function(){
+        var view = this.getView(),
+            store = view.getStore();
+
+        Ext.state.Manager.clear(view.stateId);
+        store.getSorters().removeAll();
+
+        var defaultDataIndex = null;
+        view.initialConfig.columns.forEach( Ext.bind(function( column ){
+            if(!column.hidden && defaultDataIndex == null){
+                defaultDataIndex = column.dataIndex;
+            }
+        }));
+        if(defaultDataIndex != null){
+            store.sort(defaultDataIndex, 'ASC');
+        }
+
+        if(view.down('ungridfilter')){
+            view.down('ungridfilter').setValue('');
+        }
+        store.clearFilter();
+        view.reconfigure(null, view.initialConfig.columns);
+    },
+
     columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
         var rtype = view.grid.getColumns()[columnIndex].rtype;
         if(rtype != null){
