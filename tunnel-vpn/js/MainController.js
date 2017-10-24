@@ -8,27 +8,42 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         }
     },
 
-    getTunnelStates: function () {
-        var grid = this.getView().down('#tunnelStates'),
+    getTunnelStatus: function () {
+        var grid = this.getView().down('#tunnelStatus'),
             vm = this.getViewModel();
         grid.setLoading(true);
-        this.getView().appManager.getTunnelStates(function (result, ex) {
+        this.getView().appManager.getTunnelStatusList(function (result, ex) {
             grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             if ( result == null )
-                vm.set('tunnelStatesData', []);
+                vm.set('tunnelStatusData', []);
             else
-                vm.set('tunnelStatesData', result.list);
+                vm.set('tunnelStatusData', result.list);
         });
+    },
+
+    recycleTunnel: function(view, row, colIndex, item, e, record) {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        var tunnelApp = rpc.appManager.app('tunnel-vpn');
+
+        v.setLoading('Recycling...'.t());
+        tunnelApp.recycleTunnel(Ext.bind(function(result, ex) {
+        if (ex) { Util.handleException(ex); return; }
+            // this gives the app a couple seconds to process the disconnect before we refresh the list
+            var timer = setTimeout(function() {
+                me.getTunnelStatus();
+                v.setLoading(false);
+            },2000);
+        }, this), record.get("tunnelId"));
     },
 
     getSettings: function () {
         var me = this,
-            v = me.getView(), 
+            v = me.getView(),
             vm = me.getViewModel();
         v.setLoading(true);
 
-        this.getTunnelStates();
+        this.getTunnelStatus();
 
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
@@ -75,7 +90,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                 providerInstructions: '<li>' + 'Log in to "My account" at expressvpn.com'.t() + '<br/>' +
                     '<li>' + 'Click on "Set up ExpressVPN"'.t() + '<br/>' +
                     '<li>' + 'Click on "Manual Configuration" and choose "OpenVPN"'.t() + '<br/>' +
-                    '<li>' + 'Provide the username/password provided by ExpressVPN'.t() + '<br/>' +  
+                    '<li>' + 'Provide the username/password provided by ExpressVPN'.t() + '<br/>' +
                     '<li>' + 'NOTE: This is not your ExpressVPN account username/password'.t() + '<br/>' +
                     '<li>' + 'Choose your server and download the corresponding .ovpn file'.t() + '<br/>' +
                     '<li>' + 'Upload the .ovpn file'.t() + '<br/>'
@@ -381,7 +396,7 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
 
             var record = vm.get('record');
             if( ( oldValue != null ) &&
-                ( newValue != oldValue ) && 
+                ( newValue != oldValue ) &&
                 ( ( typeof record.modified.provider == undefined ) || record.modified.provider != newValue ) ){
                 fileButton.setValidation('Provider changed');
             }
@@ -408,7 +423,8 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
     },
 
     defaultTunnelName: 'tunnel',
-    updateTunnelName: function(){
+
+    updateTunnelName: function() {
         var me = this,
             v = me.getView(),
             tunnelName = v.down('[name=tunnelName]'),
@@ -424,4 +440,3 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
         me.defaultTunnelName = newDefaultTunnelName;
     }
 });
-

@@ -180,7 +180,6 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         List<String> ouFilters = settings.getOUFilters();
 
         for( String ouFilter: ouFilters ){
-            logger.warn("getSearchBases: ouFilter=" + ouFilter );
             if (ouFilter != null && !("".equals(ouFilter))){
                 bases.add(ouFilter + "," + domainComponents(settings.getDomain()));
             }
@@ -262,7 +261,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     public List<GroupEntry> listAllGroups( boolean fetchMembersOf ) 
         throws ServiceUnavailableException
     {
-        try {           
+        try {
             List<Map<String, String[]>> list =
                 queryAsSuperuser(getSearchBases(),
                                  getListAllGroupsSearchString(),
@@ -368,7 +367,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             logger.debug( "The group '" + group + "' doesn't exist.");
             return new ArrayList<UserEntry>();
         }
-        
+
         try {
             List<Map<String, String[]>> list =
                 queryAsSuperuser(getSearchBases(),

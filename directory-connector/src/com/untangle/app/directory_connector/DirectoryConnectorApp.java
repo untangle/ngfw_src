@@ -70,8 +70,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Directory Connector app constructor
      *
-     * @param appSettings Application settings
-     * @param appProperties Application properties
+     * @param appSettings
+     *      Application settings
+     * @param appProperties
+     *      Application properties
      */
     public DirectoryConnectorApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
@@ -84,7 +86,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      * * API
      * * Old API
      *
-     * @param isPermanentTransition true if permanant transition
+     * @param isPermanentTransition
+     *      true if permanant transition
      */
     @Override
     protected void postStart( boolean isPermanentTransition )
@@ -101,7 +104,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      * * API
      * * Old API
      *
-     * @param isPermanentTransition true if permanant transition
+     * @param isPermanentTransition
+     *      true if permanant transition
      */
     @Override
     protected void postStop( boolean isPermanentTransition )
@@ -154,6 +158,11 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 setSettings( readSettings );
             }
 
+            if ( readSettings.getVersion() < 3 ) {
+                convertV2toV3Settings( readSettings );
+                this.setSettings( readSettings );
+            }
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -164,7 +173,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Return connectors.
      *
-     * @return PipelineConnector[]  Array of connectors
+     * @return
+     *      PipelineConnector[]  Array of connectors
      */
     @Override
     protected PipelineConnector[] getConnectors()
@@ -225,7 +235,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get Active Directory manager.
      *
-     * @return Active Directory manager
+     * @return
+     *      Active Directory manager
      */
     public ActiveDirectoryManagerImpl getActiveDirectoryManager()
     {
@@ -235,7 +246,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get RADIUS manager.
      *
-     * @return RADIUS manager
+     * @return
+     *      RADIUS manager
      */
     public RadiusManagerImpl getRadiusManager()
     {
@@ -245,7 +257,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get Google manager.
      *
-     * @return Google  manager
+     * @return
+     *      Google manager
      */
     public GoogleManagerImpl getGoogleManager()
     {
@@ -255,7 +268,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all users from all AD servers for rule condtions
      *
-     * @returns List of users.
+     * @returns
+     *      List of users.
      */
     public List<UserEntry> getRuleConditonalUserEntries()
     {
@@ -283,11 +297,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             logger.warn(e.getMessage());
         }
 
-        /* add all "standard" users */
-        users.addFirst(new UserEntry("[unauthenticated]", "", "", ""));
-        users.addFirst(new UserEntry("[authenticated]", "", "", ""));
-        users.addFirst(new UserEntry("[any]", "", "", ""));
-
         return users;
     }
 
@@ -296,7 +305,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all groups from all AD for rule conditions
      *
-     * @returns List of groups.
+     * @returns
+     *      List of groups.
      */
     public List<GroupEntry> getRuleConditionalGroupEntries()
     {
@@ -324,7 +334,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all domains from all AD for rule conditions
      *
-     * @returns List of groups.
+     * @returns
+     *      List of groups.
      */
     public List<String> getRuleConditionalDomainEntries()
     {
@@ -338,7 +349,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns true if user authenticated.
+     * @returns 
+     *      true if user authenticated.
      */
     public boolean authenticate(String username, String pwd)
     {
@@ -355,7 +367,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns true if user authenticated.
+     * @returns
+     *      true if user authenticated.
      */
     public boolean activeDirectoryAuthenticate(String username, String pwd)
     {
@@ -376,7 +389,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns true if user authenticated.
+     * @returns
+     *      true if user authenticated.
      */
     public boolean radiusAuthenticate(String username, String pwd)
     {
@@ -397,7 +411,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns true if user authenticated.
+     * @returns
+     *      true if user authenticated.
      */
     public boolean anyAuthenticate(String username, String pwd)
     {
@@ -422,6 +437,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
 
     /**
      * Determine if user is part of a domain
+     *
+     * @return
+     *      true if user is in specified domain, false otherwise
      */
     public boolean isMemberOfDomain(String user, String domain){
         if (!isLicenseValid()) {
@@ -435,9 +453,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *
      * @param user
      *      Username to check.
-     * @returns true if user is member, fale otherwise.
+     * @returns
+     *      String list of domains this username belongs in.
      */
-    // membeOfDomain makes more sense
     public List<String> memberOfDomain(String user)
     {
         if (!isLicenseValid()) {
@@ -454,7 +472,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to check.
      * @param group
      *      Name of group to check.
-     * @returns true if user is member, fale otherwise.
+     * @returns
+     *      true if user is member, false otherwise.
      */
     public boolean isMemberOfGroup(String user, String group)
     {
@@ -470,7 +489,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *
      * @param user
      *      Username to check.
-     * @returns true if user is member, fale otherwise.
+     * @returns
+     *      String list of groups  this username belongs in.
      */
     public List<String> memberOfGroup(String user)
     {
@@ -479,6 +499,23 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         }
 
         return this.groupManager.memberOfGroup(user);
+    }
+
+    /**
+     * Determine if user is part of any group.
+     *
+     * @param user
+     *      Username to check.
+     * @returns
+     *      String list of groups  this username belongs in.
+     */
+    public List<String> memberOfGroup(String user, String domain)
+    {
+        if (!isLicenseValid()) {
+            return new LinkedList<String>();
+        }
+
+        return this.groupManager.memberOfGroup(user, domain);
     }
 
     /**
@@ -492,7 +529,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Determine if Google drive is configured.
      *
-     * @returns true if Google Drive is configured, false otherwise.
+     * @returns
+     *      true if Google Drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
@@ -531,6 +569,47 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          * On upgrade, keep the old behavior
          */
         settings.setApiManualAddressAllowed( true );
+    }
+
+    /**
+     * Convert v2 to v3 settings.
+     *
+     * Namely, Active Directory server from a singleton to first entry in the new list.
+     *
+     * @param settings
+     *      Settings to convert.
+     */
+    private void convertV2toV3Settings( DirectoryConnectorSettings settings )
+    {
+        if (settings.getVersion() != 2) {
+            logger.warn("Invalid version to convert: " + settings.getVersion());
+            return;
+        }
+        settings.setVersion(3);
+
+        ActiveDirectorySettings adSettings = settings.getActiveDirectorySettings();
+        if(adSettings.getSuperuser() != null ){
+            ActiveDirectoryServer adServer = new ActiveDirectoryServer(
+                adSettings.getSuperuser(),
+                adSettings.getSuperuserPass(),
+                adSettings.getDomain(),
+                adSettings.getLDAPHost(),
+                adSettings.getLDAPPort(),
+                adSettings.getLDAPSecure(),
+                adSettings.getOUFilters()
+            );
+            adServer.setEnabled( adSettings.getEnabled() );
+            adSettings.setSuperuser(null);
+            adSettings.setSuperuserPass(null);
+            adSettings.setDomain(null);
+            adSettings.setLDAPHost(null);
+            adSettings.setLDAPPort(-1);
+            adSettings.setOUFilters(null);
+
+            LinkedList<ActiveDirectoryServer> adServers = new LinkedList<ActiveDirectoryServer>();
+            adServers.push(adServer);
+            adSettings.setServers( adServers );
+        }
     }
 
     /**
