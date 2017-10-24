@@ -18,13 +18,17 @@ Ext.define('Ung.view.reports.ReportsController', {
 
     onInit: function () {
         var me = this, vm = me.getViewModel(), path = '', node;
+
+        // set the context (ADMIN or REPORTS)
+        vm.set('context', Ung.app.context);
+
         me.getView().setLoading(false);
 
         me.buildTablesStore();
         vm.bind('{hash}', function (hash) {
             if (!hash) { me.resetView(); return; }
 
-            if (Ung.app.servletContext === 'reports') {
+            if (Ung.app.context === 'REPORTS') {
                 path = '/reports/' + window.location.hash.replace('#', '');
                 node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#', ''));
             } else {
@@ -64,7 +68,7 @@ Ext.define('Ung.view.reports.ReportsController', {
             Ext.MessageBox.wait('Data is fetching...'.t(), 'Please wait'.t(), { text: '' });
             return false;
         }
-        if (Ung.app.servletContext === 'reports') {
+        if (Ung.app.context === 'REPORTS') {
             Ung.app.redirectTo('#' + node.get('url'));
         } else {
             Ung.app.redirectTo('#reports/' + node.get('url'));

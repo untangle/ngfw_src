@@ -77,7 +77,7 @@
                     Ext.application({
                         extend: 'Ung.Application',
                         namespace: 'Ung',
-                        servletContext: 'admin'
+                        context: 'ADMIN'
                     });
                 });
             });

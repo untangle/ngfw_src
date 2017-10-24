@@ -9,10 +9,10 @@ Ext.define('Ung.view.reports.Reports', {
 
     viewModel: {
         data: {
+            context: null,
             fetching: false,
             selection: null,
-            editing: false,
-            eEntry: null
+            editing: false
         }
     },
 
@@ -112,13 +112,17 @@ Ext.define('Ung.view.reports.Reports', {
             iconCls: 'fa fa-magic fa-lg',
             flex: 1,
             scale: 'medium',
-            handler: 'newReport'
-        }]
+            handler: 'newReport',
+            hidden: true,
+            bind: {
+                hidden: '{context !== "ADMIN"}'
+            }
+        }],
 
-        // responsiveConfig: {
-        //     wide: { hidden: false },
-        //     tall: { hidden: true }
-        // }
+        responsiveConfig: {
+            wide: { hidden: false },
+            tall: { hidden: true }
+        }
     }, {
         region: 'center',
         itemId: 'cards',

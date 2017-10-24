@@ -92,12 +92,12 @@ Ext.define('Ung.view.reports.EntryModel', {
         },
         // f_startdate: function (get) {
         //     if (!get('r_customRangeCk.value')) {
-        //         return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
+        //         return Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
         //     }
         // },
         // f_startdate: {
         //     get: function (get) {
-        //         return Util.serverToClientDate(new Date((Math.floor(rpc.systemManager.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
+        //         return Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
         //     },
         //     // set: function (date) {}
         // },
