@@ -90,7 +90,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         });
 
         Ext.Array.each(me.tableConfig.columns, function (column) {
-            if (!Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
+            if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
                 column.hidden = true;
             }
             // TO REVISIT THIS BECASE OF STATEFUL
