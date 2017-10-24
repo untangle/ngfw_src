@@ -13,7 +13,7 @@ public interface GeographyManager
         public double longitude;
     }
 
-    boolean checkForDatabaseUpdate();
+    boolean checkForDatabaseUpdate(boolean loadFlag);
 
     String getCountryName(String netAddress);
 
