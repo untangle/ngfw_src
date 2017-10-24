@@ -88,6 +88,8 @@ Ext.define('Ung.config.events.view.Syslog', {
         listProperty: 'settings.syslogRules.list',
         tbar: ['@add'],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',
+        copyAppendField: 'description',
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
 

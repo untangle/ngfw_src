@@ -109,7 +109,7 @@ Summary
 </td>
 <td>
 {% for interface in networkManager.getEnabledInterfaces %}
-{% if interface.getDisabled == false %}
+{% if interface.igetDisabled == false %}
 {% if interface.getIsWan == true %}
 {% with interfaceId=interface.getInterfaceId %}
 {% with status=networkManager.getInterfaceStatus,interface.getInterfaceId %}
@@ -163,7 +163,7 @@ Summary
 			{% endwith %}
 		{% else %}
 			<td align="center">
-			<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
+			<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" />
 			</td>
 		{% endif %}
 		</tr>
@@ -224,7 +224,7 @@ Summary
 							{% endwith %}
 						{% else %}
 							<td align="center">
-							<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
+							<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" />
 							</td>
 						{% endif %}
 						</tr>

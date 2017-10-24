@@ -597,7 +597,7 @@ public class ReportsManagerImpl implements ReportsManager
         if ( existingEntries == null )
             existingEntries = new LinkedList<ReportEntry>();
 
-        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/lib/*/reports/*.js' -print";
+        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/lib/*/reports/*.json' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
         if (result.getResult() != 0) {
             logger.warn("Failed to find report entries: \"" + cmd + "\" -> "  + result.getResult());

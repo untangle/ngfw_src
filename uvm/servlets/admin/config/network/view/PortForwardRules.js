@@ -45,9 +45,9 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
-            simple: false,
+            simple: true,
             enabled: true,
-            // description: '',
+            description: '',
             javaClass: 'com.untangle.uvm.network.PortForwardRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',

@@ -81,6 +81,7 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['dnspark','DNSPark'],
                     ['no-ip','No-IP'],
                     ['dnsomatic','DNS-O-Matic'],
+                    ['freedns','FreeDNS'],
                     ['google','Google'],
                     //['cloudflare','Cloudflare'] // does not work - needs ddclient 3.8.3
                    ]

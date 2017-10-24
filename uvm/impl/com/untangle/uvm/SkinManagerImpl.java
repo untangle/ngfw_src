@@ -87,12 +87,12 @@ public class SkinManagerImpl implements SkinManager
         /**
          * If the skin is out of date, revert to default
          */
-        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
+        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json" );
         if ( this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate() ) {
             logger.warn("Unable to find skin \"" + this.settings.getSkinName() + "\" - reverting to default skin: " + DEFAULT_ADMIN_SKIN);
             this.settings.setSkinName( DEFAULT_ADMIN_SKIN );
             this.setSettings( this.settings );
-            this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
+            this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json" );
         }
 
         this.reconfigure();
@@ -166,7 +166,7 @@ public class SkinManagerImpl implements SkinManager
                     }
                     dest.flush();
                     dest.close();
-                    if (entry.getName().contains("skinInfo.js")) {
+                    if (entry.getName().contains("skinInfo.json")) {
                         String skinInfoFile = SKINS_DIR + File.separator + entry.getName();
                         SkinInfo skinInfoTmp = null;
                         try {
@@ -204,11 +204,11 @@ public class SkinManagerImpl implements SkinManager
                 if (file.isDirectory() && !file.getName().startsWith(".")) {
                     File[] skinFiles = file.listFiles(new FilenameFilter(){
                             public boolean accept(File dir, String name) {
-                                return name.equals("skinInfo.js");
+                                return name.equals("skinInfo.json");
                             }
                         });
                     if (skinFiles.length < 1) {
-                        logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skinInfo.js");
+                        logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skinInfo.json");
                     } else {
                         SkinInfo skinInfoTmp;
                         skinInfoTmp = getSkinInfo( skinFiles[0].getPath() );
@@ -269,7 +269,7 @@ public class SkinManagerImpl implements SkinManager
         /* Register a handler to upload skins */
         UvmContextImpl.context().servletFileManager().registerUploadHandler( new SkinUploadHandler() );
 
-        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
+        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json" );
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

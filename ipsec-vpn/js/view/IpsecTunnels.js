@@ -21,6 +21,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     }],
 
     recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
+
     listProperty: 'settings.tunnels.list',
     emptyRow: {
         javaClass: 'com.untangle.app.ipsec_vpn.IpsecVpnTunnel',

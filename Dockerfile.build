@@ -1,6 +1,7 @@
 FROM docker.untangle.int/ngfw/base
 MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
 
+RUN apt-get update
 RUN apt-get install --yes untangle-development-build
 
 ENV SRC=/opt/untangle/ngfw_src
