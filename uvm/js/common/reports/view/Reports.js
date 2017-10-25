@@ -136,7 +136,7 @@ Ext.define('Ung.view.reports.Reports', {
         },
         items: [{
             itemId: 'category',
-            layout: { type: 'vbox', align: 'stretch' },
+            layout: { type: 'vbox', align: 'middle' },
             items: [{
                 xtype: 'component',
                 padding: '20px 0',
@@ -183,6 +183,18 @@ Ext.define('Ung.view.reports.Reports', {
                 html: 'select a report from a category',
                 bind: {
                     html: 'select a report from {selection.text || "a category"}'
+                }
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-external-link-square fa-lg',
+                margin: 20,
+                scale: 'medium',
+                handler: 'exportCategoryReports',
+                text: 'Export All Reports'.t(),
+                hidden: true,
+                bind: {
+                    text: 'Export All'.t() + ' <strong>{selection.text}</strong> ' + 'Reports'.t(),
+                    hidden: '{context !== "ADMIN"}'
                 }
             }]
         }, {

@@ -116,6 +116,16 @@ Ext.define('Ung.view.reports.Entry', {
                 },
                 handler: 'dashboardAddRemove'
             }, {
+                text: 'Export Settings'.t(),
+                iconCls: 'fa fa-external-link-square',
+                handler: 'exportSettings',
+                hidden: true,
+                disabled: true,
+                bind: {
+                    hidden: '{eEntry}',
+                    disabled: '{fetching}'
+                }
+            }, {
                 itemId: 'exportBtn',
                 text: 'Export'.t(),
                 iconCls: 'fa fa-external-link-square',

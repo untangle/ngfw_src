@@ -945,5 +945,23 @@ Ext.define('Ung.view.reports.EntryController', {
         // record.drop();
         // store.each(function (col) { tdc.push(col.get('str')); });
         // vm.set('eEntry.timeDataColumns', tdc);
+    },
+
+    exportSettings: function () {
+        var me = this, vm = me.getViewModel(),
+            rep = vm.get('entry').getData();
+
+        delete rep._id;
+        delete rep.localizedTitle;
+        delete rep.localizedDescription;
+        delete rep.slug;
+        delete rep.categorySlug;
+        delete rep.url;
+        delete rep.icon;
+
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = 'Report-' + rep.title.replace(/ /g, '_');
+        exportForm.gridData.value = Ext.encode([rep]);
+        exportForm.submit();
     }
 });
