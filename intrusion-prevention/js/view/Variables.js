@@ -14,10 +14,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
 
     bind: '{variables}',
 
-    // listeners: {
-    //     reconfigure: 'rulesReconfigure'
-    // },
-
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
     copyAppendField: 'description',
@@ -30,11 +26,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
 
     columns: [{
         header: 'Name'.t(),
-        width: 140,
+        width: Renderer.messageWidth,
         dataIndex: 'variable'
     },{
         header: 'Definition'.t(),
-        width: 170,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'definition',
         editor: {
             xtype:'textfield',
@@ -44,7 +41,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     },{
         header: 'Description'.t(),
         dataIndex: 'description',
-        flex:1,
+        width: Renderer.messageWidth,
+        flex: 2,
         editor: {
             xtype:'textfield',
             emptyText: "[enter description]".t(),
