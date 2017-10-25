@@ -66,7 +66,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.blockAllIpHosts}'
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Pass if referers matches Pass Sites'.t(),
+            boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
             bind: '{settings.passReferers}'
         }]
     }, {
