@@ -26,28 +26,32 @@ Ext.define('Ung.apps.applicationcontrollite.view.Signatures', {
 
     bind: '{signatureList}',
 
+    emptyText: 'No Signatures Defined'.t(),
+
     columns: [{
         header: 'Protocol'.t(),
-        width: 200,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'protocol'
     }, {
         header: 'Category'.t(),
-        width: 200,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'category'
     }, {
         xtype: 'checkcolumn',
         header: 'Block'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'blocked'
     }, {
         xtype: 'checkcolumn',
         header: 'Log'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'log',
     }, {
         header: 'Description'.t(),
-        width:300,
-        flex: 1,
+        width: Renderer.messageWidth,
+        flex: 2,
         dataIndex: 'description',
     }],
 
