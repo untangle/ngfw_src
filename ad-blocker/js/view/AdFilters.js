@@ -50,6 +50,10 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
         listProperty: 'settings.userRules.list',
         bind: '{userRules}',
 
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No User Defined Filters defined'.t() + '</p>'
+        },
+
         emptyRow: {
             string: '',
             enabled: true,

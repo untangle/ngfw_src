@@ -21,6 +21,10 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
         listProperty: 'settings.passedUrls.list',
         bind: '{passedUrls}',
 
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Passed Sites Defined'.t() + '</p>'
+        },
+
         emptyRow: {
             string: '',
             enabled: true,
@@ -81,13 +85,17 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
         height: '50%',
         split: true,
 
-        title: 'Passed Client IP addresses'.t(),
+        title: 'Passed Client IP Addresses'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
 
         listProperty: 'settings.passedClients.list',
         bind: '{passedClients}',
+
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Passed Client IP Addresses Defined'.t() + '</p>'
+        },
 
         emptyRow: {
             string: '1.2.3.4',
