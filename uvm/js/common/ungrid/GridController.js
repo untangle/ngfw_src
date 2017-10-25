@@ -558,10 +558,19 @@ Ext.define('Ung.cmp.GridController', {
         var rtype = view.grid.getColumns()[columnIndex].rtype;
         if(rtype != null){
             if( !Renderer[rtype] ){
-                var gview = this.getView();
-                var parentController = gview.up(gview.parentView).getController();
-                if(parentController[rtype+'Renderer']){
-                    return parentController[rtype+'Renderer'](value);
+                var parentController = null;
+                var methodName = rtype + 'Renderer';
+                while( view != null){
+                    parentController = view.getController();
+
+                    if( parentController && parentController[methodName]){
+                        break;
+                    }
+                    view = view.up();
+                }
+
+                if(parentController[methodName]){
+                    return parentController[methodName](value);
                 }else{
                     console.log('Missing renderer for rtype=' + rtype);
                 }
