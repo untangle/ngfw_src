@@ -74,33 +74,33 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     columns: [{
         header: "Sid".t(),
         dataIndex: 'sid',
-        width: 70,
+        width: Renderer.idWidth,
         renderer: 'sidRenderer'
     },{
         header: "Classtype".t(),
         dataIndex: 'classtype',
-        width: 100,
+        width: Renderer.messageWidth,
         renderer: 'classtypeRenderer'
     },{
         header: "Category".t(),
         dataIndex: 'category',
-        width: 100,
+        width: Renderer.messageWidth,
         renderer: 'categoryRenderer'
     },{
         header: "Msg".t(),
         dataIndex: 'msg',
-        width: 200,
+        width: Renderer.messageWidth,
         flex:3,
     },{
         header: "Reference".t(),
         dataIndex: 'rule',
-        width: 100,
+        width: Renderer.messageWidth,
         renderer: 'referenceRenderer'
     },{
         xtype:'checkcolumn',
         header: "Log".t(),
         dataIndex: 'log',
-        width:55,
+        width: Renderer.booleanWidth,
         listeners: {
             beforecheckchange: 'logBeforeCheckChange'
         },
@@ -111,7 +111,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         xtype:'checkcolumn',
         header: "Block".t(),
         dataIndex: 'block',
-        width:55,
+        width: Renderer.booleanWidth,
         listeners: {
             beforecheckchange: 'blockBeforeCheckChange'
         },
