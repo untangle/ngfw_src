@@ -14,7 +14,6 @@ Ext.define('Ung.apps.adblocker.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
         });
     },
@@ -56,5 +55,14 @@ Ext.define('Ung.apps.adblocker.MainController', {
             if (ex) { console.error(ex); Util.handleException(ex); return; }
             me.getSettings();
         });
+    },
+
+    actionRenderer: function(value){
+        return value ? 'Block'.t() : 'Pass'.t();
+    },
+
+    flaggedRenderer: function(value){
+        return value ? 'Yes'.t() : '';
     }
+
 });

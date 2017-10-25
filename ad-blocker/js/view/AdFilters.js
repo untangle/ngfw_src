@@ -21,25 +21,21 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),
-                width: 200,
+                width: Renderer.messagwWidth,
                 dataIndex: 'string',
                 flex: 1
             }, {
                 header: 'Action'.t(),
-                width: 100,
+                width: Renderer.messagwWidth,
                 dataIndex: 'blocked',
                 resizable: false,
-                renderer: function (value) {
-                    return value ? 'Block'.t() : 'Pass'.t();
-                }
+                rtype: 'action'
             }, {
                 header: 'Slow'.t(),
-                width: 100,
+                width: Renderer.messagwWidth,
                 dataIndex: 'flagged',
                 resizable: false,
-                renderer: function(value) {
-                    return value ? 'Yes'.t() : '';
-                }
+                rtype: 'flagged'
             }]
     }, {
         region: 'south',
@@ -64,7 +60,7 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),
-                width: 200,
+                width: Renderer.messagwWidth,
                 dataIndex: 'string',
                 flex: 1,
                 editor: {
@@ -74,20 +70,16 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
                 }
             }, {
                 header: 'Action'.t(),
-                width: 100,
+                width: Renderer.messagwWidth,
                 dataIndex: 'blocked',
                 resizable: false,
-                renderer: function (value) {
-                    return value ? 'Block'.t() : 'Pass'.t();
-                }
+                rtype: 'action'
             }, {
                 header: 'Slow'.t(),
-                width: 100,
+                width: Renderer.messagwWidth,
                 dataIndex: 'flagged',
                 resizable: false,
-                renderer: function(value) {
-                    return value ? 'Yes'.t() : '';
-                }
+                rtype: 'flagged'
             }],
         editorFields: [{
             xtype: 'checkbox',
