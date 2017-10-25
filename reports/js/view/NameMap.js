@@ -19,11 +19,13 @@ Ext.define('Ung.apps.reports.view.NameMap', {
         javaClass: 'com.untangle.app.reports.ReportsHostnameMapEntry',
     },
 
+    emptyText: 'No Names Defined'.t(),
+
     bind: '{hostnames}',
 
     columns: [{
         header: 'IP Address'.t(),
-        width: 200,
+        width: Renderer.ipWidth,
         dataIndex: 'address',
         editor: {
             xtype: 'textfield',
@@ -33,6 +35,7 @@ Ext.define('Ung.apps.reports.view.NameMap', {
         }
     }, {
         header: 'Name'.t(),
+        width: Renderer.usernameWidth,
         flex: 1,
         dataIndex: 'hostname',
         editor: {

@@ -40,9 +40,11 @@ Ext.define('Ung.apps.reports.view.Users', {
 
     bind: '{users}',
 
+    emptyText: 'No Names Defined'.t(),
+
     columns: [{
         header: 'Email Address (username)'.t(),
-        width: 200,
+        width: Renderer.emailWidth,
         dataIndex: 'emailAddress',
         editor: {
             xtype: 'textfield',
@@ -52,25 +54,26 @@ Ext.define('Ung.apps.reports.view.Users', {
         }
     }, {
         xtype: 'checkcolumn',
-        width: 100,
+        width: Renderer.idWidth,
         header: 'Email Alerts'.t(),
         dataIndex: 'emailAlerts',
         resizable: false
     }, {
         xtype: 'checkcolumn',
-        width: 100,
+        width: Renderer.idWidth,
         header: 'Email Reports'.t(),
         dataIndex: 'emailSummaries',
         resizable: false
     }, {
         header: 'Email Templates'.t(),
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'emailTemplateIds',
         renderer: 'emailTemplatesRenderer'
     }, {
         xtype: 'checkcolumn',
         header: 'Online Access'.t(),
-        width: 100,
+        width: Renderer.idWidth,
         dataIndex: 'onlineAccess',
         resizable: false
     }],
