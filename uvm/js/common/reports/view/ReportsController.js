@@ -214,5 +214,39 @@ Ext.define('Ung.view.reports.ReportsController', {
             tableConfig: me.tableConfig
         });
         wizard.show();
+    },
+
+    exportCategoryReports: function () {
+        var me = this, vm = me.getViewModel(), reportsArr = [], category, reports;
+
+        if (vm.get('selection')) {
+            category = vm.get('selection.text'); // selected category
+            reports = Ext.getStore('reports').query('category', category, false, true, true);
+        } else {
+            // export all
+            reports = Ext.getStore('reports').getData();
+        }
+
+        Ext.Array.each(reports.items, function (report) {
+            var rep = report.getData();
+            // remove extra custom fields
+            delete rep._id;
+            delete rep.localizedTitle;
+            delete rep.localizedDescription;
+            delete rep.slug;
+            delete rep.categorySlug;
+            delete rep.url;
+            delete rep.icon;
+            reportsArr.push(rep);
+        });
+
+        Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = 'AllReports'.t() + (category ? '_' + category.replace(/ /g, '_') : ''); // used in exported file name
+        exportForm.gridData.value = Ext.encode(reportsArr);
+        exportForm.submit();
+        Ext.MessageBox.hide();
     }
+
+
 });
