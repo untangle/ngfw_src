@@ -8,7 +8,7 @@ Ext.define('Ung.util.Renderer', {
     // Action
     actionWidth: 60,
     // Boolean
-    booleanWidth: 40,
+    booleanWidth: 50,
     // Counter
     counterWidth: 80,
     // Email address
@@ -16,9 +16,11 @@ Ext.define('Ung.util.Renderer', {
     // Hostname
     hostnameWidth: 120,
     // Numeric identifier
-    idWidth: 75,
+    idWidth: 80,
     // Icon
     iconWidth: 30,
+    // Interval
+    intervalWidth: 60,
     // IP Address
     ipWidth: 100,
     // Load measurement
@@ -170,6 +172,33 @@ Ext.define('Ung.util.Renderer', {
         }
         return Renderer.datasize(value);
     },
+
+    countMap: [
+        [ 1125899906842624, 'P'.t() ],
+        [ 1099511627776, 'T'.t() ],
+        [ 1073741824, 'G'.t() ],
+        [ 1048576, 'M'.t() ] ,
+        [ 1024, 'K'.t() ],
+        [ 1, '' ]
+    ],
+    count: function( value ){
+        // walk map looking at key.  If larger then divide and use units
+        value = parseInt( value, 10 );
+        var size;
+        for( var i = 0; i < Ung.util.Renderer.countMap.length; i++){
+            size = Ung.util.Renderer.countMap[i];
+            if( value >= size[0] || value <= (0-size[0])){
+                break;
+            }
+        }
+        if( ( value == 0 ) ||
+            ( size[0] == 1 ) ){
+            return value + ' ' + size[1];
+        }else{
+            return ( value / size[0] ).toFixed(2) + ' ' + size[1];
+        }
+    },
+
 
     timeIntervalMap: {
         86400: 'Daily'.t(),
