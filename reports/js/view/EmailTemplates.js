@@ -30,17 +30,18 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
 
     bind: '{emailTemplates}',
 
+    emptyText: 'No Email Templates Defined'.t(),
+    
     listProperty: 'settings.emailTemplates.list',
     columns: [{
         header: 'Id'.t(),
-        width: 50,
+        width: Renderer.idWidth,
         dataIndex: 'templateId',
-        renderer: function(value) {
-            return value < 0 ? 'new'.t() : value;
-        }
+        renderer: 'idRenderer'
     }, {
         header: 'Title'.t(),
         dataIndex: 'title',
+        width: Renderer.messageWidth,
         flex: 1,
         editor: {
             xtype: 'textfield',
@@ -53,7 +54,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         }
     }, {
         header: 'Description'.t(),
-        width: 200,
+        width: Renderer.messageWidth,
         dataIndex: 'description',
         flex: 1,
         editor: {
@@ -64,7 +65,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         },
     }, {
         header: 'Interval'.t(),
-        width: 80,
+        width: Renderer.intervalWidth,
         dataIndex: 'interval',
         rtype: 'timeInterval',
         editor: {
@@ -77,7 +78,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         }
     }, {
         header: 'Mobile'.t(),
-        width: 60,
+        width: Renderer.booleanWidth,
         dataIndex: 'mobile',
         rtype: 'boolean',
         editor: {
@@ -86,11 +87,13 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         }
     }, {
         header: 'Config'.t(),
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'enabledConfigIds',
         renderer: 'reportRenderer'
     }, {
         header: 'Apps'.t(),
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'enabledAppIds',
         renderer: 'reportRenderer'
