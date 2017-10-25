@@ -164,7 +164,6 @@ Ext.define('Ung.cmp.Grid', {
         var me = this;
         var viewConfig = {
             enableTextSelection: true,
-            // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
             stripeRows: false,
             getRowClass: function(record) {
                 if (record.get('markedForDelete')) {
@@ -178,6 +177,10 @@ Ext.define('Ung.cmp.Grid', {
                 }
             }
         };
+        if(this.emptyText){
+            // If you want to override the styling, just add an emptyText member to the defined viewConfig
+            viewConfig.emptyText = '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + this.emptyText + '</p>';
+        }
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }
