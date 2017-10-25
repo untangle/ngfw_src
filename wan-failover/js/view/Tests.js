@@ -40,9 +40,7 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    viewConfig: {
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Tests Defined'.t() + '</p>'
-    },
+    emptyText: 'No Tests Defined'.t(),
 
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tests.list',
