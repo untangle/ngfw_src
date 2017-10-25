@@ -61,61 +61,74 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
                     hidden: '{!wanWarnings}'
                 }
             }, {
-                xtype: 'grid',
+                xtype: 'ungrid',
                 itemId: 'wanStatus',
+                enableColumnHide: true,
+                stateful: true,
                 trackMouseOver: false,
-                sortableColumns: false,
-                enableColumnHide: false,
 
-                minHeight: 120,
-                maxHeight: 250,
                 flex: 1,
                 viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Active Sessions ...</p>',
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No External Interfaces'.t() + '</p>',
                     stripeRows: false
                 },
 
                 bind: '{wanStatusStore}',
 
+                plugins: ['gridfilters'],
+
                 columns: [{
                     header: 'Interface ID'.t(),
                     dataIndex: 'interfaceId',
-                    width: 100,
-                    resizable: false
+                    sortable: true,
+                    width: Renderer.idWidth,
+                    filter: Renderer.booleanFilter,
                 }, {
                     header: 'Interface Name'.t(),
                     dataIndex: 'interfaceName',
+                    sortable: true,
+                    width: Renderer.idWidth,
                     flex: 1,
+                    filter: Renderer.stringFilter,
                 }, {
                     header: 'System Name'.t(),
                     dataIndex: 'systemName',
-                    width: 100,
-                    resizable: false
+                    sortable: true,
+                    width: Renderer.idWidth,
+                    resizable: false,
+                    filter: Renderer.stringFilter,
                 }, {
                     header: 'Online Status',
                     dataIndex: 'online',
-                    width: 100,
-                    resizable: false
+                    sortable: true,
+                    width: Renderer.booeanWidth,
+                    resizable: false,
+                    filter: Renderer.booleanFilter,
                 }, {
                     header: 'Current Tests Count'.t(),
                     dataIndex: 'totalTestsRun',
-                    width: 150,
-                    resizable: false
+                    sortable: true,
+                    width: Renderer.messageWidth,
+                    resizable: false,
+                    filter: Renderer.numericFilter,
+                    renderer: Renderer.count
                 }, {
                     header: 'Tests Passed'.t(),
                     dataIndex: 'totalTestsPassed',
-                    width: 100,
-                    resizable: false
+                    sortable: true,
+                    width: Renderer.sizeWidth,
+                    resizable: false,
+                    filter: Renderer.numericFilter,
+                    renderer: Renderer.count
                 }, {
                     header: 'Tests Failed'.t(),
+                    sortable: true,
                     dataIndex: 'totalTestsFailed',
-                    width: 100
+                    width: Renderer.sizeWidth,
+                    filter: Renderer.numericFilter,
+                    renderer: Renderer.count
                 }],
-                bbar: [{
-                    text: 'Refresh'.t(),
-                    iconCls: 'fa fa-refresh',
-                    handler: 'getWanStatus'
-                }]
+                bbar: [ '@refresh', '@reset']
             }]
         }, {
             xtype: 'appreports'
