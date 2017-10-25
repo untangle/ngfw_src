@@ -27,7 +27,7 @@ from htmlentitydefs import name2codepoint
 
 default_policy_id = 1
 app = None
-webApp = None
+web_app = None
 can_relay = None
 can_syslog = None
 orig_settings = None
@@ -152,7 +152,7 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global app, orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host
+        global app, orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host, web_app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             # report app is normally installed.
             # print "App %s already installed" % self.appName()
@@ -165,7 +165,7 @@ class ReportsTests(unittest2.TestCase):
 
         if (uvmContext.appManager().isInstantiated(self.webAppName())):
             raise Exception('app %s already instantiated' % self.webAppName())
-        webApp = uvmContext.appManager().instantiate(self.webAppName(), default_policy_id)
+        web_app = uvmContext.appManager().instantiate(self.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
@@ -524,12 +524,12 @@ class ReportsTests(unittest2.TestCase):
         
     @staticmethod
     def finalTearDown(self):
-        global app
+        global app, web_app
         if app != None:
             app.setSettings(orig_settings)
-        if webApp != None:
-            uvmContext.appManager().destroy( webApp.getAppSettings()["id"] )
-            webApp = None
+        if web_app != None:
+            uvmContext.appManager().destroy( web_app.getAppSettings()["id"] )
+            web_app = None
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
         app = None
