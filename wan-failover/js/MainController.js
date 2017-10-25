@@ -7,10 +7,10 @@ Ext.define('Ung.apps.wan-failover.MainController', {
             beforerender: 'getSettings'
         },
         '#wanStatus': {
-            afterrender: 'getWanStatus'
+            afterrender: 'wanStatusRefresh'
         },
         '#tests': {
-            afterrender: 'getWanStatus'
+            afterrender: 'wanStatusRefresh'
         }
     },
 
@@ -19,7 +19,6 @@ Ext.define('Ung.apps.wan-failover.MainController', {
 
         this.getView().appManager.getSettings(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
 
             var testList = result.tests.list;
 
@@ -74,7 +73,7 @@ Ext.define('Ung.apps.wan-failover.MainController', {
         }, vm.get('settings'));
     },
 
-    getWanStatus: function (cmp) {
+    wanStatusRefresh: function (cmp) {
         var vm = this.getViewModel();
         var grid;
 
@@ -104,7 +103,7 @@ Ext.define('Ung.apps.wan-failover.MainController', {
                 }
             });
 
-            vm.set('wanWarnings', wanWarnings.join('<br/>'));
+            vm.set('wanWarnings', wanWarnings.join(''));
         });
     }
 });

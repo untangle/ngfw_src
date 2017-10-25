@@ -4,6 +4,7 @@ Ext.define('Ung.apps.wan-failover.view.Tests', {
     itemId: 'tests',
     title: 'Tests'.t(),
     viewModel: true,
+    bodyPadding: 10,
 
     tbar: [{
         xtype: 'tbtext',
@@ -14,21 +15,15 @@ Ext.define('Ung.apps.wan-failover.view.Tests', {
 
     items: [{
         xtype: 'displayfield',
-        padding: '10 20 0 20',
-        value: '<STRONG>' + 'Note'.t() + '</STRONG>'
-    }, {
-        xtype: 'displayfield',
-        padding: '0 20 0 40',
-        value: 'There should be one configured test per WAN interface.'.t() + '<BR>' +
-               'These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover.'.t() + '<BR>' +
-               'Press Help to see a further discussion about Failure Detection Tests.'.t()
+        value: '<strong>' + 'Note'.t() + '</strong>' +
+               '<ul>' +
+               '<li>' + 'There should be one configured test per WAN interface.'.t() + '<BR>' +
+               '<li>' + 'These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover.'.t() + '<BR>' +
+               '<li>' + 'Press Help to see a further discussion about Failure Detection Tests.'.t() +
+               '</ul>'
     },{
         xtype: 'app-wan-failover-test-grid',
-        title: 'Failure Detection Tests'.t(),
-        width: 800,
-        height: 400,
-        padding: '20 20 20 20',
-        border: true,
+        title: 'Failure Detection Tests'.t()
     }]
 
 });
@@ -44,6 +39,10 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
         dock: 'top',
         items: ['@add', '->', '@import', '@export']
     }],
+
+    viewConfig: {
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Tests Defined'.t() + '</p>'
+    },
 
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tests.list',
@@ -65,21 +64,21 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Interface'.t(),
-        width: 100,
+        width: Renderer.messageWidth,
         dataIndex: 'interfaceId',
         renderer: Ung.util.Renderer.interface
     }, {
         header: 'Test Type'.t(),
-        width: 100,
+        width: Renderer.messageWidth,
         dataIndex: 'type',
     }, {
         header: 'Description'.t(),
-        width: 150,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'description'
     }],
