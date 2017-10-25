@@ -21,7 +21,7 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),
-                width: 200,
+                width: Renderer.messageWidth,
                 dataIndex: 'string',
                 flex: 1
             }]
@@ -47,7 +47,7 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),
-                width: 200,
+                width: Renderer.messageWidth,
                 dataIndex: 'string',
                 flex: 1,
                 editor: {

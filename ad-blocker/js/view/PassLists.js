@@ -30,7 +30,7 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
 
         columns: [{
             header: 'Site'.t(),
-            width: 200,
+            width: Renderer.messagwWidth,
             dataIndex: 'string',
             editor:{
                 xtype: 'textfield',
@@ -44,10 +44,10 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             header: 'Pass'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth
         }, {
             header: 'Description'.t(),
-            width: 200,
+            width: Renderer.messagwWidth,
             dataIndex: 'description',
             flex: 1,
             editor: {
@@ -98,7 +98,7 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
 
         columns: [{
             header: 'IP Address/Range'.t(),
-            width: 200,
+            width: Renderer.networkWidth,
             dataIndex: 'string',
             editor:{
                 xtype: 'textfield',
@@ -110,10 +110,10 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             header: 'Pass'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth
         }, {
             header: 'Description'.t(),
-            width: 200,
+            width: Renderer.messagwWidth,
             dataIndex: 'description',
             flex: 1,
             editor: {
