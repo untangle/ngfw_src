@@ -191,12 +191,11 @@ Ext.define('Ung.cmp.Grid', {
             this.stateId = "ungrid-" + this.itemId ? this.itemId : this.reference;
         }
 
-        if (this.tbar == null) {
-            this.tbar=[];
-        }
-        this.tbarSeparatorIndex = this.tbar.indexOf('->');
-        if( this.tbarSeparatorIndex == -1 ){
-            this.tbarSeparatorIndex = this.tbar.length;
+        if (this.tbar != null) {
+            this.tbarSeparatorIndex = this.tbar.indexOf('->');
+            if( this.tbarSeparatorIndex == -1 ){
+                this.tbarSeparatorIndex = this.tbar.length;
+            }
         }
 
         if(columns){
