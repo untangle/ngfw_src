@@ -68,10 +68,7 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
                 trackMouseOver: false,
 
                 flex: 1,
-                viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No External Interfaces'.t() + '</p>',
-                    stripeRows: false
-                },
+                emptyText: 'No External Interfaces'.t(),
 
                 bind: '{wanStatusStore}',
 
