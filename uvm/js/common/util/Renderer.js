@@ -408,5 +408,8 @@ Ext.define('Ung.util.Renderer', {
         return value;
     },
 
+    id: function(value){
+        return ( value < 0 || value === undefined ) ? 'new'.t() : value;
+    },
 
 });
