@@ -10,7 +10,6 @@ import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
-import com.untangle.uvm.event.EventRuleConditionField;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppSettings.AppState;
