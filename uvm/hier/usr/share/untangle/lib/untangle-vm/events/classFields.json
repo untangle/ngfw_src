@@ -1290,7 +1290,7 @@
         description: "The local address assigned to the tunnel connection",
         },
         {
-        name: "type",
+        name: "eventType",
         type: "TunnelVpnEvent$EventType",
         description: "The type of connection event",
         values: [ "CONNECT",  "DISCONNECT" ],
