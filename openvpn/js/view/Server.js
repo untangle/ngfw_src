@@ -3,9 +3,22 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     alias: 'widget.app-openvpn-server',
     itemId: 'server',
     title: 'Server'.t(),
-    viewModel: true,
     autoScroll: true,
     withValidation: true,
+
+    viewModel: {
+        formulas: {
+            _btnConfigureDirectory: function (get) {
+                switch (get('settings.authenticationType')) {
+                case 'LOCAL_DIRECTORY': return 'Configure Local Directory'.t();
+                case 'RADIUS': return 'Configure RADIUS'.t();
+                case 'ACTIVE_DIRECTORY': return 'Configure Active Directory'.t();
+                case 'ANY_DIRCON': return 'Configure Directory Connector'.t();
+                default: return '';
+                }
+            }
+        }
+    },
 
     tbar: [{
         xtype: 'tbtext',
@@ -42,6 +55,40 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         fieldLabel: 'Site URL'.t(),
         xtype: 'displayfield',
         bind: '{getSiteUrl}'
+    },{
+        fieldLabel: 'Username/Password Authentication',
+        xtype: 'checkbox',
+        bind: '{settings.authUserPass}'
+    },{
+        title: 'Authentication Method'.t(),
+        width: 400,
+        padding: '10 0 0 20',
+        bind: {
+            disabled: '{!settings.authUserPass}',
+            hidden: '{!settings.authUserPass}'
+        },
+        items: [{
+            xtype: 'radiogroup',
+            bind: '{settings.authenticationType}',
+            simpleValue: 'true',
+            columns: 1,
+            vertical: true,
+            items: [
+                { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
+                { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' },
+                { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
+                { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY_DIRCON' }
+            ]
+        }, {
+            // todo: update this button later
+            xtype: 'button',
+            iconCls: 'fa fa-cog',
+            margin: '10 0 10 10',
+            bind: {
+                text: '{_btnConfigureDirectory}'
+            },
+            handler: 'configureAuthenticationMethod'
+        }]
     },{
         xtype: 'app-openvpn-server-tab-panel',
         padding: '20 20 20 20',
