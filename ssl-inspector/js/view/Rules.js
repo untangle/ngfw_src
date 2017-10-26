@@ -24,6 +24,8 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     listProperty: 'settings.ignoreRules.list',
     ruleJavaClass: 'com.untangle.app.ssl_inspector.SslInspectorRuleCondition',
 
+    emptyText: 'No Rules defined'.t(),
+
     emptyRow: {
         ruleId: 0,
         enabled: true,
@@ -46,18 +48,13 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         Column.ruleId,
         Column.enabled,
         Column.description,
-        Column.conditions, {
-            header: 'Action'.t(),
-            dataIndex: 'action',
-            renderer: function (act) {
-                switch (act.actionType) {
-                case 'INSPECT': return 'Inspect'.t();
-                case 'IGNORE': return 'Ignore'.t();
-                default: return 'Unknown Action'.t() + ': ' + act;
-                }
-            }
-        }
-    ],
+        Column.conditions,
+    {
+        header: 'Action'.t(),
+        dataIndex: 'action',
+        width: Renderer.actionWidth,
+        rtype: 'action'
+    }],
 
     // todo: continue this stuff
     editorFields: [

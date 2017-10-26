@@ -199,40 +199,35 @@ Ext.define('Ung.apps.sslinspector.view.TrustedCertsGrid', {
     controller: 'app-sslinspector-special',
     bind: '{trustedCertList}',
 
-    viewConfig: {
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Trusted Certificates'.t() + ' ...</p>',
-        stripeRows: false
-    },
+    emptyText: 'No Trusted Certificates'.t(),
 
     columns: [{
         header: 'Alias'.t(),
-        width: 180,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'certAlias'
     }, {
         header: 'Issued To'.t(),
-        width: 220,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'issuedTo',
     }, {
         header: 'Issued By'.t(),
-        width: 220,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'issuedBy'
     }, {
         header: 'Date Valid'.t(),
-        width: 180,
-        flex: 1,
+        width: Renderer.dateWidth,
         dataIndex: 'dateValid'
     }, {
         header: 'Date Expires'.t(),
-        width: 180,
-        flex: 1,
+        width: Renderer.dateWidth,
         dataIndex: 'dateExpire'
     }, {
         header: 'Delete'.t(),
         xtype: 'actioncolumn',
-        width: 80,
+        width: Renderer.actionWidth,
         align: 'center',
         iconCls: 'fa fa-trash',
         handler: 'deleteTrustedCertificate'
