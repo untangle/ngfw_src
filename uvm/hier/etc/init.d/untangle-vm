@@ -87,18 +87,12 @@ case "$1" in
     start)
         log_daemon_msg "Starting $DESC"
 
-        # This is a hack to not start during install phase
-        if grep -q mv_install /proc/cmdline ; then
-            echo "Skipping."
-            log_end_msg 0
-            exit
-        fi
-
-        if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "launching" ] || [ "`uvmStatus`" == "booting" ]; then
-            echo "untangle-vm already running."
-		    log_end_msg 0
-            exit
-        fi
+        case $(uvmStatus) in
+	    running|launching|booting)
+                echo "untangle-vm already running."
+		log_end_msg 0
+		exit ;;
+        esac
         
         updateStatus "[" "Starting"
 
@@ -126,9 +120,10 @@ case "$1" in
                 updateStatusExit "x]\n" "Stopped"
             fi
 
-            if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "starting" ]; then
-                break
-            fi
+            case $(uvmStatus) in
+	        running|starting)
+                    break ;;
+	    esac
 
             sleep 1
         done
@@ -146,7 +141,7 @@ case "$1" in
         done
 
         echo "x]"
-	    log_end_msg 0
+	log_end_msg 0
         ;;
 
     stop)
