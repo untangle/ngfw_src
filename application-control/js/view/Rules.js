@@ -24,6 +24,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
     listProperty: 'settings.logicRules.list',
     ruleJavaClass: 'com.untangle.app.application_control.ApplicationControlLogicRuleCondition',
 
+    emptyText: 'No Rules defined'.t(),
 
     emptyRow: {
         enabled: true,
@@ -44,29 +45,21 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
     columns: [{
         header: 'Rule Id'.t(),
-        width: 70,
+        width: Renderer.idWidth,
         align: 'right',
         resizable: false,
         dataIndex: 'id',
-        renderer: function(value) {
-            return value < 0 ? 'new'.t() : value;
-        }
-    }, Column.enabled,
-        Column.description,
-        Column.conditions, {
-            header: 'Action'.t(),
-            dataIndex: 'action',
-            width: 250,
-            renderer: function (act) {
-                switch(act.actionType) {
-                case 'ALLOW': return 'Allow'.t();
-                case 'BLOCK': return 'Block'.t();
-                case 'TARPIT': return 'Tarpit'.t();
-                default: return 'Unknown Action'.t() + ': ' + act;
-                }
-            }
-        }
-    ],
+        renderer: Renderer.id
+    },
+    Column.enabled,
+    Column.description,
+    Column.conditions,
+    {
+        header: 'Action'.t(),
+        dataIndex: 'action',
+        width: Renderer.actionWidth,
+        rtype: 'action'
+    }],
 
     // todo: continue this stuff
     editorFields: [
