@@ -22,6 +22,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
 
     recordActions: ['edit', 'delete', 'reorder'],
 
+    emptyText: 'No Rules defined'.t(),
+
     listProperty: 'settings.rules.list',
     ruleJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition',
 
@@ -57,7 +59,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
         Column.conditions, {
             header: 'Destination Tunnel'.t(),
             dataIndex: 'tunnelId',
-            width: 250,
+            width: Renderer.messageWidth,
+            flex: 1,
             renderer: function(value, meta, record, row, col, store, grid) {
                 var tunnellist = this.getViewModel().get('destinationTunnelList');
                 var dstname = 'Unknown'.t();

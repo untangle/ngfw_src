@@ -17,6 +17,7 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
             }
         },
         data: {
+            autoReload: false,
             tunnelProviderSelected: false,
             tunnelProviderTitle: '',
             tunnelProviderInstructions: '',
@@ -36,7 +37,23 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
                 data: '{destinationTunnelData}'
             },
             tunnelStatusList: {
-                data: '{tunnelStatusData}'
+                data: '{tunnelStatusData}',
+                fields:[{
+                    name: 'tunnelId',
+                    sortType: 'asInt'
+                }, {
+                    name: 'tunnelName',
+                }, {
+                    name: 'elapsedTime',
+                }, {
+                    name: 'recvTotal',
+                    sortType: 'asInt'
+                }, {
+                    name: 'xmitTotal',
+                    sortType: 'asInt'
+                }, {
+                    name: 'stateInfo'
+                }]
             }
         },
     },
