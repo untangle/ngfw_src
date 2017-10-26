@@ -50,39 +50,14 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         Column.ruleId,
         Column.enabled,
         Column.description,
-        Column.conditions, {
-            header: 'Action'.t(),
-            dataIndex: 'action',
-            width: 250,
-            renderer: function (value, metaData, record) {
-                if (typeof value === 'undefined') {
-                    return 'Unknown action'.t();
-                }
-                switch(value.actionType) {
-                  //case 'SET_PRIORITY': return 'Set Priority' + ' [' + this.priorityRenderer(value.priority) + ']';
-                  case 'SET_PRIORITY':
-                    var priostr = value.priority;
-                    switch(value.priority) {
-                      case 1: priostr = 'Very High'.t(); break;
-                      case 2: priostr = 'High'.t(); break;
-                      case 3: priostr = 'Medium'.t(); break;
-                      case 4: priostr = 'Low'.t(); break;
-                      case 5: priostr = 'Limited'.t(); break;
-                      case 6: priostr = 'Limited More'.t(); break;
-                      case 7: priostr = 'Limited Severely'.t(); break;
-                    default: priostr = 'Unknown Priority'.t() + ': ' + value.priority; break;
-                    }
-                    return 'Set Priority'.t() + ' [' + priostr + ']';
-                  case 'TAG_HOST': return 'Tag Host'.t();
-                  case 'APPLY_PENALTY_PRIORITY': return 'Apply Penalty Priority'.t(); // DEPRECATED
-                  case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
-                  case 'GIVE_HOST_QUOTA': return 'Give Host a Quota'.t();
-                  case 'GIVE_USER_QUOTA': return 'Give User a Quota'.t();
-                default: return 'Unknown Action'.t() + ': ' + value;
-                }
-            }
-        }
-    ],
+        Column.conditions,
+    {
+        header: 'Action'.t(),
+        dataIndex: 'action',
+        flex: 1,
+        width: Renderer.messageWidth,
+        rtype: 'action'
+    }],
 
     // todo: continue this stuff
     editorFields: [
