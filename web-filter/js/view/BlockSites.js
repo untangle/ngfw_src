@@ -21,6 +21,8 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
 
     recordActions: ['edit', 'delete'],
 
+    emptyText: 'No Block Sites defined'.t(),
+
     listProperty: 'settings.blockedUrls.list',
     emptyRow: {
         string: '',
@@ -34,7 +36,8 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
 
     columns: [{
         header: 'Site'.t(),
-        width: 200,
+        width: Renderer.uriWidth,
+        flex: 1,
         dataIndex: 'string',
         editor: {
             xtype: 'textfield',
@@ -43,21 +46,21 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         }
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Block'.t(),
         dataIndex: 'blocked',
         resizable: false
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Flag'.t(),
         dataIndex: 'flagged',
         resizable: false,
         tooltip: 'Flag as Violation'.t()
     }, {
         header: 'Description'.t(),
-        width: 200,
-        flex: 1,
+        width: Renderer.messageWidth,
+        flex: 2,
         dataIndex: 'description',
         editor: {
             xtype: 'textfield',

@@ -17,17 +17,18 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
 
     columns: [{
         header: 'Category'.t(),
-        width: 200,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'name'
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Block'.t(),
         dataIndex: 'blocked',
         resizable: false
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Flag'.t(),
         dataIndex: 'flagged',
         resizable: false,
@@ -35,8 +36,8 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
         // checkAll: {}
     }, {
         header: 'Description'.t(),
-        flex: 1,
-        width: 400,
+        flex: 4,
+        width: Renderer.messageWidth,
         dataIndex: 'description',
         editor: {
             xtype: 'textfield',

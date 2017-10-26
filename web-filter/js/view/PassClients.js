@@ -22,6 +22,8 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
 
     recordActions: ['edit', 'delete'],
 
+    emptyText: 'No Pass Clients defined'.t(),
+
     listProperty: 'settings.passedClients.list',
     emptyRow: {
         string: '1.2.3.4',
@@ -34,7 +36,8 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
 
     columns: [{
         header: 'IP address/range'.t(),
-        width: 200,
+        width: Renderer.networkWidth,
+        flex: 1,
         dataIndex: 'string',
         editor: {
             xtype: 'textfield',
@@ -44,14 +47,14 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
         }
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Pass'.t(),
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Description'.t(),
-        width: 200,
-        flex: 1,
+        width: Renderer.messageWidth,
+        flex: 2,
         dataIndex: 'description',
         editor: {
             xtype: 'textfield',
