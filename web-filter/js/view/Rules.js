@@ -21,6 +21,8 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
 
     recordActions: ['edit', 'delete', 'reorder'],
 
+    emptyText: 'No Rules defined'.t(),
+
     listProperty: 'settings.filterRules.list',
     ruleJavaClass: 'com.untangle.app.web_filter.WebFilterRuleCondition',
 

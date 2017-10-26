@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Flagged'.t(),
         dataIndex: 'flagged',
         resizable: false,
-        width: Renderer.booleanWidth
+        width: Renderer.booleanWidth + 10
     },
 
     blocked: {
@@ -34,7 +34,7 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Blocked'.t(),
         dataIndex: 'blocked',
         resizable: false,
-        width: Renderer.booleanWidth
+        width: Renderer.booleanWidth + 10
     },
 
     description: {
