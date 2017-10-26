@@ -160,6 +160,14 @@ Ext.define('Ung.apps.sslinspector.MainController', {
         return true;
     },
 
+    actionRenderer: function(action){
+        switch (action.actionType) {
+            case 'INSPECT': return 'Inspect'.t();
+            case 'IGNORE': return 'Ignore'.t();
+            default: return 'Unknown Action'.t() + ': ' + act;
+        }
+    }
+
 });
 
 Ext.define('Ung.apps.sslinspector.SpecialGridController', {

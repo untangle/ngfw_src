@@ -11,6 +11,8 @@ Ext.define('Ung.util.Renderer', {
     booleanWidth: 50,
     // Counter
     counterWidth: 80,
+    // UTC-formatted Date
+    dateWidth: 170,
     // Email address
     emailWidth: 150,
     // Hostname
