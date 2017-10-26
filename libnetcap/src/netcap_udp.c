@@ -264,8 +264,8 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     cmsg->cmsg_type  = IP_TOS;
     if ( IS_NEW_KERNEL() >= 316 ) {
         tos_len   = CMSG_LEN(sizeof(int));
-        cmsg->cmsg_len   = tos_len;
         tos_val   = pkt->tos;
+        cmsg->cmsg_len   = tos_len;
         memcpy( CMSG_DATA(cmsg), &tos_val, tos_len );
     }
     else {
