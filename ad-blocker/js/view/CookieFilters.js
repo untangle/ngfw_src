@@ -44,10 +44,7 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
             javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
-        viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No User Defined Cookie Filters Defined'.t() + '</p>'
-        },
-
+        emptyText: 'No User Defined Cookie Filters Defined'.t(),
 
         columns: [
             Column.enabled, {
