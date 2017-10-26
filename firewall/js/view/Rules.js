@@ -24,6 +24,7 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     listProperty: 'settings.rules.list',
     ruleJavaClass: 'com.untangle.app.firewall.FirewallRuleCondition',
 
+    emptyText: 'No Rules defined'.t(),
 
     emptyRow: {
         ruleId: 0,
@@ -49,13 +50,13 @@ Ext.define('Ung.apps.firewall.view.Rules', {
             header: 'Block'.t(),
             dataIndex: 'block',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth
         }, {
             xtype: 'checkcolumn',
             header: 'Flag'.t(),
             dataIndex: 'flag',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth
         }
     ],
 
