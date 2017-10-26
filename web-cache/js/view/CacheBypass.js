@@ -22,6 +22,8 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
 
     recordActions: ['edit', 'delete'],
 
+    emptyTest: 'No Cache Bypasses defined'.t(),
+
     listProperty: 'settings.rules.list',
     emptyRow: {
         live: true,
@@ -33,13 +35,13 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
 
     columns: [{
         xtype: 'checkcolumn',
-        width: 70,
+        width: Renderer.booleanWidth,
         header: 'Enable'.t(),
         dataIndex: 'live',
         resizable: false
     }, {
         header: 'Hostname'.t(),
-        width: 200,
+        width: Renderer.uriWidth,
         flex: 1,
         dataIndex: 'hostname',
         editor: {
