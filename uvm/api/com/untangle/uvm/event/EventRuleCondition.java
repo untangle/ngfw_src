@@ -20,7 +20,6 @@ public class EventRuleCondition
 {
     private static final Logger logger = Logger.getLogger( EventRuleCondition.class );
 
-    //private EventRuleConditionField value;
     private String field;
     private String comparator;
     private String fieldValue;
@@ -46,23 +45,6 @@ public class EventRuleCondition
 
     public String getFieldValue() { return fieldValue; }
     public void setFieldValue( String newValue ) { this.fieldValue = newValue; }
-
-    /**
-     * 13.0 conversion
-     * this can be removed in 13.1
-     *
-     * Prior to 13.0 we stored these inside a "sub-object" EventRuleConditionField
-     * This will dynamically converter the old format to the new format
-     * We now store the field, comparator, and value in the EventRuleCondition
-     */
-    public EventRuleConditionField getValue() { return null; }
-    public void setValue( EventRuleConditionField field )
-    {
-        if ( field == null ) return;
-        this.field = field.getField();
-        this.comparator = field.getComparator();
-        this.fieldValue = field.getValue();
-    }
 
     public boolean isMatch( JSONObject obj )
     {
