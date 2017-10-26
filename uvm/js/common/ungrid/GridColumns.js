@@ -4,7 +4,7 @@ Ext.define('Ung.cmp.GridColumns', {
 
     ruleId: {
         header: 'Rule Id'.t(),
-        width: 70,
+        width: Renderer.idWidth,
         align: 'right',
         resizable: false,
         dataIndex: 'ruleId',
@@ -18,7 +18,7 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Enable'.t(),
         dataIndex: 'enabled',
         resizable: false,
-        width: 70
+        width: Renderer.booleanWidth
     },
 
     flagged: {
@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Flagged'.t(),
         dataIndex: 'flagged',
         resizable: false,
-        width: 70
+        width: Renderer.booleanWidth
     },
 
     blocked: {
@@ -34,12 +34,13 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Blocked'.t(),
         dataIndex: 'blocked',
         resizable: false,
-        width: 70
+        width: Renderer.booleanWidth
     },
 
     description: {
         header: 'Description',
-        width: 200,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'description',
         renderer: function (value) {
             return value || '<em>no description<em>';
@@ -48,6 +49,7 @@ Ext.define('Ung.cmp.GridColumns', {
 
     conditions: {
         header: 'Conditions'.t(),
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'conditions',
         renderer: 'conditionsRenderer'
@@ -57,7 +59,7 @@ Ext.define('Ung.cmp.GridColumns', {
         header: 'Bypass'.t(),
         xtype: 'checkcolumn',
         dataIndex: 'bypass',
-        width: 70
+        width: Renderer.booleanWidth
     }
 });
 
