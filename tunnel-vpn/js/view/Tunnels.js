@@ -33,6 +33,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         ptype: 'responsive'
     }],
 
+    emptyText: 'No Tunnels defined'.t(),
+
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
 

@@ -26,82 +26,89 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
-            xtype: 'grid',
-            title: 'Tunnel Status'.t(),
-            itemId: 'tunnelStatus',
-            trackMouseOver: false,
-            sortableColumns: false,
-            enableColumnHide: false,
-            minHeight: 150,
-            maxHeight: 250,
-            margin: '10 0 10 0',
-            resizable: true,
-            resizeHandles: 's',
-            viewConfig: {
-                emptyText: '',
-                stripeRows: false
+            xtype: 'fieldset',
+            title: '<i class="fa fa-clock-o"></i> ' + 'Tunnel Status'.t(),
+            padding: 10,
+            margin: '20 0',
+            cls: 'app-section',
+
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
             },
 
-            collapsible: true,
-            hideCollapseTool: true,
-            animCollapse: false,
-            recordJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnStatusRecord',
+            collapsed: true,
+            disabled: true,
             bind: {
-                store: '{tunnelStatusList}'
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
             },
+            items: [{
+                xtype: 'ungrid',
+                itemId: 'tunnelStatus',
+                enableColumnHide: true,
+                stateful: true,
+                trackMouseOver: false,
+                resizable: true,
 
-            columns: [{
-                header: 'Tunnel ID'.t(),
-                dataIndex: 'tunnelId',
-                width: 75
-            }, {
-                header: 'Tunnel Name'.t(),
-                dataIndex: 'tunnelName',
-                width: 150,
-                flex: 1
-            }, {
-                header: 'Elapsed Time'.t(),
-                dataIndex: 'elapsedTime',
-                width: 180,
-                renderer: function(value) {
-                    var total = parseInt(value / 1000,10);
-                    var hours = (parseInt(total / 3600,10) % 24);
-                    var minutes = (parseInt(total / 60,10) % 60);
-                    var seconds = parseInt(total % 60,10);
-                    var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-                    return result;
-                }
-            }, {
-                header: 'Rx Data'.t(),
-                dataIndex: 'recvTotal',
-                width: Renderer.sizeWidth,
-                renderer: Renderer.datasize,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Tx Data'.t(),
-                dataIndex: 'xmitTotal',
-                width: Renderer.sizeWidth,
-                renderer: Renderer.datasize,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Tunnel Status'.t(),
-                dataIndex: 'stateInfo',
-                width: 180
-            }, {
-                header: 'Recycle'.t(),
-                xtype: 'actioncolumn',
-                width: 80,
-                align: 'center',
-                iconCls: 'fa fa-recycle',
-                handler: 'recycleTunnel',
-            }],
-            bbar: [{
-                text: 'Refresh'.t(),
-                iconCls: 'fa fa-refresh',
-                handler: 'getTunnelStatus'
+                flex: 1,
+
+                emptyText: 'No Tunnels defined'.t(),
+
+                bind: {
+                    store: '{tunnelStatusList}'
+                },
+
+                plugins: ['gridfilters'],
+
+                columns: [{
+                    header: 'Tunnel ID'.t(),
+                    dataIndex: 'tunnelId',
+                    sortable: true,
+                    width: Renderer.idWidth
+                }, {
+                    header: 'Tunnel Name'.t(),
+                    dataIndex: 'tunnelName',
+                    sortable: true,
+                    width: Renderer.messageWidth,
+                    flex: 1
+                }, {
+                    header: 'Elapsed Time'.t(),
+                    dataIndex: 'elapsedTime',
+                    sortable: true,
+                    width: Renderer.messageWidth,
+                    renderer: Renderer.elapsedTime
+                }, {
+                    header: 'Rx Data'.t(),
+                    dataIndex: 'recvTotal',
+                    sortable: true,
+                    width: Renderer.sizeWidth,
+                    renderer: Renderer.datasize,
+                    filter: Renderer.numericFilter
+                }, {
+                    header: 'Tx Data'.t(),
+                    dataIndex: 'xmitTotal',
+                    sortable: true,
+                    width: Renderer.sizeWidth,
+                    renderer: Renderer.datasize,
+                    filter: Renderer.numericFilter
+                }, {
+                    header: 'Tunnel Status'.t(),
+                    sortable: true,
+                    dataIndex: 'stateInfo',
+                    width: Renderer.messageWidth
+                }, {
+                    header: 'Recycle'.t(),
+                    xtype: 'actioncolumn',
+                    width: Renderer.actionWidth,
+                    align: 'center',
+                    iconCls: 'fa fa-recycle',
+                    handler: 'externalAction',
+                    action: 'recycleTunnel',
+                }],
+                bbar: [ '@refresh', '@reset']
             }]
-
-        }, {
+        },{
             xtype: 'appreports'
         }]
     }, {
@@ -110,7 +117,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
         width: 350,
         minWidth: 300,
         split: true,
-        layout: 'border',
+        layout: 'fit',
         items: [{
             xtype: 'appmetrics',
             region: 'center'
