@@ -7,25 +7,7 @@ Ext.define('Ung.apps.wan-failover.Main', {
 
         data: {
             autoReload: false,
-            wanStatusData: [{
-                name: 'systemName'
-            },{
-                name: 'totalTestsPassed',
-                sortType: 'asInt'
-            },{
-                name: 'totalTestsRun',
-                sortType: 'asInt'
-            },{
-                name: 'online'
-            },{
-                name: 'interfaceId',
-                sortType: 'asInt'
-            },{
-                name: 'interfaceName'
-            },{
-                name: 'totalTestsFailed',
-                sortType: 'asInt'
-            }],
+            wanStatusData: [],
             pingListData: []
         },
 
@@ -34,7 +16,26 @@ Ext.define('Ung.apps.wan-failover.Main', {
                 data: '{settings.tests.list}'
             },
             wanStatusStore: {
-                data: '{wanStatusData}'
+                data: '{wanStatusData}',
+                fields: [{
+                    name: 'systemName'
+                },{
+                    name: 'totalTestsPassed',
+                    sortType: 'asInt'
+                },{
+                    name: 'totalTestsRun',
+                    sortType: 'asInt'
+                },{
+                    name: 'online'
+                },{
+                    name: 'interfaceId',
+                    sortType: 'asInt'
+                },{
+                    name: 'interfaceName'
+                },{
+                    name: 'totalTestsFailed',
+                    sortType: 'asInt'                    
+                }]
             },
             pingListStore: {
                 fields: [ 'name' , 'addr' ],

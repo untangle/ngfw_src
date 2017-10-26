@@ -66,11 +66,15 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
                 enableColumnHide: true,
                 stateful: true,
                 trackMouseOver: false,
+                resizable: true,
 
                 flex: 1,
+
                 emptyText: 'No External Interfaces'.t(),
 
-                bind: '{wanStatusStore}',
+                bind: {
+                    store: '{wanStatusStore}'
+                },
 
                 plugins: ['gridfilters'],
 
