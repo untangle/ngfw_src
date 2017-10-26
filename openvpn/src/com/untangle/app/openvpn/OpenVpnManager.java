@@ -41,6 +41,7 @@ public class OpenVpnManager
     private static final String GENERATE_OVPN_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-ovpn";
     private static final String GENERATE_ONC_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-onc";
     private static final String IPTABLES_SCRIPT = System.getProperty( "prefix" ) + "/etc/untangle-netd/iptables-rules.d/720-openvpn";
+    private static final String AUTH_USER_PASS_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-auth-user-pass";
 
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
@@ -219,6 +220,11 @@ public class OpenVpnManager
             }
         }
 
+        if (settings.getAuthUserPass()) {
+            sb.append( "script-security 3 execve" + "\n" );
+            sb.append( "auth-user-pass-verify " + AUTH_USER_PASS_SCRIPT + " via-env" + "\n" );
+        }
+
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
         sb.append( "port" + " " + settings.getPort() + "\n");
         sb.append( "cipher" + " " + settings.getCipher() + "\n");
@@ -333,6 +339,10 @@ public class OpenVpnManager
                 logger.debug("ADDING client config: " + cfgstr);
                 sb.append( cfgstr + "\n" );
             }
+        }
+
+        if (settings.getAuthUserPass()) {
+            sb.append( "auth-user-pass" + "\n" );
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );

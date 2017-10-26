@@ -198,6 +198,32 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
     },
 
+    configureAuthenticationMethod: function (btn) {
+        var vm = this.getViewModel();
+        var policyId = vm.get('policyId');
+        var authType = this.getViewModel().get('settings.authenticationType');
+        var dircon = rpc.appManager.app('directory-connector');
+
+        switch (authType) {
+            case 'LOCAL_DIRECTORY':
+                Ung.app.redirectTo('#config/local-directory');
+                break;
+            case 'RADIUS':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
+                break;
+            case 'ACTIVE_DIRECTORY':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/active-directory');
+                break;
+            case 'ANY_DIRCON':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
+                break;
+            default: return;
+        }
+    }
+
 });
 
 Ext.define('Ung.apps.openvpn.SpecialGridController', {

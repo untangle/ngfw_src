@@ -3,6 +3,8 @@
  */
 package com.untangle.app.openvpn;
 
+import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Random;
 import java.util.List;
@@ -25,6 +27,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
@@ -244,6 +247,79 @@ public class OpenVpnAppImpl extends AppBase
         } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
+    }
+
+    public int userAuthenticate(String username, String password)
+    {
+        boolean isAuthenticated = false;
+
+        switch (getSettings().getAuthenticationType())
+        {
+        case ACTIVE_DIRECTORY:
+            try {
+                // first create a copy of the original username and another
+                // that is stripped of all the Active Directory foo:
+                // domain*backslash*user -> user
+                // user@domain -> user
+                // We'll always use the stripped version internally but
+                // well try both for authentication. See bug #7951
+                String originalUsername = new String(username);
+                String strippedUsername = new String(username);
+                strippedUsername = strippedUsername.replaceAll(".*\\\\", "");
+                strippedUsername = strippedUsername.replaceAll("@.*", "");
+
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
+                if (directoryConnector == null) break;
+
+                // try the original first and then the stripped version
+                isAuthenticated = directoryConnector.activeDirectoryAuthenticate(originalUsername, password);
+                if (isAuthenticated == false) isAuthenticated = directoryConnector.activeDirectoryAuthenticate(strippedUsername, password);
+            } catch (Exception e) {
+                logger.warn("Active Directory authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+
+        case LOCAL_DIRECTORY:
+            try {
+                isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Local Directory authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+
+        case RADIUS:
+            try {
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.radiusAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Radius authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+
+        case ANY_DIRCON:
+            try {
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Any authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+        default:
+            logger.error("Unknown Authenticate Method: " + getSettings().getAuthenticationType());
+
+        }
+
+        if (!isAuthenticated) {
+            logger.info("Authenticate failure: " + username + " (" + getSettings().getAuthenticationType() + ")");
+            return (1);
+        }
+
+        logger.info("Authenticate success: " + username  + " (" + getSettings().getAuthenticationType() + ")");
+        return (0);
     }
 
     public void incrementPassCount()

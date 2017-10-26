@@ -18,6 +18,11 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
+    public static enum AuthenticationType
+    {
+        NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON
+    };
+
     private static final int DEFAULT_PING_TIME    = 10;
     private static final int DEFAULT_PING_TIMEOUT = 60;
     private static final int DEFAULT_VERBOSITY    = 1;
@@ -33,6 +38,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     private boolean serverEnabled = false;
     private boolean natOpenVpnTraffic = true;
+    private boolean authUserPass = false;
+    private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     
     private LinkedList<OpenVpnConfigItem> clientConfiguration;
     private LinkedList<OpenVpnConfigItem> serverConfiguration;
@@ -133,7 +140,13 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public boolean getNatOpenVpnTraffic() { return this.natOpenVpnTraffic; }
     public void setNatOpenVpnTraffic( boolean newValue ) { this.natOpenVpnTraffic = newValue; }
-    
+
+    public AuthenticationType getAuthenticationType() { return this.authenticationType; }
+    public void setAuthenticationType( AuthenticationType argValue ) { this.authenticationType = argValue; }
+
+    public boolean getAuthUserPass() { return this.authUserPass; }
+    public void setAuthUserPass( boolean newValue ) { this.authUserPass = newValue; }
+
     public String getProtocol() { return this.protocol; }
     public void setProtocol( String newValue ) { this.protocol = newValue; }
 
