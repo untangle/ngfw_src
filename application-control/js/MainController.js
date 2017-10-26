@@ -12,7 +12,6 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         var me = this;
         me.getView().appManager.getStatistics(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             me.getViewModel().set('statistics', result);
         });
         me.getSettings();
@@ -24,7 +23,6 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
         });
     },
@@ -56,6 +54,15 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
             me.getSettings();
             Ext.fireEvent('resetfields', v);
         }, vm.get('settings'));
+    },
+
+    actionRenderer: function(action){
+        switch(action.actionType) {
+            case 'ALLOW': return 'Allow'.t();
+            case 'BLOCK': return 'Block'.t();
+            case 'TARPIT': return 'Tarpit'.t();
+            default: return 'Unknown Action'.t() + ': ' + act;
+        }
     }
 
 });

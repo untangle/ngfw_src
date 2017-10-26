@@ -24,13 +24,13 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
 
     columns: [{
         header: 'Application'.t(),
-        width: 120,
+        width: Renderer.messageWidth,
         dataIndex: 'guid'
     }, {
         xtype: 'checkcolumn',
         header: 'Block'.t(),
         dataIndex: 'block',
-        width: 50,
+        width: Renderer.booleanWidth,
         resizable: false,
         listeners: {
             checkchange: function(col, row, checked, record) {
@@ -41,9 +41,9 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
         xtype: 'checkcolumn',
         header: 'Tarpit'.t(),
         dataIndex: 'tarpit',
-        width: 50,
+        width: Renderer.booleanWidth,
         resizable: false,
-         listeners: {
+        listeners: {
             checkchange: function(col, row, checked, record) {
                 if (checked) record.set('block', false);
             }
@@ -52,27 +52,27 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
         xtype: 'checkcolumn',
         header: 'Flag'.t(),
         dataIndex: 'flag',
-        width: 50,
+        width: Renderer.booleanWidth,
         resizable: false
     }, {
         header: 'Name'.t(),
-        width: 150,
+        width: Renderer.messageWidth,
         dataIndex: 'name'
     }, {
         header: 'Category'.t(),
-        width: 150,
+        width: Renderer.messageWidth,
         dataIndex: 'category'
     }, {
         header: 'Productivity'.t(),
-        width: 80,
+        width: Renderer.idWidth,
         dataIndex: 'productivity'
     }, {
         header: 'Risk',
-        width: 80,
+        width: Renderer.idWidth,
         dataIndex: 'risk'
     }, {
         header: 'Description (click for full text)'.t(),
-        width: 300,
+        width: Renderer.messageWidth,
         dataIndex: 'description',
         flex: 1
     }]
