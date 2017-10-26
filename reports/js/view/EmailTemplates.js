@@ -37,7 +37,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         header: 'Id'.t(),
         width: Renderer.idWidth,
         dataIndex: 'templateId',
-        renderer: 'idRenderer'
+        renderer: Renderer.id
     }, {
         header: 'Title'.t(),
         dataIndex: 'title',
