@@ -53,7 +53,7 @@ public class EventRuleCondition
 
         Object valueObj = getAttribute( obj, field );
         if ( valueObj == null ) {
-            //logger.warn("DEBUG missing field: " + field + " value: " + valueObj );
+            if (logger.isDebugEnabled()) logger.debug("DEBUG missing field: " + field + " value: " + valueObj );
             return false;
         }
 
@@ -62,12 +62,12 @@ public class EventRuleCondition
          * Number is handled specially > and < operators
          */
         if ( valueObj instanceof Number ) {
-            //logger.warn("DEBUG number eval: " + valueObj);
+            if (logger.isDebugEnabled()) logger.debug("DEBUG number eval: " + valueObj);
 
             try {
                 int specifiedValue = Integer.parseInt( fieldValue );
                 int value = (int) valueObj;
-                //logger.warn("DEBUG integer check: " + specifiedValue + " against " + valueObj );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG integer check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
                     return (value == specifiedValue);
@@ -83,13 +83,13 @@ public class EventRuleCondition
                     return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
-                //logger.warn("DEBUG Exception",e );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG Exception",e );
             }
 
             try {
                 long specifiedValue = Long.parseLong( fieldValue );
                 long value = (long) valueObj;
-                //logger.warn("DEBUG long check: " + specifiedValue + " against " + valueObj );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG long check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
                     return (value == specifiedValue);
@@ -105,13 +105,13 @@ public class EventRuleCondition
                     return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
-                //logger.warn("DEBUG Exception",e );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG Exception",e );
             }
 
             try {
                 double specifiedValue = Double.parseDouble( fieldValue );
                 double value = (double)valueObj;
-                //logger.warn("DEBUG double check: " + specifiedValue + " against " + valueObj );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG double check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
                     return (value == specifiedValue);
@@ -127,13 +127,13 @@ public class EventRuleCondition
                     return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
-                //logger.warn("DEBUG Exception",e );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG Exception",e );
             }
 
             try {
                 float specifiedValue = Float.parseFloat( fieldValue );
                 float value = (float)valueObj;
-                //logger.warn("DEBUG float check: " + specifiedValue + " against " + valueObj );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG float check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
                     return (value == specifiedValue);
@@ -149,7 +149,7 @@ public class EventRuleCondition
                     return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
-                //logger.warn("DEBUG Exception",e );
+                if (logger.isDebugEnabled()) logger.debug("DEBUG Exception",e );
             }
 
             return false;
@@ -162,7 +162,7 @@ public class EventRuleCondition
         if ( ! ( "=".equals( comparator ) || "!=".equals( comparator ) ) ) // String only supports "=" or "!=" operator
             return false;
         String valueStr = valueObj.toString().toLowerCase();
-        //logger.warn("DEBUG string check: " + valueStr + " against " + value );
+        if (logger.isDebugEnabled()) logger.debug("DEBUG string check: " + valueStr + " against " + fieldValue );
 
         if ( this.stringGlobMatcher == null )
             this.stringGlobMatcher = new GlobMatcher( fieldValue );
