@@ -335,7 +335,7 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<EventRuleCondition>();
-        condition1 = new EventRuleCondition( "class", "=", "*CaptureUserEvent*" );
+        condition1 = new EventRuleCondition( "class", "=", "*CaptivePortalUserEvent*" );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "event", "=", "FAILED" );
         conditions.add( condition2 );
