@@ -4,7 +4,6 @@ Ext.define('Ung.apps.wan-failover.view.Tests', {
     itemId: 'tests',
     title: 'Tests'.t(),
     viewModel: true,
-    bodyPadding: 10,
 
     tbar: [{
         xtype: 'tbtext',
