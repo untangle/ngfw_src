@@ -172,10 +172,6 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
 
     alias: 'controller.unreportsemailtemplatesgrid',
 
-    idRenderer: function(value){
-        return ( value < 0 || value === undefined ) ? 'new'.t() : value;
-    },
-
     reportRenderer: function( value, metaData ){
         var me = this,
             vm = me.getViewModel(),
