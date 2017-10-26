@@ -67,16 +67,12 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                     '<p>{bandwidthLabel}</p>'
             }
         }, {
-            xtype: 'grid',
-            flex: 1,
+            xtype: 'ungrid',
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
 
-            viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No WANs..</p>',
-                stripeRows: false
-            },
+            emptyText: 'No WAN Interfaces defined'.t(), 
             plugins: {
                 ptype: 'cellediting',
                 clicksToEdit: 1
@@ -95,16 +91,18 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             columns: [{
                 header: 'Interface Id'.t(),
                 align: 'right',
-                width: 100,
+                width: Renderer.idWidth,
                 resizable: false,
                 dataIndex: 'interfaceId'
             }, {
                 header: 'WAN'.t(),
+                width: Renderer.messageWidth,
                 flex: 1,
                 dataIndex: 'name'
             }, {
                 header: 'Download Bandwidth'.t(),
-                width: 150,
+                width: Renderer.sizeWidth,
+                flex: 1,
                 resizable: false,
                 dataIndex: 'downloadBandwidthKbps',
                 editor: {
@@ -118,7 +116,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 }
             }, {
                 header: 'Upload Bandwidth'.t(),
-                width: 150,
+                width: Renderer.sizeWidth,
+                flex: 1,
                 resizable: false,
                 dataIndex: 'uploadBandwidthKbps',
                 editor: {
