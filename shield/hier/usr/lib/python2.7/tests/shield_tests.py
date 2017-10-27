@@ -42,7 +42,10 @@ class ShieldTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_shieldDetectsNmap(self):
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
+    def test_020_shieldDetectsNmap(self):
         # enable logging of blocked settings
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['logBlockedSessions'] = True
