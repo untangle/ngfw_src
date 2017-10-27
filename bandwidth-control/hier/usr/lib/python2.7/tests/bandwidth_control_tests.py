@@ -256,7 +256,10 @@ class BandwidthControlTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_qosLimit(self):
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
+    def test_012_qosLimit(self):
         global preDownSpeedKbsec, wanLimitKbit
 
         print "\nSetting WAN limit: %i Kbps" % (wanLimitKbit)
