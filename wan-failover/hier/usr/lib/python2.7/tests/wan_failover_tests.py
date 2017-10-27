@@ -120,6 +120,9 @@ class WanFailoverTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
     
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     def test_020_ping_test_wan_online(self):
         nuke_rules()
         for wanIndexTup in indexOfWans:
