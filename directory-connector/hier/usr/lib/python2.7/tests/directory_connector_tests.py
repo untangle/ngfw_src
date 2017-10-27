@@ -257,6 +257,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     def test_015_setADSettings_NonSecure(self):
         """
         Test and save settings for test AD server, non secure
