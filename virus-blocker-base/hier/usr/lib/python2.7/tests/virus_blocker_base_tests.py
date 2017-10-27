@@ -122,8 +122,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     # test that client can http download zip
-    def test_011_httpNonVirusNotBlocked(self):
+    def test_012_httpNonVirusNotBlocked(self):
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
