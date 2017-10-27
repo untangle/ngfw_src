@@ -16,31 +16,23 @@ Ext.define('Ung.view.reports.GraphReport', {
     controller: {
         control: {
             '#': {
-                afterrender: 'buildChart',
+                afterrender: 'onAfterRender',
                 resize: 'onResize',
                 deactivate: 'reset'
             }
         },
 
-        // onAfterRender: function () {
-        //     var me = this, vm = this.getViewModel();
-        //     me.buildChart(); // builds an empy chart
+        onAfterRender: function () {
+            var me = this, vm = this.getViewModel();
+            me.buildChart(); // builds an empy chart
 
-        //     // check if reports is rendered inside a widget
-        //     // if (me.getView().up('reportwidget')) {
-        //     //     me.isWidget = true;
-        //     //     return;
-        //     // }
-
-        //     // fetch data when report entry is set or changed
-        //     // vm.bind('{entry}', function () {
-        //     //     me.reset();
-        //     //     me.fetchData(true);
-        //     // });
-        //     // vm.bind('{eEntry.type}', function () {
-        //     //     me.reset();
-        //     // });
-        // },
+            // fetch data when report inside widget or widget settings
+            vm.bind('{entry}', function () {
+                if (!me.getView().up('entry')) {
+                    me.fetchData();
+                }
+            });
+        },
 
         /**
          * used to refresh the chart when it's container size changes
@@ -51,7 +43,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 Ext.defer(function () {
                     me.chart.reflow();
                 }, 200);
-
             }
         },
 
@@ -68,7 +59,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     animation: false,
                     marginRight: widgetDisplay ? undefined : 20,
                     spacing: widgetDisplay ? [5, 5, 10, 5] : [30, 10, 15, 10],
-                    style: { fontFamily: 'Source Sans Pro', fontSize: '12px' },
+                    style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
                     backgroundColor: 'transparent'
                 },
                 exporting: {
@@ -89,7 +80,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         y: 20
                     },
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        // fontFamily: 'Source Sans Pro',
                         padding: 0,
                         fontSize: '14px',
                         fontWeight: 'normal',
@@ -112,11 +103,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                     tickPixelInterval: 80,
                     labels: {
                         style: {
-                            color: '#333',
+                            color: '#777',
                             fontSize: widgetDisplay ? '11px' : '12px',
                             fontWeight: 600
                         },
-                        y: widgetDisplay ? 12 : 15
+                        y: widgetDisplay ? 15 : 20
                     },
                     maxPadding: 0,
                     minPadding: 0,
@@ -157,7 +148,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         useHTML: true,
                         padding: 0,
                         style: {
-                            color: '#333',
+                            color: '#777',
                             fontSize: widgetDisplay ? '11px' : '12px',
                             fontWeight: 600
                         },
@@ -232,7 +223,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                             style: {
                                 fontSize: '12px',
                                 color: '#333',
-                                // fontFamily: 'Source Sans Pro',
+                                fontFamily: 'Roboto Condensed',
                                 fontWeight: 600
                             },
                             formatter: function () {
@@ -297,7 +288,10 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
             me.chart.update({
                 xAxis: { visible: false },
-                yAxis: { visible: false }
+                yAxis: { visible: false },
+                legend: {
+                    enabled: false
+                }
             });
             me.chart.redraw();
             me.chart.zoomOut();
@@ -349,29 +343,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     }
 
                     if (cb) { cb(me.data); }
-                    // if graph rendered inside reports, format and add data in current data grid
-                    if (!me.isWidget && me.getView().up('entry')) {
-                        // console.log(vm.get('data'));
-                        // console.log(me.data);
-                        // vm.set('reportData', me.data);
-                        // vm.set('_currentData', []);
-                        // var ctrl = me.getView().up('entry').getController();
-                        // switch (entryType) {
-                        // case 'TIME_GRAPH':         ctrl.formatTimeData(me.data); break;
-                        // case 'TIME_GRAPH_DYNAMIC': ctrl.formatTimeDynamicData(me.data); break;
-                        // case 'PIE_GRAPH':          ctrl.formatPieData(me.data); break;
-                        // }
-                    } else {
-                        // is widget
-                        // DashboardQueue.next();
-                        // console.log(me);
-                        // Ext.defer(function () {
-                        //     DashboardQueue.add(me);
-                        // }, me.refreshIntervalSec * 1000);
-
-                    }
                 }, function () {
-                    console.log('here');
                     vm.set('eError', true);
                 })
                 .always(function () {
@@ -723,7 +695,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                     }
                 },
                 legend: {
-                    enabled: !(widgetDisplay && isPie),
+                    title: {
+                        text: (!widgetDisplay && isPie && isPieGraph) ? (me.getColumnReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
+                        style: { fontSize: '18px', fontWeight: 400 }
+                    },
+                    enabled: (!widgetDisplay && isPie && isPieGraph),
                     layout: (isPieGraph && isPie) ? 'vertical' : 'horizontal',
                     align: (isPieGraph && isPie) ? 'left' : 'center',
                     verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
@@ -748,6 +724,15 @@ Ext.define('Ung.view.reports.GraphReport', {
                 });
                 me.chart.redraw();
             }
+        },
+
+        getColumnReadableName: function (column) {
+            var tableColumns = this.getViewModel().get('f_tableConfig.columns');
+            if (!tableColumns) { return; }
+
+            return Ext.Array.findBy(tableColumns, function(col) {
+                return col.dataIndex === column;
+            }).header;
         }
     }
 });
