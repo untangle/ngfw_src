@@ -110,8 +110,11 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     # verify client is online
-    def test_011_defaultIsPass(self):
+    def test_012_defaultIsPass(self):
         result = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
         assert (result == 0)
 
