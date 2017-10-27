@@ -90,23 +90,6 @@ Ext.define('Ung.view.reports.EntryModel', {
             });
             return tableConfig.comboItems;
         },
-        // f_startdate: function (get) {
-        //     if (!get('r_customRangeCk.value')) {
-        //         return Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
-        //     }
-        // },
-        // f_startdate: {
-        //     get: function (get) {
-        //         return Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - get('sinceDate.value') * 3600 * 1000));
-        //     },
-        //     // set: function (date) {}
-        // },
-        // f_enddate: function (get) {
-        //     if (!get('r_customRangeCk.value')) {
-        //         return null;
-        //     }
-        //     // return Ext.Date.clearTime(get('endDate.value'));
-        // },
 
         f_textColumnsCount: function (get) {
             return get('textColumns').length;
@@ -134,24 +117,6 @@ Ext.define('Ung.view.reports.EntryModel', {
 
         // _props: function (get) {
         //     return get('entry').getData();
-        // },
-
-        // _colorsStr: {
-        //     get: function (get) {
-        //         if (get('entry.colors')) {
-        //             return get('entry.colors').join(',');
-        //         } else {
-        //             return '';
-        //         }
-        //     },
-        //     set: function (value) {
-        //         var str = value.replace(/ /g, '');
-        //         if (value.length > 0) {
-        //             this.set('entry.colors', value.split(','));
-        //         } else {
-        //             this.set('entry.colors', null);
-        //         }
-        //     }
         // },
 
         f_tableColumnsSource: function (get) {

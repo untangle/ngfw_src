@@ -558,7 +558,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * sets/updates the chart styles based on entry and data
      */
     setStyles: function () {
-        var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
+        var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'), colors,
             widgetDisplay = me.getView().widgetDisplay,
 
             isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
@@ -580,7 +580,11 @@ Ext.define('Ung.view.reports.GraphReportController', {
             is3d = entry.get('pieStyle').indexOf('3D') >= 0;
         }
 
-        var colors = Ext.clone(entry.get('colors')) || Ext.clone(Util.defaultColors);
+        if (!entry.get('colors') || entry.get('colors').length === 0) {
+            colors = Ext.clone(Util.defaultColors);
+        } else {
+            colors = Ext.clone(entry.get('colors'));
+        }
 
         if (colors) {
             for (var i = 0; i < colors.length; i += 1) {
