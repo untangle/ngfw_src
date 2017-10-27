@@ -58,6 +58,10 @@ Ext.define('Ung.view.reports.EntryModel', {
         //     return reportCard;
         // },
 
+        f_tableConfig: function (get) {
+            return TableConfig.generate(get('entry.table'));
+        },
+
         f_tableColumns: function (get) {
             var table = get('eEntry.table'), tableConfig, defaultColumns;
 
