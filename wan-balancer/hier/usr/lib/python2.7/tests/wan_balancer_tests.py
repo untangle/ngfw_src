@@ -213,6 +213,9 @@ class WanBalancerTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
     
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     def test_020_stickySession(self):
         result = global_functions.get_public_ip_address()
         print "Initial IP address %s" % result
