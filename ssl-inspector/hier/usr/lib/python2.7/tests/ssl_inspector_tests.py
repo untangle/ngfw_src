@@ -99,7 +99,10 @@ class SslInspectorTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
             
-    def test_011_checkServerCertificate(self):
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
+    def test_012_checkServerCertificate(self):
         result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
         assert (result == 0)
 
