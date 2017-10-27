@@ -122,7 +122,7 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{eEntry}',
+                    hidden: '{!entry || eEntry || context !== "ADMIN"}',
                     disabled: '{fetching}'
                 }
             }, {
@@ -588,13 +588,15 @@ Ext.define('Ung.view.reports.Entry', {
                     emptyText: 'Select Approximation ...'.t()
                 }, {
                     // PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC
-                    xtype: 'textarea',
-                    fieldLabel: 'Custom Colors'.t() + ' (comma separated)',
+                    xtype: 'colorspicker',
+                    fieldLabel: 'Colors'.t(),
+                    anchor: '100%',
+                    emptyText: 'Using default colors'.t(),
                     bind: {
-                        value: '{_colorsStr}',
+                        value: '{eEntry.colors}',
                         hidden: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
                         disabled: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                    },
+                    }
                 }]
             }],
             dockedItems: [{
@@ -635,8 +637,7 @@ Ext.define('Ung.view.reports.Entry', {
             }, {
                 xtype: 'toolbar',
                 dock: 'bottom',
-                // layout: { type: 'hbox', align: 'stretch' },
-                // ui: 'footer',
+                ui: 'footer',
                 items: [{
                     text: '<strong>' + 'Preview/Refresh'.t() + '</strong>',
                     iconCls: 'fa fa-refresh fa-lg',
