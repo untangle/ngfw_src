@@ -81,16 +81,19 @@ class AdBlockerTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
-    def test_011_adIsBlocked(self):
+    def test_011_license_valid(self):
+        assert(uvm.licenseManager().isLicenseValid(appName()))
+
+        # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
+    def test_021_adIsBlocked(self):
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         assert (result != 0)
          
-    def test_012_notBlocked(self):
+    def test_022_notBlocked(self):
         result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         assert (result == 0)
  
-    def test_013_eventlog_blockedAd(self):
+    def test_023_eventlog_blockedAd(self):
         fname = sys._getframe().f_code.co_name
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
@@ -105,37 +108,37 @@ class AdBlockerTests(unittest2.TestCase):
                                             'ad_blocker_action', 'B' )
         assert( found )
         
-    def test_014_userDefinedAdIsBlocked(self):
+    def test_024_userDefinedAdIsBlocked(self):
         addRule("google.com", True, "description", True)
         result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         nukeRules("userRules")
         assert (result != 0)
         
-    def test_015_userDefinedAdNotBlocked(self):
+    def test_025_userDefinedAdNotBlocked(self):
         addRule("showad.js", True, "description", False)
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("userRules")
         assert (result == 0)
            
-    def test_016_passSiteDisabled(self):
+    def test_026_passSiteDisabled(self):
         addPassRule("ads.pubmatic.com", False, "passedUrls")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result != 0)
          
-    def test_017_passSiteEnabled(self):
+    def test_027_passSiteEnabled(self):
         addPassRule("ads.pubmatic.com", True, "passedUrls")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result == 0)
         
-    def test_018_passClientDisabled(self):
+    def test_028_passClientDisabled(self):
         addPassRule(remote_control.clientIP, False, "passedClients")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
         assert (result != 0)
          
-    def test_019_passClientEnabled(self):
+    def test_029_passClientEnabled(self):
         addPassRule(remote_control.clientIP, True, "passedClients")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
