@@ -81,6 +81,9 @@ class AdBlockerTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
         # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
     def test_021_adIsBlocked(self):
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
