@@ -151,15 +151,18 @@ class PolicyManagerTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     # add a rack
-    def test_011_addRack(self):
+    def test_015_addRack(self):
         global secondRackId
         secondRackId = addRack()
         result = remote_control.is_online()
         assert (result == 0)
 
     # remove a rack
-    def test_012_removeRack(self):
+    def test_016_removeRack(self):
         global secondRackId
         assert (removeRack(secondRackId))
         result = remote_control.is_online()
