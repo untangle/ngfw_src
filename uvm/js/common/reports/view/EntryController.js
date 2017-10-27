@@ -25,6 +25,7 @@ Ext.define('Ung.view.reports.EntryController', {
          */
         vm.bind('{entry}', function (entry) {
             vm.set('eEntry', null);
+
             // vm.set('_currentData', []);
             me.setReportCard(entry.get('type'));
 
