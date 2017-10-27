@@ -97,6 +97,11 @@ public class TunnelVpnApp extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         /**
+         * Clean up stuff from tunnels that have been removed
+         */
+        cleanTunnelSettings();
+
+        /**
          * Synchronize settings with NetworkSettings
          * 1) Any tunnel interfaces that exists that aren't in network settings should be added
          * 2) Any tunnel interfaces that exist in network settings but not in tunnel VPN
@@ -157,7 +162,6 @@ public class TunnelVpnApp extends AppBase
             if(this.getRunState() == AppSettings.AppState.RUNNING)
                 this.tunnelVpnManager.restartProcesses();
         }
-        
     }
 
     @Override
@@ -395,7 +399,7 @@ public class TunnelVpnApp extends AppBase
                 extra.add(interfaceSetings);
             }
         }
-        
+
         return extra;
     }
 
@@ -432,6 +436,48 @@ public class TunnelVpnApp extends AppBase
             logger.info("Sync Settings: " + line);
 
         if (enabled) insertIptablesRules();
+    }
+
+    private void cleanTunnelSettings()
+    {
+        String directory = System.getProperty("uvm.settings.dir") + "/tunnel-vpn";
+        File file = new File(directory);
+        String list[]  = file.list();
+        boolean found;
+
+        for(String name : list)
+        {
+
+
+            // check for a name that starts with our directory prefix
+            if (!name.startsWith("tunnel-")) continue;
+
+            // make sure the file is a directory
+            File target = new File(directory + "/" + name);
+            if (!target.isDirectory()) continue;
+
+            String path = (directory + "/" + name);
+            logger.info("Cleanup checking: " + path);
+
+            // extract the tunnel id from the directory name
+            String idString = name.substring(name.lastIndexOf("-") + 1);
+            int idValue = Integer.valueOf(idString);
+
+            // check the settings to see if this is a valid tunnel
+            found = false;
+
+            for (TunnelVpnTunnelSettings tunnelSettings : getSettings().getTunnels()) {
+                if (tunnelSettings.getTunnelId() !=  idValue) continue;
+                found = true;
+                break;
+            }
+
+            if (found == true) continue;
+
+            // no matching tunnel so get rid of the directory
+            logger.info("Cleanup removing: " + path);
+            UvmContextFactory.context().execManager().exec("rm -r -f " + path);
+        }
     }
 
     private void insertIptablesRules()
@@ -551,5 +597,4 @@ public class TunnelVpnApp extends AppBase
             }
         }
     }
-
 }
