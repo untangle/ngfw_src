@@ -263,8 +263,8 @@ public class OpenVpnAppImpl extends AppBase
                 // user@domain -> user
                 // We'll always use the stripped version internally but
                 // well try both for authentication. See bug #7951
-                String originalUsername = new String(username);
-                String strippedUsername = new String(username);
+                String originalUsername = username;
+                String strippedUsername = username;
                 strippedUsername = strippedUsername.replaceAll(".*\\\\", "");
                 strippedUsername = strippedUsername.replaceAll("@.*", "");
 
