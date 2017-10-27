@@ -131,25 +131,28 @@ class WebFilterBaseTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_test_untangle_com_reachable(self):
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
+    def test_012_test_untangle_com_reachable(self):
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
         assert( found )
 
-    def test_012_porn_is_blocked_by_default(self):
+    def test_013_porn_is_blocked_by_default(self):
         result = self.get_web_request_results(url="http://playboy.com/", expected="blockpage")
         assert (result == 0)
         found = self.check_events("playboy.com", "/", True)
         assert( found )
 
-    def test_013_porn_subdomain_is_blocked_by_default(self):
+    def test_014_porn_subdomain_is_blocked_by_default(self):
         result = self.get_web_request_results(url="http://www.playboy.com/", expected="blockpage")
         assert (result == 0)
         found = self.check_events("www.playboy.com", "/", True)
         assert( found )
 
-    def test_014_porn_subdomain_and_url_is_blocked_by_default(self):
+    def test_015_porn_subdomain_and_url_is_blocked_by_default(self):
         result = self.get_web_request_results(url="http://www.playboy.com/bunnies.html", expected="blockpage")
         assert (result == 0)
         found = self.check_events("www.playboy.com", "/bunnies.html", True)
