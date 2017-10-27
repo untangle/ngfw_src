@@ -7,11 +7,11 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             afterrender: 'getSettings'
         },
         '#tunnelStatus': {
-            afterrender: 'tunnelStatusRefresh'
+            afterrender: 'getTunnelStatus'
         },
     },
 
-    tunnelStatusRefresh: function () {
+    getTunnelStatus: function () {
         var grid = this.getView().down('#tunnelStatus'),
             vm = this.getViewModel();
         grid.setLoading(true);
@@ -34,7 +34,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         if (ex) { Util.handleException(ex); return; }
             // this gives the app a couple seconds to process the disconnect before we refresh the list
             var timer = setTimeout(function() {
-                me.tunnelStatusRefresh();
+                me.getTunnelStatus();
                 v.setLoading(false);
             },2000);
         }, this), record.get("tunnelId"));
