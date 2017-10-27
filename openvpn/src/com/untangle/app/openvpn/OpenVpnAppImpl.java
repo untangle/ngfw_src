@@ -233,6 +233,12 @@ public class OpenVpnAppImpl extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         /**
+         * Clean up stuff from clients that have been removed
+         */
+        cleanClientSettings();
+        cleanClientPackages();
+
+        /**
          * Sync those settings
          */
         this.openVpnManager.configure( this.settings );
@@ -609,6 +615,72 @@ public class OpenVpnAppImpl extends AppBase
             }
         }
 
+    }
+
+    private void cleanClientSettings()
+    {
+        String directory = System.getProperty("uvm.settings.dir") + "/openvpn/remote-clients";
+        File file = new File(directory);
+        String list[]  = file.list();
+        boolean found;
+
+        for(String name : list)
+        {
+            // check for a name that starts with the client prefix
+            if (!name.startsWith("client-")) continue;
+
+            String target = (directory + "/" + name);
+            logger.info("Cleanup checking: " + target);
+
+            // extract the client name from the directory name
+            String clientName = name.substring(name.lastIndexOf("-") + 1);
+
+            // check the settings to see if this is a valid client
+            found = false;
+
+            for (OpenVpnRemoteClient client : getSettings().getRemoteClients()) {
+                if (!clientName.startsWith(client.getName() + ".")) continue;
+                found = true;
+                break;
+            }
+
+            if (found == true) continue;
+
+            // no matching client so get rid of the file
+            logger.info("Cleanup removing: " + target);
+            File trash = new File(target);
+            trash.delete();
+        }
+    }
+
+    private void cleanClientPackages()
+    {
+        String directory = "/tmp/openvpn/client-packages";
+        File file = new File(directory);
+        String list[]  = file.list();
+        boolean found;
+
+        for(String name : list)
+        {
+            String target = (directory + "/" + name);
+            logger.info("Cleanup checking: " + target);
+
+            // check the settings to see if this is a valid client
+            found = false;
+
+            for (OpenVpnRemoteClient client : getSettings().getRemoteClients()) {
+                if (!name.contains("-" + client.getName() + ".")) continue;
+                found = true;
+                break;
+            }
+
+            if (found == true) continue;
+
+            // no matching client so get rid of the file
+            logger.info("Cleanup removing: " + target);
+            File trash = new File(target);
+            trash.delete();
+        }
     }
 
     private synchronized void deployWebApp()

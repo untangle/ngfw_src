@@ -447,8 +447,6 @@ public class TunnelVpnApp extends AppBase
 
         for(String name : list)
         {
-
-
             // check for a name that starts with our directory prefix
             if (!name.startsWith("tunnel-")) continue;
 
