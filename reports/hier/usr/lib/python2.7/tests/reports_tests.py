@@ -147,6 +147,10 @@ class ReportsTests(unittest2.TestCase):
         return "reports"
 
     @staticmethod
+    def webAppName():
+        return "web-filter"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
@@ -189,6 +193,9 @@ class ReportsTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
     
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     # FIXME
     # Syslog settings now live in config > events
     # I'm not sure why this test passes, since the syslog functionality has been removed from reports
