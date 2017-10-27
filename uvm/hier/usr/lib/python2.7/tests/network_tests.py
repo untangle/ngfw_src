@@ -477,6 +477,9 @@ class NetworkTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     def test_015_addVLAN(self):
         raise unittest2.SkipTest("Review changes in test")
         # Add a test static VLAN
