@@ -2,42 +2,19 @@ Ext.define('Ung.reports.cmp.GlobalConditionsController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.globalconditions',
 
+
+    updateConditions: function (store) {
+        var me = this, entryView = me.getView().up('entry'), count = store.getCount();
+
+        me.getView().setTitle('Global Conditions'.t() + ': ' + ((count > 0) ? (' <span style="color: red;">' + count + ' condition(s)</span>') : 'none'.t()));
+
+
+        entryView.getViewModel().set('globalConditions', Ext.Array.pluck(store.getRange(), 'data'));
+        entryView.getController().reload();
+    },
+
     sqlColumnRenderer: function (val) {
         return '<strong>' + TableConfig.getColumnHumanReadableName(val) + '</strong> <span style="float: right;">[' + val + ']</span>';
-    },
-
-    addSqlFilter: function () {
-        var me = this, vm = me.getViewModel(), grid = me.getView(),
-            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
-            _operatorCmp = me.getView().down('#sqlFilterOperator'),
-            _filterValueCmp = me.getView().down('#sqlFilterValue');
-
-        vm.get('globalConditions').push({
-            column: _filterComboCmp.getValue(),
-            operator: _operatorCmp.getValue(),
-            value: _filterValueCmp.getValue(),
-            javaClass: 'com.untangle.app.reports.SqlCondition'
-        });
-
-        _filterComboCmp.setValue(null);
-        _operatorCmp.setValue('=');
-
-        grid.down('#filtersToolbar').remove('sqlFilterValue');
-        grid.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('globalConditions').length));
-        grid.getStore().reload();
-
-        grid.up('entry').getController().reload();
-    },
-
-    removeSqlFilter: function (table, rowIndex) {
-        var me = this, vm = me.getViewModel(), grid = me.getView();
-        Ext.Array.removeAt(vm.get('globalConditions'), rowIndex);
-
-        grid.down('#filtersToolbar').remove('sqlFilterValue');
-        grid.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('globalConditions').length));
-        grid.getStore().reload();
-
-        grid.up('entry').getController().reload();
     },
 
     onColumnChange: function (cmp, newValue) {
@@ -63,11 +40,11 @@ Ext.define('Ung.reports.cmp.GlobalConditionsController', {
         }
     },
 
-    onFilterKeyup: function (cmp, e) {
-        if (e.keyCode === 13) {
-            this.addSqlFilter();
-        }
-    },
+    // onFilterKeyup: function (cmp, e) {
+    //     if (e.keyCode === 13) {
+    //         this.addSqlFilter();
+    //     }
+    // },
 
     sqlFilterQuickItems: function (btn) {
         var menuItem, menuItems = [];
@@ -100,12 +77,32 @@ Ext.define('Ung.reports.cmp.GlobalConditionsController', {
         });
     },
 
+    addSqlFilter: function () {
+        var me = this, grid = me.getView(),
+            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
+            _operatorCmp = me.getView().down('#sqlFilterOperator'),
+            _filterValueCmp = me.getView().down('#sqlFilterValue');
+
+        // var gc = vm.get('globalConditions');
+
+        grid.getStore().add({
+            column: _filterComboCmp.getValue(),
+            operator: _operatorCmp.getValue(),
+            value: _filterValueCmp.getValue(),
+            javaClass: 'com.untangle.app.reports.SqlCondition'
+        });
+
+        _filterComboCmp.setValue(null);
+        _operatorCmp.setValue('=');
+        grid.down('#filtersToolbar').remove('sqlFilterValue');
+    },
+
     selectQuickFilter: function (menu, item) {
-        var me = this, vm = this.getViewModel(), grid = me.getView(),
+        var me = this, grid = me.getView(),
             _filterComboCmp = me.getView().down('#sqlFilterCombo'),
             _operatorCmp = me.getView().down('#sqlFilterOperator');
 
-        vm.get('globalConditions').push({
+        grid.getStore().add({
             column: item.column,
             operator: '=',
             value: item.text,
@@ -116,10 +113,5 @@ Ext.define('Ung.reports.cmp.GlobalConditionsController', {
         _operatorCmp.setValue('=');
 
         grid.down('#filtersToolbar').remove('sqlFilterValue');
-
-        grid.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('globalConditions').length));
-        grid.getStore().reload();
-
-        grid.up('entry').getController().reload();
     }
 });

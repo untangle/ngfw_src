@@ -696,7 +696,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 },
                 legend: {
                     title: {
-                        text: (!widgetDisplay && isPie && isPieGraph) ? (me.getColumnReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
+                        text: (!widgetDisplay && isPie && isPieGraph) ? (TableConfig.getColumnHumanReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
                         style: { fontSize: '18px', fontWeight: 400 }
                     },
                     enabled: (!widgetDisplay && isPie && isPieGraph),
@@ -724,15 +724,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 });
                 me.chart.redraw();
             }
-        },
-
-        getColumnReadableName: function (column) {
-            var tableColumns = this.getViewModel().get('f_tableConfig.columns');
-            if (!tableColumns) { return; }
-
-            return Ext.Array.findBy(tableColumns, function(col) {
-                return col.dataIndex === column;
-            }).header;
         }
     }
 });
