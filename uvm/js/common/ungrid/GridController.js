@@ -509,9 +509,9 @@ Ext.define('Ung.cmp.GridController', {
         var view = this.getView(),
             parentController = null;
 
-        // In parent controller, look for method as <itemId>Refresh (e.g.,wanStatusRefresh)
-        // or default to just refresh.
-        var method = ( view.itemId ? view.itemId  + 'Refresh': 'refresh' );
+        // In parent controller, look for method as get<itemId> in camel case  ( e.g.,getWanStatus() ).
+        // If itemId not found, look for getRefresh()
+        var method = Ext.String.camelCase(['get', view.itemId ? view.itemId : 'refresh']);
 
         while( view != null){
             parentController = view.getController();
@@ -537,6 +537,7 @@ Ext.define('Ung.cmp.GridController', {
         Ext.state.Manager.clear(view.stateId);
         store.getSorters().removeAll();
 
+        // Look for first non-hidden column and make that the default sort.
         var defaultDataIndex = null;
         view.initialConfig.columns.forEach( Ext.bind(function( column ){
             if(!column.hidden && defaultDataIndex == null){

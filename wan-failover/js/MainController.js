@@ -7,10 +7,10 @@ Ext.define('Ung.apps.wan-failover.MainController', {
             beforerender: 'getSettings'
         },
         '#wanStatus': {
-            afterrender: 'wanStatusRefresh'
+            afterrender: 'getWanStatus'
         },
         '#tests': {
-            afterrender: 'wanStatusRefresh'
+            afterrender: 'getWanStatus'
         }
     },
 
@@ -73,7 +73,7 @@ Ext.define('Ung.apps.wan-failover.MainController', {
         }, vm.get('settings'));
     },
 
-    wanStatusRefresh: function (cmp) {
+    getWanStatus: function (cmp) {
         var vm = this.getViewModel();
         var grid;
 
