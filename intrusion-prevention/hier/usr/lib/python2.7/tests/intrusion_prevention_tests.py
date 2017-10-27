@@ -265,6 +265,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     #
     # Wizard tests just compare before/after of enabled rules.
     #
