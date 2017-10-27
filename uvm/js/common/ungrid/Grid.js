@@ -102,6 +102,14 @@ Ext.define('Ung.cmp.Grid', {
      */
     actionText: 'Perform the following action(s):'.t(),
 
+    /**
+     * @cfg {Boolean} defaultSortable
+     *
+     * If true, allow all columns to sort.
+     * If the 'sortable' key on each column is defined, that value will be used instead.
+     */
+    defaultSortable: false,
+
     stateful: false,
 
     layout: 'fit',
@@ -119,6 +127,10 @@ Ext.define('Ung.cmp.Grid', {
     }],
 
     initComponentColumn: function(column){
+        if( column.sortable === undefined ){
+            column.sortable = this.defaultSortable;
+        }
+
         if( this.stateful &&
             !column.stateId &&
             column.dataIndex){
