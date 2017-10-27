@@ -1,4 +1,4 @@
-Ext.define('Ung.view.reports.ReportsController', {
+Ext.define('Ung.view.reports.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.reports',
 
@@ -215,6 +215,15 @@ Ext.define('Ung.view.reports.ReportsController', {
         });
         wizard.show();
     },
+
+    newImport: function () {
+        var me = this;
+        var dialog = me.getView().add({
+            xtype: 'importdialog'
+        });
+        dialog.show();
+    },
+
 
     exportCategoryReports: function () {
         var me = this, vm = me.getViewModel(), reportsArr = [], category, reports;
