@@ -5,6 +5,14 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     controller: 'globalconditions',
 
     viewModel: {
+        stores: {
+            conditions: {
+                data: [],
+                listeners: {
+                    datachanged: 'updateConditions'
+                }
+            }
+        },
         formulas: {
             f_tableconfig: function (get) {
                 return TableConfig.generate(get('entry.table'));
@@ -12,7 +20,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         }
     },
 
-    title: Ext.String.format('Global Conditions: {0}'.t(), 0),
+    title: 'Global Conditions'.t() + ': ' + 'none'.t(),
 
 
     sortableColumns: false,
@@ -23,7 +31,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     // hideHeaders: true,
     bind: {
         hidden: '{!entry}',
-        store: { data: '{globalConditions}' }
+        store: '{conditions}'
     },
 
     viewConfig: {
@@ -148,9 +156,12 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     }, {
         xtype: 'actioncolumn',
         width: 30,
-        flex: 1,
-        // align: 'center',
-        iconCls: 'fa fa-minus-circle',
-        handler: 'removeSqlFilter'
+        align: 'center',
+        iconCls: 'fa fa-trash-o fa-red',
+        handler: function (table, rowIndex, colIndex, item, e, record) {
+            record.drop();
+        }
+    }, {
+        flex: 1
     }]
 });

@@ -187,13 +187,12 @@ Ext.define('Ung.reports.cmp.ReportData', {
         },
 
         addPieFilter: function (view, rowIndex, colIndex, item, e, record) {
-            console.log(record);
             var me = this, vm = me.getViewModel(),
                 // gridFilters =  me.getView().down('#sqlFilters'),
                 col = vm.get('entry.pieGroupColumn');
 
             if (col) {
-                vm.get('globalConditions').push({
+                me.getView().up('entry').down('globalconditions').getStore().add({
                     column: col,
                     operator: '=',
                     value: record.get(col),
@@ -203,11 +202,6 @@ Ext.define('Ung.reports.cmp.ReportData', {
                 console.log('Issue with pie column!');
                 return;
             }
-
-            // gridFilters.setCollapsed(false);
-            // gridFilters.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('globalConditions').length));
-            // gridFilters.getStore().reload();
-            // me.reload();
         }
 
     }
