@@ -1,5 +1,5 @@
 Ext.define('Ung.view.Main', {
-    extend: 'Ung.view.reports.Reports', // defined in module
+    extend: 'Ung.view.reports.Main', // defined in module
     // layout: 'border',
     viewModel: {
         data: { servlet: 'REPORTS' }

@@ -1,4 +1,4 @@
-Ext.define('Ung.cmp.DateRangePicker', {
+Ext.define('Ung.reports.cmp.DateRangePicker', {
     extend: 'Ext.form.field.Picker',
     alias: 'widget.daterange',
 

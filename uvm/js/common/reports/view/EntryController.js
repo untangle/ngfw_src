@@ -11,7 +11,6 @@ Ext.define('Ung.view.reports.EntryController', {
 
     refreshTimeout: null,
 
-
     onDeactivate: function () {
         this.getViewModel().set('eEntry', null);
         this.reset();
@@ -26,8 +25,10 @@ Ext.define('Ung.view.reports.EntryController', {
          */
         vm.bind('{entry}', function (entry) {
             vm.set('eEntry', null);
-            vm.set('_currentData', []);
+            // vm.set('_currentData', []);
             me.setReportCard(entry.get('type'));
+
+            me.reload(true);
 
 
             // dataGrid.setColumns([]);
@@ -71,7 +72,7 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('timeDataColumns', Ext.Array.map(eEntry.get('timeDataColumns') || [], function (col) { return { str: col }; }));
         });
 
-        // each time the eEntry type is changed check valid edit form
+        // each time the eEntry type is changed check if editing form is valid
         vm.bind('{eEntry.type}', function (type) {
             // console.log('TYPE', type);
             if (!type) { return; }
@@ -142,182 +143,6 @@ Ext.define('Ung.view.reports.EntryController', {
         me.getView().down('#reportCard').setActiveItem(reportCard);
     },
 
-    formatTimeData: function (data) {
-        var vm = this.getViewModel(),
-            entry = vm.get('eEntry') || vm.get('entry'),
-            dataGrid = this.getView().down('#currentData'), i, column;
-
-        dataGrid.setLoading(false);
-
-        // var storeFields = [{
-        //     name: 'time_trunc'
-        // }];
-
-        var reportDataColumns = [{
-            dataIndex: 'time_trunc',
-            header: 'Timestamp'.t(),
-            width: 130,
-            flex: 1,
-            renderer: function (val) {
-                return (!val) ? 0 : Util.timestampFormat(val);
-            }
-        }];
-        var title;
-
-        for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
-            column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
-            title = column;
-            reportDataColumns.push({
-                dataIndex: column,
-                header: title,
-                width: entry.get('timeDataColumns').length > 2 ? 60 : 90,
-                renderer: function (val) {
-                    return val !== undefined ? val : '-';
-                }
-            });
-        }
-
-        dataGrid.setColumns(reportDataColumns);
-        dataGrid.getStore().loadData(data);
-        // vm.set('_currentData', data);
-    },
-
-    formatTimeDynamicData: function (data) {
-        var vm = this.getViewModel(),
-            entry = vm.get('entry'),
-            timeDataColumns = [],
-            dataGrid = this.getView().down('#currentData'), i, column;
-
-        dataGrid.setLoading(false);
-
-        for (i = 0; i < data.length; i += 1) {
-            for (var _column in data[i]) {
-                if (data[i].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
-                    timeDataColumns.push(_column);
-                }
-            }
-        }
-
-        var reportDataColumns = [{
-            dataIndex: 'time_trunc',
-            header: 'Timestamp'.t(),
-            width: 130,
-            flex: 1,
-            renderer: function (val) {
-                return (!val) ? 0 : Util.timestampFormat(val);
-            }
-        }];
-        var seriesRenderer = null, title;
-        if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-            seriesRenderer = Renderer[entry.get('seriesRenderer')];
-        }
-
-        for (i = 0; i < timeDataColumns.length; i += 1) {
-            column = timeDataColumns[i];
-            title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
-            // storeFields.push({name: timeDataColumns[i], type: 'integer'});
-            reportDataColumns.push({
-                dataIndex: column,
-                header: title,
-                width: timeDataColumns.length > 2 ? 60 : 90
-            });
-        }
-
-        dataGrid.setColumns(reportDataColumns);
-        dataGrid.getStore().loadData(data);
-        // vm.set('_currentData', data);
-    },
-
-    formatPieData: function (data) {
-        var me = this, vm = me.getViewModel(),
-            entry = vm.get('eEntry') || vm.get('entry'),
-            dataGrid = me.getView().down('#currentData');
-
-        dataGrid.setLoading(false);
-
-        dataGrid.setColumns([{
-            dataIndex: entry.get('pieGroupColumn'),
-            header: me.sqlColumnRenderer(entry.get('pieGroupColumn')),
-            flex: 1,
-            renderer: Renderer[entry.get('pieGroupColumn')] || null
-        }, {
-            dataIndex: 'value',
-            header: 'value'.t(),
-            width: 200,
-            renderer: function (value) {
-                if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
-                    return Util.bytesToHumanReadable(value, true);
-                } else {
-                    return value;
-                }
-            }
-        }, {
-            xtype: 'actioncolumn',
-            menuDisabled: true,
-            width: 30,
-            align: 'center',
-            items: [{
-                iconCls: 'fa fa-filter',
-                tooltip: 'Add Condition'.t(),
-                handler: 'addPieFilter'
-            }]
-        }]);
-        dataGrid.getStore().loadData(data);
-        // vm.set('_currentData', data);
-
-    },
-
-    addPieFilter: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this, vm = me.getViewModel(),
-            gridFilters =  me.getView().down('#sqlFilters'),
-            col = vm.get('entry.pieGroupColumn');
-
-        if (col) {
-            vm.get('sqlFilterData').push({
-                column: col,
-                operator: '=',
-                value: record.get(col),
-                javaClass: 'com.untangle.app.reports.SqlCondition'
-            });
-        } else {
-            console.log('Issue with pie column!');
-            return;
-        }
-
-        gridFilters.setCollapsed(false);
-        gridFilters.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
-        gridFilters.getStore().reload();
-        me.reload();
-    },
-
-    formatTextData: function (data) {
-        var vm = this.getViewModel(),
-            entry = vm.get('eEntry') || vm.get('entry'),
-            dataGrid = this.getView().down('#currentData'), column, i;
-
-        dataGrid.setLoading(false);
-        dataGrid.setColumns([{
-            dataIndex: 'data',
-            header: 'data'.t(),
-            flex: 1
-        }, {
-            dataIndex: 'value',
-            header: 'value'.t(),
-            width: 200
-        }]);
-
-        var reportData = [], value;
-        if (data.length > 0 && entry.get('textColumns') !== null) {
-            for (i = 0; i < entry.get('textColumns').length; i += 1) {
-                column = entry.get('textColumns')[i].split(' ').splice(-1)[0];
-                value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
-                reportData.push({data: column, value: value});
-            }
-        }
-        // vm.set('_currentData', reportData);
-        dataGrid.getStore().loadData(reportData);
-    },
-
     filterData: function (min, max) {
         // aply filtering only on timeseries
         if (this.getViewModel().get('entry.type').indexOf('TIME_GRAPH') >= 0) {
@@ -329,8 +154,11 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-
-    reload: function () {
+    /**
+     * reloads the reports
+     * reset = false just fetches the data
+     */
+    reload: function (reset) {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
@@ -356,10 +184,15 @@ Ext.define('Ung.view.reports.EntryController', {
             return;
         }
 
+        if (reset) {
+            me.reset();
+        }
+
         // if (reps) { reps.getViewModel().set('fetching', true); }
-        ctrl.fetchData(false, function () {
+        ctrl.fetchData(false, function (data) {
             // if (reps) { reps.getViewModel().set('fetching', false); }
             // if autorefresh enabled refetch data in 5 seconds
+            vm.set('reportData', data);
             if (vm.get('r_autoRefreshBtn.pressed')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.reload();
@@ -389,6 +222,14 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
+    refresh: function () {
+        this.reload(false);
+    },
+
+    resetAndReload: function () {
+        this.reload(true);
+    },
+
     // resetView: function(){
     //     var grid = this.getView().down('grid');
     //     Ext.state.Manager.clear(grid.stateId);
@@ -410,9 +251,6 @@ Ext.define('Ung.view.reports.EntryController', {
 
 
     // TABLE COLUMNS / CONDITIONS
-    updateDefaultColumns: function (el, value) {
-        this.getViewModel().set('entry.defaultColumns', value.split(','));
-    },
 
     addSqlCondition: function () {
         var me = this, vm = me.getViewModel(),
@@ -444,126 +282,6 @@ Ext.define('Ung.view.reports.EntryController', {
         return '<strong>' + TableConfig.getColumnHumanReadableName(val) + '</strong> <span style="float: right;">[' + val + ']</span>';
     },
     // TABLE COLUMNS / CONDITIONS END
-
-
-    // FILTERS
-    addSqlFilter: function () {
-        var me = this, vm = me.getViewModel(),
-            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
-            _operatorCmp = me.getView().down('#sqlFilterOperator'),
-            _filterValueCmp = me.getView().down('#sqlFilterValue');
-
-        vm.get('sqlFilterData').push({
-            column: _filterComboCmp.getValue(),
-            operator: _operatorCmp.getValue(),
-            value: _filterValueCmp.getValue(),
-            javaClass: 'com.untangle.app.reports.SqlCondition'
-        });
-
-        _filterComboCmp.setValue(null);
-        _operatorCmp.setValue('=');
-
-        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
-
-        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
-        me.getView().down('#sqlFilters').getStore().reload();
-        me.reload();
-    },
-
-    removeSqlFilter: function (table, rowIndex) {
-        var me = this, vm = me.getViewModel();
-        Ext.Array.removeAt(vm.get('sqlFilterData'), rowIndex);
-
-        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
-
-        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
-        me.getView().down('#sqlFilters').getStore().reload();
-        me.reload();
-    },
-
-    onColumnChange: function (cmp, newValue) {
-        var me = this;
-
-        cmp.up('toolbar').remove('sqlFilterValue');
-
-        if (!newValue) { return; }
-        var column = Ext.Array.findBy(me.tableConfig.columns, function (column) {
-            return column.dataIndex === newValue;
-        });
-
-        if (column.widgetField) {
-            column.widgetField.itemId = 'sqlFilterValue';
-            cmp.up('toolbar').insert(4, column.widgetField);
-        } else {
-            cmp.up('toolbar').insert(4, {
-                xtype: 'textfield',
-                itemId: 'sqlFilterValue',
-                value: ''
-            });
-        }
-    },
-
-    onFilterKeyup: function (cmp, e) {
-        if (e.keyCode === 13) {
-            this.addSqlFilter();
-        }
-    },
-
-    sqlFilterQuickItems: function (btn) {
-        var menuItem, menuItems = [];
-        Rpc.asyncData('rpc.reportsManager.getConditionQuickAddHints').then(function (result) {
-            Ext.Object.each(result, function (key, vals) {
-                menuItem = {
-                    text: TableConfig.getColumnHumanReadableName(key),
-                    disabled: vals.length === 0
-                };
-                if (vals.length > 0) {
-                    menuItem.menu = {
-                        plain: true,
-                        items: Ext.Array.map(vals, function (val) {
-                            return {
-                                text: val,
-                                column: key
-                            };
-                        }),
-                        listeners: {
-                            click: 'selectQuickFilter'
-                        }
-                    };
-                }
-                menuItems.push(menuItem);
-
-
-            });
-            btn.getMenu().removeAll();
-            btn.getMenu().add(menuItems);
-        });
-    },
-
-    selectQuickFilter: function (menu, item) {
-        var me = this, vm = this.getViewModel(),
-            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
-            _operatorCmp = me.getView().down('#sqlFilterOperator');
-
-        vm.get('sqlFilterData').push({
-            column: item.column,
-            operator: '=',
-            value: item.text,
-            javaClass: 'com.untangle.app.reports.SqlCondition'
-        });
-
-        _filterComboCmp.setValue(null);
-        _operatorCmp.setValue('=');
-
-        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
-
-        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
-        me.getView().down('#sqlFilters').getStore().reload();
-        me.reload();
-
-    },
-
-    // END FILTERS
 
 
     // // DASHBOARD ACTION
@@ -641,6 +359,9 @@ Ext.define('Ung.view.reports.EntryController', {
     //         });
     // },
 
+    /**
+     * updates an existing custom report
+     */
     updateReport: function () {
         var me = this,
             v = this.getView(),
@@ -678,6 +399,9 @@ Ext.define('Ung.view.reports.EntryController', {
             });
     },
 
+    /**
+     * creates a new report
+     */
     saveNewReport: function () {
         var me = this,
             v = this.getView(),
@@ -712,6 +436,9 @@ Ext.define('Ung.view.reports.EntryController', {
             });
     },
 
+    /**
+     * removes a custom created report
+     */
     removeReport: function () {
         var me = this, vm = this.getViewModel(),
             entry = vm.get('entry');
@@ -752,6 +479,9 @@ Ext.define('Ung.view.reports.EntryController', {
             });
     },
 
+    /**
+     * exports an image with current graph chart
+     */
     downloadGraph: function () {
         var me = this, vm = me.getViewModel(), now = new Date();
         try {
@@ -765,6 +495,9 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
+    /**
+     * exports Events list from an Event Report
+     */
     exportEventsHandler: function () {
         var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], startDate, endDate;
         if (!entry) { return; }
@@ -783,7 +516,7 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         var conditions = [];
-        Ext.Array.each(Ext.clone(vm.get('sqlFilterData')), function (cnd) {
+        Ext.Array.each(Ext.clone(vm.get('globalConditions')), function (cnd) {
             delete cnd._id;
             conditions.push(cnd);
         });
@@ -806,6 +539,9 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.MessageBox.hide();
     },
 
+    /**
+     * exports graph data
+     */
     exportGraphData: function (btn) {
         var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [], headers = [], j;
         if (!entry) { return; }

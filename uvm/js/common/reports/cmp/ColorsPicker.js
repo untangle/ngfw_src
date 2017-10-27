@@ -1,4 +1,4 @@
-Ext.define('Ung.cmp.ColorsPicker', {
+Ext.define('Ung.reports.cmp.ColorsPicker', {
     extend: 'Ext.form.field.Picker',
     alias: 'widget.colorspicker',
 
