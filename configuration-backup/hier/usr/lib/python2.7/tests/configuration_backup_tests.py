@@ -46,6 +46,9 @@ class ConfigurationBackupTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
     def test_020_backupNow(self):
         global app
         boxUID = uvmContext.getServerUID()
