@@ -100,7 +100,10 @@ class ApplicationControlTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_classdIsRunning(self):
+    def test_011_license_valid(self):
+        assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
+
+    def test_012_classdIsRunning(self):
         result = os.system("ps aux | grep classd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
 
