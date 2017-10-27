@@ -873,6 +873,33 @@ a.view-reports {
     padding: 1px;
 }
 
+.colorpicker {
+    .x-tagfield-list {
+        list-style-type: none;
+    }
+    .color-item {
+        float: left;
+        width: 16px;
+        height: 16px;
+        margin: 0 1px;
+        border-radius: 4px;
+        border: 1px #CCC solid;
+        // box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+    .x-tagfield-input {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        input {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
+
+
 
 .invalidreport {
     // visibility: visible !important;

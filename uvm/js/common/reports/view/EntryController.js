@@ -5,11 +5,17 @@ Ext.define('Ung.view.reports.EntryController', {
     control: {
         '#': {
             afterrender: 'onAfterRender',
+            deactivate: 'onDeactivate'
         }
     },
 
     refreshTimeout: null,
 
+
+    onDeactivate: function () {
+        this.getViewModel().set('eEntry', null);
+        this.reset();
+    },
 
     onAfterRender: function () {
         var me = this, vm = this.getViewModel(),
@@ -323,25 +329,6 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-
-
-    updateColor: function (menu, color) {
-        var vm = this.getViewModel(),
-            newColors = vm.get('entry.colors') ? Ext.clone(vm.get('entry.colors')) : Ext.clone(Util.defaultColors);
-
-        menu.up('button').setText('<i class="fa fa-square" style="color: #' + color + ';"></i>');
-        newColors[menu.up('button').idx] = '#' + color;
-        vm.set('entry.colors', newColors);
-        return false;
-    },
-
-    // addColor: function (btn) {
-    //     btn.up('grid').getStore().add({color: 'FF0000'});
-    //     // var vm = this.getViewModel();
-    //     // var colors = vm.get('report.colors');
-    //     // colors.push('#FF0000');
-    //     // vm.set('report.colors', colors);
-    // },
 
     reload: function () {
         var me = this, vm = me.getViewModel(),
