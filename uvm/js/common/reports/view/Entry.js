@@ -311,7 +311,7 @@ Ext.define('Ung.view.reports.Entry', {
                         text: 'Refresh'.t(),
                         iconCls: 'fa fa-refresh',
                         itemId: 'refreshBtn',
-                        handler: 'reload',
+                        handler: 'refresh',
                         disabled: true,
                         bind: {
                             disabled: '{autoRefresh || fetching}'
@@ -643,7 +643,7 @@ Ext.define('Ung.view.reports.Entry', {
                     iconCls: 'fa fa-refresh fa-lg',
                     flex: 1,
                     scale: 'medium',
-                    handler: 'reload',
+                    handler: 'resetAndReload',
                     formBind: true
                 }]
             }]
@@ -1197,172 +1197,28 @@ Ext.define('Ung.view.reports.Entry', {
             }]
         }, {
             region: 'east',
-            xtype: 'grid',
-            itemId: 'currentData',
+            xtype: 'reportdata',
+            split: true,
             width: 400,
             minWidth: 400,
-            split: true,
-            store: { data: [] },
             bind: {
                 hidden: '{!dataCk.checked || eEntry}',
-            },
-            bbar: ['->', {
-                itemId: 'exportGraphData',
-                text: 'Export Data'.t(),
-                iconCls: 'fa fa-external-link-square',
-                handler: 'exportGraphData'
-            }]
+            }
         }, {
             /**
              * Global conditions which apply to all reports
              */
             region: 'south',
-            weight: 25,
-            xtype: 'grid',
-            height: 280,
-            title: Ext.String.format('Global Conditions: {0}'.t(), 0),
+            xtype: 'globalconditions',
             itemId: 'sqlFilters',
-            collapsible: true,
-            collapsed: true,
+            weight: 25,
+            height: 280,
             animCollapse: false,
             titleCollapse: true,
+            collapsible: true,
+            collapsed: true,
             split: true,
             hidden: true,
-
-            sortableColumns: false,
-            enableColumnResize: false,
-            enableColumnMove: false,
-            enableColumnHide: false,
-            disableSelection: true,
-            // hideHeaders: true,
-            bind: {
-                hidden: '{!entry}',
-                store: { data: '{sqlFilterData}' }
-            },
-
-            viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> ' + 'No Conditions'.t() + '</p>',
-                stripeRows: false,
-            },
-
-            dockedItems: [{
-                xtype: 'toolbar',
-                itemId: 'filtersToolbar',
-                dock: 'top',
-                layout: {
-                    type: 'hbox',
-                    align: 'stretch',
-                    pack: 'start'
-                },
-                items: [{
-                    xtype: 'button',
-                    text: 'Quick Add'.t(),
-                    iconCls: 'fa fa-plus-circle',
-                    menu: {
-                        plain: true,
-                        // mouseLeaveDelay: 0,
-                        items: [{
-                            text: 'Loading ...'
-                        }],
-                    },
-                    listeners: {
-                        menushow: 'sqlFilterQuickItems'
-                    }
-                }, '-',  {
-                    xtype: 'combo',
-                    emptyText: 'Select Column ...',
-                    labelWidth: 100,
-                    labelAlign: 'right',
-                    width: 450,
-                    itemId: 'sqlFilterCombo',
-                    reference: 'sqlFilterCombo',
-                    publishes: 'value',
-                    value: '',
-                    editable: false,
-                    queryMode: 'local',
-                    displayField: 'text',
-                    valueField: 'value',
-                    store: { data: [] },
-                    listConfig: {
-                        itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
-                    },
-                    listeners: {
-                        change: 'onColumnChange'
-                    }
-                }, {
-                    xtype: 'combo',
-                    width: 80,
-                    publishes: 'value',
-                    value: '=',
-                    itemId: 'sqlFilterOperator',
-                    store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
-                    editable: false,
-                    queryMode: 'local',
-                    hidden: true,
-                    bind: {
-                        hidden: '{!sqlFilterCombo.value}'
-                    }
-                },
-                // {
-                //     xtype: 'textfield',
-                //     itemId: 'sqlFilterValue',
-                //     value: '',
-                //     disabled: true,
-                //     enableKeyEvents: true,
-                //     bind: {
-                //         disabled: '{sqlFilterCombo.value === ""}'
-                //     },
-                //     listeners: {
-                //         keyup: 'onFilterKeyup'
-                //     }
-                // },
-                {
-                    xtype: 'button',
-                    text: 'Add',
-                    iconCls: 'fa fa-plus-circle',
-                    disabled: true,
-                    bind: {
-                        disabled: '{!sqlFilterCombo.value}'
-                    },
-                    handler: 'addSqlFilter'
-                }]
-            }],
-
-            columns: [{
-                header: 'Column'.t(),
-                width: 435,
-                dataIndex: 'column',
-                renderer: 'sqlColumnRenderer'
-            }, {
-                header: 'Operator'.t(),
-                xtype: 'widgetcolumn',
-                width: 82,
-                align: 'center',
-                widget: {
-                    xtype: 'combo',
-                    width: 80,
-                    bind: '{record.operator}',
-                    store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
-                    editable: false,
-                    queryMode: 'local'
-                }
-
-            }, {
-                header: 'Value'.t(),
-                xtype: 'widgetcolumn',
-                width: 300,
-                widget: {
-                    xtype: 'textfield',
-                    bind: '{record.value}'
-                }
-            }, {
-                xtype: 'actioncolumn',
-                width: 30,
-                flex: 1,
-                // align: 'center',
-                iconCls: 'fa fa-minus-circle',
-                handler: 'removeSqlFilter'
-            }]
         }]
 
     }]

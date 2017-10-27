@@ -1,4 +1,4 @@
-Ext.define('Ung.view.reports.Reports', {
+Ext.define('Ung.view.reports.Main', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.reports',
     itemId: 'reports',
@@ -64,10 +64,10 @@ Ext.define('Ung.view.reports.Reports', {
         plugins: 'responsive',
         store: 'reportstree',
 
-        disabled: true,
-        bind: {
-            disabled: '{editing}',
-        },
+        // disabled: true,
+        // bind: {
+        //     disabled: '{editing}',
+        // },
 
         viewConfig: {
             selectionModel: {
@@ -93,6 +93,30 @@ Ext.define('Ung.view.reports.Reports', {
                 change: 'filterTree',
                 buffer: 100
             }
+        }, {
+            xtype: 'toolbar',
+            dock: 'bottom',
+            ui: 'footer',
+            hidden: true,
+            bind: {
+                hidden: '{context !== "ADMIN"}'
+            },
+            items: [{
+                xtype: 'segmentedbutton',
+                allowToggle: false,
+                flex: 1,
+                items: [{
+                    text: 'Create New'.t(),
+                    iconCls: 'fa fa-magic fa-lg',
+                    scale: 'medium',
+                    handler: 'newReport',
+                }, {
+                    text: 'Import'.t(),
+                    iconCls: 'fa fa-external-link-square fa-lg fa-rotate-180',
+                    scale: 'medium',
+                    handler: 'newImport',
+                }]
+            }]
         }],
 
         columns: [{
@@ -106,18 +130,6 @@ Ext.define('Ung.view.reports.Reports', {
         listeners: {
             beforeselect: 'beforeSelectReport'
         },
-
-        bbar: [{
-            text: 'Create New Report'.t(),
-            iconCls: 'fa fa-magic fa-lg',
-            flex: 1,
-            scale: 'medium',
-            handler: 'newReport',
-            hidden: true,
-            bind: {
-                hidden: '{context !== "ADMIN"}'
-            }
-        }],
 
         responsiveConfig: {
             wide: { hidden: false },
