@@ -91,8 +91,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
             result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_options + " " +  url)
         else:
-            print "wget -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected
-            result = remote_control.run_command("wget -q -O - " + extra_options + " " + url + " 2>&1 | grep -q " + expected)
+            print "wget -4 -t 2 -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected
+            result = remote_control.run_command("wget -q -4 -t 2 -O - " + extra_options + " " + url + " 2>&1 | grep -q " + expected)
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
@@ -538,8 +538,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         """verify that an entry in the pass list overrides a blocked category"""
         self.pass_url_list_add("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result1 = remote_control.run_command("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
-        result2 = remote_control.run_command("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
+        result1 = self.get_web_request_results(url="https://playboy.com/test/testPage1.html", expected="blockpage")
+        result2 = self.get_web_request_results(url="https://www.playboy.com/test/testPage1.html", expected="blockpage")
         self.pass_url_list_clear()
         assert (result1 != 0)
         assert (result2 != 0)
