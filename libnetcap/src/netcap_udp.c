@@ -306,6 +306,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.port));
     cmsg->cmsg_level = SOL_UDP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = UDP_SPORT;
     sport = htons(pkt->src.port);
     memcpy( CMSG_DATA(cmsg),&sport,sizeof(pkt->src.port) );
@@ -318,6 +319,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = IP_SENDNFMARK_VALUE();
     memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark) );
 
@@ -329,6 +331,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.host));
     cmsg->cmsg_level = SOL_IP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = IP_SADDR_VALUE();
     memcpy( CMSG_DATA(cmsg),&pkt->src.host,sizeof(pkt->src.host) );
 
