@@ -77,7 +77,14 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                     dataIndex: 'elapsedTime',
                     sortable: true,
                     width: Renderer.messageWidth,
-                    renderer: Renderer.elapsedTime
+                    renderer: function(value) {
+                        var total = parseInt(value / 1000,10);
+                        var hours = (parseInt(total / 3600,10) % 24);
+                        var minutes = (parseInt(total / 60,10) % 60);
+                        var seconds = parseInt(total % 60,10);
+                        var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+                        return result;
+                    }
                 }, {
                     header: 'Rx Data'.t(),
                     dataIndex: 'recvTotal',
