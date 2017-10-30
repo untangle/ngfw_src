@@ -230,7 +230,7 @@ Ext.define('Ung.reports.cmp.ImportDialog', {
                 delete rep.icon;
 
                 // if appending check uniqueId conflit and generate another
-                if (!rep.uniqueId || (!me.lookup('replaceAllCk').getValue() && Ext.getStore('reports').find('uniqueId', rep.uniqueId) < 0)) {
+                if (!rep.uniqueId || (!me.lookup('replaceAllCk').getValue() && Ext.getStore('reports').find('uniqueId', rep.uniqueId) > 0)) {
                     rep.uniqueId = 'report-' + Math.random().toString(36).substr(2);
                 }
                 reports.push(rep);
