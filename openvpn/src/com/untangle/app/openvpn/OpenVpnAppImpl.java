@@ -233,12 +233,6 @@ public class OpenVpnAppImpl extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         /**
-         * Clean up stuff from clients that have been removed
-         */
-        cleanClientSettings();
-        cleanClientPackages();
-
-        /**
          * Sync those settings
          */
         this.openVpnManager.configure( this.settings );
@@ -252,6 +246,17 @@ public class OpenVpnAppImpl extends AppBase
             }
         } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );
+        }
+
+        /**
+         * Clean up stuff from clients and servers that have been removed
+         */
+        try {
+            cleanClientSettings();
+            cleanClientPackages();
+            cleanServerSettings();
+        } catch (Exception exn) {
+            logger.warn("Exception during client/server cleanup", exn);
         }
     }
 
@@ -617,7 +622,7 @@ public class OpenVpnAppImpl extends AppBase
 
     }
 
-    private void cleanClientSettings()
+    private void cleanClientSettings() throws Exception
     {
         String directory = System.getProperty("uvm.settings.dir") + "/openvpn/remote-clients";
         File file = new File(directory);
@@ -656,7 +661,7 @@ public class OpenVpnAppImpl extends AppBase
         }
     }
 
-    private void cleanClientPackages()
+    private void cleanClientPackages() throws Exception
     {
         String directory = "/tmp/openvpn/client-packages";
         File file = new File(directory);
@@ -685,6 +690,63 @@ public class OpenVpnAppImpl extends AppBase
             // no matching client so get rid of the file
             logger.info("Cleanup removing: " + target);
             File trash = new File(target);
+            trash.delete();
+        }
+    }
+
+    private void cleanServerSettings() throws Exception
+    {
+        String directory = System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers";
+        File file = new File(directory);
+        String list[]  = file.list();
+        boolean found;
+
+        if (list == null) return;
+        if (list.length == 0) return;
+
+        for(String name : list)
+        {
+            // check for a name that ends with the server config extension
+            if (!name.endsWith(".conf")) continue;
+
+            String target = (directory + "/" + name);
+            logger.info("Cleanup checking: " + target);
+
+            // extract the server name from the config file name
+            String serverName = name.substring(0,name.indexOf("."));
+
+            // check the settings to see if this is a valid server
+            found = false;
+
+            for (OpenVpnRemoteServer server : getSettings().getRemoteServers()) {
+                if (!serverName.equals(server.getName())) continue;
+                found = true;
+                break;
+            }
+
+            if (found == true) continue;
+
+            // no matching server so get rid of the config file and keys
+            logger.info("Cleanup removing: " + target);
+
+            File trash = new File(target);
+            BufferedReader br = new BufferedReader( new FileReader(trash) );
+            String[] part;
+            String junk;
+            String line;
+
+                while ((line = br.readLine()) != null) {
+
+                    if ( (line.startsWith("cert ")) || (line.startsWith("key ")) || (line.startsWith("ca ")) ) { 
+                        part = line.split(" ");
+                        junk = (directory + "/" + part[1]);
+                        logger.info("Cleanup removing: " + junk);
+                        File wipe = new File(junk);
+                        wipe.delete();
+                    }
+                }
+
+            br.close();
             trash.delete();
         }
     }
