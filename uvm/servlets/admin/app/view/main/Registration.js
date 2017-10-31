@@ -258,12 +258,7 @@ Ext.define('Ung.view.main.Registration', {
                         }, {
                             name: 'email',
                             fieldLabel: 'Email Address'.t() + ' *',
-                            validator: function (email) {
-                                if (!/^(")?(?:[^\."\s])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.test(email)) {
-                                    return 'You must provide a valid login name or email address.'.t();
-                                }
-                                return true;
-                            }
+                            vtype: 'email'
                         }, {
                             name: 'password',
                             fieldLabel: 'Password'.t() + ' *',
@@ -407,15 +402,7 @@ Ext.define('Ung.view.main.Registration', {
                             name: 'email',
                             columnWidth: 0.5,
                             fieldLabel: 'Email Address'.t() + ' *',
-                            validator: function (email) {
-                                if (!email) {
-                                    return 'We need your email address to contact you.'.t();
-                                }
-                                if (!/^(")?(?:[^\."\s])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.test(email)) {
-                                    return 'Your email address must be in the format of name@domain.com.'.t();
-                                }
-                                return true;
-                            }
+                            vtype: 'email'
                         }]
                     }]
                 }, {
