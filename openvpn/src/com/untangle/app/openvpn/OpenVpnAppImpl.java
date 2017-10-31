@@ -624,6 +624,9 @@ public class OpenVpnAppImpl extends AppBase
         String list[]  = file.list();
         boolean found;
 
+        if (list == null) return;
+        if (list.length == 0) return;
+
         for(String name : list)
         {
             // check for a name that starts with the client prefix
@@ -659,6 +662,9 @@ public class OpenVpnAppImpl extends AppBase
         File file = new File(directory);
         String list[]  = file.list();
         boolean found;
+
+        if (list == null) return;
+        if (list.length == 0) return;
 
         for(String name : list)
         {
