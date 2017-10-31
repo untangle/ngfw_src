@@ -699,7 +699,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         text: (!widgetDisplay && isPie && isPieGraph) ? (TableConfig.getColumnHumanReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
                         style: { fontSize: '18px', fontWeight: 400 }
                     },
-                    enabled: (!widgetDisplay && isPie && isPieGraph),
+                    enabled: !(widgetDisplay && isPieGraph),
                     layout: (isPieGraph && isPie) ? 'vertical' : 'horizontal',
                     align: (isPieGraph && isPie) ? 'left' : 'center',
                     verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
