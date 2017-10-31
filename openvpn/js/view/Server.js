@@ -3,7 +3,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     alias: 'widget.app-openvpn-server',
     itemId: 'server',
     title: 'Server'.t(),
-    autoScroll: true,
+
     withValidation: true,
 
     viewModel: {
@@ -27,99 +27,104 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         html: 'The Server tab is used to configure OpenVPN to operate as a server for remote clients'.t()
     }],
 
-    defaults: {
-        labelWidth: 180,
-        padding: '10 0 0 10'
-    },
+    layout: 'border',
 
     items: [{
-        fieldLabel: 'Server Enabled'.t(),
-        xtype: 'checkbox',
-        bind: '{settings.serverEnabled}'
-    },{
-        fieldLabel: 'Site Name'.t(),
-        xtype: 'textfield',
-        vtype: 'openvpnName',
-        bind: '{settings.siteName}',
-        allowBlank: false
-    },{
-        fieldLabel: 'Address Space'.t(),
-        xtype: 'textfield',
-        vtype: 'cidrBlock',
-        bind: '{settings.addressSpace}'
-    },{
-        fieldLabel: 'NAT OpenVPN Traffic'.t(),
-        xtype: 'checkbox',
-        bind: '{settings.natOpenVpnTraffic}'
-    },{
-        fieldLabel: 'Site URL'.t(),
-        xtype: 'displayfield',
-        bind: '{getSiteUrl}'
-    },{
-        fieldLabel: 'Username/Password Authentication',
-        xtype: 'checkbox',
-        bind: '{settings.authUserPass}'
-    },{
-        title: 'Authentication Method'.t(),
-        width: 400,
-        padding: '10 0 0 20',
-        bind: {
-            disabled: '{!settings.authUserPass}',
-            hidden: '{!settings.authUserPass}'
+        xtype: 'panel',
+        region: 'west',
+        width: 300,
+        split: true,
+        scrollable: true,
+        layout: {
+            type: 'anchor'
+        },
+        bodyPadding: 10,
+        defaults: {
+            anchor: '100%',
+            labelAlign: 'top'
         },
         items: [{
-            xtype: 'radiogroup',
-            bind: '{settings.authenticationType}',
-            simpleValue: 'true',
-            columns: 1,
-            vertical: true,
-            items: [
-                { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
-                { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' },
-                { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
-                { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY_DIRCON' }
-            ]
-        }, {
-            // todo: update this button later
-            xtype: 'button',
-            iconCls: 'fa fa-cog',
-            margin: '10 0 10 10',
-            bind: {
-                text: '{_btnConfigureDirectory}'
+            xtype: 'checkbox',
+            boxLabel: 'Server Enabled'.t(),
+            bind: '{settings.serverEnabled}'
+        },{
+            fieldLabel: 'Site Name'.t(),
+            xtype: 'textfield',
+            vtype: 'openvpnName',
+            bind: '{settings.siteName}',
+            allowBlank: false
+        },{
+            fieldLabel: 'Address Space'.t(),
+            xtype: 'textfield',
+            vtype: 'cidrBlock',
+            bind: '{settings.addressSpace}'
+        },{
+            xtype: 'checkbox',
+            boxLabel: 'NAT OpenVPN Traffic'.t(),
+            bind: '{settings.natOpenVpnTraffic}'
+        },{
+            fieldLabel: 'Site URL'.t(),
+            xtype: 'displayfield',
+            bind: '{getSiteUrl}'
+        },{
+            xtype: 'checkbox',
+            boxLabel: 'Username/Password Authentication',
+            bind: '{settings.authUserPass}'
+        },{
+            xtype: 'container',
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
             },
-            handler: 'configureAuthenticationMethod'
+            hidden: true,
+            disabled: true,
+            bind: {
+                disabled: '{!settings.authUserPass}',
+                hidden: '{!settings.authUserPass}'
+            },
+            items: [{
+                xtype: 'radiogroup',
+                fieldLabel: 'Authentication Method'.t(),
+                labelAlign: 'top',
+                bind: '{settings.authenticationType}',
+                simpleValue: 'true',
+                columns: 1,
+                vertical: true,
+                items: [
+                    { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
+                    { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' },
+                    { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
+                    { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY_DIRCON' }
+                ]
+            }, {
+                // todo: update this button later
+                xtype: 'button',
+                iconCls: 'fa fa-cog',
+                margin: '5 0',
+                scale: 'medium',
+                bind: {
+                    text: '{_btnConfigureDirectory}'
+                },
+                handler: 'configureAuthenticationMethod'
+            }]
         }]
-    },{
-        xtype: 'app-openvpn-server-tab-panel',
-        padding: '20 20 20 20',
-        border: true,
+    }, {
+        xtype: 'tabpanel',
+        region: 'center',
+        defaults: {
+            border: false
+        },
+        items: [{
+            title: 'Remote Clients'.t(),
+            xtype: 'app-openvpn-remote-clients-grid'
+        },{
+            title: 'Groups'.t(),
+            xtype: 'app-openvpn-groups-grid'
+        },{
+            title: 'Exported Networks'.t(),
+            xtype: 'app-openvpn-exported-networks-grid'
+        }]
     }]
-});
-
-Ext.define('Ung.apps.openvpn.cmp.ServerTabs', {
-    extend: 'Ext.tab.Panel',
-    alias: 'widget.app-openvpn-server-tab-panel',
-    itemId: 'server-tab-panel',
-    viewModel: true,
-    layout: 'fit',
-
-    items: [{
-        title: 'Remote Clients'.t(),
-        items: [
-            { xtype: 'app-openvpn-remote-clients-grid' }
-            ]
-    },{
-        title: 'Groups'.t(),
-        items: [
-            { xtype: 'app-openvpn-groups-grid' }
-        ]
-    },{
-        title: 'Exported Networks'.t(),
-        items: [
-            { xtype: 'app-openvpn-exported-networks-grid' }
-        ]
-    }]
-
 });
 
 Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
@@ -144,7 +149,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         'groupId': 1,
         'export': false,
         'existing': false
-        },
+    },
 
     bind: '{remoteClients}',
 
@@ -243,7 +248,7 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
         'name': '',
         'groupId': -1,
         'export': false
-        },
+    },
 
     bind: '{groups}',
 
@@ -336,7 +341,7 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
         'enabled': true,
         'name': '',
         'network': ''
-        },
+    },
 
     bind: '{exportedNetworks}',
 

@@ -106,6 +106,7 @@ Ext.define('Ung.cmp.GridController', {
     editorWin: function (record) {
         this.dialog = this.getView().add({
             xtype: this.getView().editorXtype,
+            renderTo: Ext.getBody(),
             record: record
         });
 
@@ -242,6 +243,7 @@ Ext.define('Ung.cmp.GridController', {
         this.importDialog = this.getView().add({
             xtype: 'window',
             title: 'Import Settings'.t(),
+            renderTo: Ext.getBody(),
             modal: true,
             layout: 'fit',
             width: 450,
