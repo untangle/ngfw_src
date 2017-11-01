@@ -8,7 +8,7 @@ Ext.define('Ung.util.Renderer', {
     // Action
     actionWidth: 60,
     // Boolean
-    booleanWidth: 50,
+    booleanWidth: 60,
     // Counter
     counterWidth: 80,
     // UTC-formatted Date
@@ -201,7 +201,6 @@ Ext.define('Ung.util.Renderer', {
         }
     },
 
-
     timeIntervalMap: {
         86400: 'Daily'.t(),
         604800: 'Weekly'.t(),
@@ -214,6 +213,15 @@ Ext.define('Ung.util.Renderer', {
             return Ung.util.Renderer.timeIntervalMap[value];
         }
         return value;
+    },
+
+    elapsedTime: function( value ){
+        var total = parseInt(value / 1000,10);
+        var hours = (parseInt(total / 3600,10) % 24);
+        var minutes = (parseInt(total / 60,10) % 60);
+        var seconds = parseInt(total % 60,10);
+        var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+        return result;
     },
 
     dayOfWeekMap: {
