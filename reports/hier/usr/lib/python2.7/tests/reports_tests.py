@@ -296,7 +296,7 @@ class ReportsTests(unittest2.TestCase):
         post_data += "&arg6=" + str(current_epoch)  # epach end time
         # print post_data
         
-        subprocess.call(("wget -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
+        subprocess.call(("wget -q -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
         result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
         print "Result of wc on %s : %s" % (csv_tmp,str(result))
         assert(result > 3)
