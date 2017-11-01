@@ -173,6 +173,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     animation: false,
                     shared: true,
                     followPointer: true,
+                    split: false,
                     // distance: 30,
                     padding: 10,
                     hideDelay: 0,
@@ -196,10 +197,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         edgeColor: '#FFF'
                     },
                     areaspline: {
-                        lineWidth: 1,
-                        tooltip: {
-                            // split: true
-                        }
+                        lineWidth: 1
                     },
                     spline: {
                         lineWidth: 2
@@ -361,6 +359,8 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             if ((entry.get('type') !== 'TIME_GRAPH' && entry.get('type') !== 'TIME_GRAPH_DYNAMIC') || !me.data) { return; }
 
+            me.setStyles(); // move at the beginning to avoid colors issues
+
             var timeDataColumns = Ext.clone(entry.get('timeDataColumns')),
                 colors = (entry.get('colors') && entry.get('colors').length > 0) ? entry.get('colors') : Util.defaultColors,
                 i, j, seriesData, series = [], seriesRenderer = null, column,
@@ -437,7 +437,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 me.chart.addSeries(serie, false, false);
             });
             // console.log(series);
-            me.setStyles();
             me.chart.redraw();
         },
 
@@ -451,6 +450,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 slicesData = [], restValue = 0, seriesRenderer = null, i;
 
             if (entry.get('type') !== 'PIE_GRAPH' || !me.data) { return; }
+
+            me.setStyles();
 
             if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
                 seriesRenderer = Renderer[entry.get('seriesRenderer')];
@@ -501,7 +502,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
             }, false, false);
 
-            me.setStyles();
             me.chart.redraw();
         },
 
@@ -593,7 +593,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                         };
                     });
                 }
-
             }
 
             me.chart.update({
