@@ -934,7 +934,7 @@ Ext.define('Ung.Setup.Internet', {
                 padding: 10,
                 defaults: {
                     xtype: 'displayfield',
-                    labelWidth: 150,
+                    labelWidth: 170,
                     labelAlign: 'right',
                     margin: 0
                 },
