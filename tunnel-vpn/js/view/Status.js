@@ -50,6 +50,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
                 stateful: true,
                 trackMouseOver: false,
                 resizable: true,
+                defaultSortable: true,
 
                 flex: 1,
 
