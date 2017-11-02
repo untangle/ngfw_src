@@ -343,9 +343,12 @@ class ReportsTests(unittest2.TestCase):
         assert((email_context_found1) and (email_context_found2))
 
         ## Verify that all images are intact.
+        # copy mail from remote client
+        os.system("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
         fp = open("/tmp/test_100_email_report_admin_file")
         msg = email.message_from_file(fp)
         fp.close()
+        os.system("rm /tmp/test_100_email_report_admin_file")
 
         mime_content_ids = []
         parser = ContentIdParser();
