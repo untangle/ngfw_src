@@ -108,10 +108,10 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         {name:'HTTP_USER_AGENT', displayName: 'HTTP: Client User Agent'.t(), type: 'textfield', visible: true },
         {name:'HTTP_USER_AGENT_OS', displayName: 'HTTP: Client User OS'.t(), type: 'textfield', visible: false },
         {name:'DIRECTORY_CONNECTOR_GROUP', displayName: 'Directory Connector: User in Group'.t(), type: 'directorygroupfield', visible: true},
-        {name:'SSL_INSPECTOR_SNI_HOSTNAME', displayName: 'SSL: SNI Host Name'.t(), type: 'textfield', visible: true },
         {name:'DIRECTORY_CONNECTOR_DOMAIN',displayName: 'Directory Connector: User in Domain'.t(), type: 'directorydomainfield', visible: true},
-        {name:'SSL_INSPECTOR_SUBJECT_DN', displayName: 'SSL: Certificate Subject'.t(), type: 'textfield', visible: true },
-        {name:'SSL_INSPECTOR_ISSUER_DN', displayName: 'SSL: Certificate Issuer'.t(), type: 'textfield', visible: true },
+        {name:'SSL_INSPECTOR_SNI_HOSTNAME', displayName: 'SSL Inspector: SNI Host Name'.t(), type: 'textfield', visible: true },
+        {name:'SSL_INSPECTOR_SUBJECT_DN', displayName: 'SSL Inspector: Certificate Subject'.t(), type: 'textfield', visible: true },
+        {name:'SSL_INSPECTOR_ISSUER_DN', displayName: 'SSL Inspector: Certificate Issuer'.t(), type: 'textfield', visible: true },
         {name:'CLIENT_COUNTRY', displayName: 'Client Country'.t(), type: 'countryfield', visible: true},
         {name:'SERVER_COUNTRY', displayName: 'Server Country'.t(), type: 'countryfield', visible: true}
     ],
