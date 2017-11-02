@@ -28,6 +28,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
 
     items: [{
         title: 'File Extensions'.t(),
+        emptyText: 'No File Extensions defined'.t(),
 
         listProperty: 'settings.httpFileExtensions.list',
         emptyRow: {
@@ -41,7 +42,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
 
         columns: [{
             header: 'File Type'.t(),
-            width: 100,
+            width: Renderer.idWidth,
             dataIndex: 'string',
             editor: {
                 xtype: 'textfield',
@@ -50,13 +51,13 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
             }
         }, {
             xtype: 'checkcolumn',
-            width: 55,
+            width: Renderer.booleanWidth,
             header: 'Scan'.t(),
             dataIndex: 'enabled',
             resizable: false
         }, {
             header: 'Description'.t(),
-            width: 200,
+            width: Renderer.messageWidth,
             flex: 1,
             dataIndex: 'description',
             editor: {
@@ -85,6 +86,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
         }]
     }, {
         title: 'MIME Types'.t(),
+        emptyText: 'No MIME Types defined'.t(),
 
         listProperty: 'settings.httpMimeTypes.list',
         emptyRow: {
@@ -98,7 +100,8 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
 
         columns: [{
             header: 'MIME Type'.t(),
-            width: 100,
+            width: Renderer.messageWidth,
+            flex: 1,
             dataIndex: 'string',
             editor: {
                 xtype: 'textfield',
@@ -107,14 +110,14 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
             }
         }, {
             xtype: 'checkcolumn',
-            width: 55,
+            width: Renderer.booleanWidth,
             header: 'Scan'.t(),
             dataIndex: 'enabled',
             resizable: false
         }, {
             header: 'Description'.t(),
-            width: 200,
-            flex: 1,
+            width: Renderer.messageWidth,
+            flex: 2,
             dataIndex: 'description',
             editor: {
                 xtype: 'textfield',
