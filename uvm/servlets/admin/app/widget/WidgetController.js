@@ -4,11 +4,14 @@ Ext.define('Ung.widget.WidgetController', {
 
     control: {
         '#': {
-            afterrender: 'onAfterRender',
-            beforedestroy: 'onBeforeRemove'
+            beforedestroy: 'onBeforeDestroy',
+            render: 'onRender'
         },
         '#header': {
             render: 'headerRender'
+        },
+        '#menu': {
+            render: 'menuRender'
         }
     },
 
@@ -21,8 +24,17 @@ Ext.define('Ung.widget.WidgetController', {
         }
     },
 
+    onRender: function (widget) {
+        var me = this;
+        widget.getEl().on({
+            mouseleave: function () {
+                me.closeMenu();
+            }
+        });
+    },
+
     headerRender: function (cmp) {
-        var me = this, wg = me.getView(), vm = me.getViewModel();
+        var me = this, wg = me.getView();
         cmp.getEl().on({
             click: function (e) {
                 // on refresh
@@ -30,6 +42,24 @@ Ext.define('Ung.widget.WidgetController', {
                     wg.lastFetchTime = null; // reset fetch time
                     DashboardQueue.addFirst(wg); // add it first
                 }
+                // show menu
+                if (e.target.dataset.action === 'menu') {
+                    wg.down('#menu').setStyle({ zIndex: 999 });
+                    wg.addCls('showmenu');
+                }
+            }
+        });
+    },
+
+    menuRender: function (cmp) {
+        var me = this, wg = me.getView(), vm = me.getViewModel();
+        cmp.getEl().on({
+            click: function (e) {
+                // close menu
+                if (e.target.dataset.action) {
+                    me.closeMenu();
+                }
+
                 // on settings
                 if (e.target.dataset.action === 'settings') {
                     // if (wg.up('#dashboard').down('window')) {
@@ -42,22 +72,41 @@ Ext.define('Ung.widget.WidgetController', {
                 if (e.target.dataset.action === 'download') {
                     var chart = wg.down('graphreport').getController().chart;
                     if (chart) {
-                        chart.exportChart();
+                        chart.exportChart({
+                            filename: vm.get('entry.title').trim().replace(/ /g, '_')
+                        }, {
+                            chart: {
+                                backgroundColor: '#FFFFFF'
+                            }
+                        });
                     }
                 }
 
-                if (e.target.dataset.action === 'info') {
-                    Ext.Msg.show({
-                        title: vm.get('entry.localizedTitle') + ' / ' + vm.get('entry.category'),
-                        msg: vm.get('entry.localizedDescription'),
-                        buttons: Ext.Msg.OK,
-                        icon: Ext.Msg.INFO
-                    });
-                }
+                // on export
+                if (e.target.dataset.action === 'export') {
+                    var grid = wg.down('grid');
+                    var exportForm = document.getElementById('exportGridSettings');
 
+                    var data = Ext.Array.pluck(grid.getStore().getRange(), 'data');
+                    Ext.Array.forEach(data, function (rec) {
+                        delete rec._id;
+                    });
+                    exportForm.gridName.value = vm.get('entry.title').trim().replace(/ /g, '_') + '-WIDGET-';
+                    exportForm.gridData.value = Ext.encode(data);
+                    exportForm.submit();
+                }
             }
         });
     },
+
+    closeMenu: function () {
+        var view = this.getView();
+        view.removeCls('showmenu');
+        Ext.defer(function () {
+            view.down('#menu').setStyle({ zIndex: -1 });
+        }, 300);
+    },
+
 
     init: function (view) {
         var vm = view.getViewModel(), entryType;
@@ -91,7 +140,7 @@ Ext.define('Ung.widget.WidgetController', {
         widget.getViewModel().notify();
     },
 
-    onBeforeRemove: function (widget) {
+    onBeforeDestroy: function (widget) {
         // remove widget from queue if; important if removal is happening while fetching data
         if (widget.tout) {
             clearTimeout(widget.tout);
