@@ -21,6 +21,8 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
 
     recordActions: ['edit', 'delete'],
 
+    emptyText: 'No Pass Sites defined'.t(),
+
     listProperty: 'settings.passedUrls.list',
     emptyRow: {
         string: '',
@@ -33,7 +35,8 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
 
     columns: [{
         header: 'Site'.t(),
-        width: 200,
+        width: Renderer.uriWidth,
+        flex: 1,
         dataIndex: 'string',
         editor: {
             xtype: 'textfield',
@@ -42,14 +45,14 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
         }
     }, {
         xtype: 'checkcolumn',
-        width: 55,
+        width: Renderer.booleanWidth,
         header: 'Pass'.t(),
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Description'.t(),
-        width: 200,
-        flex: 1,
+        width: Renderer.messageWidth,
+        flex: 2,
         dataIndex: 'description',
         editor: {
             xtype: 'textfield',
