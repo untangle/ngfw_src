@@ -63,6 +63,8 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     alias: 'widget.app-openvpn-remote-servers-grid',
     itemId: 'openvpn-remote-servers-grid',
 
+    emptyText: 'No Remote Servers defined'.t(),
+
     recordActions: ['delete'],
     listProperty: 'settings.remoteServers.list',
     emptyRow: {
@@ -76,12 +78,12 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Server Name'.t(),
-        width: 150,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'name',
         editor: {

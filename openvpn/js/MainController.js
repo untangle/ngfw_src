@@ -19,7 +19,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
     },
 
-    getActiveServers: function () {
+    getRemoteServers: function () {
         var grid = this.getView().down('#remoteServers'),
             vm = this.getViewModel();
         grid.setLoading(true);
@@ -50,7 +50,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
             // get clients and servers only when instance is RUNNING
             if (runstate === 'RUNNING') {
                 me.getActiveClients();
-                me.getActiveServers();
+                me.getRemoteServers();
             } else {
             // if not RUNNING, empty clients/servers grid
                 vm.set({
@@ -339,5 +339,12 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
         this.distributeWindow.show();
         return this.distributeWindow;
     },
+
+    groupRenderer: function(value, meta, record, row, col, store, grid){
+        var groupList = this.getViewModel().get('groups');
+        var grpname = 'Unknown'.t();
+        groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
+        return(grpname);
+    }
 
 });
