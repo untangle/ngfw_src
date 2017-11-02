@@ -1294,8 +1294,33 @@ class NetworkTests(unittest2.TestCase):
         assert (result1 == 0)
         assert (result2 != 0)
 
+    # Test that filter rule's SRC_ADDR condition supports commas and many many entries
+    # This is because iptables only supports so many entries so the rules must be broken apart
+    def test_152_filterRulesBlockedSrcCommaMany(self):
+        # verify port 80 is open
+        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+
+        str = ""
+        for i in range(0,20):
+            str += "1.2.3.4,"
+        str += remote_control.clientIP
+
+        # Add a block rule for port 80 and enabled blocked session logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ createFilterRule("SRC_ADDR",str,"PROTOCOL","TCP",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # make the request again which should now be blocked
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        # put the network settings back the way we found them
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert (result1 == 0)
+        assert (result2 != 0)
+
     # Test that filter rule's SRC_ADDR condition supports commas
-    def test_152_filterRulesBlockedSrcMacComma(self):
+    def test_153_filterRulesBlockedSrcMacComma(self):
         foundTestSession = False
         remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
@@ -1332,7 +1357,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
 
     # Test that filter rule's SRC_ADDR condition supports commas
-    def test_153_filterRulesBlockedClientTagged(self):
+    def test_154_filterRulesBlockedClientTagged(self):
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
 
