@@ -67,6 +67,7 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
                 stateful: true,
                 trackMouseOver: false,
                 resizable: true,
+                defaultSortable: true,
 
                 flex: 1,
 
