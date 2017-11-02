@@ -51,25 +51,45 @@ Ext.define('Ung.apps.openvpn.view.Server', {
             fieldLabel: 'Site Name'.t(),
             xtype: 'textfield',
             vtype: 'openvpnName',
-            bind: '{settings.siteName}',
+            disabled: true,
+            bind: {
+                value: '{settings.siteName}',
+                disabled: '{settings.serverEnabled == false}'
+            },
             allowBlank: false
         },{
             fieldLabel: 'Address Space'.t(),
             xtype: 'textfield',
             vtype: 'cidrBlock',
-            bind: '{settings.addressSpace}'
+            disabled: true,
+            bind: {
+                value: '{settings.addressSpace}',
+                disabled: '{settings.serverEnabled == false}'
+            },
         },{
             xtype: 'checkbox',
             boxLabel: 'NAT OpenVPN Traffic'.t(),
-            bind: '{settings.natOpenVpnTraffic}'
+            disabled: true,
+            bind: {
+                value: '{settings.natOpenVpnTraffic}',
+                disabled: '{settings.serverEnabled == false}'
+            },
         },{
             fieldLabel: 'Site URL'.t(),
             xtype: 'displayfield',
-            bind: '{getSiteUrl}'
+            disabled: true,
+            bind: {
+                value: '{getSiteUrl}',
+                disabled: '{settings.serverEnabled == false}'
+            },
         },{
             xtype: 'checkbox',
             boxLabel: 'Username/Password Authentication',
-            bind: '{settings.authUserPass}'
+            disabled: true,
+            bind: {
+                value: '{settings.authUserPass}',
+                disabled: '{settings.serverEnabled == false}'
+            },
         },{
             xtype: 'container',
             layout: {
@@ -79,7 +99,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
             hidden: true,
             disabled: true,
             bind: {
-                disabled: '{!settings.authUserPass}',
+                disabled: '{settings.serverEnabled == false}',
                 hidden: '{!settings.authUserPass}'
             },
             items: [{
@@ -113,6 +133,10 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         region: 'center',
         defaults: {
             border: false
+        },
+        disabled: true,
+        bind: {
+            disabled: '{settings.serverEnabled == false}',
         },
         items: [{
             title: 'Remote Clients'.t(),
@@ -156,28 +180,24 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Client Name'.t(),
-        width: 150,
+        width: Renderer.usernameWidth,
         flex: 1,
         dataIndex: 'name',
     }, {
         header: 'Group'.t(),
-        width: 120,
+        width: Renderer.usernameWidth,
+        flex: 1,
         dataIndex: 'groupId',
-        renderer: function(value, meta, record, row, col, store, grid) {
-            var groupList = this.getViewModel().get('groups');
-            var grpname = 'Unknown'.t();
-            groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
-            return(grpname);
-        }
+        rtype: 'group'
     }, {
         xtype: 'actioncolumn',
         header: 'Download Client'.t(),
-        width: 120,
+        width: Renderer.usernameWidth,
         iconCls: 'fa fa-download',
         align: 'center',
         handler: 'downloadClient',
@@ -254,17 +274,17 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
 
     columns: [{
         header: 'Group Name'.t(),
-        allowBlank: false,
-        width: 150,
+        allowBlank: false, 
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'name',
     }, {
         header: 'Full Tunnel'.t(),
-        width: 120,
+        width: Renderer.booleanWidth + 20,
         dataIndex: 'fullTunnel',
     }, {
         header: 'Push DNS'.t(),
-        width: 120,
+        width: Renderer.booleanWidth + 20,
         dataIndex: 'pushDns'
     }],
 
@@ -348,17 +368,17 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'enabled',
         resizable: false
     }, {
         header: 'Export Name'.t(),
-        width: 150,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'name',
     }, {
         header: 'Network'.t(),
-        width: 150,
+        width: Renderer.networkWidth,
         dataIndex: 'network',
     }],
 
