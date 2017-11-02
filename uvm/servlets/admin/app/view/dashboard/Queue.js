@@ -26,10 +26,10 @@ Ext.define('Ung.view.dashboard.Queue', {
     },
 
     process: function () {
-        me = this;
+        var me = this;
         if (this.queue.length > 0 && !me.processing) {
             // console.info('processing', me.processing);
-            var wg = this.queue[0], seconds;
+            var wg = this.queue[0];
 
             /**
              * if queue is paused (e.g. not in Dashboard view) or
