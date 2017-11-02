@@ -6,6 +6,7 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     viewModel: true,
     autoScroll: true,
     withValidation: true,
+    bodyPadding: 10,
 
     tbar: [{
         xtype: 'tbtext',
@@ -19,15 +20,9 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
               'Changes made on this tab are not officially supported.<br>'.t()
     }],
 
-    defaults: {
-        labelWidth: 180,
-        padding: '0 0 0 10'
-    },
-
     items: [{
         xtype: 'container',
         layout: 'column',
-        margin: '10 0 5 0',
         items: [{
             xtype: 'combo',
             fieldLabel: 'Protocol'.t(),
@@ -43,7 +38,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },{
         xtype: 'container',
         layout: 'column',
-        margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Port'.t(),
@@ -58,7 +52,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },{
         xtype: 'container',
         layout: 'column',
-        margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Cipher'.t(),
@@ -72,7 +65,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },{
         xtype: 'container',
         layout: 'column',
-        margin: '0 0 5 0',
         items: [{
             xtype: 'checkbox',
             fieldLabel: 'Client To Client Allowed'.t(),
@@ -84,23 +76,43 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
             value: '(default = checked)'.t()
         }]
     },{
+        xtype: 'fieldset',
         title: 'Server Configuration'.t(),
-        xtype: 'app-openvpn-config-editor-grid',
-        padding: '20 20 20 20',
-        width: 800,
-        height: 300,
-        listProperty: 'settings.serverConfiguration.list',
-        itemId: 'server-config-editor-grid',
-        bind: '{serverConfiguration}'
+        // padding: 10,
+        // margin: '20 0',
+        // cls: 'app-section',
+
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+
+        items: [{
+            xtype: 'app-openvpn-config-editor-grid',
+            // height: 300,
+            listProperty: 'settings.serverConfiguration.list',
+            itemId: 'server-config-editor-grid',
+            bind: '{serverConfiguration}'
+        }]
     },{
+        xtype: 'fieldset',
         title: 'Client Configuration'.t(),
-        xtype: 'app-openvpn-config-editor-grid',
-        padding: '20 20 20 20',
-        width: 800,
-        height: 300,
-        listProperty: 'settings.clientConfiguration.list',
-        itemId: 'client-config-editor-grid',
-        bind: '{clientConfiguration}'
+        // padding: 10,
+        // margin: '20 0',
+        // cls: 'app-section',
+
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+
+        items: [{
+            xtype: 'app-openvpn-config-editor-grid',
+            // height: 300,
+            listProperty: 'settings.clientConfiguration.list',
+            itemId: 'client-config-editor-grid',
+            bind: '{clientConfiguration}'
+        }]
     }]
 });
 
@@ -134,7 +146,8 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
 
     columns: [{
         header: 'Option Name'.t(),
-        width: 250,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'optionName',
         editable: false,
         editor: {
@@ -143,7 +156,8 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
         },
     }, {
         header: 'Option Value'.t(),
-        width: 250,
+        width: Renderer.messageWidth,
+        flex: 1,
         dataIndex: 'optionValue',
         editor: {
             xtype: 'textfield',
@@ -151,7 +165,7 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
         }
     }, {
         header: 'Option Type'.t(),
-        width: 80,
+        width: Renderer.actionWidth + 20,
         dataIndex: 'readOnly',
         resizable: false,
         renderer: function(val) {
@@ -160,7 +174,7 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
     }, {
         xtype: 'checkcolumn',
         header: 'Exclude'.t(),
-        width: 80,
+        width: Renderer.booleanWidth + 10,
         dataIndex: 'excludeFlag',
         resizable: false,
     }]
