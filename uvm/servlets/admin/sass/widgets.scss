@@ -92,7 +92,7 @@
             position: absolute;
             padding: 0;
             top: 7px;
-            right: 0;
+            right: 10px;
         }
         .action-btn {
             border: 0;
@@ -146,6 +146,10 @@
 
     &.adding {
         opacity: 0;
+    }
+
+    .x-panel-body-default {
+        background: transparent;
     }
 }
 
@@ -527,3 +531,131 @@
 }
 
 
+///////////////////
+.widget {
+
+    .menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: -1;
+        // display: none;
+        opacity: 0;
+        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+
+        font-family: $custom-font-condensed;
+        p {
+            color: #FFF;
+            font-size: 18px;
+            width: 250px;
+            padding: 40px 20px 20px 20px;
+        }
+    }
+
+    .options {
+        position: absolute;
+        // width: 120px;
+        background: rgba(0, 0, 0, 0.5);
+        // padding: 0;
+        top: 0;
+        right: -200px;
+        bottom: 0;
+        font-size: 14px;
+        box-shadow: 0 -5px 10px rgba(0, 0, 0, 1);
+        transition: right .3s cubic-bezier(0.23, 1, 0.32, 1);
+        padding-top: 40px;
+
+        >i {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #CCC;
+            padding: 10px;
+            cursor: pointer;
+            &:hover {
+                color: #FFF;
+            }
+        }
+
+        a {
+            display: block;
+            cursor: pointer;
+            padding: 10px 30px 10px 10px;
+            text-decoration: none;
+            color: #CCC;
+            i {
+                margin-right: 10px;
+            }
+            &:hover {
+                color: #8efb6c;
+                background: rgba(0, 0, 0, 0.5);
+            }
+        }
+    }
+
+
+
+    // .opts {
+    //     position: absolute;
+    //     top: 0;
+    //     bottom: 0;
+    //     right: 0;
+    //     width: 120px;
+    //     background: #FFF;
+    // }
+    &.showmenu {
+        .actions {
+            display: none;
+        }
+        .menu {
+            // display: block;
+            opacity: 1;
+        }
+        .options {
+            right: 0;
+        }
+    }
+}
+
+.highcharts-data-table {
+    background-color: #FFF;
+}
+
+
+
+///////////////////
+
+
+
+
+
+
+// THEMES
+.theme-DARK {
+    background: #2a2a2b;
+    .header h1 {
+        font-family: $custom-font-condensed;
+        a {
+            color: #999;
+            &:hover {
+                color: #EEE;
+            }
+        }
+    }
+}
+
+.theme-SAND {
+    background: url('/highcharts-5.0.9/sand.png');
+    .header h1 {
+        font-family: $custom-font-condensed;
+        a {
+            color: #999;
+            &:hover {
+                color: #EEE;
+            }
+        }
+    }
+}

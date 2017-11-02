@@ -197,7 +197,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         edgeColor: '#FFF'
                     },
                     areaspline: {
-                        lineWidth: 1
+                        lineWidth: 2
                     },
                     spline: {
                         lineWidth: 2
@@ -628,7 +628,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     spline: {
                         shadow: true,
                         dataGrouping: {
-                            groupPixelWidth: 8
+                            groupPixelWidth: 16
                         },
                     },
                     // time graphs
@@ -636,7 +636,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         // shadow: true,
                         // fillOpacity: 0.3,
                         dataGrouping: {
-                            groupPixelWidth: 8
+                            groupPixelWidth: 16
                         },
                     },
                     column: {
