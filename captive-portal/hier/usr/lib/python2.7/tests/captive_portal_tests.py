@@ -27,6 +27,8 @@ appAD = None
 appWeb = None
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
+AD_DOMAIN = "adtest.adtesting.int"
+AD_USER = "user_28004"
 localUserName = 'test20'
 adUserName = 'atsadmin'
 captureIP = None
@@ -108,23 +110,47 @@ def removeLocalDirectoryUser():
         'list': []
     }
 
-def createDirectoryConnectorSettings():
+def createDirectoryConnectorSettings(ldap_secure=False):
     # Need to send Radius setting even though it's not used in this case.
+    if ldap_secure == True:
+        ldap_port = 636
+    else:
+        ldap_port = 389
     return {
-       "activeDirectorySettings": {
+        "apiEnabled": True,
+        "activeDirectorySettings": {
             "LDAPHost": global_functions.adServer,
-            "LDAPPort": 389,
+            "LDAPSecure": ldap_secure,
+            "LDAPPort": ldap_port,
             "OUFilter": "",
             "OUFilters": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
             },
-            "domain": "adtest.adtesting.int",
-            "enabled": True,
+            "domain": AD_DOMAIN,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
-            "superuserPass": AD_PASSWORD
-       },
+            "superuserPass": AD_PASSWORD,
+            "enabled": True,
+            "servers": {
+                "javaClass": "java.util.LinkedList",
+                "list": [{
+                    "LDAPHost": global_functions.adServer,
+                    "LDAPSecure": ldap_secure,
+                    "LDAPPort": ldap_port,
+                    "OUFilter": "",
+                    "OUFilters": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "domain": AD_DOMAIN,
+                    "enabled": True,
+                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
+                    "superuser": AD_ADMIN,
+                    "superuserPass": AD_PASSWORD
+                }]
+            }
+        },
         "radiusSettings": {
             "port": 1812,
             "enabled": False,
@@ -136,13 +162,9 @@ def createDirectoryConnectorSettings():
         "googleSettings": {
             "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
             "authenticationEnabled": True
-        },
-        "facebookSettings": {
-            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
-            "authenticationEnabled": True
         }
     }
-
+        
 def createRadiusSettings():
     return {
         "activeDirectorySettings": {
@@ -517,7 +539,7 @@ class CaptivePortalTests(unittest2.TestCase):
         if (adResult != 0):
             raise unittest2.SkipTest("No AD server available")
         # Configure AD settings
-        testResultString = appAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createDirectoryConnectorSettings())
+        testResultString = appAD.getActiveDirectoryManager().getStatusForSettings(createDirectoryConnectorSettings(ldap_secure=False)["activeDirectorySettings"]["servers"]["list"][0])
         # print 'testResultString %s' % testResultString  # debug line
         appAD.setSettings(createDirectoryConnectorSettings())
         assert ("success" in testResultString)
