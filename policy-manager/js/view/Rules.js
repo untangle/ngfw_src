@@ -21,6 +21,8 @@ Ext.define('Ung.apps.policymanager.view.Rules', {
 
     recordActions: ['edit', 'delete', 'reorder'],
 
+    emptyText: 'No Rules defined'.t(),
+
     listProperty: 'settings.rules.list',
     ruleJavaClass: 'com.untangle.app.policy_manager.PolicyRuleCondition',
 
@@ -44,13 +46,13 @@ Ext.define('Ung.apps.policymanager.view.Rules', {
         Column.description,
         Column.conditions, {
             header: 'Target Policy'.t(),
+            width: Renderer.messageWidth,
             dataIndex: 'targetPolicy',
             renderer: function (val) {
                 var plc = Ext.getStore('policiestree').findNode('policyId', val);
                 return plc ? plc.get('name') : '';
             },
             resizable: false,
-            width: 200
         }
     ],
     editorFields: [
