@@ -3,9 +3,11 @@
  */
 package com.untangle.app.openvpn;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -485,6 +487,7 @@ public class OpenVpnManager
 
     private void writeRemoteServerFiles( OpenVpnSettings settings )
     {
+        int count = 1;
 
         /**
          * Copy the config file for all enabled remote servers
@@ -496,8 +499,37 @@ public class OpenVpnManager
             String name = server.getName();
             logger.info( "Writing server configuration file for [" + name + "]" );
 
-            String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
-            UvmContextFactory.context().execManager().exec( cpCmd );
+            /**
+             * We copy each file line by line looking for the dev line so we
+             * can assign a specific device number in hopes that it may help
+             * openvpn always apply routes pushed by the remote server to the
+             * correct interface. If there are any exceptions we simply fall
+             * back to the old method of using a shell copy command.
+             */
+
+            try {
+                File readFile = new File(System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf");
+                File writeFile = new File("/etc/openvpn/" + name + ".conf");
+                BufferedReader cfgReader = new BufferedReader( new FileReader(readFile) );
+                BufferedWriter cfgWriter = new BufferedWriter( new FileWriter(writeFile) );
+                String line;
+
+                while ((line = cfgReader.readLine()) != null) {
+                    if (line.startsWith("dev ")) {
+                        cfgWriter.write("dev tun" + Integer.toString(count) + "\n");
+                    } else {
+                        cfgWriter.write(line + "\n");
+                    }
+                }
+
+                cfgReader.close();
+                cfgWriter.close();
+                count += 1;
+            } catch (Exception exn) {
+                logger.warn("Exception adjusting remote server configuration.", exn);
+                String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
+                UvmContextFactory.context().execManager().exec( cpCmd );
+            }
         }
 
         /**
