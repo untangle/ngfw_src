@@ -86,7 +86,17 @@ public class HostTableImpl implements HostTable
 
     }
     
-    public synchronized void setHosts( LinkedList<HostTableEntry> newHosts )
+    /**
+     * Set the host table to the specified list
+     * This actually empties the table, and then adds all the newHosts to the new table
+     * If an entry exists in the old table it either copies/or merges the new entry into the old entry
+     * and adds it to the new table.
+     * It does this so any outstanding references to the old HostTableEntry are still valid
+     *
+     * @param newHosts - the hosts to add to the table
+     * @param merge - if true then the settings are merged "intelligently" on existing entries, if false they are copied
+     */
+    public synchronized void setHosts( LinkedList<HostTableEntry> newHosts, boolean merge )
     {
         ConcurrentHashMap<InetAddress, HostTableEntry> oldHostTable = this.hostTable;
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
@@ -102,7 +112,10 @@ public class HostTableImpl implements HostTable
 
             HostTableEntry existingEntry = oldHostTable.get( address );
             if ( existingEntry != null ) {
-                existingEntry.copy( entry );
+                if (merge)
+                    existingEntry.merge( entry );
+                else
+                    existingEntry.copy( entry );
                 this.hostTable.put( existingEntry.getAddress(), existingEntry );
             }
             else {

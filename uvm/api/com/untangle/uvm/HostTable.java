@@ -116,7 +116,7 @@ public interface HostTable
     /**
      * Set the host table to these entries
      */
-    void setHosts( LinkedList<HostTableEntry> devices );
+    void setHosts( LinkedList<HostTableEntry> hosts, boolean merge );
 
     /**
      * save the hosts to disk

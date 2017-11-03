@@ -94,6 +94,12 @@ public class HostTableEntry implements Serializable, JSONString
         this.setHttpUserAgent( other.getHttpUserAgent() );
         this.setTags( other.getTags() );
     }
+
+    public void merge( HostTableEntry other )
+    {
+        this.setHttpUserAgent( other.getHttpUserAgent() );
+        this.setTags( other.getTags() );
+    }
     
     public InetAddress getAddress() { return this.address; }
     public void setAddress( InetAddress newValue )
