@@ -84,6 +84,8 @@ public class PluginManagerImpl implements PluginManager
 
     /**
      * Unload the plugin (if it exists)
+     *
+     * @param className - the className of the plugin to unload
      */
     public void unloadPlugin( String className )
     {
@@ -98,6 +100,17 @@ public class PluginManagerImpl implements PluginManager
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);
         }
+    }
+
+    /**
+     * Get the plugin of the specified className
+     *
+     * @param className - the className of the plugin
+     * @return the plugin or null if not found
+     */
+    public Plugin getPlugin(String className)
+    {
+        return loadedPlugins.get( className );
     }
     
     /**
