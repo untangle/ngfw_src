@@ -30,6 +30,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel(), policies, selNode;
         v.setLoading(true);
+
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
@@ -69,6 +70,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
     onRootChange: function (newRoot) {
         var me = this, selNode;
+
         if (me.selectedPolicyId) {
             selNode = newRoot.findChild('policyId', me.selectedPolicyId, true);
             if (selNode) {
@@ -77,6 +79,11 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 setTimeout(function() {
                     me.lookup('tree').selectPath(selNode.getPath('policyId'), 'policyId');
                 }, 100);
+            }
+        }else{
+            var tree = me.lookup('tree');
+            if( tree != null){
+                tree.getSelectionModel().select(0);
             }
         }
     },
@@ -88,7 +95,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
         Rpc.asyncData('rpc.appManager.getAppsView', selectedNode.get('policyId'))
             .then(function (result) {
                 me.buildApps(result);
-                // console.log(result);
             });
     },
 

@@ -26,6 +26,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
             handler: 'addPolicy'
         }],
         columns: [{
+            header: 'Policy'.t(),
             xtype: 'treecolumn',
             flex: 1,
             dataIndex: 'name',
@@ -33,14 +34,16 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
                 return '<strong>' + rec.get('name') + '</strong> [' + rec.get('policyId') + ']';
             }
         }, {
+            header: 'Edit'.t(),
             xtype: 'actioncolumn',
-            width: 20,
+            width: Renderer.actionWidth,
             align: 'center',
             iconCls: 'fa fa-pencil',
             handler: 'editPolicy'
         }, {
+            header: 'Delete'.t(),
             xtype: 'actioncolumn',
-            width: 20,
+            width: Renderer.actionWidth,
             align: 'center',
             iconCls: 'fa fa-times',
             isDisabled: function (view, rowIndex, colIndex, item , record) {
@@ -53,13 +56,13 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
         }
     }, {
         region: 'center',
-        xtype: 'grid',
+        xtype: 'ungrid',
         reference: 'apps',
         title: 'Apps'.t(),
         bind: '{appsStore}',
 
+        emptyText: 'Select Policy'.t(),
         viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>Select a Policy ...</p>',
             getRowClass: function (rec) {
                 return rec.get('parentPolicy') ? 'parent-policy' : '';
             }
@@ -72,25 +75,29 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
         columns: [{
             header: 'Id',
             align: 'right',
-            width: 50,
+            width: Renderer.idWidth,
             dataIndex: 'instanceId',
         }, {
             header: 'Status',
+            width: Renderer.messageWidth,
             dataIndex: 'status',
         }, {
             header: 'Name',
-            width: 200,
+            width: Renderer.messageWidth,
             dataIndex: 'displayName',
+            flex: 1,
             renderer: function (val, meta, rec) {
                 return '<strong>' + val + '</strong>';
                 // return '<img src="/skins/modern-rack/images/admin/apps/' + rec.get('name') + '_80x80.png" width=16 height=16/>' + '<strong>' + val + '</strong>';
             }
         }, {
             header: 'Inherited from',
-            dataIndex: 'parentPolicy'
+            dataIndex: 'parentPolicy',
+            width: Renderer.messageWidth
         }, {
+            header: 'Action'.t(),
             xtype: 'widgetcolumn',
-            width: 80,
+            width: Renderer.actionWidth,
             widget: {
                 xtype: 'button',
                 disabled: true,
@@ -110,8 +117,9 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
             //     widget.setVisible(rec.get('status') ? true : false);
             // }
         }, {
+            header: 'Manage'.t(),
             xtype: 'widgetcolumn',
-            width: 80,
+            width: Renderer.actionWidth + 20,
             widget: {
                 xtype: 'button',
                 bind: {
