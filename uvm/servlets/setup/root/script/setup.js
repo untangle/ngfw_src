@@ -1071,7 +1071,7 @@ Ext.define('Ung.Setup.Internet', {
         items: [{
             text: 'Renew DHCP'.t(),
             iconCls: 'fa fa-refresh',
-            handler: 'refresh', // refetch settings to refresh
+            handler: 'renewDhcp', // renew DHCP and refresh status
             bind: {
                 hidden: '{wan.v4ConfigType !== "AUTO"}'
             }
@@ -1217,17 +1217,22 @@ Ext.define('Ung.Setup.InternetController', {
 
     },
 
-    refresh: function () {
+    renewDhcp: function () {
         var me = this, vm = me.getViewModel();
-        Ung.app.loading('Saving settings ...'.t());
+        var wan = vm.get('wan');
         // save settings before
+        Ung.app.loading('Saving settings ...'.t());
         rpc.networkManager.setNetworkSettings(function (response, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            Ung.app.loading(false);
-            me.getSettings();
+            // then force the DHCP lease renew just in case
+            // setNetworkSettings is not guaranteed to restart networking
+            Ung.app.loading('Renewing DHCP Lease...'.t());
+            rpc.networkManager.renewDhcpLease(function (response, ex) {
+                if (ex) { Util.handleException(ex); return; }
+                Ung.app.loading(false);
+                me.getSettings();
+            }, wan.interfaceId);
         }, vm.get('networkSettings'));
     }
-
 });
 
 /**
