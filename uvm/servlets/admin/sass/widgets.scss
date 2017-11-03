@@ -73,7 +73,7 @@
             font-size: 18px;
             font-weight: 400;
             //line-height: 40px;
-            padding: 5px 10px 1px 10px;
+            padding: 5px 80px 1px 10px;
             margin: 0;
             overflow: hidden;
             white-space: nowrap;
@@ -540,7 +540,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.85);
         z-index: -1;
         // display: none;
         opacity: 0;
@@ -557,8 +557,9 @@
 
     .options {
         position: absolute;
+        padding: 10px;
         // width: 120px;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.9);
         // padding: 0;
         top: 0;
         right: -200px;
@@ -567,7 +568,8 @@
         box-shadow: 0 -5px 10px rgba(0, 0, 0, 1);
         transition: right .3s cubic-bezier(0.23, 1, 0.32, 1);
         padding-top: 40px;
-
+        z-index: 999;
+        color: #FFF;
         >i {
             position: absolute;
             top: 0;
@@ -580,10 +582,15 @@
             }
         }
 
+        hr {
+            border-top: 1px #555 solid;
+            border-bottom: none;
+        }
+
         a {
             display: block;
             cursor: pointer;
-            padding: 10px 30px 10px 10px;
+            padding: 10px 0;
             text-decoration: none;
             color: #CCC;
             i {
@@ -591,21 +598,48 @@
             }
             &:hover {
                 color: #8efb6c;
-                background: rgba(0, 0, 0, 0.5);
+                background: rgba(0, 0, 0, 1);
+            }
+        }
+
+        a.size {
+            float: left;
+            padding: 5px;
+            width: 20%;
+            text-align: center;
+            border-radius: 3px;
+            font-weight: 600;
+            &.selected {
+                background: #8efb6c;
+                color: #333;
+            }
+        }
+
+        select {
+            font-family: $custom-font-condensed;
+            padding: 3px;
+            background: #040404;
+            border: 0;
+            color: #FFF;
+        }
+
+        button {
+            font-family: $custom-font-condensed;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #333436;
+            border: 0;
+            border-radius: 3px;
+            padding: 8px 20px;
+            color: #FFF;
+            cursor: pointer;
+            &:hover {
+                color: #8efb6c;
             }
         }
     }
 
-
-
-    // .opts {
-    //     position: absolute;
-    //     top: 0;
-    //     bottom: 0;
-    //     right: 0;
-    //     width: 120px;
-    //     background: #FFF;
-    // }
     &.showmenu {
         .actions {
             display: none;
