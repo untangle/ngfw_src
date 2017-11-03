@@ -433,10 +433,15 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             // add series
-            series.forEach(function (serie) {
+            series.forEach(function (serie, idx) {
+                if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
+                    serie.pointPadding = 0.075 * idx;
+                } else {
+                    serie.pointPadding = 0.1;
+                }
                 me.chart.addSeries(serie, false, false);
             });
-            // console.log(series);
+
             me.chart.redraw();
         },
 
@@ -644,9 +649,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                         pointPlacement: isTimeGraph ? 'on' : undefined, // time
                         colorByPoint: isPieColumn, // pie
                         grouping: !isColumnOverlapped,
-                        groupPadding: 0.20,
+                        groupPadding: isColumnOverlapped ? 0.1 : 0.2,
                         // shadow: !isColumnOverlapped,
-                        shadow: false,
                         dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 80 } : undefined
                     }
                 },
@@ -702,27 +706,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                     layout: (isPieGraph && isPie) ? 'vertical' : 'horizontal',
                     align: (isPieGraph && isPie) ? 'left' : 'center',
                     verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
+                },
+                tooltip: {
+                    split: !widgetDisplay && isTimeGraph
                 }
-                // tooltip: {
-                //     split: isTimeGraph && !isTimeColumn
-                // }
             });
-
-            if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
-                Ext.Array.each(me.chart.series, function (serie, idx) {
-                    serie.update({
-                        pointPadding: (me.chart.series.length <= 3 ? 0.1 : 0.075) * idx
-                    }, false);
-                });
-                me.chart.redraw();
-            } else {
-                Ext.Array.each(me.chart.series, function (serie) {
-                    serie.update({
-                        pointPadding: 0.1
-                    }, false);
-                });
-                me.chart.redraw();
-            }
         }
     }
 });

@@ -68,7 +68,7 @@ Ext.define('Ung.widget.MapDistribution', {
             // view.setLoading(true);
             if (!Highcharts.map['custom/world']) {
                 Ext.Loader.loadScript({
-                    url: '/highcharts-5.0.9/world.js',
+                    url: '/highcharts-6.0.2/world.js',
                     onLoad: function () {
                         // view.setLoading(false);
                         view.renderMap(view);

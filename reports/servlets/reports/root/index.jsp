@@ -19,13 +19,12 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
     <script src="/jsonrpc/jsonrpc.js"></script>
 
     <!-- Highchart lib, map -->
-    <script src="/highcharts-5.0.9/highstock.js"></script>
-    <script src="/highcharts-5.0.9/highcharts-3d.js"></script>
-    <script src="/highcharts-5.0.9/highcharts-more.js"></script>
-    <script src="/highcharts-5.0.9/exporting.js"></script>
-    <script src="/highcharts-5.0.9/no-data-to-display.js"></script>
-    <script src="/highcharts-5.0.9/map.js"></script>
-    <script src="/highcharts-5.0.9/proj4.js"></script>
+    <script src="/highcharts-6.0.2/highstock.js"></script>
+    <script src="/highcharts-6.0.2/highcharts-3d.js"></script>
+    <script src="/highcharts-6.0.2/highcharts-more.js"></script>
+    <script src="/highcharts-6.0.2/exporting.js"></script>
+    <script src="/highcharts-6.0.2/export-data.js"></script>
+    <script src="/highcharts-6.0.2/no-data-to-display.js"></script>
 
     <!-- ExtJS lib & theme -->
     <script src="/ext6.2/ext-all-debug.js"></script>
