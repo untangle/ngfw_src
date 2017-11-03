@@ -5,7 +5,7 @@ Ext.define('Ung.widget.WidgetController', {
     control: {
         '#': {
             beforedestroy: 'onBeforeDestroy',
-            render: 'onRender'
+            // render: 'onRender'
         },
         '#header': {
             render: 'headerRender'
@@ -55,21 +55,17 @@ Ext.define('Ung.widget.WidgetController', {
         var me = this, wg = me.getView(), vm = me.getViewModel();
         cmp.getEl().on({
             click: function (e) {
-                // close menu
-                if (e.target.dataset.action) {
+                var action = e.target.dataset.action;
+
+                if (!action) { return; }
+
+                // close menu but only when not selecting size
+                if (action.indexOf('size') < 0) {
                     me.closeMenu();
                 }
 
-                // on settings
-                if (e.target.dataset.action === 'settings') {
-                    // if (wg.up('#dashboard').down('window')) {
-                    //     wg.up('#dashboard').down('window').close();
-                    // }
-                    wg.up('#dashboard').getController().showWidgetEditor(vm.get('widget'), vm.get('entry'));
-                }
-
                 // on download
-                if (e.target.dataset.action === 'download') {
+                if (action === 'download') {
                     var chart = wg.down('graphreport').getController().chart;
                     if (chart) {
                         chart.exportChart({
@@ -83,7 +79,7 @@ Ext.define('Ung.widget.WidgetController', {
                 }
 
                 // on export
-                if (e.target.dataset.action === 'export') {
+                if (action === 'export') {
                     var grid = wg.down('grid');
                     var exportForm = document.getElementById('exportGridSettings');
 
@@ -95,6 +91,22 @@ Ext.define('Ung.widget.WidgetController', {
                     exportForm.gridData.value = Ext.encode(data);
                     exportForm.submit();
                 }
+
+                // on size
+                if (action.indexOf('size') >= 0) {
+                    var newSize = e.target.dataset.action.replace('size-', '');
+                    vm.set('widget.size', newSize.toUpperCase());
+                }
+
+                // on save
+                if (action === 'save') {
+                    vm.set('widget.refreshIntervalSec', parseInt(wg.down('#menu').getEl().dom.getElementsByTagName('select')[0].value, 10));
+                    Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                        .then(function () {
+                            wg.lastFetchTime = null; // reset fetch time
+                            DashboardQueue.addFirst(wg);
+                        });
+                }
             }
         });
     },
@@ -102,6 +114,7 @@ Ext.define('Ung.widget.WidgetController', {
     closeMenu: function () {
         var view = this.getView();
         view.removeCls('showmenu');
+        if (!view.down('#menu')) { return; }
         Ext.defer(function () {
             view.down('#menu').setStyle({ zIndex: -1 });
         }, 300);
@@ -153,28 +166,6 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('widget').dirty) {
             vm.get('widget').reject();
         }
-    },
-
-
-    // not used
-    resizeWidget: function () {
-        var view = this.getView();
-        if (view.hasCls('small')) {
-            view.removeCls('small').addCls('medium');
-        } else {
-            if (view.hasCls('medium')) {
-                view.removeCls('medium').addCls('large');
-            } else {
-                if (view.hasCls('large')) {
-                    view.removeCls('large').addCls('x-large');
-                } else {
-                    if (view.hasCls('x-large')) {
-                        view.removeCls('x-large').addCls('small');
-                    }
-                }
-            }
-        }
-        view.updateLayout();
     },
 
     // used only for Network Layout widget devices number update when stats change
