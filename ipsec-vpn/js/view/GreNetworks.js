@@ -5,6 +5,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
     title: 'GRE Networks'.t(),
     viewModel: true,
     withValidation: true,
+    bodyPadding: 10,
 
     tbar: [{
         xtype: 'tbtext',
@@ -19,15 +20,25 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
         vtype: 'cidrBlock',
         allowBlank: false,
         labelWidth: 200,
-        padding: '10 0 0 10',
+        // padding: '10 0 0 10',
         fieldLabel: 'GRE Address Pool'.t()
     }, {
         xtype: 'displayfield',
-        padding: '10 0 0 10',
+        // padding: '10 0 0 10',
         value: 'Each Remote Network will have a corresponding GRE interface created on this server, with each interface being assigned an IP address from this pool.'.t()
     }, {
-        xtype: 'app-ipsecvpn-gre-networks-grid',
-        padding: '20 20 20 20'
+        xtype: 'fieldset',
+        title: 'GRE Networks'.t(),
+        padding: 10,
+
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+
+        items: [{
+            xtype: 'app-ipsecvpn-gre-networks-grid',
+        }]
     }]
 });
 
@@ -36,13 +47,14 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-ipsecvpn-gre-networks-grid',
     itemId: 'gre-networks-grid',
-    title: 'GRE Networks'.t(),
 
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
         items: ['@add', '->', '@import', '@export']
     }],
+
+    emptyText: 'No GRE Networks Defined'.t(),
 
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.networks.list',
@@ -60,25 +72,25 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'active',
         resizable: false
     }, {
         header: 'Description'.t(),
-        width: 300,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'description'
     }, {
         header: 'External IP'.t(),
-        width: 150,
+        width: Renderer.ipWidth,
         dataIndex: 'localAddress',
     }, {
         header: 'Remote Host'.t(),
-        width: 150,
+        width: Renderer.hostnameWidth,
         dataIndex: 'remoteAddress'
     }, {
         header: 'Remote Networks'.t(),
-        width: 400,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'remoteNetworks'
     }],

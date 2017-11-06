@@ -20,6 +20,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         items: ['@add', '->', '@import', '@export']
     }],
 
+    emptyText: 'No IPSec Tunnels defined'.t(),
+
     recordActions: ['edit', 'copy', 'delete'],
     copyAppendField: 'description',
 
@@ -56,28 +58,28 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),
-        width: 80,
+        width: Renderer.booleanWidth,
         dataIndex: 'active',
         resizable: false
     }, {
         header: 'External IP'.t(),
-        width: 150,
+        width: Renderer.ipWidth,
         dataIndex: 'left',
     }, {
         header: 'Remote Host'.t(),
-        width: 150,
+        width: Renderer.hostnameWidth,
         dataIndex: 'right',
     }, {
         header: 'Local Network'.t(),
-        width: 200,
+        width: Renderer.networkWidth,
         dataIndex: 'leftSubnet',
     }, {
         header: 'Remote Network'.t(),
-        width: 200,
+        width: Renderer.networkWidth,
         dataIndex: 'rightSubnet',
     }, {
         header: 'Description'.t(),
-        width:300,
+        width: Renderer.messageWidth,
         dataIndex: 'description',
         flex: 1,
     }],
