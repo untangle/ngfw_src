@@ -90,12 +90,12 @@ Ext.define('Ung.reports.cmp.ImportDialog', {
                 hideHeaders: '{!filefield.value}',
                 store: {
                     data: '{reports}',
-                    model: 'Ung.model.Report',
-                    groupField: 'category',
-                    sorters: [{
-                        property: 'category',
-                        direction: 'ASC'
-                    }]
+                    model: 'Ung.model.Report'
+                    // groupField: 'category',
+                    // sorters: [{
+                    //     property: 'category',
+                    //     direction: 'ASC'
+                    // }]
                 }
             },
             columns: [{
@@ -124,25 +124,19 @@ Ext.define('Ung.reports.cmp.ImportDialog', {
                     xtype: 'textfield'
                 }
             }, {
-                dataIndex: 'icon',
-                resizable: false,
-                width: 30,
-                align: 'center',
-                renderer: function (val) {
-                    return '<i class="fa ' + val + ' fa-gray" style="font-size: 14px;"></i>';
-                }
-            }, {
                 header: 'Type'.t(),
                 dataIndex: 'type',
                 width: 120,
-                renderer: function (val) {
+                renderer: function (val, meta, record) {
+                    var str = '<i class="fa ' + record.get('icon') + ' fa-gray" style="font-size: 14px;"></i> ';
                     switch (val) {
-                    case 'TEXT': return 'Text'.t();
-                    case 'PIE_GRAPH': return 'Pie Graph'.t();
-                    case 'TIME_GRAPH': return 'Time Graph'.t();
-                    case 'TIME_GRAPH_DYNAMIC': return 'Time Graph Dynamic'.t();
-                    case 'EVENT_LIST': return 'Event List'.t();
+                    case 'TEXT': str += 'Text'.t(); break;
+                    case 'PIE_GRAPH': str += 'Pie Graph'.t(); break;
+                    case 'TIME_GRAPH': str += 'Time Graph'.t(); break;
+                    case 'TIME_GRAPH_DYNAMIC': str += 'Time Graph Dynamic'.t(); break;
+                    case 'EVENT_LIST': str += 'Event List'.t(); break;
                     }
+                    return str;
                 }
             }]
         }, {
