@@ -67,9 +67,7 @@ Ext.define('Ung.view.extra.DevicesController', {
 
 
     saveDevices: function () {
-        var me = this,
-            store = me.getView().down('ungrid').getStore(),
-            list = [];
+        var me = this, list = [];
 
         me.getView().query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -99,12 +97,12 @@ Ext.define('Ung.view.extra.DevicesController', {
         Rpc.asyncData('rpc.deviceTable.setDevices', {
             javaClass: 'java.util.LinkedList',
             list: list
-        }).then(function(result, ex) {
-             me.getDevices();
+        }).then(function() {
+            me.getDevices();
         }, function (ex) {
             Util.handleException(ex);
         }).always(function () {
             me.getView().setLoading(false);
         });
-   }
+    }
 });
