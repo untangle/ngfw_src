@@ -14,7 +14,7 @@ Ext.define('Ung.apps.wan-balancer.view.TrafficAllocation', {
 
     items: [{
         xtype: 'displayfield',
-        padding: '10 20 0 20',
+        padding: '10 10 0 10',
         value: 'Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface.'.t() + '<BR>' +
                'After entering the weight of each interface the resulting allocation is displayed.'.t() + '<BR>' +
                'If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces.'.t() + '<BR>' +
@@ -22,10 +22,7 @@ Ext.define('Ung.apps.wan-balancer.view.TrafficAllocation', {
                'For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link.'.t()
     },{
         xtype: 'app-wan-balancer-weight-grid',
-        width: 800,
-        height: 400,
-        padding: '20 20 20 20',
-        border: true,
+        padding: '10 10 10 10'
     }]
 
 });
@@ -37,14 +34,16 @@ Ext.define('Ung.apps.wan-balancer.view.WeightGrid', {
     title: 'Interface Weights'.t(),
     bind: '{interfaceWeightList}',
 
+    emptyText: 'No WAN Interfaces defined'.t(),
+
     columns: [{
         header: 'Interface'.t(),
         dataIndex: 'name',
-        width: 150,
+        width: Renderer.idWidth,
     }, {
         header: 'Weight'.t(),
         dataIndex: 'weight',
-        width: 120,
+        width: Renderer.sizeWidth,
         editor: {
             xtype: 'numberfield',
             allowDecimals: false,
@@ -54,7 +53,7 @@ Ext.define('Ung.apps.wan-balancer.view.WeightGrid', {
     }, {
         header: 'Resulting Traffic Allocation'.t(),
         dataIndex: 'description',
-        width: 150,
+        width: Renderer.messageWidth,
         flex: 1
     }]
 });
