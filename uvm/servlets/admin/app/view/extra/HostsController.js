@@ -108,6 +108,41 @@ Ext.define('Ung.view.extra.HostsController', {
             }).always(function () {
                 Ext.MessageBox.hide();
             });
+    },
+
+    saveHosts: function () {
+        var me = this, list = [];
+
+        me.getView().query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+
+            var filters = store.getFilters().clone();
+            store.clearFilter();
+
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                store.isReordered = undefined;
+            }
+            list = Ext.Array.pluck(store.getRange(), 'data');
+
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
+        });
+
+        me.getView().setLoading(true);
+        Rpc.asyncData('rpc.hostTable.setHosts', {
+            javaClass: 'java.util.LinkedList',
+            list: list
+        }, true).then(function() {
+            me.getHosts();
+        }, function (ex) {
+            Util.handleException(ex);
+        }).always(function () {
+            me.getView().setLoading(false);
+        });
     }
 
 });
