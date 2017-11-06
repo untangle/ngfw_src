@@ -21,6 +21,7 @@ Ext.define ('Ung.model.Report', {
         { name: 'table', type: 'string', defaultValue: null },
         { name: 'textColumns', type: 'auto', defaultValue: null },
         { name: 'textString', type: 'string', defaultValue: '' },
+        { name: 'theme', type: 'string' },
         { name: 'timeDataColumns', type: 'auto', defaultValue: null },
         { name: 'timeDataDynamicAggregationFunction', type: 'string', defaultValue: '' },
         { name: 'timeDataDynamicAllowNull', type: 'boolean', defaultValue: false },

@@ -468,6 +468,24 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{eEntry.type === "TEXT" || eEntry.type === "EVENT_LIST"}'
                 },
                 items: [{
+                    // ALL GRAPHS
+                    xtype: 'combo',
+                    fieldLabel: 'Theme'.t(),
+                    editable: false,
+                    store: [
+                        ['DEFAULT', 'Default'.t()],
+                        ['DARK', 'Dark'.t()],
+                        ['SAND', 'Sand'.t()]
+                    ],
+                    queryMode: 'local',
+                    bind: {
+                        value: '{eEntry.theme}',
+                        hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
+                        disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
+                    },
+                    allowBlank: false,
+                    emptyText: 'Select Theme ...'.t()
+                }, {
                     // PIE_GRAPH
                     xtype: 'combo',
                     fieldLabel: 'Style'.t(),

@@ -53,7 +53,7 @@ Ext.define('Ung.view.reports.EntryController', {
             else {
                 // on cancel when eEntry turns null reloads the selected entry if exists
                 if (!eEntry) {
-                    me.reload();
+                    me.reload(true);
                     return;
                 }
             }
@@ -74,20 +74,21 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         // each time the eEntry type is changed check if editing form is valid
-        vm.bind('{eEntry.type}', function (type) {
-            // console.log('TYPE', type);
-            if (!type) { return; }
-            me.setReportCard(type);
-            Ext.defer(function () {
-                if (me.getView().down('form').isValid()) {
-                    vm.set('validForm', true);
-                    me.reload();
-                } else {
-                    vm.set('validForm', false);
-                    me.reset();
-                }
-            }, 100);
-        });
+        // vm.bind('{eEntry.type}', function (type) {
+
+        //     if (!type) { return; }
+        //     me.setReportCard(type);
+        //     // defer needed for form validation
+        //     Ext.defer(function () {
+        //         if (me.getView().down('form').isValid()) {
+        //             vm.set('validForm', true);
+        //             me.reload(true);
+        //         } else {
+        //             vm.set('validForm', false);
+        //             me.reset();
+        //         }
+        //     }, 100);
+        // });
 
         // watch since date switching and reload the report
         vm.bind('{sinceDate.value}', function () {
@@ -163,6 +164,8 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
+        if (!entry) { return; }
+
         vm.set('validForm', true); // te remove the valid warning
 
         if (!vm.get('r_customRangeCk.value')) {
@@ -171,8 +174,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 f_enddate: null
             });
         }
-
-        if (!entry) { return; }
 
         switch(entry.get('type')) {
         case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
@@ -190,7 +191,7 @@ Ext.define('Ung.view.reports.EntryController', {
         }
 
         // if (reps) { reps.getViewModel().set('fetching', true); }
-        ctrl.fetchData(false, function (data) {
+        ctrl.fetchData(reset, function (data) {
             // if (reps) { reps.getViewModel().set('fetching', false); }
             // if autorefresh enabled refetch data in 5 seconds
             vm.set('reportData', data);
@@ -367,36 +368,40 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
-            entry = vm.get('eEntry'), tdcg, tdc = [];
+            eEntry = vm.get('eEntry'), tdcg, tdc = [];
 
         // update timeDataColumns or textColumns
-        if (entry.get('type') === 'TIME_GRAPH') {
+        if (eEntry.get('type') === 'TIME_GRAPH') {
             tdcg = v.down('#timeDataColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            entry.set('timeDataColumns', tdc);
+            eEntry.set('timeDataColumns', tdc);
         }
-        if (entry.get('type') === 'TEXT') {
+        if (eEntry.get('type') === 'TEXT') {
             tdcg = v.down('#textColumnsGrid');
             tdcg.getStore().each(function (col) { tdc.push(col.get('str')); });
-            entry.set('textColumns', tdc);
+            eEntry.set('textColumns', tdc);
         }
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', eEntry.getData())
             .then(function() {
                 v.setLoading(false);
 
-                var updatedRec = Ext.getStore('reports').findRecord('uniqueId', entry.get('uniqueId'));
-                if (updatedRec) {
-                    updatedRec.copyFrom(entry);
-                    updatedRec.commit();
-                    Ext.getStore('reportstree').build();
-                }
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
+                vm.get('entry').copyFrom(eEntry);
+                // console.log(entry.get('theme'));
+
+                // var updatedRec = Ext.getStore('reports').findRecord('uniqueId', entry.get('uniqueId'));
+                // if (updatedRec) {
+                //     updatedRec = entry.copy(null);
+                //     // updatedRec.commit();
+                //     console.log(updatedRec);
+                //     Ext.getStore('reportstree').build();
+                // }
+                // Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
 
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
                 vm.set('eEntry', null);
-                me.reload();
+                me.reload(true);
             });
     },
 
