@@ -58,7 +58,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     renderTo: me.getView().lookupReference('graph').getEl().dom,
                     animation: false,
                     marginRight: widgetDisplay ? undefined : 20,
-                    spacing: widgetDisplay ? [5, 5, 10, 5] : [30, 10, 15, 10],
+                    spacing: widgetDisplay ? [5, 0, 10, 5] : [30, 10, 15, 10],
                     style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
                     backgroundColor: 'transparent'
                 },
