@@ -69,7 +69,7 @@ Ext.define('Ung.widget.Report', {
                     '<option value=60 {widget.refreshIntervalSec === 60 ? "selected" : ""}>1 ' + 'minute'.t() + '</option>' +
                     '<option value=120 {widget.refreshIntervalSec === 120 ? "selected" : ""}>2 ' + 'minutes'.t() + '</option>' +
                     '<option value=300 {widget.refreshIntervalSec === 300 ? "selected" : ""}>5 ' + 'minutes'.t() + '</option>' +
-                    '<option value=null {widget.refreshIntervalSec === null ? "selected" : ""}>' + 'never'.t() + '</option>' +
+                    '<option value=0 {widget.refreshIntervalSec === 0 ? "selected" : ""}>' + 'never'.t() + '</option>' +
                 '</select><br/>' +
                 '<button data-action="save">' + 'Save'.t() + '</button>' +
                 '</div>'

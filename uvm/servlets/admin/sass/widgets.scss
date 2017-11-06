@@ -92,7 +92,7 @@
             position: absolute;
             padding: 0;
             top: 7px;
-            right: 10px;
+            right: 7px;
         }
         .action-btn {
             border: 0;
@@ -105,7 +105,7 @@
             background: none;
             opacity: 0;
             text-align: center;
-            margin: 0 5px;
+            margin: 0 0 0 5px;
             transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
             i {
                 color: #999;
@@ -544,7 +544,7 @@
         z-index: -1;
         // display: none;
         opacity: 0;
-        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+        // transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
 
         font-family: $custom-font-condensed;
         p {
@@ -553,6 +553,9 @@
             width: 250px;
             padding: 40px 20px 20px 20px;
         }
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
     }
 
     .options {
@@ -570,6 +573,9 @@
         padding-top: 40px;
         z-index: 999;
         color: #FFF;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
         >i {
             position: absolute;
             top: 0;
