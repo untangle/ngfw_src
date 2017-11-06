@@ -11,6 +11,9 @@ Ext.define('Ung.view.reports.GraphReport', {
         xtype: 'component',
         reference: 'graph',
         cls: 'chart'
+        // bind: {
+        //     userCls: 'theme-{f_theme}'
+        // }
     }],
 
     controller: {
@@ -42,7 +45,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             if (me.chart) {
                 Ext.defer(function () {
                     me.chart.reflow();
-                }, 200);
+                }, 150);
             }
         },
 
@@ -346,7 +349,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 })
                 .always(function () {
                     if (reps) { reps.getViewModel().set('fetching', false); }
-                    me.chart.reflow();
                     me.chart.hideLoading();
                 });
         },
@@ -443,6 +445,8 @@ Ext.define('Ung.view.reports.GraphReport', {
             });
 
             me.chart.redraw();
+            me.getView().fireEvent('resize');
+            // Ext.defer(function() { me.chart.reflow(); }, 200);
         },
 
         /**
@@ -508,6 +512,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             }, false, false);
 
             me.chart.redraw();
+            me.getView().fireEvent('resize');
         },
 
         /**
@@ -600,7 +605,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
             }
 
-            me.chart.update({
+            var settings = {
                 chart: {
                     type: me.setChartType(entry),
                     zoomType: isTimeGraph ? 'x' : undefined,
@@ -710,7 +715,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                 tooltip: {
                     split: !widgetDisplay && isTimeGraph
                 }
-            });
+            };
+
+            Highcharts.merge(true, settings, Theme[entry.get('theme')] || Theme.DEFAULT);
+            me.chart.update(settings, true);
         }
     }
 });
