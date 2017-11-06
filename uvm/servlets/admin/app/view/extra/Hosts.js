@@ -59,11 +59,19 @@ Ext.define('Ung.view.extra.Hosts', {
         enableColumnHide: true,
 
         viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true
+            stripeRows: false,
+            enableTextSelection: true,
+            trackOver: false,
         },
 
-        plugins: ['gridfilters'],
+        selModel: {
+            type: 'rowmodel'
+        },
+
+        plugins: [ 'gridfilters', {
+            ptype: 'cellediting',
+            clicksToEdit: 1
+        }],
 
         fields: [{
             name: 'address',
@@ -246,10 +254,15 @@ Ext.define('Ung.view.extra.Hosts', {
             renderer: Renderer.boolean,
             filter: Renderer.booleanFilter
         },{
-            header: 'HTTP User Agent'.t(),
+            header: '<i class="fa fa-pencil fa-gray"></i> ' + 'HTTP User Agent'.t(),
             dataIndex: 'httpUserAgent',
             width: Renderer.messageWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            tdCls: 'editable-column',
+            editor: {
+                xtype: 'textfield',
+                emptyText: ''.t()
+            }
         },{
             header: 'Captive Portal Authenticated'.t(),
             dataIndex: 'captivePortalAuthenticated',
@@ -257,10 +270,16 @@ Ext.define('Ung.view.extra.Hosts', {
             renderer: Renderer.boolean,
             filter: Renderer.booleanFilter
         },{
-            header: 'Tags'.t(),
-            dataIndex: 'tags',
+            header: '<i class="fa fa-pencil fa-gray"></i> ' + 'Tags'.t(),
             width: Renderer.tagsWidth,
-            renderer: Renderer.tags
+            xtype: 'widgetcolumn',
+            tdCls: 'tag-cell editable-column',
+            widget: {
+                xtype: 'tagpicker',
+                bind: {
+                    tags: '{record.tags}'
+                }
+            }
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
@@ -446,5 +465,10 @@ Ext.define('Ung.view.extra.Hosts', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/hosts',
         hrefTarget: '_self'
+    }],
+    bbar: ['->', {
+        text: '<strong>' + 'Save'.t() + '</strong>',
+        iconCls: 'fa fa-floppy-o',
+        handler: 'saveHosts'
     }]
 });

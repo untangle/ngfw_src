@@ -80,9 +80,7 @@ Ext.define('Ung.view.extra.Devices', {
             javaClass: 'com.untangle.uvm.DeviceTableEntry'
         },
 
-        plugins: [
-        'gridfilters',
-        {
+        plugins: [ 'gridfilters', {
             ptype: 'cellediting',
             clicksToEdit: 1
         }],
