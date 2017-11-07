@@ -37,6 +37,8 @@ Ext.define('Ung.util.Renderer', {
     networkWidth: 120,
     // Port
     portWidth: 70,
+    // Protocol
+    protocolWidth: 70,
     // Data size
     sizeWidth: 90,
     // Tags
