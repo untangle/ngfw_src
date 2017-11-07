@@ -24,6 +24,8 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
     listProperty: 'settings.captureRules.list',
     ruleJavaClass: 'com.untangle.app.captive_portal.CaptureRuleCondition',
 
+    emptyText: 'No Capture Rules defined'.t(),
+
     emptyRow: {
         ruleId: -1,
         enabled: true,
@@ -47,7 +49,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
             header: 'Capture',
             dataIndex: 'capture',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth
         }
 
     ],
