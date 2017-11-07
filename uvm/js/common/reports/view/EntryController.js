@@ -12,6 +12,7 @@ Ext.define('Ung.view.reports.EntryController', {
     refreshTimeout: null,
 
     onDeactivate: function () {
+        // this.getViewModel().set('entry', null);
         this.getViewModel().set('eEntry', null);
         this.reset();
     },
@@ -24,6 +25,7 @@ Ext.define('Ung.view.reports.EntryController', {
          * each time report selection changes
          */
         vm.bind('{entry}', function (entry) {
+            // if (!entry) { return; }
             vm.set('eEntry', null);
 
             // vm.set('_currentData', []);
@@ -53,7 +55,8 @@ Ext.define('Ung.view.reports.EntryController', {
             else {
                 // on cancel when eEntry turns null reloads the selected entry if exists
                 if (!eEntry) {
-                    me.reload(true);
+                    // me.reload(true);
+                    me.getView().down('graphreport').fireEvent('styleschanged');
                     return;
                 }
             }
@@ -368,6 +371,7 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel(),
+            entry = vm.get('entry'),
             eEntry = vm.get('eEntry'), tdcg, tdc = [];
 
         // update timeDataColumns or textColumns
@@ -387,21 +391,18 @@ Ext.define('Ung.view.reports.EntryController', {
             .then(function() {
                 v.setLoading(false);
 
-                vm.get('entry').copyFrom(eEntry);
-                // console.log(entry.get('theme'));
+                var modFields = entry.copyFrom(eEntry);
 
-                // var updatedRec = Ext.getStore('reports').findRecord('uniqueId', entry.get('uniqueId'));
-                // if (updatedRec) {
-                //     updatedRec = entry.copy(null);
-                //     // updatedRec.commit();
-                //     console.log(updatedRec);
-                //     Ext.getStore('reportstree').build();
-                // }
-                // Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
+                // if title or category changed, update route
+                if (Ext.Array.contains(modFields, 'category') || Ext.Array.contains(modFields, 'title')) {
+                    Ext.getStore('reportstree').build();
+                    Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
+                }
 
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
                 vm.set('eEntry', null);
-                me.reload(true);
+                vm.notify();
+
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
             });
     },
 
