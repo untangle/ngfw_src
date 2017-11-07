@@ -1,5 +1,5 @@
 Ext.define('Ung.view.reports.GraphReport', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.container.Container',
     alias: 'widget.graphreport',
 
     viewModel: true,
@@ -7,61 +7,28 @@ Ext.define('Ung.view.reports.GraphReport', {
     border: false,
     bodyBorder: false,
 
-    items: [{
-        xtype: 'component',
-        reference: 'graph',
-        cls: 'chart'
-        // bind: {
-        //     userCls: 'theme-{f_theme}'
-        // }
-    }],
+    listeners: {
+        afterrender: 'initChart',
+        resize: 'onResize',
+        deactivate: 'reset',
+        styleschanged: 'setStyles'
+    },
 
     controller: {
-        control: {
-            '#': {
-                afterrender: 'onAfterRender',
-                resize: 'onResize',
-                deactivate: 'reset'
-            }
-        },
-
-        onAfterRender: function () {
-            var me = this, vm = this.getViewModel();
-            me.buildChart(); // builds an empy chart
-
-            // fetch data when report inside widget or widget settings
-            vm.bind('{entry}', function () {
-                if (!me.getView().up('entry')) {
-                    me.fetchData();
-                }
-            });
-        },
 
         /**
-         * used to refresh the chart when it's container size changes
+         * initializes an empty chart (no data) and adds it to the container (this is done once)
          */
-        onResize: function () {
-            var me = this;
-            if (me.chart) {
-                Ext.defer(function () {
-                    me.chart.reflow();
-                }, 150);
-            }
-        },
-
-        /**
-         * builds an empty chart (no data) and adds it to the container (this is done once)
-         */
-        buildChart: function () {
+        initChart: function () {
             var me = this, widgetDisplay = me.getView().widgetDisplay;
 
             me.chart = new Highcharts.StockChart({
                 chart: {
                     type: 'spline',
-                    renderTo: me.getView().lookupReference('graph').getEl().dom,
+                    renderTo: me.getView().getEl().dom,
                     animation: false,
                     marginRight: widgetDisplay ? undefined : 20,
-                    spacing: widgetDisplay ? [5, 0, 10, 5] : [30, 10, 15, 10],
+                    spacing: widgetDisplay ? [5, 5, 10, 5] : [30, 10, 15, 10],
                     style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
                     backgroundColor: 'transparent'
                 },
@@ -281,244 +248,10 @@ Ext.define('Ung.view.reports.GraphReport', {
             });
         },
 
-
-        reset: function () {
-            var me = this;
-            while(me.chart.series.length > 0) {
-                me.chart.series[0].remove(true);
-            }
-            me.chart.update({
-                xAxis: { visible: false },
-                yAxis: { visible: false },
-                legend: {
-                    enabled: false
-                }
-            });
-            me.chart.redraw();
-            me.chart.zoomOut();
-        },
-
         /**
-         * fetches the report data
+         * returns the chart type (e.g. line, areaspline, column etc...) based on entry type and style
          */
-        fetchData: function (reset, cb) {
-            var me = this,
-                vm = this.getViewModel(),
-                entry = vm.get('eEntry') || vm.get('entry'),
-                entryType = entry.get('type'),
-                reps = me.getView().up('#reports'),
-                startDate, endDate;
-
-            vm.set('eError', false);
-
-            if (reps) { reps.getViewModel().set('fetching', true); }
-
-            // date range setup
-            if (!me.getView().renderInReports) {
-                // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
-                startDate = new Date(Util.getMilliseconds() - (Ung.dashboardSettings.timeframe * 3600 || 3600) * 1000);
-                endDate = null;
-            } else {
-                // if it's a report, convert UI client start date to server date
-                startDate = Util.clientToServerDate(vm.get('f_startdate'));
-                endDate = Util.clientToServerDate(vm.get('f_enddate'));
-            }
-
-            // if (reset) { me.reset(); }
-            me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
-
-            Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-                entry.getData(), // entry
-                startDate,
-                endDate,
-                vm.get('globalConditions'), -1) // sql filters
-                .then(function (result) {
-                    me.data = result.list;
-
-                    // after data is fetched, generate chart series based on it's type
-                    if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                        me.setTimeSeries();
-                    }
-                    if (entryType === 'PIE_GRAPH') {
-                        me.setPieSeries();
-                    }
-
-                    if (cb) { cb(me.data); }
-                }, function () {
-                    vm.set('eError', true);
-                })
-                .always(function () {
-                    if (reps) { reps.getViewModel().set('fetching', false); }
-                    me.chart.hideLoading();
-                });
-        },
-
-        /**
-         * set chart series for the timeseries
-         */
-        setTimeSeries: function () {
-            var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry');
-
-            if ((entry.get('type') !== 'TIME_GRAPH' && entry.get('type') !== 'TIME_GRAPH_DYNAMIC') || !me.data) { return; }
-
-            me.setStyles(); // move at the beginning to avoid colors issues
-
-            var timeDataColumns = Ext.clone(entry.get('timeDataColumns')),
-                colors = (entry.get('colors') && entry.get('colors').length > 0) ? entry.get('colors') : Util.defaultColors,
-                i, j, seriesData, series = [], seriesRenderer = null, column,
-                units = entry.get('units');
-
-            // get or generate series names based on timeDataColumns for TIME_GRAPH or data form TIME_GRAPH_DYNAMIC
-            if (!timeDataColumns || (Ext.isArray(timeDataColumns) && timeDataColumns.length === 0)) {
-                timeDataColumns = [];
-                for (i = 0; i < me.data.length; i += 1) {
-                    for (var _column in me.data[i]) {
-                        if (me.data[i].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
-                            timeDataColumns.push(_column);
-                        }
-                    }
-                }
-
-                if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-                    seriesRenderer = Renderer[entry.get('seriesRenderer')];
-                }
-            } else {
-                for (i = 0; i < timeDataColumns.length; i += 1) {
-                    timeDataColumns[i] = timeDataColumns[i].split(' ').splice(-1)[0];
-                }
-            }
-
-            // create series
-            for (i = 0; i < timeDataColumns.length; i += 1) {
-                column = timeDataColumns[i];
-                seriesData = [];
-                for (j = 0; j < me.data.length; j += 1) {
-                    seriesData.push([
-                        me.data[j].time_trunc.time || me.data[j].time_trunc, // for sqlite is time_trunc, for postgres is time_trunc.time
-                        me.data[j][column] || 0
-                    ]);
-                }
-                var renderedName = column;
-                if( seriesRenderer ){
-                    renderedName = seriesRenderer(column);
-                    if(renderedName.substr(-1) != ']'){
-                        renderedName += ' [' + column + ']';
-                    }
-                }
-                series.push({
-                    name: renderedName,
-                    data: seriesData,
-                    fillColor: {
-                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                        stops: [
-                            [0, Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')],
-                            [1, Highcharts.Color(colors[i]).setOpacity(0.1).get('rgba')]
-                        ]
-                    },
-                    tooltip: {
-                        pointFormatter: function () {
-                            var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
-                            if (units === 'bytes' || units === 'bytes/s') {
-                                str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
-                            } else {
-                                str += ': <b>' + this.y + '</b> ' + units;
-                            }
-                            return str + '<br/>';
-                        }
-                    }
-                });
-            }
-
-            // remove existing series
-            while (this.chart.series.length > 0) {
-                this.chart.series[0].remove(false);
-            }
-
-            // add series
-            series.forEach(function (serie, idx) {
-                if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
-                    serie.pointPadding = 0.075 * idx;
-                } else {
-                    serie.pointPadding = 0.1;
-                }
-                me.chart.addSeries(serie, false, false);
-            });
-
-            me.chart.redraw();
-            me.getView().fireEvent('resize');
-            // Ext.defer(function() { me.chart.reflow(); }, 200);
-        },
-
-        /**
-         * set serie fro the pie chart
-         */
-        setPieSeries: function () {
-            var me = this, vm = this.getViewModel(),
-                entry = vm.get('eEntry') || vm.get('entry'),
-                seriesName,
-                slicesData = [], restValue = 0, seriesRenderer = null, i;
-
-            if (entry.get('type') !== 'PIE_GRAPH' || !me.data) { return; }
-
-            me.setStyles();
-
-            if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-                seriesRenderer = Renderer[entry.get('seriesRenderer')];
-            }
-
-            for (i = 0; i < me.data.length; i += 1) {
-                if (!seriesRenderer) {
-                    seriesName = me.data[i][entry.get('pieGroupColumn')] !== undefined ? me.data[i][entry.get('pieGroupColumn')] : 'None'.t();
-                } else {
-                    seriesName = seriesRenderer(me.data[i][entry.get('pieGroupColumn')]);
-                }
-
-                if (i < entry.get('pieNumSlices')) {
-                    slicesData.push({
-                        name: seriesName,
-                        y: me.data[i].value,
-                    });
-                } else {
-                    restValue += me.data[i].value;
-                }
-            }
-
-            if (restValue > 0) {
-                slicesData.push({
-                    name: 'Others'.t(),
-                    color: '#DDD',
-                    y: restValue
-                });
-            }
-
-            while(this.chart.series.length > 0) {
-                this.chart.series[0].remove(false);
-            }
-
-            me.chart.addSeries({
-                name: entry.get('units').t(),
-                data: slicesData,
-                tooltip: {
-                    pointFormatter: function () {
-                        var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
-                        if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
-                            str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
-                        } else {
-                            str += ': <b>' + this.y + '</b>';
-                        }
-                        return str + '<br/>';
-                    }
-                }
-            }, false, false);
-
-            me.chart.redraw();
-            me.getView().fireEvent('resize');
-        },
-
-        /**
-         * returns the chart type (e.g. line, areaspline, column etc...) based on entry
-         */
-        setChartType: function (entry) {
+        getChartType: function (entry) {
             var type;
 
             if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
@@ -550,6 +283,231 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
             return type;
         },
+
+        /**
+         * fetches the report data
+         */
+        fetchData: function (reset, cb) {
+            var me = this,
+                vm = this.getViewModel(),
+                entry = vm.get('eEntry') || vm.get('entry'),
+                reps = me.getView().up('#reports'),
+                startDate, endDate;
+
+            vm.set('eError', false);
+
+            if (reps) { reps.getViewModel().set('fetching', true); }
+
+            // date range setup
+            if (!me.getView().renderInReports) {
+                // if not rendered in reports than treat as widget so from server startDate is extracted the timeframe
+                startDate = new Date(Util.getMilliseconds() - (Ung.dashboardSettings.timeframe * 3600 || 3600) * 1000);
+                endDate = null;
+            } else {
+                // if it's a report, convert UI client start date to server date
+                startDate = Util.clientToServerDate(vm.get('f_startdate'));
+                endDate = Util.clientToServerDate(vm.get('f_enddate'));
+            }
+
+            // if (reset) { me.reset(); }
+            me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
+
+            Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
+                entry.getData(), // entry
+                startDate,
+                endDate,
+                vm.get('globalConditions'), -1) // sql filters
+                .then(function (result) {
+                    me.data = result.list;
+                    me.setSeries();
+                    if (cb) { cb(me.data); }
+                }, function () {
+                    vm.set('eError', true);
+                })
+                .always(function () {
+                    if (reps) { reps.getViewModel().set('fetching', false); }
+                    me.chart.hideLoading();
+                });
+        },
+
+        /**
+         * used to refresh the chart when it's container size changes
+         */
+        onResize: function (el, width, height) {
+            var me = this;
+            // explicitly set size of the chart to avoid cutoffs
+            if (me.chart) {
+                me.chart.setSize(width, height, false);
+            }
+        },
+
+
+        reset: function () {
+            var me = this;
+            while(me.chart.series.length > 0) {
+                me.chart.series[0].remove(true);
+            }
+            me.chart.update({
+                xAxis: { visible: false },
+                yAxis: { visible: false },
+                legend: {
+                    enabled: false
+                }
+            });
+            me.chart.redraw();
+            me.chart.zoomOut();
+        },
+
+        /**
+         * sets the data series for graph reports
+         */
+        setSeries: function () {
+            var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
+                seriesRenderer = entry.get('seriesRenderer') ? Renderer[entry.get('seriesRenderer')] : null,
+                seriesData,
+                seriesName;
+
+            if (!me.data) { return; }
+
+            // remove any existing series
+            while (me.chart.series.length > 0) {
+                me.chart.series[0].remove(false);
+            }
+
+            // apply styles before adding new series
+            me.setStyles();
+
+            if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
+                var dataColumns = [],
+                    pointPadding,
+                    colors = (entry.get('colors') && entry.get('colors').length > 0) ? entry.get('colors') : Util.defaultColors,
+                    units = entry.get('units');
+
+                // get or generate series names based on timeDataColumns for TIME_GRAPH or data form TIME_GRAPH_DYNAMIC
+                if (entry.get('type') === 'TIME_GRAPH') {
+                    Ext.Array.each(entry.get('timeDataColumns'), function (column) {
+                        dataColumns.push(column.split(' ').splice(-1)[0]);
+                    });
+                }
+
+
+                if (entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
+                    Ext.Array.each(me.data, function (row) {
+                        Ext.Object.each(row, function (key) {
+                            if (row.hasOwnProperty(key) && key !== 'time_trunc' && key !== 'time' && dataColumns.indexOf(key) < 0) {
+                                dataColumns.push(key);
+                            }
+                        });
+                    });
+                }
+
+                Ext.Array.each(dataColumns, function (column, idx) {
+                    // set series data
+                    seriesData = [];
+                    Ext.Array.each(me.data, function (row) {
+                        seriesData.push([
+                            row.time_trunc.time || row.time_trunc, // for sqlite is time_trunc, for postgres is time_trunc.time
+                            row[column] || 0
+                        ]);
+                    });
+                    // set series name
+                    seriesName = column;
+                    if (seriesRenderer) {
+                        seriesName = seriesRenderer(column);
+                        if (seriesName.substr(-1) != ']') {
+                            seriesName += ' [' + column + ']';
+                        }
+                    }
+
+                    if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
+                        pointPadding = 0.075 * idx;
+                    } else {
+                        pointPadding = 0.1;
+                    }
+
+                    me.chart.addSeries({
+                        name: seriesName,
+                        data: seriesData,
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, Highcharts.Color(colors[idx]).setOpacity(0.7).get('rgba')],
+                                [1, Highcharts.Color(colors[idx]).setOpacity(0.1).get('rgba')]
+                            ]
+                        },
+                        pointPadding: pointPadding,
+                        tooltip: {
+                            pointFormatter: function () {
+                                var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                                if (units === 'bytes' || units === 'bytes/s') {
+                                    str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
+                                } else {
+                                    str += ': <b>' + this.y + '</b> ' + units;
+                                }
+                                return str + '<br/>';
+                            }
+                        }
+                    }, false, false);
+                });
+            }
+
+            if (entry.get('type') === 'PIE_GRAPH') {
+                var othersValue = 0;
+                seriesData = [],
+
+                Ext.Array.each(me.data, function (row, idx) {
+                    if (!seriesRenderer) {
+                        seriesName = row[entry.get('pieGroupColumn')] !== undefined ? row[entry.get('pieGroupColumn')] : 'None'.t();
+                    } else {
+                        seriesName = seriesRenderer(row[entry.get('pieGroupColumn')]);
+                    }
+
+                    if (idx < entry.get('pieNumSlices')) {
+                        seriesData.push({
+                            name: seriesName,
+                            y: row.value
+                        });
+                    } else {
+                        othersValue += row.value;
+                    }
+
+                });
+
+                // add the rest of the values as Others slice
+                if (othersValue > 0) {
+                    seriesData.push({
+                        name: 'Others'.t(),
+                        color: '#DDD',
+                        y: othersValue
+                    });
+                }
+
+                me.chart.addSeries({
+                    name: entry.get('units').t(),
+                    // name: seriesName,
+                    data: seriesData,
+                    tooltip: {
+                        pointFormatter: function () {
+                            var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                            if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
+                                str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
+                            } else {
+                                str += ': <b>' + this.y + '</b>';
+                            }
+                            return str + '<br/>';
+                        }
+                    }
+                }, false, false);
+            }
+            me.chart.redraw();
+            me.getView().fireEvent('resize');
+            // // me.chart.reflow();
+            // Ext.defer(function () {
+            //     console.log('resize');
+
+            // }, 2000);
+        },
+
 
         /**
          * sets/updates the chart styles based on entry and data
@@ -607,7 +565,7 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             var settings = {
                 chart: {
-                    type: me.setChartType(entry),
+                    type: me.getChartType(entry),
                     zoomType: isTimeGraph ? 'x' : undefined,
                     panning: isTimeGraph,
                     panKey: 'ctrl',
