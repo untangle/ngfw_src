@@ -346,9 +346,12 @@ class ReportsTests(unittest2.TestCase):
         # copy mail from remote client
         os.system("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
         fp = open("/tmp/test_100_email_report_admin_file")
-        msg = email.message_from_file(fp)
+        email_string = fp.read()
         fp.close()
         os.system("rm /tmp/test_100_email_report_admin_file")
+        # Delete the first line as it is blank and throws off the parser/
+        email_string = '\n'.join(email_string.split('\n')[1:])
+        msg = email.message_from_string(email_string)
 
         mime_content_ids = []
         parser = ContentIdParser();
