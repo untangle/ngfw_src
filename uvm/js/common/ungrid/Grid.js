@@ -244,7 +244,7 @@ Ext.define('Ung.cmp.Grid', {
                 if (action === 'changePassword') {
                     column = {
                         xtype: 'actioncolumn',
-                        width: 120,
+                        width: Renderer.actionWidth + 40,
                         header: 'Change Password'.t(),
                         align: 'center',
                         resizable: false,
@@ -260,7 +260,7 @@ Ext.define('Ung.cmp.Grid', {
                 if (action === 'edit') {
                     column = {
                         xtype: 'actioncolumn',
-                        width: 60,
+                        width: Renderer.actionWidth,
                         header: 'Edit'.t(),
                         align: 'center',
                         resizable: false,
@@ -279,7 +279,7 @@ Ext.define('Ung.cmp.Grid', {
                 if (action === 'copy') {
                     column = {
                         xtype: 'actioncolumn',
-                        width: 60,
+                        width: Renderer.actionWidth,
                         header: 'Copy'.t(),
                         align: 'center',
                         resizable: false,
@@ -295,7 +295,7 @@ Ext.define('Ung.cmp.Grid', {
                 if (action === 'delete') {
                     column = {
                         xtype: 'actioncolumn',
-                        width: 60,
+                        width: Renderer.actionWidth,
                         header: 'Delete'.t(),
                         align: 'center',
                         resizable: false,
