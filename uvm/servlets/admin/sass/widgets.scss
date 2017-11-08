@@ -679,9 +679,9 @@
     .header h1 {
         font-family: $custom-font-condensed;
         a {
-            color: #999;
+            color: #CCC;
             &:hover {
-                color: #EEE;
+                color: #FFF;
             }
         }
     }
@@ -692,9 +692,9 @@
     .header h1 {
         font-family: $custom-font-condensed;
         a {
-            color: #999;
+            color: #333;
             &:hover {
-                color: #EEE;
+                color: #000;
             }
         }
     }

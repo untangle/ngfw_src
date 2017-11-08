@@ -47,15 +47,18 @@ Ext.define('Ung.view.reports.GraphReport', {
             });
 
             vm.bind('{eEntry.theme}', function (theme) {
+                if (!theme) { return; }
                 vm.set('f_theme', theme);
                 me.setStyles();
             });
 
-            vm.bind('{eEntry.pieStyle}', function () {
+            vm.bind('{eEntry.pieStyle}', function (pieStyle) {
+                if (!pieStyle) { return; }
                 me.setStyles();
             });
 
-            vm.bind('{eEntry.timeStyle}', function () {
+            vm.bind('{eEntry.timeStyle}', function (timeStyle) {
+                if (!timeStyle) { return; }
                 me.setStyles();
             });
 
@@ -239,7 +242,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     series: {
                         dataLabels: {
                             style: {
-                                fontSize: '12px'
+                                fontSize: widgetDisplay ? '10px' : '12px'
                             }
                         },
                         animation: false,
@@ -410,9 +413,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                 me.chart.series[0].remove(false);
             }
 
-            // apply styles before adding new series
-            me.setStyles();
-
             if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
                 var dataColumns = [], units = entry.get('units');
 
@@ -519,12 +519,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }, false, false);
             }
             me.chart.redraw();
+            me.setStyles();
             me.getView().fireEvent('resize');
-            // // me.chart.reflow();
-            // Ext.defer(function () {
-            //     console.log('resize');
-
-            // }, 2000);
         },
 
 
@@ -570,8 +566,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                             r: 0.7
                         },
                         stops: [
-                            [0, Highcharts.Color(color).setOpacity(0.4).get('rgba')],
-                            [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
+                            [0, Highcharts.Color(color).setOpacity(entry.get('theme') !== 'DARK' ? 0.4 : 0.9).get('rgba')],
+                            [1, Highcharts.Color(color).setOpacity(entry.get('theme') !== 'DARK' ? 0.8 : 0.3).get('rgba')]
                         ]
                     };
                 });
@@ -584,6 +580,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             if (isTimeGraph) {
                 Ext.Array.each(me.chart.series, function (serie, idx) {
                     serie.update({
+                        lineColor: colors[idx],
                         fillColor: {
                             linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                             stops: [
@@ -595,7 +592,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                     }, false);
                 });
             }
-            // console.log(colors);
 
             var settings = {
                 chart: {
