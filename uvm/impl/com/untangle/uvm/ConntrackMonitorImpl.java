@@ -191,6 +191,7 @@ public class ConntrackMonitorImpl
             LinkedHashMap<SessionTuple,ConntrackEntryState> newConntrackEntries = new LinkedHashMap<SessionTuple, ConntrackEntryState>(conntrackEntries.size()*2);
                 
             List<Conntrack> dumpEntries = com.untangle.jnetcap.Netcap.getInstance().getConntrackDump();            
+            boolean logBypassed = UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions();
 
             synchronized( ConntrackMonitorImpl.INSTANCE ) {
                 String type = null;
@@ -235,6 +236,8 @@ public class ConntrackMonitorImpl
                         if ( sessionId == 0 ) {
                             Long sid = NetcapConntrackHook.getInstance().lookupSessionId( tuple );
                             if ( sid != null ) {
+                                if (!logBypassed)
+                                    continue;
                                 type = "bypassed";
                                 sessionId = sid;
                             }
