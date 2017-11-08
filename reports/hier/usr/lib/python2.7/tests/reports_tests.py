@@ -12,6 +12,8 @@ import inspect
 import os
 import base64
 import calendar
+import Image
+from StringIO import StringIO
 from datetime import datetime
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -346,9 +348,12 @@ class ReportsTests(unittest2.TestCase):
         # copy mail from remote client
         os.system("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
         fp = open("/tmp/test_100_email_report_admin_file")
-        msg = email.message_from_file(fp)
+        email_string = fp.read()
         fp.close()
         os.system("rm /tmp/test_100_email_report_admin_file")
+        # Delete the first line as it is blank and throws off the parser
+        email_string = '\n'.join(email_string.split('\n')[1:])
+        msg = email.message_from_string(email_string)
 
         mime_content_ids = []
         parser = ContentIdParser();
@@ -445,16 +450,36 @@ class ReportsTests(unittest2.TestCase):
         if email_found:
             email_context_found1 = remote_control.run_command("grep -i 'Custom Report' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
             email_context_found2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
-            measureBegin = 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"'
-            measureEnd = '---'
-            measureLength = remote_control.run_command("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/test_102_email_admin_override_custom_report_mobile_file* | wc -l", stdout=True)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
-        assert((email_context_found1) and (email_context_found2) and (int(measureLength) < 80))
-        
+        assert((email_context_found1) and (email_context_found2))
+
+        # Verify that all images are less than 350x350.
+        # copy mail from remote client
+        os.system("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
+        fp = open("/tmp/test_102_email_admin_override_custom_report_mobile_file")
+        email_string = fp.read()
+        fp.close()
+        os.system("rm /tmp/test_102_email_admin_override_custom_report_mobile_file")
+        # Delete the first line as it is blank and throws off the parser
+        email_string = '\n'.join(email_string.split('\n')[1:])
+        msg = email.message_from_string(email_string)
+
+        mime_content_ids = []
+        for part in msg.walk():
+            if part.get_content_maintype() == "image":
+                # print "Image found"
+                for index, key in enumerate(part.keys()):
+                    if key == "Content-ID":
+                        email_image = part.get_payload(decode=True)
+                        im = Image.open(StringIO(email_image))
+                        (image_width,image_height) = im.size
+                        print "Image width: %d height: %d" % (image_width, image_height)
+                        assert(image_width < 350 and image_height < 350)
+
     def test_103_email_report_verify_apps(self):
         """
         1) Install all apps

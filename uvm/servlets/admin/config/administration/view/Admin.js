@@ -10,7 +10,6 @@ Ext.define('Ung.config.administration.view.Admin', {
 
     items: [{
         xtype: 'ungrid',
-        // border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
 
@@ -21,6 +20,8 @@ Ext.define('Ung.config.administration.view.Admin', {
         listProperty: 'adminSettings.users.list',
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['changePassword', 'delete'],
+
+        emptyText: 'No Admin Accounts defined'.t(),
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.AdminUserSettings',
@@ -35,7 +36,7 @@ Ext.define('Ung.config.administration.view.Admin', {
 
         columns: [{
             header: 'Username'.t(),
-            width: 150,
+            width: Renderer.usernameWidth,
             dataIndex: 'username',
             editor: {
                 allowBlank: false,
@@ -44,6 +45,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             }
         }, {
             header: 'Description'.t(),
+            width: Renderer.messageWidth,
             flex: 1,
             dataIndex: 'description',
             editor:{
@@ -51,7 +53,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             }
         }, {
             header: 'Email Address'.t(),
-            width: 200,
+            width: Renderer.emailWidth,
             dataIndex: 'emailAddress',
             editor: {
                 emptyText: '[no email]'.t(),
@@ -60,7 +62,8 @@ Ext.define('Ung.config.administration.view.Admin', {
         }, {
             xtype: 'checkcolumn',
             header: 'Email Alerts'.t(),
-            dataIndex: 'emailAlerts'
+            dataIndex: 'emailAlerts',
+            width: Renderer.booleanWidth + 20
         }],
         editorFields: [{
             xtype: 'textfield',

@@ -176,6 +176,10 @@ Ext.define('Ung.apps.captive-portal.MainController', {
                 },500);
             }, this), netaddr);
         }
+    },
+
+    loginkeyRenderer: function(value){
+        return value ? 'MAC Address'.t() : 'IP Address'.t();
     }
 
 });

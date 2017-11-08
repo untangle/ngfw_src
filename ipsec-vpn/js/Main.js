@@ -58,11 +58,47 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
             },
 
             tunnelStatusStore: {
-                data: '{tunnelStatusData}'
+                data: '{tunnelStatusData}',
+                fields: [{
+                    name: 'mode'
+                }, {
+                    name: 'src',
+                    sortType: 'asIp'
+                }, {
+                    name: 'dst',
+                    sortType: 'asIp'
+                }, {
+                    name: 'tmplSrc',
+                }, {
+                    name: 'tmplDst',
+                }, {
+                    name: 'proto',
+                }, {
+                    name: 'inBytes',
+                    sortType: 'asInt'
+                }, {
+                    name: 'outBytes',
+                    sortType: 'asInt'
+                }]
             },
 
             virtualUserStore: {
-                data: '{virtualUserData}'
+                data: '{virtualUserData}',
+                fields: [{
+                    name: 'clientAddress',
+                    sortType: 'asIp'
+                }, {
+                    name: 'clientProtocol',
+                }, {
+                    name: 'clientUsername',
+                }, {
+                    name: 'netInterface',
+                }, {
+                    name: 'sessionCreation',
+                }, {
+                    name: 'sessionElapsed',
+                    sortType: 'asInt'
+                }]
             },
 
             wanListStore: {

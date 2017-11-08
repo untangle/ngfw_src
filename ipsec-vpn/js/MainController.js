@@ -216,5 +216,19 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                 v.setLoading(false);
             },2000);
         }, this), record.get("clientAddress"), record.get("clientUsername"));
+    },
+
+    modeRenderer: function(value){
+        var showtxt = 'Inactive'.t(),
+            showico = 'fa fa-circle fa-gray';
+        if (value.toLowerCase() === 'active') {
+            showtxt = 'Active'.t();
+            showico = 'fa fa-circle fa-green';
+        }
+        if (value.toLowerCase() === 'unknown') {
+            showtxt = 'Unknown'.t();
+            showico = 'fa fa-exclamation-triangle fa-orange';
+        }
+        return '<i class="' + showico + '">&nbsp;&nbsp;</i>' + showtxt;
     }
 });

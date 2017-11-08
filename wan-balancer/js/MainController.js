@@ -12,7 +12,6 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
         var me = this, vm = this.getViewModel();
         this.getView().appManager.getSettings(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
             me.afterGetSettings();
         });
@@ -124,6 +123,13 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
         });
 
         vm.set('settings.weights', weights);
+    },
+
+    destinationWanRenderer: function(value){
+        var wanlist = this.getViewModel().get('destinationWanList');
+        var dstname = 'Unknown'.t();
+        wanlist.each(function(record) { if (record.get('index') == value) dstname = record.get('name'); });
+        return(dstname);
     }
 
 });

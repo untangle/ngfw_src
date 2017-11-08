@@ -20,8 +20,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
             xtype: "checkbox",
             bind: '{settings.apiEnabled}',
             fieldLabel: 'Enable User Notification API'.t(),
-            labelWidth: 200,
-            margin: '10 0 10 0',
+            labelWidth: 190,
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -29,6 +28,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
             }
         }, {
             xtype: 'fieldset',
+            margin: '10 10 10 -10',
             border: 0,
             hidden: true,
             disabled: true,
@@ -39,7 +39,6 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
             items: [{
                 xtype: 'fieldcontainer',
                 layout: 'column',
-                width: 600,
                 items: [{
                     xtype:'textfield',
                     name: 'secretKey',
