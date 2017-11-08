@@ -857,14 +857,14 @@ public class EventManagerImpl implements EventManager
      */
     private class EventWriter implements Runnable
     {
-
         private volatile Thread thread;
         private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
-
+        
         public void run()
         {
             thread = Thread.currentThread();
             LogEvent event = null;
+            long lastLoggedWarningTime = 0;
 
             /**
              * Loop indefinitely and continue running event rules
@@ -872,8 +872,10 @@ public class EventManagerImpl implements EventManager
             while (thread != null) {
                 synchronized( this ) {
                     try {
-                        if (inputQueue.size() > 20000) {
+                        // only log this warning once every 10 seconds
+                        if (inputQueue.size() > 20000 && System.currentTimeMillis() - lastLoggedWarningTime > 10000 ) {
                             logger.warn("Large input queue size: " + inputQueue.size());
+                            lastLoggedWarningTime = System.currentTimeMillis();
                         }
 
                         event = inputQueue.take();
