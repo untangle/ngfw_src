@@ -472,7 +472,7 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             if (entry.get('type') === 'PIE_GRAPH') {
                 var othersValue = 0;
-                seriesData = [],
+                seriesData = [];
 
                 Ext.Array.each(me.data, function (row, idx) {
                     if (!seriesRenderer) {
@@ -489,7 +489,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                     } else {
                         othersValue += row.value;
                     }
-
                 });
 
                 // add the rest of the values as Others slice
