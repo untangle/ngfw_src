@@ -2,6 +2,21 @@ Ext.define('Ung.view.reports.GraphReport', {
     extend: 'Ext.container.Container',
     alias: 'widget.graphreport',
 
+    // viewModel: {
+    //     formulas: {
+    //         f_theme: {
+    //             bind: {
+    //                 t1: '{entry.theme}',
+    //                 // t2: '{eEntry.theme}'
+    //             },
+    //             get: function(theme) {
+    //                 console.log(theme);
+    //                 return theme.t1;
+    //             }
+    //         }
+    //     }
+    // },
+
     viewModel: true,
 
     border: false,
@@ -14,13 +29,35 @@ Ext.define('Ung.view.reports.GraphReport', {
         styleschanged: 'setStyles'
     },
 
+    bind: {
+        userCls: 'theme-{f_theme}'
+    },
+
     controller: {
 
         /**
          * initializes an empty chart (no data) and adds it to the container (this is done once)
          */
         initChart: function () {
-            var me = this, widgetDisplay = me.getView().widgetDisplay;
+            var me = this, widgetDisplay = me.getView().widgetDisplay, vm = me.getViewModel();
+
+            vm.bind('{entry.theme}', function (theme) {
+                vm.set('f_theme', theme);
+                me.setStyles();
+            });
+
+            vm.bind('{eEntry.theme}', function (theme) {
+                vm.set('f_theme', theme);
+                me.setStyles();
+            });
+
+            vm.bind('{eEntry.pieStyle}', function () {
+                me.setStyles();
+            });
+
+            vm.bind('{eEntry.timeStyle}', function () {
+                me.setStyles();
+            });
 
             me.chart = new Highcharts.StockChart({
                 chart: {
@@ -182,18 +219,12 @@ Ext.define('Ung.view.reports.GraphReport', {
                         depth: 35,
                         minSize: 150,
                         borderWidth: 1,
-                        borderColor: '#FFF',
+
                         dataLabels: {
                             enabled: true,
                             distance: 5,
                             padding: 0,
                             reserveSpace: false,
-                            style: {
-                                fontSize: '12px',
-                                color: '#333',
-                                fontFamily: 'Roboto Condensed',
-                                fontWeight: 600
-                            },
                             formatter: function () {
                                 if (this.point.percentage < 2) {
                                     return null;
@@ -206,6 +237,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                         }
                     },
                     series: {
+                        dataLabels: {
+                            style: {
+                                fontSize: '12px'
+                            }
+                        },
                         animation: false,
                         states: {
                             hover: {
@@ -233,7 +269,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     lineHeight: 12,
                     itemDistance: 10,
                     itemStyle: {
-                        fontSize: '14px',
+                        fontSize: '12px',
                         fontWeight: 600,
                         width: '120px',
                         whiteSpace: 'nowrap',
@@ -378,10 +414,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             me.setStyles();
 
             if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
-                var dataColumns = [],
-                    pointPadding,
-                    colors = (entry.get('colors') && entry.get('colors').length > 0) ? entry.get('colors') : Util.defaultColors,
-                    units = entry.get('units');
+                var dataColumns = [], units = entry.get('units');
 
                 // get or generate series names based on timeDataColumns for TIME_GRAPH or data form TIME_GRAPH_DYNAMIC
                 if (entry.get('type') === 'TIME_GRAPH') {
@@ -401,7 +434,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     });
                 }
 
-                Ext.Array.each(dataColumns, function (column, idx) {
+                Ext.Array.each(dataColumns, function (column) {
                     // set series data
                     seriesData = [];
                     Ext.Array.each(me.data, function (row) {
@@ -419,23 +452,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                         }
                     }
 
-                    if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
-                        pointPadding = 0.075 * idx;
-                    } else {
-                        pointPadding = 0.1;
-                    }
-
                     me.chart.addSeries({
                         name: seriesName,
                         data: seriesData,
-                        fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, Highcharts.Color(colors[idx]).setOpacity(0.7).get('rgba')],
-                                [1, Highcharts.Color(colors[idx]).setOpacity(0.1).get('rgba')]
-                            ]
-                        },
-                        pointPadding: pointPadding,
                         tooltip: {
                             pointFormatter: function () {
                                 var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
@@ -536,32 +555,47 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             if (!entry.get('colors') || entry.get('colors').length === 0) {
-                colors = Ext.clone(Util.defaultColors);
+                colors = Theme[entry.get('theme')].colors;
             } else {
                 colors = Ext.clone(entry.get('colors'));
             }
 
-            if (colors) {
+            // add gradient
+            if ((isPie || isDonut) && !is3d) {
+                colors = Highcharts.map( colors, function (color) {
+                    return {
+                        radialGradient: {
+                            cx: 0.5,
+                            cy: 0.5,
+                            r: 0.7
+                        },
+                        stops: [
+                            [0, Highcharts.Color(color).setOpacity(0.4).get('rgba')],
+                            [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
+                        ]
+                    };
+                });
+            } else {
                 for (var i = 0; i < colors.length; i += 1) {
                     colors[i] = isTimeGraph ? ( isColumnOverlapped ? new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba') : new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')) : colors[i];
                 }
-                // add gradient
-                if ((isPie || isDonut) && !is3d) {
-                    colors = Highcharts.map( colors, function (color) {
-                        return {
-                            radialGradient: {
-                                cx: 0.5,
-                                cy: 0.5,
-                                r: 0.7
-                            },
-                            stops: [
-                                [0, Highcharts.Color(color).setOpacity(0.4).get('rgba')],
-                                [1, Highcharts.Color(color).setOpacity(0.8).get('rgba')]
-                            ]
-                        };
-                    });
-                }
             }
+
+            if (isTimeGraph) {
+                Ext.Array.each(me.chart.series, function (serie, idx) {
+                    serie.update({
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, Highcharts.Color(colors[idx]).setOpacity(0.7).get('rgba')],
+                                [1, Highcharts.Color(colors[idx]).setOpacity(0.1).get('rgba')]
+                            ]
+                        },
+                        pointPadding: isColumnOverlapped ? 0.075 * idx : 0.1
+                    }, false);
+                });
+            }
+            // console.log(colors);
 
             var settings = {
                 chart: {
@@ -590,6 +624,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     // pie graphs
                     pie: {
                         innerSize: isDonut ? '40%' : 0,
+                        colors: colors
                         //borderColor: '#666666'
                     },
                     // time graphs
@@ -676,6 +711,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             };
 
             Highcharts.merge(true, settings, Theme[entry.get('theme')] || Theme.DEFAULT);
+            // Highcharts.setOptions(Theme[entry.get('theme')]);
             me.chart.update(settings, true);
         }
     }

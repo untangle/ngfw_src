@@ -92,11 +92,6 @@ Ext.define('Ung.widget.WidgetController', {
                     exportForm.submit();
                 }
 
-                // // on reports
-                // if (action === 'reports') {
-                //     Ung.app.redirectTo(e.target.dataset.url);
-                // }
-
                 // on size
                 if (action.indexOf('size') >= 0) {
                     var newSize = e.target.dataset.action.replace('size-', '');
