@@ -455,7 +455,7 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
-        assert((email_context_found1) and (email_context_found2) and (int(measureLength) < 80))
+        assert((email_context_found1) and (email_context_found2))
 
         # Verify that all images are less than 350x350.
         # copy mail from remote client
