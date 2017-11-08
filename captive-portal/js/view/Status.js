@@ -40,24 +40,21 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                 disabled: '{instance.runState !== "RUNNING"}'
             },
             items: [{
-                xtype: 'grid',
+                xtype: 'ungrid',
                 itemId: 'activeUsers',
                 trackMouseOver: false,
                 sortableColumns: false,
                 enableColumnHide: false,
 
-                minHeight: 120,
-                maxHeight: 250,
-                viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Active Sessions ...</p>',
-                    stripeRows: false
-                },
+                emptyText: 'No Active Sessions',
 
                 bind: {
                     store: {
                         data: '{activeUsers}'
                     }
                 },
+
+                plugins: ['gridfilters'],
 
                 columns: [{
                     header: 'IP Address'.t(),
@@ -71,9 +68,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                     header: 'Login Key'.t(),
                     dataIndex: 'macLogin',
                     width: Renderer.messageWidth,
-                    renderer: function(value) {
-                        return value ? 'MAC Address'.t() : 'IP Address'.t();
-                    }
+                    rtype: 'loginkey'
                 }, {
                     header: 'User Name'.t(),
                     dataIndex: 'userName',
@@ -83,24 +78,22 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                     header: 'Login Time'.t(),
                     dataIndex: 'sessionCreation',
                     width: Renderer.timestampWidth,
-                    renderer: function(value) { return Util.timestampFormat(value); }
+                    renderer: Renderer.timestamp
                 }, {
                     header: 'Session Count'.t(),
                     dataIndex: 'sessionCounter',
-                    width: Renderer.idWidth,
+                    width: Renderer.sizeWidth,
+                    renderer: Renderer.count
                 }, {
                     header: 'Logout'.t(),
                     xtype: 'actioncolumn',
                     width: Renderer.actionWidth,
                     align: 'center',
                     iconCls: 'fa fa-minus-circle',
-                    handler: 'logoutUser',
+                    handler: 'externalAction',
+                    action: 'logoutUser'
                 }],
-                bbar: [{
-                    text: 'Refresh'.t(),
-                    iconCls: 'fa fa-refresh',
-                    handler: 'getActiveUsers'
-                }]
+                bbar: [ '@refresh', '@reset']
             }]
         }, {
             xtype: 'appreports'

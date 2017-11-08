@@ -34,10 +34,10 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
                 header: 'Log'.t(),
                 dataIndex: 'log',
                 resizable: false,
-                width: 70
+                width: Renderer.booleanWidth
             }, {
                 header: 'Address'.t(),
-                width: 200,
+                width: Renderer.ipWidth,
                 dataIndex: 'address',
                 editor: {
                     xtype: 'textfield',
@@ -47,7 +47,7 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
                 }
             }, {
                 header: 'Description'.t(),
-                width: 400,
+                width: Renderer.messageWidth,
                 flex: 1,
                 dataIndex: 'description',
                 editor: {
@@ -63,6 +63,7 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
         title: 'Pass Listed Client Addresses'.t(),
         bind: '{passedClients}',
         listProperty: 'settings.passedClients.list',
+        emptyText: 'No Pass Listed Client Addresses defined'.t(),
         bbar: [{
             xtype: 'component',
             padding: 5,
@@ -77,6 +78,7 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
         height: '50%',
         title: 'Pass Listed Server Addresses'.t(),
         bind: '{passedServers}',
+        emptyText: 'No Pass Listed Server Addresses defined'.t(),
         listProperty: 'settings.passedServers.list',
         bbar: [{
             xtype: 'component',

@@ -49,6 +49,8 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
 
     bind: '{routeRules}',
 
+    emptyText: 'No Route Rules defined'.t(),
+
     columns: [
         Column.ruleId,
         Column.enabled,
@@ -56,13 +58,8 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
         Column.conditions, {
             header: 'Destination WAN'.t(),
             dataIndex: 'destinationWan',
-            width: 250,
-            renderer: function(value, meta, record, row, col, store, grid) {
-                var wanlist = this.getViewModel().get('destinationWanList');
-                var dstname = 'Unknown'.t();
-                wanlist.each(function(record) { if (record.get('index') == value) dstname = record.get('name'); });
-                return(dstname);
-            }
+            width: Renderer.messageWidth,
+            rtype: 'destinationWan'
         }
     ],
 
