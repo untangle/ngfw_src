@@ -257,10 +257,10 @@ class UvmTests(unittest2.TestCase):
         time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        assert( entry.get('tagsString') != None )
-        assert( "test-tag" in entry.get('tagsString') )
-
+        tag_test = entry.get('tagsString')
         uvmContext.eventManager().setSettings( orig_settings )
+        assert( tag_test != None )
+        assert( "test-tag" in tag_test )
 
     def test_041_trigger_rule_untag_host(self):
         settings = uvmContext.eventManager().getSettings()
@@ -273,8 +273,8 @@ class UvmTests(unittest2.TestCase):
         time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        assert( entry.get('tagsString') != None )
-        assert( "test-tag" in entry.get('tagsString') )
+        tag_test = entry.get('tagsString')
+        uvmContext.eventManager().setSettings( orig_settings )
 
         new_rule = create_trigger_rule("UNTAG_HOST", "localAddr", "test*", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
         settings['triggerRules']['list'] = [ new_rule ]
@@ -284,9 +284,12 @@ class UvmTests(unittest2.TestCase):
         time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        assert( entry.get('tagsString') == None or "test-tag" not in entry.get('tagsString'))
+        tag_test2 = entry.get('tagsString')
 
         uvmContext.eventManager().setSettings( orig_settings )
+        assert( tag_test != None )
+        assert( "test-tag" in tag_test )
+        assert( tag_test2 == None or "test-tag" not in tag_test2)
 
     def test_042_trigger_rule_tag_host_subcondition(self):
         settings = uvmContext.eventManager().getSettings()
@@ -299,10 +302,11 @@ class UvmTests(unittest2.TestCase):
         time.sleep(4)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        assert( entry.get('tagsString') != None )
-        assert( "test-tag-2" in entry.get('tagsString') )
 
         uvmContext.eventManager().setSettings( orig_settings )
+        tag_test = entry.get('tagsString')
+        assert( tag_test != None )
+        assert( "test-tag-2" in tag_test )
 
     def test_050_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
@@ -315,12 +319,11 @@ class UvmTests(unittest2.TestCase):
         time.sleep(4)
 
         events = global_functions.get_events('Events','Alert Events',None,10)
-        assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'description', 'test alert rule' )
-        assert ( found )
-
         uvmContext.eventManager().setSettings( orig_settings )
+        assert(events != None)
+        assert ( found )
 
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
