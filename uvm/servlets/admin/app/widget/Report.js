@@ -26,7 +26,8 @@ Ext.define('Ung.widget.Report', {
 
     bind: {
         hidden: '{!widget.enabled}',
-        width: '{f_size}'
+        width: '{f_size}',
+        userCls: 'theme-{entry.theme}'
     },
 
     border: false,

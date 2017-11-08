@@ -31,6 +31,9 @@ Ext.define('Ung.reports.Theme', {
         },
         plotOptions: {
             series: {
+                tooltip: {
+                    headerFormat: '<span style="font-size: 14px; color: #333;">{point.key}</span><br/>'
+                },
                 dataLabels: {
                     color: '#555555'
                 }
@@ -87,7 +90,7 @@ Ext.define('Ung.reports.Theme', {
         },
         yAxis: {
             lineColor: '#707073',
-            gridLineColor: '#555',
+            gridLineColor: '#444',
             labels: {
                 style: {
                     color: '#CCC'
@@ -101,6 +104,9 @@ Ext.define('Ung.reports.Theme', {
         },
         plotOptions: {
             series: {
+                tooltip: {
+                    headerFormat: '<span style="font-size: 14px; color: #FFF;">{point.key}</span><br/>'
+                },
                 dataLabels: {
                     color: '#B0B0B3'
                 }
@@ -112,7 +118,7 @@ Ext.define('Ung.reports.Theme', {
         tooltip: {
             backgroundColor: 'rgba(0, 0, 0, 0.85)',
             style: {
-                color: '#F0F0F0'
+                color: '#FFF'
             }
         },
         legend: {
@@ -151,7 +157,7 @@ Ext.define('Ung.reports.Theme', {
         },
         yAxis: {
             lineColor: '#C0D0E0',
-            gridLineColor: '#EEE',
+            gridLineColor: '#DDD',
             labels: {
                 style: {
                     color: '#777'
@@ -163,7 +169,25 @@ Ext.define('Ung.reports.Theme', {
                 }
             }
         },
+        plotOptions: {
+            series: {
+                tooltip: {
+                    headerFormat: '<span style="font-size: 14px; color: #555;">{point.key}</span><br/>'
+                },
+                dataLabels: {
+                    color: '#555'
+                }
+            },
+            pie: {
+                borderColor: '#E2E2E2'
+            }
+        },
         legend: {
+            title: {
+                style: {
+                    color: '#333'
+                }
+            },
             itemStyle: {
                 color: '#333'
             },
