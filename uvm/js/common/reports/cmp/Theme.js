@@ -3,7 +3,7 @@ Ext.define('Ung.reports.Theme', {
     singleton: true,
 
     DEFAULT: {
-        // colors: Util.defaultColors,
+        colors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
         chart: {
             backgroundColor: '#FFFFFF'
         },
@@ -30,11 +30,27 @@ Ext.define('Ung.reports.Theme', {
             }
         },
         plotOptions: {
+            series: {
+                dataLabels: {
+                    color: '#555555'
+                }
+            },
             pie: {
                 borderColor: '#FFF'
             }
         },
+        tooltip: {
+            backgroundColor: 'rgba(247, 247, 247, 0.95)',
+            style: {
+                color: '#333'
+            }
+        },
         legend: {
+            title: {
+                style: {
+                    color: '#000'
+                }
+            },
             itemStyle: {
                 color: '#333'
             },
@@ -51,7 +67,7 @@ Ext.define('Ung.reports.Theme', {
     },
 
     DARK: {
-        // colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+        colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
         chart: {
             backgroundColor: {
                 linearGradient: { x1: 0, y1: 1, x2: 0, y2: 1 },
@@ -84,18 +100,27 @@ Ext.define('Ung.reports.Theme', {
             }
         },
         plotOptions: {
+            series: {
+                dataLabels: {
+                    color: '#B0B0B3'
+                }
+            },
             pie: {
-                borderColor: 'transparent'
+                borderColor: '#333'
             }
         },
         tooltip: {
-            headerFormat: '<p style="margin: 0 0 5px 0; color: #EEE;">{point.key}</p>',
             backgroundColor: 'rgba(0, 0, 0, 0.85)',
             style: {
                 color: '#F0F0F0'
             }
         },
         legend: {
+            title: {
+                style: {
+                    color: '#FFFFFF'
+                }
+            },
             itemStyle: {
                 color: '#DDD'
             },
@@ -112,9 +137,9 @@ Ext.define('Ung.reports.Theme', {
     },
 
     SAND: {
-        // colors: Util.defaultColors,
+        colors: ['#f45b5b', '#8085e9', '#8d4654', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
         chart: {
-            background: null
+            backgroundColor: null
         },
         xAxis: {
             lineColor: '#C0D0E0',
