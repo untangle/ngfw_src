@@ -31,144 +31,180 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
-            xtype: 'grid',
-            title: 'Enabled IPsec Tunnels'.t(),
-            itemId: 'tunnelStatus',
-            trackMouseOver: false,
-            sortableColumns: true,
-            enableColumnHide: false,
-            minHeight: 150,
-            maxHeight: 800,
-            resizable: true,
-            margin: '10 0 10 0',
-            viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No IPsec Tunnels'.t() + ' ...</p>',
-                stripeRows: false
+            xtype: 'fieldset',
+            title: '<i class="fa fa-clock-o"></i> ' + 'Enabled IPsec Tunnels'.t(),
+            padding: 10,
+            cls: 'app-section',
+
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
             },
 
-            recordJavaClass: 'com.untangle.app.ipsec_vpn.ConnectionStatusRecord',
-            bind: '{tunnelStatusStore}',
+            collapsed: true,
+            disabled: true,
+            bind: {
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
+            },
+            items: [{
+                xtype: 'ungrid',
+                itemId: 'tunnelStatus',
+                enableColumnHide: true,
+                stateful: true,
+                trackMouseOver: false,
+                resizable: true,
+                defaultSortable: true,
 
-            columns: [{
-                header: 'Status'.t(),
-                dataIndex: 'mode',
-                renderer: function(value) {
-                    var showtxt = 'Inactive'.t(),
-                        showico = 'fa fa-circle fa-gray';
-                    if (value.toLowerCase() === 'active') {
-                        showtxt = 'Active'.t();
-                        showico = 'fa fa-circle fa-green';
-                    }
-                    if (value.toLowerCase() === 'unknown') {
-                        showtxt = 'Unknown'.t();
-                        showico = 'fa fa-exclamation-triangle fa-orange';
-                    }
-                    return '<i class="' + showico + '">&nbsp;&nbsp;</i>' + showtxt;
-                }
-            }, {
-                header: 'Local IP'.t(),
-                dataIndex: 'src',
-                width: 140
-            }, {
-                header: 'Remote Host'.t(),
-                dataIndex: 'dst',
-                width: 140
-            }, {
-                header: 'Local Network'.t(),
-                dataIndex: 'tmplSrc',
-                width: 200
-            }, {
-                header: 'Remote Network'.t(),
-                dataIndex: 'tmplDst',
-                width: 200
-            }, {
-                header: 'Description'.t(),
-                dataIndex: 'proto',
-                width: 200,
-                flex: 1
-            }, {
-                header: 'Bytes In'.t(),
-                dataIndex: 'inBytes',
-                width: 100
-            }, {
-                header: 'Bytes Out'.t(),
-                dataIndex: 'outBytes',
-                width: 100
-            }],
-            bbar: [{
-                text: 'Refresh'.t(),
-                iconCls: 'fa fa-refresh',
-                handler: 'getTunnelStatus'
+                emptyText: 'No Enabled IPsec VPN Tunnels'.t(),
+
+                bind: {
+                    store: '{tunnelStatusStore}'
+                },
+
+                plugins: ['gridfilters'],
+
+                columns: [{
+                    header: 'Status'.t(),
+                    dataIndex: 'mode',
+                    sortable: true,
+                    width: Renderer.messagwWidth,
+                    rtype: 'mode',
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Local IP'.t(),
+                    dataIndex: 'src',
+                    sortable: true,
+                    width: Renderer.ipWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Remote Host'.t(),
+                    dataIndex: 'dst',
+                    sortable: true,
+                    width: Renderer.hostnameWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Local Network'.t(),
+                    dataIndex: 'tmplSrc',
+                    sortable: true,
+                    width: Renderer.networkWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Remote Network'.t(),
+                    dataIndex: 'tmplDst',
+                    sortable: true,
+                    width: Renderer.networkWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Description'.t(),
+                    dataIndex: 'proto',
+                    sortable: true,
+                    width: Renderer.messageWidth,
+                    flex: 1,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Bytes In'.t(),
+                    dataIndex: 'inBytes',
+                    sortable: true,
+                    width: Renderer.sizeWidth,
+                    filter: Renderer.numericFilter,
+                    renderer: Renderer.count
+                }, {
+                    header: 'Bytes Out'.t(),
+                    dataIndex: 'outBytes',
+                    sortable: true,
+                    width: Renderer.sizeWidth,
+                    filter: Renderer.numericFilter,
+                    renderer: Renderer.count
+                }],
+                bbar: [ '@refresh', '@reset']
             }]
+        }, {
+            xtype: 'fieldset',
+            title: '<i class="fa fa-clock-o"></i> ' + 'Active VPN Sessions'.t(),
+            padding: 10,
+            cls: 'app-section',
 
-        }, {
-            xtype: 'component',
-            html: '<BR>'
-        }, {
-            xtype: 'grid',
-            title: 'Active VPN Sessions'.t(),
-            itemId: 'virtualUsers',
-            trackMouseOver: false,
-            sortableColumns: true,
-            enableColumnHide: false,
-            minHeight: 150,
-            maxHeight: 800,
-            resizable: true,
-            margin: '0 0 10 0',
-            viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/> ' + 'No VPN Sessions'.t() + ' ...</p>',
-                stripeRows: false
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
             },
 
-            recordJavaClass: 'com.untangle.app.ipsec_vpn.VirtualUserEntry',
-            bind: '{virtualUserStore}',
+            collapsed: true,
+            disabled: true,
+            bind: {
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
+            },
+            items: [{
+                xtype: 'ungrid',
+                itemId: 'virtualUsers',
+                enableColumnHide: true,
+                stateful: true,
+                trackMouseOver: false,
+                resizable: true,
+                defaultSortable: true,
 
-            columns: [{
-                header: 'IP Address'.t(),
-                dataIndex: 'clientAddress',
-                width: 150
-            }, {
-                header: 'Protocol'.t(),
-                dataIndex: 'clientProtocol',
-                width: 80
-            }, {
-                header: 'Username'.t(),
-                dataIndex: 'clientUsername',
-                width: 200,
-                flex: 1
-            }, {
-                header: 'Interface'.t(),
-                dataIndex: 'netInterface',
-                width: 150
-            }, {
-                header: 'Connect Time'.t(),
-                dataIndex: 'sessionCreation',
-                width: 180,
-                renderer: function(value) { return Util.timestampFormat(value); }
-            }, {
-                header: 'Elapsed Time'.t(),
-                dataIndex: 'sessionElapsed',
-                width: 180,
-                renderer: function(value) {
-                    var total = parseInt(value / 1000,10);
-                    var hours = (parseInt(total / 3600,10) % 24);
-                    var minutes = (parseInt(total / 60,10) % 60);
-                    var seconds = parseInt(total % 60,10);
-                    var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-                    return result;
-                }
-            },{
-                header: 'Disconnect'.t(),
-                xtype: 'actioncolumn',
-                width: 80,
-                align: 'center',
-                iconCls: 'fa fa-minus-circle',
-                handler: 'disconnectUser',
-            }],
-            bbar: [{
-                text: 'Refresh'.t(),
-                iconCls: 'fa fa-refresh',
-                handler: 'getVirtualUsers'
+                flex: 1,
+
+                emptyText: 'No Active VPN Sessions'.t(),
+
+                bind: {
+                    store: '{virtualUserStore}'
+                },
+
+                plugins: ['gridfilters'],
+
+                columns: [{
+                    header: 'IP Address'.t(),
+                    dataIndex: 'clientAddress',
+                    sortable: true,
+                    width: Renderer.ipWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Protocol'.t(),
+                    dataIndex: 'clientProtocol',
+                    sortable: true,
+                    width: Renderer.protocolWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Username'.t(),
+                    dataIndex: 'clientUsername',
+                    sortable: true,
+                    width: Renderer.usernameWidth,
+                    flex: 1,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Interface'.t(),
+                    dataIndex: 'netInterface',
+                    sortable: true,
+                    width: Renderer.idWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Connect Time'.t(),
+                    dataIndex: 'sessionCreation',
+                    sortable: true,
+                    width: Renderer.timestampWidth,
+                    filter: Renderer.timestampFilter,
+                    renderer: Renderer.timestamp
+                }, {
+                    header: 'Elapsed Time'.t(),
+                    dataIndex: 'sessionElapsed',
+                    width: Renderer.timestampWidth,
+                    sortable: true,
+                    renderer: Renderer.elapsedTime,
+                    filter: Renderer.numericFilter,
+                },{
+                    header: 'Disconnect'.t(),
+                    xtype: 'actioncolumn',
+                    width: Renderer.actionWidth + 20,
+                    align: 'center',
+                    iconCls: 'fa fa-minus-circle',
+                    handler: 'externalAction',
+                    action: 'disconnectUser',
+                }],
+                bbar: [ '@refresh', '@reset']
+
             }]
         }, {
             xtype: 'appreports'
