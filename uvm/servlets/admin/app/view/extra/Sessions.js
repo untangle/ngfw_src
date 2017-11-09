@@ -53,6 +53,7 @@ Ext.define('Ung.view.extra.Sessions', {
         reference: 'sessionsgrid',
         store: 'sessions',
         stateful: true,
+        defaultSortable: true,
 
         enableColumnHide: true,
 

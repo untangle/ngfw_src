@@ -47,6 +47,7 @@ Ext.define('Ung.view.extra.Devices', {
         title: 'Current Devices'.t(),
         store: 'devices',
         stateful: true,
+        defaultSortable: true,
 
         enableColumnHide: true,
 

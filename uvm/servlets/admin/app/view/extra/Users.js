@@ -83,6 +83,7 @@ Ext.define('Ung.view.extra.Users', {
         reference: 'usersgrid',
         title: 'Current Users'.t(),
         stateful: true,
+        defaultSortable: true,
 
         sortField: 'username',
         sortOrder: 'ASC',
