@@ -22,7 +22,7 @@ Ext.define('Ung.config.local-directory.Main', {
         title: 'Local Users'.t(),
         itemId: 'local-users-grid',
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
 
         listProperty: 'usersData.list',
