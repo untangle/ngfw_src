@@ -1235,8 +1235,7 @@ Ext.define('Ung.view.reports.Entry', {
             titleCollapse: true,
             collapsible: true,
             collapsed: true,
-            split: true,
-            hidden: true,
+            split: true
         }]
 
     }]

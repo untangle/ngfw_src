@@ -12,11 +12,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     datachanged: 'updateConditions'
                 }
             }
-        },
-        formulas: {
-            f_tableconfig: function (get) {
-                return TableConfig.generate(get('entry.table'));
-            }
         }
     },
 
@@ -29,6 +24,9 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     enableColumnHide: false,
     disableSelection: true,
     // hideHeaders: true,
+
+    hidden: true,
+
     bind: {
         hidden: '{!entry}',
         store: '{conditions}'

@@ -76,15 +76,14 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     showNode: function (node) {
-        var me = this, vm = me.getViewModel(), record;
+        var me = this, record;
 
         if (node.isLeaf()) {
             // report node
             record = Ext.getStore('reports').findRecord('url', node.get('url'));
             if (record) {
-                vm.set({
-                    // report: record, // main reference from the store
-                    entry: record // report reference copy on which modifications are made
+                me.getView().down('entry').getViewModel().set({
+                    entry: record
                 });
             }
             me.lookup('cards').setActiveItem('report');
