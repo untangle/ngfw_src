@@ -39,7 +39,7 @@ Ext.define('Ung.view.reports.GraphReport', {
          * initializes an empty chart (no data) and adds it to the container (this is done once)
          */
         initChart: function () {
-            var me = this, widgetDisplay = me.getView().widgetDisplay, vm = me.getViewModel();
+            var me = this, isWidget = me.getView().isWidget, vm = me.getViewModel();
 
             vm.bind('{entry.theme}', function (theme) {
                 vm.set('f_theme', theme);
@@ -67,8 +67,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                     type: 'spline',
                     renderTo: me.getView().getEl().dom,
                     animation: false,
-                    marginRight: widgetDisplay ? undefined : 20,
-                    spacing: widgetDisplay ? [5, 5, 10, 5] : [30, 10, 15, 10],
+                    marginRight: isWidget ? undefined : 20,
+                    spacing: isWidget ? [5, 5, 10, 5] : [30, 10, 15, 10],
                     style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
                     backgroundColor: 'transparent'
                 },
@@ -114,10 +114,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                     labels: {
                         style: {
                             color: '#777',
-                            fontSize: widgetDisplay ? '11px' : '12px',
+                            fontSize: isWidget ? '11px' : '12px',
                             fontWeight: 600
                         },
-                        y: widgetDisplay ? 15 : 20
+                        y: isWidget ? 15 : 20
                     },
                     maxPadding: 0,
                     minPadding: 0,
@@ -159,7 +159,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         padding: 0,
                         style: {
                             color: '#777',
-                            fontSize: widgetDisplay ? '11px' : '12px',
+                            fontSize: isWidget ? '11px' : '12px',
                             fontWeight: 600
                         },
                         x: -10,
@@ -173,7 +173,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         textAlign: 'left',
                         style: {
                             color: '#555',
-                            fontSize: widgetDisplay ? '12px' : '14px',
+                            fontSize: isWidget ? '12px' : '14px',
                             fontWeight: 600
                         }
                     }
@@ -190,7 +190,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     backgroundColor: 'rgba(247, 247, 247, 0.95)',
                     useHTML: true,
                     style: {
-                        fontSize: widgetDisplay ? '12px' : '14px'
+                        fontSize: isWidget ? '12px' : '14px'
                     },
                     headerFormat: '<p style="margin: 0 0 5px 0; color: #555;">{point.key}</p>',
                     dateTimeLabelFormats: {
@@ -242,7 +242,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     series: {
                         dataLabels: {
                             style: {
-                                fontSize: widgetDisplay ? '10px' : '12px'
+                                fontSize: isWidget ? '10px' : '12px'
                             }
                         },
                         animation: false,
@@ -267,7 +267,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 },
                 legend: {
                     margin: 0,
-                    y: widgetDisplay ? 5 : 10,
+                    y: isWidget ? 5 : 10,
                     // useHTML: true,
                     lineHeight: 12,
                     itemDistance: 10,
@@ -518,6 +518,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }, false, false);
             }
             me.chart.redraw();
+            // reload styles
             me.setStyles();
             me.getView().fireEvent('resize');
         },
@@ -528,10 +529,12 @@ Ext.define('Ung.view.reports.GraphReport', {
          */
         setStyles: function () {
             var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'), colors,
-                widgetDisplay = me.getView().widgetDisplay,
+                isWidget = me.getView().isWidget,
 
                 isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
                 isPieColumn = false, isDonut = false, isPie = false, is3d = false;
+
+            if (!entry) { return; }
 
             var isPieGraph = entry.get('type') === 'PIE_GRAPH';
             var isTimeGraph = entry.get('type').indexOf('TIME_GRAPH') >= 0;
@@ -692,16 +695,16 @@ Ext.define('Ung.view.reports.GraphReport', {
                 },
                 legend: {
                     title: {
-                        text: (!widgetDisplay && isPie && isPieGraph) ? (TableConfig.getColumnHumanReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
+                        text: (!isWidget && isPie && isPieGraph) ? (TableConfig.getColumnHumanReadableName(entry.get('pieGroupColumn')) + '<br/> <span style="font-size: 12px;">[' + entry.get('pieGroupColumn') + '] by ' + entry.get('units') + '</span>') : null,
                         style: { fontSize: '18px', fontWeight: 400 }
                     },
-                    enabled: !(widgetDisplay && isPieGraph),
+                    enabled: !(isWidget && isPieGraph),
                     layout: (isPieGraph && isPie) ? 'vertical' : 'horizontal',
                     align: (isPieGraph && isPie) ? 'left' : 'center',
                     verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
                 },
                 tooltip: {
-                    split: !widgetDisplay && isTimeGraph
+                    split: !isWidget && isTimeGraph
                 }
             };
 

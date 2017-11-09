@@ -59,7 +59,6 @@ Ext.define('Ung.widget.WidgetController', {
                 var action = e.target.dataset.action;
 
                 if (!action) { return; }
-
                 // close menu but only when not selecting size
                 if (action.indexOf('size') < 0) {
                     me.closeMenu();
@@ -93,6 +92,10 @@ Ext.define('Ung.widget.WidgetController', {
                     exportForm.submit();
                 }
 
+                // on reports
+                if (action === 'reports') {
+                    Ung.app.redirectTo(e.target.dataset.url);
+                }
                 // on size
                 if (action.indexOf('size') >= 0) {
                     var newSize = e.target.dataset.action.replace('size-', '');
@@ -125,23 +128,23 @@ Ext.define('Ung.widget.WidgetController', {
     init: function (view) {
         var vm = view.getViewModel(), entryType;
         if (vm.get('entry')) {
-            entryType = vm.get('entry.type');
-            if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 250, widgetDisplay: true });
+            switch(vm.get('entry.type')) {
+            case 'PIE_GRAPH':
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
+                entryType = 'graphreport'; break;
+            case 'TEXT':
+                entryType = 'textreport'; break;
+            case 'EVENT_LIST':
+                entryType = 'eventreport'; break;
             }
 
-            if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 250, widgetDisplay: true });
-            }
-
-            if (entryType === 'TEXT') {
-                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 250 });
-            }
-
-
-            if (entryType === 'EVENT_LIST') {
-                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 250 });
-            }
+            view.add({
+                xtype: entryType,
+                itemId: 'report-widget',
+                height: 250,
+                isWidget: true
+            });
         }
     },
 
