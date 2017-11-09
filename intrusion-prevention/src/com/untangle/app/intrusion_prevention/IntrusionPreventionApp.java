@@ -96,8 +96,6 @@ public class IntrusionPreventionApp extends AppBase
         super( appSettings, appProperties );
 
         handler = new EventHandler(this);
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
-        this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -111,15 +109,6 @@ public class IntrusionPreventionApp extends AppBase
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
-
-        File settingsFile = new File( getSettingsFileName() );
-        File snortConf = new File(SNORT_CONF);
-        File snortDebianConf = new File(SNORT_DEBIAN_CONF);
-        if (settingsFile.lastModified() > snortDebianConf.lastModified() ||
-            snortConf.lastModified() > snortDebianConf.lastModified() ) {
-            logger.warn("Settings file newer than snort debian configuration, Syncing...");
-            reconfigure();
-        }
     }
 
     /**
@@ -182,6 +171,18 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
+        this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+
+        File settingsFile = new File( getSettingsFileName() );
+        File snortConf = new File(SNORT_CONF);
+        File snortDebianConf = new File(SNORT_DEBIAN_CONF);
+        if (settingsFile.lastModified() > snortDebianConf.lastModified() ||
+            snortConf.lastModified() > snortDebianConf.lastModified() ) {
+            logger.warn("Settings file newer than snort debian configuration, Syncing...");
+            reconfigure();
+        }
+
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         if(wizardCompleted() == false){
