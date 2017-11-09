@@ -40,27 +40,6 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
-        // f_activeReportCard: function (get) {
-        //     var reportCard = 'textreport', type;
-        //     if (get('eEntry.type')) {
-        //         type = get('eEntry.type');
-        //     } else {
-        //         type = get('entry.type');
-        //     }
-        //     console.log(type);
-        //     switch(type) {
-        //     case 'TEXT': reportCard = 'textreport'; break;
-        //     case 'PIE_GRAPH': reportCard = 'graphreport'; break;
-        //     case 'TIME_GRAPH': reportCard = 'graphreport'; break;
-        //     case 'TIME_GRAPH_DYNAMIC': reportCard = 'graphreport'; break;
-        //     case 'EVENT_LIST': reportCard = 'eventreport'; break;
-        //     }
-        //     return reportCard;
-        // },
-
-        f_tableConfig: function (get) {
-            return TableConfig.generate(get('entry.table'));
-        },
 
         f_tableColumns: function (get) {
             var table = get('eEntry.table'), tableConfig, defaultColumns;

@@ -12,23 +12,23 @@ Ext.define('Ung.view.reports.EntryController', {
     refreshTimeout: null,
 
     onDeactivate: function () {
-        // this.getViewModel().set('entry', null);
-        this.getViewModel().set('eEntry', null);
         this.reset();
+        this.getViewModel().set({
+            entry: null,
+            eEntry: null
+        });
     },
 
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel(),
-            dataGrid = this.getView().down('#currentData');
+        var me = this, vm = this.getViewModel();
 
         /**
          * each time report selection changes
          */
         vm.bind('{entry}', function (entry) {
-            // if (!entry) { return; }
-            vm.set('eEntry', null);
+            if (!entry) { return; }
 
-            // vm.set('_currentData', []);
+            vm.set('eEntry', null);
             me.setReportCard(entry.get('type'));
 
             me.reload(true);
@@ -48,17 +48,21 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
+        vm.bind('{entry.table}', function (table) {
+            vm.set('f_tableconfig', table ? TableConfig.generate(table) : []);
+        });
+
         // each time the eEntry changes by selecting 'Settings'
         vm.bind('{eEntry}', function (eEntry) {
             me.getView().up('#reports').getViewModel().set('editing', eEntry ? true : false);
+
             if (!vm.get('entry')) { return; }
-            else {
-                // on cancel when eEntry turns null reloads the selected entry if exists
-                if (!eEntry) {
-                    // me.reload(true);
-                    me.getView().down('graphreport').fireEvent('styleschanged');
-                    return;
-                }
+
+            // on cancel when eEntry turns null reloads the selected entry if exists
+            if (!eEntry) {
+                // me.reload(true);
+                me.getView().down('graphreport').fireEvent('styleschanged');
+                return;
             }
 
             // if eEntry is readOnly, alter the title to avoid initial validation error
@@ -210,21 +214,22 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
-        if (!entry) { return; }
+        // if (!entry) { return; }
+        me.getView().down('graphreport').getController().reset();
 
-        switch(entry.get('type')) {
-        case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
-        case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
-        default: ctrl = me.getView().down('graphreport').getController();
-        }
+        // switch(entry.get('type')) {
+        // case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
+        // case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
+        // default: ctrl = me.getView().down('graphreport').getController();
+        // }
 
-        if (!ctrl) {
-            console.error('Entry controller not found!');
-            return;
-        }
-        if (Ext.isFunction(ctrl.reset)) {
-            ctrl.reset();
-        }
+        // if (!ctrl) {
+        //     console.error('Entry controller not found!');
+        //     return;
+        // }
+        // if (Ext.isFunction(ctrl.reset)) {
+        //     ctrl.reset();
+        // }
     },
 
     refresh: function () {
@@ -369,8 +374,8 @@ Ext.define('Ung.view.reports.EntryController', {
      */
     updateReport: function () {
         var me = this,
-            v = this.getView(),
-            vm = this.getViewModel(),
+            v = me.getView(),
+            vm = me.getViewModel(),
             entry = vm.get('entry'),
             eEntry = vm.get('eEntry'), tdcg, tdc = [];
 
