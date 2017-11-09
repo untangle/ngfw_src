@@ -55,6 +55,7 @@ Ext.define('Ung.view.extra.Hosts', {
         title: 'Current Hosts'.t(),
         store: 'hosts',
         stateful: true,
+        defaultSortable: true,
 
         enableColumnHide: true,
 
