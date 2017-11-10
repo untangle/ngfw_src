@@ -7,7 +7,7 @@ Ext.define('Ung.widget.Report', {
         formulas: {
             f_size: function (get) {
                 switch(get('widget.size')) {
-                case 'SMALL': return 250;
+                case 'SMALL': return 300;
                 case 'MEDIUM': return 450;
                 case 'LARGE': return 600;
                 case 'XLARGE': return 750;
