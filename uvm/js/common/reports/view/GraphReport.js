@@ -2,21 +2,6 @@ Ext.define('Ung.view.reports.GraphReport', {
     extend: 'Ext.container.Container',
     alias: 'widget.graphreport',
 
-    // viewModel: {
-    //     formulas: {
-    //         f_theme: {
-    //             bind: {
-    //                 t1: '{entry.theme}',
-    //                 // t2: '{eEntry.theme}'
-    //             },
-    //             get: function(theme) {
-    //                 console.log(theme);
-    //                 return theme.t1;
-    //             }
-    //         }
-    //     }
-    // },
-
     viewModel: true,
 
     border: false,
@@ -29,10 +14,6 @@ Ext.define('Ung.view.reports.GraphReport', {
         styleschanged: 'setStyles'
     },
 
-    bind: {
-        userCls: 'theme-{f_theme}'
-    },
-
     controller: {
 
         /**
@@ -40,17 +21,6 @@ Ext.define('Ung.view.reports.GraphReport', {
          */
         initChart: function () {
             var me = this, isWidget = me.getView().isWidget, vm = me.getViewModel();
-
-            vm.bind('{entry.theme}', function (theme) {
-                vm.set('f_theme', theme);
-                me.setStyles();
-            });
-
-            vm.bind('{eEntry.theme}', function (theme) {
-                if (!theme) { return; }
-                vm.set('f_theme', theme);
-                me.setStyles();
-            });
 
             vm.bind('{eEntry.pieStyle}', function (pieStyle) {
                 if (!pieStyle) { return; }
@@ -62,10 +32,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                 me.setStyles();
             });
 
-            me.chart = new Highcharts.StockChart({
+            me.chart = new Highcharts.stockChart(me.getView().getEl().dom, {
                 chart: {
-                    type: 'spline',
-                    renderTo: me.getView().getEl().dom,
+                    // type: 'spline',
                     animation: false,
                     marginRight: isWidget ? undefined : 20,
                     spacing: isWidget ? [5, 5, 10, 5] : [30, 10, 15, 10],
@@ -552,10 +521,18 @@ Ext.define('Ung.view.reports.GraphReport', {
                 is3d = entry.get('pieStyle').indexOf('3D') >= 0;
             }
 
-            if (!entry.get('colors') || entry.get('colors').length === 0) {
-                colors = Theme[entry.get('theme')].colors;
+            if (isWidget) {
+                if (Ung.dashboardSettings.theme === 'DEFAULT' && Ext.isArray(entry.get('colors')) && entry.get('colors').length > 0) {
+                    colors = Ext.clone(entry.get('colors'));
+                } else {
+                    colors = Ext.clone(Theme[Ung.dashboardSettings.theme].colors);
+                }
             } else {
-                colors = Ext.clone(entry.get('colors'));
+                if (!entry.get('colors') || entry.get('colors').length === 0) {
+                    colors = Ext.clone(Theme.DEFAULT.colors);
+                } else {
+                    colors = Ext.clone(entry.get('colors'));
+                }
             }
 
             // add gradient
@@ -568,15 +545,23 @@ Ext.define('Ung.view.reports.GraphReport', {
                             r: 0.7
                         },
                         stops: [
-                            [0, Highcharts.Color(color).setOpacity(entry.get('theme') !== 'DARK' ? 0.4 : 0.9).get('rgba')],
-                            [1, Highcharts.Color(color).setOpacity(entry.get('theme') !== 'DARK' ? 0.8 : 0.3).get('rgba')]
+                            [0, Highcharts.Color(color).setOpacity(Ung.dashboardSettings.theme !== 'DARK' ? 0.4 : 0.9).get('rgba')],
+                            [1, Highcharts.Color(color).setOpacity(Ung.dashboardSettings.theme !== 'DARK' ? 0.8 : 0.3).get('rgba')]
                         ]
                     };
                 });
             } else {
-                for (var i = 0; i < colors.length; i += 1) {
-                    colors[i] = isTimeGraph ? ( isColumnOverlapped ? new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba') : new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')) : colors[i];
-                }
+                // for (var i = 0; i < colors.length; i += 1) {
+                //     if (isColumnOverlapped) {
+                //         // if (isColumnOverlapped) {
+                //         // colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.2).get('rgba');
+                //         // } else {
+                //         //     colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba');
+                //         // }
+                //     } else {
+                //         colors[i] = colors[i];
+                //     }
+                // }
             }
 
             if (isTimeGraph) {
@@ -708,7 +693,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
             };
 
-            Highcharts.merge(true, settings, Theme[entry.get('theme')] || Theme.DEFAULT);
+            Highcharts.merge(true, settings, isWidget ? Theme[Ung.dashboardSettings.theme] : Theme.DEFAULT);
             // Highcharts.setOptions(Theme[entry.get('theme')]);
             me.chart.update(settings, true);
         }

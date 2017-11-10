@@ -40,7 +40,6 @@ Ext.define('Ung.widget.WidgetController', {
                 // on refresh
                 if (e.target.dataset.action === 'refresh') {
                     wg.lastFetchTime = null; // reset fetch time
-                    wg.setUserCls('theme-' + wg.getViewModel().get('entry.theme'));
                     DashboardQueue.addFirst(wg); // add it first
                 }
                 // show menu
