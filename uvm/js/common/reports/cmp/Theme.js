@@ -136,8 +136,8 @@ Ext.define('Ung.reports.Theme', {
         },
         loading: {
             style: {
-                backgroundColor: '#000',
-                opacity: 0.5
+                backgroundColor: '#555',
+                opacity: 0.2
             }
         }
     },
@@ -180,6 +180,12 @@ Ext.define('Ung.reports.Theme', {
             },
             pie: {
                 borderColor: '#E2E2E2'
+            }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(247, 247, 247, 0.95)',
+            style: {
+                color: '#333'
             }
         },
         legend: {

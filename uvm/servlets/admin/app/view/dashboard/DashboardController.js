@@ -39,6 +39,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var me = this;
         view.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
         view.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
+
+        me.getViewModel().bind('{theme}', function (theme) {
+            Ung.dashboardSettings.theme = theme;
+            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widget) {
+                widget.down('graphreport').getController().setStyles();
+            });
+        });
+
     },
 
     debounce: function (fn, delay) {
@@ -80,6 +88,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // refresh the dashboard manager grid if the widgets were affected
         this.lookup('dashboardManager').getView().refresh();
         vm.set('timeframe', Ung.dashboardSettings.timeframe);
+        vm.set('theme', Ung.dashboardSettings.theme);
 
         dashboard.removeAll(true);
         var widgetsCmp = [];
@@ -106,6 +115,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         widgetsCmp.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
+                            bind: {
+                                userCls: 'theme-{theme}'
+                            },
                             // refreshIntervalSec: widget.get('refreshIntervalSec'),
                             // refreshIntervalSec: 10,
                             viewModel: {
@@ -171,11 +183,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     wg = dashboard.insert(i, {
                         xtype: 'reportwidget',
                         itemId: widget.get('entryId'),
+                        bind: {
+                            userCls: 'theme-{theme}'
+                        },
                         // refreshIntervalSec: widget.get('refreshIntervalSec'),
                         viewModel: {
                             data: {
                                 widget: widget,
-                                entry: entry
+                                entry: entry,
                             }
                         }
                     });
@@ -252,6 +267,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
         Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
+        Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
         .then(function(result) {
@@ -300,6 +316,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             widgetCmp = dashboard.insert(rowIndex, {
                                 xtype: 'reportwidget',
                                 itemId: record.get('entryId'),
+                                visible: true,
+                                bind: {
+                                    userCls: 'theme-{theme}'
+                                },
+                                lastFetchTime: null,
                                 // refreshIntervalSec: record.get('refreshIntervalSec'),
                                 viewModel: {
                                     data: {
@@ -414,6 +435,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     wgCmp = me.lookup('dashboard').add({
                         xtype: 'reportwidget',
                         itemId: wg2.get('entryId'),
+                        bind: {
+                            userCls: 'theme-{theme}'
+                        },
                         viewModel: {
                             data: {
                                 widget: wg2,
@@ -444,6 +468,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         me.lookup('dashboard').insert(idx, {
                             xtype: 'reportwidget',
                             itemId: wg2.get('entryId'),
+                            bind: {
+                                userCls: 'theme-{theme}'
+                            },
                             viewModel: {
                                 data: {
                                     widget: wg2,
@@ -549,6 +576,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 dashboardCmp.add({
                     xtype: 'reportwidget',
                     itemId: widget.entryId,
+                    bind: {
+                        userCls: 'theme-{theme}'
+                    },
                     refreshIntervalSec: widget.refreshIntervalSec,
                     viewModel: {
                         data: {

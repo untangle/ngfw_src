@@ -68,16 +68,9 @@ public class ReportEntry implements Serializable, JSONString
         COLUMN_3D
     };
 
-    public static enum Theme {
-        DEFAULT,
-        DARK,
-        SAND
-    };
-
     private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
-    private Theme theme = Theme.DEFAULT; /* Use the default theme */
 
     private ReportEntryType type;
 
@@ -187,9 +180,6 @@ public class ReportEntry implements Serializable, JSONString
 
     public PieStyle getPieStyle() { return this.pieStyle; }
     public void setPieStyle( PieStyle newValue ) { this.pieStyle = newValue; }
-
-    public Theme getTheme() { return this.theme; }
-    public void setTheme( Theme newValue ) { this.theme = newValue; }
 
     public String getTextString() { return this.textString; }
     public void setTextString( String newValue ) { this.textString = newValue; }
