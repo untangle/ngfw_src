@@ -1418,25 +1418,22 @@ class Login(Screen):
         password = self.window.getstr(self.y_pos -1, len(label), 50)
         curses.curs_set(0)
 
-        if len(password.strip()) == 0:
-            self.process_continue = False
-        else:
-            self.y_pos += 2
+        self.y_pos += 2
 
-            uvm = UvmContext()
-            adminSettings = uvm.context.adminManager().getSettings()
-            for user in adminSettings["users"]["list"]:
-                if user["username"] == "admin":
-                    pw_hash_base64 = user['passwordHashBase64']
-                    pw_hash = base64.b64decode(pw_hash_base64)
-                    raw_pw = pw_hash[0:len(pw_hash) - 8]
-                    salt = pw_hash[len(pw_hash) - 8:]
-                    if raw_pw == md5.new(password.strip() + salt).digest():
-                        self.authorized = True
-                        self.process_continue = False
-                    else:
-                        self.authorized = False
-            uvm = None
+        uvm = UvmContext()
+        adminSettings = uvm.context.adminManager().getSettings()
+        for user in adminSettings["users"]["list"]:
+            if user["username"] == "admin":
+                pw_hash_base64 = user['passwordHashBase64']
+                pw_hash = base64.b64decode(pw_hash_base64)
+                raw_pw = pw_hash[0:len(pw_hash) - 8]
+                salt = pw_hash[len(pw_hash) - 8:]
+                if raw_pw == md5.new(password.strip() + salt).digest():
+                    self.authorized = True
+                    self.process_continue = False
+                else:
+                    self.authorized = False
+        uvm = None
 
         if self.authorized == False:
             self.message("Invalid password.  Press any key to try again")
