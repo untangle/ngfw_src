@@ -39,7 +39,11 @@ Ext.define('Ung.reports.Theme', {
                 }
             },
             pie: {
-                borderColor: '#FFF'
+                borderColor: '#FFF',
+                edgeColor: '#FFF'
+            },
+            column: {
+                borderColor: '#EEE'
             }
         },
         tooltip: {
@@ -62,9 +66,11 @@ Ext.define('Ung.reports.Theme', {
             }
         },
         loading: {
+            labelStyle: {
+                color: '#777'
+            },
             style: {
-                backgroundColor: '#FFF',
-                opacity: 0.5
+                backgroundColor: 'rgba(255, 255, 255, 0.3)'
             }
         }
     },
@@ -112,6 +118,10 @@ Ext.define('Ung.reports.Theme', {
                 }
             },
             pie: {
+                borderColor: '#333',
+                edgeColor: '#333',
+            },
+            column: {
                 borderColor: '#333'
             }
         },
@@ -135,9 +145,11 @@ Ext.define('Ung.reports.Theme', {
             }
         },
         loading: {
+            labelStyle: {
+                color: '#999'
+            },
             style: {
-                backgroundColor: '#555',
-                opacity: 0.2
+                backgroundColor: 'rgba(0, 0, 0, 0.3)'
             }
         }
     },
@@ -179,7 +191,11 @@ Ext.define('Ung.reports.Theme', {
                 }
             },
             pie: {
-                borderColor: '#E2E2E2'
+                borderColor: '#FFF',
+                edgeColor: '#FFF',
+            },
+            column: {
+                borderColor: '#EEE'
             }
         },
         tooltip: {
@@ -202,9 +218,11 @@ Ext.define('Ung.reports.Theme', {
             }
         },
         loading: {
+            labelStyle: {
+                color: '#777'
+            },
             style: {
-                backgroundColor: '#FFF',
-                opacity: 0.5
+                backgroundColor: 'rgba(255, 255, 255, 0.3)'
             }
         }
     }
