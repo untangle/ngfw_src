@@ -7,6 +7,8 @@ Ext.define('Ung.view.reports.GraphReport', {
     border: false,
     bodyBorder: false,
 
+    margin: '0 0 0 5px',
+
     listeners: {
         afterrender: 'initChart',
         resize: 'onResize',
@@ -35,7 +37,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             me.chart = new Highcharts.stockChart(me.getView().getEl().dom, {
                 chart: {
                     // type: 'spline',
-                    animation: false,
+                    // animation: false,
                     marginRight: isWidget ? undefined : 20,
                     spacing: isWidget ? [5, 5, 10, 5] : [30, 10, 15, 10],
                     style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
@@ -188,10 +190,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                         showInLegend: true,
                         colorByPoint: true,
 
-                        depth: 35,
+                        depth: isWidget ? 25 : 35,
                         minSize: 150,
                         borderWidth: 1,
-
+                        edgeWidth: 1,
                         dataLabels: {
                             enabled: true,
                             distance: 5,
@@ -214,7 +216,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                                 fontSize: isWidget ? '10px' : '12px'
                             }
                         },
-                        animation: false,
+                        animation: true,
                         states: {
                             hover: {
                                 lineWidthPlus: 0
@@ -251,6 +253,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                     symbolHeight: 8,
                     symbolWidth: 8,
                     symbolRadius: 4
+                },
+                loading: {
+                    style: {
+                        opacity: 1
+                    }
                 },
                 series: []
             });
@@ -550,23 +557,18 @@ Ext.define('Ung.view.reports.GraphReport', {
                         ]
                     };
                 });
-            } else {
-                // for (var i = 0; i < colors.length; i += 1) {
-                //     if (isColumnOverlapped) {
-                //         // if (isColumnOverlapped) {
-                //         // colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.2).get('rgba');
-                //         // } else {
-                //         //     colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba');
-                //         // }
-                //     } else {
-                //         colors[i] = colors[i];
-                //     }
-                // }
+            }
+
+            if (isColumnOverlapped) {
+                for (var i = 0; i < colors.length; i += 1) {
+                    colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba');
+                }
             }
 
             if (isTimeGraph) {
                 Ext.Array.each(me.chart.series, function (serie, idx) {
                     serie.update({
+                        color: colors[idx],
                         lineColor: colors[idx],
                         fillColor: {
                             linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
@@ -575,7 +577,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                                 [1, Highcharts.Color(colors[idx]).setOpacity(0.1).get('rgba')]
                             ]
                         },
-                        pointPadding: isColumnOverlapped ? 0.075 * idx : 0.1
+                        pointPadding: isColumnOverlapped ? 0.1 * idx : 0.1
                     }, false);
                 });
             }
@@ -630,7 +632,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         pointPlacement: isTimeGraph ? 'on' : undefined, // time
                         colorByPoint: isPieColumn, // pie
                         grouping: !isColumnOverlapped,
-                        groupPadding: isColumnOverlapped ? 0.1 : 0.2,
+                        groupPadding: isColumnOverlapped ? 0.1 : 0.15,
                         // shadow: !isColumnOverlapped,
                         dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 80 } : undefined
                     }
