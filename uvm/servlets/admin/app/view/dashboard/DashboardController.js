@@ -42,8 +42,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         me.getViewModel().bind('{theme}', function (theme) {
             Ung.dashboardSettings.theme = theme;
-            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widget) {
-                widget.down('graphreport').getController().setStyles();
+            Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
+                graph.getController().setStyles();
             });
         });
 
