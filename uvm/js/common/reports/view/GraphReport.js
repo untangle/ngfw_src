@@ -24,6 +24,10 @@ Ext.define('Ung.view.reports.GraphReport', {
         initChart: function () {
             var me = this, isWidget = me.getView().isWidget, vm = me.getViewModel();
 
+            vm.bind('{entry}', function () {
+                me.fetchData();
+            });
+
             vm.bind('{eEntry.pieStyle}', function (pieStyle) {
                 if (!pieStyle) { return; }
                 me.setStyles();
@@ -75,10 +79,9 @@ Ext.define('Ung.view.reports.GraphReport', {
 
                 xAxis: {
                     // alternateGridColor: 'rgba(220, 220, 220, 0.1)',
-                    lineColor: '#C0D0E0',
                     lineWidth: 1,
-                    tickLength: 3,
-                    // gridLineWidth: 0,
+                    tickLength: 5,
+                    // gridLineWidth: 1,
                     // gridLineDashStyle: 'dash',
                     // gridLineColor: '#EEE',
                     tickPixelInterval: 80,
@@ -88,7 +91,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                             fontSize: isWidget ? '11px' : '12px',
                             fontWeight: 600
                         },
-                        y: isWidget ? 15 : 20
+                        // y: isWidget ? 15 : 20,
+                        autoRotation: [-25]
                     },
                     maxPadding: 0,
                     minPadding: 0,
@@ -110,11 +114,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                 yAxis: {
                     allowDecimals: true,
                     min: 0,
-                    lineColor: '#C0D0E0',
                     lineWidth: 1,
-                    gridLineWidth: 1,
+                    // gridLineWidth: 1,
                     gridLineDashStyle: 'dash',
-                    gridLineColor: '#EEE',
+                    // gridLineColor: '#EEE',
                     //tickPixelInterval: 50,
                     tickLength: 5,
                     tickWidth: 1,
@@ -308,6 +311,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 entry = vm.get('eEntry') || vm.get('entry'),
                 reps = me.getView().up('#reports'),
                 startDate, endDate;
+
+            if (!entry) { return; }
 
             vm.set('eError', false);
 
@@ -505,7 +510,7 @@ Ext.define('Ung.view.reports.GraphReport', {
          */
         setStyles: function () {
             var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'), colors,
-                isWidget = me.getView().isWidget,
+                isWidget = me.getView().isWidget, plotLines = [],
 
                 isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
                 isPieColumn = false, isDonut = false, isPie = false, is3d = false;
@@ -580,6 +585,31 @@ Ext.define('Ung.view.reports.GraphReport', {
                         pointPadding: isColumnOverlapped ? 0.1 * idx : 0.1
                     }, false);
                 });
+
+                Ext.Array.each(me.data, function (row) {
+                    var t = row.time_trunc.time || row.time_trunc;
+                    if (t && t % (24 * 3600 * 1000) === 0) {
+                        var d = Util.clientToServerDate(new Date(t));
+                        d = Ext.Date.add(d, Ext.Date.MINUTE, d.getTimezoneOffset());
+                        plotLines.push({
+                            value: d,
+                            width: 1,
+                            dashStyle: 'Dash',
+                            color: isWidget ? (Ung.dashboardSettings.theme !== 'DARK' ? '#EEE' : '#444') : '#EEE',
+                            label: {
+                                text: Ext.Date.format(d, 'Y-m-d'),
+                                rotation: 0,
+                                y: 15,
+                                style: {
+                                    fontSize: '12px',
+                                    color: '#999'
+                                }
+                                // rotation:
+                            },
+                            zIndex: 900
+                        });
+                    }
+                });
             }
 
             var settings = {
@@ -629,27 +659,24 @@ Ext.define('Ung.view.reports.GraphReport', {
                     },
                     column: {
                         borderWidth: isColumnOverlapped ? 1 : 0,
-                        pointPlacement: isTimeGraph ? 'on' : undefined, // time
+                        pointPlacement: isTimeGraph ? 'on' : null, // time
+                        // pointPadding: 0.01,
                         colorByPoint: isPieColumn, // pie
                         grouping: !isColumnOverlapped,
                         groupPadding: isColumnOverlapped ? 0.1 : 0.15,
                         // shadow: !isColumnOverlapped,
-                        dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 80 } : undefined
+                        dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnOverlapped ? 50 : 50 } : undefined
                     }
                 },
                 xAxis: {
                     visible: !isPie,
+                    // tickPixelInterval: 50,
                     type: isTimeGraph ? 'datetime' : 'category',
-                    crosshair: (isTimeGraph && !isTimeColumn) ? {
+                    crosshair: isTimeGraph ? {
                         width: 1,
-                        dashStyle: 'ShortDot',
-                        color: 'rgba(100, 100, 100, 0.5)'
-                    } : false
-                    // crosshair: {
-                    //     width: 1,
-                    //     dashStyle: 'ShortDot',
-                    //     color: 'rgba(100, 100, 100, 0.5)'
-                    // },
+                        dashStyle: 'ShortDot'
+                    } : false,
+                    plotLines: plotLines
                 },
                 yAxis: {
                     visible: !isPie,
@@ -691,7 +718,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     verticalAlign: (isPieGraph && isPie) ? 'top' : 'bottom'
                 },
                 tooltip: {
-                    split: !isWidget && isTimeGraph
+                    split: ((isWidget && me.chart.series.length <= 3) || !isWidget) && isTimeGraph
                 }
             };
 
