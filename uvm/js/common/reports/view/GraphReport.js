@@ -1,5 +1,5 @@
 Ext.define('Ung.view.reports.GraphReport', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.Component',
     alias: 'widget.graphreport',
 
     viewModel: true,
