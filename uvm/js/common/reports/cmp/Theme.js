@@ -9,14 +9,19 @@ Ext.define('Ung.reports.Theme', {
         },
         xAxis: {
             lineColor: '#C0D0E0',
+            tickColor: '#C0D0E0',
             labels: {
                 style: {
                     color: '#777'
                 }
+            },
+            crosshair: {
+                color: 'rgba(192, 208, 224, 0.5)'
             }
         },
         yAxis: {
             lineColor: '#C0D0E0',
+            tickColor: '#C0D0E0',
             gridLineColor: '#EEE',
             labels: {
                 style: {
@@ -88,14 +93,19 @@ Ext.define('Ung.reports.Theme', {
         },
         xAxis: {
             lineColor: '#707073',
+            tickColor: '#707073',
             labels: {
                 style: {
                     color: '#CCC'
                 }
+            },
+            crosshair: {
+                color: 'rgba(112, 112, 115, 0.5)'
             }
         },
         yAxis: {
             lineColor: '#707073',
+            tickColor: '#707073',
             gridLineColor: '#444',
             labels: {
                 style: {
@@ -161,14 +171,19 @@ Ext.define('Ung.reports.Theme', {
         },
         xAxis: {
             lineColor: '#C0D0E0',
+            tickColor: '#C0D0E0',
             labels: {
                 style: {
                     color: '#777'
                 }
+            },
+            crosshair: {
+                color: 'rgba(192, 208, 224, 0.5)'
             }
         },
         yAxis: {
             lineColor: '#C0D0E0',
+            tickColor: '#C0D0E0',
             gridLineColor: '#DDD',
             labels: {
                 style: {
