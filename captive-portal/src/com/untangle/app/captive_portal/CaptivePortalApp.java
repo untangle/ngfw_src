@@ -5,9 +5,7 @@ package com.untangle.app.captive_portal;
 
 import java.util.LinkedList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Enumeration;
-import java.util.TimerTask;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -35,12 +32,10 @@ import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.PortRange;
-import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
@@ -48,7 +43,6 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.app.http.ReplacementGenerator;
 
 public class CaptivePortalApp extends AppBase
 {
@@ -57,7 +51,6 @@ public class CaptivePortalApp extends AppBase
         SESSALLOW, SESSBLOCK, SESSQUERY, AUTHGOOD, AUTHFAIL
     }
 
-    private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
     private final Integer policyId = getAppSettings().getPolicyId();
 
@@ -65,6 +58,8 @@ public class CaptivePortalApp extends AppBase
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
     private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-permissions";
     private final String CAPTURE_TEMPORARY_UPLOAD = System.getProperty("java.io.tmpdir") + "/capture_upload.zip";
+
+    private static final int CLEANUP_INTERVAL = 60000;
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
@@ -358,18 +353,19 @@ public class CaptivePortalApp extends AppBase
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
 
+        // register our host table callback hook
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
     }
 
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
+        // unregister our host table callback hook
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
+
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
-
-        // unregister hook
-        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
 
         // shutdown any active sessions
         killAllSessions();
@@ -422,7 +418,7 @@ public class CaptivePortalApp extends AppBase
         return replacementGenerator.generateResponse(block, session);
     }
 
-    // public methods for user control ----------------------------------------
+    // public methods for user control
 
     public int userAuthenticate(InetAddress address, String username, String password)
     {
@@ -683,12 +679,35 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
-    // public method for testing all rules for a session ----------------------
+    // public method for determining if a client is already authenticated
 
     public boolean isClientAuthenticated(InetAddress clientAddr)
     {
+        CaptivePortalUserEntry user = null;
+        String macaddr = null;
+
+        // start by getting the MAC address for the client address
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddr);
+        if (entry != null) macaddr = entry.getMacAddress();
+
+        // try to find the user table entry using the MAC address if the feature is enabled
+        if ((getSettings().getUseMacAddress()) && (macaddr != null)) {
+            user = captureUserTable.searchByMacAddress(macaddr);
+            if (user != null) {
+                logger.debug("Found MAC user: " + user.toString());
+                // update our net address if different from host table
+                if (!entry.getAddress().equals(user.getUserNetAddress())) {
+                    logger.debug("Updating MAC user: " + user.toString() + " NEW Address = " + entry.getAddress().getHostAddress().toString());
+                    user.setUserNetAddress(entry.getAddress());
+                }
+            }
+        }
+
         // search for the address in the active user table
-        CaptivePortalUserEntry user = captureUserTable.searchByNetAddress(clientAddr);
+        if (user == null) {
+            user = captureUserTable.searchByNetAddress(clientAddr);
+            if (user != null) logger.debug("Found NET user: " + user.toString());
+        }
 
         // if we have an authenticated user update activity and allow
         if (user != null) {
@@ -698,6 +717,8 @@ public class CaptivePortalApp extends AppBase
 
         return (false);
     }
+
+    // public method for testing the passed client and server lists for a session
 
     public PassedAddress isSessionAllowed(InetAddress clientAddr, InetAddress serverAddr)
     {
@@ -725,6 +746,8 @@ public class CaptivePortalApp extends AppBase
 
         return (null);
     }
+
+    // public methods for checking capture rules for a session 
 
     public CaptureRule checkCaptureRules(IPNewSessionRequest sessreq)
     {
@@ -756,7 +779,7 @@ public class CaptivePortalApp extends AppBase
 
     public boolean isUserInCookieTable(InetAddress address, String username)
     {
-        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
+        return captureUserCookieTable.searchByAddressUsername(address, username) != null; // TODO
     }
 
     public void removeUserFromCookieTable(InetAddress address)
@@ -966,6 +989,7 @@ public class CaptivePortalApp extends AppBase
          */
         public void callback(Object... args)
         {
+            // TODO - need to handle track by MAC address mode
             Object o = args[0];
             if (!(o instanceof InetAddress)) {
                 logger.warn("Invalid argument: " + o);
