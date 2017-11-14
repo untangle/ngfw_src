@@ -56,7 +56,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
         }
     }, {
         region: 'center',
-        xtype: 'ungrid',
+        xtype: 'grid',
         reference: 'apps',
         title: 'Apps'.t(),
         bind: '{appsStore}',
@@ -67,11 +67,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
                 return rec.get('parentPolicy') ? 'parent-policy' : '';
             }
         },
-        // bind: {
-        //     store: {
-        //         data: '{appsData}'
-        //     }
-        // },
+
         columns: [{
             header: 'Id',
             align: 'right',
