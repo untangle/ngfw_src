@@ -53,7 +53,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var timer = null;
         var me = this;
         return function () {
-            var context = me, args = arguments;
             clearTimeout(timer);
             timer = setTimeout(function () {
                 fn.apply(me, arguments);
@@ -80,13 +79,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      */
     loadWidgets: function() {
         // console.log('loadWidgets');
-        var me = this, vm = this.getViewModel(),
-            dashboard = this.lookupReference('dashboard'),
+        var me = this, vm = me.getViewModel(),
+            dashboard = me.lookup('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
-        this.lookup('dashboardManager').getView().refresh();
+        me.lookup('dashboardManager').getView().refresh();
         vm.set('timeframe', Ung.dashboardSettings.timeframe);
         vm.set('theme', Ung.dashboardSettings.theme);
 
@@ -156,7 +155,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
-    toggleManager: function (btn) {
+    toggleManager: function () {
         var vm = this.getViewModel();
         vm.set('managerVisible', !vm.get('managerVisible'));
     },
@@ -263,23 +262,23 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
-        var me = this, vm = me.getViewModel();
+        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard');
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
         Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
         Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-        .then(function(result) {
+        .then(function() {
             Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
             vm.set('managerVisible', false);
 
-            // refetch data for widgets
-            var dashboard = me.getView().lookupReference('dashboard');
-            Ext.Array.each(dashboard.query('reportwidget'), function (widget) {
-                widget.lastFetchTime = null;
-                DashboardQueue.addFirst(widget);
+            // remove widgets from dashboard if removed from store (manager)
+            Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
+                if (Ext.getStore('widgets').find('entryId', widgetCmp.getItemId()) < 0) {
+                    dashboard.remove(widgetCmp);
+                }
             });
 
         });
@@ -402,7 +401,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             Ung.dashboardSettings.widgets.list.push(widget.getData());
         }
         if (action === 'remove') {
-            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg, idx) {
+            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg) {
                 return wg.entryId === widget.get('entryId');
             });
             if (wg) {
@@ -410,7 +409,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
         if (action === 'save') {
-            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg, idx) {
+            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg) {
                 return wg.entryId === widget.get('entryId');
             });
             if (wg) {
@@ -419,7 +418,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
 
         // try to save it
-        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function (result) {
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function () {
             var wg2 = Ext.getStore('widgets').findRecord('entryId', widget.get('entryId')) || widget;
             if (action === 'remove') {
                 me.lookup('dashboard').remove(wg2.get('entryId'));
@@ -529,7 +528,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             'Do you want to continue?'.t(),
             function (btn) {
                 if (btn === 'yes') {
-                    Rpc.asyncData('rpc.dashboardManager.resetSettingsToDefault').then(function (result) {
+                    Rpc.asyncData('rpc.dashboardManager.resetSettingsToDefault').then(function () {
                         Util.successToast('Dashboard reset done!');
                     });
                 }
@@ -545,7 +544,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     onAddRemoveReportWidget: function (entry, isWidget, cb) {
-        var me = this, widget, widgetCmp, dashboardCmp = me.lookupReference('dashboard');
+        var me = this, widget, dashboardCmp = me.lookupReference('dashboard');
 
         if (isWidget) {
             // remove it from settings
@@ -568,7 +567,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             Ung.dashboardSettings.widgets.list.push(widget);
         }
 
-        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function (result) {
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function () {
             if (!isWidget) {
                 // add it in dashboard
                 Ext.getStore('widgets').add(widget);
@@ -626,7 +625,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     showWidgetEditor: function (widget, entry) {
-        me = this;
+        var me = this;
         me.addWin = me.getView().add({
             xtype: 'new-widget',
             viewModel: {
