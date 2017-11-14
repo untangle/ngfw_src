@@ -604,6 +604,7 @@ Ext.define('Ung.util.Converter', {
         INACTIVE: 'Idle Timeout'.t(),
         USER_LOGOUT: 'User Logout'.t(),
         ADMIN_LOGOUT: 'Admin Logout'.t(),
+        HOST_CHANGE: 'Host Change Logout'.t(),
         default: 'Unknown'.t()
     },
     captivePortalEventInfo: function( value ){
