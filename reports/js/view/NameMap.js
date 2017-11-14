@@ -53,7 +53,14 @@ Ext.define('Ung.apps.reports.view.NameMap', {
         emptyText: '[enter IP address]'.t(),
         allowBlank: false,
         width: 300,
-        vtype: 'ipAddress'
+        vtype: 'ipAddress',
+        validator: function (val) {
+            if (this.up('grid').getStore().find('address', val) >= 0) {
+                return 'IP address is already defined in Name Map'.t();
+            } else {
+                return true;
+            }
+        }
     }, {
         xtype:'textfield',
         bind: '{record.hostname}',
