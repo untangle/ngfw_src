@@ -25,22 +25,48 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     onAfterRender: function (widget) {
+        var me = this, vm = me.getViewModel(), eventGrid = widget.down('eventreport > ungrid');
         // add to queue non report widgets when enabled
-        widget.getViewModel().bind('{widget.enabled}', function (enabled) {
-            if (enabled && Ext.isFunction(widget.fetchData) && !widget.down('#report-widget')) {
+        vm.bind('{widget.enabled}', function (enabled) {
+            if (enabled && Ext.isFunction(widget.fetchData) && widget.alias[0] !== 'reportwidget') {
                 widget.visible = true; DashboardQueue.add(widget);
             }
         });
+
+        // for EVENT_LIST widgets save displayColumns setting on column hide/show
+        if (eventGrid) {
+            eventGrid.addListener('columnhide', function () {
+                me.updateWidgetColumns(eventGrid);
+            });
+            eventGrid.addListener('columnshow', function () {
+                me.updateWidgetColumns(eventGrid);
+            });
+        }
     },
 
-    onRender: function (widget) {
-        var me = this;
-        widget.getEl().on({
-            mouseleave: function () {
-                me.closeMenu();
+    updateWidgetColumns: function (grid) {
+        var me = this, vm = me.getViewModel(), columns = [];
+        Ext.Array.each(grid.getColumns(), function (col) {
+            if (!col.isHidden()) {
+                columns.push(col.dataIndex);
             }
         });
+        vm.set('widget.displayColumns', columns);
+        // save settings
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+        .then(function () {
+            // console.log('saved');
+        });
     },
+
+    // onRender: function (widget) {
+    //     var me = this;
+    //     widget.getEl().on({
+    //         mouseleave: function () {
+    //             me.closeMenu();
+    //         }
+    //     });
+    // },
 
     headerRender: function (cmp) {
         var me = this, wg = me.getView();
