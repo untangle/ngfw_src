@@ -5,7 +5,7 @@ Ext.define('Ung.widget.WidgetController', {
     control: {
         '#': {
             beforedestroy: 'onBeforeDestroy',
-            // render: 'onRender'
+            afterrender: 'onAfterRender'
         },
         '#header': {
             render: 'headerRender'
@@ -22,6 +22,15 @@ Ext.define('Ung.widget.WidgetController', {
                 datachanged: 'onStatsUpdate'
             }
         }
+    },
+
+    onAfterRender: function (widget) {
+        // add to queue non report widgets when enabled
+        widget.getViewModel().bind('{widget.enabled}', function (enabled) {
+            if (enabled && Ext.isFunction(widget.fetchData) && !widget.down('#report-widget')) {
+                widget.visible = true; DashboardQueue.add(widget);
+            }
+        });
     },
 
     onRender: function (widget) {
@@ -145,15 +154,6 @@ Ext.define('Ung.widget.WidgetController', {
                 isWidget: true
             });
         }
-    },
-
-    onAfterRender: function (widget) {
-        widget.getViewModel().bind('{widget.enabled}', function (enabled) {
-            if (enabled && (Ext.isFunction(widget.fetchData) || widget.down('#report-widget'))) {
-                widget.visible = true; DashboardQueue.add(widget);
-            }
-        });
-        widget.getViewModel().notify();
     },
 
     onBeforeDestroy: function (widget) {
