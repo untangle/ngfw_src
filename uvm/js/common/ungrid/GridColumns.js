@@ -55,11 +55,18 @@ Ext.define('Ung.cmp.GridColumns', {
         renderer: 'conditionsRenderer'
     },
 
-    bypass: {
-        header: 'Bypass'.t(),
-        xtype: 'checkcolumn',
-        dataIndex: 'bypass',
-        width: Renderer.booleanWidth
+    reorder: {
+        xtype: 'gridcolumn',
+        header: '<i class="fa fa-sort"></i>',
+        align: 'center',
+        width: Renderer.iconWidth,
+        resizable: false,
+        tdCls: 'action-cell',
+        menuDisabled: true,
+        hideable: false,
+        renderer: function() {
+            return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+        }
     }
 });
 
