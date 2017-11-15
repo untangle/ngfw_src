@@ -205,11 +205,9 @@ Ext.define('Ung.view.reports.EventReport', {
             if( me.getView().up('entry') ){
                 limit = me.getView().up('entry').down('#eventsLimitSelector').getValue();
             }
-            // console.log(vm.get('eEntry'));
-            // console.log(vm.get('entry'));
             me.entry = vm.get('eEntry') || vm.get('entry');
 
-            me.setupGrid();
+            if (reset) { me.setupGrid(); }
 
             // date range setup
             if (!me.getView().renderInReports) {
@@ -242,10 +240,7 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         loadResultSet: function (reader) {
-            var me = this,
-                v = me.getView(),
-                vm = me.getViewModel(),
-                grid = me.getView().down('grid');
+            var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
 
             // this.getView().setLoading(true);
             grid.getStore().setFields( me.tableConfig.fields );
@@ -263,7 +258,6 @@ Ext.define('Ung.view.reports.EventReport', {
             }
             reader.closeConnection();
             vm.set('eventsData', eventData);
-            // this.getView().setLoading(false);
         },
 
         onEventSelect: function (el, record) {
