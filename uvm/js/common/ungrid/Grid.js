@@ -326,20 +326,7 @@ Ext.define('Ung.cmp.Grid', {
                             }
                         }
                     });
-                    column = {
-                        xtype: 'gridcolumn',
-                        header: '<i class="fa fa-sort"></i>',
-                        align: 'center',
-                        width: 30,
-                        resizable: false,
-                        tdCls: 'action-cell',
-                        menuDisabled: true,
-                        hideable: false,
-                        // iconCls: 'fa fa-arrows'
-                        renderer: function() {
-                            return '<i class="fa fa-arrows" style="cursor: move;"></i>';
-                        },
-                    };
+                    column = Column.reorder;
                     columns.unshift(column);
                     initialConfigColumns.unshift(column);
                 }
