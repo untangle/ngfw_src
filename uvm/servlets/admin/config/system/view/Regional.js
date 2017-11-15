@@ -147,7 +147,7 @@ Ext.define('Ung.config.system.view.Regional', {
                 value: '{languageSettings.language}'
             },
             displayField: 'name',
-            valueField: 'cc',
+            valueField: 'code',
             editable: false,
             queryMode: 'local',
             listConfig:{

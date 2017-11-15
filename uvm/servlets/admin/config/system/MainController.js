@@ -22,6 +22,10 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
         ], this).then(function (result) {
             me.getView().setLoading(false);
+
+            var languageSettings = result[0];
+            languageSettings['language'] = languageSettings['source'] + '-' + languageSettings['language'];
+
             vm.set({
                 languageSettings: result[0],
                 languagesList: result[1],
@@ -113,14 +117,17 @@ Ext.define('Ung.config.system.MainController', {
             }
         });
 
-        // var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
+        var languageSettings = vm.get('languageSettings');
+        var languageSplit = languageSettings['language'].split('-');
+        languageSettings['source'] = languageSplit[0];
+        languageSettings['language'] = languageSplit[1];
+        vm.set('languageSettings', languageSettings);
 
         var sequence = [];
         sequence.push(Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')));
         sequence.push(Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')));
         sequence.push(Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')));
         sequence.push(Rpc.asyncPromise('rpc.shieldManager.setSettings', vm.get('shieldSettings')));
-        //sequence.push(Rpc.asyncPromise('rpc.systemManager.setDate', newDate));
 
         if (!rpc.smtpApp) rpc.smtpApp = rpc.appManager.app("smtp");
         if (rpc.smtpApp) sequence.push(Rpc.asyncPromise('rpc.smtpApp.setSettings', vm.get('smtpSettings')));

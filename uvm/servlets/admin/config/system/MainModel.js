@@ -69,12 +69,11 @@ Ext.define('Ung.config.system.MainModel', {
             data: '{timeZonesList}'
         },
         languages: {
-            fields: ['code', 'name', 'statistics', {
-                name: 'cc',
-                calculate: function (r) {
-                    return r.code ? r.code.split('-')[1] : r.code;
-                }
-            }],
+            fields: [
+            'code',
+            'name',
+            'statistics'
+            ],
             data: '{languagesList.list}'
         },
         shieldRules: {
