@@ -23,6 +23,8 @@ Ext.define('Ung.config.network.view.FilterRules', {
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
+        emptyText: 'No Filter Rules defined'.t(),
+
         listProperty: 'settings.filterRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
@@ -56,7 +58,7 @@ Ext.define('Ung.config.network.view.FilterRules', {
 
         columns: [{
             header: 'Rule Id'.t(),
-            width: 70,
+            width: Renderer.idWidth,
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
@@ -68,31 +70,33 @@ Ext.define('Ung.config.network.view.FilterRules', {
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             xtype: 'checkcolumn',
             header: 'IPv6'.t(),
             dataIndex: 'ipv6Enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             header: 'Description',
-            width: 200,
+            width: Renderer.messageWidth,
+            flex: 1,
             dataIndex: 'description',
             renderer: function (value) {
                 return value || '<em>no description<em>';
             }
         }, {
             header: 'Conditions'.t(),
+            width: Renderer.messageWidth,
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
         }, {
             xtype: 'checkcolumn',
+            width: Renderer.booleannWidth,
             header: 'Block'.t(),
             dataIndex: 'blocked',
-            resizable: false,
-            width: 70
+            resizable: false
         }],
         editorFields: [
             Field.enableRule('Enable Filter Rule'.t()),

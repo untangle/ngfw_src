@@ -93,6 +93,13 @@ Ext.define('Ung.config.network.MainController', {
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
 
+            if(store.type == "chained"){
+                return;
+            }
+            if(grid.listProperty == null){
+                return;
+            }
+
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
@@ -345,7 +352,7 @@ Ext.define('Ung.config.network.MainController', {
         var vm = this.getViewModel(),
             arpView = this.getView().down('#interfaceArp'),
             symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
-            arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
+            arpCommand = 'arp -n -i ' + symbolicDev + ' | grep -v incomplete | tail -n +2';
 
         arpView.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', arpCommand).then(function (result) {
@@ -445,6 +452,9 @@ Ext.define('Ung.config.network.MainController', {
                 var list = [];
                 try {
                     list = eval(result);
+                    list.forEach(function(entry){
+                        entry['sent'] = parseInt(entry['sent'],10);
+                    });
                     vm.set('qosStatistics', Ext.create('Ext.data.Store', {
                         fields: [
                             'tokens',
@@ -904,7 +914,7 @@ Ext.define('Ung.config.network.MainController', {
             closable: false,
             onEsc: Ext.emptyFn,
             items: [{
-                xtype: 'grid',
+                xtype: 'ungrid',
                 border: false,
                 bodyBorder: false,
                 bind: '{devInterfaces}',
@@ -940,39 +950,22 @@ Ext.define('Ung.config.network.MainController', {
                 sortableColumns: false,
                 columns: [{
                     dataIndex: 'connected',
-                    width: 40,
+                    width: Renderer.iconWidth,
                     align: 'center',
                     resizable: false,
                     sortable: false,
                     menuEnabled: false,
-                    renderer: function (value) {
-                        switch (value) {
-                        case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
-                        case 'DISCONNECTED': return '<i class="fa fa-circle fa-gray"></i>';
-                        case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
-                        default: return '<i class="fa fa-question-circle fa-gray"></i>';
-                        }
-                    }
+                    renderer: Ung.config.network.MainController.connectedIconRenderer
                 }, {
                     header: 'Name'.t(),
                     dataIndex: 'name',
-                    width: 130
+                    width: Renderer.messageWidth,
                 },
-                    {
-                    xtype: 'gridcolumn',
-                    header: '<i class="fa fa-sort"></i>',
-                    align: 'center',
-                    width: 30,
-                    resizable: false,
-                    tdCls: 'action-cell',
-                    renderer: function() {
-                        return '<i class="fa fa-arrows" style="cursor: move;"></i>';
-                    },
-                },
-                    {
+                Column.reorder,
+                {
                     header: 'Device'.t(),
                     dataIndex: 'deviceName',
-                    width: 100,
+                    width: Renderer.idWidth,
                     editor: {
                         xtype: 'combo',
                         store: physicalDevsStore,
@@ -987,22 +980,23 @@ Ext.define('Ung.config.network.MainController', {
                 }, {
                     header: 'Speed'.t(),
                     dataIndex: 'mbit',
-                    width: 80
+                    width: Renderer.sizeWidth,
                 }, {
                     header: 'Duplex'.t(),
                     dataIndex: 'duplex',
-                    width: 100,
+                    width: Renderer.idWidth,
                     renderer: function (value) {
                         return (value === 'FULL_DUPLEX') ? 'full-duplex'.t() : (value === 'HALF_DUPLEX') ? 'half-duplex'.t() : 'unknown'.t();
                     }
                 }, {
                     header: 'Vendor'.t(),
                     dataIndex: 'vendor',
+                    width: Renderer.messageWidth,
                     flex: 1
                 }, {
                     header: 'MAC Address'.t(),
                     dataIndex: 'macAddress',
-                    width: 150,
+                    width: Renderer.macWidth,
                     renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
                         var text = '';
                         if (value && value.length > 0) {
@@ -1027,7 +1021,7 @@ Ext.define('Ung.config.network.MainController', {
                 text: 'Cancel'.t(),
                 iconCls: 'fa fa-ban',
                 handler: function (btn) {
-                    me.loadSettings(); // reload initial settings on Cancel
+                    me.loadSettings();
                     btn.up('window').close();
                 }
             }, {
@@ -1094,6 +1088,150 @@ Ext.define('Ung.config.network.MainController', {
                 }
             });
         });
-    }
+    },
 
+    statics: {
+        connectedIconRenderer: function(value){
+            switch (value) {
+                case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
+                case 'DISCONNECTED': return '<i class="fa fa-circle fa-gray"></i>';
+                case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
+                default: return '<i class="fa fa-question-circle fa-gray"></i>';
+            }
+        },
+
+        interfacetypeRenderer: function(value, meta, record){
+            var icon_src = '/skins/common/images/intf_nic';
+            meta.tdCls = 'intf_icon';
+            if (record.get('isWirelessInterface')) { 
+                icon_src = '/skins/common/images/intf_wifi'; 
+            }
+            if (record.get('isVlanInterface')) { 
+                icon_src = '/skins/common/images/intf_vlan'; 
+            }
+            icon_src += record.get('configType') === 'DISABLED' ? '_disabled.png' : '.png';
+            return '<img src="' + icon_src + '" />';
+        },
+
+        deviceRenderer: function(value, metadata, record){
+            if (record.get('isVlanInterface')) {
+                return record.get('systemDev');
+            }
+            return value;
+        },
+
+        speedRenderer: function( value ){
+            if( value >= 1000 ){
+                return (value / 1000) + ' ' + 'Gbit'.t();
+            }
+            return value + '' + 'Mbit'.t();
+        },
+
+        duplexRenderer: function(value){
+            switch (value) {
+                case 'FULL_DUPLEX': return 'Full-duplex'.t();
+                case 'HALF_DUPLEX': return 'Half-duplex'.t();
+                default: return 'Unknown'.t();
+            }
+        },
+
+        addressedRenderer: function(value){
+            switch (value) {
+                case 'ADDRESSED': return 'Addressed'.t();
+                case 'BRIDGED': return 'Bridged'.t();
+                case 'DISABLED': return 'Disabled'.t();
+                default: value.t();
+            }
+        },
+
+        addressRenderer: function(value, metadata, record){
+            return Ext.isEmpty(value) ? '' : value + '/' + record.get('v4PrefixLength');
+        },
+
+        iswanRenderer: function(value, metadata, record){
+            return record.get('configType') === 'ADDRESSED' ? (value ? 'true'.t() : 'false'.t()) : '';
+        },
+
+        isvlanRenderer: function(value, metadata, record){
+            return value ? 'true'.t() : 'false'.t();
+        },
+
+        connectedRenderer: function(value){
+            switch (value) {
+                case 'CONNECTED': return 'Connected'.t();
+                case 'DISCONNECTED': return 'Disconnected'.t();
+                case 'MISSING': return 'Missing'.t();
+                default: return 'Unknown'.t();
+            }
+        },
+
+        arpTypeRenderer: function(value){
+            switch(value){
+                case 'ether': return 'Ethernet'.t();
+                default: return value;
+            }
+        },
+
+        natTypeRenderer: function( value ){
+            return value ? 'Auto'.t() : 'Custom'.t();
+        },
+
+        natNewSourceRenderer: function(value, metadata, record){
+            return record.get('auto') ? '' : value;
+        },
+
+        routesNextHopRenderer: function(value, metadata, record, rowIndex, colIndex, store, view){
+            var devMap = Util.getNextHopList(true);
+            var intRegex = /^\d+$/;
+            if ( intRegex.test( value ) ) {
+                return devMap[value] ? devMap[value] : "Local interface".t();
+            } else {
+                return value;
+            }
+        },
+
+        qosBandwidthRenderer: function(value){
+            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
+        },
+
+        qosPriorityRenderer: function (value) {
+            switch (value) {
+                case 1: return 'Very High'.t();
+                case 2: return 'High'.t();
+                case 3: return 'Medium'.t();
+                case 4: return 'Low'.t();
+                case 5: return 'Limited'.t();
+                case 6: return 'Limited More'.t();
+                case 7: return 'Limited Severely'.t();
+            }
+        },
+
+        qosPriorityReserverationRenderer: function(value){
+            return value === 0 ? 'No reservation'.t() : value + '%';
+        },
+
+        qosPriorityLimitRenderer: function(value){
+            return value === 0 ? 'No limit'.t() : value + '%';
+        },
+
+        upnpAction: function(value){
+            return value ? 'Allow'.t() : 'Deny'.t();
+        },
+
+        networkMediaRenderer: function(value){
+            switch (value) {
+                case 'AUTO': return 'Auto'.t();
+                case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
+                case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
+                case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
+                case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
+                case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
+                case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
+                case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
+                case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
+                default: return 'Unknown'.t();
+            }
+        }
+
+    }
 });

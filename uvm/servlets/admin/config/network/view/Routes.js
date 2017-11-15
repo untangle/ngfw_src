@@ -24,6 +24,8 @@ Ext.define('Ung.config.network.view.Routes', {
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
+        emptyText: 'No Static Routes defined'.t(),
+
         listProperty: 'settings.staticRoutes.list',
 
         emptyRow: {
@@ -39,29 +41,22 @@ Ext.define('Ung.config.network.view.Routes', {
 
         columns: [{
             header: 'Description'.t(),
+            width: Renderer.messageWidth,
             dataIndex: 'description',
             flex: 1
         }, {
             header: 'Network'.t(),
-            width: 170,
+            width: Renderer.networkWidth,
             dataIndex: 'network'
         }, {
             header: 'Netmask/Prefix'.t(),
-            width: 170,
+            width: Renderer.ipWidth,
             dataIndex: 'prefix'
         }, {
             header: 'Next Hop'.t(),
-            width: 170,
+            width: Renderer.ipWidth,
             dataIndex: 'nextHop',
-            renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                var devMap = Util.getNextHopList(true);
-                var intRegex = /^\d+$/;
-                if ( intRegex.test( value ) ) {
-                    return devMap[value]?devMap[value]:i18n._("Local interface");
-                } else {
-                    return value;
-                }
-            }, this)
+            renderer: Ung.config.network.MainController.routesNextHopRenderer
         }],
         editorFields: [
             Field.description,

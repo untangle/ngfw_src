@@ -42,6 +42,8 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
         ],
 
+        emptyText: 'No Port Forward Rules defined'.t(),
+
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
@@ -80,11 +82,11 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             Column.conditions, {
                 header: 'New Destination'.t(),
                 dataIndex: 'newDestination',
-                width: 150
+                width: Renderer.messageWidth
             }, {
                 header: 'New Port'.t(),
                 dataIndex: 'newPort',
-                width: 80
+                width: Renderer.portWidth
             }],
         editorFields: [
             Field.enableRule('Enable Port Forward Rule'.t()),
