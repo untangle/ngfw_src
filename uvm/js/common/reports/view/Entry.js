@@ -83,6 +83,7 @@ Ext.define('Ung.view.reports.Entry', {
                     disabled: '{fetching}'
                 }
             }, {
+                // todo:add resetView
                 text: 'Reset View'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'resetBtn',
@@ -90,8 +91,8 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{!entry || entry.type !== "EVENT_LIST" || eEntry}',
-                    disabled: '{fetching}'
+                    // hidden: '{!entry || entry.type !== "EVENT_LIST" || eEntry}',
+                    // disabled: '{fetching}'
                 }
             }, {
                 itemId: 'downloadBtn',
