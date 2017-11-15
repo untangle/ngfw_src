@@ -573,12 +573,12 @@ Ext.define('Ung.cmp.GridController', {
                 }
 
                 if(parentController[methodName]){
-                    return parentController[methodName](value);
+                    return parentController[methodName].apply(this, arguments);
                 }else{
                     console.log('Missing renderer for rtype=' + rtype);
                 }
             }else{
-                return Renderer[rtype](value, metaData);
+                return Renderer[rtype].apply(this, arguments);
             }
         }
         return value;
