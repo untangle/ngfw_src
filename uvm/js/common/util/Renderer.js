@@ -9,6 +9,8 @@ Ext.define('Ung.util.Renderer', {
     actionWidth: 60,
     // Boolean
     booleanWidth: 60,
+    // Conditions
+    conditionsWidth: 100,
     // Counter
     counterWidth: 80,
     // UTC-formatted Date
@@ -37,6 +39,8 @@ Ext.define('Ung.util.Renderer', {
     networkWidth: 120,
     // Port
     portWidth: 70,
+    // Priority
+    prioritytWidth: 70,
     // Protocol
     protocolWidth: 70,
     // Data size
@@ -74,6 +78,10 @@ Ext.define('Ung.util.Renderer', {
 
     timestampFilter: {
         type: 'date'
+    },
+
+    localize: function(value){
+        return value.t();
     },
 
     boolean: function( value ){
