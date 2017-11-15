@@ -17,6 +17,7 @@ Ext.define('Ung.cmp.PropertyGrid', {
     cls: 'prop-grid',
 
     viewConfig: {
+        enableTextSelection: true,
         getRowClass: function(record) {
             if (record.get('value') === null || record.get('value') === '') {
                 return 'empty';
@@ -27,13 +28,10 @@ Ext.define('Ung.cmp.PropertyGrid', {
 
     nameColumnWidth: 200,
 
-    // features: [{
-    //     ftype: 'grouping',
-    //     groupHeaderTpl: '{name}'
-    // }],
-
     listeners: {
-        beforeedit: function () { return false; },
+        beforeedit: function () {
+            return false;
+        },
         beforeexpand: 'onBeforeExpand',
         beforerender: 'onBeforeRender'
     }

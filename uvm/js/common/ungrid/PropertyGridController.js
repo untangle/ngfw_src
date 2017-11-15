@@ -36,42 +36,43 @@ Ext.define('Ung.cmp.PropertyGridController', {
             v = me.getView(),
             vm = me.getViewModel();
 
+        var sourceConfig = v.initialConfig.sourceConfig ? v.initialConfig.sourceConfig : {};
+
         /*
          * Build source list from accompanying grid's column definitions
          */
         var masterGrid = v.up().down('grid');
-        var columns = masterGrid.getColumns();
+        if(masterGrid != v){
+            var columns = masterGrid.getColumns();
 
-        var sourceConfig = {};
-        columns.forEach( function(column){
-            var displayName = column.text;
-            if( column.ownerCt.text ){
-                displayName = column.ownerCt.text + ' ' + displayName;
-                //displayName = column.ownerCt.text + ' &#151 ' + displayName;
-            }
-            var config = {
-                displayName: displayName
-            };
-
-            if( column.renderer && 
-                !column.rtype ){
-                config.renderer = column.renderer;
-            }else{
-                if( column.rtype ){
-                    config.rtype = column.rtype;
-                    config.renderer = 'columnRenderer';
+            columns.forEach( function(column){
+                var displayName = column.text;
+                if( column.ownerCt.text ){
+                    displayName = column.ownerCt.text + ' ' + displayName;
                 }
-            }
+                var config = {
+                    displayName: displayName
+                };
 
-            var key = column.dataIndex;
-            sourceConfig[key] = config;
-        });
+                if( column.renderer &&
+                    !column.rtype ){
+                    config.renderer = column.renderer;
+                }else{
+                    if( column.rtype ){
+                        config.rtype = column.rtype;
+                        config.renderer = 'columnRenderer';
+                    }
+                }
+
+                var key = column.dataIndex;
+                sourceConfig[key] = config;
+            });
+            masterGrid.getView().on('select', 'masterGridSelect', me );
+        }
 
         v.sourceConfig = Ext.apply({}, sourceConfig);
         v.configure(sourceConfig);
         v.reconfigure();
-
-        masterGrid.getView().on('select', 'masterGridSelect', me );
 
         // this.getStore().sort('group');
         // this.getStore().group('group');
@@ -160,5 +161,38 @@ Ext.define('Ung.cmp.PropertyGridController', {
             }
         }
         return value;
+    },
+
+    /**
+     * Used for extra column actions which can be added to the grid but are very specific to that context
+     * The grid requires to have defined a parentView tied to the controller on which action method is implemented
+     * action - is an extra configuration set on actioncolumn and represents the name of the method to be called
+     * see Users/UsersController implementation
+     */
+    externalAction: function (v, rowIndex, colIndex, item, e, record) {
+        var view = this.getView(),
+            parentController = null,
+            action = item && item.action ? item.action : v.action;
+
+        while( view != null){
+            parentController = view.getController();
+
+            if( parentController && parentController[action]){
+                break;
+            }
+            view = view.up();
+        }
+
+        if (!parentController) {
+            console.log('Unable to get the extra controller');
+            return;
+        }
+
+        // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
+        if (action) {
+            parentController[action].apply(parentController, arguments);
+        } else {
+            console.log('External action not defined!');
+        }
     }
 });
