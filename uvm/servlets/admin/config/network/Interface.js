@@ -539,6 +539,7 @@ Ext.define('Ung.config.network.Interface', {
                 // ipv4 aliases
                 xtype: 'ungrid',
                 title: 'IPv4 Aliases'.t(),
+                emptyText: 'No IPv4 Aliases defined'.t(),
                 border: false,
                 collapsible: true,
                 titleCollapse: true,
@@ -547,7 +548,7 @@ Ext.define('Ung.config.network.Interface', {
                 recordActions: ['delete'],
                 bind: '{v4Aliases}',
                 listProperty: 'v4Aliases',
-                maxHeight: 140,
+                //maxHeight: 140,
                 emptyRow: {
                     staticAddress: '1.2.3.4',
                     staticPrefix: '24',
@@ -556,7 +557,7 @@ Ext.define('Ung.config.network.Interface', {
                 columns: [{
                     header: 'Address'.t(),
                     dataIndex: 'staticAddress',
-                    width: 200,
+                    width: Renderer.ipWidth,
                     editor : {
                         xtype: 'textfield',
                         vtype: 'ip4Address',
@@ -566,6 +567,7 @@ Ext.define('Ung.config.network.Interface', {
                 }, {
                     header: 'Netmask / Prefix'.t(),
                     dataIndex: 'staticPrefix',
+                    width: Renderer.networkWidth,
                     flex: 1,
                     editor : {
                         xtype: 'numberfield',
@@ -700,6 +702,7 @@ Ext.define('Ung.config.network.Interface', {
             }, {
                 // ipv6 aliases
                 title: 'IPv6 Aliases'.t(),
+                emptyText: 'No IPv6 Aliases defined'.t(),
                 xtype: 'ungrid',
                 border: false,
                 collapsible: true,
@@ -708,7 +711,7 @@ Ext.define('Ung.config.network.Interface', {
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
                 disabled: true,
-                maxHeight: 160,
+                //maxHeight: 160,
                 bind: {
                     store: '{v6Aliases}',
                     disabled: '{intf.v6ConfigType === "DISABLED"}'
@@ -722,7 +725,7 @@ Ext.define('Ung.config.network.Interface', {
                 columns: [{
                     header: 'Address'.t(),
                     dataIndex: 'staticAddress',
-                    width: 200,
+                    width: Renderer.ipWidth,
                     editor : {
                         xtype: 'textfield',
                         vtype: 'ip6Address',
@@ -732,6 +735,7 @@ Ext.define('Ung.config.network.Interface', {
                 }, {
                     header: 'Netmask / Prefix'.t(),
                     dataIndex: 'staticPrefix',
+                    width: Renderer.networkWidth,
                     flex: 1,
                     editor : {
                         xtype: 'numberfield',
@@ -908,9 +912,10 @@ Ext.define('Ung.config.network.Interface', {
                     vtype: 'ip4AddressList',
                 }]
             }, {
-                // ipv4 aliases
+                // DHCP options
                 xtype: 'ungrid',
                 title: 'DHCP Options'.t(),
+                emptyText: 'No DHCP options defined'.t(),
                 border: false,
                 collapsible: true,
                 titleCollapse: true,
@@ -929,15 +934,12 @@ Ext.define('Ung.config.network.Interface', {
                     description: '[no description]'.t(),
                     javaClass: 'com.untangle.uvm.network.DhcpOption'
                 },
-                viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Options!</p>',
-                },
                 columns: [{
                     header: 'Enable'.t(),
                     xtype: 'checkcolumn',
                     dataIndex: 'enabled',
                     align: 'center',
-                    width: 70,
+                    width: Renderer.booleanWidth,
                     resizable: false
                 }, {
                     header: 'Description'.t(),
@@ -1052,6 +1054,7 @@ Ext.define('Ung.config.network.Interface', {
                 // VRRP aliases
                 xtype: 'ungrid',
                 title: 'VRRP Aliases'.t(),
+                emptyText: 'No VRRP Aliases defined'.t(),
                 collapsible: true,
                 titleCollapse: true,
                 animCollapse: false,
@@ -1070,13 +1073,10 @@ Ext.define('Ung.config.network.Interface', {
                     staticPrefix: '24',
                     javaClass: 'com.untangle.uvm.network.InterfaceSettings$InterfaceAlias'
                 },
-                viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Aliases!</p>',
-                },
                 columns: [{
                     header: 'Address'.t(),
                     dataIndex: 'staticAddress',
-                    width: 200,
+                    width: Renderer.ipWidth,
                     editor : {
                         xtype: 'textfield',
                         vtype: 'ip4Address',
@@ -1086,6 +1086,7 @@ Ext.define('Ung.config.network.Interface', {
                 }, {
                     header: 'Netmask / Prefix'.t(),
                     dataIndex: 'staticPrefix',
+                    width: Renderer.networkWidth,
                     flex: 1,
                     editor : {
                         xtype: 'numberfield',

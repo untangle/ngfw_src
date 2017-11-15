@@ -18,6 +18,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['delete'],
 
+        emptyText: 'No Static DHCP Entries defined'.t(),
+
         listProperty: 'settings.staticDhcpEntries.list',
 
         emptyRow: {
@@ -66,23 +68,21 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             Field.description
         ]
     }, {
-        xtype: 'grid',
+        xtype: 'ungrid',
         itemId: 'dhcpLeases',
         title: 'Current DHCP Leases'.t(),
         region: 'south',
-        height: '50%',
         split: true,
         enableColumnHide: false,
         enableColumnMove: false,
 
-        // viewConfig: {
-        //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-        // },
+        emptyText: 'No Current DHCP Leases defined'.t(),
 
         tbar: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
-            handler: 'refreshDhcpLeases'
+            handler: 'externalAction',
+            action: 'refreshDhcpLeases'
         }],
 
         store: { data: [] },
@@ -90,28 +90,31 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex:'macAddress',
-            width: 150
+            width: Renderer.macWidth
         },{
             header: 'Address'.t(),
             dataIndex: 'address',
-            flex: 1
+            width: Renderer.ipWidth
         },{
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            width: 200
+            width: Renderer.hostnameWidth,
+            flex: 1
         },{
             header: 'Expiration Time'.t(),
             dataIndex: 'date',
-            width: 180,
+            width: Renderer.timestampWidth,
             renderer: function(value) { return Util.timestampFormat(value*1000); }
         }, {
             xtype: 'actioncolumn',
+            width: Renderer.actionColumn,
             header: 'Add Static'.t(),
             align: 'center',
             iconCls: 'fa fa-plus',
             sortable: false,
             resizable: false,
-            handler: 'addStaticDhcpLease'
+            handler: 'externalAction',
+            action: 'addStaticDhcpLease'
         }],
         plugins: 'responsive',
         responsiveConfig: {

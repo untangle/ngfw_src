@@ -20,6 +20,9 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
+
+        emptyText: 'No Bypass Rules defined'.t(),
+
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
         conditions: [
@@ -52,8 +55,12 @@ Ext.define('Ung.config.network.view.BypassRules', {
             Column.enabled,
             Column.description,
             Column.conditions,
-            Column.bypass
-        ],
+        {
+            header: 'Bypass'.t(),
+            xtype: 'checkcolumn',
+            dataIndex: 'bypass',
+            width: Renderer.booleanWidth
+        }],
         editorFields: [
             Field.enableRule(),
             Field.description,

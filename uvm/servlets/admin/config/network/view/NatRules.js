@@ -23,6 +23,8 @@ Ext.define('Ung.config.network.view.NatRules', {
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
+        emptyText: 'No NAT Rules defined'.t(),
+
         listProperty: 'settings.natRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
@@ -54,45 +56,37 @@ Ext.define('Ung.config.network.view.NatRules', {
 
         columns: [{
             header: 'Rule Id'.t(),
-            width: 70,
+            width: Renderer.idWidth,
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
+            renderer: Renderer.id
         }, {
             xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             header: 'Description',
-            width: 200,
-            dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
+            width: Renderer.messageWidth,
+            dataIndex: 'description'
         }, {
             header: 'Conditions'.t(),
+            width: Renderer.messageWidth,
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
         }, {
             header: 'NAT Type'.t(),
             dataIndex: 'auto',
-            width: 100,
-            renderer: function (val) {
-                return val ? 'Auto'.t() : 'Custom'.t();
-            }
+            width: Renderer.idWidth,
+            renderer: Ung.config.network.MainController.natTypeRenderer
         }, {
             header: 'New Source'.t(),
             dataIndex: 'newSource',
-            width: 120,
-            renderer: function (value, metaData, record) {
-                return record.get('auto') ? '' : value;
-            }
+            width: Renderer.networkWidth,
+            renderer: Ung.config.network.MainController.natNewSourceRenderer
         }],
         editorFields: [
             Field.enableRule('Enable NAT Rule'.t()),
