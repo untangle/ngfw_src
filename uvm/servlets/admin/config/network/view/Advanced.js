@@ -37,8 +37,6 @@ Ext.define('Ung.config.network.view.Advanced', {
             padding: 10,
             defaults: {
                 xtype: 'checkbox',
-                // labelWidth: 250,
-                // labelAlign: 'right'
             },
             items: [{
                 boxLabel: 'Enable SIP NAT Helper'.t(),
@@ -82,7 +80,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                 xtype: 'combo',
                 fieldLabel: 'Queue Discipline'.t(),
                 labelAlign: 'right',
-                padding: 5,
                 width: 400,
                 bind: {
                     store: '{queueDisciplineStore}',
@@ -92,45 +89,44 @@ Ext.define('Ung.config.network.view.Advanced', {
                 editable: false
             }, {
                 xtype: 'checkbox',
-                padding: 5,
                 fieldLabel: 'QoS Enabled'.t(),
                 labelAlign: 'right',
                 bind: '{settings.qosSettings.qosEnabled}'
             }, {
                 xtype: 'combo',
-                padding: 5,
                 fieldLabel: 'Default Priority'.t(),
                 labelAlign: 'right',
+                hidden: true,
                 bind: {
                     store: '{qosPriorityNoDefaultStore}',
                     value: '{settings.qosSettings.defaultPriority}',
-                    disabled: '{!settings.qosSettings.qosEnabled}'
+                    disabled: '{!settings.qosSettings.qosEnabled}',
+                    hidden: '{!settings.qosSettings.qosEnabled}'
                 },
                 queryMode: 'local',
                 editable: false
             }, {
                 xtype: 'tabpanel',
-                // tabPosition: 'left',
-                // tabRotation: 0,
-                // tabStretchMax: false,
                 layout: 'fit',
                 disabled: true,
+                hidden: true,
                 bind: {
-                    disabled: '{!settings.qosSettings.qosEnabled}'
+                    disabled: '{!settings.qosSettings.qosEnabled}',
+                    hidden: '{!settings.qosSettings.qosEnabled}'
                 },
                 items: [{
-                    xtype: 'grid', // normal grid because uses a chained store
+                    xtype: 'ungrid',
                     title: 'WAN Bandwidth'.t(),
-                    // bodyPadding: 10,
                     tbar: [{
                         xtype: 'tbtext',
                         padding: '8 5',
                         style: { fontSize: '12px' },
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
-                        // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
 
                     listProperty: 'settings.interfaces.list',
+
+                    emptyText: 'No WAN Bandwidth defined'.t(),
 
                     bind: '{wanInterfaces}',
 
@@ -150,48 +146,45 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                     columns: [{
                         header: 'Id'.t(),
-                        width: 70,
+                        width: Renderer.idWidth,
                         align: 'right',
                         dataIndex: 'interfaceId'
                     }, {
                         header: 'WAN'.t(),
+                        width: Renderer.messageidth,
                         flex: 1,
                         dataIndex: 'name'
                     }, {
                         header: 'Config Type'.t(),
                         dataIndex: 'configType',
-                        width: 150
+                        width: Renderer.messageWidth,
+                        renderer: Ung.config.network.MainController.addressedRenderer
                     }, {
                         header: 'Download Bandwidth'.t(),
                         dataIndex: 'downloadBandwidthKbps',
-                        width: 250,
+                        width: Renderer.messageWidth,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : true,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function (value) {
-                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
-                        }
+                        renderer: Ung.config.network.MainController.qosBandwidthRenderer
                     }, {
                         header: 'Upload Bandwidth'.t(),
                         dataIndex: 'uploadBandwidthKbps',
-                        width: 250,
+                        width: Renderer.messageWidth,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : true,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function (value) {
-                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
-                        }
+                        renderer: Ung.config.network.MainController.qosBandwidthRenderer
                     }]
                 }, {
                     xtype: 'panel',
                     title: 'QoS Rules'.t(),
-                    // bodyPadding: 10,
 
                     layout: {
                         type: 'vbox',
@@ -251,6 +244,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                         recordActions: ['edit', 'delete', 'reorder'],
 
+                        emptyText: 'No QOS Rules defined'.t(),
+
                         listProperty: 'settings.qosSettings.qosRules.list',
                         ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
 
@@ -284,46 +279,32 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                         columns: [{
                             header: 'Rule Id'.t(),
-                            width: 70,
+                            width: Renderer.idWidth,
                             align: 'right',
                             resizable: false,
                             dataIndex: 'ruleId',
-                            renderer: function(value) {
-                                return value < 0 ? 'new'.t() : value;
-                            }
+                            renderer: Renderer.id
                         }, {
                             xtype: 'checkcolumn',
                             header: 'Enable'.t(),
                             dataIndex: 'enabled',
                             resizable: false,
-                            width: 70
+                            width: Renderer.booleanWidth,
                         }, {
                             header: 'Description',
-                            width: 200,
-                            dataIndex: 'description',
-                            renderer: function (value) {
-                                return value || '<em>no description<em>';
-                            }
+                            width: Renderer.messageWidth,
+                            dataIndex: 'description'
                         }, {
                             header: 'Conditions'.t(),
+                            width: Renderer.conditionsWidth,
                             flex: 1,
                             dataIndex: 'conditions',
                             renderer: 'conditionsRenderer'
                         }, {
                             header: 'Priority'.t(),
-                            width: 100,
+                            width: Renderer.priorityWidth,
                             dataIndex: 'priority',
-                            renderer: function (value) {
-                                switch (value) {
-                                  case 1: return 'Very High'.t();
-                                  case 2: return 'High'.t();
-                                  case 3: return 'Medium'.t();
-                                  case 4: return 'Low'.t();
-                                  case 5: return 'Limited'.t();
-                                  case 6: return 'Limited More'.t();
-                                  case 7: return 'Limited Severely'.t();
-                                }
-                            }
+                            renderer: Ung.config.network.MainController.qosPriorityRenderer
                         }],
                         editorFields: [
                             Field.enableRule(),
@@ -333,7 +314,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         ]
                     }]
                 }, {
-                    xtype: 'grid',
+                    xtype: 'ungrid',
                     title: 'QoS Priorities'.t(),
 
                     bind: '{qosPriorities}',
@@ -353,69 +334,65 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                     columns: [{
                         header: 'Priority'.t(),
-                        width: 150,
+                        width: Renderer.priorityWidth,
+                        flex: 1,
                         align: 'right',
                         dataIndex: 'priorityName',
-                        renderer: function (value) {
-                            return value.t();
-                        }
+                        // renderer: function (value) {
+                        //     return value.t();
+                        // }
+                        renderer: Renderer.localized
                     }, {
                         header: 'Upload Reservation'.t(),
                         dataIndex: 'uploadReservation',
-                        width: 150,
+                        flex: 1,
+                        width: Renderer.messageWidth,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityReserverationRenderer
                     }, {
                         header: 'Upload Limit'.t(),
                         dataIndex: 'uploadLimit',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityLimitRenderer
                     }, {
                         header: 'Download Reservation'.t(),
                         dataIndex: 'downloadReservation',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityReserverationRenderer
                     }, {
                         header: 'Download Limit'.t(),
                         dataIndex: 'downloadLimit',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No limit' : value + '%';
-                        }
-                    }, {
-                        flex: 1
+                        renderer: Ung.config.network.MainController.qosPriorityLimitRenderer
                     }]
                 }, {
-                    xtype: 'grid',
+                    xtype: 'ungrid',
                     itemId: 'qosStatistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
@@ -425,30 +402,31 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                     bind: '{qosStatistics}',
 
-                    // viewConfig: {
-                    //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-                    // },
+                    emptyText: 'No QOS Statistics available'.t(),
 
                     tbar: [{
                         text: 'Refresh'.t(),
                         iconCls: 'fa fa-refresh',
-                        handler: 'refreshQosStatistics'
+                        handler: 'externalAction',
+                        action: 'refreshQosStatistics'
                     }],
 
                     columns: [{
                         header: 'Interface'.t(),
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         dataIndex: 'interface_name'
                     }, {
                         header: 'Priority'.t(),
                         dataIndex: 'priority',
-                        width: 150
+                        flex: 1,
+                        width: Renderer.priorityWidth,
                     }, {
                         header: 'Data'.t(),
                         dataIndex: 'sent',
-                        width: 150,
-                    }, {
-                        flex: 1
+                        flex: 1,
+                        width: Renderer.sizeWidth,
+                        renderer: Renderer.datasize
                     }]
                 }]
             }],
@@ -467,6 +445,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
+
+                emptyText: 'No Access Rules defined'.t(),
 
                 listProperty: 'settings.accessRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
@@ -507,34 +487,30 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 columns: [{
                     header: 'Rule Id'.t(),
-                    width: 70,
+                    width: Renderer.idWidth,
                     align: 'right',
                     resizable: false,
                     dataIndex: 'ruleId',
-                    renderer: function (value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
+                    renderer: Renderer.id
                 }, {
                     xtype: 'checkcolumn',
                     header: 'Enable'.t(),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width: 70
+                    width: Renderer.booleanWidth,
                 }, {
                     xtype: 'checkcolumn',
                     header: 'IPv6'.t(),
                     dataIndex: 'ipv6Enabled',
                     resizable: false,
-                    width: 70
+                    width: Renderer.booleanWidth,
                 }, {
                     header: 'Description',
-                    width: 200,
-                    dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
+                    width: Renderer.messageWidth,
+                    dataIndex: 'description'
                 }, {
                     header: 'Conditions'.t(),
+                    width: Renderer.conditionsWidth,
                     flex: 1,
                     dataIndex: 'conditions',
                     renderer: 'conditionsRenderer'
@@ -543,7 +519,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     header: 'Block'.t(),
                     dataIndex: 'blocked',
                     resizable: false,
-                    width: 70,
+                    width: Renderer.booleanWidth,
                     listeners: {
                         beforecheckchange: function (col, rowIndex, checked, record) {
                             if (record.get('readOnly')) {
@@ -564,185 +540,179 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'UPnP'.t(),
             itemId: 'upnp',
-            layout: 'border',
 
-            dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'top',
-                items: [{
-                    xtype: 'checkbox',
-                    fieldLabel: 'Enabled'.t(),
-                    labelAlign: 'right',
-                    bind: '{settings.upnpSettings.upnpEnabled}'
-                }, {
-                    xtype: 'checkbox',
-                    fieldLabel: 'Secure Mode'.t(),
-                    labelAlign: 'right',
-                    disabled: true,
-                    bind: {
-                        value: '{settings.upnpSettings.secureMode}',
-                        disabled: '{!settings.upnpSettings.upnpEnabled}'
-                    }
-                }]
-            }],
-
-            items: [{
-                xtype: 'grid',
-                itemId: 'upnpStatus',
-                region: 'center',
-
-                title: 'Status'.t(),
-                enableColumnHide: false,
-                enableSorting: false,
-
-                // viewConfig: {
-                //     emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-                // },
-
-                tbar: [{
-                    text: 'Refresh'.t(),
-                    iconCls: 'fa fa-refresh',
-                    handler: 'refreshUpnpStatus'
-                }],
-
-                disabled: true,
-                bind: {
-                    store: '{upnpStatus}',
-                    disabled: '{!settings.upnpSettings.upnpEnabled}'
-                },
-
-                columns: [{
-                    header: 'Protocol'.t(),
-                    width: 100,
-                    dataIndex: 'upnp_protocol'
-                }, {
-                    header: 'Client IP Address'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_client_ip_address'
-                }, {
-                    header: 'Client Port'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_client_port'
-                }, {
-                    header: 'Destination Port'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_destination_port'
-                }, {
-                    header: 'Bytes'.t(),
-                    flex: 1,
-                    dataIndex: 'bytes',
-                    renderer: function (value, metadata, record) {
-                        if (Ext.isEmpty(value)) {
-                            return 'Not set'.t();
-                        } else {
-                            var v = value;
-                            switch (value[value.length-1]) {
-                              case 'K':
-                                v = parseInt(value.substr(0,value.length - 1), 10);
-                                value = v * 1024;
-                                break;
-                              case 'M':
-                                v = parseInt(value.substr(0,value.length - 1), 10);
-                                value = v * 1024 * 1024;
-                                break;
-                            }
-                            value = value / 1000;
-                            var mbit_value = value/1000;
-                            return Number(value).toFixed(2) + ' kbps' + ' (' + Number(mbit_value).toFixed(2) + ' Mbit' + ')';
-                        }
-                    }
-                }, {
-                    xtype: 'actioncolumn',
-                    width: 60,
-                    header: 'Delete'.t(),
-                    align: 'center',
-                    resizable: false,
-                    tdCls: 'action-cell',
-                    iconCls: 'fa fa-trash-o fa-red',
-                    handler: 'deleteUpnp'
-                }]
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'UPnP Enabled'.t(),
+                labelAlign: 'right',
+                bind: '{settings.upnpSettings.upnpEnabled}'
             }, {
-                xtype: 'ungrid',
-                region: 'south',
-                height: '50%',
-                split: true,
-                title: 'Access Control Rules'.t(),
-
-                tbar: ['@add', '->', '@import', '@export'],
-                recordActions: ['edit', 'delete', 'reorder'],
-
-                listProperty: 'settings.upnpSettings.upnpRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
-
-                conditions: [
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield', vtype:"portMatcher", visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', vtype:"ipMatcher", visible: true},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield', vtype:"portMatcher", visible: true}
-                ],
-
-                label: 'Perform the following action(s):'.t(),
-
-                emptyRow: {
-                    ruleId: -1,
-                    enabled: true,
-                    description: '',
-                    javaClass: 'com.untangle.uvm.network.UpnpRule',
-                    conditions: {
-                        javaClass: 'java.util.LinkedList',
-                        list: []
-                    },
-                    priority: 1,
-                    allow: true
-                },
-
+                xtype: 'checkbox',
+                fieldLabel: 'Secure Mode'.t(),
+                labelAlign: 'right',
                 disabled: true,
-
+                hidden: true,
                 bind: {
-                    store: '{upnpRules}',
-                    disabled: '{!settings.upnpSettings.upnpEnabled}'
+                    value: '{settings.upnpSettings.secureMode}',
+                    disabled: '{!settings.upnpSettings.upnpEnabled}',
+                    hidden: '{!settings.upnpSettings.upnpEnabled}'
+                }
+            },{
+                xtype: 'tabpanel',
+                layout: 'fit',
+                disabled: true,
+                hidden: true,
+                bind: {
+                    disabled: '{!settings.upnpSettings.upnpEnabled}',
+                    hidden: '{!settings.upnpSettings.upnpEnabled}'
                 },
+                items: [{
+                    xtype: 'panel',
+                    title: 'Status'.t(),
+                    items:[{
+                        xtype: 'ungrid',
+                        itemId: 'upnpStatus',
+                        region: 'center',
 
-                columns: [{
-                    header: 'Rule Id'.t(),
-                    width: 70,
-                    align: 'right',
-                    resizable: false,
-                    dataIndex: 'ruleId',
-                    renderer: function(value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Enable'.t(),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    header: 'Description',
-                    width: 200,
-                    dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
-                }, {
-                    header: 'Conditions'.t(),
-                    flex: 1,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
-                    header: 'Action'.t(),
-                    width: 100,
-                    dataIndex: 'allow',
-                    renderer: function (value) {
-                        return value ? 'Allow'.t() : 'Deny'.t();
-                    }
-                }],
-                editorFields: [
-                    Field.enableRule(),
-                    Field.description,
-                    Field.conditions,
-                    Field.allow
-                ]
+                        enableColumnHide: false,
+                        enableSorting: false,
+
+                        emptyText: 'No UPnP Status available'.t(),
+
+                        tbar: [{
+                            text: 'Refresh'.t(),
+                            iconCls: 'fa fa-refresh',
+                            handler: 'externalAction',
+                            action: 'refreshUpnpStatus'
+                        }],
+
+                        disabled: true,
+                        hidden: true,
+                        bind: {
+                            store: '{upnpStatus}',
+                            disabled: '{!settings.upnpSettings.upnpEnabled}',
+                            hidden: '{!settings.upnpSettings.upnpEnabled}'
+                        },
+
+                        columns: [{
+                            header: 'Protocol'.t(),
+                            width: Renderer.protocolWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_protocol'
+                        }, {
+                            header: 'Client IP Address'.t(),
+                            width: Renderer.ipWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_client_ip_address'
+                        }, {
+                            header: 'Client Port'.t(),
+                            width: Renderer.portWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_client_port'
+                        }, {
+                            header: 'Destination Port'.t(),
+                            width: Renderer.portWidth ,
+                            flex: 1,
+                            dataIndex: 'upnp_destination_port'
+                        }, {
+                            header: 'Bytes'.t(),
+                            width: Renderer.sizeWidth,
+                            flex: 1,
+                            dataIndex: 'bytes',
+                            renderer: Renderer.dataSize
+                        }, {
+                            xtype: 'actioncolumn',
+                            width: Renderer.actionWidth,
+                            header: 'Delete'.t(),
+                            align: 'center',
+                            resizable: false,
+                            tdCls: 'action-cell',
+                            iconCls: 'fa fa-trash-o fa-red',
+                            handler: 'externalAction',
+                            action: 'deleteUpnp'
+                        }]
+
+                    }]
+                },{
+                    xtype: 'panel',
+                    title: 'Access Control Rules'.t(),
+                    items: [{
+                        xtype: 'ungrid',
+
+                        tbar: ['@add', '->', '@import', '@export'],
+                        recordActions: ['edit', 'delete', 'reorder'],
+
+                        emptyText: 'No Access Control Rules defined'.t(),
+
+                        listProperty: 'settings.upnpSettings.upnpRules.list',
+                        ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
+
+                        conditions: [
+                            {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield', vtype:"portMatcher", visible: true},
+                            {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', vtype:"ipMatcher", visible: true},
+                            {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield', vtype:"portMatcher", visible: true}
+                        ],
+
+                        emptyRow: {
+                            ruleId: -1,
+                            enabled: true,
+                            description: '',
+                            javaClass: 'com.untangle.uvm.network.UpnpRule',
+                            conditions: {
+                                javaClass: 'java.util.LinkedList',
+                                list: []
+                            },
+                            priority: 1,
+                            allow: true
+                        },
+
+                        disabled: true,
+                        hidden: true,
+
+                        bind: {
+                            store: '{upnpRules}',
+                            disabled: '{!settings.upnpSettings.upnpEnabled}',
+                            hidden: '{!settings.upnpSettings.upnpEnabled}'
+                        },
+
+                        columns: [{
+                            header: 'Rule Id'.t(),
+                            width: Renderer.idWidth,
+                            align: 'right',
+                            resizable: false,
+                            dataIndex: 'ruleId',
+                            renderer: Renderer.id
+                        }, {
+                            xtype: 'checkcolumn',
+                            header: 'Enable'.t(),
+                            dataIndex: 'enabled',
+                            resizable: false,
+                            width: Renderer.booleanWidth,
+                        }, {
+                            header: 'Description',
+                            width: Renderer.messageWidth,
+                            flex: 1,
+                            dataIndex: 'description'
+                        }, {
+                            header: 'Conditions'.t(),
+                            width: Renderer.conditionsWidth,
+                            flex: 1,
+                            dataIndex: 'conditions',
+                            renderer: 'conditionsRenderer'
+                        }, {
+                            header: 'Action'.t(),
+                            width: Renderer.idWidth,
+                            dataIndex: 'allow',
+                            renderer: Ung.config.network.MainController.upnpAction
+                        }],
+                        editorFields: [
+                            Field.enableRule(),
+                            Field.description,
+                            Field.conditions,
+                            Field.allow
+                        ]
+                    }]
+                }]
             }]
         }, {
             title: 'DNS & DHCP'.t(),
@@ -765,7 +735,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.dnsmasqOptions}'
             }]
         }, {
-            xtype: 'grid',
+            xtype: 'ungrid',
             itemId: 'network_cards',
             title: 'Network Cards'.t(),
 
@@ -782,11 +752,12 @@ Ext.define('Ung.config.network.view.Advanced', {
 
             columns: [{
                 header: 'Device Name'.t(),
-                width: 250,
+                width: Renderer.messageWidth,
+                flex: 1,
                 dataIndex: 'deviceName'
             }, {
                 header: 'MTU'.t(),
-                width: 100,
+                width: Renderer.sizeWidth,
                 dataIndex: 'mtu',
                 renderer: function (value) {
                     return value || 'Auto'.t();
@@ -797,20 +768,9 @@ Ext.define('Ung.config.network.view.Advanced', {
             }, {
                 header: 'Ethernet Media'.t(),
                 dataIndex: 'duplex',
-                width: 250,
-                renderer: function (value) {
-                    switch (value) {
-                      case 'AUTO': return 'Auto'.t();
-                      case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
-                      case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
-                      case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
-                      case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
-                      case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
-                      case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
-                      case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
-                      case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
-                    }
-                },
+                width: Renderer.messageWidth,
+                flex: 1,
+                renderer: Ung.config.network.MainController.networkMediaRenderer,
                 editor: {
                     xtype: 'combo',
                     store: [
@@ -827,8 +787,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                     queryMode: 'local',
                     editable: false
                 }
-            }, {
-                flex: 1
             }]
         }]
     }]

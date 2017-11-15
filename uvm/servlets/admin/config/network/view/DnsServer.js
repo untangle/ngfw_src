@@ -18,6 +18,8 @@ Ext.define('Ung.config.network.view.DnsServer', {
         tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
 
+        emptyText: 'No Static DNS Entries defined'.t(),
+
         listProperty: 'settings.dnsSettings.staticEntries.list',
 
         emptyRow: {
@@ -31,6 +33,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'name',
+            width: Renderer.hostnameWidth,
             flex: 1,
             editor: {
                 xtype: 'textfield',
@@ -40,7 +43,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             }
         }, {
             header: 'Address'.t(),
-            width: 200,
+            width: Renderer.ipWidth,
             dataIndex: 'address',
             editor: {
                 xtype: 'textfield',
@@ -62,6 +65,8 @@ Ext.define('Ung.config.network.view.DnsServer', {
         tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
 
+        emptyText: 'No Domain DNS Servers defined'.t(),
+
         listProperty: 'settings.dnsSettings.localServers.list',
 
         emptyRow: {
@@ -75,6 +80,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
         columns: [{
             header: 'Domain'.t(),
             dataIndex: 'domain',
+            width: Renderer.hostnameWidth,
             flex: 1,
             editor: {
                 xtype: 'textfield',
@@ -84,7 +90,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             }
         }, {
             header: 'Server'.t(),
-            width: 200,
+            width: Renderer.ipWidth,
             dataIndex: 'localServer',
             editor: {
                 xtype: 'textfield',
