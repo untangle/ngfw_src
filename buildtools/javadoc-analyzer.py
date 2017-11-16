@@ -243,6 +243,14 @@ def get_files(paths):
 
     return file_paths
 
+def print_report( file_count, required_count, missing_count, invalid_count, valid_count):
+    print
+    print "Total files %d, required javadocs %d" % ( file_count, required_count )
+    print "Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) )
+    print "Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) )
+    print "Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) )
+    print
+
 def usage():
     """
     Show usage
@@ -321,17 +329,37 @@ def main(argv):
         for md in parser.get_methods():
             validators[file_path].append( md )
 
-    file_count = 0
-    required_count = 0
-    missing_count = 0
-    valid_count = 0
-    invalid_count = 0
+    total_file_count = 0
+    total_required_count = 0
+    total_missing_count = 0
+    total_valid_count = 0
+    total_invalid_count = 0
+
+    current_file_count = 0
+    current_required_count = 0
+    current_missing_count = 0
+    current_valid_count = 0
+    current_invalid_count = 0
 
     print "Report"
-    for file_path in validators:
+    current_directory = None
+    for file_path in sorted(validators):
+        directory = file_path[:file_path.find('/')]
+        if current_directory is None or current_directory != directory:
+            if current_directory is not None:
+                print_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
+            current_file_count = 0
+            current_required_count = 0
+            current_missing_count = 0
+            current_valid_count = 0
+            current_invalid_count = 0
+            current_directory = directory
+            print "\n" + current_directory + "\n" + '=' * len(current_directory) + "\n"
         print file_path
-        file_count += 1
-        required_count += len(validators[file_path])
+        total_file_count += 1
+        current_file_count += 1
+        total_required_count += len(validators[file_path])
+        current_required_count += len(validators[file_path])
         for validator in validators[file_path]:
             if Type_name is not None and validator.tree["name"] != Type_name:
                 continue
@@ -340,21 +368,22 @@ def main(argv):
                 print validator.get_definition()
                 print "\t" + "\n\t".join(report)
             if validator.valid is True:
-                valid_count += 1
+                total_valid_count += 1
+                current_valid_count += 1
             elif validator.missing is True:
-                missing_count += 1
+                total_missing_count += 1
+                current_missing_count += 1
             else:
-                invalid_count +=1
+                total_invalid_count +=1
+                total_invalid_count += 1
 
-    print 
-    print "Total files %d, required javadocs %d" % ( file_count, required_count )
-    print "Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) )
-    print "Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) )
-    print "Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) )
+    print_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
+    print "Total Repository"
+    print_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
     print 
     print "Elapsed %4.2f s" % (time() - start_time)
 
-    if valid_count == required_count:
+    if total_valid_count == total_required_count:
         sys.exit(0)
     else:
         sys.exit(1)
