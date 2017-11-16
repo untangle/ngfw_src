@@ -297,6 +297,19 @@ Ext.define('Ung.config.system.MainController', {
             ( newValue != oldValue ) ){
             vm.set('localizationChanged', true);
         }
+    },
+
+    statics: {
+        shieldActionRenderer: function(value){
+            var action;
+            switch (value) {
+                case 'SCAN': action = 'Scan'.t(); break;
+                case 'PASS': action = 'Pass'.t(); break;
+                default: action = 'Unknown Action'.t() + ': ' + value;
+            }
+            return action;
+        }
+
     }
 
 });

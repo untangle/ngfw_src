@@ -3,7 +3,6 @@ Ext.define('Ung.config.system.view.Shield', {
     alias: 'widget.config-system-shield',
     itemId: 'shield',
 
-
     viewModel: true,
 
     title: 'Shield'.t(),
@@ -27,6 +26,8 @@ Ext.define('Ung.config.system.view.Shield', {
         xtype: 'ungrid',
         border: false,
         title: 'Shield Rules'.t(),
+
+        emptyText: 'No Shield Rules defined'.t(),
 
         disabled: true,
         bind: {
@@ -66,44 +67,32 @@ Ext.define('Ung.config.system.view.Shield', {
 
         columns: [{
             header: 'Rule Id'.t(),
-            width: 70,
+            width: Renderer.idWidth,
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
+            renderer: Renderer.id
         }, {
             xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             header: 'Description'.t(),
-            width: 200,
+            width: Renderer.messageWidth,
             dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
         }, {
             header: 'Conditions'.t(),
+            width: Renderer.conditionsWidth,
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
         }, {
             header: 'Action'.t(),
-            width: 150,
+            width: Renderer.messageWidth,
             dataIndex: 'action',
-            renderer: function (value) {
-                var action;
-                switch (value) {
-                case 'SCAN': action = 'Scan'.t(); break;
-                case 'PASS': action = 'Pass'.t(); break;
-                default: action = 'Unknown Action'.t() + ': ' + value;
-                }
-                return action;
-            }
+            renderer: Ung.config.system.MainController.shieldActionRenderer
         }],
         editorFields: [
             Field.enableRule(),
