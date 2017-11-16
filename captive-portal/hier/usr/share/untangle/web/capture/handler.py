@@ -85,7 +85,7 @@ def index(req):
     # load the configuration data
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
-    captureApp = load_rpc_manager(appid)
+    captureApp = None
 
     authcode = args['AUTHCODE']
     authmode = args['AUTHMODE']
@@ -106,6 +106,8 @@ def index(req):
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            if captureApp == None:
+                captureApp = load_rpc_manager(appid)
             captureApp.googleLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
@@ -137,6 +139,8 @@ def index(req):
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            if captureApp == None:
+                captureApp = load_rpc_manager(appid)
             captureApp.facebookLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
@@ -168,6 +172,8 @@ def index(req):
             uri = args['URI']
             raw = urllib.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+            if captureApp == None:
+                captureApp = load_rpc_manager(appid)
             captureApp.microsoftLogin(address,altraw)
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
@@ -195,6 +201,8 @@ def index(req):
             # Process cookie if exists.
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
+            if captureApp == None:
+                captureApp = load_rpc_manager(appid)
             if captureApp.isUserInCookieTable(address,cookie.get_field("username")):
                 # User was found in expired cookie table.
                 captureApp.removeUserFromCookieTable(address)
@@ -479,7 +487,7 @@ def generate_page(req,captureSettings,args,extra=''):
     # replace the text in the problem section with the agumented value
     page = replace_marker(page,'$.ProblemText.$',extra)
 
-#    debug = create_debug(args,captureSettings)
+    # debug = create_debug(args,captureSettings)
     debug = ""
     page = replace_marker(page,'<!--DEBUG-->',debug)
 
