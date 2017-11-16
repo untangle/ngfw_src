@@ -1,6 +1,7 @@
 Ext.define('Ung.config.local-directory.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config-local-directory',
+    alternateClassName: 'Ung.config.localdirectory.MainController',
 
     control: {
         '#': {
@@ -94,6 +95,12 @@ Ext.define('Ung.config.local-directory.MainController', {
                 view.setLoading(false);
                 Ext.fireEvent('resetfields', view);
             });
+    },
+
+    statics:{
+        expirationRenderer: function( value ){
+            return(value > 0 ? Renderer.timestamp(value) : 'Never'.t());
+        }
     }
 
 });
