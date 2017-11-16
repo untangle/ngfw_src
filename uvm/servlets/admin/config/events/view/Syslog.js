@@ -122,7 +122,7 @@ Ext.define('Ung.config.events.view.Syslog', {
             xtype:'checkcolumn',
             header: 'Remote Syslog'.t(),
             dataIndex: 'syslog',
-            width:55
+            width: Renderer.booleanWidth + 30
         }],
 
         editorFields: [

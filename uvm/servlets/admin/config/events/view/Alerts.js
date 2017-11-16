@@ -56,12 +56,13 @@ Ext.define('Ung.config.events.view.Alerts', {
             xtype:'checkcolumn',
             header: 'Log'.t(),
             dataIndex: 'log',
-            width:55
+            width: Renderer.booleanWidth,
+            sortable: false
         },{
             xtype:'checkcolumn',
             header: 'Email'.t(),
             dataIndex: 'email',
-            width:55
+            width: Renderer.booleanWidth
         }],
 
         editorFields: [
