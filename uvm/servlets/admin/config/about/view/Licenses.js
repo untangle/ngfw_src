@@ -14,8 +14,10 @@ Ext.define('Ung.config.about.view.Licenses', {
 
     items: [{
         xtype: 'ungrid',
-        controller: 'unaboutlicensegrid',
         itemId: 'licenses',
+
+        emptyText: 'No Licenses defined'.t(),
+
         bind: {
             store: {
                 data: '{licenses}'
@@ -24,37 +26,38 @@ Ext.define('Ung.config.about.view.Licenses', {
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'displayName',
-            width: 150
+            width: Renderer.messageWidth
         }, {
             header: 'App'.t(),
             dataIndex: 'currentName',
+            width: Renderer.messageWidth,
             flex: 1
         }, {
             header: 'UID'.t(),
             dataIndex: 'UID',
-            width: 150
+            width: Renderer.messageWidth
         }, {
             header: 'Start Date'.t(),
             dataIndex: 'start',
-            width: 240,
-            formatter: 'this.dateRenderer'
+            width: Renderer.dateWidth,
+            renderer: Renderer.timestamp
         }, {
             header: 'End Date'.t(),
             dataIndex: 'end',
-            width: 240,
-            formatter: 'this.dateRenderer'
+            width: Renderer.dateWidth,
+            renderer: Renderer.timestamp
         }, {
             header: 'Seats'.t(),
             dataIndex: 'seatsDisplay',
-            width: 50
+            width: Renderer.idWidth
         }, {
             header: 'Valid'.t(),
             dataIndex: 'valid',
-            width: 50
+            width: Renderer.booleanWidth
         }, {
             header: 'Status',
             dataIndex: 'status',
-            width: 150
+            width: Renderer.messageWidth
         }],
 
     }],

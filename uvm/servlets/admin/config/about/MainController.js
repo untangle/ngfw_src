@@ -64,14 +64,3 @@ Ext.define('Ung.config.about.MainController', {
     }
 
 });
-
-Ext.define('Ung.config.about.cmp.LicenseGridController', {
-    extend: 'Ung.cmp.GridController',
-
-    alias: 'controller.unaboutlicensegrid',
-
-    dateRenderer: function(value){
-        return Util.timestampFormat(value * 1000);
-    }
-
-});
