@@ -58,7 +58,7 @@ Ext.define('Ung.config.events.view.Triggers', {
             {
                 header: 'Action'.t(),
                 dataIndex: 'action',
-                width: 250,
+                width: Renderer.messagwWidth,
                 renderer: function (value, metaData, record) {
                     if (typeof value === 'undefined') {
                         return 'Unknown action'.t();
