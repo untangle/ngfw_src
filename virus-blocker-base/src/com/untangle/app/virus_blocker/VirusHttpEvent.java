@@ -14,25 +14,22 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class VirusHttpEvent extends LogEvent
 {
-    private Long requestId;
     private RequestLine requestLine;
+    private SessionEvent sessionEvent;
     private boolean clean;
     private String virusName;
     private String appName;
 
     public VirusHttpEvent() { }
 
-    public VirusHttpEvent(RequestLine requestLine, boolean clean, String virusName, String appName)
+    public VirusHttpEvent(RequestLine requestLine, SessionEvent sessionEvent, boolean clean, String virusName, String appName)
     {
-        this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
+        this.sessionEvent = sessionEvent;
         this.clean = clean;
         this.virusName = virusName;
         this.appName = appName;
     }
-
-    public Long getRequestId() { return requestId; }
-    public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
     public boolean getClean() { return clean; }
     public void setClean(boolean clean) { this.clean = clean; }
@@ -43,6 +40,12 @@ public class VirusHttpEvent extends LogEvent
     public String getAppName() { return appName; }
     public void setAppName( String appName ) { this.appName = appName; }
 
+    public RequestLine getRequestLine() { return requestLine; }
+    public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
+
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent newValue) { this.sessionEvent = newValue; }
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
@@ -59,7 +62,7 @@ public class VirusHttpEvent extends LogEvent
         int i = 0;
         pstmt.setBoolean(++i, getClean());
         pstmt.setString(++i, getVirusName());
-        pstmt.setLong(++i, getRequestId());
+        pstmt.setLong(++i, getRequestLine().getRequestId());
 
         pstmt.addBatch();
         return;

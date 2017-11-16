@@ -130,7 +130,7 @@ class VirusHttpHandler extends HttpEventHandler
                 blockRequest(session, response);
 
                 RequestLine requestLine = getRequestLine(session).getRequestLine();
-                app.logEvent(new VirusHttpEvent(requestLine, false, virusName, app.getName()));
+                app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), false, virusName, app.getName()));
 
                 return requestHeader;
             }
@@ -251,7 +251,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
 
         RequestLine requestLine = getResponseRequest(session).getRequestLine();
-        app.logEvent(new VirusHttpEvent(requestLine, result.isClean(), result.getVirusName(), app.getName()));
+        app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), result.isClean(), result.getVirusName(), app.getName()));
 
         if (result.isClean()) {
             app.incrementPassCount();
