@@ -23,8 +23,12 @@ Ext.define('Ung.config.system.view.Support', {
             bind: '{systemSettings.cloudEnabled}'
         }, {
             xtype: 'checkbox',
+            disabled: true,
             boxLabel: Ext.String.format('Allow secure remote access to {0} support team'.t(), this.oemName),
-            bind: '{systemSettings.supportEnabled}'
+            bind: {
+                value: '{systemSettings.supportEnabled}',
+                disabled: '{!systemSettings.cloudEnabled}'
+            }
         }]
     }, {
         title: 'Logs'.t(),
