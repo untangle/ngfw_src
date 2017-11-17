@@ -10,24 +10,37 @@ Ext.define('Ung.view.reports.GraphReport', {
     margin: '0 0 0 5px',
 
     listeners: {
-        afterrender: 'initChart',
+        afterrender: 'onAfterRender',
         resize: 'onResize',
         deactivate: 'reset',
         styleschanged: 'setStyles'
     },
 
+    config: {
+        widget: null,
+        chart: null
+    },
+
     controller: {
 
-        /**
-         * initializes an empty chart (no data) and adds it to the container (this is done once)
-         */
-        initChart: function () {
-            var me = this, isWidget = me.getView().isWidget, vm = me.getViewModel();
+        onAfterRender: function (view) {
+            var me = this,
+                vm = me.getViewModel();
 
+            // initialize an empty chart (once)
+            me.initChart();
+            // find and set the widget component if report is rendered inside a widget
+            view.setWidget(view.up('reportwidget'));
+            // if it's a widget, than fetch data after the report entry is binded to it
             vm.bind('{entry}', function () {
-                me.fetchData();
+                if (view.getWidget()) {
+                    DashboardQueue.addFirst(view.getWidget());
+                } else {
+                    me.fetchData(true);
+                }
             });
 
+            // when editing entry update graph styles on the fly
             vm.bind('{eEntry.pieStyle}', function (pieStyle) {
                 if (!pieStyle) { return; }
                 me.setStyles();
@@ -37,6 +50,13 @@ Ext.define('Ung.view.reports.GraphReport', {
                 if (!timeStyle) { return; }
                 me.setStyles();
             });
+        },
+
+        /**
+         * initializes an empty chart (no data) and adds it to the container (this is done once)
+         */
+        initChart: function () {
+            var me = this, isWidget = me.getView().isWidget;
 
             me.chart = new Highcharts.stockChart(me.getView().getEl().dom, {
                 chart: {
@@ -313,6 +333,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 startDate, endDate;
 
             if (!entry) { return; }
+
+            if (reset) { me.reset(); }
 
             vm.set('eError', false);
 

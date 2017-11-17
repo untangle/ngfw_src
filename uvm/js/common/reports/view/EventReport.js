@@ -17,6 +17,10 @@ Ext.define('Ung.view.reports.EventReport', {
         }
     },
 
+    config: {
+        widget: null
+    },
+
     layout: 'border',
 
     border: false,
@@ -71,21 +75,44 @@ Ext.define('Ung.view.reports.EventReport', {
             }
         },
 
-        onAfterRender: function () {
+        onAfterRender: function (view) {
             var me = this, vm = this.getViewModel();
 
-            me.modFields = { uniqueId: null };
+            // find and set the widget component if report is rendered inside a widget
+            view.setWidget(view.up('reportwidget'));
 
-            // remove property grid if in dashboard
-            if (me.getView().up('#dashboard')) {
-                me.getView().down('unpropertygrid').hide();
+            // hide property grid if rendered inside widget
+            if (view.getWidget()) {
+                view.down('unpropertygrid').hide();
             }
 
+            vm.bind('{entry}', function (entry) {
+                if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
+                me.entry = entry;
+                me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
+                if (view.getWidget()) {
+                    me.setupGrid();
+                    DashboardQueue.addFirst(view.getWidget());
+                } else {
+                    vm.set('eventsData', []);
+                    me.fetchData(true);
+                }
+            });
+
             // vm.bind('{entry}', function (entry) {
-            //     if (entry.get('type') !== 'EVENT_LIST') { return; }
-            //     vm.set('eventsData', []);
-            //     me.fetchData();
+            //     if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
+            //     console.log('step1');
+            //     me.entry = entry;
+            //     me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
             // });
+
+            // vm.bind('{eEntry}', function (entry) {
+            //     if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
+            //     console.log('step2');
+            //     me.entry = entry;
+            //     me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
+            // });
+
 
             // // update tableColumns when table is changed
             // vm.bind('{eEntry.table}', function (table) {
@@ -197,17 +224,22 @@ Ext.define('Ung.view.reports.EventReport', {
         fetchData: function (reset, cb) {
             var me = this,
                 vm = me.getViewModel(),
+                // entry = vm.get('eEntry') || vm.get('entry'),
                 reps = me.getView().up('#reports'),
                 startDate, endDate;
 
+            if (!me.entry) { return; }
+
+            if (reset) {
+                vm.set('eventsData', []);
+                me.setupGrid();
+            }
+
 
             var limit = 1000;
-            if( me.getView().up('entry') ){
+            if (me.getView().up('entry')) {
                 limit = me.getView().up('entry').down('#eventsLimitSelector').getValue();
             }
-            me.entry = vm.get('eEntry') || vm.get('entry');
-
-            if (reset) { me.setupGrid(); }
 
             // date range setup
             if (!me.getView().renderInReports) {
@@ -230,9 +262,9 @@ Ext.define('Ung.view.reports.EventReport', {
                             startDate, // start date
                             endDate) // end date
                 .then(function(result) {
+                    if (!me.getView()) { return; }
                     me.getView().setLoading(false);
                     if (reps) { reps.getViewModel().set('fetching', false); }
-
                     me.loadResultSet(result);
 
                     if (cb) { cb(); }
