@@ -31,15 +31,8 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('eEntry', null);
             me.setReportCard(entry.get('type'));
 
-            me.reload(true);
+            // me.reload(true);
 
-
-            // dataGrid.setColumns([]);
-            // dataGrid.setLoading(true);
-
-            // if (entry.get('type') === 'EVENT_LIST') {
-            //     me.lookup('filterfield').setValue('');
-            // }
 
             // check if widget in admin context
             if (Ung.app.context === 'ADMIN') {
