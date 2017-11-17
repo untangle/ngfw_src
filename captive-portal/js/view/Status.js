@@ -57,7 +57,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                 plugins: ['gridfilters'],
 
                 columns: [{
-                    header: 'User Identity'.t(),
+                    header: 'User Address'.t(),
                     dataIndex: 'userAddress',
                     width: Renderer.usernameWidth
                 }, {
