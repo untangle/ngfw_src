@@ -163,6 +163,9 @@ Ext.define('Ung.util.Renderer', {
     ],
     datasize: function( value ){
         // walk map looking at key.  If larger then divide and use units
+        if( value === null){
+            value = 0;
+        }
         value = parseInt( value, 10 );
         var size;
         for( var i = 0; i < Ung.util.Renderer.datasizeMap.length; i++){
@@ -196,6 +199,9 @@ Ext.define('Ung.util.Renderer', {
     ],
     count: function( value ){
         // walk map looking at key.  If larger then divide and use units
+        if( value === null){
+            value = 0
+        }
         value = parseInt( value, 10 );
         var size;
         for( var i = 0; i < Ung.util.Renderer.countMap.length; i++){
