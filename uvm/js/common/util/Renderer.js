@@ -200,7 +200,7 @@ Ext.define('Ung.util.Renderer', {
     count: function( value ){
         // walk map looking at key.  If larger then divide and use units
         if( value === null){
-            value = 0
+            value = 0;
         }
         value = parseInt( value, 10 );
         var size;
