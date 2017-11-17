@@ -57,18 +57,9 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                 plugins: ['gridfilters'],
 
                 columns: [{
-                    header: 'IP Address'.t(),
-                    dataIndex: 'userNetAddress',
-                    width: Renderer.ipWidth
-                }, {
-                    header: 'MAC Address'.t(),
-                    dataIndex: 'userMacAddress',
-                    width: Renderer.macWidth
-                }, {
-                    header: 'Login Key'.t(),
-                    dataIndex: 'macLogin',
-                    width: Renderer.messageWidth,
-                    rtype: 'loginkey'
+                    header: 'User Identity'.t(),
+                    dataIndex: 'userAddress',
+                    width: Renderer.usernameWidth
                 }, {
                     header: 'User Name'.t(),
                     dataIndex: 'userName',
