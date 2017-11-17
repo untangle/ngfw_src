@@ -332,7 +332,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             setTimeout(function () {
                                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
                             }, 100);
-                            DashboardQueue.addFirst(widgetCmp);
+                            // DashboardQueue.addFirst(widgetCmp);
                         } else {
                             dashboard.insert(rowIndex, {
                                 xtype: 'component',
@@ -523,13 +523,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
+        var me = this;
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
             function (btn) {
                 if (btn === 'yes') {
                     Rpc.asyncData('rpc.dashboardManager.resetSettingsToDefault').then(function () {
-                        Util.successToast('Dashboard reset done!');
+                        Rpc.asyncData('rpc.dashboardManager.getSettings')
+                            .then(function (result) {
+                                Ung.dashboardSettings = result;
+                                me.loadWidgets();
+                                Util.successToast('Dashboard reset done!');
+                            });
                     });
                 }
             });
