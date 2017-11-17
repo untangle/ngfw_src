@@ -4,7 +4,6 @@
 
 package com.untangle.app.captive_portal;
 
-import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -22,24 +21,25 @@ import com.untangle.uvm.HostTableEntry;
  *
  * The table is not saved.
  */
+
 public class CaptivePortalUserCookieTable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private Hashtable<InetAddress, CaptivePortalUserEntry> userTable;
+    private Hashtable<String, CaptivePortalUserEntry> userTable;
 
     public CaptivePortalUserCookieTable()
     {
-        userTable = new Hashtable<InetAddress, CaptivePortalUserEntry>();
+        userTable = new Hashtable<String, CaptivePortalUserEntry>();
     }
 
     public CaptivePortalUserEntry insertInactiveUser( CaptivePortalUserEntry local )
     {
-        userTable.put(local.getUserNetAddress(), local);
+        userTable.put(local.getUserAddress(), local);
 
         return (local);
     }
 
-    public boolean removeActiveUser(InetAddress address)
+    public boolean removeActiveUser(String address)
     {
         CaptivePortalUserEntry user = userTable.get(address);
         if (user == null) return (false);
@@ -48,7 +48,7 @@ public class CaptivePortalUserCookieTable
         return (true);
     }
 
-    public CaptivePortalUserEntry searchByAddressUsername(InetAddress address, String username)
+    public CaptivePortalUserEntry searchByAddressUsername(String address, String username)
     {
         CaptivePortalUserEntry user = userTable.get(address);
         if( user != null && user.getUserName().equals( username ) ){

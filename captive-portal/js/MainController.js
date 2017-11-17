@@ -152,34 +152,15 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
     logoutUser: function(view, row, col, item, e, record) {
         var me = this, v = this.getView(), vm = this.getViewModel();
-
-        var netaddr = record.get("userNetAddress");
-        var macaddr = record.get("userMacAddress");
+        var netaddr = record.get("userAddress");
         v.setLoading('Logging Out User...'.t());
-
-        if ( (vm.get('settings.useMacAddress') == true) && (macaddr != null) && (macaddr.length > 12) ) {
-            v.appManager.userAdminMacLogout(Ext.bind(function(result, ex) {
-                if (exception) { Util.handleException(ex); return; }
-                // this gives the app a couple seconds to process the disconnect before we refresh the list
-                var timer = setTimeout(function() {
-                    me.getActiveUsers(view);
-                    v.setLoading(false);
-                },500);
-            }, this), macaddr);
-        } else {
-            v.appManager.userAdminNetLogout(Ext.bind(function(result, ex) {
-                if (ex) { Util.handleException(ex); return; }
-                // this gives the app a couple seconds to process the disconnect before we refresh the list
-                var timer = setTimeout(function() {
-                    me.getActiveUsers(view);
-                    v.setLoading(false);
-                },500);
-            }, this), netaddr);
-        }
+        v.appManager.userAdminLogout(Ext.bind(function(result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            // this gives the app a little time to process the disconnect before we refresh the list
+            var timer = setTimeout(function() {
+                me.getActiveUsers(view);
+                v.setLoading(false);
+            },500);
+        }, this), netaddr);
     },
-
-    loginkeyRenderer: function(value){
-        return value ? 'MAC Address'.t() : 'IP Address'.t();
-    }
-
 });
