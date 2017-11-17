@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.captive_portal;
 
 import java.util.LinkedList;
@@ -302,8 +303,18 @@ public class CaptivePortalApp extends AppBase
                 // other than userAddress then we just leave it alone
                 if ((userAddress != null) && (clientAddr.equals(userAddress) == false)) return (false);
 
-                // if session is for any active authenticated user return false
-                if (captureUserTable.searchByNetAddress(clientAddr) != null) return (false);
+                // TODO - deal with MAC or IP
+
+                // if session is for any active authenticated IP user return false
+                if (captureUserTable.searchByAddress(clientAddr.getHostAddress().toString()) != null) return (false);
+
+                // also check if there is an active authenticated MAC user
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddr);
+                if (entry != null) {
+                    if (entry.getMacAddress() != null) {
+                        if (captureUserTable.searchByAddress(entry.getMacAddress()) != null) return (false);
+                    }
+                }
 
                 // if session matches any pass list return false
                 if (isSessionAllowed(clientAddr, serverAddr) != null) return (false);
@@ -439,12 +450,12 @@ public class CaptivePortalApp extends AppBase
                 ignoreCase = true;
             }
 
-            CaptivePortalUserEntry entry = captureUserTable.searchByUsername(username, ignoreCase);
+            CaptivePortalUserEntry user = captureUserTable.searchByUsername(username, ignoreCase);
 
             // when concurrent logins are disabled and we have an active entry for the user
             // we check the address and ignore the match if they are the same since it's
             // not really a concurrent login but a duplicate login from the same client
-            if ((entry != null) && (address.equals(entry.getUserNetAddress()) == false)) {
+            if ((user != null) && (address.getHostAddress().toString().equals(user.getUserAddress()) == false)) {
                 CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL, 1);
@@ -528,7 +539,7 @@ public class CaptivePortalApp extends AppBase
             return (1);
         }
 
-        captureUserTable.insertActiveUser(address, username, false);
+        publishActiveUser(address, username, false);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -547,7 +558,7 @@ public class CaptivePortalApp extends AppBase
             return (1);
         }
 
-        captureUserTable.insertActiveUser(address, username, anonymous);
+        publishActiveUser(address, username, anonymous);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -564,7 +575,7 @@ public class CaptivePortalApp extends AppBase
 
     public int userLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address, username, false);
+        publishActiveUser(address, username, false);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.CUSTOM, CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -572,7 +583,7 @@ public class CaptivePortalApp extends AppBase
         logger.info("Login success " + address.getHostAddress().toString());
 
         if (captureSettings.getSessionCookiesEnabled()) {
-            captureUserCookieTable.removeActiveUser(address);
+            captureUserCookieTable.removeActiveUser(address.getHostAddress().toString());
         }
 
         return (0);
@@ -580,7 +591,7 @@ public class CaptivePortalApp extends AppBase
 
     public int googleLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address, username, false);
+        publishActiveUser(address, username, false);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.GOOGLE, CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -592,7 +603,7 @@ public class CaptivePortalApp extends AppBase
 
     public int facebookLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address, username, false);
+        publishActiveUser(address, username, false);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.FACEBOOK, CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -604,7 +615,7 @@ public class CaptivePortalApp extends AppBase
 
     public int microsoftLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address, username, false);
+        publishActiveUser(address, username, false);
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.MICROSOFT, CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -619,58 +630,38 @@ public class CaptivePortalApp extends AppBase
         return (userLogout(address, CaptivePortalUserEvent.EventType.USER_LOGOUT));
     }
 
-    public int userAdminNetLogout(InetAddress netaddr)
-    {
-        return (userLogout(netaddr, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
-    }
-
-    public int userAdminMacLogout(String macaddr)
-    {
-        CaptivePortalUserEntry user = captureUserTable.searchByMacAddress(macaddr);
-
-        if (user == null) {
-            logger.info("MAC Logout failure: " + macaddr);
-            return (1);
-        }
-
-        // remove from the user table
-        captureUserTable.removeActiveMacUser(macaddr);
-
-        // call the session cleanup function passing the address from the MAC
-        // entry of the user we just logged out to clean up any outstanding sessions
-        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(macaddr);
-        validateAllSessions(entry.getAddress());
-
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserMacAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.ADMIN_LOGOUT);
-        logEvent(event);
-        logger.info("MAC Logout success: " + macaddr);
-
-        if (captureSettings.getSessionCookiesEnabled()) {
-            captureUserCookieTable.insertInactiveUser(user);
-        }
-
-        return (0);
-    }
-
     public int userLogout(InetAddress address, CaptivePortalUserEvent.EventType reason)
     {
-        CaptivePortalUserEntry user = captureUserTable.searchByNetAddress(address);
+        String userkey = null;
+
+        // if using MAC tracking we want to search using client MAC address
+        if (getSettings().getUseMacAddress()) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+            if (entry != null) userkey = entry.getMacAddress();
+        }
+
+        // use the IP address if MAC tracking not active or no MAC available 
+        if (userkey == null) {
+            userkey = address.getHostAddress().toString();
+        }
+
+        CaptivePortalUserEntry user = captureUserTable.searchByAddress(userkey);
 
         if (user == null) {
-            logger.info("NET Logout failure: " + address.getHostAddress().toString());
+            logger.info("Logout failure: " + userkey);
             return (1);
         }
 
         // remove from the user table
-        captureUserTable.removeActiveNetUser(address);
+        destroyActiveUser(user);
 
         // call the session cleanup function passing the address of the
         // user we just logged out to clean up any outstanding sessions
         validateAllSessions(address);
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserNetAddress().getHostAddress().toString(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
         logEvent(event);
-        logger.info("NET Logout success: " + address.getHostAddress().toString());
+        logger.info("Logout success: " + user.toString());
 
         if (captureSettings.getSessionCookiesEnabled() && ((reason == CaptivePortalUserEvent.EventType.USER_LOGOUT) || (reason == CaptivePortalUserEvent.EventType.ADMIN_LOGOUT))) {
             captureUserCookieTable.insertInactiveUser(user);
@@ -679,37 +670,135 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    public int userAdminLogout(String userkey)
+    {
+        HostTableEntry entry = null;
+        InetAddress netaddr = null;
+
+        CaptivePortalUserEntry user = captureUserTable.searchByAddress(userkey);
+
+        if (user == null) {
+            logger.info("Admin logout failure: " + userkey);
+            return (1);
+        }
+
+        // remove from the user table
+        destroyActiveUser(user);
+
+        if (user.getUserAddress().indexOf(':') >= 0) {
+            // any semi-colon in the key indicate a MAC address                
+            entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(user.getUserAddress());
+        } else {
+            // not a mac address so convert to InetAddr object
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserAddress());
+        }
+
+        // call the session cleanup function passing the address from the
+        // host table entry to cleanup any outstanding sessions
+        if (entry == null) {
+            logger.warn("Missing host table entry for: " + user.toString());
+        } else {
+
+            validateAllSessions(entry.getAddress());
+        }
+
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.ADMIN_LOGOUT);
+        logEvent(event);
+        logger.info("Admin logout success: " + user.toString());
+
+        if (captureSettings.getSessionCookiesEnabled()) {
+            captureUserCookieTable.insertInactiveUser(user);
+        }
+
+        return (0);
+    }
+
+    protected void publishActiveUser(InetAddress address, String username, Boolean anonymous)
+    {
+        CaptivePortalUserEntry user = null;
+        String userkey = null;
+
+        // get the host table entry and include the create flag
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
+
+        // if using MAC tracking we want to get the client MAC address
+        if ((getSettings().getUseMacAddress()) && (entry != null)) {
+            userkey = entry.getMacAddress();
+        }
+
+        // use the IP address if MAC tracking not active or no MAC available 
+        if (userkey == null) {
+            userkey = address.getHostAddress().toString();
+        }
+
+        user = captureUserTable.insertActiveUser(userkey, username, anonymous);
+
+        // should never happen but we check just in case
+        if (entry == null) {
+            logger.warn("Missing host table entry for: " + user.toString());
+            return;
+        }
+
+        /**
+         * For anonymous users clear the global capture username which shouldn't
+         * be required but always better safe than sorry. For all other users we
+         * set the clobal capture username. We also set the captive portal flag
+         * to prevent the entry from being timed-out while the user is active in
+         * our table.
+         */
+
+        if (anonymous == Boolean.TRUE) {
+            entry.setUsernameCaptivePortal(null);
+            entry.setCaptivePortalAuthenticated(true);
+        } else {
+            entry.setUsernameCaptivePortal(username);
+            entry.setCaptivePortalAuthenticated(true);
+        }
+    }
+
+    protected void destroyActiveUser(CaptivePortalUserEntry user)
+    {
+        HostTableEntry entry = null;
+
+        captureUserTable.removeActiveUser(user.getUserAddress());
+
+        if (user.getUserAddress().indexOf(':') >= 0) {
+            // any semi-colon in the key indicate a MAC address                
+            entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(user.getUserAddress());
+        } else {
+            // not a mac address so do normal lookup by IP address
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserAddress());
+        }
+
+        if (entry == null) {
+            logger.warn("Missing host table entry for: " + user.toString());
+            return;
+        }
+
+        entry.setUsernameCaptivePortal(null);
+        entry.setCaptivePortalAuthenticated(false);
+    }
+
     // public method for determining if a client is already authenticated
 
     public boolean isClientAuthenticated(InetAddress clientAddr)
     {
         CaptivePortalUserEntry user = null;
-        String macaddr = null;
+        String userkey = null;
 
-        // start by getting the MAC address for the client address
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddr);
-        if (entry != null) macaddr = entry.getMacAddress();
-
-        // try to find the user table entry using the MAC address if the feature is enabled
-        if ((getSettings().getUseMacAddress()) && (macaddr != null)) {
-            user = captureUserTable.searchByMacAddress(macaddr);
-            if (user != null) {
-                logger.debug("Found MAC user: " + user.toString());
-                // update our net address if different from host table
-                if (!entry.getAddress().equals(user.getUserNetAddress())) {
-                    logger.debug("Updating MAC user: " + user.toString() + " NEW Address = " + entry.getAddress().getHostAddress().toString());
-                    user.setUserNetAddress(entry.getAddress());
-                }
-            }
+        // if using MAC tracking we want to search using client MAC address
+        if (getSettings().getUseMacAddress()) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddr);
+            if (entry != null) userkey = entry.getMacAddress();
         }
 
-        // search for the address in the active user table
-        if (user == null) {
-            user = captureUserTable.searchByNetAddress(clientAddr);
-            if (user != null) logger.debug("Found NET user: " + user.toString());
+        // use the IP address if MAC tracking not active or no MAC available 
+        if (userkey == null) {
+            userkey = clientAddr.getHostAddress().toString();
         }
 
-        // if we have an authenticated user update activity and allow
+        user = captureUserTable.searchByAddress(userkey);
+
         if (user != null) {
             user.updateActivityTimer();
             return (true);
@@ -777,12 +866,12 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
-    public boolean isUserInCookieTable(InetAddress address, String username)
+    public boolean isUserInCookieTable(String address, String username)
     {
-        return captureUserCookieTable.searchByAddressUsername(address, username) != null; // TODO
+        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
     }
 
-    public void removeUserFromCookieTable(InetAddress address)
+    public void removeUserFromCookieTable(String address)
     {
         captureUserCookieTable.removeActiveUser(address);
     }
@@ -810,32 +899,41 @@ public class CaptivePortalApp extends AppBase
             if (!saveFile.exists()) return;
 
             logger.info("Loading user state from file... ");
-            ArrayList<CaptivePortalUserEntry> users = UvmContextFactory.context().settingsManager().load(ArrayList.class, filename);
+            ArrayList<CaptivePortalUserEntry> userlist = UvmContextFactory.context().settingsManager().load(ArrayList.class, filename);
 
-            int usersLoaded = 0;
+            HostTableEntry entry;
             long userTimeout = getCaptivePortalSettings().getUserTimeout();
             long currentTime = System.currentTimeMillis();
+            boolean macAddressFlag;
+            int usersLoaded = 0;
 
             /**
              * Insert all the non-expired users into the table. Since the
-             * untangle-vm has likely been down, don't check idle timeout
+             * untangle-vm has likely been down, don't check idle timeout.
              */
-            for (CaptivePortalUserEntry user : users) {
+            for (CaptivePortalUserEntry user : userlist) {
                 long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
 
                 /**
+                 * Don't pass the create flag when checking for the host table
+                 * here
+                 */
+                if (user.getUserAddress().indexOf(':') >= 0) {
+                    // any semi-colon in the key indicate a MAC address                
+                    entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(user.getUserAddress());
+                    macAddressFlag = true;
+                } else {
+                    // not a mac address so do normal lookup by IP address
+                    entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserAddress());
+                    macAddressFlag = false;
+                }
+
+                /**
                  * If we aren't loading this expired user we need to clear our
-                 * username and authenticated fields in the HostTable
+                 * username and authenticated fields in the host table if we
+                 * found a corresponding entry.
                  */
                 if (currentTime > userTrigger) {
-                    HostTableEntry entry;
-
-                    if (user.getMacLogin()) {
-                        entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(user.getUserMacAddress());
-                    } else {
-                        entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserNetAddress());
-                    }
-
                     if (entry != null) {
                         entry.setUsernameCaptivePortal(null);
                         entry.setCaptivePortalAuthenticated(false);
@@ -843,7 +941,28 @@ public class CaptivePortalApp extends AppBase
                     continue;
                 }
 
+                /**
+                 * User is not expired so we add to our table and set the name
+                 * and authenticated fields in the host table. If we didn't find
+                 * a host table entry and the user key is a MAC address there
+                 * isn't anything we can do, otherwise we create the host table
+                 * entry.
+                 */
+                if ((entry == null) && (macAddressFlag == true)) continue;
+
+                if (entry == null) {
+                    InetAddress addr;
+                    try {
+                        addr = InetAddress.getByName(user.getUserAddress());
+                        entry = UvmContextFactory.context().hostTable().getHostTableEntry(addr, true);
+                    } catch (java.net.UnknownHostException e) {
+                        continue;
+                    }
+                }
+
                 captureUserTable.insertActiveUser(user);
+                entry.setUsernameCaptivePortal(user.getUserName());
+                entry.setCaptivePortalAuthenticated(true);
                 usersLoaded++;
             }
 
@@ -989,7 +1108,6 @@ public class CaptivePortalApp extends AppBase
          */
         public void callback(Object... args)
         {
-            // TODO - need to handle track by MAC address mode
             Object o = args[0];
             if (!(o instanceof InetAddress)) {
                 logger.warn("Invalid argument: " + o);
