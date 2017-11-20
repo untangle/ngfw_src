@@ -22,9 +22,11 @@ Ext.define('Bootstrap', {
             // add timezone offset to rpc
             rpc.timeZoneOffset = rpc.ReportsContext.getTimeZoneOffset();
         }
-        else if (this.servletContext === 'QUARANTINE') {
-            rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
-        }
+        // else if (this.servletContext === 'QUARANTINE') {
+        //     console.log('init here');
+        //     rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
+        //     rpc.timeZoneOffset = rpc.ReportsContext.getTimeZoneOffset();
+        // }
     },
 
     initTranslations: function () {
@@ -54,14 +56,6 @@ Ext.define('Bootstrap', {
             rpc.translations = languageManager.getTranslations(lang).map;
         }
 
-        // apply special date / time / number formatting overrides, otherwise use some defaults
-        Ext.apply(rpc.translations, {
-            decimal_sep: languageSettings.overrideDecimalSep || '.',
-            thousand_sep: languageSettings.overrideThousandSep || ',',
-            date_fmt: languageSettings.overrideDateFmt || 'Y-m-d',
-            timestamp_fmt: languageSettings.overrideTimestampFmt || 'Y-m-d h:i:s a'
-        });
-
         String.prototype.t = function() {
             // special case formatters needed for all languages
             if (Ext.Array.contains(['decimal_sep', 'thousand_sep', 'date_fmt', 'timestamp_fmt'], this.valueOf())) {
@@ -89,6 +83,8 @@ Ext.define('Bootstrap', {
         var me = this;
 
         me.servletContext = servletContext;
+
+        console.log();
 
         if (servletContext === 'ADMIN' || servletContext === 'REPORTS') {
             me.initRpc(); me.initHighcharts(); me.initTranslations();
