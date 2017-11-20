@@ -13,12 +13,20 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 
+/**
+ * Implementation of the user table used to track active captive portal users.
+ */
+
 public class CaptivePortalUserTable
 {
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String, CaptivePortalUserEntry> activeUserTable = null;
     private CaptivePortalApp ownerApp = null;
 
+    /**
+     * Used by the timer task for generating a linked list of users that should
+     * be logged out due to session or inactivity timeout.
+     */
     public class StaleUser
     {
         CaptivePortalUserEvent.EventType reason;
@@ -31,12 +39,23 @@ public class CaptivePortalUserTable
         }
     }
 
+    /**
+     * Constructs an instance of the user table.
+     * 
+     * @param ownerApp
+     *        The application instance that created the table.
+     */
     public CaptivePortalUserTable(CaptivePortalApp ownerApp)
     {
         this.ownerApp = ownerApp;
         activeUserTable = new Hashtable<String, CaptivePortalUserEntry>();
     }
 
+    /**
+     * Creates an ArrayList of all users in the table.
+     * 
+     * @return list of all users
+     */
     public ArrayList<CaptivePortalUserEntry> buildUserList()
     {
         ArrayList<CaptivePortalUserEntry> userList = new ArrayList<CaptivePortalUserEntry>();
@@ -44,6 +63,17 @@ public class CaptivePortalUserTable
         return (userList);
     }
 
+    /**
+     * Insert a user in the table.
+     * 
+     * @param useraddr
+     *        The address (IP or MAC) of the user
+     * @param username
+     *        The name of the user
+     * @param anonymous
+     *        Set when users are anonymous with no username
+     * @return
+     */
     public CaptivePortalUserEntry insertActiveUser(String useraddr, String username, Boolean anonymous)
     {
         CaptivePortalUserEntry userEntry = new CaptivePortalUserEntry(useraddr, username, anonymous);
@@ -52,6 +82,13 @@ public class CaptivePortalUserTable
         return (userEntry);
     }
 
+    /**
+     * Insert a user in the table
+     * 
+     * @param userEntry
+     *        The object to be inserted in the table
+     * @return The object that was inserted in the table
+     */
     protected CaptivePortalUserEntry insertActiveUser(CaptivePortalUserEntry userEntry)
     {
         logger.debug("INSERT USER: " + userEntry.toString());
@@ -59,6 +96,13 @@ public class CaptivePortalUserTable
         return (userEntry);
     }
 
+    /**
+     * Remove a user from the table
+     * 
+     * @param useraddr
+     *        The address (IP or MAC) of the user to remove
+     * @return true if user is found and removed, otherwise false
+     */
     public boolean removeActiveUser(String useraddr)
     {
         // find and remove from the active user table
@@ -70,12 +114,28 @@ public class CaptivePortalUserTable
         return (true);
     }
 
+    /**
+     * Search by address for a user in the table
+     * 
+     * @param netaddr
+     *        The address for the search
+     * @return The matching user entry or null if not found
+     */
     public CaptivePortalUserEntry searchByAddress(String netaddr)
     {
         CaptivePortalUserEntry item = activeUserTable.get(netaddr);
         return (item);
     }
 
+    /**
+     * Search by name for a user in the table
+     * 
+     * @param username
+     *        The username for the search
+     * @param ignoreCase
+     *        Set when case should be ignored when searching
+     * @return The matching user entry or null if not found
+     */
     public CaptivePortalUserEntry searchByUsername(String username, boolean ignoreCase)
     {
         CaptivePortalUserEntry item;
@@ -97,6 +157,16 @@ public class CaptivePortalUserTable
         return (null);
     }
 
+    /**
+     * Builds a list of stale users that should be logged out.
+     * 
+     * @param idleTimeout
+     *        The idle timeout to apply or zero if disabled
+     * @param userTimeout
+     *        The maximum amount of time a user can stay authenticated before
+     *        they are forced to log in again
+     * @return A list of users to be logged out
+     */
     public ArrayList<StaleUser> buildStaleList(long idleTimeout, long userTimeout)
     {
         ArrayList<StaleUser> wipelist = new ArrayList<StaleUser>();
@@ -146,6 +216,9 @@ public class CaptivePortalUserTable
         return (wipelist);
     }
 
+    /**
+     * Clear the user table
+     */
     public void purgeAllUsers()
     {
         activeUserTable.clear();

@@ -29,6 +29,11 @@ import com.untangle.uvm.UvmContextFactory;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
+/**
+ * We do just enough SSL MitM to receive and extract the request and send back a
+ * redirect to the capture page for unauthenticated clients.
+ */
+
 public class CaptivePortalSSLEngine
 {
 
@@ -46,6 +51,14 @@ public class CaptivePortalSSLEngine
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
+    /**
+     * The constructor sets up the SSLEngine for communicating with the client.
+     * 
+     * @param appStr
+     *        The appid for this instance of the application
+     * @param appPtr
+     *        The captive portal application
+     */
     protected CaptivePortalSSLEngine(String appStr, CaptivePortalApp appPtr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
@@ -76,8 +89,14 @@ public class CaptivePortalSSLEngine
         }
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Main handler for data received from clients.
+     * 
+     * @param session
+     *        The TCP session
+     * @param buff
+     *        The raw data received from the client
+     */
     public void handleClientData(AppTCPSession session, ByteBuffer buff)
     {
         this.session = session;
@@ -104,8 +123,19 @@ public class CaptivePortalSSLEngine
         return;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Main worker for data received from clients. When OAuth is active we allow
+     * traffic to certain domains required to allow a client to interact with an
+     * OAuth provider. We also check for pass rules, and pass all other traffic
+     * through the SSLEngine so we can decrypt the client request.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The raw data received from clients
+     * @return True for success, otherwise false
+     * @throws Exception
+     */
     private boolean clientDataWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -116,8 +146,6 @@ public class CaptivePortalSSLEngine
         logger.debug("PARAM_BUFFER = " + data.toString());
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
-
-//        if (sniHostname != null) logger.info("sniHostname = " + sniHostname);
 
         CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
 
@@ -237,8 +265,14 @@ public class CaptivePortalSSLEngine
         return done;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngin status = NEED_TASK
+     * 
+     * @param data
+     *        The buffer to be processed
+     * @return False to allow the processing loop to continue
+     * @throws Exception
+     */
     private boolean doNeedTask(ByteBuffer data) throws Exception
     {
         Runnable runnable;
@@ -251,8 +285,17 @@ public class CaptivePortalSSLEngine
         return false;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_UNWRAP
+     * 
+     * @param data
+     *        Source buffer for encrypted SSL data
+     * @param target
+     *        Target buffer for unencrypted data
+     * @return True when all data has been processed, false when data remains
+     *         and additional SSLEngine operations are required
+     * @throws Exception
+     */
     private boolean doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
@@ -285,8 +328,17 @@ public class CaptivePortalSSLEngine
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_WRAP
+     * 
+     * @param data
+     *        Source buffer for unencrypted SSL data
+     * @param target
+     *        Target buffer for encrypted data
+     * @return True when all data has been processed, false when data remains
+     *         and additional SSLEngine operations are required
+     * @throws Exception
+     */
     private boolean doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
@@ -312,8 +364,17 @@ public class CaptivePortalSSLEngine
         return true;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NOT_HANDSHAKING
+     * 
+     * @param data
+     *        Source buffer for encrypted SSL data
+     * @param target
+     *        Target buffer for unencrypted data
+     * @return True when all data has been processed, false when data remains
+     *         and additional SSLEngine operations are required
+     * @throws Exception
+     */
     private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result = null;
@@ -517,6 +578,14 @@ public class CaptivePortalSSLEngine
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * Function for extracting the SNI hostname from the client request.
+     * 
+     * @param data
+     *        The raw data received from the client
+     * @return The SNI hostname extracted from the client request, or null
+     * @throws Exception
+     */
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
         int counter = 0;
@@ -638,6 +707,11 @@ public class CaptivePortalSSLEngine
         return (null);
     }
 
+    /**
+     * We only do enough SSL MitM to receive and extract the client request and
+     * send back a redirect to the capture page, so we never actually connect to
+     * the external server, meaning no cert checking is required.
+     */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
