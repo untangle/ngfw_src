@@ -82,6 +82,13 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     emailText: 'You must provide a valid login name or email address.'.t(),
 
+    // matchers
+    emailwildcard: function (v) {
+        return v == '*' || this.mask.email.test(v);
+    },
+    emailwildcardText: 'You must provide an email address or wildcard.'.t(),
+
+
     ipMatcher: function(val) {
         if (val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
             switch (val) {
