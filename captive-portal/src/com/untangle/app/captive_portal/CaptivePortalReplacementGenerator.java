@@ -12,6 +12,12 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
+/**
+ * This is the implementation of the replacement generator that creates the HTTP
+ * redirect which is sent to unauthenticated clients to redirect them to the
+ * captive portal login page.
+ */
+
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -62,6 +68,17 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         return String.format(BLOCK_TEMPLATE, details.getMethod(), details.getHost(), details.getUri(), uvm.brandingManager().getContactHtml());
     }
 
+    /**
+     * Creates an HTTP redirect to the login page for unauthenticated clients.
+     * 
+     * @param nonce
+     *        A random nonce used to prevent issues with browser caching
+     * @param host
+     *        The IP used by the client to reach this server
+     * @param appSettings
+     *        The settings object for the associated application instance
+     * @return
+     */
     @Override
     protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {

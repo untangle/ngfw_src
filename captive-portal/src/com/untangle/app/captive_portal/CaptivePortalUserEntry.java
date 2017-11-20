@@ -7,6 +7,11 @@ package com.untangle.app.captive_portal;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+/**
+ * This is the implementation of a captive portal user entry used to track
+ * authenticated users. 
+ */
+
 @SuppressWarnings("serial")
 public class CaptivePortalUserEntry implements Serializable
 {

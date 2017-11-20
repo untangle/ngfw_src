@@ -22,6 +22,10 @@ import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.AppTCPSession;
 
+/**
+ * This is the handler for all HTTP traffic.
+ */
+
 public class CaptivePortalHttpHandler extends HttpEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -37,6 +41,19 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
 
     // HttpEventHandler methods -----------------------------------------------
 
+    /**
+     * Main handler for HTTP requests allows traffic for authenticated users,
+     * hosts in pass lists, or anything that matches a pass rule. We also allow
+     * certain hosts to make OAuth work better, and return 503 for prefetch
+     * requests because it causes problems with the capture page.
+     * 
+     * 
+     * @param session
+     *        The session object
+     * @param requestHeader
+     *        The request header
+     * @return
+     */
     @Override
     protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
@@ -175,7 +192,11 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         return statusLine;
     }
 
-    // Generate a forbidden response for prefetch queries
+    /**
+     * Generate a forbidden response for prefetch queries
+     * 
+     * @return Token containing the 503 response code
+     */
 
     private Token[] generatePrefetchResponse()
     {

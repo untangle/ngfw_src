@@ -162,8 +162,7 @@ public class CaptureRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for (CaptureRuleCondition matcher : matchers) {
-            if ( ! matcher.matches( sess ) )
-                return false;
+            if (!matcher.matches(sess)) return false;
         }
 
         /**
