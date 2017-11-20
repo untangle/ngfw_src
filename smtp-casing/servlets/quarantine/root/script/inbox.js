@@ -121,7 +121,6 @@ Ext.define('Ung.view.MainController', {
     refreshQuarantineGrid: function () {
         var me = this, vm = me.getViewModel();
         rpc.getInboxRecords(function (result, ex) {
-            console.log(result);
             if (ex) { Util.handleException(ex); return; }
             var mails = [];
             Ext.Array.each(result.list, function (mail) {
@@ -180,10 +179,11 @@ Ext.define('Ung.view.MainController', {
             }
             // refresh safelist grid
             if (result.safelist) {
+                var addresses = [];
                 Ext.Array.each(result.safelist, function (sl) {
-                    sl = [ sl ];
+                    addresses.push([ sl ]);
                 });
-                vm.set('safelistData', result.safelist);
+                vm.set('safelistData', addresses);
             }
         }, me.token, addresses);
     },
@@ -210,7 +210,6 @@ Ext.define('Ung.view.MainController', {
             xtype: 'window',
             modal: 'true',
             width: 300,
-            height: 170,
             title: 'Add an Email Address to Safelist'.t(),
             layout: 'fit',
             items: [{
@@ -250,10 +249,11 @@ Ext.define('Ung.view.MainController', {
                         }
                         // refresh safelist grid
                         if (result.safelist) {
+                            var addresses = [];
                             Ext.Array.each(result.safelist, function (sl) {
-                                sl = [ sl ];
+                                addresses.push([ sl ]);
                             });
-                            vm.set('safelistData', result.safelist);
+                            vm.set('safelistData', addresses);
                         }
                         btn.up('window').close();
                     }, me.token, [emailField.getValue()]);
@@ -276,7 +276,7 @@ Ext.define('Ung.view.MainController', {
         });
         rpc.deleteAddressesFromSafelist(function(result, ex) {
             if (ex) { Util.handleException(ex); return; }
-            Util.successToast(Ext.String.format('Deleted {0} addresses'.t(), result.safelistCount));
+            Util.successToast(Ext.String.format('Deleted {0} addresses'.t(), Math.abs(result.safelistCount)));
             // drop removed records from grid
             Ext.Array.each(records, function (record) {
                 record.drop();
@@ -329,10 +329,13 @@ Ext.define('Ung.view.MainController', {
  * Quarantined Messages Tab
  */
 Ext.define('Ung.view.Messages', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ung.cmp.Grid',
     alias: 'widget.messages',
     reference: 'messagesGrid',
     title: 'Quarantined Messages'.t(),
+
+    emptyText: 'No Quarantined Messages found'.t(),
+
     viewModel: {
         formulas: {
             warning: function (get) {
@@ -359,19 +362,22 @@ Ext.define('Ung.view.Messages', {
             iconCls: 'fa fa-inbox',
             disabled: true,
             bind: { disabled: '{!messagesGrid.selection}' },
-            handler: 'releaseMessages'
+            handler: 'externalAction',
+            action: 'releaseMessages'
         }, {
             text: 'Release to Inbox & Add Senders to Safe List'.t(),
             iconCls: 'fa fa-user',
             disabled: true,
             bind: { disabled: '{!messagesGrid.selection}' },
-            handler: 'releaseAndSafeList'
+            handler: 'externalAction',
+            action: 'releaseAndSafeList'
         }, {
             text: 'Delete'.t(),
             iconCls: 'fa fa-trash',
             disabled: true,
             bind: { disabled: '{!messagesGrid.selection}' },
-            handler: 'purgeMessages'
+            handler: 'externalAction',
+            action: 'purgeMessages'
         }, '->', {
             xtype: 'gridfilter'
         }]
@@ -385,8 +391,8 @@ Ext.define('Ung.view.Messages', {
                 { name: 'recipients' },
                 { name: 'mailID' },
                 { name: 'attachmentCount' },
-                { name: 'truncatedSender' },
-                { name: 'truncatedSubject' },
+                { name: 'sender' },
+                { name: 'subject' },
                 { name: 'subject' },
                 { name: 'quarantineCategory' },
                 { name: 'quarantineDetail', sortType : 'asFloat' },
@@ -394,20 +400,21 @@ Ext.define('Ung.view.Messages', {
                 { name : 'sender', sortType : Ext.data.SortTypes.asUCString },
                 {
                     name: 'internDate',
-                    convert: function(value) {
-                        var date = new Date(), d, t;
-                        date.setTime(value);
-                        d = Ext.util.Format.date(date, 'm/d/Y');
-                        t = Ext.util.Format.date(date, 'g:i a');
-                        return d + ' ' + t;
-                    }
+                    // convert: function(value) {
+                    //     var date = new Date(), d, t;
+                    //     date.setTime(value);
+                    //     d = Ext.util.Format.date(date, 'm/d/Y');
+                    //     t = Ext.util.Format.date(date, 'g:i a');
+                    //     return d + ' ' + t;
+                    // }
+                    sortType: 'asTimestamp'
                 },
                 {
-                    name: 'quarantineSizeKb',
-                    calculate: function(data) {
-                        if (!data.quarantineSize) { return 0; }
-                        return Math.round(((data.quarantineSize + 0.0) / 1024) * 10) / 10;
-                    }
+                    name: 'quarantineSize',
+                    // calculate: function(data) {
+                    //     if (!data.quarantineSize) { return 0; }
+                    //     return Math.round(((data.quarantineSize + 0.0) / 1024) * 10) / 10;
+                    // }
                 }
             ]
         }
@@ -420,15 +427,18 @@ Ext.define('Ung.view.Messages', {
     columns: [{
         header: 'From'.t(),
         dataIndex: 'sender',
-        width: 250,
+        width: Renderer.emailWidth,
+        flex: 1,
+        sortable: true,
         filter: { type: 'string' }
     }, {
         header: 'Attachments'.t(),
         dataIndex: 'attachmentCount',
-        width: 90,
+        width: Renderer.counterWidth,
         tooltip: 'Number of Attachments in the email.'.t(),
         tooltipType: 'title',
         align: 'center',
+        sortable: true,
         renderer: function(value) {
             return value !== 0 ? value : '';
         },
@@ -436,29 +446,37 @@ Ext.define('Ung.view.Messages', {
     }, {
         header: 'Score'.t(),
         dataIndex: 'quarantineDetail',
-        width: 65,
+        width: Renderer.idWidth,
         align: 'center',
+        sortable: true,
         filter: { type: 'numeric' }
     }, {
         header: 'Subject'.t(),
-        dataIndex: 'truncatedSubject',
+        dataIndex: 'subject',
         flex: 1,
-        width: 250,
+        width: Renderer.messageWidth,
+        sortable: true,
         filter: { type : 'string' }
     }, {
         header: 'Date'.t(),
         dataIndex: 'internDate',
-        width: 140,
-        filter: { type : 'string' },
-        sorter: function (rec1, rec2) {
-            var t1 = rec1.getData().time, t2 = rec2.getData().time;
-            return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
-        }
+        width: Renderer.timestampWidth,
+        sortable: true,
+        filter: Renderer.timestampFilter,
+        renderer: Renderer.timestamp
+        // filter: { type : 'string' },
+        // convert to timestamp?
+        // sorter: function (rec1, rec2) {
+        //     var t1 = rec1.getData().time, t2 = rec2.getData().time;
+        //     return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
+        // }
     }, {
-        header: 'Size (KB)'.t(),
-        dataIndex: 'quarantineSizeKb',
-        width: 70,
-        filter: { type : 'numeric' }
+        header: 'Size'.t(),
+        dataIndex: 'quarantineSize',
+        width: Renderer.sizeWidth,
+        sortable: true,
+        filter: { type : 'numeric' },
+        renderer: Renderer.datasize
     }]
 });
 
@@ -466,11 +484,12 @@ Ext.define('Ung.view.Messages', {
  * Safe List Tab
  */
 Ext.define('Ung.view.SafeList', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ung.cmp.Grid',
     alias: 'widget.safelist',
     reference: 'safelistGrid',
 
     title: 'Safe List'.t(),
+    emptyText: 'No Safe List addresses defined'.t(),
     viewModel: true,
 
     dockedItems: [{
@@ -490,7 +509,8 @@ Ext.define('Ung.view.SafeList', {
         items: [{
             text: 'Add'.t(),
             iconCls: 'fa fa-plus-circle',
-            handler: 'addSafeListAddress'
+            handler: 'externalAction',
+            action: 'addSafeListAddress'
         }, {
             text: 'Delete Addresses'.t(),
             iconCls: 'fa fa-trash',
@@ -498,7 +518,8 @@ Ext.define('Ung.view.SafeList', {
             bind: {
                 disabled: '{!safelistGrid.selection}'
             },
-            handler: 'deleteSafeListAddresses'
+            handler: 'externalAction',
+            action: 'deleteSafeListAddresses'
         }]
     }],
 
@@ -510,7 +531,8 @@ Ext.define('Ung.view.SafeList', {
         header: 'Email Address'.t(),
         dataIndex: 'emailAddress',
         menuDisabled: true,
-        flex: 1
+        flex: 1,
+        width: Renderer.emailWidth
     }],
     bind: {
         store: {
@@ -565,9 +587,10 @@ Ext.define('Ung.view.ForwardReceive', {
             handler: 'deleteForwardAddress'
         }]
     }, {
-        xtype: 'grid',
+        xtype: 'ungrid',
         reference: 'receivedGrid',
         title: 'Received Quarantined Messages From:'.t(),
+        emptyText: 'No Quarantined Messages From found'.t(),
         region: 'center',
         flex: 1,
         enableColumnHide : false,
@@ -576,6 +599,7 @@ Ext.define('Ung.view.ForwardReceive', {
         columns: [{
             header: 'Email Address'.t(),
             dataIndex: 'emailAddress',
+            width: Renderer.emailWidth,
             flex: 1,
             menuDisabled: true
         }],
@@ -589,7 +613,8 @@ Ext.define('Ung.view.ForwardReceive', {
                 iconCls: 'fa fa-trash',
                 disabled: true,
                 bind: { disabled: '{!receivedGrid.selection}' },
-                handler: 'deleteReceived'
+                handler: 'externalAction',
+                action: 'deleteReceived'
             }]
         }],
     }]
