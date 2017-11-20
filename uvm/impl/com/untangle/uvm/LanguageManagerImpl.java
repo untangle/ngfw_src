@@ -305,8 +305,20 @@ public class LanguageManagerImpl implements LanguageManager
                 map.put("thousand_sep", getLanguageSettings().getOverrideThousandSep());
                 map.put("date_fmt", getLanguageSettings().getOverrideDateFmt());
                 map.put("timestamp_fmt", getLanguageSettings().getOverrideTimestampFmt());
+            }else{
+                if(map.get("decimal_sep") == null){
+                    map.put("decimal_sep", ".");
+                }
+                if(map.get("thousand_sep") == null){
+                    map.put("thousand_sep", ",");
+                }
+                if(map.get("date_fmt") == null){
+                    map.put("date_fmt", "Y-m-d");
+                }
+                if(map.get("timestamp_fmt") == null){
+                    map.put("timestamp_fmt", "Y-m-d h:i:s a");
+                }
             }
-
             translationsLastAccessed.put(translationKey, System.currentTimeMillis());
             return map;
         }
