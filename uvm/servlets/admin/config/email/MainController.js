@@ -177,7 +177,7 @@ Ext.define('Ung.config.email.MainController', {
         }
 
         selected.each(function(record) {
-            accounts.push(record.get('address'));
+            accounts.push(record.get('emailAddress'));
         });
 
         Ext.MessageBox.wait('Purging...'.t(), 'Please wait'.t());
@@ -188,7 +188,6 @@ Ext.define('Ung.config.email.MainController', {
                 Ext.MessageBox.hide();
             });
     },
-
 
     purgeInboxes: function (btn) {
         var me = this,
@@ -242,20 +241,16 @@ Ext.define('Ung.config.email.MainController', {
             xtype: 'window',
             title: 'Email Quarantine Details for:'.t() + ' ' + record.get('address'),
             width: Ext.getBody().getViewSize().width - 20,
-            minHeight: 600,
             maxHeight: Ext.getBody().getViewSize().height - 20,
             modal: true,
             layout: 'fit',
             items: [{
-                xtype: 'grid',
+                xtype: 'ungrid',
                 reference: 'mailsGrid',
                 account: record.get('address'),
                 border: false,
                 bodyBorder: false,
-                viewConfig: {
-                    enableTextSelection: true,
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Emails!</p>',
-                },
+                emptyText: 'No emails'.t(),
                 selModel: {
                     selType: 'checkboxmodel'
                 },
@@ -279,41 +274,34 @@ Ext.define('Ung.config.email.MainController', {
                 }],
                 columns: [{
                     header: 'Date'.t(),
-                    width: 140,
+                    width: Renderer.timestampWidth,
                     dataIndex: 'quarantinedDate',
-                    renderer: function(value) {
-                        if (!value) { return ''; }
-                        var date = new Date();
-                        date.setTime(value);
-                        return Util.timestampFormat(value);
-                    }
+                    renderer: Renderer.timestamp
                 }, {
                     header: 'Sender'.t(),
-                    width: 180,
+                    width: Renderer.emailWidth,
                     dataIndex: 'sender',
                     filter: { type: 'string' }
                 }, {
                     header: 'Subject'.t(),
-                    width: 150,
+                    width: Renderer.messageWidth,
                     flex: 1,
                     dataIndex: 'subject',
                     filter: { type: 'string' }
                 }, {
                     header: 'Size (KB)'.t(),
-                    width: 85,
+                    width: Renderer.sizeWidth,
                     dataIndex: 'size',
-                    renderer: function(value) {
-                        return (value/1024.0).toFixed(3);
-                    },
+                    renderer: Renderer.datasize,
                     filter: { type: 'numeric' }
                 }, {
                     header: 'Category'.t(),
-                    width: 85,
+                    width: Renderer.idWidth,
                     dataIndex: 'quarantineCategory',
                     filter: { type: 'string' }
                 }, {
                     header: 'Detail'.t(),
-                    width: 85,
+                    width: Renderer.sizeWidth,
                     dataIndex: 'quarantineDetail',
                     renderer: function(value) {
                         var detail = value;
@@ -331,7 +319,8 @@ Ext.define('Ung.config.email.MainController', {
                 tbar: [{
                     text: 'Purge Selected'.t(),
                     iconCls: 'fa fa-circle fa-red',
-                    handler: 'purgeMails',
+                    handler: 'externalAction',
+                    action: 'purgeMails',
                     disabled: true,
                     bind: {
                         disabled: '{!mailsGrid.selection}'
@@ -339,7 +328,8 @@ Ext.define('Ung.config.email.MainController', {
                 }, {
                     text: 'Release Selected'.t(),
                     iconCls: 'fa fa-circle fa-green',
-                    handler: 'releaseMails',
+                    handler: 'externalAction',
+                    action: 'releaseMails',
                     disabled: true,
                     bind: {
                         disabled: '{!mailsGrid.selection}'
