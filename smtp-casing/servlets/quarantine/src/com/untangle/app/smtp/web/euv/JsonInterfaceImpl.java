@@ -3,10 +3,14 @@
  */
 package com.untangle.app.smtp.web.euv;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import com.untangle.app.smtp.mime.MIMEUtil;
 import com.untangle.app.smtp.quarantine.BadTokenException;
@@ -23,6 +27,7 @@ import com.untangle.app.smtp.safelist.SafelistManipulation;
 public class JsonInterfaceImpl implements JsonInterface
 {
     public static final int DEFAULT_LIMIT = 20;
+    private static final String TIMEZONE_FILE = "/etc/timezone";
 
     private static enum INBOX_ACTION
     {
@@ -293,4 +298,27 @@ public class JsonInterfaceImpl implements JsonInterface
         response.setSafelistCount(userSafelist.length - currentSafelistSize);
         return response;
     }
+
+    private TimeZone getTimeZone()
+    {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            String str = in.readLine();
+            str = str.trim();
+            in.close();
+            TimeZone current = TimeZone.getTimeZone(str);
+            return current;
+        } catch (Exception x) {
+            return TimeZone.getDefault();
+        }
+    }
+
+    public Integer getTimeZoneOffset()
+    {
+        TimeZone tz = getTimeZone();
+        Calendar cal = Calendar.getInstance(tz);
+        Integer offset = tz.getOffset(cal.getTimeInMillis());
+        return(offset);
+    }
+
 }
