@@ -53,4 +53,6 @@ public interface JsonInterface
      * of addresses that are mapped to this address. */
     public String[] deleteRemaps( String token, String[] address )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public Integer getTimeZoneOffset();
 }

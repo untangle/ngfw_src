@@ -35,6 +35,7 @@
 
             // load translations first because it's a separate call
             rpc = new JSONRpcClient('/quarantine/JSON-RPC').Quarantine;
+            rpc.timeZoneOffset = rpc.getTimeZoneOffset();
 
             Ext.Ajax.request({
                 url : 'i18n',
@@ -57,6 +58,7 @@
 
                 Bootstrap.load([
                     '/script/common/util-all.js',
+                    '/script/common/ungrid-all.js',
                     'script/request.js'
                 ], 'QUARANTINE', function (ex) {
                     // if everything is initialized just launch the application
