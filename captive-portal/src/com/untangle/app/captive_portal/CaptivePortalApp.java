@@ -45,6 +45,10 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 
+/**
+ * Implementation of the captive portal application.
+ */
+
 public class CaptivePortalApp extends AppBase
 {
     public enum BlingerType
@@ -152,6 +156,9 @@ public class CaptivePortalApp extends AppBase
         validateAllSessions(null);
     }
 
+    /**
+     * @return A list of active captive portal users
+     */
     public ArrayList<CaptivePortalUserEntry> getActiveUsers()
     {
         return (captureUserTable.buildUserList());
@@ -285,6 +292,15 @@ public class CaptivePortalApp extends AppBase
         this.captureSettings = argSettings;
     }
 
+    /**
+     * Called when settings are changed to validate all active sessions and
+     * terminate any session that would not be allowed based on the updated
+     * configuration.
+     * 
+     * @param argAddress
+     *        Optional address of a client being logged out for whom all active
+     *        sessions should be terminated.
+     */
     private void validateAllSessions(InetAddress argAddress)
     {
         final InetAddress userAddress = argAddress;
@@ -429,8 +445,17 @@ public class CaptivePortalApp extends AppBase
         return replacementGenerator.generateResponse(block, session);
     }
 
-    // public methods for user control
-
+    /**
+     * Attempt to authenticate a captive portal user.
+     * 
+     * @param address
+     *        The client address
+     * @param username
+     *        The username supplied by the client
+     * @param password
+     *        The password supplied by the client
+     * @return Zero for successful authentication, any other value for failure
+     */
     public int userAuthenticate(InetAddress address, String username, String password)
     {
         boolean isAuthenticated = false;
@@ -548,6 +573,21 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called to activate a captive portal user without validating a password.
+     * Normally called when captive portal is configured in basic message mode
+     * without user authentication.
+     * 
+     * @param address
+     *        The address of the client
+     * @param username
+     *        The username for the client
+     * @param agree
+     *        The state of the agree checkbox
+     * @param anonymous
+     *        True when the user is anonymous
+     * @return Zero for successful activation, any other value for failure
+     */
     public int userActivate(InetAddress address, String username, String agree, boolean anonymous)
     {
         if (agree.equals("agree") == false) {
@@ -568,11 +608,31 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called by handler.py to activate an anonymous user when basic message
+     * mode is enabled with no user authentication.
+     * 
+     * @param address
+     *        The client address
+     * @param agree
+     *        The text from the agree control from the posted form
+     * @return Zero for successful activation, any other value for failure
+     */
     public int userActivate(InetAddress address, String agree)
     {
         return userActivate(address, "Anonymous", agree, true);
     }
 
+    /**
+     * Called to login a user when authentication is provided by some external
+     * mechanism, such as with a custom script or via cookie.
+     * 
+     * @param address
+     *        The address of the client
+     * @param username
+     *        The username for the client
+     * @return Zero for successful login, any other value for failure
+     */
     public int userLogin(InetAddress address, String username)
     {
         publishActiveUser(address, username, false);
@@ -589,6 +649,15 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called to login a Google OAuth-thenticated user
+     * 
+     * @param address
+     *        The client address
+     * @param username
+     *        The client username
+     * @return Zero for successful login
+     */
     public int googleLogin(InetAddress address, String username)
     {
         publishActiveUser(address, username, false);
@@ -601,6 +670,15 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called to login a Facebook OAuth-thenticated user
+     * 
+     * @param address
+     *        The client address
+     * @param username
+     *        The client username
+     * @return Zero for successful login
+     */
     public int facebookLogin(InetAddress address, String username)
     {
         publishActiveUser(address, username, false);
@@ -613,6 +691,15 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called to login a Microsoft OAuth-thenticated user
+     * 
+     * @param address
+     *        The client addreess
+     * @param username
+     *        The client username
+     * @return Zero for successful login
+     */
     public int microsoftLogin(InetAddress address, String username)
     {
         publishActiveUser(address, username, false);
@@ -625,11 +712,27 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called to logout a user
+     * 
+     * @param address
+     *        The client address to be logged out
+     * @return Zero for logout success, any other value for failure
+     */
     public int userLogout(InetAddress address)
     {
         return (userLogout(address, CaptivePortalUserEvent.EventType.USER_LOGOUT));
     }
 
+    /**
+     * Called to logout a user for a specific reason
+     * 
+     * @param address
+     *        The client address to be logged out
+     * @param reason
+     *        The reason for the logout event
+     * @return Zero for logout success, any other value for failure
+     */
     public int userLogout(InetAddress address, CaptivePortalUserEvent.EventType reason)
     {
         String userkey = null;
@@ -670,6 +773,13 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called by the UI to force logout a user in the status grid
+     * 
+     * @param userkey
+     *        The IP or MAC address of the user to be logged out
+     * @return Zero for logout success, any other value for failure
+     */
     public int userAdminLogout(String userkey)
     {
         HostTableEntry entry = null;
@@ -713,6 +823,18 @@ public class CaptivePortalApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called after any successfull login to add the user to the active user
+     * table and update the system host table to prevent the entry from being
+     * removed while the client is an active captive portal user.
+     * 
+     * @param address
+     *        The address of the client
+     * @param username
+     *        The username of the client
+     * @param anonymous
+     *        The anonymous flag for the login
+     */
     protected void publishActiveUser(InetAddress address, String username, Boolean anonymous)
     {
         CaptivePortalUserEntry user = null;
@@ -756,6 +878,13 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
+    /**
+     * Called for any user logout to remove the user from the active user table
+     * and clear our special entries in the system host table.
+     * 
+     * @param user
+     *        The user object to be removed
+     */
     protected void destroyActiveUser(CaptivePortalUserEntry user)
     {
         HostTableEntry entry = null;
@@ -779,8 +908,14 @@ public class CaptivePortalApp extends AppBase
         entry.setCaptivePortalAuthenticated(false);
     }
 
-    // public method for determining if a client is already authenticated
-
+    /**
+     * Called by the traffic handlers to allow passing traffic for authenticated
+     * users.
+     * 
+     * @param clientAddr
+     *        The client address for the traffic
+     * @return True if the client is authenticated, otherwise false
+     */
     public boolean isClientAuthenticated(InetAddress clientAddr)
     {
         CaptivePortalUserEntry user = null;
@@ -807,8 +942,16 @@ public class CaptivePortalApp extends AppBase
         return (false);
     }
 
-    // public method for testing the passed client and server lists for a session
-
+    /**
+     * Called by the traffic handlers to allow passing traffic for hosts matched
+     * in the passed client or server lists.
+     * 
+     * @param clientAddr
+     *        The client address for the traffic
+     * @param serverAddr
+     *        The server address for the traffic
+     * @return True if session should be allowed, otherwise false
+     */
     public PassedAddress isSessionAllowed(InetAddress clientAddr, InetAddress serverAddr)
     {
         List<PassedAddress> clientList = getCaptivePortalSettings().getPassedClients();
@@ -836,8 +979,13 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
-    // public methods for checking capture rules for a session 
-
+    /**
+     * Called by the traffic handlers to check traffic against capture rules.
+     * 
+     * @param sessreq
+     *        The new session request
+     * @return The first matching rule or null when no match is found
+     */
     public CaptureRule checkCaptureRules(IPNewSessionRequest sessreq)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
@@ -852,6 +1000,14 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
+    /**
+     * Called by the traffic handlers to check traffic against capture rules.
+     * 
+     * @param session
+     *        The TCP session
+     * 
+     * @return The first matching rule or null when no match is found
+     */
     public CaptureRule checkCaptureRules(AppTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
@@ -866,18 +1022,33 @@ public class CaptivePortalApp extends AppBase
         return (null);
     }
 
+    /**
+     * Checks to see if a user is in the cookie table
+     * 
+     * @param address
+     *        The address of the client
+     * @param username
+     *        The username for the client
+     * @return True if found in table, otherwise false
+     */
     public boolean isUserInCookieTable(String address, String username)
     {
         return captureUserCookieTable.searchByAddressUsername(address, username) != null;
     }
 
+    /**
+     * Remove a user from the cookie table
+     * 
+     * @param address
+     *        The address of the user to be removed
+     */
     public void removeUserFromCookieTable(String address)
     {
         captureUserCookieTable.removeActiveUser(address);
     }
 
     /**
-     * This runs the periodic cleanup task now. It is used by the test suite
+     * This runs the period clean up task and is used by the test suite.
      */
     public void runCleanup()
     {
@@ -979,8 +1150,8 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
-     * This method saves the current user state in a file in conf/ This is so we
-     * preserve user login state on untangle-vm or server reboots
+     * This method saves the current user state in a file in the conf directory
+     * so we preserve user login state on untangle-vm or server reboots
      */
     private void saveUserState()
     {
@@ -997,7 +1168,7 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
-    /*
+    /**
      * This is called by the UI to upload and remove custom captive pages.
      */
     private class CustomPageUploadHandler implements UploadHandler

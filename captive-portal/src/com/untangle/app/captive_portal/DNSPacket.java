@@ -7,6 +7,15 @@ package com.untangle.app.captive_portal;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+/**
+ * Class for creating and extracting DNS queries. It's used in the traffic
+ * handler for intercepting and responding to queries from clients that have not
+ * authenticated.
+ * 
+ * WARNING: There is currently no error checking, so calling any of the methods
+ * before first calling ExtractQuery will cause all kinds of chaos.
+ */
+
 class DNSPacket
 {
     private InetAddress raddr = null;
@@ -34,6 +43,14 @@ class DNSPacket
     {
     }
 
+    /**
+     * Extracts the fields from a DNS query.
+     * 
+     * @param buffer
+     *        The raw DNS query data
+     * @param length
+     *        The size of the buffer
+     */
     void ExtractQuery(byte[] buffer, int length)
     {
         int flags, count, x;
@@ -68,8 +85,7 @@ class DNSPacket
             count = bb.get();
 
             // if zero then we are finished
-            if (count == 0)
-                break;
+            if (count == 0) break;
 
             // grab each character of the lable and append to our string
             for (x = 0; x < count; x++) {
@@ -88,6 +104,14 @@ class DNSPacket
         qclass = (bb.getShort() & 0xFFFF);
     }
 
+    /**
+     * Creates a DNS response packet using the qname that was previously
+     * extracted and the argumented address.
+     * 
+     * @param The
+     *        address to be used in the response A record
+     * @return The raw DNS response packet
+     */
     public ByteBuffer GenerateResponse(InetAddress address)
     {
         ByteBuffer bb = ByteBuffer.allocate(256);
@@ -138,10 +162,8 @@ class DNSPacket
             // if we find a dot we stuff the length of the next label
             if (qname.charAt(x) == '.') {
                 find = qname.indexOf('.', x + 1);
-                if (find < 0)
-                    len = 0;
-                else
-                    len = (find - x - 1);
+                if (find < 0) len = 0;
+                else len = (find - x - 1);
                 bb.put((byte) len);
             }
 
@@ -172,36 +194,39 @@ class DNSPacket
         return (bb);
     }
 
+    /**
+     * Checks a previously extracted DNS query to see if it seems valid.
+     * 
+     * @return true if valid, otherwise false
+     */
     public boolean isValidDNSQuery()
     {
-        if (qtype != 1)
-            return (false); // must be query for A record
-        if (qclass != 1)
-            return (false); // most be the IN class
-        if (qr_flag != 0)
-            return (false); // must be a query not response
-        if (op_code != 0)
-            return (false); // must be standard query
-        if (aa_flag != 0)
-            return (false); // AA shouldn't be set in a query
-        if (tc_flag != 0)
-            return (false); // TC shouldn't be set in a query
-        if (ra_flag != 0)
-            return (false); // RA shouldn't be set in a query
-        if (zz_flag != 0)
-            return (false); // Z field should always be zero
-        if (re_code != 0)
-            return (false); // response should be zero
-        if (qd_count != 1)
-            return (false); // expect a single question
+        if (qtype != 1) return (false); // must be query for A record
+        if (qclass != 1) return (false); // most be the IN class
+        if (qr_flag != 0) return (false); // must be a query not response
+        if (op_code != 0) return (false); // must be standard query
+        if (aa_flag != 0) return (false); // AA shouldn't be set in a query
+        if (tc_flag != 0) return (false); // TC shouldn't be set in a query
+        if (ra_flag != 0) return (false); // RA shouldn't be set in a query
+        if (zz_flag != 0) return (false); // Z field should always be zero
+        if (re_code != 0) return (false); // response should be zero
+        if (qd_count != 1) return (false); // expect a single question
         return (true);
     }
 
+    /**
+     * Returns the QNAME from the previously extracted DNS Query.
+     * 
+     * @return The QNAME
+     */
     public String getQname()
     {
         return (qname);
     }
 
+    /**
+     * @return A String with details of the query for debug logging
+     */
     public String queryString()
     {
         String string = new String();
@@ -212,14 +237,15 @@ class DNSPacket
         return (string);
     }
 
+    /**
+     * @return a String with details of the response for debug logging
+     */
     public String replyString()
     {
         String string = new String();
         string += String.format("REPLY ID:%d ", query_id);
-        if (raddr == null)
-            string += String.format("REFUSED ");
-        else
-            string += String.format("ADDR:%s ", raddr.getHostAddress().toString());
+        if (raddr == null) string += String.format("REFUSED ");
+        else string += String.format("ADDR:%s ", raddr.getHostAddress().toString());
         return (string);
     }
 }

@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.util.LoadAvg;
 
+/**
+ * This is a timer task that runs periodically, gets a list of stale users, and
+ * logs those users out of captive portal.
+ */
+
 public class CaptivePortalTimer extends TimerTask
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -35,10 +40,9 @@ public class CaptivePortalTimer extends TimerTask
                 counter++;
             }
 
-            if (counter > 0)
-                logger.info("Cleaned up " + counter + " expired sessions");
+            if (counter > 0) logger.info("Cleaned up " + counter + " expired sessions");
         } catch (Exception e) {
-            logger.warn("Exception in session cleanup",e);
+            logger.warn("Exception in session cleanup", e);
         }
     }
 }

@@ -6,6 +6,11 @@ package com.untangle.app.captive_portal;
 
 import com.untangle.app.http.BlockDetails;
 
+/**
+ * This is the implementation of the captive portal block details used when
+ * generating the capture redirect.
+ */
+
 @SuppressWarnings("serial")
 public class CaptivePortalBlockDetails extends BlockDetails
 {
