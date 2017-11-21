@@ -17,8 +17,8 @@ public class DashboardManagerImpl implements DashboardManager
 {
     private static final Logger logger = Logger.getLogger(DashboardManagerImpl.class);
 
-    private DashboardSettings settings = null; 
-    
+    private DashboardSettings settings = null;
+
     protected DashboardManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -64,7 +64,7 @@ public class DashboardManagerImpl implements DashboardManager
                     iterator.remove();
                     iterator.add( new DashboardWidgetSettings("Resources") );
                 }
-                // Network widget is gone, 
+                // Network widget is gone,
                 if ( "Network".equals(widget.getType()) ) {
                     iterator.remove();
                     iterator.add( new DashboardWidgetSettings("NetworkInformation") );
@@ -94,7 +94,7 @@ public class DashboardManagerImpl implements DashboardManager
             widgetSettings.setTimeframe(3600);
             widgetSettings.setEntryId("application-control-OAI5zmhxOM"); // Application Control - Top Applications Usage
             settings.getWidgets().add( widgetSettings);
-            
+
             this.setSettings( settings );
             logger.info("Migrating dashboard settings to v2... done.");
         }
@@ -131,7 +131,7 @@ public class DashboardManagerImpl implements DashboardManager
     {
         setSettings( defaultSettings() );
     }
-    
+
     private DashboardSettings defaultSettings()
     {
         DashboardWidgetSettings widgetSettings;
@@ -143,7 +143,8 @@ public class DashboardManagerImpl implements DashboardManager
         widgets.add( new DashboardWidgetSettings("NetworkInformation"));
         widgets.add( new DashboardWidgetSettings("NetworkLayout"));
         widgets.add( new DashboardWidgetSettings("MapDistribution"));
-        
+        widgets.add( new DashboardWidgetSettings("PolicyOverview"));
+
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
@@ -161,7 +162,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("web-filter-RxrICRqf6Bg"); // Web Filter - Top Categories
         widgets.add( widgetSettings);
-        
+
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
@@ -173,7 +174,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("bandwidth-control-BVOy539ahO"); // Bandwidth Control - Top Hostnames Usage
         widgets.add( widgetSettings);
-        
+
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
@@ -185,7 +186,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("application-control-OAI5zmhxOM"); // Application Control - Top Applications Usage
         widgets.add( widgetSettings);
-    
+
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
@@ -198,7 +199,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
         widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
         widgets.add( widgetSettings);
-        
+
         DashboardSettings newSettings = new DashboardSettings();
         newSettings.setVersion(2);
         newSettings.setWidgets(widgets);

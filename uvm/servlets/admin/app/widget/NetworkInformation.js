@@ -59,16 +59,15 @@ Ext.define('Ung.widget.NetworkInformation', {
     }],
 
     fetchData: function (cb) {
-        var me = this,
-            vm = this.getViewModel();
+        var me = this, vm = me.getViewModel();
 
         if (vm) {
+            me.setLoading(true);
             Rpc.asyncData('rpc.sessionMonitor.getSessionStats')
                 .then(function(result) {
                     vm.set('sessions', result);
+                    me.setLoading(false);
                     cb();
-                    //console.log(result);
-                    // me.fireEvent('afterdata');
                 });
         }
     }

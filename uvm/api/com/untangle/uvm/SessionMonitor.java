@@ -25,7 +25,7 @@ public interface SessionMonitor
      * If appId == 0, then getMergedSessions() is returned
      */
     public List<SessionMonitorEntry> getMergedSessions(long appId);
-    
+
     /**
      * This returns a list of sessions and the bandwidth usage over the last 5 seconds
      * It calls the Jnettop list and merges it with the conntrack and netcap lists
@@ -55,4 +55,10 @@ public interface SessionMonitor
      * This is a JSON object with some keys to store values such as totalSessions, scannedSession, etc.
      */
     public org.json.JSONObject getSessionStats();
+
+    /**
+     * Retrieve the session stats by policy id
+     * This is a JSON object which has policy ids as keys and sessions count, total kbps for each policy
+     */
+    public org.json.JSONObject getPoliciesSessionsStats();
 }
