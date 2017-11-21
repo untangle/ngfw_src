@@ -1,9 +1,7 @@
 Ext.define('Ung.cmp.AppState', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.appstate',
-    // bind: {
-    //     title: '{appStateTitle}'
-    // },
+    title: '<i class="fa fa-power-off"></i> ' + "Power".t(),
 
     padding: 10,
     margin: '20 0',
