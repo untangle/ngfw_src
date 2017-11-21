@@ -5,6 +5,18 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
 
     viewModel: {
         stores: {
+            activeGroups:{
+                fields: [{
+                    name: 'categories'
+                },{
+                    name: 'categoriesSelected'
+                },{
+                    name: 'classtypes',
+                },{
+                    name: 'classtypesSelected',
+                }],
+                data: '{settings.activeGroups}',
+            },
             rules: {
                 storeId: 'rulesStore',
                 fields: [{
@@ -55,7 +67,65 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     datachanged: 'storedatachanged'
                 }
             }
-        }
+        },
+        formulas: {
+            getWizardClasstypes: function(get) {
+                var record = get('activeGroups').first();
+                var profileId = get('settings.profileId');
+                var currentClasstypes = record.get('classtypes');
+                var profileClasstypes = [];
+                if(currentClasstypes == 'custom'){
+                    profileClasstypes = record.get('classtypesSelected');
+                }else{
+                    get('wizardDefaults').profiles.forEach(function(profile){
+                        if(profile.profileId == profileId){
+                            profileClasstypes = profile.activeGroups.classtypesSelected;
+                        }
+                    });
+                }
+
+                var selected = [];
+                profileClasstypes.forEach(function(classtype){
+                    if(classtype[0] == '-'){
+                        return;
+                    }
+                    if(classtype[0] == '+'){
+                        classtype = classtype.substring(1);
+                    }
+                    selected.push(classtype);
+                });
+
+                return Ext.String.format( '<i>{0}</i>', currentClasstypes == 'custom' ? 'Custom'.t() : 'Recommended'.t() ) + ': ' + selected.join(', ');
+            },
+            getWizardCategories: function(get){
+                var record = get('activeGroups').first();
+                var profileId = get('settings.profileId');
+                var currentCategories = record.get('categories');
+                var profileCategories = [];
+                if(currentCategories == 'custom'){
+                    profileCategories = record.get('categoriesSelected');
+                }else{
+                    get('wizardDefaults').profiles.forEach(function(profile){
+                        if(profile.profileId == profileId){
+                            profileCategories = profile.activeGroups.categoriesSelected;
+                        }
+                    });
+                }
+
+                var selected = [];
+                profileCategories.forEach(function(category){
+                    if(category[0] == '-'){
+                        return;
+                    }
+                    if(category[0] == '+'){
+                        category = category.substring(1);
+                    }
+                    selected.push(category);
+                });
+
+                return Ext.String.format( '<i>{0}</i>', currentCategories == 'custom' ? 'Custom'.t() : 'Recommended'.t() ) + ': ' + selected.join(', ');
+            }
+        },
     },
 
     tabBar: {
