@@ -200,6 +200,25 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 console.log("Failed load");
             }
         });
+        Ext.Ajax.request({
+            url: "/admin/download",
+            method: 'POST',
+            params: {
+                type: "IntrusionPreventionSettings",
+                arg1: "wizard",
+                arg2: v.appManager.getAppSettings().id
+            },
+            scope: this,
+            timeout: 600000,
+            success: function(response){
+                vm.set('wizardDefaults', Ext.decode( response.responseText ));
+            },
+            failure: function(response){
+                Ext.MessageBox.alert( "Setup Wizard Error".t(), "Unable to obtain default settings.  Please run the Setup Wizard again.".t(), Ext.bind(function () {
+                    Ext.MessageBox.hide();
+                }, this));
+            }
+        });
 
     },
 
@@ -235,6 +254,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         for( var i = 0; i < keys.length; i++){
             if( ( keys[i] == "rules" ) ||
                 ( keys[i] == "variables" ) ||
+                ( keys[i] == "profileId" ) ||
                 ( keys[i] == "activeGroups") ){
                 continue;
             }

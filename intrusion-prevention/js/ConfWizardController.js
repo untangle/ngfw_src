@@ -44,7 +44,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
                             architecture = "unknown";
                         }
 
-                        var wizardProfile = wizardDefaults.profiles[0];
+                        var wizardProfile = null;
                         wizardDefaults.profiles.forEach( function(profile){
                             var match = false;
                             systemStats = profile.systemStats;
@@ -60,11 +60,14 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
                                     break;
                                 }
                             }
-                            if( match){
+                            if( match && wizardProfile == null){
                                 wizardProfile = profile;
                                 wizardProfile.profileVersion = wizardDefaults.version;
                             }
                         });
+                        if(wizardProfile == null){
+                            wizardProfile = wizardDefaults.profiles[0];
+                        }
 
                         vm.set('wizardProfile', wizardProfile);
                         var settings = vm.get('settings');
@@ -187,12 +190,16 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             }
 
             var settings = vm.get('settings');
+            settings.profileId = vm.get('wizardProfile').profileId;
             settings.activeGroups = activeGroups;
             settings.configured = true;
             vm.set('settings', settings);
 
             var app = this.getView().up('#appCard');
-            app.getController().setSettings({activeGroups: activeGroups});
+            app.getController().setSettings({
+                activeGroups: activeGroups,
+                profileId: settings.profileId
+            });
 
             app.down('appstate').down('button[cls=power-btn]').click();
         }
