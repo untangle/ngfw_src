@@ -37,7 +37,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             }
         }, {
             xtype: 'fieldset',
-            title: "Setup Wizard".t(),
+            title: '<i class="fa fa-magic"></i> ' + "Setup Wizard".t(),
             items: [{
                 xtype: 'component',
                 html: "Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention.".t(),
@@ -78,10 +78,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             }]
         },{
             xtype: 'fieldset',
-            title: "Updates".t(),
+            title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
             defaults: {
                 labelWidth: 200
             },
+            padding: 10,
             hidden: true,
             bind: {
                 hidden: '{settings.configured == false}'
