@@ -46,6 +46,29 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 bind: {
                     hidden: '{settings.configured == true}'
                 }
+            },{
+                xtype: 'fieldset',
+                title: "Current Settings".t(),
+                defaults: {
+                    labelWidth: 200
+                },
+                hidden: true,
+                bind: {
+                    hidden: '{settings.configured == false}'
+                },
+                items: [{
+                    xtype: 'displayfield',
+                    fieldLabel: "Classtypes".t(),
+                    bind: {
+                        value: '{getWizardClasstypes}'
+                    }
+                }, {
+                    xtype: 'displayfield',
+                    fieldLabel: "Categories".t(),
+                    bind: {
+                        value: '{getWizardCategories}'
+                    }
+                }]
             }, {
                 xtype: 'button',
                 margin: '10 0 10 0',
