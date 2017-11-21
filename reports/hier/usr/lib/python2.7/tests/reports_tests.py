@@ -508,7 +508,7 @@ class ReportsTests(unittest2.TestCase):
         
         # install all the apps that aren't already installed
         apps = []
-        for name in ["firewall", "web-filter", "wan-failover", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]:
+        for name in ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]:
             if (uvmContext.appManager().isInstantiated(name)):
                 print "App %s already installed" % name
             else:
