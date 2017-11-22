@@ -32,11 +32,16 @@ Ext.define('Ung.view.reports.GraphReport', {
             // find and set the widget component if report is rendered inside a widget
             view.setWidget(view.up('reportwidget'));
             // if it's a widget, than fetch data after the report entry is binded to it
-            vm.bind('{entry}', function () {
+            vm.bind('{entry}', function (entry) {
+                if (!entry ||
+                    ( entry.get('type') !== 'PIE_GRAPH' &&
+                      entry.get('type') !== 'TIME_GRAPH' &&
+                      entry.get('type') !== 'TIME_GRAPH_DYNAMIC') ) {
+                    return;
+                }
+
                 if (view.getWidget()) {
                     DashboardQueue.addFirst(view.getWidget());
-                } else {
-                    me.fetchData(true);
                 }
             });
 

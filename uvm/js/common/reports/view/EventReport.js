@@ -95,7 +95,6 @@ Ext.define('Ung.view.reports.EventReport', {
                     DashboardQueue.addFirst(view.getWidget());
                 } else {
                     vm.set('eventsData', []);
-                    me.fetchData(true);
                 }
             });
 
