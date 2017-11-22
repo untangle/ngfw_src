@@ -182,36 +182,21 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                 boxLabel: '<strong>' + 'Enabled'.t() + '</strong>',
                 bind: '{widget.enabled}'
             }, {
-                xtype: 'container',
-                layout: { type: 'hbox', align: 'middle' },
-                items: [{
-                    xtype: 'checkbox',
-                    boxLabel: '<strong>' + 'Auto Refresh'.t() + '</strong>: ',
-                    bind: '{_autorefresh}'
-                }, {
-                    xtype: 'numberfield',
-                    width: 50,
-                    maxValue: 600,
-                    minValue: 10,
-                    allowBlank: true,
-                    margin: '0 5',
-                    hidden: true,
-                    bind: {
-                        value: '{widget.refreshIntervalSec}',
-                        hidden: '{!_autorefresh}'
-                    }
-                }, {
-                    xtype: 'component',
-                    style: {
-                        fontSize: '11px',
-                        color: '#777'
-                    },
-                    html: '(seconds)'.t(),
-                    hidden: true,
-                    bind: {
-                         hidden: '{!_autorefresh}'
-                    }
-                }]
+                xtype: 'combo',
+                fieldLabel: '<strong>' + 'Auto Refresh'.t() + '</strong>',
+                allowBlank: false,
+                margin: '0 5',
+                store: [
+                    [10, '10 ' + 'seconds'.t()],
+                    [30, '30 ' + 'seconds'.t()],
+                    [60, '1 ' + 'minute'.t()],
+                    [120, '2 ' + 'minutes'.t()],
+                    [300, '5 ' + 'minutes'.t()],
+                    [0, 'never'.t()]
+                ],
+                editable: false,
+                queryMode: 'local',
+                bind: '{widget.refreshIntervalSec}'
             }, {
                 xtype: 'checkbox',
                 reference: 'columnsck',

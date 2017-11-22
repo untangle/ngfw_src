@@ -116,12 +116,12 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             });
 
             switch (node.get('type')) {
-                case 'EVENT_LIST':
-                    xtype = 'eventreport'; break;
-                case 'TEXT':
-                    xtype = 'textreport'; break;
-                default:
-                    xtype = 'graphreport';
+            case 'EVENT_LIST':
+                xtype = 'eventreport'; break;
+            case 'TEXT':
+                xtype = 'textreport'; break;
+            default:
+                xtype = 'graphreport';
             }
 
             me.lookup('report').remove('entry');
@@ -174,7 +174,7 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
 
     updateColumns: function(cmp, val) {
         var vm = this.getViewModel(), columns = this.getView().down('grid').getColumns();
-        console.log(vm.get('widget.displayColumns'));
+        // console.log(vm.get('widget.displayColumns'));
         Ext.Array.each(columns, function (col) {
             col.setHidden(Ext.Array.indexOf(vm.get('widget.displayColumns'), col.dataIndex) < 0);
         });

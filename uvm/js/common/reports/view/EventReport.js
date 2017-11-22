@@ -90,11 +90,18 @@ Ext.define('Ung.view.reports.EventReport', {
                 if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
                 me.entry = entry;
                 me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
+
+                // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
                     me.setupGrid();
                     DashboardQueue.addFirst(view.getWidget());
                 } else {
-                    vm.set('eventsData', []);
+                    // if rendered in creating new widget dialog, fetch data
+                    if (view.up('new-widget')) {
+                        me.fetchData(true);
+                    } else {
+                        vm.set('eventsData', []);
+                    }
                 }
             });
 
