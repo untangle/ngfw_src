@@ -115,6 +115,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         widgetsCmp.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
+                            lastFetchTime: null,
+                            visible: true,
                             bind: {
                                 userCls: 'theme-{theme}'
                             },
@@ -183,6 +185,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     wg = dashboard.insert(i, {
                         xtype: 'reportwidget',
                         itemId: widget.get('entryId'),
+                        lastFetchTime: null,
+                        visible: true,
                         bind: {
                             userCls: 'theme-{theme}'
                         },
@@ -194,7 +198,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             }
                         }
                     });
-                    DashboardQueue.addFirst(wg);
+                    Ext.defer(function () {
+                        DashboardQueue.addFirst(wg);
+                    }, 1000);
                 } else {
                     // add widget placeholder
                     dashboard.insert(i, {
@@ -317,10 +323,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                                 xtype: 'reportwidget',
                                 itemId: record.get('entryId'),
                                 visible: true,
+                                lastFetchTime: null,
                                 bind: {
                                     userCls: 'theme-{theme}'
                                 },
-                                lastFetchTime: null,
                                 // refreshIntervalSec: record.get('refreshIntervalSec'),
                                 viewModel: {
                                     data: {
@@ -435,6 +441,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     wgCmp = me.lookup('dashboard').add({
                         xtype: 'reportwidget',
                         itemId: wg2.get('entryId'),
+                        visible: true,
+                        lastFetchTime: null,
                         bind: {
                             userCls: 'theme-{theme}'
                         },
@@ -445,7 +453,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             }
                         }
                     });
-                    DashboardQueue.addFirst(wgCmp);
+                    Ext.defer(function () {
+                        DashboardQueue.addFirst(wgCmp);
+                    }, 1000);
                 } else {
                     me.lookup('dashboard').add({
                         xtype: 'component',
@@ -468,6 +478,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         me.lookup('dashboard').insert(idx, {
                             xtype: 'reportwidget',
                             itemId: wg2.get('entryId'),
+                            visible: true,
+                            lastFetchTime: null,
                             bind: {
                                 userCls: 'theme-{theme}'
                             },
@@ -582,6 +594,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 dashboardCmp.add({
                     xtype: 'reportwidget',
                     itemId: widget.entryId,
+                    visible: true,
+                    lastFetchTime: null,
                     bind: {
                         userCls: 'theme-{theme}'
                     },

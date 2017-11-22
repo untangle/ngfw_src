@@ -8,7 +8,6 @@ Ext.define('Ung.widget.PolicyOverview', {
     border: false,
     baseCls: 'widget',
 
-    width: 500,
     height: 300,
 
     layout: {
