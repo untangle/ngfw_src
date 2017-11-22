@@ -190,6 +190,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             timeout: 600000,
             success: function(response){
                 vm.set('settings', Ext.decode( response.responseText ) );
+                vm.set('profileStore', true);
                 vm.set('rulesStoreLoad', true);
                 vm.set('variablesStoreLoad', true);
                 v.setLoading(false);
@@ -363,7 +364,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
          * save in the same session, causes to see all records as modified
          * and therefore, send send ALL data back.
          *
-         * To get around this, we have the inline loader rouines set the
+         * To get around this, we have the inline loader routines set the
          * 'storeId'Load variable and if we see it here, cause all of those changes
          * to be "commited" since nothing has changed.
          *
@@ -377,6 +378,18 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             vm.set( storeId + 'Load', false);
         }
     },
+
+    /**
+     * In cases where we want to bind both to the value and tooltip (profile),
+     * bind the value to a formula and return an object containing 'value' and 'tip' keys.
+     */
+    bindChange: function(cmp){
+        var bindValue = cmp.bind.value.getValue();
+        cmp.setValue(bindValue.value);
+        cmp.getEl().set({
+            'data-qtip': bindValue.tip
+        });
+    }
 
 });
 
