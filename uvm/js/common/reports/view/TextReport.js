@@ -15,6 +15,10 @@ Ext.define('Ung.view.reports.TextReport', {
         fontSize: '16px'
     },
 
+    config: {
+        widget: null
+    },
+
     controller: {
         control: {
             '#': {
@@ -23,18 +27,21 @@ Ext.define('Ung.view.reports.TextReport', {
             }
         },
 
-        onAfterRender: function () {
+        onAfterRender: function (view) {
             var me = this, vm = this.getViewModel();
 
-            // vm.bind('{entry}', function (entry) {
-            //     if (entry.get('type') !== 'TEXT') {
-            //         return;
-            //     }
-            //     if (!me.getView().up('reportwidget')) {
-            //         me.fetchData();
-            //     } else {
-            //         me.isWidget = true;
-            //     }
+            // find and set the widget component if report is rendered inside a widget
+            view.setWidget(view.up('reportwidget'));
+
+            // if it's a widget, than fetch data after the report entry is binded to it
+            vm.bind('{entry}', function (entry) {
+                if (!entry || entry.get('type') !== 'TEXT') { return; }
+
+                if (view.getWidget()) {
+                    DashboardQueue.addFirst(view.getWidget());
+                }
+            });
+
             // });
 
             // needed on Create New

@@ -31,8 +31,7 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('eEntry', null);
             me.setReportCard(entry.get('type'));
 
-            // me.reload(true);
-
+            me.reload(true); // important to fetch data in reports view
 
             // check if widget in admin context
             if (Ung.app.context === 'ADMIN') {
@@ -195,6 +194,7 @@ Ext.define('Ung.view.reports.EntryController', {
             // if (reps) { reps.getViewModel().set('fetching', false); }
             // if autorefresh enabled refetch data in 5 seconds
             vm.set('reportData', data);
+
             if (vm.get('r_autoRefreshBtn.pressed')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.reload();
