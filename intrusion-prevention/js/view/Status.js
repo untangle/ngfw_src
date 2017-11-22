@@ -48,26 +48,32 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 }
             },{
                 xtype: 'fieldset',
-                title: "Current Settings".t(),
+                title: "Profile".t(),
                 defaults: {
                     labelWidth: 200
                 },
                 hidden: true,
                 bind: {
-                    hidden: '{settings.configured == false}'
+                    hidden: '{instance.runState !== "RUNNING"}'
                 },
                 items: [{
                     xtype: 'displayfield',
                     fieldLabel: "Classtypes".t(),
                     bind: {
-                        value: '{getWizardClasstypes}'
-                    }
+                        value: '{getWizardClasstypes}',
+                    },
+                    listeners:{
+                        change: 'bindChange'
+                    },
                 }, {
                     xtype: 'displayfield',
                     fieldLabel: "Categories".t(),
                     bind: {
                         value: '{getWizardCategories}'
-                    }
+                    },
+                    listeners:{
+                        change: 'bindChange'
+                    },
                 }]
             }, {
                 xtype: 'button',
@@ -83,10 +89,13 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 labelWidth: 200
             },
             padding: 10,
-            hidden: true,
+            collapsed: true,
+            disabled: true,
             bind: {
-                hidden: '{settings.configured == false}'
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
             },
+
             items: [{
                 xtype: 'displayfield',
                 fieldLabel: "Last check for updates".t(),
@@ -100,11 +109,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', rpc.companyName)
             }]
         }, {
-            xtype: 'appreports',
-            hidden: true,
-            bind: {
-                hidden: '{settings.configured == false}'
-            }
+            xtype: 'appreports'
         }]
     }, {
         region: 'west',

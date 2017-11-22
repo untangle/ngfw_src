@@ -6,6 +6,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     viewModel: {
         stores: {
             activeGroups:{
+                storeId: 'profileStore',
                 fields: [{
                     name: 'categories'
                 },{
@@ -16,6 +17,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     name: 'classtypesSelected',
                 }],
                 data: '{settings.activeGroups}',
+                listeners:{
+                    datachanged: 'storedatachanged'
+                }
             },
             rules: {
                 storeId: 'rulesStore',
@@ -95,7 +99,14 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     selected.push(classtype);
                 });
 
-                return Ext.String.format( '<i>{0}</i>', currentClasstypes == 'custom' ? 'Custom'.t() : 'Recommended'.t() ) + ': ' + selected.join(', ');
+                var value = 'Recommended'.t();
+                if(currentClasstypes == 'custom'){
+                    value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
+                }
+                return {
+                    value: value,
+                    tip: selected.join(', ')
+                };
             },
             getWizardCategories: function(get){
                 var record = get('activeGroups').first();
@@ -123,7 +134,14 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     selected.push(category);
                 });
 
-                return Ext.String.format( '<i>{0}</i>', currentCategories == 'custom' ? 'Custom'.t() : 'Recommended'.t() ) + ': ' + selected.join(', ');
+                var value = 'Recommended'.t();
+                if(currentCategories == 'custom'){
+                    value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
+                }
+                return {
+                    value: value,
+                    tip: selected.join(', ')
+                };
             }
         },
     },
