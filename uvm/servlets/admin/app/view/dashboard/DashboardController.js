@@ -67,6 +67,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         DashboardQueue.isVisible(dashboard.down('networklayoutwidget'));
         DashboardQueue.isVisible(dashboard.down('mapdistributionwidget'));
         DashboardQueue.isVisible(dashboard.down('networkinformationwidget'));
+        DashboardQueue.isVisible(dashboard.down('policyoverviewwidget'));
         Ext.Array.each(widgets, function (widget) {
             if (widget) {
                 DashboardQueue.isVisible(widget);
