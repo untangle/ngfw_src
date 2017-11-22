@@ -201,7 +201,11 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
                 profileId: settings.profileId
             });
 
-            app.down('appstate').down('button[cls=power-btn]').click();
+            var appState = app.down('appstate');
+            var appStateVm = appState.getViewModel();
+            if(appStateVm.get('instance.targetState') != 'RUNNING' || appStateVm.get('instance.runState') != 'RUNNING'){
+                app.down('appstate').down('button[cls=power-btn]').click();
+            }
         }
 
     },
