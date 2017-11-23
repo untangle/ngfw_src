@@ -590,8 +590,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                             r: 0.7
                         },
                         stops: [
-                            [0, Highcharts.Color(color).setOpacity(Ung.dashboardSettings.theme !== 'DARK' ? 0.4 : 0.9).get('rgba')],
-                            [1, Highcharts.Color(color).setOpacity(Ung.dashboardSettings.theme !== 'DARK' ? 0.8 : 0.3).get('rgba')]
+                            [0, Highcharts.Color(color).setOpacity((isWidget && Ung.dashboardSettings.theme === 'DARK') ? 0.9 : 0.4).get('rgba')],
+                            [1, Highcharts.Color(color).setOpacity((isWidget && Ung.dashboardSettings.theme === 'DARK') ? 0.3 : 0.8).get('rgba')]
                         ]
                     };
                 });
