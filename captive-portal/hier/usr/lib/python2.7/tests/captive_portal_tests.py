@@ -923,6 +923,26 @@ class CaptivePortalTests(unittest2.TestCase):
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_072.out --insecure https://test.untangle.com/")
         assert (result != 0)
 
+    def test_080_checkCaptivePageOnNonStandardPort(self):
+        # Test for captive page when HTTP is set to nonstandard port
+        global app, appData
+        # set HTTP port to 8081
+        setHttpHttpsPorts(8081,443)
+        
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_080.out /tmp/capture_test_080.out http://test.untangle.com/",stdout=True)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_080.out")
+        
+        # revert back to standard ports
+        setHttpHttpsPorts(80,443)
+        assert ("8081" in result)                
+        assert (search == 0)
+    
     @staticmethod
     def finalTearDown(self):
         global app, appAD, appWeb
