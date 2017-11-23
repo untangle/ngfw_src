@@ -100,6 +100,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 widgetsCmp.push({
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
+                    lastFetchTime: null,
                     viewModel: {
                         data: {
                             widget: widget
