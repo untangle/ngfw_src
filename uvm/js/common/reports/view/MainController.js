@@ -80,7 +80,7 @@ Ext.define('Ung.view.reports.MainController', {
 
         if (node.isLeaf()) {
             // report node
-            record = Ext.getStore('reports').findRecord('url', node.get('url'));
+            record = Ext.getStore('reports').findRecord('url', node.get('url'), 0, false, true, true);
             if (record) {
                 me.getView().down('entry').getViewModel().set({
                     entry: record

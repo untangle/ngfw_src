@@ -82,7 +82,7 @@ Ext.define('Ung.view.reports.EventReport', {
             view.setWidget(view.up('reportwidget'));
 
             // hide property grid if rendered inside widget
-            if (view.getWidget()) {
+            if (view.getWidget() || view.up('new-widget')) {
                 view.down('unpropertygrid').hide();
             }
 
@@ -91,17 +91,14 @@ Ext.define('Ung.view.reports.EventReport', {
                 me.entry = entry;
                 me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
 
+                me.setupGrid();
                 // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
-                    me.setupGrid();
                     DashboardQueue.addFirst(view.getWidget());
                 } else {
-                    // if rendered in creating new widget dialog, fetch data
-                    if (view.up('new-widget')) {
-                        me.fetchData(true);
-                    } else {
-                        vm.set('eventsData', []);
-                    }
+                    // if rendered in reports, fetch data
+                    vm.set('eventsData', []);
+                    me.fetchData(true);
                 }
             });
 

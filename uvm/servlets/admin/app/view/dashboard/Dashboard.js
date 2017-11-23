@@ -84,7 +84,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             padding: '10 5',
             items: [{
                 xtype: 'component',
-                html: '<h2>' + 'Manage Widgets'.t() + '</h2>'
+                html: '<h2 style="margin: 0;">' + 'Manage Widgets'.t() + '</h2>'
             }, '->', {
                 xtype: 'tool',
                 type: 'close',
