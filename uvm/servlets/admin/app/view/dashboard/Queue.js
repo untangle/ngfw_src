@@ -26,20 +26,28 @@ Ext.define('Ung.view.dashboard.Queue', {
     },
 
     process: function () {
-        var me = this;
-        if (this.queue.length > 0 && !me.processing) {
-            // console.info('processing', me.processing);
-            var wg = this.queue[0];
+        var me = this, wg = me.queue[0], timeout;
 
+        if (me.queue.length > 0 && !me.processing) {
+
+            /**
+             * timeout computes if the widget needs to be refreshed based on refreshIntervalSec
+             * for custom widgets refreshIntervalSec is defined in view
+             * for report widgets refreshIntervalSec is defined in viewmodel
+             * if lastFetchTime = null means the widgets did not fatch data at all, it was just being rendered
+             */
+            if (wg.lastFetchTime === null) {
+                timeout = true;
+            } else {
+                timeout = ((new Date()).getTime() - wg.lastFetchTime)/1000 - (wg.refreshIntervalSec || wg.getViewModel().get('widget.refreshIntervalSec')) > 0;
+            }
             /**
              * if queue is paused (e.g. not in Dashboard view) or
              * widget is not in visible area of the screen or
              * it hasn't passed the timeout to be refreshed
              * just remove it from queue and skip fetching
              */
-            if (me.paused || !wg.visible ||
-                wg.lastFetchTime && ((new Date()).getTime() - wg.lastFetchTime)/1000 <= wg.getViewModel().get('widget.refreshIntervalSec')
-            ) {
+            if (me.paused || !wg.visible ||!timeout) {
                 Ext.Array.removeAt(me.queue, 0);
                 me.processing = false;
                 me.process();
