@@ -80,6 +80,10 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
             width: 600,
             fieldLabel: 'IPsec Secret'.t()
         },{
+            xtype: 'checkbox',
+            bind: '{settings.allowConcurrentLogins}',
+            fieldLabel: 'Allow Concurrent Logins',
+        },{
             xtype: 'radiogroup',
             bind: '{settings.authenticationType}',
             simpleValue: 'true',
