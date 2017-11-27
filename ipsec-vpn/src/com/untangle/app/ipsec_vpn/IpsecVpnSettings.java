@@ -22,6 +22,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean debugflag = false;
     private boolean vpnflag = false;
     private boolean neverWriteConfig = false;
+    private boolean allowConcurrentLogins = true;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     private String virtualNetworkPool = "198.51.100.0/24";  // used for GRE
@@ -52,6 +53,9 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public boolean getNeverWriteConfig() { return(neverWriteConfig); }
     public void setNeverWriteConfig(boolean neverWriteConfig) { this.neverWriteConfig = neverWriteConfig; }
+
+    public boolean getAllowConcurrentLogins() { return(allowConcurrentLogins); }
+    public void setAllowConcurrentLogins(boolean allowConcurrentLogins) { this.allowConcurrentLogins = allowConcurrentLogins; }
 
     public LinkedList<IpsecVpnTunnel> getTunnels() { return (tunnelList); }
     public void setTunnels(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }

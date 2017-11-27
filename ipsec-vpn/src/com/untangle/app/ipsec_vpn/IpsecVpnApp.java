@@ -27,6 +27,8 @@ import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 
 public class IpsecVpnApp extends AppBase
 {
@@ -397,6 +399,29 @@ public class IpsecVpnApp extends AppBase
     public int virtualUserConnect(String clientProtocol, InetAddress clientAddress, String clientUsername, String netInterface, String netProcess)
     {
         logger.debug("virtualUserConnect PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " IF:" + netInterface + " PROC:" + netProcess);
+
+        /**
+         * If concurrent logins are disabled we start by look for any existing
+         * host table entry for the user.
+         */
+        if (getSettings().getAllowConcurrentLogins() == false) {
+            HostTableEntry finder = UvmContextFactory.context().hostTable().findHostTableEntryByIpsecUsername(clientUsername);
+
+            /**
+             * If we found an entry and the IP address is different, we create a
+             * new entry with the info from the old entry, remove the old entry,
+             * and insert the new entry. It's the equivalent of updating the IP
+             * address of the old entry, which we can't do directly.
+             */
+            if ((finder != null) && (finder.getAddress().equals(clientAddress) == false)) {
+                logger.debug("Replacing host table entry for " + clientUsername + " OLD:" + finder.getAddress().getHostAddress().toString() + " NEW:" + clientAddress.getHostAddress().toString());
+                HostTableEntry pusher = new HostTableEntry();
+                pusher.copy(finder);
+                pusher.setAddress(clientAddress);
+                UvmContextFactory.context().hostTable().removeHostTableEntry(finder.getAddress());
+                UvmContextFactory.context().hostTable().setHostTableEntry(clientAddress, pusher);
+            }
+        }
 
         // put the client in the virtual user table
         VirtualUserEntry entry = virtualUserTable.insertVirtualUser(clientProtocol, clientAddress, clientUsername, netInterface, netProcess);

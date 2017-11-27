@@ -44,11 +44,13 @@ public class VirtualUserTable
 
     public boolean removeVirtualUser(InetAddress clientAddress)
     {
+/*
         // clear the global tunnel username and turn off the tunnel marker so host table knows we are done
         HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddress, false);
         if (entry != null) {
             entry.setUsernameIpsecVpn(null);
         }
+*/
 
         // clear the user detail sfrom our local table
         VirtualUserEntry user = userTable.get(clientAddress);

@@ -60,7 +60,7 @@ public class HostTableImpl implements HostTable
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
 
     private final Pulse saverPulse = new Pulse("device-table-saver", new HostTableSaver(), PERIODIC_SAVE_DELAY);
-    
+
     private int maxActiveSize = 0;
 
     private volatile long lastSaveTime = 0;
@@ -69,12 +69,12 @@ public class HostTableImpl implements HostTable
     private final HostTableRemoveTagHook removeTagHook = new HostTableRemoveTagHook();
 
     private HashMap<String,HashSet<String>> currentIpSets = new HashMap<String,HashSet<String>>();
-    
+
     protected HostTableImpl()
     {
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedHosts();
-        
+
         saverPulse.start();
 
         UvmContextFactory.context().newThread(this.cleaner).start();
@@ -85,7 +85,7 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_REMOVE_TAG, this.removeTagHook );
 
     }
-    
+
     /**
      * Set the host table to the specified list
      * This actually empties the table, and then adds all the newHosts to the new table
@@ -100,7 +100,7 @@ public class HostTableImpl implements HostTable
     {
         ConcurrentHashMap<InetAddress, HostTableEntry> oldHostTable = this.hostTable;
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
-        
+
         /**
          * For each entry, copy the value on top of the exitsing objects so references are maintained
          * If there aren't in the table, create new entries
@@ -174,7 +174,21 @@ public class HostTableImpl implements HostTable
 
         return(null);
     }
-    
+
+    public HostTableEntry findHostTableEntryByIpsecUsername( String username )
+    {
+        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+
+        //  look for an entry with matching MAC address
+        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
+            HostTableEntry entry = i.next();
+            if (entry.getUsernameIpsecVpn() == null) continue;
+            if (entry.getUsernameIpsecVpn().equals(username)) return(entry);
+        }
+
+        return(null);
+    }
+
     public void setHostTableEntry( InetAddress addr, HostTableEntry entry )
     {
         hostTable.put( addr, entry );
@@ -184,7 +198,7 @@ public class HostTableImpl implements HostTable
     {
         return new LinkedList<HostTableEntry>(hostTable.values());
     }
-    
+
     public synchronized void giveHostQuota( InetAddress address, long quotaBytes, int time_sec, String reason )
     {
         if (address == null) {
@@ -204,7 +218,7 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
 
         UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address.getHostAddress(), reason, quotaBytes ) );
-        
+
         return;
     }
 
@@ -273,17 +287,17 @@ public class HostTableImpl implements HostTable
             removeQuota( address );
             return 0.0;
         }
-        
+
         long quotaRemaining = entry.getQuotaRemaining();
         long quotaSize = entry.getQuotaSize();
         long quotaUsed = quotaSize - quotaRemaining;
-        
+
         long quotaUsedK = quotaUsed/1000;
         long quotaSizeK = quotaSize/1000;
 
         return ((double)quotaUsedK)/((double)quotaSizeK);
     }
-    
+
     public synchronized void refillQuota(InetAddress address)
     {
         if (address == null) {
@@ -334,7 +348,7 @@ public class HostTableImpl implements HostTable
 
         return false;
     }
-    
+
     public LinkedList<HostTableEntry> getQuotaHosts()
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
@@ -347,7 +361,7 @@ public class HostTableImpl implements HostTable
 
         return list;
     }
-    
+
     public int getCurrentSize()
     {
         return this.hostTable.size();
@@ -371,10 +385,10 @@ public class HostTableImpl implements HostTable
             }
         }
         catch (java.util.ConcurrentModificationException e) {} // ignore this, just best effort
-        
+
         return licenseSize;
     }
-    
+
     public int getMaxActiveSize()
     {
         return this.maxActiveSize;
@@ -389,7 +403,7 @@ public class HostTableImpl implements HostTable
     {
         this.cleanerSemaphore.release(); /* wake up cleanup thread */
     }
-    
+
     public HostTableEntry removeHostTableEntry( InetAddress address )
     {
         if ( address == null ) {
@@ -405,30 +419,30 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_REMOVE, address );
         return removed;
     }
-    
+
     private synchronized HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
 
         HostTableEvent event = new HostTableEvent( address, "add", null, null );
         UvmContextFactory.context().logEvent(event);
-        
+
         entry.setAddress( address );
 
         syncWithDeviceEntry( entry, address );
-        
+
         updateHostnameDhcp( entry );
         updateHostnameReports( entry );
-        
+
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
         int currentSize = getCurrentActiveSize();
-        
+
         // if there is a seat limit, and the size of the table is currently greater than that seatLimit
         // this host is out of compliance and not entitled
         if ( seatLimit > 0 && currentSize > seatLimit ) {
             entry.setEntitled( false );
         }
-        
+
         return entry;
     }
 
@@ -445,7 +459,7 @@ public class HostTableImpl implements HostTable
             return;
         if ( "".equals(macAddress) )
             return;
-        
+
         entry.setMacAddress( macAddress );
         DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
 
@@ -485,7 +499,7 @@ public class HostTableImpl implements HostTable
     public void saveHosts()
     {
         lastSaveTime = System.currentTimeMillis();
-        
+
         try {
             Collection<HostTableEntry> entries = hostTable.values();
             logger.info("Saving hosts to file... (" + entries.size() + " entries)");
@@ -505,7 +519,7 @@ public class HostTableImpl implements HostTable
                     list.removeLast();
                 }
             }
-            
+
             UvmContextFactory.context().settingsManager().save( HOSTS_SAVE_FILENAME, list, false, true );
             logger.info("Saving hosts to file... done");
         } catch (Exception e) {
@@ -523,7 +537,7 @@ public class HostTableImpl implements HostTable
             if ( entry.getActive() )
                 realSize++;
         }
-        
+
         if (realSize > this.maxActiveSize)
             this.maxActiveSize = realSize;
     }
@@ -572,7 +586,7 @@ public class HostTableImpl implements HostTable
                         }
 
                         syncWithDeviceEntry( entry, entry.getAddress() );
-                        
+
                         hostTable.put( entry.getAddress(), entry );
                     } catch ( Exception e ) {
                         logger.warn( "Error loading host entry: " + entry.toJSONString(), e);
@@ -584,7 +598,7 @@ public class HostTableImpl implements HostTable
             logger.warn("Failed to load hosts",e);
         }
     }
-    
+
     /**
      * This thread periodically walks through the entries and removes expired entries
      * It also explicitly releases hosts from the penalty box and quotas after expiration
@@ -633,13 +647,13 @@ public class HostTableImpl implements HostTable
                         } catch (Exception e) {
                             logger.warn("Exception",e);
                         }
-                        
+
                         /**
                          * Update some metadata
                          */
                         updateHostnameDhcp( entry );
                         updateHostnameReports( entry );
-                        
+
                         /**
                          * Check quota expiration
                          * Remove from quota if expired
@@ -655,7 +669,7 @@ public class HostTableImpl implements HostTable
                          * Remove any expired tags
                          */
                         entry.removeExpiredTags();
-                        
+
                         /**
                          * If this host hasnt been touched recently, delete it
                          */
@@ -686,7 +700,7 @@ public class HostTableImpl implements HostTable
                             if ( entry.getAddress().isReachable( null, 3, 500 ) ) {
                                 continue;
                             }
-                            
+
                             /**
                              * Otherwise just delete the entire entry
                              */
@@ -722,7 +736,7 @@ public class HostTableImpl implements HostTable
                                 reassignCount = available;
                             else
                                 reassignCount = numUnlicensed;
-                            
+
                             for (HostTableEntry entry : entries) {
                                 if (!entry.getEntitled()) {
                                     logger.debug( "Granting host " + entry.getAddress() + " entitlement." );
@@ -734,9 +748,9 @@ public class HostTableImpl implements HostTable
                             }
                         }
                     }
-                    
+
                     adjustMaxSizeIfNecessary();
-                    
+
                 } catch (Exception e) {
                     logger.warn("Exception while cleaning host table",e);
                 }
@@ -745,7 +759,7 @@ public class HostTableImpl implements HostTable
     }
 
     /**
-     * This thread periodically walks through the entries and does a reverse lookup on the IP 
+     * This thread periodically walks through the entries and does a reverse lookup on the IP
      * to see if it can determine the host's hostname (for hosts without a known hostname)
      *
      * This is done in a separate thread because it may hang on the DNS lookup.
@@ -789,7 +803,7 @@ public class HostTableImpl implements HostTable
                                 logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - already known hostname: " + currentHostname);
                             continue;
                         }
-                        
+
                         try {
                             String hostname = org.xbill.DNS.Address.getHostName(address);
 
@@ -813,7 +827,7 @@ public class HostTableImpl implements HostTable
                             int firstdot = hostname.indexOf('.');
                             if ( firstdot != -1 )
                                 hostname = hostname.substring(0,firstdot);
-                            
+
                             logger.debug("HostTable Reverse lookup hostname = " + hostname);
                             entry.setHostnameDns( hostname );
                         } catch (java.net.UnknownHostException e ) {
@@ -844,7 +858,7 @@ public class HostTableImpl implements HostTable
         {
             return "host-table-add-tag-hook";
         }
-        
+
         public void callback( Object... args )
         {
             try {
@@ -854,12 +868,12 @@ public class HostTableImpl implements HostTable
                 }
                 Object o1 = args[0];
                 Object o2 = args[1];
-            
+
                 if (!(o1 instanceof HostTableEntry) || !(o2 instanceof Tag)) {
                     logger.warn( "Invalid arguments: " + o1 + " " + o2);
                     return;
                 }
-                 
+
                 HostTableEntry entry = (HostTableEntry)o1;
                 Tag tag = (Tag)o2;
 
@@ -871,7 +885,7 @@ public class HostTableImpl implements HostTable
                     logger.warn("Invalid address: " + entry);
                     return;
                 }
-            
+
                 //only keep basic ascii
                 String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
                 String address = entry.getAddress().getHostAddress();
@@ -908,7 +922,7 @@ public class HostTableImpl implements HostTable
         {
             return "host-table-remove-tag-hook";
         }
-        
+
         public void callback( Object... args )
         {
             try {
@@ -935,7 +949,7 @@ public class HostTableImpl implements HostTable
                     logger.warn("Invalid address: " + entry);
                     return;
                 }
-            
+
                 //only keep basic ascii
                 String tagName = tag.getName().replaceAll("[^a-zA-Z0-9]","");
                 String address = entry.getAddress().getHostAddress();
@@ -957,5 +971,4 @@ public class HostTableImpl implements HostTable
             }
         }
     }
-    
 }
