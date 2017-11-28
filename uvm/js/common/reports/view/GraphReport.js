@@ -46,7 +46,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
 
                 // if rendered in creating new widget dialog, fetch data
-                if (view.up('new-widget')) {
+                if (view.up('new-widget') || view.itemId == 'fixedChart') {
                     me.fetchData(true);
                 }
             });
