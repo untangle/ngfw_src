@@ -124,6 +124,7 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                     { name: 'MD5', value: 'md5' },
                     { name: 'SHA-1', value: 'sha1' },
                     { name: 'SHA-256', value: 'sha2_256' },
+                    { name: 'SHA-384', value: 'sha2_384' },
                     { name: 'SHA-512', value: 'sha2_512' }
                 ]
             },
@@ -131,13 +132,26 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
             P1GroupStore: {
                 fields: [ 'name', 'value' ],
                 data: [
-                    { name: '2 (1024 bit)', value: 'modp1024' },
-                    { name: '5 (1536 bit)', value: 'modp1536' },
-                    { name: '14 (2048 bit)', value: 'modp2048' },
-                    { name: '15 (3072 bit)', value: 'modp3072' },
-                    { name: '16 (4096 bit)', value: 'modp4096' },
-                    { name: '17 (6144 bit)', value: 'modp6144' },
-                    { name: '18 (8192 bit)', value: 'modp8192' }
+                    { name: '1 (modp768)', value: 'modp768' },
+                    { name: '2 (modp1024)', value: 'modp1024' },
+                    { name: '5 (modp1536)', value: 'modp1536' },
+                    { name: '14 (modp2048)', value: 'modp2048' },
+                    { name: '15 (modp3072)', value: 'modp3072' },
+                    { name: '16 (modp4096)', value: 'modp4096' },
+                    { name: '17 (modp6144)', value: 'modp6144' },
+                    { name: '18 (modp8192)', value: 'modp8192' },
+                    { name: '22 (modp1024s160)', value:'modp1024s160' },
+                    { name: '23 (modp2048s224)', value:'modp2048s224' },
+                    { name: '24 (modp2048s256)', value: 'modp2048s256' },
+                    { name: '25 (ecp192)', value: 'ecp192' },
+                    { name: '26 (ecp224)', value: 'ecp224' },
+                    { name: '19 (ecp256)', value: 'ecp256' },
+                    { name: '20 (ecp384)', value: 'ecp385' },
+                    { name: '21 (ecp521)', value: 'ecp521' },
+                    { name: '27 (ecp224pb)', value: 'ecp224bp' },
+                    { name: '28 (ecp256bp)', value: 'ecp256bp' },
+                    { name: '29 (ecp384bp)', value: 'ecp384bp' },
+                    { name: '30 (ecp512bp)', value: 'ecp512bp' }
                 ]
             },
 
@@ -160,8 +174,8 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                     { name: 'MD5', value: 'md5' },
                     { name: 'SHA-1', value: 'sha1' },
                     { name: 'SHA-256', value: 'sha2_256' },
-                    { name: 'SHA-512', value: 'sha2_512' },
-                    { name: 'RIPEMD', value: 'ripemd' }
+                    { name: 'SHA-384', value: 'sha2_384' },
+                    { name: 'SHA-512', value: 'sha2_512' }
                 ]
             },
 
@@ -169,13 +183,26 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 fields: [ 'name', 'value' ],
                 data: [
                     { name: '0 (disabled)', value: 'disabled' },
-                    { name: '2 (1024 bit)', value: 'modp1024' },
-                    { name: '5 (1536 bit)', value: 'modp1536' },
-                    { name: '14 (2048 bit)', value: 'modp2048' },
-                    { name: '15 (3072 bit)', value: 'modp3072' },
-                    { name: '16 (4096 bit)', value: 'modp4096' },
-                    { name: '17 (6144 bit)', value: 'modp6144' },
-                    { name: '18 (8192 bit)', value: 'modp8192' }
+                    { name: '1 (modp768)', value: 'modp768' },
+                    { name: '2 (modp1024)', value: 'modp1024' },
+                    { name: '5 (modp1536)', value: 'modp1536' },
+                    { name: '14 (modp2048)', value: 'modp2048' },
+                    { name: '15 (modp3072)', value: 'modp3072' },
+                    { name: '16 (modp4096)', value: 'modp4096' },
+                    { name: '17 (modp6144)', value: 'modp6144' },
+                    { name: '18 (modp8192)', value: 'modp8192' },
+                    { name: '22 (modp1024s160)', value:'modp1024s160' },
+                    { name: '23 (modp2048s224)', value:'modp2048s224' },
+                    { name: '24 (modp2048s256)', value: 'modp2048s256' },
+                    { name: '25 (ecp192)', value: 'ecp192' },
+                    { name: '26 (ecp224)', value: 'ecp224' },
+                    { name: '19 (ecp256)', value: 'ecp256' },
+                    { name: '20 (ecp384)', value: 'ecp385' },
+                    { name: '21 (ecp521)', value: 'ecp521' },
+                    { name: '27 (ecp224pb)', value: 'ecp224bp' },
+                    { name: '28 (ecp256bp)', value: 'ecp256bp' },
+                    { name: '29 (ecp384bp)', value: 'ecp384bp' },
+                    { name: '30 (ecp512bp)', value: 'ecp512bp' }
                 ]
             }
         }

@@ -24,12 +24,12 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private boolean phase1Manual = false;
     private String phase1Cipher = "3des";
     private String phase1Hash = "md5";
-    private String phase1Group = "modp1024";
+    private String phase1Group = "modp2048";
     private String phase1Lifetime = "28800";
     private boolean phase2Manual = false;
     private String phase2Cipher = "3des";
     private String phase2Hash = "md5";
-    private String phase2Group = "modp1024";
+    private String phase2Group = "modp2048";
     private String phase2Lifetime = "3600";
     private String left;
     private String leftId;
