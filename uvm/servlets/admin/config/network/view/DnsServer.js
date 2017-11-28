@@ -23,7 +23,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
         listProperty: 'settings.dnsSettings.staticEntries.list',
 
         emptyRow: {
-            name: '[no name]'.t(),
+            name: '',
             address: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
         },
@@ -39,6 +39,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 xtype: 'textfield',
                 allowBlank: false,
                 bind: '{record.name}',
+                maskRe: /[a-zA-Z0-9\-_.]/,
                 emptyText: '[enter name]'.t()
             }
         }, {
@@ -70,7 +71,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
         listProperty: 'settings.dnsSettings.localServers.list',
 
         emptyRow: {
-            domain: '[no domain]'.t(),
+            domain: '',
             localServer: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsLocalServer'
         },
@@ -86,6 +87,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 xtype: 'textfield',
                 allowBlank: false,
                 emptyText: '[enter domain]'.t(),
+                maskRe: /[a-zA-Z0-9\-_.]/,
                 bind: '{record.domain}',
             }
         }, {
