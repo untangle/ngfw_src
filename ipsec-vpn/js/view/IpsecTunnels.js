@@ -36,11 +36,11 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'dpdtimeout': '120',
         'phase1Cipher': '3des',
         'phase1Hash': 'md5',
-        'phase1Group': 'modp1024',
+        'phase1Group': 'modp2048',
         'phase1Lifetime' : '28800',
         'phase2Cipher': '3des',
         'phase2Hash': 'md5',
-        'phase2Group': 'modp1024',
+        'phase2Group': 'modp2048',
         'phase2Lifetime' : '3600',
         'left': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftDefault']],
         'leftId': '',
@@ -441,7 +441,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: 'Default = 2 (1024 bit)'.t()
+            value: 'Default = 14 (modp2048)'.t()
         }]
     }, {
         xtype: 'container',
@@ -536,7 +536,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: 'Default = 2 (1024 bit)'.t()
+            value: 'Default = 14 (modp2048)'.t()
         }]
     }, {
         xtype: 'container',
