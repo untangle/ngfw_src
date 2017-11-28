@@ -12,6 +12,9 @@ from timeit import default_timer as time
 
 Debug = False
 Type_name = None
+Validators = {}
+Show_valid = False
+Start_time = time()
 
 class JavaParser:
     def __init__(self, file_path):
@@ -29,16 +32,16 @@ class JavaParser:
 
         if type(tree) == tuple:
             for path, node in tree:
-                print "(tuple) node=%s" % ( str(node))
-                print "(tuple) node type=%s" % ( str( type( node) ) )
+                print("(tuple) node=%s" % ( str(node)))
+                print("(tuple) node type=%s" % ( str( type( node) ) ))
                 if type(node) is list or type(node) is tuple:
-                    print "(tuple) do list"
+                    print("(tuple) do list")
                 else:
-                    print "(tuple) do other"
+                    print("(tuple) do other")
                     if "attr" in node:
-                        print "(tuple) do attr"
+                        print("(tuple) do attr")
                     else:
-                        print self.get_node(node)
+                        print(self.get_node(node))
         elif type(tree) == list:
             result = []
             for node in tree:
@@ -74,16 +77,38 @@ class JavaParser:
             node_name = node.__class__.__name__
             if node_name != "ClassDeclaration":
                 continue
-            class_result = {}
+            class_result = {"_optional": False}
+
             for key in node.attrs:
                 class_result[key] = getattr(node, key) 
+                if key == "implements":
+                    serializable = False
+                    jsonstring = False
+                    for implement in self.get_node(getattr(node,key)):
+                        if implement["name"] == "Serializable":
+                            serializable = True
+                        elif implement["name"] == "JSONString":
+                            jsonstring = True
+                    if serializable is True and jsonstring is True:
+                            class_result["_optional"] = True
+
             result.append( JavaDocValidator( node_name, class_result) )
         return result
 
-    def get_methods(self):
+    def get_methods(self, classes):
         result = []
+        current_class = None
+        optional_method = False
         for path, node in self.tree:
             node_name = node.__class__.__name__
+            if node_name == "ClassDeclaration":
+                current_class = getattr(node,"name")
+
+                class_found = False
+                for c in classes:
+                    if c.tree["name"] == current_class and c.tree["_optional"] is True:
+                        optional_method = True
+
             if node_name != "MethodDeclaration":
                 continue
             method_result = {}
@@ -95,7 +120,9 @@ class JavaParser:
                 if key == "parameters":
                     method_result[key] = self.get_node(value)
 
-            result.append( JavaDocValidator( node_name, method_result) )
+            method_validator = JavaDocValidator( node_name, method_result)
+            if optional_method is False or method_validator.missing is False:
+                result.append( JavaDocValidator( node_name, method_result) )
         return result
 
 class JavaDocValidator:
@@ -119,7 +146,7 @@ class JavaDocValidator:
 
     def validate(self):
         if Debug:
-            print "\tvalidating %s" % (self.get_definition())
+            print("\tvalidating %s" % (self.get_definition()))
         if "documentation" not in self.tree or self.tree["documentation"] is None:
             self.missing = True
             return
@@ -243,19 +270,80 @@ def get_files(paths):
 
     return file_paths
 
-def print_report( file_count, required_count, missing_count, invalid_count, valid_count):
-    print
-    print "Total files %d, required javadocs %d" % ( file_count, required_count )
-    print "Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) )
-    print "Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) )
-    print "Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) )
-    print
+def print_summary_report( file_count, required_count, missing_count, invalid_count, valid_count):
+    print("")
+    print("Total files %d, required javadocs %d" % ( file_count, required_count ))
+    if required_count > 0:
+        print("Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) ))
+        print("Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) ))
+        print("Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) ))
+    print("")
+
+def print_report(total_only=False):
+    total_file_count = 0
+    total_required_count = 0
+    total_missing_count = 0
+    total_valid_count = 0
+    total_invalid_count = 0
+
+    current_file_count = 0
+    current_required_count = 0
+    current_missing_count = 0
+    current_valid_count = 0
+    current_invalid_count = 0
+
+    current_directory = None
+    for file_path in sorted(Validators):
+        directory = file_path[:file_path.find('/')]
+        if current_directory is None or current_directory != directory:
+            if total_only is False and current_directory is not None:
+                print_summary_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
+            current_file_count = 0
+            current_required_count = 0
+            current_missing_count = 0
+            current_valid_count = 0
+            current_invalid_count = 0
+            current_directory = directory
+            if total_only is False:
+                print("\n" + current_directory + "\n" + '=' * len(current_directory) + "\n")
+        if total_only is False:
+            print(file_path)
+        total_file_count += 1
+        current_file_count += 1
+        total_required_count += len(Validators[file_path])
+        current_required_count += len(Validators[file_path])
+        for validator in Validators[file_path]:
+            if Type_name is not None and validator.tree["name"] != Type_name:
+                continue
+            report = validator.get_report()
+            if total_only is False and validator.valid is not True or Show_valid is True:
+                print(validator.get_definition())
+                print("\t" + "\n\t".join(report))
+            if validator.valid is True:
+                total_valid_count += 1
+                current_valid_count += 1
+            elif validator.missing is True:
+                total_missing_count += 1
+                current_missing_count += 1
+            else:
+                total_invalid_count +=1
+                total_invalid_count += 1
+
+    if total_only is False:
+        print_summary_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
+
+    print("Total Repository")
+    print_summary_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
+    print("")
+    print("Elapsed %4.2f s" % (time() - Start_time))
+
+    return total_valid_count == total_required_count
 
 def usage():
     """
     Show usage
     """
-    print "usage"
+    print("usage")
 
 def main(argv):
     global Debug
@@ -264,7 +352,6 @@ def main(argv):
     path = "."
     ignore_paths = []
     filename = None
-    show_valid = False
 
     try:
         opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "path=", "ignore_path=", "filename=", "debug", "type_name=", "show_valid"] )
@@ -287,24 +374,21 @@ def main(argv):
         if opt in ( "--type_name"):
             Type_name = arg
         if opt in ( "--show_valid"):
-            show_valid = True
+            Show_valid = True
 
     if Debug is True:
-        print "path=" + path
-        print "ignore_path=" + ",".join(ignore_paths)
+        print("path=" + path)
+        print("ignore_path=" + ",".join(ignore_paths))
         if filename != None:
-            print "filename=" + filename
+            print("filename=" + filename)
 
     file_reports = {}
-    validators = {}
 
-    start_time = time()
-
-    print "Finding and validating..."
+    print("Finding and validating...")
     file_paths = get_files(path)
     for file_path in file_paths:
         if Debug:
-            print file_path
+            print(file_path)
 
         ignore = False
         for ignore_path in ignore_paths:
@@ -312,78 +396,30 @@ def main(argv):
                 ignore = True
         if ignore is True:
             if Debug:
-                print "\tIgnored"
+                print("\tIgnored")
             continue
 
         if ( filename is not None ) and ( file_path.endswith("/" + filename) is False):
             continue
 
-        validators[file_path] = []
+        Validators[file_path] = []
 
         parser = JavaParser(file_path)
         package = parser.get_package()
+        classes = []
         if package is not None:
-            validators[file_path].append( parser.get_package() )
+            Validators[file_path].append( parser.get_package() )
         for cd in parser.get_classes():
-            validators[file_path].append( cd )
-        for md in parser.get_methods():
-            validators[file_path].append( md )
+            classes.append(cd)
+            Validators[file_path].append( cd )
+        for md in parser.get_methods(classes):
+            Validators[file_path].append( md )
 
-    total_file_count = 0
-    total_required_count = 0
-    total_missing_count = 0
-    total_valid_count = 0
-    total_invalid_count = 0
-
-    current_file_count = 0
-    current_required_count = 0
-    current_missing_count = 0
-    current_valid_count = 0
-    current_invalid_count = 0
-
-    print "Report"
-    current_directory = None
-    for file_path in sorted(validators):
-        directory = file_path[:file_path.find('/')]
-        if current_directory is None or current_directory != directory:
-            if current_directory is not None:
-                print_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
-            current_file_count = 0
-            current_required_count = 0
-            current_missing_count = 0
-            current_valid_count = 0
-            current_invalid_count = 0
-            current_directory = directory
-            print "\n" + current_directory + "\n" + '=' * len(current_directory) + "\n"
-        print file_path
-        total_file_count += 1
-        current_file_count += 1
-        total_required_count += len(validators[file_path])
-        current_required_count += len(validators[file_path])
-        for validator in validators[file_path]:
-            if Type_name is not None and validator.tree["name"] != Type_name:
-                continue
-            report = validator.get_report()
-            if validator.valid is not True or show_valid is True:
-                print validator.get_definition()
-                print "\t" + "\n\t".join(report)
-            if validator.valid is True:
-                total_valid_count += 1
-                current_valid_count += 1
-            elif validator.missing is True:
-                total_missing_count += 1
-                current_missing_count += 1
-            else:
-                total_invalid_count +=1
-                total_invalid_count += 1
-
-    print_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
-    print "Total Repository"
-    print_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
-    print 
-    print "Elapsed %4.2f s" % (time() - start_time)
-
-    if total_valid_count == total_required_count:
+    print("Report")
+    # Show total only as a header
+    print_report(True)
+    # Show full report with total as footer
+    if print_report(False) is True:
         sys.exit(0)
     else:
         sys.exit(1)
