@@ -114,7 +114,7 @@ Ext.define('Ung.Application', {
 
 Ext.define('Ung.view.ChartMain', {
     extend: 'Ung.view.reports.GraphReport',
-    itemId: 'chart',
+    itemId: 'fixedChart',
     viewModel: {},
     renderInReports: true
 });
@@ -123,7 +123,7 @@ Ext.define('Ung.controller.ChartGlobal', {
     extend: 'Ext.app.Controller',
 
     refs: {
-        chartView: '#chart',
+        chartView: '#fixedChart',
     },
     config: {
         routes: {
@@ -151,8 +151,8 @@ Ext.define('Ung.controller.ChartGlobal', {
             if(result){
                 var entry = new Ung.model.Report(result);
                 vm.set('entry', entry);
-                vm.set('startDate', new Date( parseInt( chartReport.startDate, 10 ) ) );
-                vm.set('endDate', new Date( parseInt( chartReport.endDate, 10 ) ) );
+                vm.set('f_startdate', new Date( parseInt( chartReport.startDate, 10 ) ) );
+                vm.set('f_enddate', new Date( parseInt( chartReport.endDate, 10 ) ) );
             }
         }, this), chartReport.reportUniqueId);
     }
