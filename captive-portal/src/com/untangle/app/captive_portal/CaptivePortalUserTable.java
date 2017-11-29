@@ -217,10 +217,31 @@ public class CaptivePortalUserTable
     }
 
     /**
-     * Clear the user table
+     * Clear the user table. First we remove the captive portal user name and
+     * authenticated flag from the host table for each user, and then we clear
+     * our hash table.
      */
     public void purgeAllUsers()
     {
+        HostTableEntry entry;
+
+        for (String address : activeUserTable.keySet()) {
+            CaptivePortalUserEntry user = activeUserTable.get(address);
+            if (address.indexOf(':') >= 0) {
+                // any semi-colon in the key indicate a MAC address
+                entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(address);
+            } else {
+                // not a mac address so do normal lookup by IP address
+                entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+            }
+
+            if (entry == null) continue;
+
+            logger.debug("Purging host table entry for " + user.toString());
+            entry.setUsernameCaptivePortal(null);
+            entry.setCaptivePortalAuthenticated(false);
+        }
+
         activeUserTable.clear();
     }
 }
