@@ -563,16 +563,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     BufferedReader reader = new BufferedReader(new FileReader(keyFile));
                     UvmContextImpl.applianceModel = reader.readLine();
                 } else {
-                    UvmContextImpl.applianceModel = "";
+                    /*
+                     * Detect virtual.
+                     */
+                    UvmContextImpl.applianceModel = this.execManager().execOutput(APPLIANCE_VIRTUAL_DETECT_SCRIPT).trim();
                 }
             } catch (IOException x) {
                 logger.error("Unable to get UID", x);
             }
-        }else{
-            /* 
-             * Virtual appliance.
-             */
-            UvmContextImpl.applianceModel = this.execManager().execOutput(APPLIANCE_VIRTUAL_DETECT_SCRIPT);
         }
         return UvmContextImpl.applianceModel;
     }
