@@ -183,7 +183,6 @@ class JavaDocValidator:
 
         if "throws" in self.tree and self.tree["throws"] is not None:
             if len(javadoc.throws) == 0:
-                print "no jd throw"
                 self.throws_missing = True
             elif len(javadoc.throws) != len(self.tree["throws"]):
                 self.throws_mismatch = True
