@@ -68,6 +68,7 @@ class JavaParser:
                 result[key] = getattr(node, key)
             break
         if result:
+            result['_type'] = 'package'
             return JavaDocValidator( node_name, result )
         return None
 
@@ -92,6 +93,7 @@ class JavaParser:
                     if serializable is True and jsonstring is True:
                             class_result["_optional"] = True
 
+            class_result['_type'] = 'class'
             result.append( JavaDocValidator( node_name, class_result) )
         return result
 
@@ -109,7 +111,8 @@ class JavaParser:
                     if c.tree["name"] == current_class and c.tree["_optional"] is True:
                         optional_method = True
 
-            if node_name != "MethodDeclaration":
+            # Other method identifiers to look for?
+            if node_name != "MethodDeclaration" and node_name != "ConstructorDeclaration":
                 continue
             method_result = {}
             for key in node.attrs:
@@ -120,9 +123,10 @@ class JavaParser:
                 if key == "parameters":
                     method_result[key] = self.get_node(value)
 
+            method_result['_type'] = 'method'
             method_validator = JavaDocValidator( node_name, method_result)
             if optional_method is False or method_validator.missing is False:
-                result.append( JavaDocValidator( node_name, method_result) )
+                result.append( method_validator )
         return result
 
 class JavaDocValidator:
@@ -147,6 +151,7 @@ class JavaDocValidator:
     def validate(self):
         if Debug:
             print("\tvalidating %s" % (self.get_definition()))
+            print self.tree
         if "documentation" not in self.tree or self.tree["documentation"] is None:
             self.missing = True
             return
@@ -167,15 +172,18 @@ class JavaDocValidator:
                 self.parameter_mismatch = True
 
         return_type = self.get_return_type()
-        if "return_type" in self.tree and self.tree["return_type"]:
+        if "return_type" in self.tree and len(self.tree["return_type"])> 0:
             if return_type == "void":
                 self.return_mismatch = True
+            elif javadoc.return_doc is None:
+                self.return_missing = True
         else:
             if return_type != "void":
                 self.return_missing = True
 
         if "throws" in self.tree and self.tree["throws"] is not None:
             if len(javadoc.throws) == 0:
+                print "no jd throw"
                 self.throws_missing = True
             elif len(javadoc.throws) != len(self.tree["throws"]):
                 self.throws_mismatch = True
@@ -205,6 +213,7 @@ class JavaDocValidator:
         if "throws" in self.tree and self.tree["throws"] is not None:
             for throw in self.tree["throws"]:
                 throws.append(throw)
+
         if len(throws) > 0:
             throws_string = " throws " + ",".join(throws)
         else:
@@ -216,23 +225,28 @@ class JavaDocValidator:
     def get_definition(self):
         definition = []
 
-        if "modifiers" in self.tree and self.tree["modifiers"] is not None:
-            for modifier in self.tree["modifiers"]:
-                definition.append(modifier)
+        if self.tree['_type'] == 'package':
+            return self.tree['_type'] + ' ' + self.tree['name'] + ';'
+        elif self.tree['_type'] == 'class':
+            return self.tree['_type'] + ' ' + self.tree['name'] + ';'
+        else:
+            if "modifiers" in self.tree and self.tree["modifiers"] is not None:
+                for modifier in self.tree["modifiers"]:
+                    definition.append(modifier)
 
-        definition.append(self.get_return_type())
+            definition.append(self.get_return_type())
 
-        definition.append(self.tree["name"])
+            definition.append(self.tree["name"])
 
-        arguments = []
-        if "parameters" in self.tree:
-            for parameter in self.tree["parameters"]:
-                if "type" in parameter and "name" in parameter["type"]:
-                    arguments.append(parameter["type"]["name"] + " " + parameter["name"])
+            arguments = []
+            if "parameters" in self.tree:
+                for parameter in self.tree["parameters"]:
+                    if "type" in parameter and "name" in parameter["type"]:
+                        arguments.append(parameter["type"]["name"] + " " + parameter["name"])
 
-        throws = self.get_throws()
+            throws = self.get_throws()
 
-        return " ".join(definition) + "(" + " ".join(arguments) + ")" + throws
+            return " ".join(definition) + "(" + " ".join(arguments) + ")" + throws
 
     def get_report(self):
         report = []
@@ -387,16 +401,13 @@ def main(argv):
     print("Finding and validating...")
     file_paths = get_files(path)
     for file_path in file_paths:
-        if Debug:
-            print(file_path)
-
         ignore = False
         for ignore_path in ignore_paths:
             if ignore_path in file_path:
                 ignore = True
         if ignore is True:
             if Debug:
-                print("\tIgnored")
+                print("\tIgnored: " + file_path)
             continue
 
         if ( filename is not None ) and ( file_path.endswith("/" + filename) is False):
@@ -404,11 +415,14 @@ def main(argv):
 
         Validators[file_path] = []
 
+        if Debug:
+            print(file_path)
+
         parser = JavaParser(file_path)
         package = parser.get_package()
         classes = []
         if package is not None:
-            Validators[file_path].append( parser.get_package() )
+            Validators[file_path].append( package )
         for cd in parser.get_classes():
             classes.append(cd)
             Validators[file_path].append( cd )
