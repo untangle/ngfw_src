@@ -25,8 +25,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.untangle.uvm.util.IOUtil;
 
-/*
- * Use web browser
+/**
+ * Use web browser (Chromium) to pull data from a web site.
  */
 public class WebBrowser
 {
@@ -42,7 +42,6 @@ public class WebBrowser
         XPATH
     }
     private WebDriver driver = null;
-    private Wait<WebDriver> wait = null;
 
     private String tempDirectory = "/tmp/webbrowser";
     private static String chromeDriver = "/usr/lib/chromium/chromedriver";
@@ -57,11 +56,18 @@ public class WebBrowser
 
     /**
      * Start browser
-     * @param displaySequence display sequence to use
-     * @param displayScreen display screen to use
-     * @param screenWidth Screen width to use
-     * @param screenHeight Screen height to use
-     * @param screenDepth Screen depth to use
+     * @param 
+     *  displaySequence display sequence to use
+     * @param 
+     *  displayScreen display screen to use
+     * @param 
+     *  screenWidth Screen width to use
+     * @param 
+     *  screenHeight Screen height to use
+     * @param 
+     *  screenDepth Screen depth to use
+     * @throws
+     *  File not found exception if cannot open Chromium web driver.  Currently not available for ARM.,
     */
 	public WebBrowser(Integer displaySequence, Integer displayScreen, Integer screenWidth, Integer screenHeight, Integer screenDepth)
     throws java.io.FileNotFoundException
@@ -107,7 +113,6 @@ public class WebBrowser
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
             driver = new ChromeDriver(service, options);
-            wait = new WebDriverWait(driver, 300);
         }catch(UnreachableBrowserException e){
             logger.warn("Unable to open driver, ", e);
         }
@@ -120,7 +125,6 @@ public class WebBrowser
      */
 	public void close()
 	{
-        wait = null;
         try { 
             driver.close(); 
         } catch (Exception e) {
@@ -138,6 +142,9 @@ public class WebBrowser
 
     /**
      * Allow others to determine what we know without forcing an exception check.
+     *
+     * @return
+     *  true if driver found, false if not.
      */
     static public Boolean exists(){
         File f = new File(chromeDriver);
@@ -147,6 +154,8 @@ public class WebBrowser
     /**
      * Open the web browser to the specified URL
      *
+     * @param
+     *  url The URL to open.
      */
 	public void openUrl(String url)
 	{
@@ -155,6 +164,9 @@ public class WebBrowser
 
 	/**
 	 * Get temp directory path
+     *
+     * @return
+     *  String of temporary directory
 	 */
 	public String getTempDirectory()
 	{
@@ -163,14 +175,27 @@ public class WebBrowser
 
 	/**
 	 * Wait for element.  
-     * @param search key to wait upon.
-     * @param value to wait upon.
+     * @param
+     *  key to wait upon (see FIND_KEYS).
+     * @param 
+     *  value to wait upon.
+     * @param 
+     *  seconds to wait
      * @return true if found, false if not found.
 	 */
-	public Boolean waitForElement(FIND_KEYS key, String value)
+	public Boolean waitForElement(FIND_KEYS key, String value, int seconds)
 	{
-		Boolean found = false;
-        found = wait.until(new ExpectedCondition<Boolean>() {
+	   Boolean found = false;
+       Wait<WebDriver> wait = new WebDriverWait(driver, seconds);
+       found = wait.until(new ExpectedCondition<Boolean>() {
+            /**
+             * Process wait, looking for the specific item value to appear.
+             *
+             * @param
+             *  driver  Webdriver to use.
+             * @return
+             *  true if found, false otherwise
+             */
         	public Boolean apply(WebDriver driver) {
                 By by = null;
                 switch(key){
