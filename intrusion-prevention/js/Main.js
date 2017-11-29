@@ -76,7 +76,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             getWizardClasstypes: function(get) {
                 var record = get('activeGroups').first();
                 var profileId = get('settings.profileId');
-                var currentClasstypes = record.get('classtypes');
+                var currentClasstypes = record ? record.get('classtypes') : 'recommended';
                 var profileClasstypes = [];
                 if(currentClasstypes == 'custom'){
                     profileClasstypes = record.get('classtypesSelected');
@@ -111,7 +111,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             getWizardCategories: function(get){
                 var record = get('activeGroups').first();
                 var profileId = get('settings.profileId');
-                var currentCategories = record.get('categories');
+                var currentCategories = record ? record.get('categories') : 'recommended';
                 var profileCategories = [];
                 if(currentCategories == 'custom'){
                     profileCategories = record.get('categoriesSelected');
