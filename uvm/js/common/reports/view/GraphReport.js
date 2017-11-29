@@ -620,7 +620,14 @@ Ext.define('Ung.view.reports.GraphReport', {
                 });
 
                 Ext.Array.each(me.data, function (row) {
-                    var t = row.time_trunc.time || row.time_trunc;
+                    var t;
+                    if(row.time_trunc){
+                        if(row.time_trunc.time){
+                            t = row.time_trunc.time;
+                        }else{
+                            t = row.time_trunc;
+                        }
+                    }
                     if (t && t % (24 * 3600 * 1000) === 0) {
                         var d = Util.clientToServerDate(new Date(t));
                         d = Ext.Date.add(d, Ext.Date.MINUTE, d.getTimezoneOffset());
