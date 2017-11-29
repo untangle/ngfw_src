@@ -27,6 +27,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -160,8 +161,15 @@ public class SettingsManagerImpl implements SettingsManager
     {
         InputStream is = null;
 
-        CloseableHttpClient httpClient = HttpClients.custom().build();
         CloseableHttpResponse response = null;
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(90000)
+            .setSocketTimeout(90000)
+            .setConnectionRequestTimeout(90000)
+            .build();
+        CloseableHttpClient httpClient = HttpClients.custom()
+            .setDefaultRequestConfig(requestConfig)
+            .build();
         
         try {
             URL url = new URL(urlStr);
