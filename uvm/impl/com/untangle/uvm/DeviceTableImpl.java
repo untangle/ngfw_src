@@ -113,12 +113,12 @@ public class DeviceTableImpl implements DeviceTable
             return newEntry;
         }
 
-        // Many networks have 00:00:00:00:00:00 devices, so we shouldn't print this
-        // every time it creates a session and we should just add it like a normal device
-        // if ("00:00:00:00:00:00".equals( macAddress )) {
-        //     logger.warn("Ignoring 00:00:00:00:00:00 device.");
-        //     return null;
-        // }
+        if ("00:00:00:00:00:00".equals( macAddress )) {
+            // Many networks have 00:00:00:00:00:00 devices, so we shouldn't print this
+            // because it prints everytime a 00:00:00:00:00:00 device creates a session
+            // logger.warn("Ignoring 00:00:00:00:00:00 device.");
+            return null;
+        }
 
         try {
             logger.info("Discovered new device: " + macAddress);
