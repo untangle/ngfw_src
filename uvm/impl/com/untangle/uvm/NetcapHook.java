@@ -438,7 +438,8 @@ public abstract class NetcapHook implements Runnable
         }
 
         sessionGlobalState.setEndTime( System.currentTimeMillis() );
-        logSessionStatsEvent( sessionEvent );
+        if ( sessionEvent != null )
+            logSessionStatsEvent( sessionEvent );
 
         /**
          * Remove the session from the active sessions table
