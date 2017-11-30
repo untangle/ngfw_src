@@ -441,6 +441,8 @@ public class HostTableImpl implements HostTable
          */
         if ( deviceEntry == null )
             deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
+        if ( deviceEntry == null )
+            return;
 
         /**
          * Restore known information from the device entry where able
