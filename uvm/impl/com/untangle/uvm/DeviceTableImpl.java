@@ -114,7 +114,9 @@ public class DeviceTableImpl implements DeviceTable
         }
 
         if ("00:00:00:00:00:00".equals( macAddress )) {
-            logger.warn("Ignoring 00:00:00:00:00:00 device.");
+            // Many networks have 00:00:00:00:00:00 devices, so we shouldn't print this
+            // because it prints everytime a 00:00:00:00:00:00 device creates a session
+            // logger.warn("Ignoring 00:00:00:00:00:00 device.");
             return null;
         }
 
