@@ -455,6 +455,18 @@ public class HostTableImpl implements HostTable
             entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         if ( deviceEntry.getMacVendor() != null )
             entry.setMacVendor( deviceEntry.getMacVendor() );
+
+        /**
+         * XXX
+         * We add all tags from the device to the host.
+         * Ideally we would not do this because the host and device are two separate entities.
+         * When a session is created in inherits the tag from both the host and device.
+         * However iptables rules currently support a "Host Tagged" condition and the only permanent
+         * way to tag a host is to tag the host's device.
+         * Once we implement a proper "Host Tagged" coniditon that does not rely on ip set.
+         * Instead if should rely on just "Session Tag" but we don't currently support that in iptables.
+         * Once we do, we should probably this inheritance
+         */
         entry.addTags( deviceEntry.getTags() );
 
         /**
