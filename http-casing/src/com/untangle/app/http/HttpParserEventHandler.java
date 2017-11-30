@@ -651,6 +651,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                         // find the last slash to extract the file name
                         loc = fpath.lastIndexOf("/");
                         if (loc != -1) fname = fpath.substring(loc + 1);
+                        else fname = fpath;
 
                         // find the last dot to extract the file extension
                         loc = fname.lastIndexOf(".");
