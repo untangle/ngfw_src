@@ -455,6 +455,7 @@ public class HostTableImpl implements HostTable
             entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         if ( deviceEntry.getMacVendor() != null )
             entry.setMacVendor( deviceEntry.getMacVendor() );
+        entry.addTags( deviceEntry.getTags() );
 
         /**
          * Update Device Entry
