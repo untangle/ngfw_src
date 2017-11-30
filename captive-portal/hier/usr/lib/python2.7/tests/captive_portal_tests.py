@@ -220,6 +220,12 @@ def timeOfClientOff (timediff=60):
     else:
         return False
 
+def setHttpHttpsPorts(httpPort, httpsPort):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['httpPort'] = httpPort
+    netsettings['httpsPort'] = httpsPort
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
 class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
