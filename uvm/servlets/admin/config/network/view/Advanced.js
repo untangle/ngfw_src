@@ -788,6 +788,51 @@ Ext.define('Ung.config.network.view.Advanced', {
                     editable: false
                 }
             }]
+        }, {
+            title: 'Netflow'.t(),
+            itemId: 'netflow',
+            defaults: {
+                labelAlign: 'right'
+            },
+
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'Netflow Enabled'.t(),
+                bind: '{settings.netflowSettings.enabled}'
+            },{
+                xtype: 'textfield',
+                fieldLabel: 'Host'.t(),
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.host}'
+                }
+            }, {
+                xtype: 'numberfield',
+                fieldLabel: 'Port'.t(),
+                minValue: 0,
+                allowDecimals: false,
+                allowBlank: false,
+                blankText: 'You must provide a valid port.'.t(),
+                vtype: 'port',
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.port}'
+                }
+            },{
+                xtype: 'combo',
+                fieldLabel: 'Version'.t(),
+                store: [
+                    [1,'v1'],
+                    [5,'v5'],
+                    [9,'v9']
+                ],
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.version}'
+                },
+                queryMode: 'local',
+                editable: false
+            }]
         }]
     }]
 });
