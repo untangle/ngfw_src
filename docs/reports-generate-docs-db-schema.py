@@ -264,12 +264,30 @@ dict['ipsec_tunnel_stats'].update({
     'out_bytes' : 'The number of bytes transmitted during this time frame',
 })
 
+dict['ipsec_vpn_events'] = copy.deepcopy(generic)
+dict['ipsec_vpn_events'].update({
+    'table_description' : 'This table stores IPsec tunnel connection events.',
+    'local_address' : 'The local address of the tunnel',
+    'remote_address' : 'The remote address of the tunnel',
+    'tunnel_description' : 'The description of the tunnel',
+    'type': 'The type of the event (CONNECT,DISCONNECT)',
+})
+
 dict['tunnel_vpn_stats'] = copy.deepcopy(generic)
 dict['tunnel_vpn_stats'].update({
     'table_description' : 'This table stores Tunnel VPN tunnel statistics.',
     'tunnel_name' : 'The name of the Tunnel VPN tunnel',
     'in_bytes' : 'The number of bytes received during this time frame',
     'out_bytes' : 'The number of bytes transmitted during this time frame',
+})
+
+dict['tunnel_vpn_events'] = copy.deepcopy(generic)
+dict['tunnel_vpn_events'].update({
+    'table_description' : 'This table stores Tunnel VPN connection events.',
+    'server_address' : 'The address of the remote server',
+    'local_address' : 'The local address assigned the client',
+    'tunnel_name' : 'The name the tunnel',
+    'type': 'The type of the event (CONNECT,DISCONNECT)',
 })
 
 dict['smtp_tarpit_events'] = copy.deepcopy(generic)

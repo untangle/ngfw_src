@@ -2729,6 +2729,58 @@ Ext.define('TableConfig', {
                 dataIndex: 'net_process'
             }]
         },
+        ipsec_vpn_events: {
+            fields: [{
+                name: 'time_stamp',
+                sortType: 'asTimestamp'
+            }, {
+                name: 'type'
+            }, {
+                name: 'tunnel_description',
+                type: 'string'
+            }, {
+                name: 'remote_address',
+                type: 'string',
+                sortType: 'asIp'
+            }, {
+                name: 'local_address',
+                type: 'string',
+                sortType: 'asIp'
+            }],
+            columns: [{
+                header: 'Timestamp'.t(),
+                width: Renderer.timestampWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                rtype: 'timestamp',
+                filter: Renderer.timestampFilter
+            }, {
+                header: 'Type'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'event_type'
+            }, {
+                header: 'Tunnel Description'.t(),
+                width: Renderer.usernameWidth,
+                sortable: true,
+                flex: 1,
+                filter: Renderer.stringFilter,
+                dataIndex: 'tunnel_description'
+            }, {
+                header: 'Remote Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'remote_address'
+            }, {
+                header: 'Local Address'.t(),
+                width: Renderer.ipWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'local_address'
+            }]
+        },
         ipsec_tunnel_stats: {
             fields: [{
                 name: 'time_stamp',
