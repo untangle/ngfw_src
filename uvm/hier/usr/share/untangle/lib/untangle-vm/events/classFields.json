@@ -1362,6 +1362,42 @@
         },
     ]
     },
+    IpsecVpnEvent: {
+    description: "These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_vpn_events|ipsec_vpn_events]] table when an IPsec connection event occurs.",
+    fields: [
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "localAddress",
+        type: "InetAddress",
+        description: "The local address of the tunnel connection",
+        },
+        {
+        name: "remoteAddress",
+        type: "String",
+        description: "The remote address of the tunnel connection",
+        },
+        {
+        name: "tunnelDescription",
+        type: "String",
+        description: "The description of the tunnel",
+        },
+        {
+        name: "eventType",
+        type: "IpsecVpnEvent$EventType",
+        description: "The type of connection event",
+        values: [ "CONNECT",  "DISCONNECT" ],
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+    ]
+    },
     VirtualUserEvent: {
     description: "These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.",
     fields: [

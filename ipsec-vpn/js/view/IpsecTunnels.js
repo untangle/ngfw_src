@@ -50,7 +50,9 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'rightSubnet': '',
         'description': '',
         'secret': '',
-        'localInterface': 0
+        'localInterface': 0,
+        'pingAddress': '',
+        'pingInterval': 0
         },
 
     bind: '{tunnelList}',
@@ -369,6 +371,39 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'displayfield',
             margin: '0 0 0 10',
             value: 'The number of seconds for a dead peer tunnel to be restarted'.t()
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype: 'textfield',
+            bind: '{record.pingAddress}',
+            fieldLabel: 'Ping Address'.t(),
+            vtype: 'ipAddress',
+            labelWidth: 120
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(An IP address on the remote network to ping for connectivity verification. Leave blank to disable.)'.t()
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype:'numberfield',
+            bind: '{record.pingInterval}',
+            fieldLabel: 'Ping Interval'.t(),
+            labelWidth: 120,
+            allowBlank: false,
+            allowDecimals: false,
+            minValue: 0,
+            maxValue: 30
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: 'How often to ping the configured ping address address. Enter 0 to disable.'.t()
         }]
     }, {
         xtype: 'container',
