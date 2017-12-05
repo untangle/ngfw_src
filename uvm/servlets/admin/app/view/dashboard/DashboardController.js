@@ -68,6 +68,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         DashboardQueue.isVisible(dashboard.down('mapdistributionwidget'));
         DashboardQueue.isVisible(dashboard.down('networkinformationwidget'));
         DashboardQueue.isVisible(dashboard.down('policyoverviewwidget'));
+        DashboardQueue.isVisible(dashboard.down('notificationswidget'));
         Ext.Array.each(widgets, function (widget) {
             if (widget) {
                 DashboardQueue.isVisible(widget);
@@ -537,7 +538,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
-        var me = this;
+        var me = this, vm = me.getViewModel();
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
@@ -547,8 +548,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         Rpc.asyncData('rpc.dashboardManager.getSettings')
                             .then(function (result) {
                                 Ung.dashboardSettings = result;
+                                Ext.getStore('widgets').loadData(result.widgets.list);
                                 me.loadWidgets();
                                 Util.successToast('Dashboard reset done!');
+                                vm.set('managerVisible', false);
                             });
                     });
                 }
