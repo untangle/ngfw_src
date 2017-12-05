@@ -144,6 +144,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgets.add( new DashboardWidgetSettings("NetworkLayout"));
         widgets.add( new DashboardWidgetSettings("MapDistribution"));
         widgets.add( new DashboardWidgetSettings("PolicyOverview"));
+        widgets.add( new DashboardWidgetSettings("Notifications"));
 
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
