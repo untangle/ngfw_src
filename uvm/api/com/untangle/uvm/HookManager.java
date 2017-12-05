@@ -7,6 +7,7 @@ import java.io.File;
 
 public interface HookManager
 {
+    public static String SETTINGS_CHANGE = "settings-change";
     public static String NETWORK_SETTINGS_CHANGE = "network-settings-change";
     public static String REPORTS_EVENT_LOGGED = "reports-event-logged";
     public static String LICENSE_CHANGE = "license-change";

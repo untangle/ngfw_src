@@ -388,12 +388,13 @@ public class SettingsManagerImpl implements SettingsManager
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
 
-        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.SETTINGS_CHANGE, fileName, value, saveVersion, outputFileName );
 
         /*
          * Synchronized on the name of the parent directory, so two files cannot
          * modify the same file at the same time
          */
+        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
         synchronized (lock) {
             FileWriter fileWriter = null;
 
