@@ -26,7 +26,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     },
 
     process: function () {
-        var me = this, wg = me.queue[0], timeout;
+        var me = this, wg = me.queue[0];
 
         if (me.queue.length > 0 && !me.processing) {
 
@@ -37,17 +37,22 @@ Ext.define('Ung.view.dashboard.Queue', {
              * if lastFetchTime = null means the widgets did not fatch data at all, it was just being rendered
              */
             if (wg.lastFetchTime === null) {
-                timeout = true;
+                wg.timeout = true;
             } else {
-                timeout = ((new Date()).getTime() - wg.lastFetchTime)/1000 - (wg.refreshIntervalSec || wg.getViewModel().get('widget.refreshIntervalSec')) > 0;
+                if (wg.refreshIntervalSec === 0) {
+                    wg.timeout = false;
+                } else {
+                    wg.timeout = ((new Date()).getTime() - wg.lastFetchTime)/1000 - (wg.refreshIntervalSec || wg.getViewModel().get('widget.refreshIntervalSec')) > 0;
+                }
             }
+
             /**
              * if queue is paused (e.g. not in Dashboard view) or
              * widget is not in visible area of the screen or
              * it hasn't passed the timeout to be refreshed
              * just remove it from queue and skip fetching
              */
-            if (me.paused || !wg.visible ||!timeout) {
+            if (me.paused || !wg.visible || !wg.timeout) {
                 Ext.Array.removeAt(me.queue, 0);
                 me.processing = false;
                 me.process();
