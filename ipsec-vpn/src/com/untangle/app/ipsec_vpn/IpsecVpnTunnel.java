@@ -41,6 +41,8 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String rightSubnet;
     private String rightProtoPort;
     private String rightNextHop;
+    private String pingAddress;
+    private int pingInterval;
 
     public IpsecVpnTunnel()
     {
@@ -136,6 +138,12 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public String getRightNextHop() { return (rightNextHop); }
     public void setRightNextHop(String rightNextHop) { this.rightNextHop = rightNextHop; }
+
+    public String getPingAddress() { return(pingAddress); }
+    public void setPingAddress(String pingAddress) { this.pingAddress = pingAddress; }
+
+    public int getPingInterval() { return(pingInterval); }
+    public void setPingInterval(int pingInterval) { this.pingInterval = pingInterval; }
 
     // THIS IS FOR ECLIPSE - @formatter:on
 

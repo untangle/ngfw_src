@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.TimerTask;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.net.InetAddress;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -28,19 +29,25 @@ public class IpsecVpnTimer extends TimerTask
 {
     class TunnelWatcher
     {
+        int tunnelId;
         String tunnelName;
+        boolean activeFlag;
         long activeCounter;
         long cycleMark;
         long outLast;
         long inLast;
+        int pingCounter;
 
-        public TunnelWatcher(String tunnelName)
+        public TunnelWatcher(String tunnelName, int tunnelId)
         {
             this.tunnelName = tunnelName;
+            this.tunnelId = tunnelId;
+            activeFlag = false;
             activeCounter = 0;
             cycleMark = 0;
             outLast = 0;
             inLast = 0;
+            pingCounter = 0;
         }
     }
 
@@ -48,7 +55,7 @@ public class IpsecVpnTimer extends TimerTask
     private final Logger logger = Logger.getLogger(getClass());
     private final IpsecVpnApp app;
 
-    // the mininum number of minutes (assuming 600000 msec timer calling interval) for
+    // the mininum number of minutes (assuming 60000 msec timer calling interval) for
     // a tunnel to be detected active before we try to restart if detected down
     private final long RESTART_THRESHOLD = 5;
 
@@ -65,9 +72,10 @@ public class IpsecVpnTimer extends TimerTask
         CheckAllTunnels();
     }
 
-    public void CheckAllTunnels()
+    private void CheckAllTunnels()
     {
         LinkedList<ConnectionStatusRecord> statusList = app.getTunnelStatus();
+        IpsecVpnTunnel tunnel;
         TunnelWatcher watcher;
         cycleCounter += 1;
         String workname;
@@ -88,13 +96,15 @@ public class IpsecVpnTimer extends TimerTask
 
             if (watcher == null) {
                 logger.debug("Creating new watch table entry for " + workname);
-                watcher = new TunnelWatcher(workname);
+                watcher = new TunnelWatcher(workname, Integer.parseInt(status.getId()));
                 watchTable.put(workname, watcher);
             }
 
             else {
                 logger.debug("Found existing watch table entry for " + workname);
             }
+
+            tunnel = findTunnelById(watcher.tunnelId);
 
             // update the cycle mark for all watcher objects that match an enabled IPsec
             // tunnel.  we'll use this later to remove any stale watcher entries
@@ -104,10 +114,30 @@ public class IpsecVpnTimer extends TimerTask
             if (status.getMode().toLowerCase().equals("active")) {
                 watcher.activeCounter += 1;
                 GrabTunnelStatistics(watcher);
+
+                if (tunnel != null) {
+                    CheckTunnelPingTarget(watcher, tunnel);
+
+                    // if the active flag is false we need to log an up event 
+                    if (watcher.activeFlag == false) {
+                        watcher.activeFlag = true;
+                        IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.CONNECT);
+                        app.logEvent(event);
+                        logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                    }
+                }
             }
 
             // ipsec screwed up again... or rather, the tunnel appears to be down
             else {
+
+                // if our active flag is true we need to log a down event
+                if (watcher.activeFlag == true) {
+                    watcher.activeFlag = false;
+                    IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
+                    app.logEvent(event);
+                    logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                }
 
                 // if the tunnel was detected as active for the minimum amount of time
                 // then we will attempt restart by calling ipsec down and ipsec up
@@ -116,6 +146,7 @@ public class IpsecVpnTimer extends TimerTask
                     long mval = (watcher.activeCounter % 60);
                     logger.warn("Attempting restart for inactive tunnel " + watcher.tunnelName + " (UPTIME = " + Long.toString(hval) + " hours " + Long.toString(mval) + " minutes)");
                     IpsecVpnApp.execManager().exec("ipsec down " + watcher.tunnelName);
+
                     // run the up command in the background as it can block if the other side is unreachable
                     IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.tunnelName + " >/dev/null 2>&1 &");
                 } else {
@@ -145,7 +176,7 @@ public class IpsecVpnTimer extends TimerTask
         }
     }
 
-    void GrabTunnelStatistics(TunnelWatcher watcher)
+    private void GrabTunnelStatistics(TunnelWatcher watcher)
     {
         long outValue = 0;
         long inValue = 0;
@@ -235,5 +266,42 @@ public class IpsecVpnTimer extends TimerTask
         TunnelStatusEvent event = new TunnelStatusEvent(shortName, inBytes, outBytes);
         app.logEvent(event);
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
+    }
+
+    private void CheckTunnelPingTarget(TunnelWatcher watcher, IpsecVpnTunnel tunnel)
+    {
+        if (tunnel == null) return;
+        if (tunnel.getPingInterval() == 0) return;
+        if (tunnel.getPingAddress() == null) return;
+        if (tunnel.getPingAddress().length() == 0) return;
+
+        // no ping if we haven't reached the configured interval threshold
+        watcher.pingCounter += 1;
+        if (watcher.pingCounter < tunnel.getPingInterval()) return;
+
+        try {
+            InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
+            if (target.isReachable(2000)) {
+                logger.debug("PING SUCCESS: " + tunnel.getPingAddress());
+                return;
+            }
+        } catch (Exception exn) {
+            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
+            return;
+        }
+        logger.debug("PING FAILURE: " + tunnel.getPingAddress());
+    }
+
+    private IpsecVpnTunnel findTunnelById(int idValue)
+    {
+        LinkedList<IpsecVpnTunnel> configList = app.getSettings().getTunnels();
+
+        // create a status display record for all enabled tunnels
+        for (int x = 0; x < configList.size(); x++) {
+            IpsecVpnTunnel tunnel = configList.get(x);
+            if (tunnel.getId() == idValue) return (tunnel);
+        }
+
+        return (null);
     }
 }

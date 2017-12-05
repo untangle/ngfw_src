@@ -1,0 +1,13 @@
+{
+    "uniqueId": "ipsec-yUKPu8mnpC",
+    "category": "IPsec VPN",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [],
+    "defaultColumns": ["time_stamp","local_address","remote_address","tunnel_description","event_type"],
+    "description": "Shows all IPsec VPN tunnel connection events.",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "ipsec_vpn_events",
+    "title": "Tunnel Connection Events"
+}
