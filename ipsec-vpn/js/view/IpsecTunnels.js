@@ -126,7 +126,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)'.t()
+            value: 'We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>'.t()
         }]
     }, {
         xtype: 'container',
@@ -201,7 +201,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The external IP address of this server)'.t()
+            value: 'The external IP address of this server'.t()
         }]
     }, {
         xtype: 'container',
@@ -216,7 +216,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The public hostname or IP address of the remote IPsec gateway)'.t()
+            value: 'The public hostname or IP address of the remote IPsec gateway'.t()
         }]
     }, {
         xtype: 'container',
@@ -230,7 +230,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The authentication ID of the local IPsec gateway. Default = same as <B>External IP</B>)'.t()
+            value: 'The authentication ID of the local IPsec gateway. Default = same as <B>External IP</B>'.t()
         }]
     }, {
         xtype: 'container',
@@ -244,7 +244,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>)'.t()
+            value: 'The authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>'.t()
         }]
     }, {
         xtype: 'container',
@@ -277,12 +277,12 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private network attached to the local side of the tunnel)'.t(),
+            value: 'The private network attached to the local side of the tunnel'.t(),
             bind: { hidden: '{record.ikeVersion !== 1}' }
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private networks attached to the local side of the tunnel)'.t(),
+            value: 'The private networks attached to the local side of the tunnel'.t(),
             bind: { hidden: '{record.ikeVersion !== 2}' }
         }]
     }, {
@@ -316,12 +316,12 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private network attached to the remote side of the tunnel)'.t(),
+            value: 'The private network attached to the remote side of the tunnel'.t(),
             bind: { hidden: '{record.ikeVersion !== 1}' }
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private networks attached to the remote side of the tunnel)'.t(),
+            value: 'The private networks attached to the remote side of the tunnel'.t(),
             bind: { hidden: '{record.ikeVersion !== 2}' }
         }]
     }, {
@@ -385,7 +385,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(An IP address on the remote network to ping for connectivity verification. Leave blank to disable.)'.t()
+            value: 'An IP address on the remote network to ping for connectivity verification. Leave blank to disable.'.t()
         }]
     }, {
         xtype: 'container',
