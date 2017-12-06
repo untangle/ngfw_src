@@ -207,22 +207,21 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = me.getViewModel(),
             entry = vm.get('eEntry') || vm.get('entry'), ctrl;
 
-        // if (!entry) { return; }
-        me.getView().down('graphreport').getController().reset();
+        if (!entry) { return; }
 
-        // switch(entry.get('type')) {
-        // case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
-        // case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
-        // default: ctrl = me.getView().down('graphreport').getController();
-        // }
+        switch(entry.get('type')) {
+        case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
+        case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
+        default: ctrl = me.getView().down('graphreport').getController();
+        }
 
-        // if (!ctrl) {
-        //     console.error('Entry controller not found!');
-        //     return;
-        // }
-        // if (Ext.isFunction(ctrl.reset)) {
-        //     ctrl.reset();
-        // }
+        if (!ctrl) {
+            console.error('Entry controller not found!');
+            return;
+        }
+        if (Ext.isFunction(ctrl.reset)) {
+            ctrl.reset();
+        }
     },
 
     refresh: function () {
@@ -556,9 +555,9 @@ Ext.define('Ung.view.reports.EntryController', {
         vm.set('validForm', true);
         vm.notify();
 
-        // if New Entry was initiated from a category view
-        if (!vm.get('entry')) {
-            me.getView().up('#reports').lookup('cards').setActiveItem('category');
+        // go back if returning from create new report
+        if (location.hash === '#reports/create') {
+            Ext.util.History.back();
             return;
         }
 
