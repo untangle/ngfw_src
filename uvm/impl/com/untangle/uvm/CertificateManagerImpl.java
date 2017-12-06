@@ -8,6 +8,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Collection;
@@ -636,7 +637,7 @@ public class CertificateManagerImpl implements CertificateManager
         String argList[] = new String[4];
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         argList[0] = "SERVER"; // puts cert file and key in settings directory
-        argList[1] = certSubject;
+        argList[1] = certSubject.replaceAll("\"", "'");
         argList[2] = altNames;
         argList[3] = baseName;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
