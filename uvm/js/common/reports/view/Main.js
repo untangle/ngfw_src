@@ -107,7 +107,7 @@ Ext.define('Ung.view.reports.Main', {
                 flex: 1,
                 items: [{
                     text: 'Create New'.t(),
-                    iconCls: 'fa fa-magic fa-lg',
+                    iconCls: 'fa fa-plus fa-lg',
                     scale: 'medium',
                     handler: 'newReport',
                 }, {

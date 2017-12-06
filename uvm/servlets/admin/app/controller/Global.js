@@ -69,6 +69,7 @@ Ext.define('Ung.controller.Global', {
             'config/:configName/:configView': 'onConfig',
             'config/:configName/:configView/:subView': 'onConfig',
             'reports': { before: 'detectChanges', action: 'onReports' },
+            'reports/create': { before: 'detectChanges', action: 'onReports' },
             'reports/:category': { before: 'detectChanges', action: 'onReports' },
             'reports/:category/:entry': { before: 'detectChanges', action: 'onReports', conditions: { ':entry': '(.*)' } },
             'sessions': { before: 'detectChanges', action: 'onSessions' },
@@ -322,7 +323,6 @@ Ext.define('Ung.controller.Global', {
         }
         if (reportName) {
             hash += '/' + reportName;
-            // reportsVm.set('activeCard', 'report');
         }
         reportsVm.set('hash', hash);
         this.getMainView().getViewModel().set('activeItem', 'reports');

@@ -28,6 +28,19 @@ Ext.define('Ung.view.reports.MainController', {
         vm.bind('{hash}', function (hash) {
             if (!hash) { me.resetView(); return; }
 
+            // on create new report reset and apply new entry
+            if (hash === 'create') {
+                me.getViewModel().set('selection', null);
+                me.resetView();
+                me.getView().down('entry').getController().reset();
+                me.getView().down('entry').getViewModel().set({
+                    entry: null,
+                    eEntry: Ext.create('Ung.model.Report')
+                });
+                me.lookup('cards').setActiveItem('report');
+                return;
+            }
+
             if (Ung.app.context === 'REPORTS') {
                 path = '/reports/' + window.location.hash.replace('#', '');
                 node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#', ''));
@@ -146,10 +159,12 @@ Ext.define('Ung.view.reports.MainController', {
 
         breadcrumb.setSelection('root');
 
-        me.buildStats();
-        me.lookup('cards').setActiveItem('category');
-        me.getViewModel().set('selection', null);
-        me.getViewModel().set('hash', null);
+        if (me.getViewModel().get('hash') !== 'create') {
+            me.buildStats();
+            me.lookup('cards').setActiveItem('category');
+            me.getViewModel().set('selection', null);
+            me.getViewModel().set('hash', null);
+        }
     },
 
     /**
@@ -199,20 +214,9 @@ Ext.define('Ung.view.reports.MainController', {
         vm.set('stats', stats);
     },
 
+    // on new report just redirect to proper route
     newReport: function () {
-        var me = this,
-            newReport = Ext.create('Ung.model.Report');
-        me.getView().down('entry').getViewModel().set('eEntry', newReport);
-        me.lookup('cards').setActiveItem('report');
-    },
-
-    newReportWizard: function () {
-        var me = this;
-        var wizard = me.getView().add({
-            xtype: 'reportwizard',
-            tableConfig: me.tableConfig
-        });
-        wizard.show();
+        Ung.app.redirectTo('#reports/create');
     },
 
     newImport: function () {
