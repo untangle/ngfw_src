@@ -19,7 +19,7 @@ public class IpsecVpnEvent extends LogEvent implements Serializable
 {
     public enum EventType
     {
-        CONNECT, DISCONNECT
+        CONNECT, DISCONNECT, UNREACHABLE
     };
 
     private String localAddress;

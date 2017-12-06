@@ -1389,7 +1389,7 @@
         name: "eventType",
         type: "IpsecVpnEvent$EventType",
         description: "The type of connection event",
-        values: [ "CONNECT",  "DISCONNECT" ],
+        values: [ "CONNECT",  "DISCONNECT", "UNREACHABLE" ],
         },
         {
         name: "timeStamp",

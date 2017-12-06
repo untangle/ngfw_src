@@ -287,9 +287,10 @@ public class IpsecVpnTimer extends TimerTask
             }
         } catch (Exception exn) {
             logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
-            return;
         }
-        logger.debug("PING FAILURE: " + tunnel.getPingAddress());
+        IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.UNREACHABLE);
+        app.logEvent(event);
+        logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
     }
 
     private IpsecVpnTunnel findTunnelById(int idValue)
