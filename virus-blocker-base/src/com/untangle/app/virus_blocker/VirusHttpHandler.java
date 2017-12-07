@@ -24,6 +24,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.GlobUtil;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Virus handler for HTTP.
@@ -169,7 +170,7 @@ class VirusHttpHandler extends HttpEventHandler
         logger.debug("content-disposition: " + contentDisposition);
         String mimeType = header.getValue("content-type");
         logger.debug("content-type: " + mimeType);
-        String contentDispositionFilename = findContentDispositionFilename(header);
+        String contentDispositionFilename = (String)session.globalAttachment(AppSession.KEY_HTTP_RESPONSE_FILE_NAME);
         logger.debug("content-disposition filename: " + contentDispositionFilename);
 
         if ( rl == null || rl.getMethod() == HttpMethod.HEAD ) {

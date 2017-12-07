@@ -446,6 +446,30 @@ public class HttpParserEventHandler extends AbstractEventHandler
                             state.transferEncoding = BodyEncoding.NO_BODY;
                         }
                     }
+                    String contentType = state.header.getValue("content-type");
+                    String contentLength = state.header.getValue("content-length");
+                    String fileName = findContentDispositionFilename(state.header);
+
+                    /**
+                     * Attach values to session
+                     */
+                    if (contentType != null) {
+                        session.globalAttach( AppSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                    }
+                    if (contentLength != null) {
+                        try {
+                            Long contentLengthLong = Long.parseLong(contentLength);
+                            session.globalAttach(AppSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
+                        } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
+                    }
+                    if (fileName != null) {
+                        session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
+                        // find the last dot to extract the file extension
+                        int loc = fileName.lastIndexOf(".");
+                        if (loc != -1)
+                            session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
+                    }
+
                 } else {
                     /* the request event is saved internally and used later with getRequestEvent */
                     String referer = ( app.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
@@ -594,9 +618,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 if (!clientSide) {
                     String contentType = state.header.getValue("content-type");
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
-                    
                     RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
-
+                    
                     if (null != rl) {
                         HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, state.lengthCounter);
 
@@ -621,6 +644,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     String host = state.header.getValue("host");
                     String referer = state.header.getValue("referer");
                     String userAgent = state.header.getValue("user-agent");
+                    String rmethod = state.requestLineToken.getMethod().toString();
                     /**
                      * XXX what is this: .replaceAll("(?<!:)/+", "/")
                      * -dmorris
@@ -639,6 +663,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     session.globalAttach( AppSession.KEY_HTTP_URI, uri );
                     session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
                     session.globalAttach( AppSession.KEY_HTTP_USER_AGENT, userAgent );
+                    session.globalAttach( AppSession.KEY_HTTP_REQUEST_METHOD, rmethod );
 
                     String fpath = null;
                     String fname = null;
@@ -1393,6 +1418,36 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 }
             }
         };
+    }
+
+    /**
+     * This method extracts the filename from the content disposition header
+     * @param the HTTP response header token
+     * @returns the filename as a string if found, or null
+     */
+    public static String findContentDispositionFilename( HeaderToken header )
+    {
+        String contentDisposition = header.getValue("content-disposition");
+
+        if ( contentDisposition == null )
+            return null;
+
+        contentDisposition = contentDisposition.toLowerCase();
+
+        int indexOf = contentDisposition.indexOf("filename=");
+
+        if ( indexOf == -1 )
+            return null;
+
+        indexOf = indexOf + "filename=".length();
+
+        String filename = contentDisposition.substring( indexOf );
+
+        filename = filename.replace("\"","");
+        filename = filename.replace("'","");
+        filename = filename.replaceAll("\\s","");
+
+        return filename;
     }
 
     @SuppressWarnings("unchecked")

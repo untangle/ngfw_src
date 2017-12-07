@@ -353,10 +353,6 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             state.requestLineToken = (RequestLineToken)token;
             state.requestLineToken = doRequestLine( session, state.requestLineToken );
 
-            String rmethod = state.requestLineToken.getMethod().toString();
-            if (rmethod != null)
-                session.globalAttach(AppSession.KEY_HTTP_REQUEST_METHOD, rmethod);
-            
             switch ( state.requestMode ) {
             case QUEUEING:
                 state.requestQueue.add( state.requestLineToken );
@@ -588,30 +584,6 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             if ( state.responseMode != Mode.BLOCKED ) {
                 HeaderToken h = (HeaderToken)token;
                 state.responsePersistent = isPersistent(h);
-
-                /**
-                 * Attach metadata
-                 */
-                String contentType = h.getValue("content-type");
-                if (contentType != null) {
-                    session.globalAttach( AppSession.KEY_HTTP_CONTENT_TYPE, contentType );
-                }
-                String contentLength = h.getValue("content-length");
-                if (contentLength != null) {
-                    try {
-                        Long contentLengthLong = Long.parseLong(contentLength);
-                        session.globalAttach(AppSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
-                    } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
-                }
-                String fileName = findContentDispositionFilename(h);
-                if (fileName != null) {
-                    session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
-                    // find the last dot to extract the file extension
-                    int loc = fileName.lastIndexOf(".");
-                    if (loc != -1)
-                        session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
-
-                }
                 h = doResponseHeader( session, h );
 
                 switch ( state.responseMode ) {
@@ -787,30 +759,4 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");
     }
-
-    public static String findContentDispositionFilename( HeaderToken header )
-    {
-        String contentDisposition = header.getValue("content-disposition");
-
-        if ( contentDisposition == null )
-            return null;
-
-        contentDisposition = contentDisposition.toLowerCase();
-        
-        int indexOf = contentDisposition.indexOf("filename=");
-
-        if ( indexOf == -1 )
-            return null;
-
-        indexOf = indexOf + "filename=".length();
-        
-        String filename = contentDisposition.substring( indexOf );
-        
-        filename = filename.replace("\"","");
-        filename = filename.replace("'","");
-        filename = filename.replaceAll("\\s","");
-        
-        return filename;
-    }
-
 }
