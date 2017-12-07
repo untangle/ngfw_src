@@ -571,7 +571,8 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Returns true if the specified interface is currently the master of its VRRP group
+     * Determines if the specified interface is currently the VRRP master
+     * @returns true if the given interfaceId is current the VRRP master of its VRRP group, false otherwise
      */
     public boolean isVrrpMaster( int interfaceId )
     {
@@ -609,6 +610,7 @@ public class NetworkManagerImpl implements NetworkManager
         
     /**
      * Return the status of all addressed interfaces
+     * @returns a list of InterfaceStatus for all interface
      */
     public List<InterfaceStatus> getInterfaceStatus( )
     {
@@ -623,6 +625,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     /**
      * Returns a list of all the current device status'
+     * @returns a list of DeviceStatus for all current devices
      */
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
@@ -738,6 +741,7 @@ public class NetworkManagerImpl implements NetworkManager
                 // Check for wireless interfaces
                 if (deviceName.startsWith("wlan")) {
                     interfaceSettings.setIsWirelessInterface(true);
+                    interfaceSettings.setWirelessChannel(6);
                 } else {
                     interfaceSettings.setIsWirelessInterface(false);
                 }
@@ -826,7 +830,10 @@ public class NetworkManagerImpl implements NetworkManager
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
                 external.setV6ConfigType( InterfaceSettings.V6ConfigType.DISABLED );
                 external.setV4NatEgressTraffic( true );
-                if (devName.startsWith("wlan")) external.setIsWirelessInterface(true);
+                if (devName.startsWith("wlan")) {
+                    external.setIsWirelessInterface(true);
+                    external.setWirelessChannel(6);
+                }
                 interfaces.add( external );
             }
         
@@ -848,7 +855,10 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV6StaticAddress( null );
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
-                if (devName.startsWith("wlan")) internal.setIsWirelessInterface(true);
+                if (devName.startsWith("wlan")) {
+                    internal.setIsWirelessInterface(true);
+                    internal.setWirelessChannel(6);
+                }
                 interfaces.add(internal);
             }
 
@@ -867,6 +877,7 @@ public class NetworkManagerImpl implements NetworkManager
                 // Check for wireless interfaces
                 if (devName.startsWith("wlan")) {
                     intf.setIsWirelessInterface(true);
+                    intf.setWirelessChannel(6);
                 }
 
                 intf.setPhysicalDev( devName);
@@ -2211,32 +2222,33 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Query a wireless card for a list of supported channels
+     *
+     * @returns a list of the support wifi channels (never null)
      */
-
     public List<Integer> getWirelessChannels( String systemDev )
     {
-	List<Integer> channels = new LinkedList<Integer>();
+        List<Integer> channels = new LinkedList<Integer>();
 
-	String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
+        String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
 
-	String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
-	String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
-	String wiphyPattern = ".*wiphy (\\d)";
-	Pattern channelRegex = Pattern.compile(channelPattern);
-	Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
-	Pattern wiphyRegex = Pattern.compile(wiphyPattern);
-	Integer maxChannel = 0;
+        String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
+        String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
+        String wiphyPattern = ".*wiphy (\\d)";
+        Pattern channelRegex = Pattern.compile(channelPattern);
+        Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
+        Pattern wiphyRegex = Pattern.compile(wiphyPattern);
+        Integer maxChannel = 0;
 
-	channels.add(new Integer(-1));
+        channels.add(new Integer(-1));
 
-	String wiphyId = "";
+        String wiphyId = "";
 
-	try {
+        try {
             String lines[] = infoResult.split("\\n");
             for ( String line : lines ) {
-		Matcher match = wiphyRegex.matcher(line);
-		if ( match.find() ) {
-		    wiphyId = match.group(1);
+                Matcher match = wiphyRegex.matcher(line);
+                if ( match.find() ) {
+                    wiphyId = match.group(1);
                 }
             }
         } catch (Exception e) {
@@ -2244,32 +2256,39 @@ public class NetworkManagerImpl implements NetworkManager
             return channels;
         }
 
-	if ( wiphyId.length() == 0 ) {
-	    logger.error( "Error parsing wiphy for dev: " + systemDev );
-	    return channels;
-	}
-
-	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
-
-	try {
-        String lines[] = channelResult.split("\\n");
-        for ( String line : lines ) {
-            Matcher match = channelRegex.matcher(line);
-            Matcher disabledMatch = channelDisabledRegex.matcher(line);
-            if ( match.find() && !disabledMatch.find() ) {
-                Integer channel = Integer.valueOf(match.group(3));
-                channels.add(channel);
-                if (channel > maxChannel) maxChannel = channel;
-            }
+        if ( wiphyId.length() == 0 ) {
+            logger.error( "Error parsing wiphy for dev: " + systemDev );
+            return channels;
         }
-    } catch (Exception e) {
-        logger.error( "Error parsing wireless channels", e );
-        return channels;
-    }
-	
-	if (maxChannel > 11) channels.add(1, new Integer( -2 ));
 
-	return channels;
+        logger.debug("Query supported channels for " + systemDev + " / phy" + wiphyId + " with: iw phy" + wiphyId + " info");
+        String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
+
+        try {
+            String lines[] = channelResult.split("\\n");
+            for ( String line : lines ) {
+                logger.debug("Parsing line: " + line);
+                Matcher match = channelRegex.matcher(line);
+                Matcher disabledMatch = channelDisabledRegex.matcher(line);
+                if ( match.find() ) {
+                    Integer channel = Integer.valueOf(match.group(3));
+                    if ( disabledMatch.find() ) {
+                        logger.debug("Ignoring channel (disabled): " + channel);
+                    } else {
+                        logger.debug("Adding channel: " + channel);
+                        channels.add(channel);
+                        if (channel > maxChannel) maxChannel = channel;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error( "Error parsing wireless channels", e );
+            return channels;
+        }
+	
+        if (maxChannel > 11) channels.add(1, new Integer( -2 ));
+
+        return channels;
     }
 
     public String getUpnpManager(String command, String arguments)
