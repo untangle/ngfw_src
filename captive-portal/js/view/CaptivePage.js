@@ -144,11 +144,13 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
             },{
                 xtype: 'hidden',
                 name: 'type',
-                value: 'custom_page'
+                value: 'CaptivePortal/custom_upload'
             },{
                 xtype: 'hidden',
                 name: 'argument',
-                value: 'UPLOAD'
+                bind: {
+                    value: '{instance.id}'
+                }
             }]
         }, {
             xtype: 'form',
@@ -163,19 +165,21 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
                 name: 'custom_file',
                 bind: '{settings.customFilename}',
                 width: 500
-            }, {
+            },{
                 xtype: 'fileuploadfield',
                 name: 'remove_file',
                 allowBlank: true,
                 hidden: true
-            }, {
+            },{
                 xtype: 'hidden',
                 name: 'type',
-                value: 'custom_page'
-            }, {
+                value: 'CaptivePortal/custom_remove'
+            },{
                 xtype: 'hidden',
                 name: 'argument',
-                value: 'REMOVE'
+                bind: {
+                    value: '{instance.id}'
+                }
             }, {
                 xtype: 'button',
                 formBind: true,
