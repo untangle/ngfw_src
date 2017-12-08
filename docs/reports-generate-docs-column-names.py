@@ -47,6 +47,7 @@ dict = {
     'c2s_content_length' : i18n._('Client-to-server Content Length'),
     's2c_content_length' : i18n._('Server-to-client Content Length'),
     's2c_content_type' : i18n._('Server-to-client Content Type'),
+    's2c_content_filename' : i18n._('Server-to-client Content Disposition Filename'),
     'rx_bytes' : i18n._('Bytes Received'),
     'tx_bytes' : i18n._('Bytes Sent'),
     'client_name': i18n._('Client Name'),

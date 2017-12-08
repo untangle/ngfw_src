@@ -15,14 +15,16 @@ public class HttpResponseEvent extends LogEvent
 {
     private RequestLine requestLine;
     private String contentType;
+    private String contentFilename;
     private long contentLength;
 
     public HttpResponseEvent() { }
 
-    public HttpResponseEvent(RequestLine requestLine, String contentType, long contentLength)
+    public HttpResponseEvent(RequestLine requestLine, String contentType, String contentFilename, long contentLength)
     {
         this.requestLine = requestLine;
         this.contentType = contentType;
+        this.contentFilename = contentFilename;
         this.contentLength = contentLength;
     }
 
@@ -35,6 +37,12 @@ public class HttpResponseEvent extends LogEvent
      */
     public String getContentType() { return contentType; }
     public void setContentType(String newValue) { this.contentType = contentType; }
+
+    /**
+     * The filename as specified in the content-dispition if specified
+     */
+    public String getContentFilename() { return contentFilename; }
+    public void setContentFilename(String newValue) { this.contentFilename = contentFilename; }
 
     /**
      * Content length, as counted by the parser.
@@ -56,7 +64,8 @@ public class HttpResponseEvent extends LogEvent
             "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
             "s2c_content_length = ?, " +
-            "s2c_content_type = ? " +
+            "s2c_content_type = ?, " +
+            "s2c_content_filename = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -65,6 +74,7 @@ public class HttpResponseEvent extends LogEvent
         int i=0;
         pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getContentType());
+        pstmt.setString(++i, getContentFilename());
         pstmt.setLong(++i, getRequestLine().getRequestId());
 
         pstmt.addBatch();
