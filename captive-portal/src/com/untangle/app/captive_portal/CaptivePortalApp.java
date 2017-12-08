@@ -84,7 +84,6 @@ public class CaptivePortalApp extends AppBase
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/captive-portal/settings_" + getAppSettings().getId().toString()) + ".js";
-    private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
 
     protected CaptivePortalUserCookieTable captureUserCookieTable = new CaptivePortalUserCookieTable();
     protected CaptivePortalUserTable captureUserTable;
@@ -103,6 +102,7 @@ public class CaptivePortalApp extends AppBase
         replacementGenerator = new CaptivePortalReplacementGenerator(getAppSettings(),this);
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageUploadHandler());
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageRemoveHandler());
 
         addMetric(new AppMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
         addMetric(new AppMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
@@ -340,6 +340,9 @@ public class CaptivePortalApp extends AppBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
+        // create the custom path for this application instance
+        String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
+
         // load user state from file (if exists)
         loadUserState();
 
@@ -412,6 +415,9 @@ public class CaptivePortalApp extends AppBase
     protected void uninstall()
     {
         super.uninstall();
+
+        // create the custom path for this application instance
+        String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
 
         // run a script to remove the directory for the custom captive page
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
@@ -855,15 +861,15 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
-    /*
-     * This is called by the UI to upload and remove custom captive pages.
+    /**
+     * This is called by the UI to upload custom captive pages.
      */
     private class CustomPageUploadHandler implements UploadHandler
     {
         @Override
         public String getName()
         {
-            return "custom_page";
+            return "CaptivePortal/custom_upload";
         }
 
         @Override
@@ -871,19 +877,9 @@ public class CaptivePortalApp extends AppBase
         {
             logger.info("CUSTOM UPLOAD: " + fileItem.getName() + " ARGUMENT: " + argument);
 
-            switch (argument)
-            {
-            case "UPLOAD":
-                return handleFileUpload(fileItem);
-            case "REMOVE":
-                return handleFileRemove();
-            }
+            // create the custom path for this application instance
+            String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + argument);
 
-            return new ExecManagerResult(1, "Unknown argument: " + argument);
-        }
-
-        private ExecManagerResult handleFileUpload(FileItem fileItem) throws Exception
-        {
             /*
              * save the uploaded file to disk so we can work on it
              */
@@ -937,14 +933,35 @@ public class CaptivePortalApp extends AppBase
             UvmContextFactory.context().execManager().exec("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
 
             tempFile.delete();
+            logger.debug("Custom zip uploaded to: " + customPath);
             return new ExecManagerResult(0, fileItem.getName());
         }
+    }
 
-        private ExecManagerResult handleFileRemove() throws Exception
+    /**
+     * This is called by the UI to remove custom captive pages.
+     */
+    private class CustomPageRemoveHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
         {
+            return "CaptivePortal/custom_remove";
+        }
+
+        @Override
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            logger.info("CUSTOM REMOVE: " + fileItem.getName() + " ARGUMENT: " + argument);
+
+            // create the custom path for this application instance
+            String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + argument);
+
             // use our existing remove and create scripts to wipe any existing custom page
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+
+            logger.debug("Custom zip removed from: " + customPath);
             return new ExecManagerResult(0, "The custom captive portal page has been removed");
         }
     }
