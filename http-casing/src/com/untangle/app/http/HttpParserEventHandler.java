@@ -619,9 +619,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     String contentType = state.header.getValue("content-type");
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
                     RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
+                    String filename = findContentDispositionFilename(state.header);
                     
                     if (null != rl) {
-                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, state.lengthCounter);
+                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, filename, state.lengthCounter);
 
                         app.logEvent(evt);
                     }
@@ -684,8 +685,13 @@ public class HttpParserEventHandler extends AbstractEventHandler
                         if (loc != -1) fext = fname.substring(loc + 1);
 
                         if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
-                        if (fname != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
-                        if (fext != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
+                        // FILE_NAME can be set from earlier in the header, only overwrite if it is null
+                        if (fname != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_NAME) == null) {
+                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
+                        }
+                        // FILE_EXTENSION can be set from earlier in the header, only overwrite if it is null
+                        if (fext != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION) == null)
+                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
                     } catch (URISyntaxException e) {}
 
                     if ( agentString != null ) {

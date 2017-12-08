@@ -1207,6 +1207,8 @@ Ext.define('TableConfig', {
             }, {
                 name: 's2c_content_type'
             }, {
+                name: 's2c_content_filename'
+            }, {
                 name: 'web_filter_blocked'
             }, {
                 name: 'web_filter_flagged'
@@ -1397,6 +1399,12 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 's2c_content_type'
+            }, {
+                header: 'Content Filename'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 's2c_content_filename'
             }, {
                 header: 'Blocked'.t() + ' (Web Filter)',
                 width: Renderer.booleanWidth,
