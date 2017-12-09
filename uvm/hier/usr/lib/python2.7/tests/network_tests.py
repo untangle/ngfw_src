@@ -22,7 +22,7 @@ import global_functions
 
 ftp_file_name = ""
 dyn_hostname = ""
-dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net'];
+dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
 
 defaultRackId = 1
 orig_netsettings = None
