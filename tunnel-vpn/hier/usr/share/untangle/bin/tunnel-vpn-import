@@ -49,14 +49,10 @@ importZip()
     cp -Pf $CONF_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/tunnel.conf
     cp -Pf ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
 
-    CRT_FILE="`find ${TMPDIR} -type f -name '*.crt'`"
-    PEM_FILE="`find ${TMPDIR} -type f -name '*.pem'`"
-    if [ -f "$CRT_FILE" ] ; then
-        cp $CRT_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
-    fi
-    if [ -f "$PEM_FILE" ] ; then
-        cp $PEM_FILE @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
-    fi
+    # Copy all .crt files .pem files and .key files
+    find ${TMPDIR} -type f -name '*.crt' -exec cp {} @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/ \;
+    find ${TMPDIR} -type f -name '*.pem' -exec cp {} @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/ \;
+    find ${TMPDIR} -type f -name '*.key' -exec cp {} @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/ \;
 }
 
 importOvpn()
