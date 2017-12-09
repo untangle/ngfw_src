@@ -1558,7 +1558,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: Renderer.idWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'policy_id'
@@ -1831,7 +1831,7 @@ Ext.define('TableConfig', {
                 dataIndex: 'session_id'
             }, {
                 header: 'Policy Id'.t(),
-                width: Renderer.idWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'policy_id'
@@ -3013,7 +3013,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: Renderer.idWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'policy_id'
@@ -3598,7 +3598,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
-                width: Renderer.idWidth,
+                width: Renderer.messageWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
                 dataIndex: 'policy_id'
