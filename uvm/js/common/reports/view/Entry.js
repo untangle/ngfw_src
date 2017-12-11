@@ -118,7 +118,7 @@ Ext.define('Ung.view.reports.Entry', {
                 handler: 'dashboardAddRemove'
             }, {
                 itemId: 'exportBtn',
-                text: 'Export'.t(),
+                text: 'Export Data (csv)'.t(),
                 iconCls: 'fa fa-external-link-square',
                 handler: 'exportEventsHandler',
                 hidden: true,
@@ -584,6 +584,7 @@ Ext.define('Ung.view.reports.Entry', {
                     // PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC
                     xtype: 'colorspicker',
                     fieldLabel: 'Colors'.t(),
+                    pickerAlign: 'bl-tl',
                     anchor: '100%',
                     emptyText: 'Using default colors'.t(),
                     bind: {
