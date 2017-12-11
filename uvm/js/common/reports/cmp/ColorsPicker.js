@@ -183,15 +183,22 @@ Ext.define('Ung.reports.cmp.ColorsPicker', {
         return me.grid;
     },
 
-    addColor: function () {
+    addColor: function (btn) {
         this.grid.getStore().add({
             color: '#' + this.colorPalette[Ext.Number.randomInt(0, this.colorPalette.length - 1)]
         });
+        // limit amount of colors to max 8
+        if (this.grid.getStore().count() >= 8 ) {
+            btn.setDisabled(true);
+        }
     },
 
     removeColor: function (view, rowIndex, colIndex, item, e, record) {
         view.focus(); // important to move the focus on the grid so the picker does not collapse
         record.drop();
+        if (this.grid.getStore().count() < 8 ) {
+            this.grid.down('#addbtn').setDisabled(false);
+        }
     },
 
     removeAll: function () {
