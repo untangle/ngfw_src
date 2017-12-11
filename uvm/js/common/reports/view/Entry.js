@@ -96,13 +96,13 @@ Ext.define('Ung.view.reports.Entry', {
                 }
             }, {
                 itemId: 'downloadBtn',
-                text: 'Download Graph'.t(),
+                text: 'Download (Image)'.t(),
                 iconCls: 'fa fa-download',
                 handler: 'downloadGraph',
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{!isGraphEntry || eEntry}',
+                    hidden: '{entry.type === "EVENT_LIST" || entry.type === "TEXT" || eEntry}',
                     disabled: '{fetching}'
                 }
             }, {
