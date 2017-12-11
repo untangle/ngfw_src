@@ -88,86 +88,33 @@ Ext.define('Ung.view.reports.EventReport', {
 
             vm.bind('{entry}', function (entry) {
                 if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
-                me.entry = entry;
-                me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
 
-                me.setupGrid();
                 // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
+                    // if it's widgets it needs separate calls to setup the grid
+                    me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
+                    me.setupGrid();
                     DashboardQueue.addFirst(view.getWidget());
-                } else {
-                    // if rendered in reports, fetch data
-                    vm.set('eventsData', []);
+                }
+                // if rendered in creating new widget dialog, fetch data
+                if (view.up('new-widget')) {
                     me.fetchData(true);
                 }
             });
-
-            // vm.bind('{entry}', function (entry) {
-            //     if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
-            //     console.log('step1');
-            //     me.entry = entry;
-            //     me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
-            // });
-
-            // vm.bind('{eEntry}', function (entry) {
-            //     if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
-            //     console.log('step2');
-            //     me.entry = entry;
-            //     me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
-            // });
-
-
-            // // update tableColumns when table is changed
-            // vm.bind('{eEntry.table}', function (table) {
-            //     console.log(table);
-            //     if (!table) {
-            //         vm.set('tableColumns', []);
-            //         return;
-            //     }
-            //     var tableConfig = TableConfig.generate(table);
-
-            //     if (vm.get('eEntry.type') !== 'EVENT_LIST') {
-            //         vm.set('tableColumns', tableConfig.comboItems);
-            //         return;
-            //     }
-
-            //     // for EVENT_LIST setup the columns
-            //     var defaultColumns = Ext.clone(vm.get('eEntry.defaultColumns'));
-
-            //     // initially set none as default
-            //     Ext.Array.each(tableConfig.comboItems, function (item) {
-            //         item.isDefault = false;
-            //     });
-
-            //     Ext.Array.each(vm.get('eEntry.defaultColumns'), function (defaultColumn) {
-            //         var col = Ext.Array.findBy(tableConfig.comboItems, function (item) {
-            //             return item.value === defaultColumn;
-            //         });
-            //         // remove default columns if not in TableConfig
-            //         if (!col) {
-            //             vm.set('eEntry.defaultColumns', Ext.Array.remove(defaultColumns, defaultColumn));
-            //         } else {
-            //             // otherwise set it as default
-            //             col.isDefault = true;
-            //         }
-            //     });
-            //     console.log(tableConfig.comboItems);
-            //     vm.set('tableColumns', tableConfig.comboItems);
-            //     me.fetchData();
-            // });
         },
 
         setupGrid: function () {
             var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
+            var entry = vm.get('eEntry') || vm.get('entry');
 
-            if (!me.entry) { return; }
+            if (!entry) { return; }
 
             if (me.getView().up('reportwidget')) {
                 me.isWidget = true;
             }
 
-            me.tableConfig = Ext.clone(TableConfig.getConfig(me.entry.get('table')));
-            me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : me.entry.get('defaultColumns'); // widget or report columns
+            me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
+            me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
 
             Ext.Array.each(me.tableConfig.fields, function (field) {
                 if (!field.sortType) {
@@ -227,11 +174,11 @@ Ext.define('Ung.view.reports.EventReport', {
         fetchData: function (reset, cb) {
             var me = this,
                 vm = me.getViewModel(),
-                // entry = vm.get('eEntry') || vm.get('entry'),
+                entry = vm.get('eEntry') || vm.get('entry'),
                 reps = me.getView().up('#reports'),
                 startDate, endDate;
 
-            if (!me.entry) { return; }
+            if (!entry) { return; }
 
             if (reset) {
                 vm.set('eventsData', []);
@@ -259,7 +206,7 @@ Ext.define('Ung.view.reports.EventReport', {
             if (reps) { reps.getViewModel().set('fetching', true); }
 
             Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
-                            me.entry.getData(), // entry
+                            entry.getData(), // entry
                             vm.get('globalConditions'), // etra conditions
                             limit,
                             startDate, // start date
