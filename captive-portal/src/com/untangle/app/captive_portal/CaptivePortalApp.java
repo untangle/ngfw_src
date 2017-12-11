@@ -1252,7 +1252,7 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
-     * This is called by the UI to upload custom captive pages.
+     * This is called by the UI to remove custom captive pages.
      */
     private class CustomPageRemoveHandler implements UploadHandler
     {
