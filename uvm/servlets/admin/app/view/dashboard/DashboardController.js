@@ -40,12 +40,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         view.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
         view.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
 
-        me.getViewModel().bind('{theme}', function (theme) {
-            Ung.dashboardSettings.theme = theme;
-            Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
-                graph.getController().setStyles();
-            });
-        });
+        // me.getViewModel().bind('{theme}', function (theme) {
+        //     Ung.dashboardSettings.theme = theme;
+        //     Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
+        //         graph.getController().setStyles();
+        //     });
+        // });
 
     },
 
@@ -89,7 +89,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // refresh the dashboard manager grid if the widgets were affected
         me.lookup('dashboardManager').getView().refresh();
         vm.set('timeframe', Ung.dashboardSettings.timeframe);
-        vm.set('theme', Ung.dashboardSettings.theme);
+        // vm.set('theme', Ung.dashboardSettings.theme);
 
         dashboard.removeAll(true);
         var widgetsCmp = [];
@@ -119,9 +119,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             itemId: widget.get('entryId'),
                             lastFetchTime: null,
                             visible: true,
-                            bind: {
-                                userCls: 'theme-{theme}'
-                            },
+                            // bind: {
+                            //     userCls: 'theme-{theme}'
+                            // },
                             // refreshIntervalSec: widget.get('refreshIntervalSec'),
                             // refreshIntervalSec: 10,
                             viewModel: {
@@ -189,9 +189,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         itemId: widget.get('entryId'),
                         lastFetchTime: null,
                         visible: true,
-                        bind: {
-                            userCls: 'theme-{theme}'
-                        },
+                        // bind: {
+                        //     userCls: 'theme-{theme}'
+                        // },
                         // refreshIntervalSec: widget.get('refreshIntervalSec'),
                         viewModel: {
                             data: {
@@ -275,7 +275,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
         Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
-        Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
+        // Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
         .then(function() {
@@ -326,9 +326,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                                 itemId: record.get('entryId'),
                                 visible: true,
                                 lastFetchTime: null,
-                                bind: {
-                                    userCls: 'theme-{theme}'
-                                },
+                                // bind: {
+                                //     userCls: 'theme-{theme}'
+                                // },
                                 // refreshIntervalSec: record.get('refreshIntervalSec'),
                                 viewModel: {
                                     data: {
@@ -445,9 +445,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         itemId: wg2.get('entryId'),
                         visible: true,
                         lastFetchTime: null,
-                        bind: {
-                            userCls: 'theme-{theme}'
-                        },
+                        // bind: {
+                        //     userCls: 'theme-{theme}'
+                        // },
                         viewModel: {
                             data: {
                                 widget: wg2,
@@ -482,9 +482,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             itemId: wg2.get('entryId'),
                             visible: true,
                             lastFetchTime: null,
-                            bind: {
-                                userCls: 'theme-{theme}'
-                            },
+                            // bind: {
+                            //     userCls: 'theme-{theme}'
+                            // },
                             viewModel: {
                                 data: {
                                     widget: wg2,
@@ -600,9 +600,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     itemId: widget.entryId,
                     visible: true,
                     lastFetchTime: null,
-                    bind: {
-                        userCls: 'theme-{theme}'
-                    },
+                    // bind: {
+                    //     userCls: 'theme-{theme}'
+                    // },
                     refreshIntervalSec: widget.refreshIntervalSec,
                     viewModel: {
                         data: {

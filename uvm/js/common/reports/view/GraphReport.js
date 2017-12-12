@@ -763,7 +763,6 @@ Ext.define('Ung.view.reports.GraphReport', {
             };
 
             Highcharts.merge(true, settings, isWidget ? Theme[Ung.dashboardSettings.theme] : Theme.DEFAULT);
-            // Highcharts.setOptions(Theme[entry.get('theme')]);
             me.chart.update(settings, true);
         }
     }
