@@ -142,6 +142,7 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
     onClose: function () {
         var me = this, vm = this.getViewModel();
         me.lookup('tree').collapseAll();
+        me.lookup('tree').getStore().clearFilter();
         vm.set({
             entry: null,
             widget: null,
