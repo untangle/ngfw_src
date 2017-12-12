@@ -148,13 +148,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             }, '->', {
                 // text: 'Import'.t(),
                 iconCls: 'fa fa-download',
-                tooltip: 'Import'.t()
-                // handler: 'applyChanges'
+                tooltip: 'Import'.t(),
+                handler: 'importWidgets'
             }, {
                 // text: 'Export'.t(),
                 iconCls: 'fa fa-upload',
-                tooltip: 'Export'.t()
-                //handler: 'applyChanges'
+                tooltip: 'Export'.t(),
+                handler: 'exportWidgets'
             }]
         }],
 
