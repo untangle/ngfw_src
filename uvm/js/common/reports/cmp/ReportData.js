@@ -76,18 +76,19 @@ Ext.define('Ung.reports.cmp.ReportData', {
 
         formatTimeData: function (data) {
             var me = this, vm = this.getViewModel(),
-                entry = vm.get('eEntry') || vm.get('entry'), i, column;
+                entry = vm.get('eEntry') || vm.get('entry'), i, column, title;
 
             var reportDataColumns = [{
                 dataIndex: 'time_trunc',
                 header: 'Timestamp'.t(),
                 width: 130,
                 flex: 1,
-                renderer: function (val) {
-                    return (!val) ? 0 : Util.timestampFormat(val);
-                }
+                renderer: Renderer.timestamp,
+                sortable: true
             }];
-            var title;
+            var reportDataFields = [
+                { name: 'time_trunc', sortType: 'asTimestamp' }
+            ];
 
             for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
                 column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
@@ -98,11 +99,16 @@ Ext.define('Ung.reports.cmp.ReportData', {
                     width: entry.get('timeDataColumns').length > 2 ? 60 : 90,
                     renderer: function (val) {
                         return val !== undefined ? val : '-';
-                    }
+                    },
+                    sortable: true
+                });
+                reportDataFields.push({
+                    name: column, sortType: 'asUnString'
                 });
             }
 
             me.getView().setColumns(reportDataColumns);
+            me.getView().getStore().setFields(reportDataFields);
             me.getView().getStore().loadData(data);
         },
 
