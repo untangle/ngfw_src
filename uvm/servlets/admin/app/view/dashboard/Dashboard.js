@@ -114,22 +114,24 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 maxValue: 24,
                 publishes: 'value',
                 publishOnComplete: false
-            }, {
-                xtype: 'combo',
-                itemId: 'theme',
-                fieldLabel: 'Theme'.t(),
-                editable: false,
-                store: [
-                    ['DEFAULT', 'Default'.t()],
-                    ['DARK', 'Dark'.t()],
-                    ['SAND', 'Sand'.t()]
-                ],
-                queryMode: 'local',
-                bind: {
-                    value: '{theme}',
-                },
-                allowBlank: false
-            }]
+            }
+            // , {
+            //     xtype: 'combo',
+            //     itemId: 'theme',
+            //     fieldLabel: 'Theme'.t(),
+            //     editable: false,
+            //     store: [
+            //         ['DEFAULT', 'Default'.t()],
+            //         ['DARK', 'Dark'.t()],
+            //         ['SAND', 'Sand'.t()]
+            //     ],
+            //     queryMode: 'local',
+            //     bind: {
+            //         value: '{theme}',
+            //     },
+            //     allowBlank: false
+            // }
+            ]
         }, {
             xtype: 'toolbar',
             dock: 'top',
