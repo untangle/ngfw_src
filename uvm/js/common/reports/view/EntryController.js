@@ -33,6 +33,8 @@ Ext.define('Ung.view.reports.EntryController', {
 
             me.reload(true); // important to fetch data in reports view
 
+            me.lookup('dataCk').setValue(false); // close the data panel if open
+
             // check if widget in admin context
             if (Ung.app.context === 'ADMIN') {
                 // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
