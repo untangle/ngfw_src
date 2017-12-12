@@ -661,5 +661,32 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         });
         me.addWin.show();
+    },
+
+    exportWidgets: function () {
+        var widgetsArr = [], w;
+
+        console.log(Ext.getStore('widgets').getData());
+        Ext.getStore('widgets').each(function (widget) {
+            w = widget.getData();
+            delete w._id;
+            widgetsArr.push(w);
+        });
+
+        Ext.MessageBox.wait('Exporting Widgets...'.t(), 'Please wait'.t());
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = 'Widgets'.t(); // used in exported file name
+        exportForm.gridData.value = Ext.encode(widgetsArr);
+        exportForm.submit();
+        Ext.MessageBox.hide();
+    },
+
+    importWidgets: function () {
+        // var me = this;
+        // var imp = me.getView().add({
+        //     xtype: 'dataimporter'
+        // });
+        // imp.show();
     }
+
 });
