@@ -59,11 +59,6 @@ Ext.define('Ung.view.reports.EntryController', {
                 return;
             }
 
-            // if eEntry is readOnly, alter the title to avoid initial validation error
-            if (eEntry.get('readOnly')) {
-                eEntry.set('title', eEntry.get('title') + ' ' + '[new]'.t());
-            }
-
             // if not defaultColumns initialize with [] to avoid editing errors
             if (!eEntry.get('defaultColumns')) {
                 eEntry.set('defaultColumns', []);
@@ -363,6 +358,31 @@ Ext.define('Ung.view.reports.EntryController', {
     //         });
     // },
 
+
+    validateTitle: function (entry, action) {
+        var me = this, field = me.getView().down('#report_title'),
+            foundEntry = Ext.getStore('reports').findRecord('title', entry.get('title').trim(), 0, false, false, true);
+
+        // if not entry found than title is unique
+        if (!foundEntry) {
+            return true;
+        }
+
+        // on creating a new one
+        if (action === 'create') {
+            field.markInvalid('Choose a unique report title!'.t());
+            return false;
+        }
+
+        // on update existing custom one
+        if (foundEntry.get('uniqueId') === entry.get('uniqueId')) {
+            return true;
+        } else {
+            field.markInvalid('Choose a unique report title!'.t());
+            return false;
+        }
+    },
+
     /**
      * updates an existing custom report
      */
@@ -372,6 +392,10 @@ Ext.define('Ung.view.reports.EntryController', {
             vm = me.getViewModel(),
             entry = vm.get('entry'),
             eEntry = vm.get('eEntry'), tdcg, tdc = [];
+
+        if (!me.validateTitle(eEntry, 'update')) {
+            return;
+        }
 
         // update timeDataColumns or textColumns
         if (eEntry.get('type') === 'TIME_GRAPH') {
@@ -413,6 +437,10 @@ Ext.define('Ung.view.reports.EntryController', {
             v = this.getView(),
             vm = this.getViewModel(),
             entry = vm.get('eEntry'), tdcg, tdc = [];
+
+        if (!me.validateTitle(entry, 'create')) {
+            return;
+        }
 
         entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         entry.set('readOnly', false);

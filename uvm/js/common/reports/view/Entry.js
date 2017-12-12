@@ -359,6 +359,7 @@ Ext.define('Ung.view.reports.Entry', {
                 layout: 'anchor',
                 items: [{
                     xtype: 'textfield',
+                    itemId: 'report_title',
                     fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
                     anchor: '100%',
                     hidden: true,
@@ -368,17 +369,7 @@ Ext.define('Ung.view.reports.Entry', {
                     },
                     valuePublishEvent: 'blur', // update binding on blur only
                     allowBlank: false,
-                    emptyText: 'Enter Report Title ...'.t(),
-                    validator: function (title) {
-                        var vm = this.up('entry').getViewModel();
-                        if (vm.get('eEntry.readOnly')) {
-                            if (Ext.getStore('reports').find('title', title.trim(), 0, false, false, true) > 0) {
-                                return 'Choose a unique report title!'.t();
-                            }
-                            return true;
-                        }
-                        return true;
-                    }
+                    emptyText: 'Enter Report Title ...'.t()
                 }, {
                     xtype: 'combo',
                     itemId: 'categoryCombo',
