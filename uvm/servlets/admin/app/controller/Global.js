@@ -285,7 +285,13 @@ Ext.define('Ung.controller.Global', {
             if (mainView.down('config-' + config)) {
                 // if config card already exists activate it and select given view
                 mainView.getViewModel().set('activeItem', 'configCard');
-                mainView.down('config-' + config).setActiveItem(view || 0);
+                var viewTarget = mainView.down('config-' + config).setActiveItem(view || 0);
+                if(subView){
+                    var subViewTarget = viewTarget.down('tabpanel');
+                    if(subViewTarget){
+                        subViewTarget.setActiveTab(subView);
+                    }
+                }
                 return;
             } else {
                 mainView.remove('configCard');
