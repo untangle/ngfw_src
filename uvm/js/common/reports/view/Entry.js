@@ -327,263 +327,458 @@ Ext.define('Ung.view.reports.Entry', {
              * east border ragion with entry editing fields
              */
             region: 'east',
-            width: 350,
+            title: '<i class="fa fa-cog"></i> ' + 'Settings'.t(),
+            width: 400,
+            minWidth: 390,
             weight: 20,
             split: true,
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
             scrollable: true,
             hidden: true,
             bind: {
                 hidden: '{!eEntry}'
             },
+            border: false,
+            bodyBorder: false,
+            bodyPadding: 10,
             defaults: {
-                bodyBorder: false,
-                bodyPadding: 10
+                labelAlign: 'right',
+                anchor: '100%',
+                labelWidth: 120,
+                // labelStyle: 'font-weight: bold;'
             },
-            bbar: ['->', {
+            layout: 'anchor',
+            bbar: [{
+                text: 'Preview/Refresh'.t(),
+                iconCls: 'fa fa-refresh',
+                handler: 'resetAndReload',
+                formBind: true
+            }, '->', {
                 text: 'Export Settings'.t(),
                 iconCls: 'fa fa-external-link-square',
                 handler: 'exportSettings',
                 formBind: true
             }],
             items: [{
-                // generic report properties
-                title: 'General'.t(),
-                border: false,
-                defaults: {
-                    labelAlign: 'top'
+                xtype: 'textfield',
+                itemId: 'report_title',
+                fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
+                anchor: '100%',
+                hidden: true,
+                bind: {
+                    value: '{eEntry.title}',
+                    hidden: '{!eEntry}'
                 },
-                layout: 'anchor',
-                items: [{
-                    xtype: 'textfield',
-                    itemId: 'report_title',
-                    fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
-                    anchor: '100%',
-                    hidden: true,
-                    bind: {
-                        value: '{eEntry.title}',
-                        hidden: '{!eEntry}'
-                    },
-                    valuePublishEvent: 'blur', // update binding on blur only
-                    allowBlank: false,
-                    emptyText: 'Enter Report Title ...'.t()
-                }, {
-                    xtype: 'combo',
-                    itemId: 'categoryCombo',
-                    editable: false,
-                    fieldLabel: '<strong>' + 'Category'.t() + '</strong>',
-                    anchor: '100%',
-                    displayField: 'displayName',
-                    tpl: '<ul class="x-list-plain"><tpl for=".">' +
-                            '<li role="option" class="x-boundlist-item"><img src="{icon}" style="width: 16px; height: 16px; vertical-align: middle;"> {displayName}</li>' +
-                            '</tpl></ul>',
-                    store: 'categories',
-                    queryMode: 'local',
-                    allowBlank: false,
-                    emptyText: 'Select a Category ...'.t(),
-                    hidden: true,
-                    bind: {
-                        value: '{eEntry.category}',
-                        hidden: '{!eEntry}'
-                    }
-                }, {
-                    xtype: 'textarea',
-                    grow: true,
-                    fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
-                    anchor: '100%',
-                    hidden: true,
-                    // allowBlank: false,
-                    emptyText: 'Add a description ...'.t(),
-                    valuePublishEvent: 'blur',
-                    bind: {
-                        value: '{eEntry.description}',
-                        hidden: '{!eEntry}'
-                    }
-                }, {
-                    xtype: 'combo',
-                    fieldLabel: '<strong>' + 'Report Type'.t() + '</strong>',
-                    anchor: '100%',
-                    publishes: 'value',
-                    editable: false,
-                    queryMode: 'local',
-                    displayField: 'name',
-                    valueField: 'value',
-                    allowBlank: false,
-                    emptyText: 'Select Report Type ...'.t(),
-                    store: {
-                        data: [
-                            { name: 'Text'.t(), value: 'TEXT' },
-                            { name: 'Pie Graph'.t(), value: 'PIE_GRAPH' },
-                            { name: 'Time Graph'.t(), value: 'TIME_GRAPH' },
-                            { name: 'Time Graph Dynamic'.t(), value: 'TIME_GRAPH_DYNAMIC' },
-                            { name: 'Event List'.t(), value: 'EVENT_LIST' },
-                        ]
-                    },
-                    hidden: true,
-                    bind: {
-                        value: '{eEntry.type}',
-                        hidden: '{!eEntry}'
-                    }
-                }, {
-                    xtype: 'numberfield',
-                    fieldLabel: 'Display Order'.t(),
-                    width: 100,
-                    bind: '{eEntry.displayOrder}',
-                    hidden: false,
-                    disabled: false
-                }]
+                valuePublishEvent: 'blur', // update binding on blur only
+                allowBlank: false,
+                emptyText: 'Enter Report Title ...'.t()
             }, {
-                // style properties
-                xtype: 'panel',
-                title: '<i class="fa fa-paint-brush"></i> ' + 'Graph/View Options'.t(),
-                // flex: 1,
-                layout: 'anchor',
-                border: false,
-                defaults: {
-                    labelAlign: 'top',
-                    anchor: '100%',
-                    hidden: true,
-                    disabled: true
+                xtype: 'combo',
+                itemId: 'categoryCombo',
+                editable: false,
+                fieldLabel: '<strong>' + 'Category'.t() + '</strong>',
+                anchor: '100%',
+                displayField: 'displayName',
+                tpl: '<ul class="x-list-plain"><tpl for=".">' +
+                        '<li role="option" class="x-boundlist-item"><img src="{icon}" style="width: 16px; height: 16px; vertical-align: middle;"> {displayName}</li>' +
+                        '</tpl></ul>',
+                store: 'categories',
+                queryMode: 'local',
+                allowBlank: false,
+                emptyText: 'Select a Category ...'.t(),
+                hidden: true,
+                bind: {
+                    value: '{eEntry.category}',
+                    hidden: '{!eEntry}'
+                }
+            }, {
+                xtype: 'textarea',
+                grow: true,
+                fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
+                anchor: '100%',
+                hidden: true,
+                // allowBlank: false,
+                emptyText: 'Add a description ...'.t(),
+                valuePublishEvent: 'blur',
+                bind: {
+                    value: '{eEntry.description}',
+                    hidden: '{!eEntry}'
+                }
+            }, {
+                xtype: 'combo',
+                fieldLabel: '<strong>' + 'Report Type'.t() + '</strong>',
+                anchor: '100%',
+                publishes: 'value',
+                editable: false,
+                queryMode: 'local',
+                displayField: 'name',
+                valueField: 'value',
+                allowBlank: false,
+                emptyText: 'Select Report Type ...'.t(),
+                store: {
+                    data: [
+                        { name: 'Text'.t(), value: 'TEXT' },
+                        { name: 'Pie Graph'.t(), value: 'PIE_GRAPH' },
+                        { name: 'Time Graph'.t(), value: 'TIME_GRAPH' },
+                        { name: 'Time Graph Dynamic'.t(), value: 'TIME_GRAPH_DYNAMIC' },
+                        { name: 'Event List'.t(), value: 'EVENT_LIST' },
+                    ]
                 },
                 hidden: true,
                 bind: {
-                    hidden: '{eEntry.type === "TEXT" || eEntry.type === "EVENT_LIST"}'
+                    value: '{eEntry.type}',
+                    hidden: '{!eEntry}'
+                }
+            }, {
+                // TEXT
+                xtype: 'textarea',
+                anchor: '100%',
+                fieldLabel: 'Text String'.t(),
+                bind: {
+                    value: '{eEntry.textString}',
+                    hidden: '{eEntry.type !== "TEXT"}',
+                    disabled: '{eEntry.type !== "TEXT"}'
                 },
+                allowBlank: false
+            },
+
+            /** PIE_GRAPH settings down */
+            {
+                xtype: 'combo',
+                fieldLabel: 'Pie Group Column'.t(),
+                margin: '5 0',
+                typeAhead: true,
+                hideTrigger: true,
+                displayField: 'value',
+                valueField: 'value',
+                bind: {
+                    store: { data: '{f_tableColumns}' },
+                    value: '{eEntry.pieGroupColumn}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                },
+                queryMode: 'local',
+                allowBlank: false,
+                emptyText: 'Column Id or custom value'.t()
+            }, {
+                xtype: 'combo',
+                fieldLabel: 'Pie Sum Column'.t(),
+                margin: '5 0',
+                typeAhead: true,
+                hideTrigger: true,
+                displayField: 'value',
+                valueField: 'value',
+                bind: {
+                    store: { data: '{f_tableColumns}' },
+                    value: '{eEntry.pieSumColumn}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                },
+                queryMode: 'local',
+                allowBlank: false,
+                emptyText: 'Column Id or custom value (e.g. count(*))'.t()
+            }, {
+                xtype: 'fieldcontainer',
+                fieldLabel: 'Order By Column'.t(),
+                allowBlank: false,
+                bind: {
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                },
+                layout: { type: 'hbox', align: 'middle' },
                 items: [{
-                    // PIE_GRAPH
-                    xtype: 'combo',
-                    fieldLabel: 'Style'.t(),
-                    editable: false,
-                    store: [
-                        ['PIE', 'Pie'.t()],
-                        ['PIE_3D', 'Pie 3D'.t()],
-                        ['DONUT', 'Donut'.t()],
-                        ['DONUT_3D', 'Donut 3D'.t()],
-                        ['COLUMN', 'Column'.t()],
-                        ['COLUMN_3D', 'Column 3D'.t()]
-                    ],
-                    queryMode: 'local',
-                    bind: {
-                        value: '{eEntry.pieStyle}',
-                        hidden: '{eEntry.type !== "PIE_GRAPH"}',
-                        disabled: '{eEntry.type !== "PIE_GRAPH"}'
-                    },
+                    xtype: 'textfield',
+                    flex: 1,
+                    emptyText: 'Column Id or custom value',
                     allowBlank: false,
-                    emptyText: 'Select Style ...'.t()
-                }, {
-                    // PIE_GRAPH
-                    xtype: 'fieldcontainer',
-                    fieldLabel: 'Pie Slices Number'.t(),
-                    labelAlign: 'left',
-                    layout: {
-                        type: 'hbox',
-                        align: 'middle'
-                    },
-                    items: [{
-                        xtype: 'slider',
-                        flex: 1,
-                        reference: 'pieNumSlices',
-                        minValue: 1,
-                        maxValue: 25,
-                        increment: 1,
-                        publishes: 'value',
-                        publishOnComplete: false,
-                        bind: {
-                            value: '{eEntry.pieNumSlices}',
-                        },
-                        tipText: function (thumb) {
-                            return String(thumb.value) + ' ' + 'slices'.t();
-                        }
-                    }, {
-                        xtype: 'component',
-                        width: 100,
-                        margin: '0 0 0 10',
-                        bind: {
-                            html: '<strong>{pieNumSlices.value} ' + 'slices'.t() + '</strong>'
-                        }
-                    }],
                     bind: {
-                        hidden: '{eEntry.type !== "PIE_GRAPH"}',
-                        disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                        value: '{eEntry.orderByColumn}'
                     }
                 }, {
-                    // TIME_GRAPH, TIME_GRAPH_DYNAMIC
-                    xtype: 'combo',
-                    fieldLabel: 'Time Chart Style'.t(),
-                    editable: false,
-                    store: [
-                        ['LINE', 'Line'.t()],
-                        ['AREA', 'Area'.t()],
-                        ['AREA_STACKED', 'Stacked Area'.t()],
-                        ['BAR', 'Column'.t()],
-                        ['BAR_OVERLAPPED', 'Overlapped Columns'.t()],
-                        ['BAR_STACKED', 'Stacked Columns'.t()]
+                    xtype: 'segmentedbutton',
+                    margin: '0 0 0 5',
+                    items: [
+                        { text: 'Asc'.t(), iconCls: 'fa fa-arrow-up', value: true },
+                        { text: 'Desc'.t(), iconCls: 'fa fa-arrow-down' , value: false }
                     ],
-                    queryMode: 'local',
                     bind: {
-                        value: '{eEntry.timeStyle}',
-                        hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                        disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                    },
-                    allowBlank: false,
-                    emptyText: 'Select Style ...'.t()
-                }, {
-                    // TIME_GRAPH, TIME_GRAPH_DYNAMIC
-                    xtype: 'combo',
-                    fieldLabel: 'Time Data Interval'.t(),
-                    editable: false,
-                    store: [
-                        ['AUTO', 'Auto'.t()],
-                        ['SECOND', 'Second'.t()],
-                        ['MINUTE', 'Minute'.t()],
-                        ['HOUR', 'Hour'.t()],
-                        ['DAY', 'Day'.t()],
-                        ['WEEK', 'Week'.t()],
-                        ['MONTH', 'Month'.t()]
-                    ],
-                    queryMode: 'local',
-                    bind: {
-                        value: '{eEntry.timeDataInterval}',
-                        hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                        disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                    },
-                    allowBlank: false,
-                    emptyText: 'Select the Time Interval ...'.t()
-                }, {
-                    // TIME_GRAPH, TIME_GRAPH_DYNAMIC
-                    xtype: 'combo',
-                    fieldLabel: 'Approximation'.t(),
-                    editable: false,
-                    store: [
-                        ['average', 'Average'.t()],
-                        ['high', 'High'.t()],
-                        ['low', 'Low'.t()],
-                        ['sum', 'Sum'.t() + ' (' + 'default'.t() + ')'] // default
-                    ],
-                    queryMode: 'local',
-                    bind: {
-                        value: '{f_approximation}',
-                        hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                        disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                    },
-                    allowBlank: false,
-                    emptyText: 'Select Approximation ...'.t()
-                }, {
-                    // PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC
-                    xtype: 'colorspicker',
-                    fieldLabel: 'Colors'.t(),
-                    pickerAlign: 'bl-tl',
-                    anchor: '100%',
-                    emptyText: 'Using default colors'.t(),
-                    bind: {
-                        value: '{eEntry.colors}',
-                        hidden: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                        disabled: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                        value: '{eEntry.orderDesc}'
                     }
                 }]
+            }, {
+                xtype: 'combo',
+                fieldLabel: 'Graph Style'.t(),
+                editable: false,
+                store: [
+                    ['PIE', 'Pie'.t()],
+                    ['PIE_3D', 'Pie 3D'.t()],
+                    ['DONUT', 'Donut'.t()],
+                    ['DONUT_3D', 'Donut 3D'.t()],
+                    ['COLUMN', 'Column'.t()],
+                    ['COLUMN_3D', 'Column 3D'.t()]
+                ],
+                queryMode: 'local',
+                bind: {
+                    value: '{eEntry.pieStyle}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                },
+                allowBlank: false,
+                emptyText: 'Select Style ...'.t()
+            }, {
+                // PIE_GRAPH
+                xtype: 'fieldcontainer',
+                fieldLabel: 'Pie Slices Number'.t(),
+                layout: {
+                    type: 'hbox',
+                    align: 'middle'
+                },
+                items: [{
+                    xtype: 'slider',
+                    flex: 1,
+                    reference: 'pieNumSlices',
+                    minValue: 1,
+                    maxValue: 25,
+                    increment: 1,
+                    publishes: 'value',
+                    publishOnComplete: false,
+                    bind: {
+                        value: '{eEntry.pieNumSlices}',
+                    },
+                    tipText: function (thumb) {
+                        return String(thumb.value) + ' ' + 'slices'.t();
+                    }
+                }, {
+                    xtype: 'component',
+                    width: 80,
+                    margin: '0 0 0 10',
+                    bind: {
+                        html: '<strong>{pieNumSlices.value} ' + 'slices'.t() + '</strong>'
+                    }
+                }],
+                bind: {
+                    hidden: '{eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                }
+            },
+            /** PIE_GRAPH settings up */
+
+            /** TIME_GRAPH_DYNAMIC settings down */
+            {
+                xtype: 'combo',
+                fieldLabel: 'Dynamic Column'.t(),
+                // margin: '5 0',
+                publishes: 'value',
+                allowBlank: false,
+                emptyText: 'Select Column ...'.t(),
+                editable: false,
+                queryMode: 'local',
+                displayField: 'value',
+                valueField: 'value',
+                bind: {
+                    store: { data: '{f_tableColumns}' },
+                    value: '{eEntry.timeDataDynamicColumn}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                },
+                displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
+                listConfig: {
+                    itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
+                }
+            }, {
+                xtype: 'combo',
+                fieldLabel: 'Dynamic Value'.t(),
+                margin: '5 0',
+                typeAhead: true,
+                hideTrigger: true,
+                displayField: 'value',
+                valueField: 'value',
+                bind: {
+                    store: { data: '{f_tableColumns}' },
+                    value: '{eEntry.timeDataDynamicValue}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                },
+                queryMode: 'local',
+                allowBlank: false,
+                emptyText: 'Column Id or custom value'
+            }, {
+                xtype: 'fieldcontainer',
+                fieldLabel: 'Dynamic Limit'.t(),
+                layout: { type: 'hbox', align: 'middle' },
+                items: [{
+                    xtype: 'numberfield',
+                    width: 70,
+                    allowBlank: false,
+                    disabled: true,
+                    bind: {
+                        value: '{eEntry.timeDataDynamicLimit}',
+                        disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                    }
+                }, {
+                    xtype: 'component',
+                    padding: '0 5',
+                    html: '<i class="fa fa-info-circle fa-gray" data-qtip="e.g. 10"></i>'
+                }],
+                disabled: false,
+                bind: {
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                }
+            }, {
+                xtype: 'combo',
+                fieldLabel: 'Aggregation Function'.t(),
+                store: [
+                    ['avg', 'Average'.t()],
+                    ['sum', 'Sum'.t()],
+                    ['min', 'Min'.t()],
+                    ['max', 'Max'.t()]
+                ],
+                editable: false,
+                allowBlank: false,
+                emptyText: 'Select Aggregation Method ...'.t(),
+                queryMode: 'local',
+                bind: {
+                    value: '{eEntry.timeDataDynamicAggregationFunction}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                }
+            }, {
+                // TIME_GRAPH, TIME_GRAPH_DYNAMIC
+                xtype: 'combo',
+                fieldLabel: 'Graph Style'.t(),
+                editable: false,
+                store: [
+                    ['LINE', 'Line'.t()],
+                    ['AREA', 'Area'.t()],
+                    ['AREA_STACKED', 'Stacked Area'.t()],
+                    ['BAR', 'Column'.t()],
+                    ['BAR_OVERLAPPED', 'Overlapped Columns'.t()],
+                    ['BAR_STACKED', 'Stacked Columns'.t()]
+                ],
+                queryMode: 'local',
+                bind: {
+                    value: '{eEntry.timeStyle}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                },
+                allowBlank: false,
+                emptyText: 'Select Style ...'.t()
+            }, {
+                // TIME_GRAPH, TIME_GRAPH_DYNAMIC
+                xtype: 'combo',
+                fieldLabel: 'Time Data Interval'.t(),
+                editable: false,
+                store: [
+                    ['AUTO', 'Auto'.t()],
+                    ['SECOND', 'Second'.t()],
+                    ['MINUTE', 'Minute'.t()],
+                    ['HOUR', 'Hour'.t()],
+                    ['DAY', 'Day'.t()],
+                    ['WEEK', 'Week'.t()],
+                    ['MONTH', 'Month'.t()]
+                ],
+                queryMode: 'local',
+                bind: {
+                    value: '{eEntry.timeDataInterval}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                },
+                allowBlank: false,
+                emptyText: 'Select the Time Interval ...'.t()
+            }, {
+                // TIME_GRAPH, TIME_GRAPH_DYNAMIC
+                xtype: 'combo',
+                fieldLabel: 'Approximation'.t(),
+                editable: false,
+                store: [
+                    ['average', 'Average'.t()],
+                    ['high', 'High'.t()],
+                    ['low', 'Low'.t()],
+                    ['sum', 'Sum'.t() + ' (' + 'default'.t() + ')'] // default
+                ],
+                queryMode: 'local',
+                bind: {
+                    value: '{f_approximation}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                },
+                allowBlank: false,
+                emptyText: 'Select Approximation ...'.t()
+            },
+            /** TIME_GRAPH_DYNAMIC settings up */
+
+            /** ALL GRAPHS settings down */
+            {
+                xtype: 'textfield',
+                fieldLabel: 'Units'.t(),
+                allowBlank: false,
+                emptyText: 'Enter Units ... (e.g. sessions, bytes/s)'.t(),
+                bind: {
+                    value: '{eEntry.units}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
+                }
+            }, {
+                xtype: 'combo',
+                fieldLabel: 'Series Renderer'.t(),
+                store: Renderer.forReports,
+                editable: false,
+                queryMode: 'local',
+                bind: {
+                    value: '{eEntry.seriesRenderer}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
+                }
+            }, {
+                // PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC
+                xtype: 'colorspicker',
+                fieldLabel: 'Colors'.t(),
+                pickerAlign: 'bl-tl',
+                emptyText: 'Using default colors'.t(),
+                bind: {
+                    value: '{eEntry.colors}',
+                    hidden: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
+                    disabled: '{eEntry.type !== "PIE_GRAPH" && eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                }
+            }, {
+                xtype: 'numberfield',
+                fieldLabel: 'Display Order'.t(),
+                anchor: '50%',
+                bind: '{eEntry.displayOrder}',
+                hidden: false,
+                disabled: false
+            }, {
+                xtype: 'component',
+                margin: '15 0',
+                style: {
+                    textAlign: 'center'
+                },
+                html: '<i class="fa fa-info-circle fa-lg fa-gray"></i> ' + 'Select default columns to show from the "Data Source" panel'.t(),
+                disabled: false,
+                bind: {
+                    hidden: '{eEntry.type !== "EVENT_LIST"}',
+                }
+            }, {
+                // used for validating text columns
+                xtype: 'textfield',
+                hidden: true,
+                bind: {
+                    value: '{textColumnsCount}',
+                    disabled: '{eEntry.type !== "TEXT"}'
+                },
+                validator: function(val) {
+                    return val > 0;
+                }
+            }, {
+                // used for validating time columns
+                xtype: 'textfield',
+                hidden: true,
+                bind: {
+                    value: '{timeDataColumnsCount}',
+                    disabled: '{eEntry.type !== "TIME_GRAPH"}'
+                },
+                validator: function(val) {
+                    return val > 0;
+                }
             }],
             dockedItems: [{
                 xtype: 'toolbar',
@@ -591,7 +786,7 @@ Ext.define('Ung.view.reports.Entry', {
                 ui: 'footer',
                 defaults: {
                     xtype: 'button',
-                    scale: 'medium',
+                    scale: 'medium'
                 },
                 items: [{
                     text: 'Cancel'.t(),
@@ -599,7 +794,7 @@ Ext.define('Ung.view.reports.Entry', {
                     handler: 'cancelEdit'
                 }, '->' , {
                     iconCls: 'fa fa-trash fa-red fa-lg',
-                    // text: 'Delete'.t(),
+                    text: 'Delete'.t(),
                     handler: 'removeReport',
                     hidden: true,
                     bind: {
@@ -619,18 +814,6 @@ Ext.define('Ung.view.reports.Entry', {
                     iconCls: 'fa fa-floppy-o fa-lg',
                     formBind: true,
                     handler: 'saveNewReport'
-                }]
-            }, {
-                xtype: 'toolbar',
-                dock: 'bottom',
-                ui: 'footer',
-                items: [{
-                    text: '<strong>' + 'Preview/Refresh'.t() + '</strong>',
-                    iconCls: 'fa fa-refresh fa-lg',
-                    flex: 1,
-                    scale: 'medium',
-                    handler: 'resetAndReload',
-                    formBind: true
                 }]
             }]
         }, {
@@ -652,15 +835,17 @@ Ext.define('Ung.view.reports.Entry', {
                 region: 'west',
                 itemId: 'tableColumns',
                 xtype: 'grid',
+                weight: 25,
                 title: '<i class="fa fa-database"></i> ' + 'Data Source'.t(),
-                width: '40%',
+                width: 350,
                 split: true,
                 sortableColumns: false,
                 disableSelection: true,
                 enableColumnHide: false,
                 columnLines: true,
                 viewConfig: {
-                    enableTextSelection: true
+                    enableTextSelection: true,
+                    stripeRows: false
                 },
                 // selType: 'checkboxmodel',
                 bind: {
@@ -683,14 +868,12 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{eEntry.type !== "EVENT_LIST"}'
                     }
                 }, {
-                    header: 'Column Name'.t(),
-                    dataIndex: 'text',
-                    width: 250
-                }, {
-                    header: 'Column Id'.t(),
+                    header: 'Column Name [Column Id]'.t(),
                     dataIndex: 'value',
                     flex: 1,
-                    renderer: function (val) { return '<strong>' + val + '</strong>'; }
+                    renderer: function (val, meta, record) {
+                        return record.get('text') + ' [<strong>' + val + '</strong>]';
+                    }
                 }],
                 dockedItems: [{
                     // ALL
@@ -712,7 +895,7 @@ Ext.define('Ung.view.reports.Entry', {
                         editable: false,
                         queryMode: 'local',
                         allowBlank: false,
-                        emptyText: 'Select a Table for Report data ...'.t()
+                        emptyText: 'Select Table ...'.t()
                     }]
                 }, {
                     xtype: 'toolbar',
@@ -728,462 +911,222 @@ Ext.define('Ung.view.reports.Entry', {
                     }
                 }]
             }, {
+                region: 'north',
+                title: '<i class="fa fa-columns"></i> ' + '<strong>' + 'Text Data Columns'.t() + '</strong>',
+                height: '50%',
+                split: true,
+                xtype: 'grid',
+                itemId: 'textColumnsGrid',
+                sortableColumns: false,
+                enableColumnResize: false,
+                enableColumnMove: false,
+                enableColumnHide: false,
+                disableSelection: true,
+                hideHeaders: true,
+                border: false,
+                viewConfig: {
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: red;"><i class="fa fa-exclamation-triangle fa-lg fa-orange"></i><br/>' + 'Text Columns are required for the report!'.t() + '</p>',
+                },
+                tbar: [{
+                    xtype: 'button',
+                    text: 'Add'.t(),
+                    iconCls: 'fa fa-plus-circle',
+                    handler: function (btn) {
+                        btn.up('grid').getStore().add({ str: '' });
+                    }
+                }],
+                plugins: [{
+                    ptype: 'cellediting',
+                    clicksToEdit: 1
+                }],
+                disabled: false,
+                bind: {
+                    store: '{textColumnsStore}',
+                    hidden: '{eEntry.type !== "TEXT"}'
+                },
+                columns: [{
+                    xtype: 'rownumberer',
+                    // title: 'Value Mask'.t(),
+                    width: 40,
+                    renderer: function (value, metaData, record, rowIdx) { return '{' + rowIdx + '}'; }
+                }, {
+                    dataIndex: 'str',
+                    flex: 1,
+                    editor: 'textfield',
+                    renderer: function (val) {
+                        return val ? '<strong>' + val + '</strong>' : '<em>Click to insert column value ...</em>';
+                    }
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 40,
+                    align: 'center',
+                    resizable: false,
+                    tdCls: 'action-cell',
+                    iconCls: 'fa fa-times',
+                    // handler: function (view, rowIndex, colIndex, item, e, record) {
+                    //     record.drop();
+                    // },
+                    handler: 'removeTextColumn',
+                    menuDisabled: true,
+                    hideable: false
+                }]
+            }, {
+                region: 'north',
+                title: '<i class="fa fa-columns"></i> ' + '<strong>' + 'Time Data Columns'.t() + '</strong>',
+                split: true,
+                height: '50%',
+                xtype: 'grid',
+                itemId: 'timeDataColumnsGrid',
+                sortableColumns: false,
+                enableColumnResize: false,
+                enableColumnMove: false,
+                enableColumnHide: false,
+                disableSelection: true,
+                border: false,
+                viewConfig: {
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: red;"><i class="fa fa-exclamation-triangle fa-lg fa-orange"></i><br/>' + 'Time Data Columns are required for the graph!'.t() + '</p>',
+                },
+                tbar: [{
+                    xtype: 'button',
+                    text: 'Add'.t(),
+                    iconCls: 'fa fa-plus-circle',
+                    handler: function (btn) {
+                        btn.up('grid').getStore().add({ str: '' });
+                    }
+                }],
+                plugins: [{
+                    ptype: 'cellediting',
+                    clicksToEdit: 1
+                }],
+                disabled: false,
+                bind: {
+                    store: '{timeDataColumnsStore}',
+                    hidden: '{eEntry.type !== "TIME_GRAPH"}'
+                },
+                columns: [{
+                    dataIndex: 'str',
+                    flex: 1,
+                    editor: 'textfield',
+                    renderer: function (val) {
+                        return val ? '<strong>' + val + '</strong>' : '<em>Click to insert column value ...</em>';
+                    }
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 40,
+                    align: 'center',
+                    resizable: false,
+                    tdCls: 'action-cell',
+                    iconCls: 'fa fa-times',
+                    handler: 'removeTimeDataColumn',
+                    // handler: function (view, rowIndex, colIndex, item, e, record) {
+                    //     record.drop();
+                    //     record.commit();
+                    // },
+                    menuDisabled: true,
+                    hideable: false
+                }]
+            }, {
                 region: 'center',
-                xtype: 'tabpanel',
-                items: [{
-                    title: '<i class="fa fa-cogs"></i> ' + 'Data Settings'.t(),
+                title: '<i class="fa fa-filter"></i> ' + 'SQL Conditions'.t(),
+                xtype: 'grid',
+                itemId: 'sqlConditions',
+                sortableColumns: false,
+                enableColumnResize: false,
+                enableColumnMove: false,
+                enableColumnHide: false,
+                // hideHeaders: true,
+                disableSelection: true,
+                viewConfig: {
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> ' + 'No Conditions'.t() + '</p>',
+                    stripeRows: false,
+                },
+                fields: ['column', 'operator', 'value'],
+                disabled: true,
+                bind: {
+                    title: '{_sqlTitle}',
+                    disabled: '{!f_tableColumns}',
+                    store: {
+                        data: '{_sqlConditions}'
+                    }
+                },
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'top',
                     layout: {
-                        type: 'anchor'
-                    },
-                    scrollable: true,
-                    defaults: {
-                        labelWidth: 200,
-                        labelAlign: 'right',
-                        disabled: true,
-                        hidden: true
+                        type: 'hbox',
+                        align: 'stretch'
                     },
                     items: [{
-                        // used for validating text columns
-                        xtype: 'textfield',
-                        bind: {
-                            value: '{textColumnsCount}',
-                            disabled: '{eEntry.type !== "TEXT"}'
-                        },
-                        validator: function(val) {
-                            return val > 0;
-                        }
-                    }, {
-                        // TEXT
-                        xtype: 'grid',
-                        itemId: 'textColumnsGrid',
-                        sortableColumns: false,
-                        enableColumnResize: false,
-                        enableColumnMove: false,
-                        enableColumnHide: false,
-                        disableSelection: true,
-                        // minHeight: 120,
-                        margin: '0 0 20 0',
-                        hideHeaders: true,
-                        border: false,
-                        viewConfig: {
-                            emptyText: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: red;"><i class="fa fa-exclamation-triangle fa-lg fa-orange"></i><br/>' + 'Text Columns are required for the report!'.t() + '</p>',
-                        },
-                        tbar: [{
-                            xtype: 'component',
-                            html: '<strong>' + 'Text Data Columns'.t() + '</strong>',
-                            padding: '0 0 0 5'
-                        }, '->', {
-                            xtype: 'button',
-                            text: 'Add'.t(),
-                            iconCls: 'fa fa-plus-circle',
-                            handler: function (btn) {
-                                btn.up('grid').getStore().add({ str: '' });
-                            }
-                        }],
-                        plugins: [{
-                            ptype: 'cellediting',
-                            clicksToEdit: 1
-                        }],
-                        disabled: false,
-                        bind: {
-                            store: '{textColumnsStore}',
-                            hidden: '{eEntry.type !== "TEXT"}'
-                        },
-                        columns: [{
-                            xtype: 'rownumberer',
-                            // title: 'Value Mask'.t(),
-                            width: 40,
-                            renderer: function (value, metaData, record, rowIdx) { return '{' + rowIdx + '}'; }
-                        }, {
-                            dataIndex: 'str',
-                            flex: 1,
-                            editor: 'textfield',
-                            renderer: function (val) {
-                                return val ? '<strong>' + val + '</strong>' : '<em>Click to insert column value ...</em>';
-                            }
-                        }, {
-                            xtype: 'actioncolumn',
-                            width: 40,
-                            align: 'center',
-                            resizable: false,
-                            tdCls: 'action-cell',
-                            iconCls: 'fa fa-times',
-                            // handler: function (view, rowIndex, colIndex, item, e, record) {
-                            //     record.drop();
-                            // },
-                            handler: 'removeTextColumn',
-                            menuDisabled: true,
-                            hideable: false
-                        }]
-                    }, {
-                        // TEXT
-                        xtype: 'textarea',
-                        anchor: '100%',
-                        fieldLabel: 'Text String'.t(),
-                        labelAlign: 'top',
-                        margin: 10,
-                        bind: {
-                            value: '{eEntry.textString}',
-                            hidden: '{eEntry.type !== "TEXT"}',
-                            disabled: '{eEntry.type !== "TEXT"}'
-                        },
-                        allowBlank: false
-                    }, {
-                        // PIE_GRAPH
                         xtype: 'combo',
-                        fieldLabel: 'Pie Group Column'.t(),
-                        margin: '5 0',
-                        typeAhead: true,
-                        hideTrigger: true,
-                        anchor: '70%',
-                        displayField: 'value',
-                        valueField: 'value',
-                        bind: {
-                            store: { data: '{f_tableColumns}' },
-                            value: '{eEntry.pieGroupColumn}',
-                            hidden: '{eEntry.type !== "PIE_GRAPH"}',
-                            disabled: '{eEntry.type !== "PIE_GRAPH"}'
-                        },
-                        queryMode: 'local',
-                        allowBlank: false,
-                        emptyText: 'Enter a Column Id or a custom value ...'
-                    }, {
-                        // PIE_GRAPH
-                        xtype: 'combo',
-                        fieldLabel: 'Pie Sum Column'.t(),
-                        margin: '5 0',
-                        typeAhead: true,
-                        hideTrigger: true,
-                        anchor: '70%',
-                        displayField: 'value',
-                        valueField: 'value',
-                        bind: {
-                            store: { data: '{f_tableColumns}' },
-                            value: '{eEntry.pieSumColumn}',
-                            hidden: '{eEntry.type !== "PIE_GRAPH"}',
-                            disabled: '{eEntry.type !== "PIE_GRAPH"}'
-                        },
-                        queryMode: 'local',
-                        allowBlank: false,
-                        emptyText: 'Enter a Column Id or a custom value ( e.g. count(*)) ...'
-                    }, {
-                        xtype: 'textfield',
-                        bind: {
-                            value: '{timeDataColumnsCount}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH"}'
-                        },
-                        validator: function(val) {
-                            return val > 0;
-                        }
-                    }, {
-                        // TIME_GRAPH
-                        xtype: 'grid',
-                        itemId: 'timeDataColumnsGrid',
-                        sortableColumns: false,
-                        enableColumnResize: false,
-                        enableColumnMove: false,
-                        enableColumnHide: false,
-                        disableSelection: true,
-                        // minHeight: 120,
-                        margin: '0 0 20 0',
-                        border: false,
-                        viewConfig: {
-                            emptyText: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: red;"><i class="fa fa-exclamation-triangle fa-lg fa-orange"></i><br/>' + 'Time Data Columns are required for the graph!'.t() + '</p>',
-                        },
-                        tbar: [{
-                            xtype: 'component',
-                            html: '<strong>' + 'Time Data Columns'.t() + '</strong>',
-                            padding: '0 0 0 5'
-                        }, '->', {
-                            xtype: 'button',
-                            text: 'Add'.t(),
-                            iconCls: 'fa fa-plus-circle',
-                            handler: function (btn) {
-                                btn.up('grid').getStore().add({ str: '' });
-                            }
-                        }],
-                        plugins: [{
-                            ptype: 'cellediting',
-                            clicksToEdit: 1
-                        }],
-                        disabled: false,
-                        bind: {
-                            store: '{timeDataColumnsStore}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH"}'
-                        },
-                        columns: [{
-                            dataIndex: 'str',
-                            flex: 1,
-                            editor: 'textfield',
-                            renderer: function (val) {
-                                return val ? '<strong>' + val + '</strong>' : '<em>Click to insert column value ...</em>';
-                            }
-                        }, {
-                            xtype: 'actioncolumn',
-                            width: 40,
-                            align: 'center',
-                            resizable: false,
-                            tdCls: 'action-cell',
-                            iconCls: 'fa fa-times',
-                            handler: 'removeTimeDataColumn',
-                            // handler: function (view, rowIndex, colIndex, item, e, record) {
-                            //     record.drop();
-                            //     record.commit();
-                            // },
-                            menuDisabled: true,
-                            hideable: false
-                        }]
-                    }, {
-                        // TIME_GRAPH_DYNAMIC
-                        xtype: 'combo',
-                        fieldLabel: 'Time Data Dynamic Column'.t(),
-                        margin: '5 0',
-                        anchor: '70%',
+                        emptyText: 'Select Column ...',
+                        flex: 1,
+                        itemId: 'sqlConditionsCombo',
+                        reference: 'sqlConditionsCombo',
                         publishes: 'value',
-                        allowBlank: false,
-                        emptyText: 'Select Column ...'.t(),
+                        value: '',
                         editable: false,
                         queryMode: 'local',
-                        displayField: 'value',
+                        displayField: 'text',
                         valueField: 'value',
+                        fieldStyle: 'font-weight: bold',
                         bind: {
-                            store: { data: '{f_tableColumns}' },
-                            value: '{eEntry.timeDataDynamicColumn}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                            store: {
+                                data: '{f_tableColumns}'
+                            }
                         },
                         displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
                         listConfig: {
-                            itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
-                        }
-                    }, {
-                        // TIME_GRAPH_DYNAMIC
-                        xtype: 'combo',
-                        fieldLabel: 'Time Data Dynamic Value'.t(),
-                        margin: '5 0',
-                        typeAhead: true,
-                        hideTrigger: true,
-                        anchor: '70%',
-                        displayField: 'value',
-                        valueField: 'value',
-                        bind: {
-                            store: { data: '{f_tableColumns}' },
-                            value: '{eEntry.timeDataDynamicValue}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
+                            itemTpl: ['<div data-qtip="{value}">{text} <span style="font-weight: bold; float: right;">[{value}]</span></div>']
                         },
-                        queryMode: 'local',
-                        allowBlank: false,
-                        emptyText: 'Enter a Column Id or a custom value ...'
                     }, {
-                        // TIME_GRAPH_DYNAMIC
-                        xtype: 'fieldcontainer',
-                        fieldLabel: 'Time Data Dynamic Limit'.t(),
-                        layout: { type: 'hbox', align: 'middle' },
-                        items: [{
-                            xtype: 'numberfield',
-                            width: 70,
-                            allowBlank: false,
-                            disabled: true,
-                            bind: {
-                                value: '{eEntry.timeDataDynamicLimit}',
-                                disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                            }
-                        }, {
-                            xtype: 'component',
-                            padding: '0 5',
-                            html: '<i class="fa fa-info-circle fa-gray" data-qtip="e.g. 10"></i>'
-                        }],
-                        disabled: false,
+                        xtype: 'button',
+                        text: 'Add',
+                        iconCls: 'fa fa-plus-circle',
+                        disabled: true,
                         bind: {
-                            hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                        }
-                    }, {
-                        // TIME_GRAPH_DYNAMIC
-                        xtype: 'combo',
-                        fieldLabel: 'Time Data Aggregation Function'.t(),
-                        anchor: '70%',
-                        store: [
-                            ['avg', 'Average'.t()],
-                            ['sum', 'Sum'.t()],
-                            ['min', 'Min'.t()],
-                            ['max', 'Max'.t()]
-                        ],
-                        editable: false,
-                        allowBlank: false,
-                        emptyText: 'Select Aggregation Method ...'.t(),
-                        queryMode: 'local',
-                        bind: {
-                            value: '{eEntry.timeDataDynamicAggregationFunction}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH_DYNAMIC"}'
-                        }
-                    }, {
-                        // ALL GRAPHS
-                        xtype: 'textfield',
-                        fieldLabel: 'Units'.t(),
-                        anchor: '70%',
-                        allowBlank: false,
-                        emptyText: 'Enter Units ... (e.g. sessions, bytes/s)'.t(),
-                        bind: {
-                            value: '{eEntry.units}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
-                        }
-                    }, {
-                        // PIE_GRAPH
-                        xtype: 'fieldcontainer',
-                        fieldLabel: 'Order By Column'.t(),
-                        anchor: '70%',
-                        allowBlank: false,
-                        bind: {
-                            hidden: '{eEntry.type !== "PIE_GRAPH"}',
-                            disabled: '{eEntry.type !== "PIE_GRAPH"}'
+                            disabled: '{!sqlConditionsCombo.value}'
                         },
-                        layout: { type: 'hbox', align: 'middle' },
-                        items: [{
-                            xtype: 'textfield',
-                            flex: 1,
-                            emptyText: 'Enter a Column Id or a custom value ...',
-                            allowBlank: false,
-                            bind: {
-                                value: '{eEntry.orderByColumn}'
-                            }
-                        }, {
-                            xtype: 'segmentedbutton',
-                            margin: '0 0 0 5',
-                            items: [
-                                { text: 'Asc'.t(), iconCls: 'fa fa-arrow-up', value: true },
-                                { text: 'Desc'.t(), iconCls: 'fa fa-arrow-down' , value: false }
-                            ],
-                            bind: {
-                                value: '{eEntry.orderDesc}'
-                            }
-                        }]
-                    }, {
-                        // ALL GRAPHS
-                        xtype: 'combo',
-                        anchor: '70%',
-                        fieldLabel: 'Series Renderer'.t(),
-                        store: Renderer.forReports,
-                        editable: false,
-                        queryMode: 'local',
-                        bind: {
-                            value: '{eEntry.seriesRenderer}',
-                            hidden: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}',
-                            disabled: '{eEntry.type !== "TIME_GRAPH" && eEntry.type !== "TIME_GRAPH_DYNAMIC" && eEntry.type !== "PIE_GRAPH"}'
-                        }
-                    }, {
-                        // EVENT_LIST
-                        xtype: 'component',
-                        html: '<h1 style="text-align: center;">No Settings!</h1>',
-                        hidden: true,
-                        bind: {
-                            hidden: '{eEntry.type !== "EVENT_LIST"}'
-                        }
+                        handler: 'addSqlCondition'
                     }]
+                }],
+                columns: [{
+                    header: 'Column'.t(),
+                    dataIndex: 'column',
+                    renderer: 'sqlColumnRenderer',
+                    width: 300
                 }, {
-                    title: '<i class="fa fa-filter"></i> ' + 'SQL Conditions'.t(),
-                    xtype: 'grid',
-                    itemId: 'sqlConditions',
-                    sortableColumns: false,
-                    enableColumnResize: false,
-                    enableColumnMove: false,
-                    enableColumnHide: false,
-                    // hideHeaders: true,
-                    disableSelection: true,
-                    viewConfig: {
-                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> ' + 'No Conditions'.t() + '</p>',
-                        stripeRows: false,
-                    },
-                    fields: ['column', 'operator', 'value'],
-                    disabled: true,
-                    bind: {
-                        title: '{_sqlTitle}',
-                        disabled: '{!f_tableColumns}',
-                        store: {
-                            data: '{_sqlConditions}'
-                        }
-                    },
-                    dockedItems: [{
-                        xtype: 'toolbar',
-                        dock: 'top',
-                        layout: {
-                            type: 'hbox',
-                            align: 'stretch'
-                        },
-                        items: [{
-                            xtype: 'combo',
-                            emptyText: 'Select Column ...',
-                            flex: 1,
-                            itemId: 'sqlConditionsCombo',
-                            reference: 'sqlConditionsCombo',
-                            publishes: 'value',
-                            value: '',
-                            editable: false,
-                            queryMode: 'local',
-                            displayField: 'text',
-                            valueField: 'value',
-                            fieldStyle: 'font-weight: bold',
-                            bind: {
-                                store: {
-                                    data: '{f_tableColumns}'
-                                }
-                            },
-                            displayTpl: '<tpl for=".">{text} [{value}]</tpl>',
-                            listConfig: {
-                                itemTpl: ['<div data-qtip="{value}">{text} <span style="font-weight: bold; float: right;">[{value}]</span></div>']
-                            },
-                        }, {
-                            xtype: 'button',
-                            text: 'Add',
-                            iconCls: 'fa fa-plus-circle',
-                            disabled: true,
-                            bind: {
-                                disabled: '{!sqlConditionsCombo.value}'
-                            },
-                            handler: 'addSqlCondition'
-                        }]
-                    }],
-                    columns: [{
-                        header: 'Column'.t(),
-                        dataIndex: 'column',
-                        renderer: 'sqlColumnRenderer',
-                        width: 300
-                    }, {
-                        header: 'Operator'.t(),
-                        xtype: 'widgetcolumn',
-                        width: 82,
-                        align: 'center',
-                        widget: {
-                            xtype: 'combo',
-                            width: 80,
-                            bind: '{record.operator}',
-                            store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
-                            editable: false,
-                            queryMode: 'local'
-                        }
+                    header: 'Operator'.t(),
+                    xtype: 'widgetcolumn',
+                    width: 82,
+                    align: 'center',
+                    widget: {
+                        xtype: 'combo',
+                        width: 80,
+                        bind: '{record.operator}',
+                        store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
+                        editable: false,
+                        queryMode: 'local'
+                    }
 
-                    }, {
-                        header: 'Value'.t(),
-                        xtype: 'widgetcolumn',
-                        flex: 1,
-                        widget: {
-                            xtype: 'textfield',
-                            bind: '{record.value}'
-                        }
-                    }, {
-                        header: 'Auto Format'.t(),
-                        xtype: 'checkcolumn',
-                        dataIndex: 'autoFormatValue',
-                        width: 80
-                    }, {
-                        xtype: 'actioncolumn',
-                        width: 22,
-                        align: 'center',
-                        iconCls: 'fa fa-times',
-                        handler: 'removeSqlCondition'
-                    }]
+                }, {
+                    header: 'Value'.t(),
+                    xtype: 'widgetcolumn',
+                    flex: 1,
+                    widget: {
+                        xtype: 'textfield',
+                        bind: '{record.value}'
+                    }
+                }, {
+                    header: 'Auto Format'.t(),
+                    xtype: 'checkcolumn',
+                    dataIndex: 'autoFormatValue',
+                    width: 80
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 22,
+                    align: 'center',
+                    iconCls: 'fa fa-times',
+                    handler: 'removeSqlCondition'
                 }]
             }]
         }, {
