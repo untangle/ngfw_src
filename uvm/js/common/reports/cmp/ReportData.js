@@ -103,7 +103,7 @@ Ext.define('Ung.reports.cmp.ReportData', {
                     sortable: true
                 });
                 reportDataFields.push({
-                    name: column, sortType: 'asUnString'
+                    name: column, sortType: 'asFloat'
                 });
             }
 
