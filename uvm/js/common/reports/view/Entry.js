@@ -1173,10 +1173,15 @@ Ext.define('Ung.view.reports.Entry', {
                             bind: '{record.value}'
                         }
                     }, {
+                        header: 'Auto Format'.t(),
+                        xtype: 'checkcolumn',
+                        dataIndex: 'autoFormatValue',
+                        width: 80
+                    }, {
                         xtype: 'actioncolumn',
                         width: 22,
                         align: 'center',
-                        iconCls: 'fa fa-minus-circle',
+                        iconCls: 'fa fa-times',
                         handler: 'removeSqlCondition'
                     }]
                 }]
