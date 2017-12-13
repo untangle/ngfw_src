@@ -53,7 +53,6 @@ Ext.define('Ung.view.reports.Main', {
         xtype: 'treepanel',
         reference: 'tree',
         width: 250,
-        minWidth: 200,
         region: 'west',
         split: true,
         border: false,
@@ -64,10 +63,9 @@ Ext.define('Ung.view.reports.Main', {
         plugins: 'responsive',
         store: 'reportstree',
 
-        // disabled: true,
-        // bind: {
-        //     disabled: '{editing}',
-        // },
+        bind: {
+            width: '{editing ? 0 : 250}'
+        },
 
         viewConfig: {
             selectionModel: {
