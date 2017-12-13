@@ -665,8 +665,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     exportWidgets: function () {
         var widgetsArr = [], w;
-
-        console.log(Ext.getStore('widgets').getData());
         Ext.getStore('widgets').each(function (widget) {
             w = widget.getData();
             delete w._id;
@@ -682,11 +680,105 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     importWidgets: function () {
-        // var me = this;
-        // var imp = me.getView().add({
-        //     xtype: 'dataimporter'
-        // });
-        // imp.show();
+        var me = this;
+        this.importDialog = this.getView().add({
+            xtype: 'window',
+            title: 'Import Widgets'.t(),
+            renderTo: Ext.getBody(),
+            modal: true,
+            layout: 'fit',
+            width: 450,
+            items: [{
+                xtype: 'form',
+                border: false,
+                url: 'gridSettings',
+                bodyPadding: 10,
+                layout: 'anchor',
+                items: [{
+                    xtype: 'radiogroup',
+                    name: 'importMode',
+                    simpleValue: true,
+                    value: 'replace',
+                    columns: 1,
+                    vertical: true,
+                    items: [
+                        { boxLabel: '<strong>' + 'Replace current widgets'.t() + '</strong>', inputValue: 'replace' },
+                        { boxLabel: '<strong>' + 'Prepend to current widgets'.t() + '</strong>', inputValue: 'prepend' },
+                        { boxLabel: '<strong>' + 'Append to current widgets'.t() + '</strong>', inputValue: 'append' }
+                    ]
+                }, {
+                    xtype: 'component',
+                    margin: 10,
+                    html: 'with widgets from'.t()
+                }, {
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    fieldLabel: 'File'.t(),
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'import'
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-red',
+                    handler: function () {
+                        me.importDialog.close();
+                    }
+                }, {
+                    text: 'Import'.t(),
+                    iconCls: 'fa fa-check',
+                    formBind: true,
+                    handler: function (btn) {
+                        btn.up('form').submit({
+                            waitMsg: 'Please wait while the widgets are imported...'.t(),
+                            success: function(form, action) {
+                                if (!action.result) {
+                                    Ext.MessageBox.alert('Warning'.t(), 'Import failed.'.t());
+                                    return;
+                                }
+                                if (!action.result.success) {
+                                    Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                                    return;
+                                }
+                                me.importHandler(form.getValues().importMode, action.result.msg);
+                                me.importDialog.close();
+                            },
+                            failure: function(form, action) {
+                                Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                            }
+                        });
+                    }
+                }]
+            }],
+        });
+        this.importDialog.show();
+    },
+
+    importHandler: function (importMode, newData) {
+        var me = this, existingData = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+
+        Ext.Array.forEach(existingData, function (rec) {
+            delete rec._id;
+        });
+
+        if (importMode === 'replace') {
+            Ext.getStore('widgets').removeAll();
+        }
+        if (importMode === 'append') {
+            Ext.Array.insert(existingData, existingData.length, newData);
+            newData = existingData;
+        }
+        if (importMode === 'prepend') {
+            Ext.Array.insert(existingData, 0, newData);
+            newData = existingData;
+        }
+
+        Ext.getStore('widgets').loadData(newData);
+        me.loadWidgets();
     }
 
 });
