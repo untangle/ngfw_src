@@ -152,10 +152,15 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             bind: '{record.value}'
         }
     }, {
+        header: 'Auto Format'.t(),
+        xtype: 'checkcolumn',
+        dataIndex: 'autoFormatValue',
+        width: 80
+    }, {
         xtype: 'actioncolumn',
         width: 30,
         align: 'center',
-        iconCls: 'fa fa-trash-o fa-red',
+        iconCls: 'fa fa-times',
         handler: function (table, rowIndex, colIndex, item, e, record) {
             record.drop();
         }

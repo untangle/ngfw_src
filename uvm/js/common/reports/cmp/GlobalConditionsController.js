@@ -86,6 +86,7 @@ Ext.define('Ung.reports.cmp.GlobalConditionsController', {
         // var gc = vm.get('globalConditions');
 
         grid.getStore().add({
+            autoFormatValue: true,
             column: _filterComboCmp.getValue(),
             operator: _operatorCmp.getValue(),
             value: _filterValueCmp.getValue(),
