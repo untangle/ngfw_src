@@ -104,7 +104,7 @@
     },
     "screens": [{
         "url": "/admin/index.do#dashboard",
-	"extra_delay": 10
+	    "extra_delay": 10
     },{
         "url": "/admin/index.do#config"
     },{
@@ -143,7 +143,49 @@
         "url": "/admin/index.do#config/network/advanced",
         "type": "remove_nav"
     },{
+        "url": "/admin/index.do#config/network/advanced/options",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/qos",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/access_rules",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/upnp",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dns_and_dhcp",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/network_cards",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/netflow",
+        "type": "remove_nav"
+    },{
         "url": "/admin/index.do#config/network/troubleshooting",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/connectivity",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/ping",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/dns",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/connection",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/traceroute",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/download",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/troubleshooting/packet",
         "type": "remove_nav"
 
     },{
@@ -294,7 +336,16 @@
         "type": "remove_nav"
     },{
         "url": "/admin/index.do#apps/1/virus-blocker/advanced",
-        "type": "remove_nav"
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/virus-blocker/advanced/file_extensions",
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/virus-blocker/advanced/mime_types",
+        "type": "remove_nav",
+        "extra_delay": 5
 
     },{
         "url": "/admin/index.do#apps/1/virus-blocker-lite/status",
@@ -307,7 +358,16 @@
         "type": "remove_nav"
     },{
         "url": "/admin/index.do#apps/1/virus-blocker-lite/advanced",
-        "type": "remove_nav"
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/virus-blocker-lite/advanced/file_extensions",
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/virus-blocker-lite/advanced/mime_types",
+        "type": "remove_nav",
+        "extra_delay": 5
 
     },{
         "url": "/admin/index.do#apps/1/spam-blocker/status",
@@ -507,7 +567,20 @@
         "type": "remove_nav"
     },{
         "url": "/admin/index.do#apps/1/openvpn/server",
-        "type": "remove_nav"
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/openvpn/server/remote_clients",
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/openvpn/server/groups",
+        "type": "remove_nav",
+        "extra_delay": 5
+    },{
+        "url": "/admin/index.do#apps/1/openvpn/server/exported_networks",
+        "type": "remove_nav",
+        "extra_delay": 5
     },{
         "url": "/admin/index.do#apps/1/openvpn/client",
         "type": "remove_nav"
