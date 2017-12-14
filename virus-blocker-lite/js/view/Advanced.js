@@ -28,6 +28,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
 
     items: [{
         title: 'File Extensions'.t(),
+        itemId: 'file_extenions',
         emptyText: 'No File Extensions defined'.t(),
 
         listProperty: 'settings.httpFileExtensions.list',
@@ -86,6 +87,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
         }]
     }, {
         title: 'MIME Types'.t(),
+        itemId: 'mime_types',
         emptyText: 'No MIME Types defined'.t(),
 
         listProperty: 'settings.httpMimeTypes.list',

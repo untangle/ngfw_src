@@ -130,7 +130,9 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         }]
     }, {
         xtype: 'tabpanel',
+        itemId: 'server',
         region: 'center',
+
         defaults: {
             border: false
         },
@@ -140,12 +142,15 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         },
         items: [{
             title: 'Remote Clients'.t(),
+            itemId: 'remote_clients',
             xtype: 'app-openvpn-remote-clients-grid'
         },{
             title: 'Groups'.t(),
+            itemId: 'groups',
             xtype: 'app-openvpn-groups-grid'
         },{
             title: 'Exported Networks'.t(),
+            itemId: 'exported_networks',
             xtype: 'app-openvpn-exported-networks-grid'
         }]
     }]
