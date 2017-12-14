@@ -88,7 +88,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         // refresh the dashboard manager grid if the widgets were affected
         me.lookup('dashboardManager').getView().refresh();
-        vm.set('timeframe', Ung.dashboardSettings.timeframe);
+        vm.set('timeframe', Ung.dashboardSettings.timeframe || 1);
         // vm.set('theme', Ung.dashboardSettings.theme);
 
         dashboard.removeAll(true);
@@ -584,7 +584,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 entryId: entry.get('uniqueId'),
                 javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
                 refreshIntervalSec: 60,
-                timeframe: 3600,
                 type: 'ReportEntry'
             };
             Ung.dashboardSettings.widgets.list.push(widget);
