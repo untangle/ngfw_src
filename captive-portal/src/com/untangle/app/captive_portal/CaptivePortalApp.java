@@ -61,7 +61,6 @@ public class CaptivePortalApp extends AppBase
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
-    private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-permissions";
     private final String CAPTURE_TEMPORARY_UPLOAD = System.getProperty("java.io.tmpdir") + "/capture_upload.zip";
 
     private static final int CLEANUP_INTERVAL = 60000;
@@ -367,9 +366,6 @@ public class CaptivePortalApp extends AppBase
 
         // load user state from file (if exists)
         loadUserState();
-
-        // run a script to add www-data to the uvmlogin group
-        UvmContextFactory.context().execManager().exec(CAPTURE_PERMISSIONS_SCRIPT);
 
         // run a script to create the directory for the custom captive page
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
