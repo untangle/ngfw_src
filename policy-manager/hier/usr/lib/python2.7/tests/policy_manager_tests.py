@@ -334,6 +334,7 @@ class PolicyManagerTests(unittest2.TestCase):
         # remove captive portal and test user
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
+        defaultRackCaptivePortal = None
 
     # remove apps from second rack
     def test_980_removeAppsFromSecondRack(self):
@@ -364,10 +365,13 @@ class PolicyManagerTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global app
+        global app, defaultRackCaptivePortal
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
             app = None
+        if defaultRackCaptivePortal != None:
+            uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
+            defaultRackCaptivePortal = None
 
 
 test_registry.registerApp("policy-manager", PolicyManagerTests)
