@@ -5,6 +5,10 @@ Ext.define('Ung.apps.virusblocker.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings',
+        },
+        '#advanced': {
+            activate: Ung.controller.Global.onSubtabActivate,
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         }
     },
 

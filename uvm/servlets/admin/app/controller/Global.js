@@ -61,8 +61,10 @@ Ext.define('Ung.controller.Global', {
             'apps/:policyId': { before: 'detectChanges', action: 'onApps' },
             'apps/:policyId/:app': { before: 'detectChanges', action: 'onApps' },
             'apps/:policyId/:app/:view': 'onApps',
+            'apps/:policyId/:app/:view/:subView': 'onApps',
             'service/:app': { before: 'detectChanges', action: 'onService' },
             'service/:app/:view': 'onService',
+            'service/:app/:view/:subView': 'onService',
 
             'config': { before: 'detectChanges', action: 'onConfig' },
             'config/:configName': { before: 'detectChanges', action: 'onConfig' },
@@ -178,7 +180,7 @@ Ext.define('Ung.controller.Global', {
         this.getMainView().getViewModel().set('activeItem', 'dashboard');
     },
 
-    onApps: function (policyId, app, view) {
+    onApps: function (policyId, app, view, subView) {
         var me = this;
 
         policyId = policyId || 1;
@@ -193,27 +195,33 @@ Ext.define('Ung.controller.Global', {
         this.getAppsView().getViewModel().set('onInstalledApps', true);
 
         if (app) {
-            me.loadApp(policyId, app, view);
+            me.loadApp(policyId, app, view, subView);
         }
     },
 
-    onService: function (app, view) {
+    onService: function (app, view, subView) {
         var me = this;
         this.getMainView().getViewModel().set('activeItem', 'apps');
         if (app) {
-            me.loadApp(null, app, view);
+            me.loadApp(null, app, view, subView);
         }
 
 
     },
 
 
-    loadApp: function (policyId, app, view) {
+    loadApp: function (policyId, app, view, subView) {
         var me = this, mainView = me.getMainView();
         if (mainView.down('app-' + app)) {
             // if app card already exists activate it and select given view
             mainView.getViewModel().set('activeItem', 'appCard');
             mainView.down('app-' + app).setActiveItem(view || 0);
+            if(subView){
+                var subViewTarget = mainView.down('tabpanel').down('tabpanel');
+                if(subViewTarget){
+                    subViewTarget.setActiveTab(subView);
+                }
+            }
             return;
         } else {
             // eventually do not remove the old card
@@ -250,6 +258,7 @@ Ext.define('Ung.controller.Global', {
                             itemId: 'appCard',
                             appManager: result,
                             activeTab: view || 0,
+                            subTab: subView || 0,
                             viewModel: {
                                 data: {
                                     // policyId: policyId,
@@ -380,5 +389,36 @@ Ext.define('Ung.controller.Global', {
             itemId: 'users'
         });
         this.getMainView().getViewModel().set('activeItem', 'users');
+    },
+
+    statics: {
+        //
+        // These two methods are used on tab panels with their own sub-tab panels and added
+        // to the controller.  See openvon/server and virus-blocker/advanced.
+        //
+        onSubtabActivate: function(panel){
+            var parentPanel = panel.up('apppanel') || panel.up('configpanel');
+            var subTab = parentPanel.subTab;
+            if(subTab == 0){
+                return;
+            }
+            // Get the first child tabpanel (could be us!)
+            while( (panel != null ) && ( panel.isXType('tabpanel') == false ) ){
+                panel = panel.down('tabpanel');
+            }
+            if(panel){
+                panel.setActiveItem(subTab);
+            }
+        },
+
+        onBeforeSubtabChange: function (tabPanel, card, oldCard) {
+            var hash = window.location.hash;
+            var id = tabPanel.itemId;
+            if( id && hash.indexOf(id) > -1 ){
+                Ung.app.redirectTo(hash.substr(0,hash.indexOf(id) + id.length) + '/' + card.getItemId());
+            }
+        }
+
     }
+
 });

@@ -16,20 +16,9 @@ Ext.define('Ung.config.network.view.Advanced', {
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
     }],
 
-    listeners: {
-        activate: function (panel) {
-            panel.down('tabpanel').setActiveItem(panel.up('config-network').subTab);
-        }
-    },
-
     items: [{
         xtype: 'tabpanel',
-
-        listeners: {
-            beforetabchange: function (tabPanel, card, oldCard) {
-                Ung.app.redirectTo('#config/network/advanced/' + card.getItemId());
-            }
-        },
+        itemId: 'advanced',
 
         items: [{
             title: 'Options'.t(),
