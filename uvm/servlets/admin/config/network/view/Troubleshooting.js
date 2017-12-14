@@ -6,12 +6,6 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
 
     layout: 'fit',
 
-    listeners: {
-        activate: function (panel) {
-            panel.down('tabpanel').setActiveItem(panel.up('config-network').subTab);
-        }
-    },
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
@@ -21,12 +15,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
 
     items: [{
         xtype: 'tabpanel',
-
-        listeners: {
-            beforetabchange: function (tabPanel, card, oldCard) {
-                Ung.app.redirectTo('#config/network/troubleshooting/' + card.getItemId());
-            }
-        },
+        itemId: 'troubleshooting',
 
         items: [{
             xtype: 'networktest',

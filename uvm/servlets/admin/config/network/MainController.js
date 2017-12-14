@@ -11,7 +11,19 @@ Ext.define('Ung.config.network.MainController', {
         '#qosStatistics': { afterrender: 'refreshQosStatistics' },
         '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
-        'networktest': { afterrender: 'networkTestRender' }
+        'networktest': { afterrender: 'networkTestRender' },
+        '#advanced': {
+            activate: Ung.controller.Global.onSubtabActivate,
+        },
+        '#advanced #advanced': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#troubleshooting': {
+            activate: Ung.controller.Global.onSubtabActivate,
+        },
+        '#troubleshooting #troubleshooting': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        }
     },
 
     loadSettings: function () {

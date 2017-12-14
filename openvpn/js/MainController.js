@@ -5,6 +5,12 @@ Ext.define('Ung.apps.openvpn.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings'
+        },
+        '#server': {
+            activate: Ung.controller.Global.onSubtabActivate,
+        },
+        '#server #server': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         }
     },
 
