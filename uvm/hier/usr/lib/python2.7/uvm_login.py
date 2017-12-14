@@ -129,7 +129,7 @@ def is_wizard_complete():
 def is_local_process_uid_authorized(req):
     (remote_ip, remote_port) = req.connection.remote_addr
 
-    if remote_ip != "127.0.0.1":
+    if remote_ip != "127.0.0.1" and remote_ip != '::1':
         return False
 
     # This determines the PID of the connecting process
@@ -281,7 +281,7 @@ def send_login_event(client_addr, login, local, succeeded, reason):
         uvmContext = uvm.Uvm().getUvmContext()
         uvmContext.adminManager().logAdminLoginEvent( str(login), local, str(client_addr), succeeded, reason )
     except Exception, e:
-        apache.log_error('error: %s' % str(e))
+        apache.log_error('error: %s' % repr(e))
 
 def log_login(req, login, local, succeeded, reason):
     (client_addr, client_port) = req.connection.remote_addr
