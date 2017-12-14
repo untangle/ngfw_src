@@ -24,6 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 public class IpsecVpnManager
 {
     private final Logger logger = Logger.getLogger(getClass());
+    private final IpsecVpnScriptWriter scriptWriter = new IpsecVpnScriptWriter();
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -33,7 +34,6 @@ public class IpsecVpnManager
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
-    private static final String IPTABLES_GRE_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre";
 
     private static final String IPSEC_UNTANGLE_FILE = "/etc/ipsec.untangle";
     private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";
@@ -42,8 +42,8 @@ public class IpsecVpnManager
     private static final String XL2TPD_CONF_FILE = "/etc/xl2tpd/xl2tpd.conf";
     private static final String STRONGSWAN_CONF_FILE = "/etc/strongswan.conf";
 
-    private static final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle IPsec service." + RET +
-                                                   "# If you modify this file manually, your changes will be overwritten!" + RET + RET;
+    protected static final String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle IPsec service." + RET +
+                                                    "# If you modify this file manually, your changes will be overwritten!" + RET + RET;
 
     // these are the default values that will be used when phase 1/2 manual configuration is NOT enabled
     // and were chosen for maximum compatibility with our previous releases that used openswan
@@ -70,7 +70,9 @@ public class IpsecVpnManager
 
         try {
             writeConfigFiles(settings);
-            writeIptablesScript(settings);
+            scriptWriter.write_IPSEC_script(settings);
+            scriptWriter.write_XAUTH_script(settings);
+            scriptWriter.write_GRE_script(settings);
             UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
         }
 
@@ -95,12 +97,12 @@ public class IpsecVpnManager
         int x;
 
         /*
-         * Some customers want manual control of the ipsec.conf file to
-         * set low level features and options that we don't currently
-         * support in the user interface. To support them we added a special
-         * neverWriteconfig boolean that can be manually enabled in the
-         * settings file. When set, we write our config to ipsec.untangle
-         * instead of ipsec.conf, leaving manual modifications unchanged.
+         * Some customers want manual control of the ipsec.conf file to set low
+         * level features and options that we don't currently support in the
+         * user interface. To support them we added a special neverWriteconfig
+         * boolean that can be manually enabled in the settings file. When set,
+         * we write our config to ipsec.untangle instead of ipsec.conf, leaving
+         * manual modifications unchanged.
          */
         FileWriter ipsec_conf = null;
 
@@ -270,7 +272,7 @@ public class IpsecVpnManager
                 if (osArch.equals("arm") == true) {
                     ipsec_conf.write(TAB + "replay_window=0" + RET);
                 }
-                
+
                 ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
                 ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                 ipsec_conf.write(TAB + "dpddelay=10" + RET);
@@ -350,7 +352,7 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "type=tunnel" + RET);
                 ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
                 ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
-                
+
                 if (osArch.equals("arm") == true) {
                     ipsec_conf.write(TAB + "replay_window=0" + RET);
                 }
@@ -503,100 +505,6 @@ public class IpsecVpnManager
         options_xl2tpd.close();
         xl2tpd_conf.close();
         strongswan_conf.close();
-    }
-
-    private void writeIptablesScript(IpsecVpnSettings settings) throws Exception
-    {
-        logger.debug("writeIptablesScript(" + IPTABLES_GRE_SCRIPT + ")");
-
-        AddressCalculator calculator = new AddressCalculator(settings.getVirtualNetworkPool());
-        LinkedList<IpsecVpnNetwork> networkList = settings.getNetworks();
-        String greAddr = calculator.getFirstIP();
-        IpsecVpnNetwork network;
-        String iface;
-        String iaddr;
-        int x, y;
-
-        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
-        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-
-        FileWriter gre_script = new FileWriter(IPTABLES_GRE_SCRIPT, false);
-
-        gre_script.write("#!/bin/dash" + RET + "# " + IPTABLES_GRE_SCRIPT + RET + FILE_DISCLAIMER);
-
-        gre_script.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + RET + RET);
-
-        gre_script.write("# delete all existing gre interfaces except 0 which is hidden and protected" + RET);
-        gre_script.write("GRECOUNT=`cat /proc/net/dev | grep -v gre0 | grep gre | wc -l`" + RET);
-        gre_script.write("for i in `seq 1 $GRECOUNT` ; do" + RET);
-        gre_script.write(TAB + "${IPTABLES} -t mangle -D mark-src-intf -i gre$i -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\" >/dev/null 2>&1" + RET);
-        gre_script.write(TAB + "${IPTABLES} -t mangle -D mark-dst-intf -o gre$i -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\" >/dev/null 2>&1" + RET);
-        gre_script.write(TAB + "ip tunnel del gre$i" + RET);
-        gre_script.write("done" + RET);
-        gre_script.write(RET);
-
-        gre_script.write("# delete all of the old WAN NAT rules" + RET);
-        for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
-            if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
-                gre_script.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fd) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound GRE traffic\" >/dev/null 2>&1" + RET);
-            }
-        }
-        gre_script.write(RET);
-
-        gre_script.write("# delete the old nat-reverse-filter rule" + RET);
-        gre_script.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\" >/dev/null 2>&1" + RET);
-        gre_script.write(RET);
-
-        gre_script.write("# delete the old admin forwards for GRE networks" + RET);
-        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
-        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
-        gre_script.write(RET);
-
-        for (x = 0; x < networkList.size(); x++) {
-            // For each active network we create a GRE interface
-            // and add routes for the configured remote networks
-            network = networkList.get(x);
-            if (network.getActive() != true) continue;
-
-            iface = ("gre" + String.valueOf(x + 1));
-            iaddr = calculator.getOffsetIP(x + 1);
-
-            gre_script.write("# IpsecVpnNetwork - " + network.getDescription() + RET);
-            gre_script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
-            gre_script.write("ip link set " + iface + " up" + RET);
-            gre_script.write("ip addr add " + iaddr + " dev " + iface + RET);
-
-            String netlist[] = network.getRemoteNetworks().split("\\n");
-
-            for (y = 0; y < netlist.length; y++) {
-                gre_script.write("ip route add " + netlist[y] + " dev " + iface + RET);
-            }
-
-            gre_script.write("${IPTABLES} -t mangle -I mark-src-intf 4 -i " + iface + " -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\"" + RET);
-            gre_script.write("${IPTABLES} -t mangle -I mark-dst-intf 4 -o " + iface + " -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\"" + RET);
-            gre_script.write(RET);
-        }
-
-        gre_script.write("# create WAN NAT rules for each GRE interface" + RET);
-        for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
-            if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
-                gre_script.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fd) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound GRE traffic\"" + RET);
-            }
-        }
-        gre_script.write(RET);
-
-        gre_script.write("# create nat-reverse-filter rule to allow GRE to penetrate NATd networks" + RET);
-        gre_script.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\"" + RET);
-        gre_script.write(RET);
-
-        gre_script.write("# create admin forwards for GRE networks" + RET);
-        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\"" + RET);
-        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\"" + RET);
-        gre_script.write(RET);
-
-        gre_script.close();
-
-        UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_GRE_SCRIPT);
     }
 
     private String StringHexify(String source)
