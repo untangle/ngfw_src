@@ -73,11 +73,31 @@ public class IpsecVpnManager
             scriptWriter.write_IPSEC_script(settings);
             scriptWriter.write_XAUTH_script(settings);
             scriptWriter.write_GRE_script(settings);
-            UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
         }
 
         catch (Exception e) {
             logger.error("IpsecVpnManager.generateConfig()", e);
+        }
+
+        // call the ipsec reload script
+        UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
+
+        /*
+         * For every active tunnel configured to be always connected we call
+         * ipsec route. This will install the kernel policy to automatically
+         * bring the tunnel back up when traffic matching the tunnel policy is
+         * detected and the tunnel is down for some reason.
+         */
+        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
+        IpsecVpnTunnel tunnel;
+
+        for (int x = 0; x < tunnelList.size(); x++) {
+            tunnel = tunnelList.get(x);
+            if (tunnel.getActive() != true) continue;
+            if (tunnel.getRunmode().equals("start")) {
+                String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
+                UvmContextFactory.context().execManager().exec("ipsec route " + workname);
+            }
         }
     }
 
