@@ -117,6 +117,8 @@ class WebBrowser:
         """
         Open the specified URL
         """
+        if Debug:
+            print "go: url=" + url
         self.driver.get(url)
 
     def wait_for_load(self):
@@ -373,6 +375,8 @@ def main(argv):
         web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
 
         base_url = settings["authentication"]["url"]
+        if Debug:
+            print "base_url=" + base_url
 
         if "user" in settings["authentication"]:
             web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
@@ -383,7 +387,7 @@ def main(argv):
             screen['name'] = screen['name'].replace("_1_","_")
 
             total_screens += 1
-            if want_screen_name is not None and want_screen_name not in screen["name"]:
+            if want_screen_name is not None and want_screen_name not in screen["url"]:
                 # if Debug is True:
                 #     print "Skipping screen: " + screen["name"] 
                 continue
