@@ -28,7 +28,7 @@ Ext.define('Ung.widget.WidgetController', {
         var me = this, vm = me.getViewModel(), eventGrid = widget.down('eventreport > ungrid');
         // add to queue non report widgets when enabled
         vm.bind('{widget.enabled}', function (enabled) {
-            if (enabled) {
+            if (enabled && (Ext.isFunction(widget.fetchData) || widget.getXType() === 'reportwidget')) {
                 widget.visible = true;
                 DashboardQueue.add(widget);
             }
