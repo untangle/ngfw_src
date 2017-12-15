@@ -171,6 +171,8 @@ Ext.define('Ung.view.reports.EntryController', {
             });
         }
 
+        me.setReportCard(entry.get('type'));
+
         switch(entry.get('type')) {
         case 'TEXT': ctrl = me.getView().down('textreport').getController(); break;
         case 'EVENT_LIST': ctrl = me.getView().down('eventreport').getController(); break;
@@ -590,8 +592,8 @@ Ext.define('Ung.view.reports.EntryController', {
             Ext.util.History.back();
             return;
         }
-
-        me.setReportCard(vm.get('entry.type'));
+        // reload the current entry as it was before editing
+        me.reload(true);
     },
 
     onTextColumnsChanged: function (store) {
