@@ -38,9 +38,9 @@ Ext.define('Ung.view.reports.TextReport', {
                 if (!entry || entry.get('type') !== 'TEXT') { return; }
 
                 // if rendered as widget, add to dashboard queue
-                if (view.getWidget()) {
-                    DashboardQueue.addFirst(view.getWidget());
-                }
+                // if (view.getWidget()) {
+                //     DashboardQueue.addFirst(view.getWidget());
+                // }
 
                 // if rendered in creating new widget dialog, fetch data
                 if (view.up('new-widget')) {

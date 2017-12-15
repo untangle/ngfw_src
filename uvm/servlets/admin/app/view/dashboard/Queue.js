@@ -55,7 +55,7 @@ Ext.define('Ung.view.dashboard.Queue', {
             if (me.paused || !wg.visible || !wg.timeout) {
                 Ext.Array.removeAt(me.queue, 0);
                 me.processing = false;
-                me.process();
+                if (me.queue.length > 0) { me.process(); }
                 return;
             }
 
@@ -74,7 +74,7 @@ Ext.define('Ung.view.dashboard.Queue', {
                     wg.lastFetchTime = new Date().getTime();
                     Ext.Array.removeAt(me.queue, 0);
                     me.processing = false;
-                    me.process();
+                    if (me.queue.length > 0) { me.process(); }
                 });
             } else {
                 wg.fetchData(function () {
@@ -87,7 +87,7 @@ Ext.define('Ung.view.dashboard.Queue', {
                     wg.lastFetchTime = new Date().getTime();
                     Ext.Array.removeAt(me.queue, 0);
                     me.processing = false;
-                    me.process();
+                    if (me.queue.length > 0) { me.process(); }
                 });
             }
         }
