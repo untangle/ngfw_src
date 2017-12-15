@@ -94,7 +94,7 @@ Ext.define('Ung.view.reports.EventReport', {
                     // if it's widgets it needs separate calls to setup the grid
                     me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                     me.setupGrid();
-                    DashboardQueue.addFirst(view.getWidget());
+                    // DashboardQueue.addFirst(view.getWidget());
                 }
                 // if rendered in creating new widget dialog, fetch data
                 if (view.up('new-widget')) {

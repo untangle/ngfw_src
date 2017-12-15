@@ -41,9 +41,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
 
                 // if rendered as widget, add to dashboard queue
-                if (view.getWidget()) {
-                    DashboardQueue.addFirst(view.getWidget());
-                }
+                // if (view.getWidget()) {
+                //     // console.log('aaa');
+                //     DashboardQueue.addFirst(view.getWidget());
+                // }
 
                 // if rendered in creating new widget dialog, fetch data
                 if (view.up('new-widget') || view.itemId == 'fixedChart') {
