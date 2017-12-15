@@ -20,6 +20,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
+    widgetsRendered: false,
+
     listen: {
         global: {
             init: 'loadWidgets',
@@ -36,10 +38,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     onAfterRender: function (view) {
-        var me = this;
-        view.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
-        view.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
-
+        // var me = this;
         // me.getViewModel().bind('{theme}', function (theme) {
         //     Ung.dashboardSettings.theme = theme;
         //     Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
@@ -150,8 +149,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
         dashboard.add(widgetsCmp);
 
-        // me.getView().getEl().on('scroll', me.debounce(me.onScrollChange, 500));
-        // this.populateMenus();
+        if (!me.widgetsRendered) {
+            me.widgetsRendered = true;
+
+            // add scroll/resize events
+            me.getView().body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
+            me.getView().getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
+        }
     },
 
     onResize: function (view) {
