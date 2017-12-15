@@ -345,7 +345,8 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             if (!entry) { return; }
 
-            if (reset) { me.reset(); }
+            // disable this reset because it fires second time and may cause browser freeze NGFW-11306
+            // if (reset) { me.reset(); }
 
             vm.set('eError', false);
 
