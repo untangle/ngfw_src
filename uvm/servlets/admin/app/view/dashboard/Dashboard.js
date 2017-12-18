@@ -249,15 +249,12 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     }, {
         region: 'center',
         reference: 'dashboard',
-        itemId: 'widgetsCmp',
+        itemId: 'dashboard',
         bodyCls: 'dashboard',
         bodyPadding: 8,
         border: false,
         bodyBorder: false,
-        scrollable: true,
-        listeners: {
-            afterrender: 'onAfterRender'
-        }
+        scrollable: true
     }],
     listeners: {
         showwidgeteditor: 'showWidgetEditor'

@@ -15,7 +15,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             activate: 'onActivate',
             deactivate: 'onDeactivate',
         },
-        '#widgetsCmp': {
+        '#dashboard': {
             resize: 'onResize'
         }
     },
@@ -37,16 +37,17 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
-    onAfterRender: function (view) {
-        // var me = this;
-        // me.getViewModel().bind('{theme}', function (theme) {
-        //     Ung.dashboardSettings.theme = theme;
-        //     Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
-        //         graph.getController().setStyles();
-        //     });
-        // });
+    // not used
+    // onAfterRender: function (view) {
+    //     // var me = this;
+    //     // me.getViewModel().bind('{theme}', function (theme) {
+    //     //     Ung.dashboardSettings.theme = theme;
+    //     //     Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
+    //     //         graph.getController().setStyles();
+    //     //     });
+    //     // });
 
-    },
+    // },
 
     debounce: function (fn, delay) {
         var timer = null;
@@ -153,8 +154,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             me.widgetsRendered = true;
 
             // add scroll/resize events
-            me.getView().body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
-            me.getView().getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
+            dashboard.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
+            dashboard.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
         }
     },
 
