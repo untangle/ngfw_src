@@ -52,12 +52,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
             if (!vm.get('entry')) { return; }
 
-            // on cancel when eEntry turns null reloads the selected entry if exists
-            if (!eEntry) {
-                // me.reload(true);
-                me.getView().down('graphreport').fireEvent('styleschanged');
-                return;
-            }
+            if (!eEntry) { return; }
 
             // if not defaultColumns initialize with [] to avoid editing errors
             if (!eEntry.get('defaultColumns')) {

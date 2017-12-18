@@ -12,8 +12,7 @@ Ext.define('Ung.view.reports.GraphReport', {
     listeners: {
         afterrender: 'onAfterRender',
         resize: 'onResize',
-        deactivate: 'reset',
-        styleschanged: 'setStyles'
+        deactivate: 'reset'
     },
 
     config: {
@@ -533,10 +532,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                     }
                 }, false, false);
             }
-            me.chart.redraw();
+            // me.chart.redraw();
             // reload styles
             me.setStyles();
-            me.getView().fireEvent('resize');
         },
 
 
