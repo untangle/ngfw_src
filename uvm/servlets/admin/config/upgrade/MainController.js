@@ -60,13 +60,18 @@ Ext.define('Ung.config.upgrade.MainController', {
         Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
             if(result) {
                 var upgradeButton = v.down('[name="upgradeButton"]');
-                upgradeButton.show();
+                if (upgradeButton)
+                    upgradeButton.show();
             } else {
                 var upgradeText = v.down('[name="upgradeText"]');
-                upgradeText.show();
+                if (upgradeText)
+                    upgradeText.show();
             }
-            v.down('progressbar').reset();
-            v.down('progressbar').hide();
+            var progressbar = v.down('progressbar');
+            if (progressbar) {
+                progressbar.reset();
+                progressbar.hide();
+            }
         });
     },
 
