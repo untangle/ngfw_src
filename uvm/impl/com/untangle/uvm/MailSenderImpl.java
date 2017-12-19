@@ -1091,6 +1091,7 @@ public class MailSenderImpl implements MailSender
                     }
                     // a line containing => indicates that the mail has been successfully sent 
                     if (line.contains("=>")){
+                        logger.info("Test email succcesfully sent.");
                         return "Completed";
                     }
                     if (!line.contains("retry time not reached for any host")){ // this is just a info, we do not add it to the message
@@ -1100,6 +1101,7 @@ public class MailSenderImpl implements MailSender
                 }
             }
         }
+        logger.info("Test email msg:" + msg);
         return msg;
     }
 
