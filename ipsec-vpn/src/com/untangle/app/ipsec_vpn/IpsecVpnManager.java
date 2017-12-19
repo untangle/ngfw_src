@@ -21,6 +21,14 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
+/**
+ * This class uses the application settings to dynamically generate the
+ * configuration files used by the underlying IPsec implementation.
+ * 
+ * @author mahotz
+ * 
+ */
+
 public class IpsecVpnManager
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -64,10 +72,18 @@ public class IpsecVpnManager
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * This function will perform all actions required when new settings are
+     * applied.
+     * 
+     * @param settings
+     *        The application settings to be used
+     */
     public void generateConfig(IpsecVpnSettings settings)
     {
         logger.debug("generateConfig()");
 
+        // generate all of the network scripts
         try {
             writeConfigFiles(settings);
             scriptWriter.write_IPSEC_script(settings);
@@ -101,6 +117,14 @@ public class IpsecVpnManager
         }
     }
 
+    /**
+     * This function writes all of the low level IPsec configuration files using
+     * the argumented settings.
+     * 
+     * @param settings
+     *        The application settings to be used
+     * @throws Exception
+     */
     private void writeConfigFiles(IpsecVpnSettings settings) throws Exception
     {
         logger.debug("writeConfigFiles()");
@@ -527,6 +551,18 @@ public class IpsecVpnManager
         strongswan_conf.close();
     }
 
+    /**
+     * This function takes a normal string and converts it to a string of hex
+     * digit pairs representing each character in the original string. We use it
+     * to obfuscate passwords in the ipsec.secrets file. Using the hex format
+     * also prevents problems with embeding characters that may also be a
+     * parsing token used by one of the IPsec applications or daemons.
+     * 
+     * @param source
+     *        The string to convert to hex format
+     * 
+     * @return The hex format string
+     */
     private String StringHexify(String source)
     {
         // we convert the source to a hex string that can handle CR, LF, and
