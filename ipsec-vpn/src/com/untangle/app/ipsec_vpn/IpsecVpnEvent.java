@@ -12,8 +12,13 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * IPsec connection event
+ * This class defines the event record used to record IPsec connection status
+ * events to the database.
+ * 
+ * @author mahotz
+ * 
  */
+
 @SuppressWarnings("serial")
 public class IpsecVpnEvent extends LogEvent implements Serializable
 {

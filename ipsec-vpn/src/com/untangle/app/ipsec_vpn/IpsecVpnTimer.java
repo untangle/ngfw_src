@@ -15,18 +15,32 @@ import com.untangle.uvm.ExecManagerResult;
 
 import org.apache.log4j.Logger;
 
-/*
- * Sometimes we see tunnels that have been connected for days suddenly just go
- * away, almost like ipsec just forgot about them.  The only solution we've come
- * up with is this awful code that periodically looks at the status of all
- * tunnels, and uses the ipsec down/up utility to force the tunnel to reconnect.
- *
- * Since we're already monitoring every minute, we're also using this code
- * to capture and record traffic statistics for reporting purposes.
+/**
+ * This is our timer class where we handle periodic tasks. Sometimes we see
+ * tunnels that have been connected for days suddenly just go away, almost like
+ * ipsec just forgot about them. The only solution we've come up with is this
+ * awful code that periodically looks at the status of all tunnels, and uses the
+ * ipsec down/up utility to force the tunnel to reconnect.
+ * 
+ * Since we're already monitoring every minute, we're also using this code to
+ * capture and record traffic statistics for reporting purposes.
+ * 
+ * We also added the ability to ping a host across the tunnel, so we use the
+ * timer to implement that functionality as well.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class IpsecVpnTimer extends TimerTask
 {
+
+    /**
+     * Define an object we can use to keep track of each IPsec tunnel.
+     * 
+     * @author mahotz
+     * 
+     */
     class TunnelWatcher
     {
         int tunnelId;
@@ -72,6 +86,10 @@ public class IpsecVpnTimer extends TimerTask
         CheckAllTunnels();
     }
 
+    /**
+     * Function to check the status of all IPsec tunnels, and restart any that
+     * seem to be down.
+     */
     private void CheckAllTunnels()
     {
         LinkedList<ConnectionStatusRecord> statusList = app.getTunnelStatus();
@@ -176,6 +194,13 @@ public class IpsecVpnTimer extends TimerTask
         }
     }
 
+    /**
+     * Function to capture and record the traffic statistics for each active
+     * tunnel.
+     * 
+     * @param watcher
+     *        The TunnelWatcher for the tunnel to be checked
+     */
     private void GrabTunnelStatistics(TunnelWatcher watcher)
     {
         long outValue = 0;
@@ -268,6 +293,17 @@ public class IpsecVpnTimer extends TimerTask
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
     }
 
+    /**
+     * Function to ping a remote host across a tunnel. The main goal here is to
+     * give users a way to periodically generate traffic that goes across a
+     * tunnel, and generate alerts if the ping target does not respond.
+     * 
+     * @param watcher
+     *        The TunnelWatcher for the ping test
+     * 
+     * @param tunnel
+     *        The IpsecVpnTunnel for the ping test
+     */
     private void CheckTunnelPingTarget(TunnelWatcher watcher, IpsecVpnTunnel tunnel)
     {
         if (tunnel == null) return;
@@ -293,6 +329,14 @@ public class IpsecVpnTimer extends TimerTask
         logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
     }
 
+    /**
+     * Function to find the IpsecVpnTunnel matching a given ID value.
+     * 
+     * @param idValue
+     *        The ID value of the tunnel to find
+     * 
+     * @return The IpsecVpnTunnel if found, otherwise null
+     */
     private IpsecVpnTunnel findTunnelById(int idValue)
     {
         LinkedList<IpsecVpnTunnel> configList = app.getSettings().getTunnels();
