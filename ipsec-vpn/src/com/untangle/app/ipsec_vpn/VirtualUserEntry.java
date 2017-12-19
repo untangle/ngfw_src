@@ -6,6 +6,12 @@ package com.untangle.app.ipsec_vpn;
 
 import java.net.InetAddress;
 
+/**
+ * Class to store details for active IPsec VPN (L2TP | XAUTH | IKEv2) users.
+ * 
+ * @author mahotz
+ * 
+ */
 public class VirtualUserEntry
 {
     private String clientProtocol;

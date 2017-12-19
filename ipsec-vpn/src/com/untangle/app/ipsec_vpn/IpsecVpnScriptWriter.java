@@ -33,6 +33,14 @@ public class IpsecVpnScriptWriter
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
+    /**
+     * This function writes 710-ipsec which creates the rules required for IPsec
+     * tunnel traffic and L2TP VPN traffic.
+     * 
+     * @param settings
+     *        The IPsec settings
+     * @throws Exception
+     */
     protected void write_IPSEC_script(IpsecVpnSettings settings) throws Exception
     {
         logger.debug("write_IPSEC_script(" + IPTABLES_IPSEC_SCRIPT + ")");
@@ -106,6 +114,14 @@ public class IpsecVpnScriptWriter
         UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_IPSEC_SCRIPT);
     }
 
+    /**
+     * This function writes 711-xauth which creates the rules required for Xauth
+     * VPN traffic.
+     * 
+     * @param settings
+     *        The IPsec settings
+     * @throws Exception
+     */
     protected void write_XAUTH_script(IpsecVpnSettings settings) throws Exception
     {
         logger.debug("write_XAUTH_script(" + IPTABLES_XAUTH_SCRIPT + ")");
