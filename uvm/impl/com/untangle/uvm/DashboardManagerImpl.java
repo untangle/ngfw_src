@@ -144,7 +144,6 @@ public class DashboardManagerImpl implements DashboardManager
         widgets.add( new DashboardWidgetSettings("NetworkLayout"));
         widgets.add( new DashboardWidgetSettings("MapDistribution"));
         widgets.add( new DashboardWidgetSettings("PolicyOverview"));
-        widgets.add( new DashboardWidgetSettings("Notifications"));
 
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
@@ -200,6 +199,8 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
         widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
         widgets.add( widgetSettings);
+
+        widgets.add( new DashboardWidgetSettings("Notifications"));
 
         DashboardSettings newSettings = new DashboardSettings();
         newSettings.setVersion(2);
