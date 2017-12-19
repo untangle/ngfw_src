@@ -276,10 +276,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
-        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard');
+        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard'),
+            tf = me.getView().down('slider').getValue(), refetch = false;
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-        Ung.dashboardSettings.timeframe = me.getView().down('slider').getValue();
+
+        if (Ung.dashboardSettings.timeframe !== tf) {
+            Ung.dashboardSettings.timeframe = tf;
+            refetch = true;
+        }
+
         // Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
@@ -292,6 +298,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
                 if (Ext.getStore('widgets').find('entryId', widgetCmp.getItemId()) < 0) {
                     dashboard.remove(widgetCmp);
+                } else {
+                    if (refetch) {
+                        widgetCmp.lastFetchTime = null;
+                    }
                 }
             });
 
