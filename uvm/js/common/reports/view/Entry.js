@@ -628,6 +628,7 @@ Ext.define('Ung.view.reports.Entry', {
                 fieldLabel: 'Aggregation Function'.t(),
                 store: [
                     ['avg', 'Average'.t()],
+                    ['count', 'Count'.t()],
                     ['sum', 'Sum'.t()],
                     ['min', 'Min'.t()],
                     ['max', 'Max'.t()]
