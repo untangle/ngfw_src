@@ -12,10 +12,17 @@ Ext.define('Ung.config.email.EmailTestController', {
         rpc.UvmContext.mailSender().sendTestMessage(function (result, ex) {
             btn.setDisabled(false);
             if (ex) { console.error(ex); Util.handleException(ex); return; }
-            vm.set({
-                processing: null,
-                processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Success'.t()
-            });
+            if (result == 'Completed') {
+                vm.set({
+                    processing: null,
+                    processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Email sent. Verify successful delivery with recipient.'.t()
+                });
+            } else {
+                vm.set({
+                    processing: null,
+                    processingIcon: '<i class="fa fa-close fa-3x fa-fw" style="color: red;"></i> <br/>' + result
+                });
+            }
         }, v.down('textfield').getValue());
     },
     cancel: function () {
