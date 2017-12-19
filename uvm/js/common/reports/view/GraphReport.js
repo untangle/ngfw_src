@@ -115,7 +115,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     // gridLineWidth: 1,
                     // gridLineDashStyle: 'dash',
                     // gridLineColor: '#EEE',
-                    tickPixelInterval: 80,
+                    tickPixelInterval: isWidget ? 80 : 120,
                     labels: {
                         style: {
                             color: '#777',
@@ -764,6 +764,9 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             Highcharts.merge(true, settings, isWidget ? Theme[Ung.dashboardSettings.theme] : Theme.DEFAULT);
             me.chart.update(settings, true);
+
+            // force redraw for column charts, NGFW-11349
+            if (isPieColumn) { me.chart.redraw(); }
         }
     }
 });
