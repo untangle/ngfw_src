@@ -8,6 +8,12 @@ import java.util.LinkedList;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+/**
+ * This class represents all of the settings for the IPsec application.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class IpsecVpnSettings implements java.io.Serializable, JSONString
 {
@@ -25,9 +31,9 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean allowConcurrentLogins = true;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
-    private String virtualNetworkPool = "198.51.100.0/24";  // used for GRE
-    private String virtualAddressPool = "198.18.0.0/16";    // used for L2TP
-    private String virtualXauthPool = "198.19.0.0/16";      // used for XAUTH
+    private String virtualNetworkPool = "198.51.100.0/24"; // used for GRE
+    private String virtualAddressPool = "198.18.0.0/16"; // used for L2TP
+    private String virtualXauthPool = "198.19.0.0/16"; // used for XAUTH
     private String virtualSecret = "Please_Change_Me";
     private String virtualDnsOne = "";
     private String virtualDnsTwo = "";
