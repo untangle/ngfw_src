@@ -282,12 +282,14 @@ Ext.define('Ung.view.reports.EntryController', {
 
     // // DASHBOARD ACTION
     dashboardAddRemove: function () {
-        var vm = this.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry'), action;
+        var me = this, vm = me.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry'), action;
+
+        me.getView().setLoading(true);
 
         if (!widget) {
             action = 'add';
             widget = Ext.create('Ung.model.Widget', {
-                displayColumns: entry.get('displayColumns'),
+                displayColumns: entry.get('defaultColumns'),
                 enabled: true,
                 entryId: entry.get('uniqueId'),
                 javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
@@ -302,6 +304,7 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.fireEvent('widgetaction', action, widget, entry, function (wg) {
             vm.set('widget', wg);
             Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (action === 'add' ? 'added to' : 'removed from') + ' Dashboard!');
+            me.getView().setLoading(false);
         });
     },
 

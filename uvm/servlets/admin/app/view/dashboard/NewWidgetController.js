@@ -98,7 +98,7 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
                 }
             } else {
                 newWidget = Ext.create('Ung.model.Widget', {
-                    displayColumns: entry.get('displayColumns'),
+                    displayColumns: entry.get('defaultColumns'),
                     enabled: true,
                     entryId: entry.get('uniqueId'),
                     javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
