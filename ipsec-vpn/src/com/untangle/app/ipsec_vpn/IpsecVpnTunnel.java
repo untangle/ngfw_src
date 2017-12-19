@@ -9,6 +9,13 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This class contains all settings for each configured IPsec tunnel.
+ * 
+ * @author mahotz
+ * 
+ */
+
 @SuppressWarnings("serial")
 public class IpsecVpnTunnel implements JSONString, Serializable
 {

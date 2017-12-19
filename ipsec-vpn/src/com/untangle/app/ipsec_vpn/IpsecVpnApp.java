@@ -30,6 +30,13 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 
+/**
+ * The IPsec application manages all IPsec tunnels and VPN configurations.
+ * 
+ * @author mahotz
+ * 
+ */
+
 public class IpsecVpnApp extends AppBase
 {
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
@@ -63,6 +70,15 @@ public class IpsecVpnApp extends AppBase
     protected IpsecVpnSettings settings;
     protected Timer timer;
 
+    /**
+     * Initializes the IPsec application by creating blingers and fixing low
+     * level configuration options.
+     * 
+     * @param appSettings
+     *        Application settings
+     * @param appProperties
+     *        Application properties
+     */
     public IpsecVpnApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
@@ -83,6 +99,9 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * Initialize application settings when no previous settings found.
+     */
     @Override
     public void initializeSettings()
     {
@@ -134,12 +153,23 @@ public class IpsecVpnApp extends AppBase
         setSettings(settings);
     }
 
+    /**
+     * Returns the application settings
+     * 
+     * @return The application settings
+     */
     public IpsecVpnSettings getSettings()
     {
         logger.debug("getSettings()");
         return (settings);
     }
 
+    /**
+     * Set and apply new application settings.
+     * 
+     * @param newSettings
+     *        The new settings
+     */
     public void setSettings(IpsecVpnSettings newSettings)
     {
         int idx;
@@ -188,30 +218,56 @@ public class IpsecVpnApp extends AppBase
         reconfigure();
     }
 
+    /**
+     * Gets the contents of the IPsec log file
+     * 
+     * @return The contents of the IPsec log file
+     */
     public String getLogFile()
     {
         logger.debug("getLogFile()");
         return IpsecVpnApp.execManager().execOutput(GRAB_LOGFILE_SCRIPT);
     }
 
+    /**
+     * Gets the contents of the L2TP log file
+     * 
+     * @return The contents of the L2TP log file
+     */
     public String getVirtualLogFile()
     {
         logger.debug("getVirtualLogFile()");
         return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUAL_LOGFILE_SCRIPT);
     }
 
+    /**
+     * Gets the IPsec policy info returned by 'ip xfrm policy'
+     * 
+     * @return The IPsec policy info
+     */
     public String getPolicyInfo()
     {
         logger.debug("getPolicyInfo()");
         return IpsecVpnApp.execManager().execOutput(GRAB_POLICY_SCRIPT);
     }
 
+    /**
+     * Gets the IPsec state info returned by 'ip xfrm state'
+     * 
+     * @return The IPsec state info
+     */
     public String getStateInfo()
     {
         logger.debug("getStateInfo()");
         return IpsecVpnApp.execManager().execOutput(GRAB_STATE_SCRIPT);
     }
 
+    /**
+     * Returns our local execManager, or the global execManager if ours has not
+     * yet been instantiated.
+     * 
+     * @return A valid execManager
+     */
     protected static ExecManager execManager()
     {
         if (IpsecVpnApp.execManager != null) return IpsecVpnApp.execManager;
@@ -220,6 +276,12 @@ public class IpsecVpnApp extends AppBase
         return UvmContextFactory.context().execManager();
     }
 
+    /**
+     * Required by all UVM applications. We return an empty list of connectors
+     * since this application doesn't do any traffic processing.
+     * 
+     * @return Our list of pipeline connectors.
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -227,6 +289,10 @@ public class IpsecVpnApp extends AppBase
         return this.connectors;
     }
 
+    /**
+     * After initialization we load and apply our settings, or create new
+     * default settings if no saved settings are found.
+     */
     @Override
     protected void postInit()
     {
@@ -252,6 +318,12 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * Before the app is started we make sure our license is valid. If so, we
+     * call our pre-start script and add xl2tpd and ipsec to the daemon manager.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
@@ -271,6 +343,11 @@ public class IpsecVpnApp extends AppBase
         reconfigure();
     }
 
+    /**
+     * After the app is started, we create our monitoring timer task.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStart(boolean isPermanentTransition)
     {
@@ -281,6 +358,12 @@ public class IpsecVpnApp extends AppBase
         timer.schedule(new IpsecVpnTimer(this), 60000, 60000);
     }
 
+    /**
+     * Before the app is stopped we stop our monitoring timer task and
+     * disconnect all active users.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
@@ -308,6 +391,12 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * After the app is stopped we remove xl2tpd and ipsec from the daemon
+     * manager.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
@@ -322,6 +411,9 @@ public class IpsecVpnApp extends AppBase
         UvmContextFactory.context().daemonManager().decrementUsageCount("ipsec");
     }
 
+    /**
+     * Called to activate the node settings.
+     */
     private synchronized void reconfigure()
     {
         logger.debug("reconfigure()");
@@ -367,6 +459,9 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * Updates the blinger display.
+     */
     public void updateBlingers()
     {
         logger.debug("updateBlingers()");
@@ -389,6 +484,11 @@ public class IpsecVpnApp extends AppBase
         this.setMetric(IpsecVpnApp.STAT_VIRTUAL, virtualUserTable.countVirtualUsers());
     }
 
+    /**
+     * Checks to see if we have a valid license.
+     * 
+     * @return True if we have a valid license, otherwise false
+     */
     public boolean isLicenseValid()
     {
         logger.debug("isLicenseValid()");
@@ -396,6 +496,22 @@ public class IpsecVpnApp extends AppBase
         return false;
     }
 
+    /**
+     * Called externally by ipsec-virtual-user-event python script and possibly
+     * others to register an active VPN user.
+     * 
+     * @param clientProtocol
+     *        The protocol used to connect (L2TP | Xauth | IKEv2)
+     * @param clientAddress
+     *        The IP address assigned to the client
+     * @param clientUsername
+     *        The client username
+     * @param netInterface
+     *        The protocol interface assigned to the client
+     * @param netProcess
+     *        The process identifier assigned to the client
+     * @return 0 for success
+     */
     public int virtualUserConnect(String clientProtocol, InetAddress clientAddress, String clientUsername, String netInterface, String netProcess)
     {
         logger.debug("virtualUserConnect PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " IF:" + netInterface + " PROC:" + netProcess);
@@ -437,6 +553,22 @@ public class IpsecVpnApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called externally by ipsec-virtual-user-event python script and possibly
+     * others when a VPN user disconnects.
+     * 
+     * @param clientProtocol
+     *        The protocol used to connect (L2TP | Xauth | IKEv2)
+     * @param clientAddress
+     *        The IP address assigned to the client
+     * @param clientUsername
+     *        The client username
+     * @param netRXcount
+     *        The total number of bytes received by the client
+     * @param netTXcount
+     *        The total number of bytes sent by the client
+     * @return
+     */
     public int virtualUserGoodbye(String clientProtocol, InetAddress clientAddress, String clientUsername, String netRXcount, String netTXcount)
     {
         logger.debug("virtualUserGoodbye PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " RX:" + netRXcount + " TX:" + netTXcount);
@@ -467,12 +599,21 @@ public class IpsecVpnApp extends AppBase
         logEvent(event);
         logger.debug("virtualUserGoodbye(logEvent) " + event.toString());
 
-        virtualUserTable.removeVirtualUser(clientAddress);
+        virtualUserTable.removeVirtualUser(clientAddress, getSettings().getAllowConcurrentLogins());
 
         updateBlingers();
         return (0);
     }
 
+    /**
+     * Called by the UI to forcefully disconnect an active VPN user.
+     * 
+     * @param clientAddress
+     *        The IP address to of the client to disconnected
+     * @param clientUsername
+     *        The username of the client to be disconnected
+     * @return 0 if client was active and disconnected
+     */
     public int virtualUserDisconnect(InetAddress clientAddress, String clientUsername)
     {
         logger.debug("virtualUserDisconnect ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername);
@@ -499,12 +640,22 @@ public class IpsecVpnApp extends AppBase
         return (0);
     }
 
+    /**
+     * Returns a list of active VPN users.
+     * 
+     * @return A list of active VPN users
+     */
     public LinkedList<VirtualUserEntry> getVirtualUsers()
     {
         logger.debug("getVirtualUsers()");
         return (virtualUserTable.buildUserList());
     }
 
+    /**
+     * Returns a list with the status of all enabled IPsec tunnels
+     * 
+     * @return A list with the status of all enabled IPsec tunnels
+     */
     public LinkedList<ConnectionStatusRecord> getTunnelStatus()
     {
         LinkedList<ConnectionStatusRecord> displayList = new LinkedList<ConnectionStatusRecord>();
@@ -524,6 +675,13 @@ public class IpsecVpnApp extends AppBase
         return (displayList);
     }
 
+    /**
+     * Creates a UI status display record for an IpsecVpnTunnel
+     * 
+     * @param tunnel
+     *        The tunnel for which status is requested
+     * @return The status of the tunnel
+     */
     private ConnectionStatusRecord createDisplayRecord(IpsecVpnTunnel tunnel)
     {
         String string;
@@ -635,12 +793,20 @@ public class IpsecVpnApp extends AppBase
         return (record);
     }
 
-    /*
-     * https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+    /**
+     * This function makes changes to the underlying configuration of the IPsec
+     * applications and daemons critical for proper operation.
+     * 
+     * @throws Exception
      */
-
     private void fixStrongswanConfig() throws Exception
     {
+        /**
+         * We add a timeout for the IKE daemon so that commands like up and down
+         * don't hang forever, which is the default.
+         * 
+         * https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+         */
         File cfgfile = new File(STRONGSWAN_STROKE_CONFIG);
         StringBuffer buffer = new StringBuffer(1024);
         String line;
