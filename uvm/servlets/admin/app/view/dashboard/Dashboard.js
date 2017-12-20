@@ -187,25 +187,15 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             },
             stripeRows: false,
             getRowClass: function (record) {
-                return !record.get('enabled') ? 'disabled' : '';
+                var cls = !record.get('enabled') ? 'disabled' : '';
+                cls += record.get('markedForDelete') ? ' will-remove' : '';
+                return cls;
             },
             listeners: {
                 drop: 'onDrop'
             }
         },
-        columns: [
-        //     {
-        //     xtype: 'actioncolumn',
-        //     iconCls: 'fa fa-arrows',
-        //     width: 14,
-        //     align: 'center',
-        //     sortable: false,
-        //     hideable: false,
-        //     resizable: false,
-        //     menuDisabled: true,
-        //     // tdCls: 'drag-handle'
-        // },
-        {
+        columns: [{
             width: 28,
             align: 'center',
             sortable: false,
@@ -220,17 +210,21 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             renderer: 'widgetTitleRenderer',
             flex: 1
         }, {
-            xtype: 'actioncolumn',
-            iconCls: 'fa fa-close',
+            xtype: 'widgetcolumn',
             width: 30,
             align: 'center',
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            handler: 'removeWidget',
-            isDisabled: function (view, rowIndex, colIndex, item, record) {
-                return record.get('type') !== 'ReportEntry';
+            widget: {
+                xtype: 'button',
+                width: 24,
+                enableToggle: true,
+                iconCls: 'fa fa-trash fa-gray',
+                hidden: true,
+                focusable: false,
+                bind: {
+                    hidden: '{record.type !== "ReportEntry"}',
+                    iconCls: 'fa fa-trash {record.markedForDelete ? "fa-red" : "fa-gray"}',
+                },
+                handler: 'removeWidget'
             }
         }],
         listeners: {
