@@ -48,17 +48,6 @@ public class Version
         return getResource("VERSION");
     }
 
-    /**
-     * Get the public version as a name IE: "focus"
-     * "focus"
-     */
-    public static String getVersionName()
-    {
-        if (UvmContextFactory.context().isDevel())
-            return "DEVEL";
-        return getResource("RELEASE_CODENAME");
-    }
-    
     private static String getResource(String type)
     {
         String line = null;
