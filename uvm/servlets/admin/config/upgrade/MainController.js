@@ -58,19 +58,24 @@ Ext.define('Ung.config.upgrade.MainController', {
     checkUpgrades: function () {
         var v = this.getView();
         Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
-            if(result) {
-                var upgradeButton = v.down('[name="upgradeButton"]');
-                if (upgradeButton)
-                    upgradeButton.show();
-            } else {
-                var upgradeText = v.down('[name="upgradeText"]');
-                if (upgradeText)
-                    upgradeText.show();
-            }
-            var progressbar = v.down('progressbar');
-            if (progressbar) {
-                progressbar.reset();
-                progressbar.hide();
+            try {
+                if(result) {
+                    var upgradeButton = v.down('[name="upgradeButton"]');
+                    if (upgradeButton)
+                        upgradeButton.show();
+                } else {
+                    var upgradeText = v.down('[name="upgradeText"]');
+                    if (upgradeText)
+                        upgradeText.show();
+                }
+                var progressbar = v.down('progressbar');
+                if (progressbar) {
+                    progressbar.reset();
+                    progressbar.hide();
+                }
+            } catch (err) {
+                //if down() throws an exception because the items are no longer visible
+                //ignore it
             }
         });
     },
