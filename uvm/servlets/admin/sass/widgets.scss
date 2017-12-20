@@ -469,43 +469,18 @@
 
 
 .widget-manager {
-    // box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
-    // z-index: 10;
-    // .x-grid-row.disabled {
-    //     color: #555;
-    //     i {
-    //         //color: #999;
-    //     }
-    // }
     .x-grid-cell-inner {
         font-family: $custom-font-condensed;
         font-size: 13px;
-        // padding: 5px 6px 3px;
-        // i {
-        //     font-size: 20px;
-        //     // height: auto;
-        //     cursor: pointer;
-        //     padding-top: 3px;
-        // }
     }
 
-    // .x-grid-cell-inner-action-col {
-    //     padding-top: 5px;
-    //     height: 35px;
-    // }
-
-    .x-grid-cell-last {
-        i {
-            opacity: 0;
-            transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+    .x-grid-item {
+        .x-btn {
+            display: none;
         }
-        &:hover i {
-            color: #333 !important;
+        &-over .x-btn, .will-remove .x-btn {
+            display: inline-block;
         }
-    }
-
-    .x-grid-item-over .x-grid-cell-last i {
-        opacity: 1;
     }
 
 

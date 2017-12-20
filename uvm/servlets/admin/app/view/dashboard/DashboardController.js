@@ -248,20 +248,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
                 title = '<span style="font-weight: 400; ' + ((unavailApp || !enabled) ? 'color: #777;' : 'color: #000;') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
-
-                if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
-                    title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
-                }
-                // if (unavailApp) {
-                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
-                // } else {
-                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
-                // }
-                /*
-                if (entry.get('readOnly')) {
-                    title += ' <i class="material-icons" style="font-size: 14px; color: #999; vertical-align: top;">lock</i>';
-                }
-                */
                 return title;
             } else {
                 return 'Unknown Widget'.t();
@@ -278,6 +264,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     applyChanges: function () {
         var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard'),
             tf = me.getView().down('slider').getValue(), refetch = false;
+
+        // drom record selected for removal
+        Ext.getStore('widgets').each(function (record) {
+            if (record.get('markedForDelete')) {
+                record.drop();
+            }
+        });
+
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
 
@@ -384,16 +378,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 100});
             }
         }
-
-        // if (cellIndex === 3) {
-        //     // remove widget
-        //     record.drop();
-        // }
     },
 
 
-    removeWidget: function (table, rowIndex, colIndex, item, e, record) {
-        record.drop();
+    removeWidget: function (btn) {
+        btn.lookupViewModel().get('record').set('markedForDelete', btn.pressed);
     },
 
     /**
