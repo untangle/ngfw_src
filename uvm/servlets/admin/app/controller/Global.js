@@ -120,6 +120,7 @@ Ext.define('Ung.controller.Global', {
         // check for grids changes
         Ext.Array.each(cmp.query('ungrid'), function (grid) {
             var store = grid.getStore();
+            if (store.type === 'chained') { return; }
             if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0 && !dirtyGrids) {
                 dirtyGrids = true;
             }
