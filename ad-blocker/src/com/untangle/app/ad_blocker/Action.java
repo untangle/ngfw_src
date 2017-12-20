@@ -1,8 +1,10 @@
+/**
+ * $Id$
+ */
 package com.untangle.app.ad_blocker;
 
 /**
- * Action that was taken.
- *
+ * An enumeration of the possible actions
  */
 public enum Action
 {
@@ -21,16 +23,28 @@ public enum Action
         this.name = name;
     }
 
+    /**
+     * get the key character for this action
+     * @returns the key
+     */
     public char getKey()
     {
         return key;
     }
 
+    /**
+     * get the english name for this action
+     * @returns the name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Get the global Action instance for the specified key
+     * @returns the action or null if not found
+     */
     public static Action getInstance(char key)
     {
         Action[] values = values();
