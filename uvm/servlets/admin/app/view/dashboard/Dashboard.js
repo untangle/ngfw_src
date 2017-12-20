@@ -29,6 +29,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         },
         formulas: {
             timeframeText: function (get) {
+                if (!get('timeframe')) {
+                    return 1 + ' ' + 'hour'.t() + ' (' + 'default'.t() + ')';
+                }
                 return get('timeframe') + ' ' + (get('timeframe') === 1 ? 'hour'.t() + ' (' + 'default'.t() + ')' : 'hours'.t());
             }
         }
@@ -101,6 +104,10 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 type: 'vbox',
                 align: 'stretch'
             },
+            hidden: true,
+            bind: {
+                hidden: '{!reportsInstalled}'
+            },
             items: [{
                 xtype: 'label',
                 bind: {
@@ -146,12 +153,12 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                     hidden: '{!reportsInstalled}'
                 }
             }, '->', {
-                // text: 'Import'.t(),
+                text: 'Import'.t(),
                 iconCls: 'fa fa-download',
                 tooltip: 'Import'.t(),
                 handler: 'importWidgets'
             }, {
-                // text: 'Export'.t(),
+                text: 'Export'.t(),
                 iconCls: 'fa fa-upload',
                 tooltip: 'Export'.t(),
                 handler: 'exportWidgets'
