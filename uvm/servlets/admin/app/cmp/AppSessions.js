@@ -1,6 +1,7 @@
 Ext.define('Ung.cmp.AppSessions', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.appsessions',
+    scrollable: true,
 
     title: 'Sessions'.t(),
     border: false,
