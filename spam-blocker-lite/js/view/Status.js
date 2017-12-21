@@ -3,6 +3,7 @@ Ext.define('Ung.apps.spamblockerlite.view.Status', {
     alias: 'widget.app-spam-blocker-lite-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

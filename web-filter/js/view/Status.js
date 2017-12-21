@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webfilter.view.Status', {
     alias: 'widget.app-web-filter-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

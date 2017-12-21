@@ -2,6 +2,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-interfaces',
     itemId: 'interfaces',
+    scrollable: true,
 
     title: 'Interfaces'.t(),
     layout: 'border',

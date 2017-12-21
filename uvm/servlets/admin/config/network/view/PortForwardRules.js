@@ -2,6 +2,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-port-forward-rules',
     itemId: 'port-forward-rules',
+    scrollable: true,
 
     viewModel: true,
 

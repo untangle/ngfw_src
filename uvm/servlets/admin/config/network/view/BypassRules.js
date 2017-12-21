@@ -3,6 +3,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
     alias: 'widget.config-network-bypass-rules',
     itemId: 'bypass-rules',
     viewModel: true,
+    scrollable: true,
 
     title: 'Bypass Rules'.t(),
 

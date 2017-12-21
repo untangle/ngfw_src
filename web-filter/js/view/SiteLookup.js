@@ -5,6 +5,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
     title: 'Site Lookup'.t(),
     viewModel: true,
     bodyPadding: 10,
+    scrollable: true,
 
     tbar: [{
         xtype: 'tbtext',

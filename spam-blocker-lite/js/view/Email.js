@@ -3,6 +3,7 @@ Ext.define('Ung.apps.spamblockerlite.view.Email', {
     alias: 'widget.app-spam-blocker-lite-email',
     itemId: 'email',
     title: 'Email'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

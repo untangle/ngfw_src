@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webcache.view.Status', {
     alias: 'widget.app-web-cache-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

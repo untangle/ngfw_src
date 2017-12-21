@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.L2tpLog', {
     itemId: 'l2tp-log',
     title: 'L2TP Log'.t(),
     layout: 'fit',
+    scrollable: true,
 
     tbar: [{
         xtype: 'button',

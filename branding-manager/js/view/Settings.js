@@ -3,6 +3,7 @@ Ext.define('Ung.apps.brandingmanager.view.Settings', {
     alias: 'widget.app-branding-manager-settings',
     itemId: 'settings',
     title: 'Settings'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
     withValidation: true,

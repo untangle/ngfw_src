@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecLog', {
     itemId: 'ipsec-log',
     title: 'IPsec Log'.t(),
     layout: 'fit',
+    scrollable: true,
 
     tbar: [{
         xtype: 'button',

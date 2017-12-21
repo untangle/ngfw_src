@@ -6,6 +6,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
     viewModel: true,
     withValidation: true,
     bodyPadding: 10,
+    scrollable: true,
 
     tbar: [{
         xtype: 'tbtext',

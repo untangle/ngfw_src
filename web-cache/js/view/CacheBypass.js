@@ -4,7 +4,6 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
     itemId: 'cache-bypass',
     title: 'Cache Bypass'.t(),
 
-
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

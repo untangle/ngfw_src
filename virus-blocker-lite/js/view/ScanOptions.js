@@ -3,6 +3,7 @@ Ext.define('Ung.apps.virusblockerlite.view.ScanOptions', {
     alias: 'widget.app-virus-blocker-lite-scanoptions',
     itemId: 'scan-options',
     title: 'Scan Options'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
     layout: {

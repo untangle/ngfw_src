@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.Status', {
     alias: 'widget.app-web-monitor-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

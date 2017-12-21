@@ -3,6 +3,7 @@ Ext.define('Ung.apps.reports.view.AllReports', {
     alias: 'widget.app-reports-allreports',
     itemId: 'all-reports',
     title: 'All Reports'.t(),
+    scrollable: true,
 
     store: 'reports',
 
