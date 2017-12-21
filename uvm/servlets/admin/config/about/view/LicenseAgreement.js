@@ -2,6 +2,7 @@ Ext.define('Ung.config.about.view.LicenseAgreement', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-about-licenseagreement',
     itemId: 'license-agreement',
+    scrollable: true,
 
     title: 'License Agreement'.t(),
 

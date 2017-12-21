@@ -3,6 +3,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Status', {
     alias: 'widget.app-application-control-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

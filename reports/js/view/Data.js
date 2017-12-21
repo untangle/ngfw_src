@@ -3,8 +3,7 @@ Ext.define('Ung.apps.reports.view.Data', {
     alias: 'widget.app-reports-data',
     itemId: 'data',
     title: 'Data'.t(),
-
-    scrollable: 'y',
+    scrollable: true,
 
     defaults: {
         xtype: 'fieldset',

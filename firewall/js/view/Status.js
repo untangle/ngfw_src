@@ -3,6 +3,7 @@ Ext.define('Ung.apps.firewall.view.Status', {
     alias: 'widget.app-firewall-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

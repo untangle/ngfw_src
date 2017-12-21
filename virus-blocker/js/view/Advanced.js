@@ -3,6 +3,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
     alias: 'widget.app-virus-blocker-advanced',
     itemId: 'advanced',
     title: 'Advanced'.t(),
+    scrollable: true,
 
     dockedItems: [{
         xtype: 'toolbar',

@@ -3,6 +3,7 @@ Ext.define('Ung.apps.configurationbackup.view.Status', {
     alias: 'widget.app-configuration-backup-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

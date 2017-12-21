@@ -3,6 +3,7 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
     alias: 'widget.app-application-control-lite-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

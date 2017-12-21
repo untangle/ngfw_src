@@ -3,6 +3,7 @@ Ext.define('Ung.config.network.view.FilterRules', {
     alias: 'widget.config-network-filter-rules',
     itemId: 'filter-rules',
     viewModel: true,
+    scrollable: true,
 
     title: 'Filter Rules'.t(),
 

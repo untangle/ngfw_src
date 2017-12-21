@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
     alias: 'widget.app-ipsec-vpn-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

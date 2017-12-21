@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
     alias: 'widget.app-ad-blocker-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

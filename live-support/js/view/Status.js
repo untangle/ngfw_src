@@ -3,6 +3,7 @@ Ext.define('Ung.apps.livesupport.view.Status', {
     alias: 'widget.app-live-support-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     requires: [
         'Ung.cmp.LicenseLoader'

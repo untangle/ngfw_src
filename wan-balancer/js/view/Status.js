@@ -3,6 +3,7 @@ Ext.define('Ung.apps.wan-balancer.view.Status', {
     alias: 'widget.app-wan-balancer-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

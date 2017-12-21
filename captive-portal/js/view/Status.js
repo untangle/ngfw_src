@@ -3,6 +3,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
     alias: 'widget.app-captive-portal-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

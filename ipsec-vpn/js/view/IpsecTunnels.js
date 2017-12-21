@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     itemId: 'ipsec-tunnels',
     title: 'IPsec Tunnels'.t(),
     viewModel: true,
+    scrollable: true,
 
     dockedItems: [{
         xtype: 'toolbar',

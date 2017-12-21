@@ -3,6 +3,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     alias: 'widget.app-configuration-backup-googleconnector',
     itemId: 'google-connector',
     title: 'Google Connector'.t(),
+    scrollable: true,
 
     viewModel: true,
     bodyPadding: 10,

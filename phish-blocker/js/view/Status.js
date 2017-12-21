@@ -3,6 +3,7 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
     alias: 'widget.app-phish-blocker-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 
