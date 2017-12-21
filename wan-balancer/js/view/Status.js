@@ -38,8 +38,7 @@ Ext.define('Ung.apps.wan-balancer.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         items: [{
             xtype: 'appmetrics',
