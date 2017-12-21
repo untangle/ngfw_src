@@ -96,6 +96,8 @@ public class IntrusionPreventionApp extends AppBase
         super( appSettings, appProperties );
 
         handler = new EventHandler(this);
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
+        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -171,9 +173,6 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
-        this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
-
         File settingsFile = new File( getSettingsFileName() );
         File snortConf = new File(SNORT_CONF);
         File snortDebianConf = new File(SNORT_DEBIAN_CONF);
@@ -210,6 +209,9 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void reconfigure()
     {
+
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
+        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
