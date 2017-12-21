@@ -139,12 +139,11 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         layout: 'fit',
         items: [{
-            xtype: 'appmetrics',
+            xtype: 'appmetrics'
         }],
         bbar: [{
             xtype: 'appremove',
