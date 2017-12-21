@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
     alias: 'widget.app-ad-blocker-adfilters',
     itemId: 'ad-filters',
     title: 'Ad Filters'.t(),
+    scrollable: true,
 
     layout: 'border',
     border: false,

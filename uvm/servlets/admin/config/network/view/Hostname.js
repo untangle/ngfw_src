@@ -2,13 +2,13 @@ Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config-network-hostname',
     itemId: 'hostname',
+    scrollable: true,
 
     withValidation: true, // requires validation on save
     viewModel: true,
 
     title: 'Hostname'.t(),
     bodyPadding: 10,
-    scrollable: true,
 
     items: [{
         xtype: 'fieldset',

@@ -3,6 +3,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
     alias: 'widget.app-directory-connector-usernotificationapi',
     itemId: 'user-notification-api',
     title: 'User Notification API'.t(),
+    scrollable: true,
 
     viewModel: true,
     bodyPadding: 10,

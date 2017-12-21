@@ -2,6 +2,7 @@ Ext.define('Ung.config.email.view.SafeList', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-email-safelist',
     itemId: 'safe-list',
+    scrollable: true,
 
     title: 'Safe List'.t(),
 

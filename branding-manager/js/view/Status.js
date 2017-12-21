@@ -3,6 +3,7 @@ Ext.define('Ung.apps.brandingmanager.view.Status', {
     alias: 'widget.app-branding-manager-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

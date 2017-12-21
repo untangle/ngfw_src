@@ -4,6 +4,7 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
     itemId: 'route-rules',
     title: 'Route Rules'.t(),
     viewModel: true,
+    scrollable: true,
 
     dockedItems: [{
         xtype: 'toolbar',

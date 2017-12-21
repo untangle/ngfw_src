@@ -3,6 +3,7 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
     alias: 'widget.app-ssl-inspector-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

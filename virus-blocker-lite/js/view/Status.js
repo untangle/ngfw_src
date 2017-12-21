@@ -3,6 +3,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Status', {
     alias: 'widget.app-virus-blocker-lite-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

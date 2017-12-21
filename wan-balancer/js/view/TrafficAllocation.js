@@ -4,6 +4,7 @@ Ext.define('Ung.apps.wan-balancer.view.TrafficAllocation', {
     itemId: 'traffic-allocation',
     title: 'Traffic Allocation'.t(),
     viewModel: true,
+    scrollable: true,
 
     tbar: [{
         xtype: 'tbtext',

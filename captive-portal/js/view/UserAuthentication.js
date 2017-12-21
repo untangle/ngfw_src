@@ -3,6 +3,7 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
     alias: 'widget.app-captive-portal-userauthentication',
     itemId: 'user-authentication',
     title: 'User Authentication'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

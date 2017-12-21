@@ -2,10 +2,10 @@ Ext.define('Ung.config.about.view.Server', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-about-server',
     itemId: 'server',
+    scrollable: true,
 
     title: 'Server'.t(),
 
-    scrollable: true,
     bodyPadding: 10,
 
     defaults: {

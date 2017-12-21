@@ -1,9 +1,9 @@
 Ext.define('Ung.config.network.view.Advanced', {
     extend: 'Ext.panel.Panel',
-
     alias: 'widget.config-network-advanced',
     itemId: 'advanced',
     viewModel: true,
+    scrollable: true,
 
     title: 'Advanced'.t(),
 
