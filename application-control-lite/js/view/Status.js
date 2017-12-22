@@ -3,6 +3,7 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
     alias: 'widget.app-application-control-lite-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{
@@ -24,10 +25,8 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'border',
         items: [{
             xtype: 'appsessions',
             region: 'north',

@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.Advanced', {
     alias: 'widget.app-web-monitor-advanced',
     itemId: 'advanced',
     title: 'Advanced'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
 

@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecState', {
     itemId: 'ipsec-state',
     title: 'IPsec State'.t(),
     layout: 'fit',
+    scrollable: true,
 
     tbar: [{
         xtype: 'button',

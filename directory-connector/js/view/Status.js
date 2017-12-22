@@ -3,6 +3,7 @@ Ext.define('Ung.apps.directoryconnector.view.Status', {
     alias: 'widget.app-directory-connector-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

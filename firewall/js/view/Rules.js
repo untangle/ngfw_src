@@ -3,6 +3,7 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     alias: 'widget.app-firewall-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
+    scrollable: true,
 
     dockedItems: [{
         xtype: 'toolbar',

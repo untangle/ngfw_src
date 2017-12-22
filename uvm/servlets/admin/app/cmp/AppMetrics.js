@@ -3,6 +3,7 @@ Ext.define('Ung.cmp.AppMetrics', {
     alias: 'widget.appmetrics',
     title: 'Metrics'.t(),
     border: false,
+    scrollable: true,
 
     nameColumnWidth: 250,
     hideHeaders: true,

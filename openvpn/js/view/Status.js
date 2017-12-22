@@ -3,6 +3,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
     alias: 'widget.app-openvpn-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{
@@ -170,8 +171,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         layout: 'fit',
         items: [{

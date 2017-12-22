@@ -108,7 +108,7 @@ Ext.define('Ung.cmp.Grid', {
      * If true, allow all columns to sort.
      * If the 'sortable' key on each column is defined, that value will be used instead.
      */
-    defaultSortable: false,
+    defaultSortable: true,
 
     stateful: false,
 
@@ -186,6 +186,9 @@ Ext.define('Ung.cmp.Grid', {
                 }
                 if (record.get('readOnly')) {
                     return 'mark-readonly';
+                }
+                if (record.get('markedForMove')) {
+                    return 'mark-moved';
                 }
             }
         };
