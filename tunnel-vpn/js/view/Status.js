@@ -4,6 +4,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     viewModel: true,
+    scrollable: true,
 
     layout: 'border',
     items: [{
@@ -122,12 +123,12 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         layout: 'fit',
         items: [{
             xtype: 'appmetrics',
+            scrollable: true,
             region: 'center'
         }],
         bbar: [{

@@ -16,6 +16,8 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             v = this.getView(),
             vm = this.getViewModel();
 
+        // Only do this if not configured!!!
+
         Ext.MessageBox.wait( "Determining recommended settings...".t(), "Please wait".t() );
         Ext.Ajax.request({
             url: "/admin/download",

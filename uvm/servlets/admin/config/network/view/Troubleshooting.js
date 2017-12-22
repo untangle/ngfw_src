@@ -3,6 +3,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
     alias: 'widget.config-network-troubleshooting',
     itemId: 'troubleshooting',
     title: 'Troubleshooting'.t(),
+    scrollable: true,
 
     layout: 'fit',
 

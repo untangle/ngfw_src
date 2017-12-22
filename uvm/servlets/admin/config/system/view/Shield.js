@@ -2,8 +2,8 @@ Ext.define('Ung.config.system.view.Shield', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-system-shield',
     itemId: 'shield',
-
     viewModel: true,
+    scrollable: true,
 
     title: 'Shield'.t(),
 

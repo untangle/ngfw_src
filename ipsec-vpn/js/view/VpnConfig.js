@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
     alias: 'widget.app-ipsec-vpn-vpnconfig',
     itemId: 'vpn-config',
     title: 'VPN Config'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {

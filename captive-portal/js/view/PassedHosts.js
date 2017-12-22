@@ -3,6 +3,7 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
     alias: 'widget.app-captive-portal-passedhosts',
     itemId: 'passed-hosts',
     title: 'Passed Hosts'.t(),
+    scrollable: true,
 
     tbar: [{
         xtype: 'tbtext',

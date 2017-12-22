@@ -2,6 +2,7 @@ Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-network-nat-rules',
     itemId: 'nat-rules',
+    scrollable: true,
 
     viewModel: true,
 

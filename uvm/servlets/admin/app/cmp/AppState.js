@@ -88,8 +88,9 @@ Ext.define('Ung.cmp.AppState', {
                             vm.set('instance.targetState', this.runStateWantState );
                             this.runStateButton.setDisabled(false);
                             // force reload Apps after start/stop within App Settings
+                            rpc.appsViews= rpc.appManager.getAppsViews();
+                            Ext.getStore('policies').loadData(rpc.appsViews);
                             Ung.app.getGlobalController().getAppsView().getController().getApps();
-
                         }
                     }, this) );
                 }, me) );
@@ -101,28 +102,28 @@ Ext.define('Ung.cmp.AppState', {
                  ( runState === 'RUNNING' ) ) {
                 // stop app
                 me.runStateWantState = 'INITIALIZED';
-                appManager.stop(function (result, ex) {
+                appManager.stop(Ext.bind(function (result, ex) {
                     if (ex) {
                         Util.handleException(ex);
                         return false;
                     }
-                    me.runStateTask.delay( this.getRunStateDelay );
-                });
+                    me.runStateTask.delay( this.runStateDelay );
+                }, this) );
             } else {
                 // start app
                 me.runStateWantState = 'RUNNING';
-                appManager.start(function (result, ex) {
+                appManager.start(Ext.bind(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
                         // Likely due to an invalid licnese.
                         // Expect the app to shutdown
                         me.runStateWantState = 'INITIALIZED';
-                        me.runStateTask.delay( this.getRunStateDelay );
+                        me.runStateTask.delay( this.runStateDelay );
                         btn.setDisabled(false);
                         return false;
                     }
-                    me.runStateTask.delay( this.getRunStateDelay );
-                });
+                    me.runStateTask.delay( this.runStateDelay );
+                }, this) );
             }
         }
     },

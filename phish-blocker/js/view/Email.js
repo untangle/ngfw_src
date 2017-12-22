@@ -3,6 +3,7 @@ Ext.define('Ung.apps.phishblocker.view.Email', {
     alias: 'widget.app-phish-blocker-email',
     itemId: 'email',
     title: 'Email'.t(),
+    scrollable: true,
 
     tbar: [{
         xtype: 'checkbox',

@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
     alias: 'widget.app-ad-blocker-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {
@@ -52,10 +53,8 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'border',
         items: [{
             xtype: 'appsessions',
             region: 'north',

@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
     alias: 'widget.app-web-filter-advanced',
     itemId: 'advanced',
     title: 'Advanced'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
 

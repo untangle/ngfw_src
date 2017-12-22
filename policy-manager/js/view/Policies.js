@@ -3,6 +3,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
     alias: 'widget.app-policy-manager-policies',
     itemId: 'policies',
     title: 'Policies'.t(),
+    scrollable: true,
 
     layout: 'border',
     items: [{

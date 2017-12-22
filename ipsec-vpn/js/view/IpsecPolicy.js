@@ -4,6 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecPolicy', {
     itemId: 'ipsec-policy',
     title: 'IPsec Policy'.t(),
     layout: 'fit',
+    scrollable: true,
 
     tbar: [{
         xtype: 'button',
