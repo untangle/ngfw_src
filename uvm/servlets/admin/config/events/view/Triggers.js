@@ -3,6 +3,7 @@ Ext.define('Ung.config.events.view.Triggers', {
     alias: 'widget.config-events-triggers',
     itemId: 'triggers',
     title: 'Triggers'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
     layout: { type: 'vbox', align: 'stretch' },

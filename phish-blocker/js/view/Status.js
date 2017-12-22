@@ -3,6 +3,7 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
     alias: 'widget.app-phish-blocker-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 
@@ -32,10 +33,8 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'border',
         items: [{
             xtype: 'appsessions',
             region: 'north',

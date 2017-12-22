@@ -3,6 +3,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     alias: 'widget.app-openvpn-server',
     itemId: 'server',
     title: 'Server'.t(),
+    scrollable: true,
 
     withValidation: true,
 

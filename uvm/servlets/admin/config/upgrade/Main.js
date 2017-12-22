@@ -1,6 +1,7 @@
 Ext.define('Ung.config.upgrade.Main', {
     extend: 'Ung.cmp.ConfigPanel',
     alias: 'widget.config-upgrade',
+    scrollable: true,
 
     /* requires-start */
     requires: [

@@ -338,16 +338,20 @@ Ext.define('Ung.view.apps.AppsController', {
                                 }
                                 return;
                             }
-                            appVm.set('targetState', appManager.getRunState());
+                            rpc.appsViews= rpc.appManager.getAppsViews();
+                            Ext.getStore('policies').loadData(rpc.appsViews);
+                            Ung.app.getGlobalController().getAppsView().getController().getApps();
                         });
                     } else {
                         appManager.stop(function (result, ex) {
                             btn.setUserCls('');
                             if (ex) { Util.handleException(ex); return; }
                             appVm.set({
-                                targetState: appManager.getRunState(),
                                 metrics: null
                             });
+                            rpc.appsViews= rpc.appManager.getAppsViews();
+                            Ext.getStore('policies').loadData(rpc.appsViews);
+                            Ung.app.getGlobalController().getAppsView().getController().getApps();
                         });
                     }
                 }, function (ex) {

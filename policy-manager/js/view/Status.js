@@ -3,6 +3,7 @@ Ext.define('Ung.apps.policymanager.view.Status', {
     alias: 'widget.app-policy-manager-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 

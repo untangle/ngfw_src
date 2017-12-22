@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webcache.view.Status', {
     alias: 'widget.app-web-cache-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: {
         formulas: {
@@ -87,10 +88,8 @@ Ext.define('Ung.apps.webcache.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'border',
         items: [{
             xtype: 'appsessions',
             region: 'north',

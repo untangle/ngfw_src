@@ -1,9 +1,9 @@
 Ext.define('Ung.config.network.view.Advanced', {
     extend: 'Ext.panel.Panel',
-
     alias: 'widget.config-network-advanced',
     itemId: 'advanced',
     viewModel: true,
+    scrollable: true,
 
     title: 'Advanced'.t(),
 
@@ -24,6 +24,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'Options'.t(),
             itemId: 'options',
             padding: 10,
+            scrollable: true,
             defaults: {
                 xtype: 'checkbox',
             },
@@ -65,6 +66,7 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'QoS'.t(),
             itemId: 'qos',
+            scrollable: true,
             items: [{
                 xtype: 'combo',
                 fieldLabel: 'Queue Discipline'.t(),
@@ -106,6 +108,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 items: [{
                     xtype: 'ungrid',
                     title: 'WAN Bandwidth'.t(),
+                    scrollable: true,
                     tbar: [{
                         xtype: 'tbtext',
                         padding: '8 5',
@@ -174,6 +177,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }, {
                     xtype: 'panel',
                     title: 'QoS Rules'.t(),
+                    scrollable: true,
 
                     layout: {
                         type: 'vbox',
@@ -222,6 +226,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }, {
                         xtype: 'ungrid',
                         title: 'QoS Custom Rules'.t(),
+                        scrollable: true,
 
                         border: false,
 
@@ -305,6 +310,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }, {
                     xtype: 'ungrid',
                     title: 'QoS Priorities'.t(),
+                    scrollable: true,
 
                     bind: '{qosPriorities}',
 
@@ -385,6 +391,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     itemId: 'qosStatistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
+                    scrollable: true,
 
                     columnLines: true,
                     enableColumnHide: false,
@@ -423,6 +430,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'Access Rules'.t(),
             itemId: 'access_rules',
             layout: 'fit',
+            scrollable: true,
 
             items: [{
                 xtype: 'ungrid',
@@ -529,6 +537,7 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'UPnP'.t(),
             itemId: 'upnp',
+            scrollable: true,
 
             items:[{
                 xtype: 'checkbox',
@@ -558,6 +567,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 items: [{
                     xtype: 'panel',
                     title: 'Status'.t(),
+                    scrollable: true,
                     items:[{
                         xtype: 'ungrid',
                         itemId: 'upnpStatus',
@@ -625,6 +635,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 },{
                     xtype: 'panel',
                     title: 'Access Control Rules'.t(),
+                    scrollable: true,
                     items: [{
                         xtype: 'ungrid',
 
@@ -707,6 +718,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'DNS & DHCP'.t(),
             itemId: 'dns_and_dhcp',
             xtype: 'panel',
+            scrollable: true,
             tbar: [{
                 xtype: 'tbtext',
                 padding: '8 5',
@@ -727,6 +739,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             xtype: 'ungrid',
             itemId: 'network_cards',
             title: 'Network Cards'.t(),
+            scrollable: true,
 
             bind: '{devices}',
 
@@ -780,6 +793,7 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'Netflow'.t(),
             itemId: 'netflow',
+            scrollable: true,
             defaults: {
                 labelAlign: 'right'
             },

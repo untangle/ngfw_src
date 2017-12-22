@@ -233,8 +233,11 @@ Ext.define('Ung.cmp.GridController', {
         return this.getView().conditionsMap[val].displayName;
     },
 
-    onDropRecord: function () {
+    onDropRecord: function (node, data ) {
         this.getView().getStore().isReordered = true;
+        data.records.forEach(function(record){
+            record.set('markedForMove', true);
+        });
     },
 
     // import/export features

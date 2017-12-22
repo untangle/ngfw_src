@@ -3,6 +3,7 @@ Ext.define('Ung.config.events.view.Syslog', {
     alias: 'widget.config-events-syslog',
     itemId: 'syslog',
     title: 'Syslog'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
     withValidation: true,

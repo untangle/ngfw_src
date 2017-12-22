@@ -3,6 +3,7 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
     alias: 'widget.app-virus-blocker-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     viewModel: true,
 
@@ -43,10 +44,8 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'border',
         items: [{
             xtype: 'appsessions',
             region: 'north',

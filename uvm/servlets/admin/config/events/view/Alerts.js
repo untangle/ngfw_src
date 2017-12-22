@@ -3,6 +3,7 @@ Ext.define('Ung.config.events.view.Alerts', {
     alias: 'widget.config-events-alerts',
     itemId: 'alerts',
     title: 'Alerts'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
 
