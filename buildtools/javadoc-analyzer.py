@@ -91,7 +91,14 @@ class JavaParser:
                         elif implement["name"] == "JSONString":
                             jsonstring = True
                     if serializable is True and jsonstring is True:
-                            class_result["_optional"] = True
+                        class_result["_optional"] = True
+                if key == "extends":
+                    extend = self.get_node(getattr(node,key))
+                    logEvent = False
+                    if extend.get('name') == "LogEvent":
+                        logEvent = True
+                    if logEvent is True:
+                        class_result["_optional"] = True
 
             class_result['_type'] = 'class'
             result.append( JavaDocValidator( node_name, class_result) )
