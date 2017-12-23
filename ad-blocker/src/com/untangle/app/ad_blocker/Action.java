@@ -17,6 +17,12 @@ public enum Action
     private final char key;
     private final String name;
 
+    /**
+     * Create an action with the specified key and name
+     * Private - use getInstance to get the instance of an action
+     * @param key The key
+     * @param name The english name
+     */
     private Action(char key, String name)
     {
         this.key = key;
@@ -25,7 +31,7 @@ public enum Action
 
     /**
      * get the key character for this action
-     * @returns the key
+     * @return the key
      */
     public char getKey()
     {
@@ -34,7 +40,7 @@ public enum Action
 
     /**
      * get the english name for this action
-     * @returns the name
+     * @return the name
      */
     public String getName()
     {
@@ -43,7 +49,8 @@ public enum Action
 
     /**
      * Get the global Action instance for the specified key
-     * @returns the action or null if not found
+     * @param key The key
+     * @return the action or null if not found
      */
     public static Action getInstance(char key)
     {

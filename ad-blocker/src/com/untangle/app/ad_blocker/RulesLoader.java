@@ -19,6 +19,9 @@ import org.jabsorb.serializer.UnmarshallException;
 import com.untangle.app.ad_blocker.cookies.CookieElement;
 import com.untangle.uvm.app.GenericRule;
 
+/**
+ * A utility class to parse, create, and load the ad-blocker rules from the source files
+ */
 public class RulesLoader
 {
     public static final String RULE_FILE = System.getProperty("uvm.lib.dir")
@@ -31,9 +34,16 @@ public class RulesLoader
     
     private static final String LAST_UPDATE_LINE = "! Last modified:";
 
-    private RulesLoader() {
-    }
+    /**
+     * RulesLoader can not be instantiated
+     * Use the static methods only
+     */
+    private RulesLoader() {}
 
+    /**
+     * Read the easylist source files and load the rules into the provided settings
+     * @param settings The settings object
+     */
     static void loadRules(AdBlockerSettings settings)
     {
         HashMap<String,GenericRule> currentRulesMap = new HashMap<String,GenericRule>();
@@ -87,9 +97,14 @@ public class RulesLoader
         } catch (IOException e) {
             logger.error("Unable to read ad blocking rules", e);
         }
+
         settings.setRules(rules);
     }
 
+    /**
+     * Read the ghostery cookie source files and load the rules into the provided settings
+     * @param settings The settings object
+     */
     static void loadCookieListGhostery(AdBlockerSettings settings)
     {
         List<GenericRule> cookieRules = new LinkedList<GenericRule>();
