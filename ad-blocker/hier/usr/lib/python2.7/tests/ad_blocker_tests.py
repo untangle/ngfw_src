@@ -18,16 +18,16 @@ app = None
 def addCookieEnabled(url, enabled=True, description="description"):
     global app
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-    rules = app.getCookies()
-    rules["list"].append(newRule)
-    app.setCookies(rules)
+    settings = app.getSettings()
+    settings['cookies']['list'].append(newRule)
+    app.setSettings(settings)
     
 def addCookieBlockedEnabled(url, enabled=True, description="description"):
     global app
     newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-    rules = app.getCookies()
-    rules["list"].append(newRule)
-    app.setCookies(rules)
+    settings = app.getSettings()
+    settings['cookies']['list'].append(newRule)
+    app.setSettings(settings)
     
 def addRule(url, enabled=True, description="description", blocked=True):
     global app

@@ -1,3 +1,6 @@
+/**
+ * $Id: UrlMatcher.java,v 1.00 2017/12/22 18:04:34 dmorris Exp $
+ */
 package com.untangle.app.ad_blocker;
 
 import java.util.ArrayList;
@@ -15,8 +18,6 @@ import com.untangle.uvm.app.GenericRule;
 
 /**
  * Optimized matcher for matching an URL against a list of rules
- * 
- * 
  */
 public class UrlMatcher
 {
@@ -36,10 +37,11 @@ public class UrlMatcher
     private static final Pattern URI_CANDIDATE_PATTERN = Pattern.compile("[a-z0-9%]{3,}", Pattern.CASE_INSENSITIVE);
     private static final Pattern MATCH_NOTHING = Pattern.compile("a^", Pattern.CASE_INSENSITIVE);
 
-    public UrlMatcher()
-    {
-
-    }
+    /**
+     * Create a UrlMatcher
+     * Must be loaded with rules after creation
+     */
+    public UrlMatcher() {}
 
     /**
      * Removes all known rules
@@ -138,6 +140,9 @@ public class UrlMatcher
 
     /**
      * Checks whether the entries for a particular keyword match a URL
+     * @param keyword The keyword
+     * @param val The value
+     * @return the matching rule if found, otherwise null
      */
     private GenericRule checkEntryMatch(String keyword, String val)
     {
@@ -159,6 +164,9 @@ public class UrlMatcher
      * || stands for either one of "http://", "https://" or "www." | stands for
      * beginning or ending of url ^ stands for separator: anything but a letter,
      * a digit, or one of the following: _ - . %
+     *
+     * @param rule The rule
+     * @return The regex pattern
      */
     private Pattern getPattern(String rule)
     {

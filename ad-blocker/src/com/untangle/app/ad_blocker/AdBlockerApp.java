@@ -59,6 +59,8 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Instantiate an add blocker app with the provided appSettings and appProperties
+     * @param appSettings the application settings
+     * @param appProperties the applicaiton properties
      */
     public AdBlockerApp( AppSettings appSettings, AppProperties appProperties )
     {
@@ -93,7 +95,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Get the current settings
-     * @returns the settings
+     * @return the settings
      */
     public AdBlockerSettings getSettings()
     {
@@ -101,7 +103,8 @@ public class AdBlockerApp extends AppBase
     }
 
     /**
-     * Set the current settings
+     * Set the settings
+     * @param newSettings The new settings
      */
     public void setSettings(AdBlockerSettings newSettings)
     {
@@ -131,7 +134,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Get the current blocking URL matcher for the current settings
-     * @returns the current blocking UrlMatcher
+     * @return the current blocking UrlMatcher
      */
     public UrlMatcher getBlockingUrlMatcher()
     {
@@ -140,7 +143,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Set the current passing URL matcher for the current settings
-     * @returns the current passing UrlMatcher
+     * @return the current passing UrlMatcher
      */
     public UrlMatcher getPassingUrlMatcher()
     {
@@ -177,7 +180,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Get the current cache
-     * @returns the cache
+     * @return the cache
      */
     public Map<String, GenericRule> getCache()
     {
@@ -186,7 +189,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Get the last update time as a string
-     * @retruns the last update time
+     * @return the last update time
      */
     public String getListLastUpdate()
     {
@@ -195,7 +198,8 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Generate a nonce for the block page
-     * @returns the nonce string
+     * @param details The BlockDetails
+     * @return the nonce string
      */
     protected String generateNonce(BlockDetails details)
     {
@@ -204,7 +208,11 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Generate a response for a block
-     * @returns the token response array
+     * @param nonce The nonce
+     * @param session The session
+     * @param uri The URI being blocked
+     * @param header The HeaderToken of the request being blocked
+     * @return the token response array
      */
     protected Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
@@ -237,7 +245,7 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Get the pipeline connectors for this ad blocker
-     * @returns the pipelineconnectors array
+     * @return the pipelineconnectors array
      */
     @Override
     protected PipelineConnector[] getConnectors()
@@ -247,7 +255,8 @@ public class AdBlockerApp extends AppBase
 
     /**
      * Checks if a cookie for the specified domain is blocked according to settings
-     * @returns true if blocked, false otherwise
+     * @param domain The domain to lookup
+     * @return true if blocked, false otherwise
      */
     protected boolean isCookieBlocked(String domain)
     {
@@ -363,12 +372,14 @@ public class AdBlockerApp extends AppBase
     /**
      * Utility to rename a src file to dest
      * This will delete the existing destination if it exists
+     * @param src The source file
+     * @param dst The destination file
      */
-    private void renameListFile(File src, File dest)
+    private void renameListFile(File src, File dst)
     {
-        if (dest.exists()){
-            dest.delete();
+        if (dst.exists()){
+            dst.delete();
         }
-        src.renameTo(dest);
+        src.renameTo(dst);
     }
 }

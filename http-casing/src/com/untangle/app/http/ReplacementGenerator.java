@@ -38,13 +38,13 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
-    private final AppSettings appId;
+    private final AppSettings appSettings;
 
     // constructors -----------------------------------------------------------
 
-    public ReplacementGenerator( AppSettings appId )
+    public ReplacementGenerator( AppSettings appSettings )
     {
-        this.appId = appId;
+        this.appSettings = appSettings;
     }
 
     // public methods ---------------------------------------------------------
@@ -109,11 +109,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement( T data );
-    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appId );
+    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appSettings );
 
     protected AppSettings getAppSettings()
     {
-        return this.appId;
+        return this.appSettings;
     }
 
     // private methods --------------------------------------------------------
@@ -159,7 +159,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         response[0] = sl;
 
         HeaderToken h = new HeaderToken();
-        h.addField("Location", getRedirectUrl(nonce, host, appId));
+        h.addField("Location", getRedirectUrl(nonce, host, appSettings));
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");

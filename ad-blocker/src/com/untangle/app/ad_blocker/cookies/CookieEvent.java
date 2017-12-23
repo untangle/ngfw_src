@@ -9,7 +9,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * Log event for a spyware hit.
+ * Log event for a blocked cookie
  */
 @SuppressWarnings("serial")
 public class CookieEvent extends LogEvent
@@ -32,15 +32,9 @@ public class CookieEvent extends LogEvent
         return requestLine.getSessionEvent();
     }
 
-    /**
-     * Request line for this HTTP response pair.
-     */
     public Long getRequestId() { return requestId; }
     public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
-    /**
-     * The identification (name of IP address range matched)
-     */
     public String getIdentification() { return identification; }
     public void setIdentification( String identification ) { this.identification = identification; }
 
