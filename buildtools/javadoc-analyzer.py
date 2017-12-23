@@ -86,6 +86,9 @@ class JavaParser:
                     serializable = False
                     jsonstring = False
                     for implement in self.get_node(getattr(node,key)):
+                        # remove all prepended class paths.. "java.io.Serializable" -> "Serializable"
+                        while implement.get('sub_type') != None:
+                            implement = implement.get('sub_type')
                         if implement["name"] == "Serializable":
                             serializable = True
                         elif implement["name"] == "JSONString":
