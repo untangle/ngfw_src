@@ -3,13 +3,9 @@
  */
 package com.untangle.app.ad_blocker;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.app.GenericRule;
 
@@ -17,7 +13,7 @@ import com.untangle.uvm.app.GenericRule;
  * The settings for Ad Blocker
  */
 @SuppressWarnings("serial")
-public class AdBlockerSettings implements Serializable, JSONString
+public class AdBlockerSettings implements java.io.Serializable, org.json.JSONString
 {
     private List<GenericRule> blockingRules = new LinkedList<GenericRule>();
     private List<GenericRule> userBlockingRules = new LinkedList<GenericRule>();
@@ -113,7 +109,7 @@ public class AdBlockerSettings implements Serializable, JSONString
 
     public String toJSONString()
     {
-        JSONObject jO = new JSONObject(this);
+        org.json.JSONObject jO = new org.json.JSONObject(this);
         return jO.toString();
     }
 }

@@ -6,11 +6,10 @@ package com.untangle.app.application_control_lite;
 import java.util.LinkedList;
 
 /**
- * Settings for the ApplicationControlLite app.
- *
+ * Settings for the ApplicationControlLite app
  */
 @SuppressWarnings("serial")
-public class ApplicationControlLiteSettings implements java.io.Serializable
+public class ApplicationControlLiteSettings implements java.io.Serializable, org.json.JSONString
 {
     private int version = 1;
     private int byteLimit  = 2048;
@@ -40,4 +39,10 @@ public class ApplicationControlLiteSettings implements java.io.Serializable
 
     public LinkedList<ApplicationControlLitePattern> getPatterns() { return patterns; }
     public void setPatterns( LinkedList<ApplicationControlLitePattern> newValue ) { this.patterns = newValue; }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }
