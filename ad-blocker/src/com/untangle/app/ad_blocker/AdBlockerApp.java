@@ -58,7 +58,7 @@ public class AdBlockerApp extends AppBase
     private volatile Map<String, GenericRule> cookieDomainMap;
 
     /**
-     * Instantiate an add blocker app with the provided appSettings and appProperties
+     * Instantiate an ad blocker app with the provided appSettings and appProperties
      * @param appSettings the application settings
      * @param appProperties the applicaiton properties
      */
