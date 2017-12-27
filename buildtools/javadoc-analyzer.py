@@ -350,7 +350,7 @@ def print_report(total_only=False):
                 current_missing_count += 1
             else:
                 total_invalid_count +=1
-                total_invalid_count += 1
+                current_invalid_count += 1
 
     if total_only is False:
         print_summary_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
