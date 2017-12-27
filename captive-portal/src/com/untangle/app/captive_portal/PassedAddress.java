@@ -6,6 +6,15 @@ package com.untangle.app.captive_portal;
 
 import com.untangle.uvm.app.IPMatcher;
 
+/**
+ * This class represents a Passed Address and is used to keep a list of allowed
+ * client and server IP addresses. We added these special lists to simplify
+ * configuration for those who find rules confusing.
+ * 
+ * @author mahotz
+ * 
+ */
+
 @SuppressWarnings("serial")
 public class PassedAddress
 {
@@ -13,6 +22,8 @@ public class PassedAddress
     private boolean log = false;
     private IPMatcher address = IPMatcher.getNilMatcher();
     private String description = null;
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public IPMatcher getAddress() { return this.address; }
     public void setAddress(IPMatcher newValue) { this.address = newValue; }
@@ -28,4 +39,7 @@ public class PassedAddress
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
 }

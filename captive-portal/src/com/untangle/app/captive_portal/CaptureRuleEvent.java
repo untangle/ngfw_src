@@ -11,6 +11,9 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  * This is the implementation of a Capture Rule Event used when logging capture
  * events to the database.
+ * 
+ * @author mahotz
+ * 
  */
 
 @SuppressWarnings("serial")
@@ -37,35 +40,18 @@ public class CaptureRuleEvent extends LogEvent
         this.captured = captured;
     }
 
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
+// THIS IS FOR ECLIPSE - @formatter:off
+    
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
+    public boolean getCaptured() { return captured; }
+    public void setCaptured(boolean captured) { this.captured = captured; }
 
-    public boolean getCaptured()
-    {
-        return captured;
-    }
+    public Integer getRuleId() { return ruleid; }
+    public void setRuleId(Integer ruleid) { this.ruleid = ruleid; }
 
-    public void setCaptured(boolean captured)
-    {
-        this.captured = captured;
-    }
-
-    public Integer getRuleId()
-    {
-        return ruleid;
-    }
-
-    public void setRuleId(Integer ruleid)
-    {
-        this.ruleid = ruleid;
-    }
+// THIS IS FOR ECLIPSE - @formatter:on
 
     @Override
     public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
