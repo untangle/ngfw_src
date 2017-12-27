@@ -28,6 +28,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * Configuration backup application
+ */
 public class ConfigurationBackupApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(ConfigurationBackupApp.class);
@@ -41,16 +44,36 @@ public class ConfigurationBackupApp extends AppBase
 
     private ConfigurationBackupSettings settings = null;
 
+    /**
+     * Initialize Configuration backup application
+     * 
+     * @param appSettings
+     *  Application settings
+     * @param appProperties
+     *  Application properties
+     */
     public ConfigurationBackupApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
     }
 
+    /**
+     * Return current state of settings
+     *
+     * @return
+     *  Configuration backup settings.
+     */
     public ConfigurationBackupSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Write new settings.
+     *
+     * @param newSettings
+     *  New configuration backup settings.
+     */
     public void setSettings(final ConfigurationBackupSettings newSettings)
     {
         String appID = this.getAppSettings().getId().toString();
@@ -68,12 +91,20 @@ public class ConfigurationBackupApp extends AppBase
         writeCronFile();
     }
 
+    /**
+     * Get the pineliene connector(???)
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Initialize settings to defaults.
+     */
     @Override
     public void initializeSettings()
     {
@@ -90,6 +121,9 @@ public class ConfigurationBackupApp extends AppBase
         setSettings( settings );
     }
 
+    /**
+     * Perform backup
+     */
     public void sendBackup()
     {
         if ( !isLicenseValid()) {
@@ -128,6 +162,9 @@ public class ConfigurationBackupApp extends AppBase
         }
     }
     
+    /**
+     * Peform post initializaion
+     */
     @Override
     protected void postInit()
     {
@@ -166,6 +203,13 @@ public class ConfigurationBackupApp extends AppBase
             writeCronFile();
     }
 
+    /**
+     * Pre configuration backup start.
+     * Check license.
+     *
+     * @param isPermanentTransition
+     *  If true, the app is permenant
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -176,6 +220,13 @@ public class ConfigurationBackupApp extends AppBase
         writeCronFile();
     }
 
+    /**
+     * Post configuration backup stop.
+     * If being removed, remove cron job.
+     *
+     * @param isPermanentTransition
+     *  If true, the app is permenant
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
@@ -184,6 +235,9 @@ public class ConfigurationBackupApp extends AppBase
             UvmContextFactory.context().execManager().execResult("/bin/rm -f " + CRON_FILE);
     }
 
+    /**
+     * After stopping, remove the cron job.
+     */
     @Override
     protected void postDestroy()
     {
@@ -191,7 +245,10 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
-     * upload the backup to untangle.com
+     * Upload the backup to untangle.com
+     *
+     * @param backupFile
+     *  Handle of file to backup.
      */
     private void uploadBackup( File backupFile )
     {
@@ -236,7 +293,10 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
-     * upload the backup to untangle.com
+     * Upload the backup to Google drive.
+     *
+     * @param backupFile
+     *  Handle of file to backup.
      */
     private void uploadBackupToGoogleDrive( File backupFile )
     {
@@ -268,7 +328,10 @@ public class ConfigurationBackupApp extends AppBase
             this.logEvent( new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive")) );
         }
     }
-    
+
+    /**
+     * Write the cronjob file
+     */    
     private void writeCronFile()
     {
         // write the cron file for nightly runs

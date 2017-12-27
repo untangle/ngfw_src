@@ -4,12 +4,14 @@
 package com.untangle.app.configuration_backup;
 
 import java.io.Serializable;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 /**
  * Settings for the ConfigurationBackup app.
  */
 @SuppressWarnings("serial")
-public class ConfigurationBackupSettings implements Serializable
+public class ConfigurationBackupSettings implements Serializable, JSONString
 {
     private int hourInDay;
     private int minuteInHour;
@@ -29,4 +31,16 @@ public class ConfigurationBackupSettings implements Serializable
 
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
+    
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }
