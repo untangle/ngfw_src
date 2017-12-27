@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -23,6 +23,9 @@ import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.Pulse.PulseState;
 
+/**
+ * Group manager process that checks for membership changes on AD servers.
+ */
 public class GroupManager
 {
     /* Default amount of time between updating the Group Cache */
@@ -60,11 +63,22 @@ public class GroupManager
 
     private DirectoryConnectorApp app;
 
+    /**
+     * Initialize manager.
+     *
+     * @param app
+     *  Directory connector application.
+     * @return
+     *  GroupManager object.
+     */
     public GroupManager(DirectoryConnectorApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Start the process.  If already running, force a new run.
+     */
     public synchronized void start()
     {
         if ( this.pulseRenewCache.getState() == PulseState.RUNNING) {
@@ -74,11 +88,25 @@ public class GroupManager
         }
     }
 
+    /**
+     * Stop the process.
+     */
     public synchronized void stop()
     {
             this.pulseRenewCache.stop();
     }
 
+    /**
+     * Checks to see if user is within a domain.
+     *
+     * @param user
+     *  Username to check.
+     * @param domain
+     *  Domain name to check.
+     *
+     * @return
+     *  true if in domain, false if not.
+     */
     public boolean isMemberOfDomain( String user, String domain )
     {
         if ( ! isLicenseValid() ) {
@@ -142,6 +170,15 @@ public class GroupManager
         return false;
     }
 
+    /**
+     * Get list of domains this username is part of.
+     *
+     * @param user
+     *  Username to lookup.
+     *
+     * @return
+     *  List of domain name strings.
+     */
     public List<String> memberOfDomain(String user)
     {
         List<String> myDomains = new LinkedList<String>();
@@ -170,11 +207,35 @@ public class GroupManager
         return myDomains;
     }
 
+    /**
+     * Checks to see if user is within a group.
+     *
+     * @param user
+     *  Username to check.
+     * @param group
+     *  Group name to check.
+     *
+     * @return
+     *  true if in group, false if not.
+     */
     public boolean isMemberOfGroup( String user, String group )
     {
         return isMemberOfGroup(user, group, null);
     }
 
+    /**
+     * Checks to see if user is within a group within a specific domain.
+     *
+     * @param user
+     *  Username to check.
+     * @param group
+     *  Group name to check.
+     * @param targetDomain
+     *  Domain name to check.
+     *
+     * @return
+     *  true if in group/domain, false if not.
+     */
     public boolean isMemberOfGroup( String user, String group, String targetDomain )
     {
         if ( ! isLicenseValid() ) {
@@ -285,7 +346,15 @@ public class GroupManager
         return false;
     }
 
-
+    /**
+     * Get list of groups this username is part of across all domains.
+     *
+     * @param user
+     *  Username to lookup.
+     *
+     * @return
+     *  List of group name strings.
+     */
     public List<String> memberOfGroup(String user)
     {
         List<String> myGroups = new LinkedList<String>();
@@ -314,6 +383,17 @@ public class GroupManager
         return myGroups;
     }
 
+    /**
+     * Get list of groups this username is part of in a specific domain.
+     *
+     * @param user
+     *  Username to lookup.
+     * @param targetDomain
+     *  Domain to use.
+     *
+     * @return
+     *  List of group name strings.
+     */
     public List<String> memberOfGroup(String user, String targetDomain)
     {
         List<String> myGroups = new LinkedList<String>();
@@ -354,11 +434,20 @@ public class GroupManager
         return myGroups;
     }
 
+    /**
+     * Force a new run against AD server.
+     */
     protected void refreshGroupCache()
     {
         this.pulseRenewCache.forceRun();
     }
 
+    /**
+     * Check that the directory connector license is valid.
+     *
+     * @return
+     *  true if valid, otherwise false.
+     */
     private boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))
@@ -366,6 +455,9 @@ public class GroupManager
         return false;
     }
 
+    /**
+     * Renew the doman/group cache across all available domains.
+     */
     private class RenewCache implements Runnable
     {
         /* Typically it should be able to recurse all of the parents in
@@ -374,6 +466,9 @@ public class GroupManager
          */
         private static final int MAX_UPDATE_GROUP_MAPS = 40;
 
+        /**
+         * Cache update process.
+         */
         public void run()
         {
             if ( !isRenewEnabled()) {
@@ -541,6 +636,12 @@ public class GroupManager
             logger.info("Renewing AD Group Cache... done");
         }
 
+        /** 
+         * Check to see if domain connector license is still active.
+         *
+         * @return
+         *  true if still active, false otherwise.
+         */
         private boolean isRenewEnabled()
         {
             if ( !isLicenseValid() ) {

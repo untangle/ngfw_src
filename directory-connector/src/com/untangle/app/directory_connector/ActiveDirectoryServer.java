@@ -27,6 +27,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     private boolean isEnabled = false;
 
     /**
+     * Initialize active directory server.
      */
     public ActiveDirectoryServer() { }
 
@@ -45,6 +46,8 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      *      AD port.  363 for non-secure, 636 for secure.
      * @param ldapSecure
      *      true to access securely, false to use non-secure mode.
+     * @param ouFilters
+     *      Filters to use in search.
      */
     public ActiveDirectoryServer(String superuser, String superuserPass, String domain, String ldapHost, int ldapPort, boolean ldapSecure, List<String> ouFilters)
     {

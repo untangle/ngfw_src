@@ -438,7 +438,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     /**
      * Get LDAP query to get users for the specified group.
      *
-     * @param grooup
+     * @param group
      *      Group to search.
      * @param objectClasses
      *      List of object classes to query.
