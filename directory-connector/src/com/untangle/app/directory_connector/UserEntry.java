@@ -41,7 +41,7 @@ public final class UserEntry implements Serializable, Comparable<UserEntry>
      *      User's first name.
      * @param lastName
      *      User's last name.
-     * @param emaul
+     * @param email
      *      User's email address.
      */
     public UserEntry(String uid, String firstName, String lastName, String email)
@@ -58,7 +58,7 @@ public final class UserEntry implements Serializable, Comparable<UserEntry>
      *      User's first name.
      * @param lastName
      *      User's last name.
-     * @param emaul
+     * @param email
      *      User's email address.
      * @param primaryGroupID
      *      Primary group ud.
@@ -208,7 +208,7 @@ public final class UserEntry implements Serializable, Comparable<UserEntry>
     /**
      * Get user's primary group id.
      *
-     * @returns User's primary group id.
+     * @return User's primary group id.
      */
     public String getPrimaryGroupID()
     {

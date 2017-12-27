@@ -49,6 +49,16 @@ public class GoogleManagerImpl
     private OutputStreamWriter driveProcOut = null;
     private BufferedReader     driveProcIn  = null;
     
+    /**
+     * Initialize Google authenticator.
+     *
+     * @param settings
+     *  GoogleSettings object.
+     * @param directoryConnector
+     *  Directory Connector application.
+     * @return
+     *  GoogleManagerImpl object.
+     */
     public GoogleManagerImpl( GoogleSettings settings, DirectoryConnectorApp directoryConnector )
     {
         this.directoryConnector = directoryConnector;

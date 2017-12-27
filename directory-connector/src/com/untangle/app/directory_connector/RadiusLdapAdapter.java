@@ -64,8 +64,8 @@ public class RadiusLdapAdapter
     /**
      * Construct a new Radius adapter with the given settings
      * 
-     * @param settings
-     *            the settings
+     * @param radiusSettings
+     *  RADIUS settings
      */
     public RadiusLdapAdapter(RadiusSettings radiusSettings)
     {
@@ -73,6 +73,12 @@ public class RadiusLdapAdapter
         this.radiusSettings = radiusSettings;
     }
 
+    /**
+     * Get the apppriate authenticator based on the RADIUS authentication method.
+     *
+     * @return
+     *  Appropriate RADIUS authenticator.
+     */
     private RadiusAuthenticator getNewAuthenticator()
     {
         if ( this.radiusSettings == null )
@@ -98,16 +104,44 @@ public class RadiusLdapAdapter
         return null;
     }
     
+    /**
+     * Return current RADIUS settings.
+     *
+     * @return
+     *  Current RADIUS settings
+     */
     protected final RadiusSettings getSettings()
     {
         return radiusSettings;
     }
 
-    public boolean authenticate(String username, String passwd)
+    /**
+     * Authenticate using username and password.
+     *
+     * @param username
+     *  User's name.
+     * @param password
+     *  User's password.
+     * @return
+     *  true if authenticated, false if not.
+     */
+    public boolean authenticate(String username, String password)
     {
-        return authenticate(username, passwd, "");
+        return authenticate(username, password, "");
     }
 
+    /**
+     * Authenticate using username, password, and credentials.
+     *
+     * @param username
+     *  User's name.
+     * @param password
+     *  User's password.
+     * @param credentials
+     *  User's credentials.
+     * @return
+     *  true if authenticated, false if not.
+     */
     public boolean authenticate(String username, String password, String credentials ) 
     {
         CommandStatus s = sendRadiusRequest( username, password, credentials );
@@ -131,7 +165,17 @@ public class RadiusLdapAdapter
     //         return false;
     //     }
     // }
-        
+    
+    /**
+     * Get the apprpriate radius client.
+     *
+     * @return
+     *  Radius client
+     * @throws SocketException
+     *  If unable to connect.
+     * @throws UnknownHostException
+     *  If unable to determine host name
+     */    
     private RadiusClient getNewClient() throws SocketException, UnknownHostException
     {
         RadiusClient client = null;
@@ -160,6 +204,18 @@ public class RadiusLdapAdapter
         }  
     }
 
+    /**
+     * Perform RADIUS request.
+     *
+     * @param username
+     *  Username request.
+     * @param password
+     *  Password request.
+     * @param credentials
+     *  Credentials request
+     * @return 
+     *  CommandStatus of the request.
+     */
     private CommandStatus sendRadiusRequest(String username, String password, String credentials ) 
     {
         if ( !this.radiusSettings.isEnabled()) {
