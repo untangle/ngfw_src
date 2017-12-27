@@ -27,6 +27,9 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.util.IOUtil;
 
+/**
+ * Branding manager
+ * */
 public class BrandingManagerApp extends AppBase implements com.untangle.uvm.BrandingManager
 {
     private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");;
@@ -62,11 +65,20 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
 
     private BrandingManagerSettings settings = null;
 
+    /**
+     * Setup branding manager application
+     *
+     * @param appSettings       Branding manager Application settings.
+     * @param appProperties     Branding manager Application properties
+     */
     public BrandingManagerApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
     }
 
+    /**
+     * Read branding manager settings into local settings object
+     */
     private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -97,10 +109,13 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         }
     }
 
-    private void writeAppSettings(BrandingManagerSettings argSettings)
-    {
-    }
-
+    /**
+     * Pre branding manager start.  
+     * Set the file logo.
+     *
+     * @param isPermanentTransition
+     *  If true, the app is permenant
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -110,6 +125,9 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         setFileLogo(settings.binary_getLogo());
     }
 
+    /**
+     * Post branding manager iniitalization
+     */
     @Override
     protected void postInit()
     {
@@ -118,12 +136,23 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new LogoUploadHandler(this) );
     }
 
+    /**
+     * Get the pineliene connector(???)
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Return branding manager settings
+     *
+     * @return
+     *  BrandingManagerSettings object.
+     */
     public BrandingManagerSettings getSettings()
     {
         /**
@@ -137,6 +166,12 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         return copy;
     }
 
+    /**
+     * Write branding manager settings
+     *
+     * @param newSettings
+     *  New branding manager settings.
+     */
     public void setSettings(final BrandingManagerSettings newSettings)
     {
         /**
@@ -167,6 +202,9 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         createRootCaInstaller();
     }
 
+    /**
+     * Initializae default branding manager settings into the settings object.
+     */
     @Override
     public void initializeSettings()
     {
@@ -191,36 +229,72 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         setSettings(settings);
     }
 
+    /**
+     * Read the contact HTML setting.
+     *
+     * @return
+     *  String of contact HTML.
+     */
     @Override
     public String getContactHtml()
     {
         return settings.grabContactHtml();
     }
 
+    /**
+     * Read the contact emailsetting.
+     *
+     * @return
+     *  String of contact email address.
+     */
     @Override
     public String getContactEmail()
     {
         return settings.getContactEmail();
     }
 
+    /**
+     * Read the contact name setting.
+     *
+     * @return
+     *  String of contact name.
+     */
     @Override
     public String getContactName()
     {
         return settings.getContactName();
     }
 
+    /**
+     * Read the company URL.
+     *
+     * @return
+     *  String of company URL.
+     */
     @Override
     public String getCompanyUrl()
     {
         return settings.getCompanyUrl();
     }
 
+    /**
+     * Read the company name.
+     *
+     * @return
+     *  String of company name.
+     */
     @Override
     public String getCompanyName()
     {
         return settings.getCompanyName();
     }
 
+    /**
+     * Write the company logo.
+     *
+     * @param logo
+     *  Byte array of the logo image.
+     */
     public void setLogo(byte[] logo)
     {
         if ( ! isLicenseValid() ) {
@@ -233,6 +307,12 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         this.setSettings(settings);
     }
 
+    /**
+     * Write the company logo to the apopriate file.
+     *
+     * @param logo
+     *  Byte array of the logo image.
+     */
     private void setFileLogo(byte[] logo)
     {
         /* if license is invalid - revert to default logo */
@@ -278,7 +358,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         }
     }
 
-    /*
+    /**
      * Using the non-branded version from uvm as a template base, modify
      * images and text to reflect branding.
      */
@@ -382,21 +462,48 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         UvmContextFactory.context().execManager().exec(CertificateManager.ROOT_CA_INSTALLER_SCRIPT);
     }
 
+    /**
+     * Branding manager logo upload handler.
+     */
     private class LogoUploadHandler implements UploadHandler
     {
         private BrandingManagerApp app;
 
+        /**
+         * Initialize handler.
+         *
+         * @param app
+         *  Application associated with this handler.
+         */
         LogoUploadHandler( BrandingManagerApp app )
         {
             this.app = app;
         }
 
+        /**
+         * Read name of handler.
+         *
+         * @return
+         *     String of the handler.
+         */
         @Override
         public String getName()
         {
             return "logo";
         }
 
+        /**
+         * If file ends with supported filetype, save.
+         * 
+         * @param fileItem
+         *  Uploaded file item.
+         * @param argument
+         *  Unused
+         * @return
+         *  On unsupported filetype, a string indicating invalid type.
+         * @throws
+         *  Generic exception indciating an unsupportrf filetype.
+         */
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
