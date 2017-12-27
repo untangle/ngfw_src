@@ -10,6 +10,9 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  * This is the implementation of a User Event used when logging user
  * authentication events to the database.
+ * 
+ * @author mahotz
+ * 
  */
 
 @SuppressWarnings("serial")
@@ -39,75 +42,30 @@ public class CaptivePortalUserEvent extends LogEvent
         setEvent(event);
     }
 
-    public String getClientAddr()
-    {
-        return clientAddr;
-    }
+// THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setClientAddr(String clientAddr)
-    {
-        this.clientAddr = clientAddr;
-    }
+    public String getClientAddr() { return clientAddr; }
+    public void setClientAddr(String clientAddr) { this.clientAddr = clientAddr; }
 
-    public String getLoginName()
-    {
-        return loginName;
-    }
+    public String getLoginName() { return loginName; }
+    public void setLoginName(String loginName) { this.loginName = loginName; }
 
-    public void setLoginName(String loginName)
-    {
-        this.loginName = loginName;
-    }
+    public String getEventValue() { return eventValue; }
+    public void setEventValue(String eventValue) { this.eventValue = eventValue; }
 
-    public String getEventValue()
-    {
-        return eventValue;
-    }
+    public EventType getEvent() { return EventType.valueOf(this.eventValue); }
+    public void setEvent(EventType newEvent) { this.eventValue = newEvent.toString(); }
 
-    public void setEventValue(String eventValue)
-    {
-        this.eventValue = eventValue;
-    }
+    public Integer getPolicyId() { return policyId; }
+    public void setPolicyId(Integer policyId) { this.policyId = policyId; }
 
-    public EventType getEvent()
-    {
-        return EventType.valueOf(this.eventValue);
-    }
+    public String getAuthenticationTypeValue() { return authenticationTypeValue; }
+    public void setAuthenticationTypeValue(String newValue) { this.authenticationTypeValue = newValue; }
 
-    public void setEvent(EventType newEvent)
-    {
-        this.eventValue = newEvent.toString();
-    }
+    public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
+    public void setAuthenticationType(AuthenticationType newValue) { this.authenticationTypeValue = newValue.toString(); }
 
-    public Integer getPolicyId()
-    {
-        return policyId;
-    }
-
-    public void setPolicyId(Integer policyId)
-    {
-        this.policyId = policyId;
-    }
-
-    public String getAuthenticationTypeValue()
-    {
-        return authenticationTypeValue;
-    }
-
-    public void setAuthenticationTypeValue(String newValue)
-    {
-        this.authenticationTypeValue = newValue;
-    }
-
-    public AuthenticationType getAuthenticationType()
-    {
-        return AuthenticationType.valueOf(this.authenticationTypeValue);
-    }
-
-    public void setAuthenticationType(AuthenticationType newValue)
-    {
-        this.authenticationTypeValue = newValue.toString();
-    }
+// THIS IS FOR ECLIPSE - @formatter:on
 
     @Override
     public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
