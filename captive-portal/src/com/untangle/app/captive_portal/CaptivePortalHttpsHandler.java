@@ -22,6 +22,9 @@ import org.apache.log4j.Logger;
  * unknown ca because the client isn't configured to trust our CA certificate,
  * or it will be a name error because we intercept a secure connection attempt
  * that we redirect to our capture page.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalHttpsHandler extends AbstractEventHandler

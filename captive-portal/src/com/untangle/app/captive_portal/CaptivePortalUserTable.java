@@ -15,6 +15,9 @@ import com.untangle.uvm.HostTableEntry;
 
 /**
  * Implementation of the user table used to track active captive portal users.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalUserTable

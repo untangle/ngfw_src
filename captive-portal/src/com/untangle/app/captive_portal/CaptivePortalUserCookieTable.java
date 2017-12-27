@@ -17,6 +17,9 @@ import com.untangle.uvm.HostTableEntry;
  * "expire cookie".
  * 
  * The table is not saved.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalUserCookieTable

@@ -9,7 +9,9 @@ import java.net.InetAddress;
 
 /**
  * This is the implementation of a captive portal user entry used to track
- * authenticated users. 
+ * authenticated users.
+ * 
+ * @author mahotz
  */
 
 @SuppressWarnings("serial")
@@ -22,7 +24,9 @@ public class CaptivePortalUserEntry implements Serializable
     private long sessionActivity;
     private long sessionCounter;
 
-    public CaptivePortalUserEntry() {}
+    public CaptivePortalUserEntry()
+    {
+    }
 
     public CaptivePortalUserEntry(String userAddress, String userName, Boolean isAnonymous)
     {
@@ -32,6 +36,8 @@ public class CaptivePortalUserEntry implements Serializable
         sessionCreation = System.currentTimeMillis();
         sessionActivity = sessionCreation;
     }
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public String getUserAddress() { return userAddress; }
     public void setUserAddress( String newValue ) { this.userAddress = newValue; }
@@ -51,6 +57,8 @@ public class CaptivePortalUserEntry implements Serializable
     public long getSessionCounter() { return sessionCounter; }
     public void setSessionCounter( long newValue ) { this.sessionCounter = newValue; }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     public void updateActivityTimer()
     {
         sessionActivity = System.currentTimeMillis();
@@ -60,6 +68,6 @@ public class CaptivePortalUserEntry implements Serializable
     public String toString()
     {
         String local = ("NAME: " + userName + " ADDR:" + userAddress);
-        return(local);
+        return (local);
     }
 }
