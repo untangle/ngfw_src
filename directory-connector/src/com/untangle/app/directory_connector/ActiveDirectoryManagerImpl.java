@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -72,7 +72,11 @@ public class ActiveDirectoryManagerImpl
     /**
      * Get user entries from all servers.
      *
+     * @param domain
+     *  Domain to pull users from.
      * @return List of users
+     * @throws ServiceUnavailableException
+     *  If unable to contact server
      */
     public List<UserEntry> getUserEntries(String domain)
         throws ServiceUnavailableException
@@ -106,7 +110,12 @@ public class ActiveDirectoryManagerImpl
         return userList;
     }
 
-    // get domains from settings
+    /**
+     * Get domains from settings
+     *
+     * @return
+     *  List of string of domain names.
+     */
     public List<String> getDomains(){
         LinkedList<String> domains = new LinkedList<String>();
         if (!app.isLicenseValid()){
@@ -128,8 +137,14 @@ public class ActiveDirectoryManagerImpl
     /**
      * Get user entries from all servers
      *
-     * @param groupName Group to search.
-     * @return List of users
+     * @param domain
+     *  Name of domain to pull.
+     * @param groupName 
+     *  Group to search.
+     * @return
+     *  List of user entries
+     * @throws ServiceUnavailableException
+     *  If unable to contact server.
      */
     public List<UserEntry> getGroupUsers( String domain, String groupName )
         throws ServiceUnavailableException
@@ -162,7 +177,10 @@ public class ActiveDirectoryManagerImpl
     /**
      * Get group entries from all servers
      *
-     * @param fetchMemberOf  ???
+     * @param domain
+     *  Domain name to search.
+     * @param fetchMemberOf
+     *  If true, pull user entires too.
      * @return List of groups
      */
     public List<GroupEntry> getGroupEntries( String domain, boolean fetchMemberOf )
@@ -306,6 +324,8 @@ public class ActiveDirectoryManagerImpl
      * @param domain
      *      Domain to query.  If null, all domains.
      * @return JSONArray of users with each entry containing fields uid, domain.
+     * @throws ServiceUnavailableException
+     *  If server is unreachable
      */
     public JSONArray getUsers( String domain)
         throws ServiceUnavailableException
@@ -352,6 +372,8 @@ public class ActiveDirectoryManagerImpl
      * @param domain
      *      Domain to query.  If null, all domains.
      * @return JSONArray of users with each entry containing fields uid, groups (comma separated list), domain.
+     * @throws ServiceUnavailableException
+     *  If unable to access server.
      */
     public JSONArray getUserGroupMap(String domain)
         throws ServiceUnavailableException

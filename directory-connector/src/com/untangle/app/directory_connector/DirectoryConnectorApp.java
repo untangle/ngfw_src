@@ -268,7 +268,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all users from all AD servers for rule condtions
      *
-     * @returns
+     * @return
      *      List of users.
      */
     public List<UserEntry> getRuleConditonalUserEntries()
@@ -305,7 +305,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all groups from all AD for rule conditions
      *
-     * @returns
+     * @return
      *      List of groups.
      */
     public List<GroupEntry> getRuleConditionalGroupEntries()
@@ -334,7 +334,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Get all domains from all AD for rule conditions
      *
-     * @returns
+     * @return
      *      List of groups.
      */
     public List<String> getRuleConditionalDomainEntries()
@@ -349,7 +349,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns 
+     * @return
      *      true if user authenticated.
      */
     public boolean authenticate(String username, String pwd)
@@ -367,7 +367,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns
+     * @return
      *      true if user authenticated.
      */
     public boolean activeDirectoryAuthenticate(String username, String pwd)
@@ -389,7 +389,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns
+     * @return
      *      true if user authenticated.
      */
     public boolean radiusAuthenticate(String username, String pwd)
@@ -411,7 +411,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to authenticate.
      * @param pwd
      *      Username password.
-     * @returns
+     * @return
      *      true if user authenticated.
      */
     public boolean anyAuthenticate(String username, String pwd)
@@ -438,6 +438,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Determine if user is part of a domain
      *
+     * @param user
+     *  Username string to lookup.
+     * @param domain
+     *  Domain string to lookup
      * @return
      *      true if user is in specified domain, false otherwise
      */
@@ -453,7 +457,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *
      * @param user
      *      Username to check.
-     * @returns
+     * @return
      *      String list of domains this username belongs in.
      */
     public List<String> memberOfDomain(String user)
@@ -472,7 +476,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      Username to check.
      * @param group
      *      Name of group to check.
-     * @returns
+     * @return
      *      true if user is member, false otherwise.
      */
     public boolean isMemberOfGroup(String user, String group)
@@ -489,7 +493,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *
      * @param user
      *      Username to check.
-     * @returns
+     * @return
      *      String list of groups  this username belongs in.
      */
     public List<String> memberOfGroup(String user)
@@ -506,7 +510,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *
      * @param user
      *      Username to check.
-     * @returns
+     * @param domain
+     *      Domain to check.
+     * @return
      *      String list of groups  this username belongs in.
      */
     public List<String> memberOfGroup(String user, String domain)
@@ -529,7 +535,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Determine if Google drive is configured.
      *
-     * @returns
+     * @return
      *      true if Google Drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()

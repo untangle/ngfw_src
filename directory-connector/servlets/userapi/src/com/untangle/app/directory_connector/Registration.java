@@ -37,6 +37,18 @@ public class Registration extends HttpServlet
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
+    /**
+     * Handle GET from user API request.
+     *
+     * @param request
+     *  HttpServelnetRequest object.
+     * @param response
+     *  HttpServletResponse object.
+     * @throws ServletException
+     *  If problem handling requeust.
+     * @throws IOException
+     *  If problem acceping request.
+     */
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
         DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
@@ -157,6 +169,16 @@ public class Registration extends HttpServlet
         
     }
 
+    /**
+     * Generate installer script.
+     *
+     * @param request
+     *  HttpServelnetRequest object.
+     * @param response
+     *  HttpServletResponse object.
+     * @throws ServletException
+     *  If problem handling requeust.
+     */
     private void generateInstaller( HttpServletRequest request, HttpServletResponse response ) throws ServletException
     {
         logger.info( "Generating installer" );

@@ -77,6 +77,8 @@ public final class GroupEntry implements Serializable, Comparable<GroupEntry>
      *      Distinguished name.
      * @param memberOf
      *      Users that are a member of group.
+     * @param domain
+     *      Domain that this user belongs to.
      */
     public GroupEntry(String cn, int gid, String samaccountname, String samaccounttype, String description, String dn, Set<String> memberOf, String domain )
     {

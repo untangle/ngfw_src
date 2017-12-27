@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: GoogleSettings.java,v 1.00 2016/04/02 22:31:04 dmorris Exp $
  */
 package com.untangle.app.directory_connector;
