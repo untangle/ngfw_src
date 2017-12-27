@@ -181,8 +181,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                     ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],
                     ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
                     ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],
-                    ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                    ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']
+                    ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip']
                 ],
                 bind: '{url}'
             }],
