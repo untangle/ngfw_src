@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: IntrusionPreventionSnortStatisticsParser.java 31685 2014-11-24 15:50:30Z cblaise $
  */
 package com.untangle.app.intrusion_prevention;
@@ -21,6 +21,9 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 
+/**
+ * Process the snort text log to derive information for metrics.
+ */
 public class IntrusionPreventionSnortStatisticsParser
 {
     /*
@@ -58,6 +61,9 @@ public class IntrusionPreventionSnortStatisticsParser
      */
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * Log block information to look for.
+     */
     private enum State {
         NONE ("===============$"),
         BREAKDOWN ("Breakdown by protocol \\(includes rebuilt packets\\):$"),
@@ -65,9 +71,21 @@ public class IntrusionPreventionSnortStatisticsParser
         STREAM ("Stream statistics:$");
         
         private final Pattern match;
+        /**
+         * Compile regular expressions. 
+         *
+         * @param match
+         *  String to compile.
+         */
         State( String match ){
             this.match = Pattern.compile(match);
         }
+        /**
+         * Return specified match.
+         *
+         * @return
+         *  Compiled regex.
+         */
         public Pattern match(){
             return this.match;
         }
@@ -103,9 +121,21 @@ public class IntrusionPreventionSnortStatisticsParser
         STREAM_UDP_SESSIONS ("UDP sessions");
         
         private final Pattern match;
+        /**
+         * Compile regular expressions. 
+         *
+         * @param match
+         *  String to compile.
+         */
         Statistic( String match ){
             this.match = Pattern.compile( "\\s+" + match + ":\\s*(\\d+)");
         }
+        /**
+         * Return specified match.
+         *
+         * @return
+         *  Compiled regex.
+         */
         public Pattern match(){ 
             return this.match;
         }
@@ -116,6 +146,9 @@ public class IntrusionPreventionSnortStatisticsParser
 
     protected static ExecManager execManager = null;
 
+    /**
+     * Iniitialize statistics parser.
+     */
     public IntrusionPreventionSnortStatisticsParser()
     {
         if ( IntrusionPreventionSnortStatisticsParser.execManager == null) {
@@ -124,6 +157,12 @@ public class IntrusionPreventionSnortStatisticsParser
         }
     }
 
+    /**
+     * Read the log file.
+     *
+     * @param ipsApp
+     *  Intrusion Prevention application.
+     */
 	public void parse( IntrusionPreventionApp ipsApp )
     {
         File f = new File( SNORT_PID );
