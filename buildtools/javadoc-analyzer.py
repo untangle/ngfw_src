@@ -259,7 +259,7 @@ class JavaDocValidator:
 
             throws = self.get_throws()
 
-            return " ".join(definition) + "(" + " ".join(arguments) + ")" + throws
+            return " ".join(definition) + "(" + ", ".join(arguments) + ")" + throws
 
     def get_report(self):
         report = []
@@ -344,8 +344,8 @@ def print_report(total_only=False):
                 continue
             report = validator.get_report()
             if total_only is False and validator.valid is not True or Show_valid is True:
-                print(validator.get_definition())
-                print("\t" + "\n\t".join(report))
+                print("\t" +validator.get_definition())
+                print("\t\t" + "\n\t".join(report))
             if validator.valid is True:
                 total_valid_count += 1
                 current_valid_count += 1
