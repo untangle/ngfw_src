@@ -458,7 +458,8 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Get the update settings flag.
      *
-     * @returns true updated set, false not updated..
+     * @return 
+     *  true updated set, false not updated..
      */
     public boolean getUpdatedSettingsFlag()
     {

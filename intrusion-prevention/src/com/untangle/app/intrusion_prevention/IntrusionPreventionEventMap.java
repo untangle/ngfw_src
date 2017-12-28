@@ -17,9 +17,33 @@ public class IntrusionPreventionEventMap implements Serializable
 {
     private Set<IntrusionPreventionEventMapRule> rules = new HashSet<IntrusionPreventionEventMapRule>();
 
-    public List<IntrusionPreventionEventMapRule> getRules() { return new LinkedList<IntrusionPreventionEventMapRule>(this.rules); }
+    /**
+     * Read the rules.
+     *
+     * @return
+     *  List of event map type rules.
+     */
+    public List<IntrusionPreventionEventMapRule> getRules() { 
+        return new LinkedList<IntrusionPreventionEventMapRule>(this.rules); 
+    }
+    /**
+     * Set the rules.
+     *
+     * @param newValue
+     *  List of event map type rules.
+     */
     public void setRules( List<IntrusionPreventionEventMapRule> newValue ) { this.rules = new HashSet<IntrusionPreventionEventMapRule>(newValue); }
 
+    /**
+     * Look for rule signature.
+     *
+     * @param signatureId
+     *  Signature id to match.
+     * @param generatorId
+     *  Generator id to match.
+     * @return
+     *  MapRule containing the best match.
+     */
     public IntrusionPreventionEventMapRule getRuleBySignatureAndGeneratorId( long signatureId, long generatorId ){
         IntrusionPreventionEventMapRule bestMatchRule = null;
     	for( IntrusionPreventionEventMapRule rule : this.rules ){

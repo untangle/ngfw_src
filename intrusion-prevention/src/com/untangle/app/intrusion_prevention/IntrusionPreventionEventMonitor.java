@@ -39,6 +39,10 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortStatisticsParser;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortUnified2Parser;
 
+/**
+ * Wach the snort unified2 log for activity.  
+ * If file size changes or new file is added, parse into event log.
+ */
 class IntrusionPreventionEventMonitor implements Runnable
 {
     public static final long SLEEP_TIME_MSEC = 30 * 1000;
@@ -56,11 +60,20 @@ class IntrusionPreventionEventMonitor implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
+    /**
+     * Initialize event monitor.
+     *
+     * @param app
+     *  Intrusion Prevention application.
+     */
     protected IntrusionPreventionEventMonitor( IntrusionPreventionApp app )
     {
         this.app = app;
     }
 
+    /**
+     * Loop looking for new files and/or last file size change.
+     */
     public void run()
     {
         logger.debug( "Starting" );
@@ -97,6 +110,9 @@ class IntrusionPreventionEventMonitor implements Runnable
         logger.debug( "Finished" );
     }
 
+    /**
+     * Start the process
+     */
     public synchronized void start()
     {
         isAlive = true;
@@ -113,6 +129,9 @@ class IntrusionPreventionEventMonitor implements Runnable
         thread.start();
     }
 
+    /**
+     * Stop the process
+     */
     public synchronized void stop()
     {
         if ( thread != null ) {
@@ -135,6 +154,10 @@ class IntrusionPreventionEventMonitor implements Runnable
     public IntrusionPreventionSnortStatisticsParser statisticsParser = new IntrusionPreventionSnortStatisticsParser();
     private long currentTime = System.currentTimeMillis();    
     private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
+
+    /** 
+     * Walk snort log files and for those that qualify, send to parser.
+     */
     public void processSnortLogFiles()
     {
         /*
@@ -185,12 +208,30 @@ class IntrusionPreventionEventMonitor implements Runnable
         statisticsParser.parse( app );
 	}
     
+    /**
+     * Look for files at or newer than the current time
+     *
+     * @param currentTime
+     *  Minimum time to qualify.
+     * @return
+     *  Array of file handlers to parse.
+     */
     public File[] getFiles( final long currentTime ){
             
         File directory = new File( "/var/log/snort" );
         File[] files = directory.listFiles( 
             new FilenameFilter() 
             {
+                /**
+                 * Accept files.
+                 *
+                 * @param directory
+                 *  Directory to search.
+                 * @param name
+                 *  Filename
+                 * @return
+                 *  true to parse file.  Otherwise false.
+                 */
                 @Override
                 public boolean accept( File directory, String name )
                 {
@@ -209,6 +250,16 @@ class IntrusionPreventionEventMonitor implements Runnable
         Arrays.sort( files, 
             new Comparator<File>()
             {
+                /**
+                 * See if files are newer than the other.
+                 *
+                 * @param f1
+                 *  File handle 1
+                 * @param f2
+                 *  File handle 2
+                 * @return
+                 *  Result of the comparision.  
+                 */
                 public int compare( File f1, File f2 )
                 {
                     return Long.valueOf( f1.lastModified()).compareTo(f2.lastModified());

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: IntrusionPreventionUnified2Parser.java 31685 2014-11-24 15:50:30Z cblaise $
  */
 package com.untangle.app.intrusion_prevention;
@@ -24,6 +24,9 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule;
 
+/**
+ * Process snort's unified2 log for inclusion in Untangle event log.
+ */
 public class IntrusionPreventionSnortUnified2Parser
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -92,7 +95,10 @@ public class IntrusionPreventionSnortUnified2Parser
         IDS_EVENTV2_MPLS_LABEL_SIZE +
         IDS_EVENTV2_VLAN_ID_SIZE +
         IDS_EVENTV2_PADDING_SIZE;
-    
+   
+    /**
+     * Initialize parser.
+     */ 
 	public IntrusionPreventionSnortUnified2Parser()
     {
 		ipv4bytes = new byte[4];
@@ -104,6 +110,9 @@ public class IntrusionPreventionSnortUnified2Parser
         reloadEventMap();
     }
 
+    /**
+     * Load the map containing descriptions to the log entry identifiers.
+     */
     public void reloadEventMap()
     {
         IntrusionPreventionEventMap newIntrusionPreventionEventMap = new IntrusionPreventionEventMap();
@@ -158,6 +167,20 @@ public class IntrusionPreventionSnortUnified2Parser
         ipsEventMap = newIntrusionPreventionEventMap;
     }
     
+    /**
+     * Read the snort unified2 log and for each entry, log to untangle event handler.
+     *
+     * @param file
+     *  Snort unified2 log file handle.
+     * @param startPosition
+     *  Location to start parsing.
+     * @param ipsApp
+     *  Intrusion Prevention application.
+     * @param currentTime
+     *  Ignore entries older than this time.
+     * @return
+     *  Long value of the last position read.
+     */
     public long parse( File file, long startPosition, IntrusionPreventionApp ipsApp, long currentTime )
     {
         fc = null;
@@ -243,6 +266,12 @@ public class IntrusionPreventionSnortUnified2Parser
         return pos;
     }
 
+    /**
+     * Read the serial header.
+     *
+     * @throws Exception
+     *  Can occur if read size mismatches.
+     */
 	public void parseSerialHeader() throws Exception
     {
         if( bufSerialHeader == null ){
@@ -272,6 +301,14 @@ public class IntrusionPreventionSnortUnified2Parser
 		serialHeader.setLength( bufSerialHeader.getInt( pos ) );
 	}
 
+    /**
+     * Log current entry.
+     *
+     * @return
+     *  IPS log event.
+     * @throws Exception
+     *  For various detected size mismatches.
+     */
 	public IntrusionPreventionLogEvent parseIdsEvent() throws Exception
     {
         IntrusionPreventionLogEvent ipsEvent = new IntrusionPreventionLogEvent();
@@ -413,6 +450,9 @@ public class IntrusionPreventionSnortUnified2Parser
         return ipsEvent;
 	}
 
+    /**
+     * For any other snort log entry we can't determine, skip to the next position.
+     */
 	public void parseSkip()
     {
 		try {
