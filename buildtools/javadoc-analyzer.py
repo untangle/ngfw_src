@@ -159,6 +159,7 @@ class JavaDocValidator:
             self.validate()
 
     def validate(self):
+
         if Debug:
             print("\tvalidating %s" % (self.get_definition()))
             print self.tree
@@ -167,6 +168,9 @@ class JavaDocValidator:
             return
 
         javadoc = javalang.javadoc.parse(self.tree["documentation"])
+        if javadoc.deprecated:
+            # Don't process futher if deprecated.
+            return
 
         if "parameters" in self.tree and len(self.tree["parameters"]) > 0:
             if len(javadoc.params) == 0:
