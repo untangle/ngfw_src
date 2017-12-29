@@ -16,6 +16,9 @@ import com.untangle.uvm.app.AppSettings;
  * This is the implementation of the replacement generator that creates the HTTP
  * redirect which is sent to unauthenticated clients to redirect them to the
  * captive portal login page.
+ * 
+ * @author mahotz
+ * 
  */
 
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>

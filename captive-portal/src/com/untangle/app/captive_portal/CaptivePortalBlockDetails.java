@@ -9,6 +9,9 @@ import com.untangle.app.http.BlockDetails;
 /**
  * This is the implementation of the captive portal block details used when
  * generating the capture redirect.
+ * 
+ * @author mahotz
+ * 
  */
 
 @SuppressWarnings("serial")

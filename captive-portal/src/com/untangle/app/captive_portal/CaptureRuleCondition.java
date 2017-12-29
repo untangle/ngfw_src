@@ -13,7 +13,10 @@ import com.untangle.uvm.app.RuleCondition;
  * Example: "Destination Port" == "80"
  * Example: "HTTP Host" == "salesforce.com"
  *
- * A CaptureRule has a set of these to determine what traffic to match
+ * A CaptureRule has a set of these to determine what traffic to match.
+ * 
+ * @author mahotz
+ * 
  */
 
 // THIS IS FOR ECLIPSE - @formatter:on

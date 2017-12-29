@@ -24,6 +24,9 @@ import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * This is the handler for all HTTP traffic.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalHttpHandler extends HttpEventHandler

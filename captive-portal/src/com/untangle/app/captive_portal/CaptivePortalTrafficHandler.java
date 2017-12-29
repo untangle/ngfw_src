@@ -20,6 +20,13 @@ import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
+/**
+ * This class contains the main traffic handlers where we decide if traffic
+ * should be captured or allowed.
+ * 
+ * @author mahotz
+ * 
+ */
 public class CaptivePortalTrafficHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());

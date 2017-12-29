@@ -28,7 +28,7 @@ def addCookieBlockedEnabled(url, enabled=True, description="description"):
     settings = app.getSettings()
     settings['cookies']['list'].append(newRule)
     app.setSettings(settings)
-    
+
 def addRule(url, enabled=True, description="description", blocked=True):
     global app
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url, "blocked": blocked }

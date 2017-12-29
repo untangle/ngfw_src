@@ -12,6 +12,8 @@ import com.untangle.uvm.util.LoadAvg;
 /**
  * This is a timer task that runs periodically, gets a list of stale users, and
  * logs those users out of captive portal.
+ * 
+ * @author mahotz
  */
 
 public class CaptivePortalTimer extends TimerTask
