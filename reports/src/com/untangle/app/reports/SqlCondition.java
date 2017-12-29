@@ -71,7 +71,8 @@ public class SqlCondition implements Serializable, JSONString
      * If false, the value will be hardcoded verbatim inside the sql string.
      * This is necessary because not all values/operators are correctly supported by Statement
      *
-     * @returns true if auto-format supported, false otherwise
+     * @return 
+     * true if auto-format supported, false otherwise
      */
     public boolean getAutoFormatValue()
     {

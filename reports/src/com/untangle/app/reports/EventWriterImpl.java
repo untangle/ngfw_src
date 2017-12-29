@@ -118,12 +118,21 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    /**
+     * Initialize event writer.
+     *
+     * @param app
+     *  Reports application.
+     */
     public EventWriterImpl( ReportsApp app )
     {
         this.app = app;
         this.dbConnection = null;
     }
 
+    /**
+     * Run main loop of writer.
+     */
     public void run()
     {
         thread = Thread.currentThread();
@@ -243,6 +252,12 @@ public class EventWriterImpl implements Runnable
         }
     }
     
+    /**
+     * Send log event to queue.
+     *
+     * @param event
+     *  Event to log.
+     */
     public void logEvent(LogEvent event)
     {
         if ( this.thread == null ) {
@@ -269,6 +284,12 @@ public class EventWriterImpl implements Runnable
 
     }
 
+    /**
+     * Get the average write time per event.
+     *
+     * @return
+     *  Return timing value.
+     */
     public double getAvgWriteTimePerEvent()
     {
         /**
@@ -280,6 +301,12 @@ public class EventWriterImpl implements Runnable
         return this.avgWriteTimePerEvent;
     }
 
+    /**
+     * Get the write delay in seconds.
+     *
+     * @return
+     *  Return write delay values in seconds.
+     */
     public long getWriteDelaySec()
     {
         /**
@@ -292,7 +319,10 @@ public class EventWriterImpl implements Runnable
     }
     
     /**
-     * write the logQueue to the database
+     * Write the logQueue to the database
+     *
+     * @param logQueue
+     *  Log queue to push to database.
      */
     private void persist( LinkedList<LogEvent> logQueue )
     {
@@ -512,17 +542,32 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    /**
+     * Return the number of events that are pending in the queue.
+     *
+     * @return
+     *  Number of events in queue.
+     */
     protected int getEventsPendingCount()
     {
         return inputQueue.size();
     }
 
+    /**
+     * Start the writer.
+     *
+     * @param app
+     *  Reports application.
+     */
     protected void start( ReportsApp app )
     {
         this.app = app;
         UvmContextFactory.context().newThread(this).start();
     }
 
+    /**
+     * Stop the writer.
+     */
     protected void stop()
     {
         // this is disabled because it causes boxes to hang on stopping the uvm
@@ -535,11 +580,22 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    /**
+     * Event type map.
+     */
     class EventTypeMap
     {
         public String name;
         public int count;
         
+        /**
+         * Initialize EventTypeMap.
+         *
+         * @param name
+         *  Name
+         * @param count
+         *  Count
+         */
         public EventTypeMap(String name, int count)
         {
             this.name = name;
@@ -547,8 +603,21 @@ public class EventWriterImpl implements Runnable
         }
     }
     
+    /**
+     * Event type comparator.
+     */
     class EventTypeMapComparator implements Comparator<EventTypeMap>
     {
+        /**
+         * Compare two event maps based on counts.
+         *
+         * @param a
+         *  First EventTypeMap to compare.
+         * @param b
+         *  Second EventTypeMap to compare.
+         * @return
+         *  Results of compare.
+         */
         public int compare( EventTypeMap a, EventTypeMap b )
         {
             if (a.count < b.count) {

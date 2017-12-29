@@ -36,6 +36,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     // HttpServlet methods ----------------------------------------------------
 
+    /**
+     * Initialize servlet/
+     */
     @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
@@ -58,6 +61,16 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         bridge.registerObject("ReportsContext", rc, ReportsContext.class);
     }
 
+    /**
+     * Handle service calls.
+     *
+     * @param req
+     *  HTTP request
+     * @param resp
+     *  HTTP response.
+     * @throws IOException
+     *  If I/O exception encountered.
+     */
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         if (null != threadRequest) {
@@ -101,16 +114,49 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         return jsonBridge;
     }
 
+    /**
+     * Reports Context.
+     */
     public interface ReportsContext
     {
+        /**
+         * Get report manager.
+         *
+         * @return
+         *  Report manager.
+         */
         public ReportsManager reportsManager();
 
+        /**
+         * Get skin manager.
+         *
+         * @return
+         *  Skin manager.
+         */
         public SkinManager skinManager();
 
+        /**
+         * Get language manager.
+         *
+         * @return
+         *  language manager.
+         */
         public LanguageManager languageManager();
 
+        /**
+         * Get current time in milliseconds.
+         *
+         * @return
+         *  Current time in miliseconds.
+         */
         public long getMilliseconds();
 
+        /**
+         * Get system timezone offset.
+         *
+         * @return
+         *  Timeozne offset in seconds.
+         */
         public Integer getTimeZoneOffset();
     }
 }

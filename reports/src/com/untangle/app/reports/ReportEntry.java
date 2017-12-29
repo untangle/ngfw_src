@@ -471,6 +471,15 @@ public class ReportEntry implements Serializable, JSONString
 
     /**
      * takes a sql string and substitutes the condition arguments into and returns a prepared statement
+     *
+     * @param conn
+     *  Database connection.
+     * @param sql
+     *  String of SQL to add.
+     * @param conditions
+     *  List of SqlConditions ot process.
+     * @return
+     *  PreparedStatement with updated SQL.
      */
     private PreparedStatement sqlToStatement( Connection conn, String sql, LinkedList<SqlCondition> conditions )
     {
