@@ -53,6 +53,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * Reports application
+ */
 public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
@@ -78,6 +81,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     
     private ReportsSettings settings;
     
+    /**
+     * Initialize reports application.
+     *
+     * @param appSettings
+     *  Reports application settings.
+     * @param appProperties
+     *  Reports application properties.
+     */
     public ReportsApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -95,11 +106,25 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
     }
 
+    /**
+     * Save the passed settings.
+     *
+     * @param newSettings
+     *  New reports settings.
+     */
     public void setSettings( final ReportsSettings newSettings )
     {
         setSettings( newSettings, true );
     }
 
+    /**
+     * Save the passed settings.
+     *
+     * @param newSettings
+     *  New reports settings.
+     * @param sanityCheck
+     *  If true, perform sanity checks on the settings.
+     */
     public void setSettings( final ReportsSettings newSettings, final boolean sanityCheck )
     {
         if (sanityCheck)
@@ -185,11 +210,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         writeCronFile();
     }
 
+    /**
+     * Read reports settings.
+     *
+     * @return
+     *  ReportSettings object.
+     */
     public ReportsSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Setup the reports database for first time use.
+     */
     public void initializeDB()
     {
         synchronized (this) {
@@ -245,6 +279,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     * Generate and email fixed reports.
+     *
+     * @throws Exception
+     *  If there an issue generating the report.
+     */
     public void runFixedReport() throws Exception
     {
         flushEvents();
@@ -273,11 +313,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }        
     }
 
+    /** 
+     * Force all currently pending events to be written to disk.
+     */
     public void flushEvents()
     {
         forceFlush();
     }
 
+    /** 
+     * Return the number of evnets in the pending queue.
+     *
+     * @return
+     *  Number of events in the pending queue.
+     */
     protected int getEventsPendingCount()
     {
         if (ReportsApp.eventWriter != null)
@@ -286,11 +335,22 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return 0;
     }
     
+    /** 
+     * Save settings using default values.
+     */
     public void initializeSettings()
     {
         setSettings( defaultSettings() );
     }
 
+    /**
+     * Perform a lookup of IP address in the hostname maps.
+     *
+     * @param address
+     *  IP address to find.
+     * @return
+     *  String of the hostnane.
+     */
     public String lookupHostname( InetAddress address )
     {
         ReportsSettings settings = this.getSettings();
@@ -307,11 +367,21 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return null;
     }
 
+    /** 
+     * Send the sevent to the event writer.
+     *
+     * @param evt
+     *  Event to log.
+     */
     public void logEvent( LogEvent evt )
     {
         ReportsApp.eventWriter.logEvent( evt );
     }
 
+    /**
+     * Force all currently pending events to be written to disk.
+     * 
+     */
     public void forceFlush()
     {
         logger.info("forceFlush() ...");
@@ -319,16 +389,34 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             ReportsApp.eventWriter.forceFlush();
     }
 
+    /** 
+     * Return the average event write time.
+     *
+     * @return
+     *  Double value indicating the average write time.
+     */
     public double getAvgWriteTimePerEvent()
     {
         return ReportsApp.eventWriter.getAvgWriteTimePerEvent();
     }
 
+    /** 
+     * Return the average event write delay time.
+     *
+     * @return
+     *  Long value indicating the average delay of writes.
+     */
     public long getWriteDelaySec()
     {
         return ReportsApp.eventWriter.getWriteDelaySec();
     }
 
+    /** 
+     * Return email addresses with alert permission.
+     *
+     * @return
+     *  List of email addresses with alert permission.
+     */
     public List<String> getAlertEmailAddresses(){
         List<String> emailAddresses = new LinkedList<String>();
 
@@ -349,6 +437,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return emailAddresses;
     }
     
+    /** 
+     * Create a new DB connection.
+     *
+     * @return
+     *  Database Connection object.
+     */
     public Connection getDbConnection()
     {
         try {
@@ -383,17 +477,32 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /** 
+     * Return the reports manager object.
+     *
+     * @return
+     *  ReportsManager object.
+     */
     public ReportsManager getReportsManager()
     {
         return ReportsManagerImpl.getInstance();
     }
     
+    /**
+     * Get the pineliene connector.
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return new PipelineConnector[0];
     }
 
+    /** 
+     * Perform post application initialization tasks including converting settings from
+     * previous versions.
+     */
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -443,6 +552,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     * Pre reports start. Setup reports servlet, start database, initialize, eventwriter, etc.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -466,6 +580,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         // new Thread(new PerformanceTest()).start();
     }
 
+    /**
+     * Post reports stop.  Shut reports servelet, shut down database, etc.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
@@ -477,13 +596,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
     }
 
+    /**
+     * Before destroying the app, don't do anything.
+     */
     @Override
     protected void preDestroy() 
     {
     }
-    
 
-    
+    /**
+     * Return the list of default email templates.
+     *
+     * @return
+     *  LinkedList of default EmailTemplate objects.
+     */        
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
         LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
@@ -509,6 +635,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return templates;
     }
 
+    /**
+     * Return the list of report users
+     *
+     * @param reportsUsers
+     *  Starting list of ReportUser.
+     * @return
+     *  LinkedList of default ReportUser objects.
+     */
     private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)
     {
         List<Integer> templateIds = new LinkedList<Integer>();
@@ -543,6 +677,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return reportsUsers;
     }
 
+    /** 
+     * Return default reports application settings.
+     *
+     * @return
+     *  ReportSettings object containing default values.
+     */
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
@@ -559,6 +699,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return settings;
     }
     
+    /** 
+     * Get the appropriate database driver.
+     *
+     * @return
+     *  String containing name of driver.
+     */
     private String determineDbDriver()
     {
         try {
@@ -587,6 +733,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return ReportsApp.dbDriver;
     }
 
+    /** 
+     * Write reports application cronjob file.
+     */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -636,6 +785,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
     }
 
+    /** 
+     * Perform settings sanity checks and throw exceptions:
+     *  * If user has online access but no password.
+     * 
+     * @param settings
+     *  Settings to validate.
+     */
     private void sanityCheck( ReportsSettings settings )
     {
         if ( settings.getReportsUsers() != null) {
@@ -648,6 +804,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /** 
+     * Restore a database from a file.
+     *
+     * @param item
+     *  FileItem containing filename.
+     * @return
+     *  Result of the restore data script.
+     */
     private int restoreData( FileItem item )
     {
         try {
@@ -670,6 +834,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     *  Convert object paths to 13.0.0 using external sed operation.
+     */
     private void conversion_paths_13_0_0()
     {
         int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
@@ -700,6 +867,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     *  Convert settings to 13.0.0.
+     */
     private void conversion_13_0_0()
     {
         settings.setVersion( 5 );
@@ -774,10 +944,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         setSettings( settings, false );
     }
 
-
-
+    /**
+     * Perform event writing performance tests.
+     */
     private class PerformanceTest implements Runnable
     {
+        /**
+         * Write events to test performance.
+         */
         public void run()
         {
             for (int i=0; i<5; i++) logger.warn("--- Running Performance Tests ---");
@@ -827,16 +1001,37 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         
     }
     
+    /**
+     * Export log events
+     */
     private class EventLogExportDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "eventLogExport".
+         */
         @Override
         public String getName()
         {
             return "eventLogExport";
         }
         
+        /**
+         * Convert event resultset reader to CSV format.
+         *
+         * @param resultSetReader
+         *  Results from query.
+         * @param resp
+         *  HttpServletResponse object to send output on.
+         * @param columnListStr
+         *  List of column names, comma separated.
+         * @param name
+         *  Name of file to generate.
+         */
         protected void toCsv( ResultSetReader resultSetReader, HttpServletResponse resp, String columnListStr, String name )
         {
             if (resultSetReader == null)
@@ -889,6 +1084,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             }
         }
         
+        /**
+         * Return date
+         *
+         * @param ts
+         *  Current timestamp.
+         * @return
+         *  Date based on timestamp.
+         */
         private Date getDate(String ts)
         {
             try {
@@ -900,6 +1103,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             return null;
         }
         
+        /**
+         * Perform download, generating query.
+         *
+         * @param req
+         *  HttpServletRequest object.
+         * @param resp
+         *  HttpServletResponse object.
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             try {
@@ -947,15 +1158,31 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
     
-    // called by the UI to download images
+    /**
+     * Download images from the UI.
+    */
     private class ImageDownloadHandler implements DownloadHandler
     {
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "imageDownload".
+         */
         @Override
         public String getName()
         {
             return "imageDownload";
         }
 
+        /**
+         * Perform download of image.
+         *
+         * @param req
+         *  HttpServletRequest object.
+         * @param resp
+         *  HttpServletResponse object.
+         */
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
@@ -980,14 +1207,35 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     * Restore database from uploaded file.
+     */
     private class ReportsDataRestoreUploadHandler implements UploadHandler
     {
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "reportsDataRestore".
+         */
         @Override
         public String getName()
         {
             return "reportsDataRestore";
         }
         
+        /**
+         * Perform restore of fille into database.
+         *
+         * @param fileItem
+         *  FileItem containing name.
+         * @param argument
+         *  Unused.
+         * @throws Exception
+         *  Thrown if unable to restore data.
+         * @return
+         *  String of result.
+         */
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
