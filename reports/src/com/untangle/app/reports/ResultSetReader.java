@@ -33,6 +33,16 @@ public class ResultSetReader implements Runnable
     private Statement statement;
     private final Thread thread;
     
+    /**
+     * Initialize ResultSetReader
+     *
+     * @param resultSet
+     *  ResultSet object
+     * @param connection
+     *  Connection object
+     * @param statement
+     *  Statement object
+     */
     public ResultSetReader( ResultSet resultSet, Connection connection, Statement statement )
     {
         this.resultSet = resultSet;
@@ -52,16 +62,34 @@ public class ResultSetReader implements Runnable
         thread.start();
     }
 
+    /**
+     * Return the result set.
+     *
+     * @return
+     *  ResultSet object.
+     */
     public ResultSet getResultSet()
     {
         return this.resultSet;
     }
 
+    /**
+     * Return the connection
+     *
+     * @return
+     *  Connection object.
+     */
     public Connection getConnection()
     {
         return this.connection;
     }
 
+    /**
+     * Test if the result set is closed.
+     *
+     * @return
+     *  true if closed, false otherwise.
+     */
     public boolean isClosed()
     {
         try {
@@ -72,6 +100,14 @@ public class ResultSetReader implements Runnable
         }
     }
     
+    /**
+     * Get the next set of results.
+     *
+     * @param chunkSize
+     *  Maximum number of results to return.
+     * @return
+     *  ArrayList of result objects.
+     */
     public ArrayList<Object> getNextChunk( int chunkSize )
     {
         ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
@@ -114,6 +150,12 @@ public class ResultSetReader implements Runnable
         return newList;
     }
 
+    /**
+     * Get all results in JSON format.
+     *
+     * @return
+     *  ArrayList of all results in JSON format.
+     */
     public ArrayList<JSONObject> getAllEvents()
     {
         ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
@@ -155,6 +197,9 @@ public class ResultSetReader implements Runnable
         }
     }
     
+    /**
+     * Close the connection object.
+     */
     public synchronized void closeConnection()
     {
         if ( this.statement != null ) {

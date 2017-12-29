@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.reports.servlet;
@@ -24,6 +24,18 @@ public class CsvServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * Handle export log event and image downloads.
+     *
+     * @param req
+     *  HTTP servelet request containing the download type.
+     * @param resp
+     *  HTTP response.
+     * @throws ServletException
+     *  On a Servlet exception.
+     * @throws IOException
+     *  On an I/O exception.
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         String downloadType = req.getParameter("type");

@@ -319,7 +319,7 @@ public class FixedReports
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s+(not\\s+|\\!\\s+)(\\=\\=|in)\\s+(.+)");
     private static final Pattern ConditionalLogical = Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)");
 
-    /*
+    /**
      * Variable context
      */
     class variableContext
@@ -329,6 +329,16 @@ public class FixedReports
         String name;
         int index;
 
+        /**
+         * Initialize this current variable context.
+         *
+         * @param tag
+         *  Tag for the context.
+         * @param name
+         *  Name of variable.
+         * @param object
+         *  Variable object.
+         */
         public variableContext(Tag tag, String name, Object object)
         {
             this.tag = tag;
@@ -337,29 +347,48 @@ public class FixedReports
             this.index = -1;
         }
 
+        /**
+         * Display context as a string for debugging purposes.
+         *
+         * @return
+         *  String of tag and name.
+         */
         public String toString(){
             return tag + ":" + name;
         }
     }
 
-    /*
+    /**
      * Conditional context
      */
     class conditionalContext
     {
         Boolean match;
 
+        /**
+         * Initialize conditional context
+         *
+         * @param match
+         *  true to match, false to not match.
+         */
         public conditionalContext(Boolean match)
         {
             this.match = match;
         }
 
+        /**
+         * Get match value.
+         * 
+         * @return
+         *  true if match is true, false otherwise.
+         */
         public Boolean getMatch(){
             return match;
         }
     }
 
-    /*
+    /**
+     * Parse context.
      */
     class parseContext
     {
@@ -375,6 +404,9 @@ public class FixedReports
         String variableName;
         int variableIndex;
 
+        /**
+         * Initialize this context.
+         */
         public parseContext()
         {
             loopBuffer = new StringBuilder();
@@ -383,6 +415,16 @@ public class FixedReports
         List<variableContext> variables = new ArrayList<variableContext>();
         List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
 
+        /**
+         * Add variable to this context.
+         * 
+         * @param tag
+         *  Tag for this variable.
+         * @param name
+         *  Name of variable.
+         * @param object
+         *  Variable object.
+         */
         public void addVariable(Tag tag, String name, Object object){
 
             /* Replace if found */
@@ -398,6 +440,12 @@ public class FixedReports
             variables.add(new variableContext(tag, name, object));
         }
 
+        /**
+         * Remove the variable specified by tag.
+         *
+         * @param tag
+         *  Variable to remove.
+         */
         public void removeVariable(Tag tag){
             for(variableContext vc : variables){
                 if(vc.tag == tag){
@@ -407,6 +455,14 @@ public class FixedReports
             }
         }
 
+        /**
+         * Get the variale by tag.
+         *
+         * @param tag
+         *  Tag to match.
+         * @return
+         *  variableContext object or null if not found.
+         */
         public variableContext getVariableContext(Tag tag){
             for(variableContext vc: variables){
                 if(vc.tag.equals(tag)){
@@ -416,6 +472,16 @@ public class FixedReports
             return null;
         }
 
+        /**
+         * Get the variale by tag and name.
+         *
+         * @param tag
+         *  Tag to match.
+         * @param name
+         *  Variable name to match.
+         * @return
+         *  variableContext object or null if not found.
+         */
         public variableContext getVariableContext(Tag tag, String name){
             for(variableContext vc: variables){
                 if(vc.tag.equals(tag) && vc.name.equals(name)){
@@ -425,13 +491,23 @@ public class FixedReports
             return null;
         }
 
-        /* Multi-level conditional support in a context */
+        /**
+         * Multi-level conditional support in a context 
+         * 
+         * @param match
+         *  true to match, false to not match.
+         */
         public void pushConditional(Boolean match){
             conditionals.add(new conditionalContext(match));
         }
 
-        /*
+        /**
          * If current level match is what we want and nested is true, we match
+         *
+         * @param wantMatch
+         *  The match to find.
+         * @return
+         *  true if found, false if not.
          */
         public Boolean getCurrentConditionalMatch(Boolean wantMatch){
             Boolean walkMatch = true;
@@ -445,10 +521,22 @@ public class FixedReports
             }
             return match && walkMatch;
         }
+
+        /**
+         * Remove last conditional.
+         */
         public void popConditional(){
             conditionals.remove(conditionals.get(conditionals.size()-1));
         }
 
+        /**
+         * Return variable's object by name,
+         *
+         * @param name
+         *  Name of variable find.
+         * @return
+         *  Variable object or null if not found.
+         */
         public Object getVariable(String name){
             for(variableContext vc: variables){
                 if(vc.name.equals(name)){
@@ -462,6 +550,14 @@ public class FixedReports
             return null;
         }
 
+        /**
+         * Set varaible's object.
+         * 
+         * @param name
+         *  Name of variaable.
+         * @param obj
+         *  Variable object.
+         */
         public void setVariable(String name, Object obj)
         {
             variableName = name;
@@ -469,27 +565,55 @@ public class FixedReports
             variableIndex = 0;
         }
 
+        /**
+         * Unset current variable name and object.
+         */
         public void unsetVariable()
         {
             variableName = null;
             variableObject = null;
         }
 
+        /**
+         * Add line to the loopBuffer.
+         *
+         * @param line
+         *  Line to add.
+         */
         public void addToBuffer(String line){
             if(ignoreLine == false && getInComment() == false){
                 loopBuffer.append(line);
             }
         } 
 
+        /**
+         * Toggle the value of being inside a comment.
+         *
+         * @param value
+         *  true if in comment, false if not.
+         */
         public void setInComment(Boolean value){
             inComment = value;
         }
+        /**
+         * Get current status of bing in a comment.
+         * @return
+         *  true if in comment, false if not.
+         */
         public Boolean getInComment(){
             return inComment;
         }
     }
     private List<parseContext> parseContextStack;
 
+    /**
+     * Check for current context match.
+     *
+     * @param wantMatch
+     *  true if should match, false if not.
+     * @return
+     *  true if match found
+     */
     private boolean getParseContextStackMatch(Boolean wantMatch)
     {
         Boolean match = true;
@@ -501,7 +625,9 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
+     * Selecting system information in a general way. 
+     * Selector is formatted like fields[,arguments][|filters]
      */
     class selector
     {
@@ -510,8 +636,11 @@ public class FixedReports
         List<String> filters = null;
         String selectorString = null;
 
-        /*
-         Selector is formatted like fields[,arguments][|filters]
+        /**
+         * Iniitalize selector from string.
+         *
+         * @param selectorString
+         *  String containing selector.
          */
         public selector(String selectorString)
         {
@@ -535,12 +664,24 @@ public class FixedReports
             arguments.remove(0);
         }
 
+        /**
+         * Display selector as its original string value.
+         *
+         * @return 
+         *  Originally passed selector string.
+         */
         public String toString(){
             return selectorString;
         }
 
     }
 
+    /**
+     * Get the configuration categories.
+     *
+     * @return
+     *  List of category strings.
+     */
     public List<String> getConfigCategories()
     {
         return FixedReports.ConfigCategories;
@@ -548,8 +689,17 @@ public class FixedReports
 
     private ReportsManager reportsManager;
 
-    /*
+    /**
      * Create and send fixed reports
+     *
+     * @param emailTemplate
+     *  EmailTemplate to process.
+     * @param users
+     *  Email addresses that will receive generatewd report.
+     * @param reportsUrl
+     *  URL to include in the message.
+     * @param reportsManager
+     *  ReportsManager object.
      */
     public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager)
     {
@@ -750,8 +900,13 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Send report email to recipients
+     * 
+     * @param recipientsList
+     *  List of email addresses.
+     * @param htmlOutput
+     *  Generated report HTML output.
      */
     void sendEmail(List<String> recipientsList, List<StringBuilder> htmlOutput){
         StringBuilder messageHtml = new StringBuilder();
@@ -788,8 +943,15 @@ public class FixedReports
 
     }
 
-    /*
+    /**
      * Process the current buffer in a new context instance.
+     *
+     * @param inputLines
+     *  List of input to process.
+     * @param outputLines
+     *  List of processed lines.
+     * @param variableKeyValues
+     *  Variables and their values to process (add to context)
      */
     void parseBuffer(List<StringBuilder> inputLines, List<StringBuilder> outputLines, Map<String,Object> variableKeyValues){
         parseContextStack = new ArrayList<parseContext>();
@@ -808,8 +970,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Process buffer within current context stack.
+     * 
+     * @param buffer
+     *  Buffer to process.
      */
     void parse(String buffer)
     {
@@ -995,9 +1160,14 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Determine if variable is active in this pass.
      * If defined and not in this pass, return false. Return true otherwise.
+     *
+     * @param name
+     *  Name of variable to find.
+     * @return
+     *  true if variable is active, false otherwise.
      */
     private Boolean isVariableParseActive(String name){
         Boolean active = true;
@@ -1009,10 +1179,15 @@ public class FixedReports
         return active;
     }
 
-    /*
+    /**
      * Proces conditional for IF statements
+     * 
+     * @param condition
+     *  Condition to break down.
+     * @return
+     *  true if condition matched, false otherwise.
      */
-    // !!! ?? try to merge code with filter conditional
+    // TODO: !!! ?? try to merge code with filter conditional
     private Boolean parseCondition(String condition)
     {
         Boolean match = false;
@@ -1145,10 +1320,15 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
      * Add variables as buffered writes.  
      * Most variables are single string so this may seem like overkill but others like files 
      * are too big to keep in memory.
+     *
+     * @param line
+     *  Line containing variable.
+     * @param variableSelector
+     *  Variable selector to add.
      */
     private void insertVariable(String line, selector variableSelector)
     {
@@ -1164,8 +1344,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Add a file to the current location as-is.
+     *
+     * @param variableSelector
+     *  Selector for the variableobject.
      */
     private void insertVariableAttachment(selector variableSelector)
     {
@@ -1210,8 +1393,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Add new cycle variable to current context
+     *
+     * @param argumentValues
+     *  Matcher to process.
      */
     private void insertVariableCycle(Matcher argumentValues)
     {
@@ -1235,8 +1421,11 @@ public class FixedReports
         vc.index = 0;
     }
 
-    /*
+    /**
      * Look for cycle variable in context stack and if found, loop
+     * 
+     * @param argumentValues
+     *  Matcher to process.
      */
     private void nextVariableCycle(Matcher argumentValues)
     {
@@ -1256,9 +1445,14 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Get a variable from its selector.  
      * This will also recurse to pull arguments into itself.
+     *
+     * @param variableSelector
+     *  Find the specified variable.
+     * @return
+     *  Object value of the variable.
      */
     private Object getVariable(selector variableSelector)
     {
@@ -1433,6 +1627,11 @@ public class FixedReports
      * Create arbitrary string-based list from stringList specifier which supports
      * following string formats:
      * "quote" unquoted "quoted with spaces"
+     *
+     * @param stringList
+     *  String to process.
+     * @return
+     *  Variable.
      */
     private Object createVariableList(String stringList){
         List<String> variableList = new ArrayList<String>();
@@ -1458,9 +1657,16 @@ public class FixedReports
         return variableList;
     }
 
-    /*
+    /**
      * Similar to condtional except use object methods for comparison.
      * (e.g., "getType=TEXT" to only pull text reports)
+     *
+     * @param object
+     *  Object to match via filters.
+     * @param filters
+     *  String list of filters.
+     * @return
+     *  true if match, false if not.
      */
     Boolean filterMatch(Object object, List<String> filters){
         if(filters.size() == 0){
@@ -1508,8 +1714,15 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
      * Modify the object.
+     * 
+     * @param object
+     *  Object to modify.
+     * @param filters
+     *  Filters to modify with.
+     * @return
+     *  Object of filtered result
      */
     Object filterProcess(Object object, List<String> filters){
         Matcher filterMatcher;
@@ -1544,7 +1757,7 @@ public class FixedReports
         return object;
     }
 
-    /*
+    /**
      * Process a template through an argument list
      * 
      * Additionally, order results according to sortOrder list.
@@ -1554,6 +1767,15 @@ public class FixedReports
      * Basically used to sort report result list in textColumn format since results
      * are not guaranteed to be in order.  Attempt to look at last word in each
      * entry, expecting the format to be in SQL format to name column like "select ... as resultName"
+     *
+     * @param template
+     *  Template to process.
+     * @param arguments
+     *  Arguments on the object.
+     * @param sortOrder
+     *  Sort order.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessFormat(Object template, JSONObject arguments, Object sortOrder){
         /*
@@ -1612,11 +1834,18 @@ public class FixedReports
         return (Object) formatted;
     }
 
-    /*
+    /**
      * Process the list and filter out duplicates.
      *
      * Simplisitic in string comparisions are expected and no method arguments are allowed.
      * Use case is to eliminate apps with the same name (e.g.,multiple policies with same app)
+     *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessDistinct(Object incomings, selector filterSelector){
         List<Object> outgoings = new ArrayList<Object>();
@@ -1655,10 +1884,19 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    /*
+    /**
      * Process the list and include only those in the specified list.
      *
      * One use for this is to pull only reports within the allowed report type list.
+     *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @param checklist
+     *  Checklist to include.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessIn(Object incomings, selector filterSelector, Object checklist){
         List<Object> outgoings = new ArrayList<Object>();
@@ -1687,12 +1925,20 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    /*
+    /**
      * Process the list to order by the specified field.
      *
      * One use is to sort all reports so that TEXT types are first.
      * Another it to sort by category order
      *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @param orderSelector
+     *  Order to use.
+     * @return
+     *  Filtered object.
      */
     @SuppressWarnings("unchecked")
     Object filterProcessOrder(Object incomings, selector filterSelector, selector orderSelector){
@@ -1757,6 +2003,17 @@ public class FixedReports
         return (Object) outgoings;
     }
 
+    /**
+     * Perform query with WebBrowser against specialized reports mode
+     * and return saved filename.
+     *
+     * @param reportUniqueId
+     *  ReportId to create.
+     * @param id
+     *  Unique HTML identifier for the image.
+     * @return
+     *  Filename from WebBrowser.
+     */
     String getChart(Object reportUniqueId, String id){
         String filename;
         if(id != null){
