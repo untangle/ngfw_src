@@ -3,6 +3,8 @@ Ext.define('Ung.store.Countries', {
     alias: 'store.countries',
     storeId: 'countries',
     data: [
+        { code: 'XU', name: 'Unknown'.t() },
+        { code: 'XL', name: 'Local'.t() },
         { code: 'AF', name: 'Afghanistan'.t() },
         { code: 'AX', name: 'Aland Islands'.t() },
         { code: 'AL', name: 'Albania'.t() },
