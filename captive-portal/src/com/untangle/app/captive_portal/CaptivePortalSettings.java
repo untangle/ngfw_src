@@ -10,6 +10,9 @@ import java.util.List;
 
 /**
  * This is the implementation of the captive portal settings.
+ * 
+ * @author mahotz
+ * 
  */
 
 @SuppressWarnings("serial")
@@ -86,305 +89,99 @@ public class CaptivePortalSettings implements Serializable
         this.captureRules = newValue;
     }
 
-    public List<PassedAddress> getPassedClients()
-    {
-        return this.passedClients;
-    }
+// THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setPassedClients(List<PassedAddress> newValue)
-    {
-        this.passedClients = newValue;
-    }
+    public List<PassedAddress> getPassedClients() { return this.passedClients; }
+    public void setPassedClients(List<PassedAddress> newValue) { this.passedClients = newValue; }
 
-    public List<PassedAddress> getPassedServers()
-    {
-        return this.passedServers;
-    }
+    public List<PassedAddress> getPassedServers() { return this.passedServers; }
+    public void setPassedServers(List<PassedAddress> newValue) { this.passedServers = newValue; }
 
-    public void setPassedServers(List<PassedAddress> newValue)
-    {
-        this.passedServers = newValue;
-    }
+    public AuthenticationType getAuthenticationType() { return this.authenticationType; }
+    public void setAuthenticationType(AuthenticationType newValue) { this.authenticationType = newValue; }
 
-    public AuthenticationType getAuthenticationType()
-    {
-        return this.authenticationType;
-    }
+    public int getIdleTimeout() { return this.idleTimeout; }
+    public void setIdleTimeout(int newValue) { this.idleTimeout = newValue; }
 
-    public void setAuthenticationType(AuthenticationType newValue)
-    {
-        this.authenticationType = newValue;
-    }
+    public int getUserTimeout() { return this.userTimeout; }
+    public void setUserTimeout(int newValue) { this.userTimeout = newValue; }
 
-    public int getIdleTimeout()
-    {
-        return this.idleTimeout;
-    }
+    public boolean getUseMacAddress() { return this.useMacAddress; }
+    public void setUseMacAddress(boolean newValue) { this.useMacAddress = newValue; }
 
-    public void setIdleTimeout(int newValue)
-    {
-        this.idleTimeout = newValue;
-    }
+    public boolean getConcurrentLoginsEnabled() { return this.areConcurrentLoginsEnabled; }
+    public void setConcurrentLoginsEnabled(boolean newValue) { this.areConcurrentLoginsEnabled = newValue; }
 
-    public int getUserTimeout()
-    {
-        return this.userTimeout;
-    }
+    public boolean getAlwaysUseSecureCapture() { return this.alwaysUseSecureCapture; }
+    public void setAlwaysUseSecureCapture(boolean newValue) { this.alwaysUseSecureCapture = newValue; }
 
-    public void setUserTimeout(int newValue)
-    {
-        this.userTimeout = newValue;
-    }
+    public boolean getSessionCookiesEnabled() { return this.sessionCookiesEnabled; }
+    public void setSessionCookiesEnabled(boolean newValue) { this.sessionCookiesEnabled = newValue; }
 
-    public boolean getUseMacAddress()
-    {
-        return this.useMacAddress;
-    }
+    public boolean getRedirectUsingHostname() { return this.redirectUsingHostname; }
+    public void setRedirectUsingHostname(boolean newValue) { this.redirectUsingHostname = newValue; }
 
-    public void setUseMacAddress(boolean newValue)
-    {
-        this.useMacAddress = newValue;
-    }
+    public boolean getDisableSecureRedirect() { return this.disableSecureRedirect; }
+    public void setDisableSecureRedirect(boolean newValue) { this.disableSecureRedirect = newValue; }
 
-    public boolean getConcurrentLoginsEnabled()
-    {
-        return this.areConcurrentLoginsEnabled;
-    }
+    public int getSessionCookiesTimeout() { return this.sessionCookiesTimeout; }
+    public void setSessionCookiesTimeout(int newValue) { this.sessionCookiesTimeout = newValue; }
 
-    public void setConcurrentLoginsEnabled(boolean newValue)
-    {
-        this.areConcurrentLoginsEnabled = newValue;
-    }
+    public PageType getPageType() { return this.pageType; }
+    public void setPageType(PageType newValue) { this.pageType = newValue; }
 
-    public boolean getAlwaysUseSecureCapture()
-    {
-        return this.alwaysUseSecureCapture;
-    }
+    public String getRedirectUrl() { return this.redirectUrl; }
+    public void setRedirectUrl(String newValue) { this.redirectUrl = newValue; }
 
-    public void setAlwaysUseSecureCapture(boolean newValue)
-    {
-        this.alwaysUseSecureCapture = newValue;
-    }
+    public String getCustomFilename() { return this.customFileName; }
+    public void setCustomFilename(String newValue) { this.customFileName = newValue; }
 
-    public boolean getSessionCookiesEnabled()
-    {
-        return this.sessionCookiesEnabled;
-    }
+    public String getBasicLoginPageTitle() { return this.basicLoginPageTitle; }
+    public void setBasicLoginPageTitle(String newValue) { this.basicLoginPageTitle = newValue; }
 
-    public void setSessionCookiesEnabled(boolean newValue)
-    {
-        this.sessionCookiesEnabled = newValue;
-    }
+    public String getBasicLoginPageWelcome() { return this.basicLoginPageWelcome; }
+    public void setBasicLoginPageWelcome(String newValue) { this.basicLoginPageWelcome = newValue; }
 
-    public boolean getRedirectUsingHostname()
-    {
-        return this.redirectUsingHostname;
-    }
+    public String getBasicLoginUsername() { return this.basicLoginUsername; }
+    public void setBasicLoginUsername(String newValue) { this.basicLoginUsername = newValue; }
 
-    public void setRedirectUsingHostname(boolean newValue)
-    {
-        this.redirectUsingHostname = newValue;
-    }
+    public String getBasicLoginPassword() { return this.basicLoginPassword; }
+    public void setBasicLoginPassword(String newValue) { this.basicLoginPassword = newValue; }
 
-    public boolean getDisableSecureRedirect()
-    {
-        return this.disableSecureRedirect;
-    }
+    public String getBasicLoginMessageText() { return this.basicLoginMessageText; }
+    public void setBasicLoginMessageText(String newValue) { this.basicLoginMessageText = newValue; }
 
-    public void setDisableSecureRedirect(boolean newValue)
-    {
-        this.disableSecureRedirect = newValue;
-    }
+    public String getBasicLoginFooter() { return this.basicLoginFooter; }
+    public void setBasicLoginFooter(String newValue) { this.basicLoginFooter = newValue; }
 
-    public int getSessionCookiesTimeout()
-    {
-        return this.sessionCookiesTimeout;
-    }
+    public String getBasicMessagePageTitle() { return this.basicMessagePageTitle; }
+    public void setBasicMessagePageTitle(String newValue) { this.basicMessagePageTitle = newValue; }
 
-    public void setSessionCookiesTimeout(int newValue)
-    {
-        this.sessionCookiesTimeout = newValue;
-    }
+    public String getBasicMessagePageWelcome() { return this.basicMessagePageWelcome; }
+    public void setBasicMessagePageWelcome(String newValue) { this.basicMessagePageWelcome = newValue; }
 
-    public PageType getPageType()
-    {
-        return this.pageType;
-    }
+    public String getBasicMessageMessageText() { return this.basicMessageMessageText; }
+    public void setBasicMessageMessageText(String newValue) { this.basicMessageMessageText = newValue; }
 
-    public void setPageType(PageType newValue)
-    {
-        this.pageType = newValue;
-    }
+    public boolean getBasicMessageAgreeBox() { return this.basicMessageAgreeBox; }
+    public void setBasicMessageAgreeBox(boolean newValue) { this.basicMessageAgreeBox = newValue; }
 
-    public String getRedirectUrl()
-    {
-        return this.redirectUrl;
-    }
+    public String getBasicMessageAgreeText() { return this.basicMessageAgreeText; }
+    public void setBasicMessageAgreeText(String newValue) { this.basicMessageAgreeText = newValue; }
 
-    public void setRedirectUrl(String newValue)
-    {
-        this.redirectUrl = newValue;
-    }
+    public String getBasicMessageFooter() { return this.basicMessageFooter; }
+    public void setBasicMessageFooter(String newValue) { this.basicMessageFooter = newValue; }
 
-    public String getCustomFilename()
-    {
-        return this.customFileName;
-    }
+    public CertificateDetection getCertificateDetection() { return this.certificateDetection; }
+    public void setCertificateDetection(CertificateDetection newValue) { this.certificateDetection = newValue; }
 
-    public void setCustomFilename(String newValue)
-    {
-        this.customFileName = newValue;
-    }
+    public Boolean getCheckServerCertificate() { return this.checkServerCertificate; }
+    public void setCheckServerCertificate(Boolean newValue) { this.checkServerCertificate = newValue; }
 
-    public String getBasicLoginPageTitle()
-    {
-        return this.basicLoginPageTitle;
-    }
+    public String getSecretKey() { return (secretKey); }
+    public void setSecretKey(String key) { secretKey = key; }
 
-    public String getBasicLoginPageWelcome()
-    {
-        return this.basicLoginPageWelcome;
-    }
-
-    public String getBasicLoginUsername()
-    {
-        return this.basicLoginUsername;
-    }
-
-    public String getBasicLoginPassword()
-    {
-        return this.basicLoginPassword;
-    }
-
-    public String getBasicLoginMessageText()
-    {
-        return this.basicLoginMessageText;
-    }
-
-    public String getBasicLoginFooter()
-    {
-        return this.basicLoginFooter;
-    }
-
-    public String getBasicMessagePageTitle()
-    {
-        return this.basicMessagePageTitle;
-    }
-
-    public String getBasicMessagePageWelcome()
-    {
-        return this.basicMessagePageWelcome;
-    }
-
-    public String getBasicMessageMessageText()
-    {
-        return this.basicMessageMessageText;
-    }
-
-    public boolean getBasicMessageAgreeBox()
-    {
-        return this.basicMessageAgreeBox;
-    }
-
-    public String getBasicMessageAgreeText()
-    {
-        return this.basicMessageAgreeText;
-    }
-
-    public String getBasicMessageFooter()
-    {
-        return this.basicMessageFooter;
-    }
-
-    public CertificateDetection getCertificateDetection()
-    {
-        return this.certificateDetection;
-    }
-
-    public Boolean getCheckServerCertificate()
-    {
-        return this.checkServerCertificate;
-    }
-
-    public void setBasicLoginPageTitle(String newValue)
-    {
-        this.basicLoginPageTitle = newValue;
-    }
-
-    public void setBasicLoginPageWelcome(String newValue)
-    {
-        this.basicLoginPageWelcome = newValue;
-    }
-
-    public void setBasicLoginUsername(String newValue)
-    {
-        this.basicLoginUsername = newValue;
-    }
-
-    public void setBasicLoginPassword(String newValue)
-    {
-        this.basicLoginPassword = newValue;
-    }
-
-    public void setBasicLoginMessageText(String newValue)
-    {
-        this.basicLoginMessageText = newValue;
-    }
-
-    public void setBasicLoginFooter(String newValue)
-    {
-        this.basicLoginFooter = newValue;
-    }
-
-    public void setBasicMessagePageTitle(String newValue)
-    {
-        this.basicMessagePageTitle = newValue;
-    }
-
-    public void setBasicMessagePageWelcome(String newValue)
-    {
-        this.basicMessagePageWelcome = newValue;
-    }
-
-    public void setBasicMessageMessageText(String newValue)
-    {
-        this.basicMessageMessageText = newValue;
-    }
-
-    public void setBasicMessageAgreeBox(boolean newValue)
-    {
-        this.basicMessageAgreeBox = newValue;
-    }
-
-    public void setBasicMessageAgreeText(String newValue)
-    {
-        this.basicMessageAgreeText = newValue;
-    }
-
-    public void setBasicMessageFooter(String newValue)
-    {
-        this.basicMessageFooter = newValue;
-    }
-
-    public void setCertificateDetection(CertificateDetection newValue)
-    {
-        this.certificateDetection = newValue;
-    }
-
-    public void setCheckServerCertificate(Boolean newValue)
-    {
-        this.checkServerCertificate = newValue;
-    }
-
-    public String getSecretKey()
-    {
-        return (secretKey);
-    }
-
-    public void setSecretKey(String key)
-    {
-        secretKey = key;
-    }
+// THIS IS FOR ECLIPSE - @formatter:on
 
     public void initBinaryKey(byte[] key)
     {
