@@ -47,6 +47,9 @@ import com.untangle.uvm.servlet.UploadHandler;
 
 /**
  * Implementation of the captive portal application.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalApp extends AppBase

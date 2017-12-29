@@ -32,6 +32,9 @@ import org.apache.log4j.Logger;
 /**
  * We do just enough SSL MitM to receive and extract the request and send back a
  * redirect to the capture page for unauthenticated clients.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class CaptivePortalSSLEngine

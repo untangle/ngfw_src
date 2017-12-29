@@ -14,6 +14,9 @@ import java.nio.ByteBuffer;
  * 
  * WARNING: There is currently no error checking, so calling any of the methods
  * before first calling ExtractQuery will cause all kinds of chaos.
+ * 
+ * @author mahotz
+ * 
  */
 
 class DNSPacket
