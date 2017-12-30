@@ -3,7 +3,6 @@
  */
 package com.untangle.app.directory_connector;
 
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,13 +12,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.directory_connector.GroupEntry;
 import com.untangle.app.directory_connector.UserEntry;
 import com.untangle.uvm.app.License;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.Pulse.PulseState;
 

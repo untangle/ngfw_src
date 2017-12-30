@@ -12,9 +12,6 @@
  */
 package com.untangle.app.directory_connector;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.lang.reflect.Method;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -38,7 +35,6 @@ import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONSerializer;
 
 import com.untangle.app.directory_connector.RadiusSettings;
 
