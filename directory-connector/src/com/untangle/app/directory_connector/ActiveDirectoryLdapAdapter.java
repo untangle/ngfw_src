@@ -261,7 +261,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
             List<GroupEntry> ret = new ArrayList<>();
 
-            if(list == null || list.size() == 0) {
+            if(list == null || list.isEmpty()) {
                 return ret;
             }
 
@@ -326,7 +326,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
             List<GroupEntry> ret = new ArrayList<>();
 
-            if(list == null || list.size() == 0) {
+            if(list == null || list.isEmpty()) {
                 return ret;
             }
 
@@ -368,7 +368,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
             List<UserEntry> ret = new ArrayList<>();
 
-            if(list == null || list.size() == 0) {
+            if(list == null || list.isEmpty()) {
                 return ret;
             }
 
@@ -530,7 +530,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
                                  getGroupEntrySearchControls(fetchMembersOf));
 
 
-            if(list == null || list.size() == 0) {
+            if(list == null || list.isEmpty()) {
                 return null;
             }
 
