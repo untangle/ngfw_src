@@ -154,7 +154,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         String sustring = settings.getSuperuser();
         if (sustring.toUpperCase().startsWith("CN="))
             return sustring + "," + domainComponents(settings.getDomain());
-        if (sustring.contains("@") == true || sustring.contains("\\") == true)
+        if (sustring.contains("@") || sustring.contains("\\") )
             return sustring;
         return sustring + "@" + settings.getDomain();
     }
