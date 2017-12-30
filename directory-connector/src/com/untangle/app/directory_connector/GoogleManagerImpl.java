@@ -10,15 +10,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
-
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 

@@ -14,7 +14,6 @@ package com.untangle.app.directory_connector;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collections;
 import java.io.FileWriter;
 
 import org.apache.log4j.Logger;
@@ -23,8 +22,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.app.License;
-import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Directory connector application

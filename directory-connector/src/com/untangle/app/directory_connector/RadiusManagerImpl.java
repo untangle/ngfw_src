@@ -12,10 +12,6 @@
  */
 package com.untangle.app.directory_connector;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
-
 import org.apache.log4j.Logger;
 
 /**
