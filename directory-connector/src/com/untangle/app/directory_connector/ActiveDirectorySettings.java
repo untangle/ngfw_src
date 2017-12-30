@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class ActiveDirectorySettings implements java.io.Serializable, JSONString
 {
     private boolean isEnabled = false;
-    private LinkedList<ActiveDirectoryServer> servers = new LinkedList<>();
+    private List<ActiveDirectoryServer> servers = new LinkedList<>();
 
     /**
      * Returns true if active directory  is enabled.
@@ -35,13 +35,13 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
      *
      * @return List of ActiveDirectoryServer for all defined AD servers.
      */
-    public LinkedList<ActiveDirectoryServer> getServers() { return servers; }
+    public List<ActiveDirectoryServer> getServers() { return servers; }
     /**
      * Sets list of active directory servers.
      *
      * @param servers List of ActiveDirectoryServer for all defined AD servers.
      */
-    public void setServers( LinkedList<ActiveDirectoryServer> servers ) { this.servers = servers; }
+    public void setServers( List<ActiveDirectoryServer> servers ) { this.servers = servers; }
 
     /**
     * Constructor
