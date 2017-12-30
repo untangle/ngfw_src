@@ -88,7 +88,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
@@ -123,7 +123,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             domains.push(adAdapter.getSettings().getDomain());
@@ -154,7 +154,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
@@ -192,7 +192,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
@@ -272,12 +272,12 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             if(domain != null ){
-                if(adAdapter.getSettings().getDomain().equals(domain) == false &&
-                   adAdapter.getSettings().getDomain().startsWith(domain+".") == false ){
+                if(!adAdapter.getSettings().getDomain().equals(domain) &&
+                   !adAdapter.getSettings().getDomain().startsWith(domain+".") ){
                     continue;
                 }
             }
@@ -336,7 +336,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
 
@@ -385,7 +385,7 @@ public class ActiveDirectoryManagerImpl
             if(adAdapter == null){
                 continue;
             }
-            if(adAdapter.getSettings().getEnabled() == false){
+            if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
