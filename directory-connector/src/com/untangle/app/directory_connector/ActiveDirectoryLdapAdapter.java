@@ -167,7 +167,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     @Override
     public List<String> getSearchBases()
     {
-        ArrayList<String> bases = new ArrayList<String>();
+        ArrayList<String> bases = new ArrayList<>();
 
         List<String> ouFilters = settings.getOUFilters();
 
@@ -259,7 +259,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
                                  getListAllGroupsSearchString(),
                                  getGroupEntrySearchControls(fetchMembersOf));
 
-            List<GroupEntry> ret = new ArrayList<GroupEntry>();
+            List<GroupEntry> ret = new ArrayList<>();
 
             if(list == null || list.size() == 0) {
                 return ret;
@@ -314,7 +314,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         
         if ( userEntry == null ) {
             logger.debug( "Unable to query an user entry for the user: '" + user + "'" );
-            return new ArrayList<GroupEntry>();
+            return new ArrayList<>();
         }
         
         /* Next retrieve all of the groups that the user belongs to, this doesn't recurse */
@@ -324,7 +324,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
                                  getListGroupsSearchString(userEntry),
                                  getGroupEntrySearchControls(false));
 
-            List<GroupEntry> ret = new ArrayList<GroupEntry>();
+            List<GroupEntry> ret = new ArrayList<>();
 
             if(list == null || list.size() == 0) {
                 return ret;
@@ -357,7 +357,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         GroupEntry groupEntry = getGroupEntry(group,false);
         if ( groupEntry == null ) {
             logger.debug( "The group '" + group + "' doesn't exist.");
-            return new ArrayList<UserEntry>();
+            return new ArrayList<>();
         }
 
         try {
@@ -366,7 +366,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
                                  getListUsersSearchString(groupEntry, getUserClassType()),
                                  getUserEntrySearchControls());
 
-            List<UserEntry> ret = new ArrayList<UserEntry>();
+            List<UserEntry> ret = new ArrayList<>();
 
             if(list == null || list.size() == 0) {
                 return ret;
@@ -490,7 +490,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         if ( this.userAccountControl == null ) {
             int values[] = { 1, 8, 32, 64, 65536 };
 
-            Set<String> valueSet  = new HashSet<String>();
+            Set<String> valueSet  = new HashSet<>();
             for ( int c = 0 ; c < Math.pow( 2, values.length + 1 ) - 1 ; c++ ) {
                 int v = 512;
                 for ( int d = 0, bit = 1 ; d <values.length; d++, bit <<= 1 ) {
