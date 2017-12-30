@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class ActiveDirectorySettings implements java.io.Serializable, JSONString
 {
     private boolean isEnabled = false;
-    private LinkedList<ActiveDirectoryServer> servers = new LinkedList<ActiveDirectoryServer>();
+    private LinkedList<ActiveDirectoryServer> servers = new LinkedList<>();
 
     /**
      * Returns true if active directory  is enabled.

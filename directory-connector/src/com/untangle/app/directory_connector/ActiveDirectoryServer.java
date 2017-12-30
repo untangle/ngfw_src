@@ -22,7 +22,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     private String domain;
     private String ldapHost;
     private boolean ldapSecure;
-    private List<String> ouFilters = new LinkedList<String>();
+    private List<String> ouFilters = new LinkedList<>();
     private int ldapPort;
     private boolean isEnabled = false;
 
@@ -57,7 +57,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         this.ldapHost = ldapHost;
         this.ldapPort = ldapPort;
         this.ldapSecure = ldapSecure;
-        this.ouFilters = new LinkedList<String>();
+        this.ouFilters = new LinkedList<>();
     }
 
     /**
