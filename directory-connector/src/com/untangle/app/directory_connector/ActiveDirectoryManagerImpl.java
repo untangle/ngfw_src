@@ -34,7 +34,7 @@ public class ActiveDirectoryManagerImpl
     /**
      * List of LDAP adapters
      */
-    private LinkedList<ActiveDirectoryLdapAdapter> adAdapters = new LinkedList<ActiveDirectoryLdapAdapter>();
+    private LinkedList<ActiveDirectoryLdapAdapter> adAdapters = new LinkedList<>();
 
     /**
      * Initialize AD manager
@@ -79,10 +79,10 @@ public class ActiveDirectoryManagerImpl
         throws ServiceUnavailableException
     {
         if (!app.isLicenseValid()){
-            return new LinkedList<UserEntry>();
+            return new LinkedList<>();
         }
 
-        List<UserEntry> userList = new LinkedList<UserEntry>();
+        List<UserEntry> userList = new LinkedList<>();
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
@@ -114,7 +114,7 @@ public class ActiveDirectoryManagerImpl
      *  List of string of domain names.
      */
     public List<String> getDomains(){
-        LinkedList<String> domains = new LinkedList<String>();
+        LinkedList<String> domains = new LinkedList<>();
         if (!app.isLicenseValid()){
             return domains;
         }
@@ -147,7 +147,7 @@ public class ActiveDirectoryManagerImpl
         throws ServiceUnavailableException
     {
         if (!app.isLicenseValid()){
-            return new LinkedList<UserEntry>();
+            return new LinkedList<>();
         }
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
@@ -168,7 +168,7 @@ public class ActiveDirectoryManagerImpl
             }
         }
 
-        return new LinkedList<UserEntry>();
+        return new LinkedList<>();
     }
 
     /**
