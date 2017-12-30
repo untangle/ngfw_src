@@ -488,7 +488,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         // (|userAccountControl=512)(|(UserAccountControl=513)|(UserAccountControl=514)(UserAccountControl=544))
 
         if ( this.userAccountControl == null ) {
-            int values[] = { 1, 8, 32, 64, 65536 };
+            int[] values = { 1, 8, 32, 64, 65536 };
 
             Set<String> valueSet  = new HashSet<>();
             for ( int c = 0 ; c < Math.pow( 2, values.length + 1 ) - 1 ; c++ ) {
