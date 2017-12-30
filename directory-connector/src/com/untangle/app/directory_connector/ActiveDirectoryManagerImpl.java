@@ -4,12 +4,9 @@
 package com.untangle.app.directory_connector;
 
 import java.lang.String;
-import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
 
 import javax.naming.ServiceUnavailableException;
 import org.apache.log4j.Logger;
