@@ -114,7 +114,7 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Get the pineliene connector(???)
+     * Get the pineliene connector.
      *
      * @return PipelineConector
      */
@@ -140,7 +140,7 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Pre IPS stop. Register callback?
      *
-     * @param isPermanentTransition  ???
+     * @param isPermanentTransition
      */
     @Override
     protected void preStop( boolean isPermanentTransition )
@@ -156,7 +156,7 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Post IPS stop.  Shut down snort.  Run IPS rules to remove.
      *
-     * @param isPermanentTransition  ???
+     * @param isPermanentTransition
      */
     @Override
     protected void postStop( boolean isPermanentTransition )
@@ -168,7 +168,7 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Pre IPS start. Check setup wizard, start snort, unregister calllback hook.
      *
-     * @param isPermanentTransition  ???
+     * @param isPermanentTransition
      */
     @Override
     protected void preStart( boolean isPermanentTransition )
@@ -195,7 +195,7 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Post  IPS start. Start IPS rules.
      *
-     * @param isPermanentTransition  ???
+     * @param isPermanentTransition
      */
     @Override
     protected void postStart( boolean isPermanentTransition )
