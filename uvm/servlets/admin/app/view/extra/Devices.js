@@ -155,7 +155,7 @@ Ext.define('Ung.view.extra.Devices', {
             filter: Renderer.stringFilter,
             editor: {
                 xtype: 'textfield',
-                emptyText: ''.t()
+                emptyText: ''
             }
         }, {
             header: 'Hostname'.t(),
