@@ -245,7 +245,7 @@ Ext.define('Ung.reports.cmp.ImportDialog', {
                     Ext.getStore('reportstree').build();
                     btn.up('window').close();
                     Ung.app.redirectTo('#reports');
-                    Ext.MessageBox.alert('Import done!'.t(), reports.length + ' Report(s) imported!'.t());
+                    Ext.MessageBox.alert('Import done!'.t(), reports.length + ' ' + 'Report(s) imported!'.t());
                 });
             }, reportsSettings);
 
