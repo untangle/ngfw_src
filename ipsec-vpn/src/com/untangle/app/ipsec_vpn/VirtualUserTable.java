@@ -26,6 +26,9 @@ public class VirtualUserTable
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<InetAddress, VirtualUserEntry> userTable;
 
+    /**
+     * Constructor
+     */
     public VirtualUserTable()
     {
         userTable = new Hashtable<InetAddress, VirtualUserEntry>();
@@ -86,7 +89,9 @@ public class VirtualUserTable
      * which would capture the new username, but mentioning just in case.
      * 
      * @param clientAddress
-     *        - The IP address of the client to be removed.
+     *        The IP address of the client to be removed.
+     * @param concurrentFlag
+     *        The allow concurrent logins flag
      * @return True if found and removed, otherwise false.
      */
     public boolean removeVirtualUser(InetAddress clientAddress, boolean concurrentFlag)

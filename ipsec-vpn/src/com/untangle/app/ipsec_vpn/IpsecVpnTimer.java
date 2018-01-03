@@ -52,6 +52,14 @@ public class IpsecVpnTimer extends TimerTask
         long inLast;
         int pingCounter;
 
+        /**
+         * Constructor
+         * 
+         * @param tunnelName
+         *        The name of the tunnel
+         * @param tunnelId
+         *        The ID of the tunnel
+         */
         public TunnelWatcher(String tunnelName, int tunnelId)
         {
             this.tunnelName = tunnelName;
@@ -76,11 +84,20 @@ public class IpsecVpnTimer extends TimerTask
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<String, TunnelWatcher>();
     private long cycleCounter = 0;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     public IpsecVpnTimer(IpsecVpnApp app)
     {
         this.app = app;
     }
 
+    /**
+     * This is the timer run function
+     */
     public void run()
     {
         CheckAllTunnels();
