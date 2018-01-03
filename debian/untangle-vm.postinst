@@ -7,6 +7,10 @@ UVM_LOGDIR="/var/log/uvm"
 # Create the uvmlogin group (processed by users in this group can access API)
 addgroup uvmlogin 2>/dev/null
 
+# Make sure the www-data user is a member of the uvmlogin group
+# which allows the mod_python handlers to make calls RPC to the uvm
+usermod -G uvmlogin www-data
+
 # enable en_US locale (used by java)
 sed -i -e "s/.*en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/" /etc/locale.gen
 locale-gen
