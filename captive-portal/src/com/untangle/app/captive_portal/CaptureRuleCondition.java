@@ -24,16 +24,37 @@ import com.untangle.uvm.app.RuleCondition;
 @SuppressWarnings("serial")
 public class CaptureRuleCondition extends RuleCondition
 {
+    /**
+     * Constructor
+     */
     public CaptureRuleCondition()
     {
         super();
     }
 
+    /**
+     * Constructor
+     * 
+     * @param matcherType
+     *        The matcher type
+     * @param value
+     *        The value
+     */
     public CaptureRuleCondition(ConditionType matcherType, String value)
     {
         super(matcherType, value);
     }
 
+    /**
+     * Constructor
+     * 
+     * @param matcherType
+     *        The matcher type
+     * @param value
+     *        The value
+     * @param invert
+     *        Invert flag
+     */
     public CaptureRuleCondition(ConditionType matcherType, String value, Boolean invert)
     {
         super(matcherType, value, invert);

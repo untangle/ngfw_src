@@ -35,6 +35,14 @@ public class CaptivePortalUserTable
         CaptivePortalUserEvent.EventType reason;
         InetAddress netaddr;
 
+        /**
+         * Constructor
+         * 
+         * @param netaddr
+         *        The address of the stale user
+         * @param reason
+         *        The reason for the logout
+         */
         StaleUser(InetAddress netaddr, CaptivePortalUserEvent.EventType reason)
         {
             this.netaddr = netaddr;
