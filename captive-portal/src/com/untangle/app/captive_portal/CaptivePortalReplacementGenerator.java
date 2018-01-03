@@ -55,12 +55,27 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * Our constuctor
+     * 
+     * @param appId
+     *        The application ID
+     * @param app
+     *        The application instance that created us
+     */
     CaptivePortalReplacementGenerator(AppSettings appId, CaptivePortalApp app)
     {
         super(appId);
         this.captureApp = app;
     }
 
+    /**
+     * The replacement to be returned for captured sessions.
+     * 
+     * @param details
+     *        The block details
+     * @return The replacement to return to the client
+     */
     @Override
     protected String getReplacement(CaptivePortalBlockDetails details)
     {
@@ -96,7 +111,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         // if the redirectUsingHostname flag is set we use the configured
         // hostname otherwise we use the passed host which should be the IP
         // address of the appropriate interface for the client
-        if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
+        if (captureApp.getSettings().getRedirectUsingHostname() == true) {
             target.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
         } else {
             target.setHost(host.split(":")[0]);
@@ -106,7 +121,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         target.setPath("/capture/handler.py/index");
 
         // set the scheme and port appropriately
-        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
+        if (captureApp.getSettings().getAlwaysUseSecureCapture() == true) {
             target.setScheme("https");
             if (httpsPort != 443) target.setPort(httpsPort);
         } else {
@@ -123,7 +138,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
         // if using Google authentication setup the authentication redirect
         // and pass the target as the OAuth state
-        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
+        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
             exauth.setScheme("https");
             exauth.setHost(GOOGLE_AUTH_HOST);
             exauth.setPath(GOOGLE_AUTH_PATH);
@@ -138,7 +153,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
         // if using Facebook authentication setup the authentication redirect
         // and pass the target as the OAuth state
-        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
+        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
             exauth.setScheme("https");
             exauth.setHost(FACEBOOK_AUTH_HOST);
             exauth.setPath(FACEBOOK_AUTH_PATH);
@@ -153,7 +168,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
         // if using Microsoft authentication setup the authentication redirect
         // and pass the target as the OAuth state
-        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
+        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
             exauth.setScheme("https");
             exauth.setHost(MICROSOFT_AUTH_HOST);
             exauth.setPath(MICROSOFT_AUTH_PATH);

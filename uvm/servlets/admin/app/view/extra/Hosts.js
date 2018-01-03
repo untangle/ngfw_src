@@ -262,7 +262,7 @@ Ext.define('Ung.view.extra.Hosts', {
             tdCls: 'editable-column',
             editor: {
                 xtype: 'textfield',
-                emptyText: ''.t()
+                emptyText: ''
             }
         },{
             header: 'Captive Portal Authenticated'.t(),
