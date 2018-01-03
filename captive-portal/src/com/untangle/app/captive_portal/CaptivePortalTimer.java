@@ -21,16 +21,28 @@ public class CaptivePortalTimer extends TimerTask
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptivePortalApp app;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     public CaptivePortalTimer(CaptivePortalApp app)
     {
         this.app = app;
     }
 
+    /**
+     * This is the timer run function
+     */
     public void run()
     {
         sessionCleanup();
     }
 
+    /**
+     * Gets a list of stale users and logs each one out
+     */
     public void sessionCleanup()
     {
         try {

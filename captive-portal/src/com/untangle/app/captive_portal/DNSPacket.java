@@ -42,6 +42,9 @@ class DNSPacket
     private int ns_count = 0;
     private int ar_count = 0;
 
+    /**
+     * Constructor
+     */
     DNSPacket()
     {
     }

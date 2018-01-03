@@ -32,6 +32,12 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(getClass());
     private CaptivePortalApp app = null;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     public CaptivePortalTrafficHandler(CaptivePortalApp app)
     {
         super(app);
@@ -49,7 +55,6 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
      *        The session request passed to us when the session was created
      * @return = nothing
      */
-
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequest sessreq)
     {
@@ -138,7 +143,6 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
      *        The session request passed to us when the session was created
      * @return = nothing
      */
-
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequest sessreq)
     {
@@ -224,7 +228,6 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
      *        The IP packet header received from the client
      * @return = nothing
      */
-
     @Override
     public void handleUDPClientPacket(AppUDPSession session, ByteBuffer data, IPPacketHeader header)
     {

@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @SuppressWarnings("serial")
-public class CaptivePortalSettings implements Serializable
+public class CaptivePortalSettings implements Serializable, org.json.JSONString
 {
     public static enum AuthenticationType
     {
@@ -202,5 +202,11 @@ public class CaptivePortalSettings implements Serializable
         }
 
         setSecretKey(local.toString());
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }
