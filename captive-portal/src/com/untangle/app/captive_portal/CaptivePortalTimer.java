@@ -34,7 +34,7 @@ public class CaptivePortalTimer extends TimerTask
     public void sessionCleanup()
     {
         try {
-            ArrayList<CaptivePortalUserTable.StaleUser> staleUsers = app.captureUserTable.buildStaleList(app.getCaptivePortalSettings().getIdleTimeout(), app.getCaptivePortalSettings().getUserTimeout());
+            ArrayList<CaptivePortalUserTable.StaleUser> staleUsers = app.captureUserTable.buildStaleList(app.getSettings().getIdleTimeout(), app.getSettings().getUserTimeout());
             int counter = 0;
 
             for (CaptivePortalUserTable.StaleUser item : staleUsers) {
