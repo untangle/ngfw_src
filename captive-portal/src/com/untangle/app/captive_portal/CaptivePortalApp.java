@@ -96,6 +96,15 @@ public class CaptivePortalApp extends AppBase
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
+    /**
+     * The application constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * 
+     * @param appProperties
+     *        The application properties
+     */
     public CaptivePortalApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -121,27 +130,22 @@ public class CaptivePortalApp extends AppBase
 // THIS IS FOR ECLIPSE - @formatter:on
 
     /**
-     * The UI components seem to automagically call getSettings and setSettings
-     * to handle the load and save stuff, so these functions just call our
-     * getCaptivePortalSettings and setCaptivePortalSettings functions.
+     * Get the application settings
+     * 
+     * @return The settings for the application instance
      */
-
     public CaptivePortalSettings getSettings()
-    {
-        return (getCaptivePortalSettings());
-    }
-
-    public void setSettings(CaptivePortalSettings newSettings)
-    {
-        this.setCaptivePortalSettings(newSettings);
-    }
-
-    public CaptivePortalSettings getCaptivePortalSettings()
     {
         return (this.captureSettings);
     }
 
-    public void setCaptivePortalSettings(CaptivePortalSettings newSettings)
+    /**
+     * Set the application settings
+     * 
+     * @param newSettings
+     *        The new application settings
+     */
+    public void setSettings(CaptivePortalSettings newSettings)
     {
         // this is an old settings that is no longer used so always
         // set to null so it will be removed from the config file
@@ -166,6 +170,15 @@ public class CaptivePortalApp extends AppBase
         return (captureUserTable.buildUserList());
     }
 
+    /**
+     * Increment a blinger
+     * 
+     * @param blingerType
+     *        The blinger to increment
+     * 
+     * @param delta
+     *        The amount to increment
+     */
     public void incrementBlinger(BlingerType blingerType, long delta)
     {
         switch (blingerType)
@@ -188,6 +201,9 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
+    /**
+     * Initialize new applications settings
+     */
     @Override
     public void initializeSettings()
     {
@@ -233,6 +249,12 @@ public class CaptivePortalApp extends AppBase
         applyAppSettings(localSettings);
     }
 
+    /**
+     * Initialize the cookie key used for cookie based authentication.
+     * 
+     * @param settings
+     *        The appliation settings
+     */
     private void initializeCookieKey(CaptivePortalSettings settings)
     {
         byte[] binaryKey = new byte[8];
@@ -240,6 +262,11 @@ public class CaptivePortalApp extends AppBase
         settings.initBinaryKey(binaryKey);
     }
 
+    /**
+     * Load the saved application settings.
+     * 
+     * @return The loaded application settings, or null if none were found
+     */
     private CaptivePortalSettings loadAppSettings()
     {
         CaptivePortalSettings readSettings = null;
@@ -251,7 +278,9 @@ public class CaptivePortalApp extends AppBase
             return (null);
         }
 
-        if (readSettings != null) logger.info("Loaded app settings from " + settingsFile);
+        if (readSettings == null) return (null);
+
+        logger.info("Loaded app settings from " + settingsFile);
 
         // if the old check certificate boolean is present we use it
         // to initialize the new certificate detection option
@@ -268,6 +297,12 @@ public class CaptivePortalApp extends AppBase
         return (readSettings);
     }
 
+    /**
+     * Save the application settings
+     * 
+     * @param argSettings
+     *        The application settings
+     */
     private void saveAppSettings(CaptivePortalSettings argSettings)
     {
         // set a unique id for each capture rule
@@ -285,12 +320,16 @@ public class CaptivePortalApp extends AppBase
         logger.info("Saved app settings to " + settingsFile);
     }
 
+    /**
+     * this function is called when settings are loaded or initialized it gives
+     * us a single place to do stuff when applying a new settings object to the
+     * app.
+     * 
+     * @param argSettings
+     *        The application settings to apply
+     */
     private void applyAppSettings(CaptivePortalSettings argSettings)
     {
-        // this function is called when settings are loaded or initialized
-        // it gives us a single place to do stuff when applying a new
-        // settings object to the app.
-
         this.captureSettings = argSettings;
     }
 
@@ -313,8 +352,21 @@ public class CaptivePortalApp extends AppBase
         {
             List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 
-            // for every session we have to check all the rules to make
-            // sure we don't kill anything that shouldn't be captured
+            /**
+             * For every session we have to check all the rules to make sure we
+             * don't kill anything that shouldn't be captured.
+             * 
+             * @param policyId
+             * @param protocol
+             * @param clientIntf
+             * @param serverIntf
+             * @param clientAddr
+             * @param serverAddr
+             * @param clientPort
+             * @param serverPort
+             * @param attachments
+             * @return True if the session matches, otherwise false
+             */
             public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
                 // if userAddress is not null and this session is for someone
@@ -355,12 +407,23 @@ public class CaptivePortalApp extends AppBase
         });
     }
 
+    /**
+     * Return the application pipeline connectors.
+     * 
+     * @return The application pipeline connectors.
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Called before the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
@@ -374,6 +437,12 @@ public class CaptivePortalApp extends AppBase
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
     }
 
+    /**
+     * Called after the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void postStart(boolean isPermanentTransition)
     {
@@ -386,6 +455,12 @@ public class CaptivePortalApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
     }
 
+    /**
+     * Called before the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
@@ -407,11 +482,20 @@ public class CaptivePortalApp extends AppBase
         captureUserCookieTable.purgeAllUsers();
     }
 
+    /**
+     * Called after the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag.
+     */
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
     }
 
+    /**
+     * Called after application initialization.
+     */
     @Override
     protected void postInit()
     {
@@ -433,18 +517,31 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
+    /**
+     * Called when the application is uninstalled.
+     */
     @Override
     protected void uninstall()
     {
         super.uninstall();
 
-        // create the custom path for this application instance
+        // remove the custom path for this application instance
         String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
 
         // run a script to remove the directory for the custom captive page
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
     }
 
+    /**
+     * Function to call our HTTP replacement generator to create the block page
+     * we return when traffic is captured for an unauthenticated user.
+     * 
+     * @param block
+     *        The block details
+     * @param session
+     *        The session details
+     * @return The response token
+     */
     protected Token[] generateResponse(CaptivePortalBlockDetails block, AppTCPSession session)
     {
         return replacementGenerator.generateResponse(block, session);
@@ -959,8 +1056,8 @@ public class CaptivePortalApp extends AppBase
      */
     public PassedAddress isSessionAllowed(InetAddress clientAddr, InetAddress serverAddr)
     {
-        List<PassedAddress> clientList = getCaptivePortalSettings().getPassedClients();
-        List<PassedAddress> serverList = getCaptivePortalSettings().getPassedServers();
+        List<PassedAddress> clientList = getSettings().getPassedClients();
+        List<PassedAddress> serverList = getSettings().getPassedServers();
         PassedAddress checker = null;
 
         // see if the client is in the pass list
@@ -1078,7 +1175,7 @@ public class CaptivePortalApp extends AppBase
             ArrayList<CaptivePortalUserEntry> userlist = UvmContextFactory.context().settingsManager().load(ArrayList.class, filename);
 
             HostTableEntry entry;
-            long userTimeout = getCaptivePortalSettings().getUserTimeout();
+            long userTimeout = getSettings().getUserTimeout();
             long currentTime = System.currentTimeMillis();
             boolean macAddressFlag;
             int usersLoaded = 0;
@@ -1178,12 +1275,23 @@ public class CaptivePortalApp extends AppBase
      */
     private class CustomPageUploadHandler implements UploadHandler
     {
+        /**
+         * @return The path name for this upload handler
+         */
         @Override
         public String getName()
         {
             return "CaptivePortal/custom_upload";
         }
 
+        /**
+         * Called when an file upload is submitted.
+         * 
+         * @param fileItem
+         * @param argument
+         * @return The result
+         * @throws Exception
+         */
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
@@ -1255,12 +1363,23 @@ public class CaptivePortalApp extends AppBase
      */
     private class CustomPageRemoveHandler implements UploadHandler
     {
+        /**
+         * @return The path name for this upload handler
+         */
         @Override
         public String getName()
         {
             return "CaptivePortal/custom_remove";
         }
 
+        /**
+         * Called when an uploaded file is removed.
+         * 
+         * @param fileItem
+         * @param argument
+         * @return The result
+         * @throws Exception
+         */
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
@@ -1278,20 +1397,28 @@ public class CaptivePortalApp extends AppBase
         }
     }
 
+    /**
+     * This hook is called when a host is removed from the host table. If the
+     * user is logged into captive portal the host table entry should never be
+     * removed. However it is removed if the MAC address changes (a different
+     * host) or something drastic occurs. In these cases we should log the host
+     * out.
+     */
     private class HostRemovedHookCallback implements HookCallback
     {
+        /**
+         * @return The name of this callback hook.
+         */
         public String getName()
         {
             return "captive-portal-host-removed-hook";
         }
 
         /**
-         * This hook is called when a host is removed from the host table. If
-         * the user is logged into captive portal the host table entry should
-         * never be removed.
+         * This is the callback function.
          * 
-         * However it is removed if the MAC address changes (a different host)
-         * or something drastic occurs. In this case we should log the host out.
+         * @param args
+         *        The arguments passed to the callback
          */
         public void callback(Object... args)
         {

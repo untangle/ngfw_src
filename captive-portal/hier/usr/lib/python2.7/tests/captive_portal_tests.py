@@ -251,7 +251,7 @@ class CaptivePortalTests(unittest2.TestCase):
             print "ERROR: App %s already installed" % self.appName()
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
-        appData = app.getCaptivePortalSettings()
+        appData = app.getSettings()
         if (uvmContext.appManager().isInstantiated(self.appNameAD())):
             print "ERROR: App %s already installed" % self.appNameAD()
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())

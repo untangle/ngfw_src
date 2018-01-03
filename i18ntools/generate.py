@@ -10,6 +10,8 @@ import json
 import os
 import sys
 import re
+import shutil
+import subprocess
 
 from subprocess import call
 
@@ -17,6 +19,8 @@ UNTANGLE_DIR = '%s/lib/python' % (os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
+
+Debug=False
 
 reload(sys)  
 sys.setdefaultencoding('utf8')
@@ -67,15 +71,48 @@ def get_keys(module):
                     process_json_file = False
 
             if process_json_file == False:
-                # xgettext does not support suffixes like "foo".t() only prefixes like _("foo")
-                # Instead we extract all strings with -a but we don't actually want ALL strings
-                # So we grep for t() to only process lines with t() on it.
-                # We also remove empty strings so xgettext wont complain
-                # and also remove all \r and \n from inside strings
+                ## xgettext does not support suffixes like "foo".t() only prefixes like _("foo")
+                ## Instead we extract all strings with -a but we don't actually want ALL strings
+                ## So we grep for t() to only process lines with t() on it.
+                ## We also remove empty strings so xgettext wont complain
+                ## and also remove all \r and \n from inside strings
 
-                # print '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^']+?)'\.t\(\)/_('\\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name)
-                call( '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^']+?)'\.t\(\)/_('\\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name), shell=True)
+                command = '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^'\\\\\\\\]*(?:\\\\\\\\.[^'\\\\\\\\]*))*'\.t\(\)/_('\\1')/g" | xgettext -j --copyright-holder="%s" -LJavascript -o %s -''' %(full_file_name, ngfw.copyright, pot.file_name)
+                try:
+                    pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    std_out, std_err = pipes.communicate()
+                    if pipes.returncode != 0:
+                        print "error!"
+                    elif len(std_err):
+                        print full_file_name
+                        print std_err
+                        sys.exit(1)
+                except Exception as e:
+                    print Exception
+                    print e
+                    print sys.exc_info()[0]
+                    sys.exit(1)
 
+                ##
+                ## Replace location of "standard input" with actual path .
+                ##
+                command = '''cat %s | sed 's@#: standard input:@#: %s:@g' > /tmp/generated-locations.pot''' %(pot.file_name, full_file_name)
+                try:
+                    pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    std_out, std_err = pipes.communicate()
+                    if pipes.returncode != 0:
+                        print "error!"
+                    elif len(std_err):
+                        print full_file_name
+                        print std_err
+                        sys.exit(1)
+                except Exception as e:
+                    print Exception
+                    print e
+                    print sys.exc_info()[0]
+                    sys.exit(1)
+
+                shutil.move("/tmp/generated-locations.pot", pot.file_name)
 
                 
         for file_name in fnmatch.filter(file_names, '*.py'):
@@ -85,7 +122,6 @@ def get_keys(module):
                 "-j",
                 "--copyright-holder=''" + ngfw.copyright + '"',
                 "-L", "Python",
-                "--no-location",
                 "-k_",
                 "-o", pot.file_name,
                 full_file_name
@@ -97,7 +133,6 @@ def get_keys(module):
                 "-j",
                 "--copyright-holder=''" + ngfw.copyright + '"',
                 "-L", "Java",
-                "--no-location",
                 "-ktr",
                 "-kmarktr",
                 "-o", pot.file_name,
@@ -119,6 +154,7 @@ def main(argv):
     Main entry for generate
     """
     global pot
+    global Debug
 
     try:
         opts, args = getopt.getopt(argv, "hpl:d", ["help", "debug"] )
@@ -129,6 +165,8 @@ def main(argv):
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
+        if opt in ( "-d", "--debug"):
+            Debug=True
 
     #
     # Process source files
@@ -157,8 +195,6 @@ def main(argv):
         print "Invalid string count: %d" % invalid_msg_id_count
     pot.save()
 
-    #if os.path.isfile(pot_file_name):
-    #    os.remove(pot_file_name)
     pot.rename(pot_file_name)
 
 if __name__ == "__main__":
