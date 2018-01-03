@@ -71,6 +71,9 @@ public class CaptivePortalSettings implements Serializable
     private String secretKey;
     private byte[] binaryKey;
 
+    /**
+     * Our constructor
+     */
     public CaptivePortalSettings()
     {
     }

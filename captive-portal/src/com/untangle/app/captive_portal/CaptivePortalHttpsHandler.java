@@ -32,6 +32,12 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptivePortalApp captureApp;
 
+    /**
+     * Our consturctor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     public CaptivePortalHttpsHandler(CaptivePortalApp app)
     {
         super(app);

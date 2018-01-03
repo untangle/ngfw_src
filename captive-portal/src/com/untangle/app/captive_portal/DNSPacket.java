@@ -111,8 +111,8 @@ class DNSPacket
      * Creates a DNS response packet using the qname that was previously
      * extracted and the argumented address.
      * 
-     * @param The
-     *        address to be used in the response A record
+     * @param address
+     *        The address to be used in the response A record
      * @return The raw DNS response packet
      */
     public ByteBuffer GenerateResponse(InetAddress address)

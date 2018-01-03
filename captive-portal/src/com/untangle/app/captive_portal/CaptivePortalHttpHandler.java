@@ -34,15 +34,17 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptivePortalApp app;
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Our contructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     CaptivePortalHttpHandler(CaptivePortalApp app)
     {
         super();
         this.app = app;
     }
-
-    // HttpEventHandler methods -----------------------------------------------
 
     /**
      * Main handler for HTTP requests allows traffic for authenticated users,
@@ -120,7 +122,7 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         host = host.toLowerCase();
 
         // allow things needed to make OAuth login work better only when enabled
-        CaptivePortalSettings.AuthenticationType authType = app.getCaptivePortalSettings().getAuthenticationType();
+        CaptivePortalSettings.AuthenticationType authType = app.getSettings().getAuthenticationType();
         if ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
 
             // google devices hit this before the user requested URL which breaks the post authentication redirect to the original destination 
@@ -154,17 +156,43 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         return requestHeader;
     }
 
+    /**
+     * Request body handler
+     * 
+     * @param session
+     *        The session
+     * 
+     * @param chunk
+     *        The chunk token
+     * 
+     * @return The chunk token
+     */
     @Override
     protected ChunkToken doRequestBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
+    /**
+     * Request body end handler
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doRequestBodyEnd(AppTCPSession session)
     {
     }
 
+    /**
+     * The response header handler
+     * 
+     * @param session
+     *        The session
+     * @param header
+     *        The header token
+     * @return The header token
+     */
     @Override
     protected HeaderToken doResponseHeader(AppTCPSession session, HeaderToken header)
     {
@@ -172,23 +200,57 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         return header;
     }
 
+    /**
+     * Response body handler
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk token
+     * @return The chunk token
+     */
     @Override
     protected ChunkToken doResponseBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
+    /**
+     * The response body end handler
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doResponseBodyEnd(AppTCPSession session)
     {
     }
 
+    /**
+     * The quest line handler
+     * 
+     * @param session
+     *        The session
+     * 
+     * @param requestLine
+     *        The request line token
+     * @return The request line token
+     */
     @Override
     protected RequestLineToken doRequestLine(AppTCPSession session, RequestLineToken requestLine)
     {
         return requestLine;
     }
 
+    /**
+     * The status line handler
+     * 
+     * @param session
+     *        The session
+     * @param statusLine
+     *        The status line
+     * @return The status line
+     */
     @Override
     protected StatusLine doStatusLine(AppTCPSession session, StatusLine statusLine)
     {
@@ -200,7 +262,6 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
      * 
      * @return Token containing the 503 response code
      */
-
     private Token[] generatePrefetchResponse()
     {
         Token response[] = new Token[4];
