@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 
@@ -150,7 +150,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
 
-        CaptivePortalSettings.AuthenticationType authType = captureApp.getCaptivePortalSettings().getAuthenticationType();
+        CaptivePortalSettings.AuthenticationType authType = captureApp.getSettings().getAuthenticationType();
 
         if (sniHostname != null) {
             // attach sniHostname to session just like SSL Inspector for use by rules 
@@ -438,7 +438,7 @@ public class CaptivePortalSSLEngine
 
         // if the redirectUsingHostname flag is set we use the configured
         // hostname otherwise we use the address of the client interface 
-        if (captureApp.getCaptivePortalSettings().getRedirectUsingHostname() == true) {
+        if (captureApp.getSettings().getRedirectUsingHostname() == true) {
             output.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
         } else {
             output.setHost(hostAddr.getHostAddress().toString());
@@ -448,7 +448,7 @@ public class CaptivePortalSSLEngine
         output.setPath("/capture/handler.py/index");
 
         // set the scheme and port appropriately
-        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) {
+        if (captureApp.getSettings().getAlwaysUseSecureCapture() == true) {
             output.setScheme("https");
             if (httpsPort != 443) output.setPort(httpsPort);
         } else {
@@ -472,7 +472,7 @@ public class CaptivePortalSSLEngine
 
         // if using Google authentication build the authentication redirect
         // and pass the output as the OAuth state, otherwise use directly
-        if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
+        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
             exauth.setScheme("https");
             exauth.setHost(CaptivePortalReplacementGenerator.GOOGLE_AUTH_HOST);
             exauth.setPath(CaptivePortalReplacementGenerator.GOOGLE_AUTH_PATH);
@@ -482,7 +482,7 @@ public class CaptivePortalSSLEngine
             exauth.addParameter("scope", "email");
             exauth.addParameter("state", output.toString());
             vector += "Location: " + exauth.toString() + "\r\n";
-        } else if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
+        } else if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
             exauth.setScheme("https");
             exauth.setHost(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_HOST);
             exauth.setPath(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_PATH);
@@ -492,7 +492,7 @@ public class CaptivePortalSSLEngine
             exauth.addParameter("scope", "email");
             exauth.addParameter("state", output.toString());
             vector += "Location: " + exauth.toString() + "\r\n";
-        } else if (captureApp.getCaptivePortalSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
+        } else if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
             exauth.setScheme("https");
             exauth.setHost(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_HOST);
             exauth.setPath(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_PATH);
@@ -717,14 +717,37 @@ public class CaptivePortalSSLEngine
      */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {
+        /**
+         * Called to check client trust
+         * 
+         * @param chain
+         *        The certificate chain
+         * @param authType
+         *        The authentication type
+         * @throws CertificateException
+         */
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * Called to check server trust
+         * 
+         * @param chain
+         *        The certificate chain
+         * @param authType
+         *        The authentication type
+         * @throws CertificateException
+         */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * Called to get accepted issuers
+         * 
+         * @return null to accept all issuers
+         */
         public X509Certificate[] getAcceptedIssuers()
         {
             return null;
