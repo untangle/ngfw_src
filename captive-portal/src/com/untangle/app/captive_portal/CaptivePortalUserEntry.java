@@ -15,7 +15,7 @@ import java.net.InetAddress;
  */
 
 @SuppressWarnings("serial")
-public class CaptivePortalUserEntry implements Serializable
+public class CaptivePortalUserEntry implements Serializable, org.json.JSONString
 {
     private String userAddress;
     private String userName;
@@ -69,5 +69,11 @@ public class CaptivePortalUserEntry implements Serializable
     {
         String local = ("NAME: " + userName + " ADDR:" + userAddress);
         return (local);
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

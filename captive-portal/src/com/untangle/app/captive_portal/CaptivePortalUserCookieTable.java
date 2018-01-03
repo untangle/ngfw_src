@@ -27,6 +27,9 @@ public class CaptivePortalUserCookieTable
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String, CaptivePortalUserEntry> userTable;
 
+    /**
+     * Constructor
+     */
     public CaptivePortalUserCookieTable()
     {
         userTable = new Hashtable<String, CaptivePortalUserEntry>();

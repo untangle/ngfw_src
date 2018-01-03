@@ -16,7 +16,7 @@ import com.untangle.uvm.app.IPMatcher;
  */
 
 @SuppressWarnings("serial")
-public class PassedAddress
+public class PassedAddress implements java.io.Serializable, org.json.JSONString
 {
     private boolean enabled = true;
     private boolean log = false;
@@ -42,4 +42,9 @@ public class PassedAddress
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }
