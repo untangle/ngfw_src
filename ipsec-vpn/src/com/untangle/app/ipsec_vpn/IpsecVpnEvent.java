@@ -20,7 +20,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 
 @SuppressWarnings("serial")
-public class IpsecVpnEvent extends LogEvent implements Serializable
+public class IpsecVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType
     {
@@ -44,57 +44,21 @@ public class IpsecVpnEvent extends LogEvent implements Serializable
         this.type = type;
     }
 
-    /**
-     * Address of the remote server
-     */
-    public String getRemoteAddress()
-    {
-        return this.remoteAddress;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
+    
+    public String getRemoteAddress() { return this.remoteAddress; }
+    public void setRemoteAddress(String newValue) { this.remoteAddress = newValue; }
 
-    public void setRemoteAddress(String newValue)
-    {
-        this.remoteAddress = newValue;
-    }
+    public String getLocalAddress() { return this.localAddress; }
+    public void setLocallAddress(String newValue) { this.localAddress = newValue; }
 
-    /**
-     * Address of the local server
-     */
-    public String getLocalAddress()
-    {
-        return this.localAddress;
-    }
+    public String getTunnelDescription() { return this.tunnelDescription; }
+    public void setTunnelDescription(String newValue) { this.tunnelDescription = newValue; }
 
-    public void setLocallAddress(String newValue)
-    {
-        this.localAddress = newValue;
-    }
+    public EventType getEventType() { return this.type; }
+    public void setEventType(EventType newValue) { this.type = newValue; }
 
-    /**
-     * Description of the tunnel for which the event was recorded
-     */
-    public String getTunnelDescription()
-    {
-        return this.tunnelDescription;
-    }
-
-    public void setTunnelDescription(String newValue)
-    {
-        this.tunnelDescription = newValue;
-    }
-
-    /**
-     * Type of event
-     */
-    public EventType getEventType()
-    {
-        return this.type;
-    }
-
-    public void setEventType(EventType newValue)
-    {
-        this.type = newValue;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     @Override
     public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
