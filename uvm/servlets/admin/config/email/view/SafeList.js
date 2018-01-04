@@ -54,7 +54,7 @@ Ext.define('Ung.config.email.view.SafeList', {
                 allowBlank: false,
                 bind: '{record.emailAddress}',
                 emptyText: '[enter email]'.t(),
-                vtype: 'email'
+                // vtype: 'email'
             },
             renderer: function (value) {
                 if (!value || value.length === 0) {
