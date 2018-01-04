@@ -9,6 +9,12 @@ import java.util.Hashtable;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+/**
+ * Class to represent the application control settings
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class ApplicationControlSettings implements java.io.Serializable, JSONString
 {
@@ -17,35 +23,18 @@ public class ApplicationControlSettings implements java.io.Serializable, JSONStr
     private Hashtable<String, ApplicationControlProtoRule> protoHash = null;
     private boolean daemonDebug = false;
 
-    public LinkedList<ApplicationControlProtoRule> getProtoRules()
-    {
-        return (protoList);
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setProtoRules(LinkedList<ApplicationControlProtoRule> protoList)
-    {
-        this.protoList = protoList;
-    }
+    public LinkedList<ApplicationControlProtoRule> getProtoRules() { return (protoList); }
+    public void setProtoRules(LinkedList<ApplicationControlProtoRule> protoList) { this.protoList = protoList; }
 
-    public LinkedList<ApplicationControlLogicRule> getLogicRules()
-    {
-        return (logicList);
-    }
+    public LinkedList<ApplicationControlLogicRule> getLogicRules() { return (logicList); }
+    public void setLogicRules(LinkedList<ApplicationControlLogicRule> logicList) { this.logicList = logicList; }
 
-    public void setLogicRules(LinkedList<ApplicationControlLogicRule> logicList)
-    {
-        this.logicList = logicList;
-    }
+    public boolean getDaemonDebug() { return (daemonDebug); }
+    public void setDaemonDebug(boolean daemonDebug) { this.daemonDebug = daemonDebug; }
 
-    public boolean getDaemonDebug()
-    {
-        return (daemonDebug);
-    }
-
-    public void setDaemonDebug(boolean daemonDebug)
-    {
-        this.daemonDebug = daemonDebug;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     public void applyAppRules(ApplicationControlStatistics statistics)
     {

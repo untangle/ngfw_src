@@ -1,6 +1,7 @@
 /**
  * $Id: ApplicationControlApp.java 41228 2015-09-11 22:45:38Z dmorris $
  */
+
 package com.untangle.app.application_control;
 
 import java.net.InetAddress;
@@ -36,6 +37,14 @@ import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
+/**
+ * The Application Control application passes network traffic to the classd
+ * daemon for categorization which is used to manage traffic based on rules and
+ * application configuration.
+ * 
+ * @author mahotz
+ * 
+ */
 public class ApplicationControlApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -66,13 +75,22 @@ public class ApplicationControlApp extends AppBase
     protected ApplicationControlSettings settings;
 
     /*
-     * appInstanceCount stores the number of this app type initialized thus
-     * far appInstanceNum stores the number of this given app type This is
-     * done so each app of this type has a unique sequential identifier
+     * appInstanceCount stores the number of this app type initialized thus far
+     * appInstanceNum stores the number of this given app type This is done so
+     * each app of this type has a unique sequential identifier
      */
     private static int appInstanceCount = 0;
     private final int appInstanceNum;
 
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * 
+     * @param appProperties
+     *        The application properties
+     */
     public ApplicationControlApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
@@ -94,29 +112,39 @@ public class ApplicationControlApp extends AppBase
         statistics = new ApplicationControlStatistics();
     }
 
+    /**
+     * @return Cumulative traffic statistics
+     */
     public ApplicationControlStatistics getStatistics()
     {
         return (statistics);
     }
 
+    /**
+     * Get the application settings
+     * 
+     * @return The application settings
+     */
     public ApplicationControlSettings getSettings()
     {
         return (settings);
     }
 
+    /**
+     * Set the application settings
+     * 
+     * @param newSettings
+     *        The new settings
+     */
     public void setSettings(ApplicationControlSettings newSettings)
     {
-        /*
-         * Give each rule a unique ID before saving
-         */
+        // Give each rule a unique ID before saving
         int idx = this.policyId * 100000;
         for (ApplicationControlLogicRule rule : newSettings.getLogicRules()) {
             rule.setId(++idx);
         }
 
-        /*
-         * Set flag for all "block" rules
-         */
+        // Set flag for all "block" rules
         for (ApplicationControlProtoRule rule : newSettings.getProtoRules()) {
             if (rule.getBlock()) rule.setFlag(Boolean.TRUE);
         }
@@ -131,16 +159,28 @@ public class ApplicationControlApp extends AppBase
         }
 
         this.settings = newSettings;
-
         validateAllSessions();
     }
 
+    /**
+     * Function to log traffic status events to the debug log
+     * 
+     * @param evt
+     *        The event to log
+     * @param extraInfo
+     *        Extra info to be logged
+     */
     public void logStatusEvent(LogEvent evt, String extraInfo)
     {
-        logger.debug("LOG EVENT (" + extraInfo + ") = " + evt.toString());
-        logEvent(evt);
+        if (logger.isDebugEnabled()) {
+            logger.debug("LOG EVENT (" + extraInfo + ") = " + evt.toString());
+            logEvent(evt);
+        }
     }
 
+    /**
+     * Function to initialize application settings
+     */
     @Override
     public void initializeSettings()
     {
@@ -154,14 +194,25 @@ public class ApplicationControlApp extends AppBase
         this.setSettings(this.settings);
     }
 
+    /**
+     * Function to return our pipeline connectors
+     * 
+     * @return Our pipeline connectors
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Called before the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
         // connect to the controller singleton
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-classd");
@@ -180,8 +231,14 @@ public class ApplicationControlApp extends AppBase
         socketStartup();
     }
 
+    /**
+     * Called after the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag.
+     */
     @Override
-    protected void postStop(  boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
         // stop daemon
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-classd");
@@ -190,6 +247,9 @@ public class ApplicationControlApp extends AppBase
         socketDestroy();
     }
 
+    /**
+     * Called after application initialization.
+     */
     @Override
     protected void postInit()
     {
@@ -225,9 +285,11 @@ public class ApplicationControlApp extends AppBase
         }
     }
 
+    /**
+     * Called to setup the socket we use to communicate with the classd daemon.
+     */
     protected void socketStartup()
     {
-
         // connect the search socket to the daemon
         try {
             daemonSocket = SocketChannel.open();
@@ -246,6 +308,10 @@ public class ApplicationControlApp extends AppBase
         }
     }
 
+    /**
+     * Called to shut down the socket we use to communicate with the classd
+     * daemon.
+     */
     protected void socketDestroy()
     {
         try {
@@ -284,6 +350,12 @@ public class ApplicationControlApp extends AppBase
         daemonSocket = null;
     }
 
+    /**
+     * Function to see if the classd daemon is running by attempting to connect
+     * to the socket where it listens for connections
+     * 
+     * @return True if daemon is running, otherwise false
+     */
     protected boolean daemonCheck()
     {
         Socket sock = new Socket();
@@ -300,13 +372,22 @@ public class ApplicationControlApp extends AppBase
         return (true);
     }
 
+    /**
+     * Check for a valid license
+     * 
+     * @return True if license is valid, otherwise false
+     */
     public boolean isLicenseValid()
     {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.APPLICATION_CONTROL))
-            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.APPLICATION_CONTROL)) return true;
         return false;
     }
 
+    /**
+     * Create the default rules
+     * 
+     * @return The default rules
+     */
     private LinkedList<ApplicationControlLogicRule> buildDefaultRules()
     {
         LinkedList<ApplicationControlLogicRule> logicRules = new LinkedList<ApplicationControlLogicRule>();
@@ -388,17 +469,32 @@ public class ApplicationControlApp extends AppBase
         rule.setId(ruleNumber++);
         logicRules.add(rule);
 
-        return logicRules;
+        return (logicRules);
     }
 
+    /**
+     * Function to validate all sessions using the active settings
+     */
     private void validateAllSessions()
     {
-        // shut down any outstanding sessions that would not be allowed
-        //  based on the active application (protolist) rules 
         this.killMatchingSessions(new SessionMatcher()
         {
             List<ApplicationControlProtoRule> protoList = settings.getProtoRules();
 
+            /**
+             * Look at every active session and apply the current protocol rules
+             * 
+             * @param policyId
+             * @param protocol
+             * @param clientIntf
+             * @param serverIntf
+             * @param clientAddr
+             * @param serverAddr
+             * @param clientPort
+             * @param serverPort
+             * @param attachments
+             * @return True if the session matches, otherwise false
+             */
             // look at every active session and apply the current proto rules
             public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
