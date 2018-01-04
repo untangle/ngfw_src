@@ -1,6 +1,7 @@
 /**
  * $Id: ApplicationControlLogicRuleAction.java 37269 2014-02-26 23:46:16Z dmorris $
  */
+
 package com.untangle.app.application_control;
 
 import java.io.Serializable;
@@ -15,8 +16,14 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * Class used to represent the action associated with a logic rule
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class ApplicationControlLogicRuleAction implements JSONString, Serializable
+public class ApplicationControlLogicRuleAction implements java.io.Serializable, org.json.JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -26,7 +33,6 @@ public class ApplicationControlLogicRuleAction implements JSONString, Serializab
     }
 
     private ActionType action = null;
-
     private Boolean flag = Boolean.FALSE;
 
     public ApplicationControlLogicRuleAction()
@@ -39,42 +45,16 @@ public class ApplicationControlLogicRuleAction implements JSONString, Serializab
         setFlag(flag);
     }
 
-    /**
-     * Get the action type for this action
-     */
-    public ActionType getActionType()
-    {
-        return this.action;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    /**
-     * Set the action type for this action
-     */
-    public void setActionType(ActionType action)
-    {
-        this.action = action;
-    }
+    public ActionType getActionType() { return this.action; }
+    public void setActionType(ActionType action) { this.action = action; }
 
-    /**
-     * Should this rule be flagged
-     */
-    public Boolean getFlag()
-    {
-        return this.flag;
-    }
+    public Boolean getFlag() { return this.flag; }
+    public void setFlag(Boolean flag) { this.flag = flag; }
 
-    /**
-     * Set the flag action for this rule
-     */
-    public void setFlag(Boolean flag)
-    {
-        this.flag = flag;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
-    /**
-     * This prints this action in JSON format This is used for JSON
-     * serialization
-     */
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
