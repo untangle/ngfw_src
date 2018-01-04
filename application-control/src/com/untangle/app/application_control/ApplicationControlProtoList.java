@@ -1,6 +1,7 @@
 /**
  * $Id: ApplicationControlProtoList.java 40861 2015-08-03 23:41:20Z mahotz $
  */
+
 package com.untangle.app.application_control;
 
 import java.util.LinkedList;
@@ -14,28 +15,44 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
+/**
+ * Class for managing the list of Vineyard/Procera/SandVine applications which
+ * we unfortunately call protocols.
+ * 
+ * @author mahotz
+ * 
+ */
 public class ApplicationControlProtoList
 {
     private final Logger logger = Logger.getLogger(getClass());
     private ApplicationControlApp app;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application that created us
+     */
     public ApplicationControlProtoList(ApplicationControlApp app)
     {
         this.app = app;
     }
 
-    /*
-     * The following insanity was created to allow changes and additions to the
-     * Vineyard protocol list to be incorporated in the list of protocols that
-     * are saved in the app settings. First we look for protocols that have been
-     * removed from vineyard and remove them from our working list. Then we look
-     * for new protocols added to Vineyard that we don't know about and add them
-     * to our working list. In the middle of all of this we look for differences
-     * between our rules and the vineyard rules so we can pull in any chages to
-     * name, description, category, etc. We use a counter to keep track of
-     * differences so we can return null if nothing changed.
+    /**
+     * This function was created to allow changes and additions to the vendor
+     * protocol list to be incorporated in the list of protocols that are saved
+     * in the app settings. First we look for protocols that have been removed
+     * from the vendor list and remove them from our working list. Then we look
+     * for new protocols added to the vendor list that we don't know about and
+     * add them to our working list. In the middle of all of this we look for
+     * differences between our rules and the vendor rules so we can pull in any
+     * chages to name, description, category, etc. We use a counter to keep
+     * track of differences so we can return null if nothing changed.
+     * 
+     * @param loadedList
+     *        The list of applications provided by the vendor which
+     * @return The merged list of applications
      */
-
     public LinkedList<ApplicationControlProtoRule> mergeProtoList(LinkedList<ApplicationControlProtoRule> loadedList)
     {
         LinkedList<ApplicationControlProtoRule> vineyardList = buildProtoList();
@@ -111,6 +128,15 @@ public class ApplicationControlProtoList
         // sort the new and improved protocol list by name
         masterList.sort(new Comparator<ApplicationControlProtoRule>()
         {
+            /**
+             * Function to compare to application protocol rules using the name
+             * 
+             * @param r1
+             *        The first rule to compare
+             * @param r2
+             *        The second rule to compare
+             * @return The compare result
+             */
             @Override
             public int compare(ApplicationControlProtoRule r1, ApplicationControlProtoRule r2)
             {
@@ -122,14 +148,15 @@ public class ApplicationControlProtoList
         return (masterList);
     }
 
-    /*
-     * The vineyard protocol list is created by loading and parsing the metadata
-     * file that is provided by Vineyard in CSV format. I'm using a very simple
+    /**
+     * The protocol list is created by loading and parsing the metadata file
+     * that is provided by the vendor in CSV format. I'm using a very simple
      * state machine thingy to parse the ten fields. It handles both quoted and
      * unquoted fields, commas within a quoted field, and even escaped quotes
      * within a quoted field. Other than that, all bets are off.
+     * 
+     * @return The list of protocols
      */
-
     public LinkedList<ApplicationControlProtoRule> buildProtoList()
     {
         LinkedList<ApplicationControlProtoRule> ruleList = new LinkedList<ApplicationControlProtoRule>();
