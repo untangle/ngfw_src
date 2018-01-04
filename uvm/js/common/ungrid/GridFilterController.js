@@ -3,13 +3,14 @@ Ext.define('Ung.cmp.GridFilterController', {
 
     alias: 'controller.ungridfilter',
 
-    filterEventList: function (field, value) {
+    filterEventList: function () {
         var me = this,
-            v = me.getView(),
-            grid = v.up('panel').down('grid'),
+            field = me.getView(),
+            value = field.getValue(),
+            grid = field.up('panel').down('grid'),
             cols = grid.getVisibleColumns(),
-            routeFilter = v.up('panel').routeFilter,
-            gridStatus = v.up('panel').down('ungridstatus');
+            routeFilter = field.up('panel').routeFilter,
+            gridStatus = field.up('panel').down('ungridstatus');
 
         grid.getStore().clearFilter();
 
