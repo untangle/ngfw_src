@@ -44,7 +44,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         ls.setSource( source );
         lm.setLanguageSettings( ls );
     }
-    
+
     public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
@@ -92,7 +92,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     {
         return this.context.languageManager().getTranslations("untangle");
     }
-    
+
     /**
      * This call returns one big JSONObject with references to all the important
      * information This is used to avoid lots of separate synchornous calls via
@@ -110,6 +110,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("oemName", this.context.oemManager().getOemName());
             json.put("fullVersionAndRevision", this.context.adminManager().getFullVersionAndRevision());
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
+            json.put("language", this.context.languageManager().getLanguageSettings().getLanguage());
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
             json.put("wizardSettings", this.context.getWizardSettings());
         } catch (Exception e) {
