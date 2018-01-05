@@ -1,10 +1,10 @@
 {
-    "authentication": {
+    "lauthentication": {
         "url": "https://192.168.252.50/",
         "user": "admin",
         "password": "Passwd123!"
     },
-    "lauthentication": {
+    "authentication": {
         "url": "https://demo.untangle.com/"
     },
     "resolutions": [
