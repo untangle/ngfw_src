@@ -42,6 +42,15 @@ import com.untangle.uvm.servlet.UploadHandler;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
+/**
+ * The SSL Inspector application performs MitM decryption/encryption of secure
+ * communications to allow the unencrypted traffic to pass through and benefit
+ * from all of the other applications.
+ * 
+ * @author mahotz
+ * 
+ */
+
 public class SslInspectorApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(SslInspectorApp.class);
@@ -64,6 +73,14 @@ public class SslInspectorApp extends AppBase
     private TrustManagerFactory trustFactory;
     private SslInspectorSettings settings;
 
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * @param appProperties
+     *        The application properties
+     */
     public SslInspectorApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
@@ -95,8 +112,9 @@ public class SslInspectorApp extends AppBase
         TrustCatalog.staticInitialization(logger);
     }
 
-    // overriden functions ----------------------------------------------------
-
+    /**
+     * Called before the application is initialized
+     */
     @Override
     protected void preInit()
     {
@@ -127,7 +145,7 @@ public class SslInspectorApp extends AppBase
 
                 // between v1 and v2 we added a new default rule to scan secure SMTP traffic
                 if (readSettings.getVersion().intValue() < 2) {
-                    SslInspectorRule addRule = createDefaultRule(0, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);                    
+                    SslInspectorRule addRule = createDefaultRule(0, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);
                     readSettings.getIgnoreRules().addFirst(addRule);
                     int idx = 1;
                     for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
@@ -153,19 +171,33 @@ public class SslInspectorApp extends AppBase
         }
     }
 
+    /**
+     * Return the application pipeline connectors.
+     * 
+     * @return The application pipeline connectors.
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
-    // public functions -------------------------------------------------------
-
+    /**
+     * Get the application settings
+     * 
+     * @return The settings for the application instance
+     */
     public SslInspectorSettings getSettings()
     {
         return settings;
     }
 
+    /**
+     * Set the application settings
+     * 
+     * @param newSettings
+     *        The new application settings
+     */
     public void setSettings(final SslInspectorSettings newSettings)
     {
         String appID = this.getAppSettings().getId().toString();
@@ -183,6 +215,12 @@ public class SslInspectorApp extends AppBase
         reconfigure();
     }
 
+    /**
+     * Returns the list of certificates and authorities we trust when connecting
+     * to secure servers as a client.
+     * 
+     * @return Our list of trusted certificates and authorities
+     */
     public List<TrustedCertificate> getTrustCatalog()
     {
         List<TrustedCertificate> trustCatalog;
@@ -199,25 +237,43 @@ public class SslInspectorApp extends AppBase
         return (trustCatalog);
     }
 
+    /**
+     * Used to remove a user added trusted certificate
+     * 
+     * @param certAlias
+     *        The alias of the certificate to remove
+     */
     public void removeTrustedCertificate(String certAlias)
     {
         TrustCatalog.removeTrustedCertificate(certAlias);
         reconfigure();
     }
 
+    /**
+     * Returns our trust manager factory which is loaded with the standard and
+     * user added certificates and authorities we trust.
+     * 
+     * @return Our trust manager factory
+     */
     public TrustManagerFactory getTrustFactory()
     {
         return (trustFactory);
     }
 
+    /**
+     * Check for a valid license
+     * 
+     * @return True if license is valid, otherwise false
+     */
     public boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR)) return true;
         return false;
     }
 
-    // private functions ------------------------------------------------------
-
+    /**
+     * This function is called whenever settings change
+     */
     private void reconfigure()
     {
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CertificateUploadHandler());
@@ -247,6 +303,11 @@ public class SslInspectorApp extends AppBase
         }
     }
 
+    /**
+     * Creates our list of default rules
+     * 
+     * @return A list of default rules
+     */
     private LinkedList<SslInspectorRule> generateDefaultRules()
     {
         LinkedList<SslInspectorRule> defaultRules = new LinkedList<SslInspectorRule>();
@@ -271,11 +332,22 @@ public class SslInspectorApp extends AppBase
         return defaultRules;
     }
 
-    private SslInspectorRule createDefaultRule(int ruleNumber, String ruleDescription,
-            SslInspectorRuleCondition.ConditionType matcherOneType, String matcherOneString,
-            SslInspectorRuleCondition.ConditionType matcherTwoType, String matcherTwoString,
-            SslInspectorRuleCondition.ConditionType matcherThreeType, String matcherThreeString,            
-            SslInspectorRuleAction.ActionType actionType, boolean isLive)
+    /**
+     * Creates a rule from passed parameters
+     * 
+     * @param ruleNumber
+     * @param ruleDescription
+     * @param matcherOneType
+     * @param matcherOneString
+     * @param matcherTwoType
+     * @param matcherTwoString
+     * @param matcherThreeType
+     * @param matcherThreeString
+     * @param actionType
+     * @param isLive
+     * @return A rule created using the passed parameters
+     */
+    private SslInspectorRule createDefaultRule(int ruleNumber, String ruleDescription, SslInspectorRuleCondition.ConditionType matcherOneType, String matcherOneString, SslInspectorRuleCondition.ConditionType matcherTwoType, String matcherTwoString, SslInspectorRuleCondition.ConditionType matcherThreeType, String matcherThreeString, SslInspectorRuleAction.ActionType actionType, boolean isLive)
     {
         SslInspectorRule rule;
         LinkedList<SslInspectorRuleCondition> matchers;
@@ -310,14 +382,31 @@ public class SslInspectorApp extends AppBase
         return (rule);
     }
 
+    /**
+     * This is the handler for uploading trusted certificates
+     * 
+     * @author mahotz
+     * 
+     */
     private class CertificateUploadHandler implements UploadHandler
     {
+        /**
+         * @return The path name for this upload handler
+         */
         @Override
         public String getName()
         {
             return "trusted_cert";
         }
 
+        /**
+         * Called when a certificate is uploaded
+         * 
+         * @param fileItem
+         * @param argument
+         * @return The result
+         * @throws Exception
+         */
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
@@ -328,7 +417,7 @@ public class SslInspectorApp extends AppBase
         }
     }
 
-    /*
+    /**
      * Some servers are misconfigured and may return the TLS unrecognized_name
      * warning when an misconfigured SNI name is included in the ClientHello
      * message. Browsers normally ignore, but it causes Java to fail the
@@ -336,9 +425,11 @@ public class SslInspectorApp extends AppBase
      * handshake over, so instead we keep a list of servers and names that
      * generate the error. When a match is found, we'll disable SNI during
      * subsequent handshake attempts. Most clients seem to try more than once,
-     * so the second attempt will succeed.
+     * so the second attempt should succeed.
+     * 
+     * @param brokenServer
+     *        The address of the broken server
      */
-
     protected void addBrokenServer(String brokenServer)
     {
         if ((brokenServerList.contains(brokenServer)) == false) {
@@ -346,6 +437,13 @@ public class SslInspectorApp extends AppBase
         }
     }
 
+    /**
+     * Checks the broken server list for the argumented address
+     * 
+     * @param brokenServer
+     *        The address to match
+     * @return True if the server is in our list, otherwise false
+     */
     protected boolean checkBrokenServer(String brokenServer)
     {
         return (brokenServerList.contains(brokenServer));
