@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: TrustedCertificate.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -8,6 +8,13 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This class is used to store the details of a trusted certificate that has
+ * been uploaded by the user.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class TrustedCertificate implements JSONString, Serializable
 {

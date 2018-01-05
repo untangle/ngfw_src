@@ -31,21 +31,22 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
-/*
+/**
  * The parser handles converting the encrypted stream of SSL traffic to
- * plain-text traffic. On both the client and server side of the casing
- * we have to complete the SSL handshake before application data can flow.
- * The process begins when we receive the initial ClientHello message. We
- * need the server side handshake to complete first, so the initial
- * ClientHello is saved in the casing and a dummy message is passed to the
- * server to initiate the handshake on that side. Data goes back and forth
- * between the casing and server until the handshake is complete, at which
- * point we pass a dummy message back allowing the client side handshake to
- * continue. Once the handshake is complete on both sides, dataMode is
- * active from end to end and traffic can flow freely back and forth until
- * the connection is terminated.
+ * plain-text traffic. On both the client and server side of the casing we have
+ * to complete the SSL handshake before application data can flow. The process
+ * begins when we receive the initial ClientHello message. We need the server
+ * side handshake to complete first, so the initial ClientHello is saved in the
+ * casing and a dummy message is passed to the server to initiate the handshake
+ * on that side. Data goes back and forth between the casing and server until
+ * the handshake is complete, at which point we pass a dummy message back
+ * allowing the client side handshake to continue. Once the handshake is
+ * complete on both sides, dataMode is set which allows end to end and traffic
+ * to flow freely back and forth until the connection is terminated.
+ * 
+ * @author mahotz
+ * 
  */
-
 public class SslInspectorParserEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -53,6 +54,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     private final SslInspectorApp app;
     private final boolean clientSide;
 
+    /**
+     * Constructor
+     * 
+     * @param clientSide
+     *        True for client side, false for server
+     * @param app
+     *        The application that created us
+     */
     protected SslInspectorParserEventHandler(boolean clientSide, SslInspectorApp app)
     {
         super();
@@ -60,7 +69,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         this.app = app;
     }
 
-    // ------------------------------------------------------------------------
+    /**
+     * We do a license check for all new session requests and release the
+     * session if our license is not valid.
+     * 
+     * @param sessionRequest
+     *        The new session request
+     */
 
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
@@ -72,16 +87,22 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * We handle new sessions by creating a manager and attaching to the
+     * session. We also attach a special flag letting other apps know we're
+     * doing inspection.
+     * 
+     * @param session
+     *        The TCP session
+     */
     @Override
     public void handleTCPNewSession(AppTCPSession session)
     {
 
         SslInspectorManager manager = new SslInspectorManager(session, clientSide, app);
 
-        if (clientSide)
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER, manager);
-        else
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER, manager);
+        if (clientSide) session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER, manager);
+        else session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER, manager);
 
         // attach something to let everyone else know we are working the session 
         session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.TRUE);
@@ -93,6 +114,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         session.serverReadLimit(32768);
     }
 
+    /**
+     * Main handler for data receive from the client
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     */
     @Override
     public void handleTCPClientChunk(AppTCPSession session, ByteBuffer data)
     {
@@ -104,6 +133,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Main handler for data received from the server
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     */
     @Override
     public void handleTCPServerChunk(AppTCPSession session, ByteBuffer data)
     {
@@ -115,6 +152,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handler for end of client data
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     */
     @Override
     public void handleTCPClientDataEnd(AppTCPSession session, ByteBuffer data)
     {
@@ -126,6 +171,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handler for end of server data
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     */
     @Override
     public void handleTCPServerDataEnd(AppTCPSession session, ByteBuffer data)
     {
@@ -137,8 +190,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // private methods --------------------------------------------------------
-
+    /**
+     * This is the handler for all data received.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @param s2c
+     *        True for server to client, false for client to server
+     */
     private void streamParse(AppTCPSession session, ByteBuffer data, boolean s2c)
     {
         SslInspectorManager manager = getManager(session);
@@ -194,6 +255,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * This is the main data parser
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @param manager
+     *        The SSL manager
+     */
     public void parse(AppTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
         String sslProblem = null;
@@ -262,16 +333,20 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         return;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * This function is called to shut down the other side of the casing
+     * 
+     * @param session
+     *        The TCP session
+     * @param killSession
+     *        True to kill session, false to release
+     */
     private void shutdownOtherSide(AppTCPSession session, boolean killSession)
     {
         ByteBuffer message = ByteBuffer.allocate(256);
 
-        if (killSession == true)
-            message.put(SslInspectorManager.IPC_DESTROY_MESSAGE);
-        else
-            message.put(SslInspectorManager.IPC_RELEASE_MESSAGE);
+        if (killSession == true) message.put(SslInspectorManager.IPC_DESTROY_MESSAGE);
+        else message.put(SslInspectorManager.IPC_RELEASE_MESSAGE);
 
         message.flip();
 
@@ -285,8 +360,18 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * This is the main parser worker where we sit in a loop passing data to the
+     * SSLEngine, reading the handshake status, and doing whatever it tells us
+     * to do until there is nothing left to be done.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return True if everything is fine, false for any error or failure
+     * @throws Exception
+     */
     private boolean parseWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -431,9 +516,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         return done;
     }
 
-    // ------------------------------------------------------------------------
-
-    /*
+    /**
      * If we're on the client side and dataMode is not yet active, we have the
      * initial TLS ClientHello message. We first try to extract the SNI hostname
      * from the message. Next we check the session against the RuleCondition.
@@ -449,8 +532,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
      * the initial chunk of data for later and pass a dummy message to the
      * server unparser to start the handshake between us and the external
      * server.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @throws Exception
      */
-
     private void handleClientHello(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -492,10 +580,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             ruleMatch.setRuleId(0);
             ruleMatch.setDescription(exn.getMessage());
 
-            if (app.getSettings().getBlockInvalidTraffic() == true)
-                ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.BLOCK, true));
-            else
-                ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
+            if (app.getSettings().getBlockInvalidTraffic() == true) ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.BLOCK, true));
+            else ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
 
             // if the message was null this was unexpected so log a warning
             if (exn.getMessage() == null) logger.warn("Exception parsing SNI hostname", exn);
@@ -610,8 +696,18 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         server.getSession().simulateClientData(wakeup);
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_TASK. We call run for all outstanding
+     * tasks and then return false to break out of the parser processing loop so
+     * we can receive more data.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return False
+     * @throws Exception
+     */
     private boolean doNeedTask(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -625,8 +721,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         return false;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_UNWRAP
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNeedUnwrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -647,10 +751,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             data.compact();
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
-            if (manager.getClientSide())
-                session.setClientBuffer(data);
-            else
-                session.setServerBuffer(data);
+            if (manager.getClientSide()) session.setClientBuffer(data);
+            else session.setServerBuffer(data);
             return true;
         }
 
@@ -700,8 +802,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_WRAP
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNeedWrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -741,6 +851,18 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Called when we receive data and dataMode is true, meaning we're done with
+     * the handshake and we're now passing data back and forth between the two
+     * sides.
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNotHandshaking(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
@@ -872,11 +994,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         return true;
     }
 
+    /**
+     * Gets the client or server side manager attached to the session
+     * 
+     * @param session
+     *        The TCP session
+     * @return The appropriate client or server side manager
+     */
     private SslInspectorManager getManager(AppTCPSession session)
     {
-        if (clientSide)
-            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
-        else
-            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+        if (clientSide) return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+        else return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
 }
