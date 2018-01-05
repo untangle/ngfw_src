@@ -130,9 +130,26 @@ class WebBrowser:
         last_progressbar_count = 0
         max_sleep = 20
         while max_sleep > 0:
-            progressbars = self.driver.find_elements_by_css_selector("div[id^=loadmask][role=progressbar]")
+            if self.errors_detected() is True:
+                print "Found error!"
+                return False
+
+            try:
+                progressbars = self.driver.find_elements_by_css_selector("div[id^=loadmask][role=progressbar]")
+            except Exception:
+                pass
+                max_sleep -= 1
+                continue
+
+            if len(progressbars) == 0:
+                # Wait until we see at least one progress bar.
+                time.sleep(.5)
+                max_sleep -= 1
+                continue
+
             if len(progressbars) != last_progressbar_count:
                 last_progressbar_count = len(progressbars)
+                max_sleep -= 1
                 continue
 
             all_none_displayed = True
@@ -147,24 +164,35 @@ class WebBrowser:
                     all_none_displayed = False
                     pass
 
+            all_images_complete=True
             images = self.driver.find_elements_by_css_selector("img")
             for image in images:
                 try:
                     if image.get_attribute("complete") is None:
                         if Debug:
                             print "Waiting for image " + image_get_attribute("name")
-                        all_none_displayed = False
+                        all_images_complete = False
                 except Exception:
                     if Debug:
                         print "Problem getting image attribute"
-                    all_none_displayed = False
+                    all_images_complete = False
                     pass
 
-            if all_none_displayed is True:
+            if Debug:
+                print
+                print "all_none_displayed=" + str(all_none_displayed) + ", all_images_complete=" + str(all_images_complete)
+
+            if all_none_displayed is True and all_images_complete:
                 return True
                 break
             time.sleep(.5)
             max_sleep -= 1
+        return False
+
+    def errors_detected(self):
+        for entry in self.driver.get_log("browser"):
+            if entry['level'] == 'SEVERE':
+                return True
         return False
 
     def crop_by_dimension(self, x, y, height, width):
@@ -381,6 +409,7 @@ def main(argv):
         if "user" in settings["authentication"]:
             web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
 
+        last_screen_url = None
         for screen in settings["screens"]:
             screen['name'] = screen['url'].replace("/admin/index.do#","")
             screen['name'] = screen['name'].replace("/","_")
@@ -404,12 +433,40 @@ def main(argv):
             web_browser.go(base_url + screen["url"])
             if web_browser.wait_for_load() is False:
                 print "Could not load"
+                total_screens_failed += 1
+                del web_browser
+                web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
+                if "user" in settings["authentication"]:
+                    web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
                 continue
+
+            if web_browser.errors_detected() is True:
+                print "Errors on url"
+                total_screens_failed += 1
+                del web_browser
+                web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
+                if "user" in settings["authentication"]:
+                    web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
+                continue
+
+            if last_screen_url is None:
+                time.sleep(settings["default_sleep_seconds"])
+            else:
+                last_slash_pos=last_screen_url.rfind('/')
+                last_pieces=last_screen_url.split('/')
+                current_slash_pos=screen["url"].rfind('/')
+                current_pieces=screen["url"].split('/')
+
+                url_base_match=last_slash_pos > -1 and current_slash_pos > -1 and last_screen_url[0:last_slash_pos] == screen["url"][0:current_slash_pos]
+                reports = ( len(last_pieces) == len(current_pieces) ) and ( current_pieces[2] == "index.do#reports" ) and last_pieces[2] == current_pieces[2]
+                subtab = ( len(last_pieces) == len(current_pieces) ) and len(current_pieces) > 5
+
+                if url_base_match and ( reports or subtab ):
+                    time.sleep(settings["default_sleep_seconds"])
 
             if screen.get('extra_delay') != None:
                 time.sleep(screen.get('extra_delay'))
 
-            start = timer()
             success = True
             if "type" in screen:
                 for operation in settings["types"][screen["type"]]:
@@ -428,8 +485,9 @@ def main(argv):
                 total_screens_failed += 1
                 print "Cannot capture screen",
 
+            last_screen_url= screen["url"]
             total_time += timer() - start
-            print str(timer() - start) + " (" + str(total_time) + ")"
+            print str(round(timer() - start,2)) + " (" + str(round(total_time,2)) + ")"
 
         del web_browser
 
