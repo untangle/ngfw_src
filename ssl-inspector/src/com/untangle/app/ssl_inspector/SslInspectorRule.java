@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: SslInspectorRule.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -12,6 +12,15 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * This in the implementation of an SSL Inspector rule.
+ * 
+ * A rule is basically a collection of rule conditions (matchers) and an action
+ * that defines what to do if all the matchers match.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class SslInspectorRule implements JSONString, Serializable
 {
@@ -28,6 +37,8 @@ public class SslInspectorRule implements JSONString, Serializable
     {
     }
 
+    // THIS IS FOR ECLIPSE - @formatter:off
+    
     public List<SslInspectorRuleCondition> getConditions() { return this.matchers; }
     public void setConditions(List<SslInspectorRuleCondition> matchers) { this.matchers = matchers; }
 
@@ -46,6 +57,8 @@ public class SslInspectorRule implements JSONString, Serializable
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
+    // THIS IS FOR ECLIPSE - @formatter:on
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -54,8 +67,7 @@ public class SslInspectorRule implements JSONString, Serializable
 
     public boolean matches(AppSession sess)
     {
-        if (!getEnabled())
-            return false;
+        if (!getEnabled()) return false;
 
         /**
          * If no matchers return true
@@ -66,11 +78,10 @@ public class SslInspectorRule implements JSONString, Serializable
         }
 
         /**
-         * IF any matcher doesn't match - return false
+         * If any matcher doesn't match - return false
          */
         for (SslInspectorRuleCondition matcher : matchers) {
-            if (!matcher.matches(sess))
-                return false;
+            if (!matcher.matches(sess)) return false;
         }
 
         /**
