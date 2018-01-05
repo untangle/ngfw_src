@@ -38,13 +38,13 @@ Ext.define ('Ung.model.Report', {
         {
             name: 'localizedTitle',
             calculate: function (entry) {
-                return entry.readOnly ? entry.title : entry.title;
+                return entry.readOnly ? entry.title.t() : entry.title;
             }
         },
         {
             name: 'localizedDescription',
             calculate: function (entry) {
-                return entry.readOnly ? entry.description : entry.description;
+                return entry.readOnly ? entry.description.t() : entry.description;
             }
         },
         {

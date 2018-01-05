@@ -2,13 +2,12 @@ Ext.define('Ung.cmp.GridStatus', {
     extend: 'Ext.toolbar.TextItem',
     alias: 'widget.ungridstatus',
 
-    controller: 'ungridstatus',
-
-    tplFiltered: '{0} filtered, {1} total entries'.t(),
-    tplUnfiltered: '{0} entries'.t(),
-
     listeners: {
-        update: 'onUpdateGridStatus'
+        update: function () {
+            var view = this,
+                store = view.up('panel').down('grid').getStore(),
+                count = store.getCount();
+            view.update(Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
+        }
     }
-
 });
