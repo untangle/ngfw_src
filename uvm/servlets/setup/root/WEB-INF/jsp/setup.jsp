@@ -39,12 +39,8 @@
             });
             rpc.timezones = tzArray;
 
-            var lang;
-            // when no translations it is assumed that language is english
-            if (Ext.Object.isEmpty(rpc.translations)) { lang = 'en'; };
-
             String.prototype.t = function() {
-                if (lang !== 'en') {
+                if (rpc.language !== 'en') {
                     return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
                 }
                 return this.valueOf();
