@@ -430,6 +430,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.set('eEntry', null);
                 vm.notify();
 
+                me.reload(true);
+
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
             });
     },
