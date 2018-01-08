@@ -21,6 +21,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         region: 'center',
         border: false,
         split: true,
+        selModel: 'rowmodel',
         tbar: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
@@ -190,27 +191,27 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 address: { displayName: 'IPv4 Address'.t() },
                 mask: { displayName: 'Mask'.t() },
                 v6Addr: { displayName: 'IPv6 Address'.t() },
-                rxpkts: { 
+                rxpkts: {
                     displayName: 'Rx Packets'.t(),
                     renderer: Renderer.datasize
                 },
-                rxerr: { 
+                rxerr: {
                     displayName: 'Rx Errors'.t(),
                     renderer: Renderer.datasize
                 },
-                rxdrop: { 
+                rxdrop: {
                     displayName: 'Rx Drop'.t(),
                     renderer: Renderer.datasize
                 },
-                txpkts: { 
+                txpkts: {
                     displayName: 'Tx Packets'.t(),
                     renderer: Renderer.datasize
                 },
-                txerr: { 
+                txerr: {
                     displayName: 'Tx Errors'.t(),
                     renderer: Renderer.datasize
                 },
-                txdrop: { 
+                txdrop: {
                     displayName: 'Tx Drop'.t(),
                     renderer: Renderer.datasize
                 }
