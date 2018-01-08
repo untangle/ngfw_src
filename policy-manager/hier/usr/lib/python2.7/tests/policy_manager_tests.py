@@ -277,7 +277,7 @@ class PolicyManagerTests(unittest2.TestCase):
         remote_control.run_command("rm -f /tmp/policy_test_040*")
         defaultRackCaptivePortal = uvmContext.appManager().instantiate("captive-portal", defaultRackId)
         assert (defaultRackCaptivePortal != None)
-        defaultRackCaptivePortalData = defaultRackCaptivePortal.getCaptivePortalSettings()
+        defaultRackCaptivePortalData = defaultRackCaptivePortal.getSettings()
         # turn default capture rule on and basic login
         defaultRackCaptivePortalData['captureRules']['list'][0]['enabled'] = True
         defaultRackCaptivePortalData['authenticationType']="LOCAL_DIRECTORY"
