@@ -96,6 +96,7 @@ Ext.define('Ung.config.system.view.Regional', {
                 disabled: true,
                 hidden: true,
                 value: new Date(),
+                format: 'timestamp_fmt'.t(),
                 bind: {
                     value: '{manualDate}',
                     format: '{manualDateFormat}',
