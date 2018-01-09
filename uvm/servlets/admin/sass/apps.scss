@@ -305,12 +305,6 @@
 
 
 .app-reports {
-    -moz-columns: 200px;
-    -webkit-columns: 200px;
-    columns: 200px;
-    column-fill: auto;
-    -moz-column-fill: auto;
-    -webkit-column-fill: auto;
     a {
         font-family: $custom-font;
         font-size: 12px;
@@ -322,7 +316,12 @@
         margin: 1px;
         line-height: 1.5;
         display: block;
-        transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+        width: 200px;
+        transition: background .2s cubic-bezier(0.23, 1, 0.32, 1);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        float: left;
         &:hover {
             color: #000;
             background: #EEE;
