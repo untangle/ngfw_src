@@ -96,7 +96,15 @@ Ext.define('Ung.cmp.TagPicker', {
                 flex: 1,
                 editor: {
                     xtype: 'textfield',
-                    allowBlank: false
+                    allowBlank: false,
+                    listeners: {
+                        focus: function (el) {
+                            el.setValue(Ext.htmlDecode(el.getValue()));
+                        },
+                        blur: function (el) {
+                            el.setValue(Ext.htmlEncode(el.getValue()));
+                        }
+                    }
                 }
             }, {
                 xtype: 'widgetcolumn',
@@ -204,7 +212,6 @@ Ext.define('Ung.cmp.TagPicker', {
 
     publishValue: function () {
         var me = this;
-        // console.log(Ext.Array.pluck(me.grid.getStore().getRange(), 'data'));
         if (me.rendered) {
             me.publishState('tags', {
                 javaClass: 'java.util.LinkedList',
