@@ -1,9 +1,18 @@
-package com.untangle.app.web_cache; // IMPL
+/**
+ * $Id$
+ */
+package com.untangle.app.web_cache;
 
 import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.util.LoadAvg;
 
+/**
+ * This timer task will periodically log the cumulative cache statistics.
+ * 
+ * @author mahotz
+ * 
+ */
 public class WebCacheTimer extends TimerTask
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -16,17 +25,29 @@ public class WebCacheTimer extends TimerTask
     private long lastHitBytes = 0;
     private long lastMissBytes = 0;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application that created us
+     */
     public WebCacheTimer(WebCacheApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Our main run function
+     */
     public void run()
     {
         CaptureStatistics();
         CheckSystemLoad();
     }
 
+    /**
+     * Function to calculate and log cache statistics
+     */
     private void CaptureStatistics()
     {
         // get the current values from the statistics object
@@ -49,7 +70,7 @@ public class WebCacheTimer extends TimerTask
         if ((diffHitCount | diffMissCount | diffBypassCount | diffSystemCount | diffHitBytes | diffMissBytes) == 0) return;
 
         // counters have increased so write the log event
-        WebCacheEvent event = new WebCacheEvent(app.getAppSettings().getPolicyId(),diffHitCount,diffMissCount,diffBypassCount,diffSystemCount,diffHitBytes,diffMissBytes);
+        WebCacheEvent event = new WebCacheEvent(app.getAppSettings().getPolicyId(), diffHitCount, diffMissCount, diffBypassCount, diffSystemCount, diffHitBytes, diffMissBytes);
         app.logEvent(event);
         logger.debug("WebCacheTimer.CaptureStatistics() =" + event.toString());
 
@@ -62,27 +83,30 @@ public class WebCacheTimer extends TimerTask
         lastMissBytes = currMissBytes;
     }
 
+    /**
+     * When the system load goes above a configured threshold, we disable
+     * caching to eliminate our impact on performance. When it comes back down
+     * we enable caching again.
+     */
     private void CheckSystemLoad()
     {
         LoadAvg la = LoadAvg.get();
         float nowval = la.getOneMin();
         float maxval = app.getSettings().getLoadLimit().floatValue();
 
-            // see if we should activate bypass on high load
-            if ((nowval > maxval) && (app.highLoadBypass == false))
-            {
+        // see if we should activate bypass on high load
+        if ((nowval > maxval) && (app.highLoadBypass == false)) {
             logger.info("High load bypass flag activated on load(" + nowval + ") limit(" + maxval + ")");
             app.highLoadBypass = true;
             return;
-            }
+        }
 
-            // see if we should clear bypass on reduced load
-            if ((nowval < maxval) && (app.highLoadBypass == true))
-            {
+        // see if we should clear bypass on reduced load
+        if ((nowval < maxval) && (app.highLoadBypass == true)) {
             logger.info("High load bypass flag cleared on load(" + nowval + ") limit(" + maxval + ")");
             app.highLoadBypass = false;
             return;
-            }
+        }
 
         logger.debug("WebCacheTimer.CheckSystemLoad() NOW(" + nowval + ") LIMIT(" + maxval + ") BYPASS(" + app.highLoadBypass + ")");
     }
