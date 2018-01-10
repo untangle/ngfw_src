@@ -5,7 +5,7 @@ Ext.define('Ung.cmp.PropertyGrid', {
     controller: 'unpropertygrid',
 
     editable: false,
-    width: 400,
+    width: Renderer.calculateWith(4),
     split: true,
     collapsible: true,
     resizable: true,
