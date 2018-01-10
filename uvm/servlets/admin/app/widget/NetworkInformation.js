@@ -62,7 +62,7 @@ Ext.define('Ung.widget.NetworkInformation', {
         var me = this, vm = me.getViewModel();
 
         if (vm) {
-            me.setLoading(true);
+            me.setLoading({ useTargetEl: true });
             Rpc.asyncData('rpc.sessionMonitor.getSessionStats')
                 .then(function(result) {
                     vm.set('sessions', result);

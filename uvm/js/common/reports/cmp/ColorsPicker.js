@@ -203,6 +203,7 @@ Ext.define('Ung.reports.cmp.ColorsPicker', {
 
     removeAll: function () {
         this.grid.getStore().loadData([]);
+        this.grid.down('#addbtn').setDisabled(false);
         this.finish();
     },
 

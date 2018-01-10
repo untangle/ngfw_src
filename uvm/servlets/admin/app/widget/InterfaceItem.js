@@ -8,7 +8,7 @@ Ext.define('Ung.widget.InterfaceItem', {
             '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{inbound} kB/s</span></div>' +
             '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{outbound} kB/s</span></div>' +
             '</div>' +
-            '<p class="name" style="display: {!iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {iface.vrrpEnabled ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
+            '<p class="name" style="display: {!iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {(iface.vrrpEnabled && iface.vrrpMaster) ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
             // '<p class="name">{iface.vrrpEnabled}</p>' +
             '<span style="display: {!iface.isWan ? \'block\' : \'none\'}; margin-top: 15px; font-size: 11px;"><img src="' + '/skins/default/images/admin/icons/interface-devices.png"><br/>{devicesCount}</span>' +
             '<i class="fa fa-caret-down fa-lg pointer"></i>'
