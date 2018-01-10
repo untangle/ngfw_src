@@ -88,6 +88,13 @@ Ext.define('Ung.util.Renderer', {
         return ( value == true ) ? 'true' : 'false';
     },
 
+    /**
+     * Determine width based on the size of the screen body and divide by the divisor.
+     */
+    calculateWith: function (divisor) {
+        return Math.ceil(Ext.getBody().getViewSize().width / divisor) - 1;
+    },
+
     timestampOffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
     timestamp: function (value) {
         if (!value) { return ''; }
