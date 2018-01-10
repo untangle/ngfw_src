@@ -126,13 +126,14 @@ Ext.define('Ung.util.Renderer', {
                 value = Ext.decode( value );
             }
             if( value && value.list ) {
-                var str = [], tip = [];
+                var str = [], tip = [], name;
                 Ext.Array.each(value.list, function (tag) {
-                    str.push('<div class="tag-item">' + tag.name + '</div>');
+                    name = Ext.String.htmlEncode(tag.name);
+                    str.push('<div class="tag-item">' + name + '</div>');
                     if ( tag.expirationTime == 0 )
-                        tip.push('<strong>' + tag.name + '</strong> - ' + 'Never'.t());
+                        tip.push('<strong>' + name + '</strong> - ' + 'Never'.t());
                     else
-                        tip.push('<strong>' + tag.name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
+                        tip.push('<strong>' + name + '</strong> - ' + Ext.Date.format(new Date(tag.expirationTime), 'timestamp_fmt'.t()));
                 });
                 if (metaData) {
                     metaData.tdAttr = 'data-qtip="' + tip.join('<br/>') + '"';
