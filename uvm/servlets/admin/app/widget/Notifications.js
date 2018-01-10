@@ -44,7 +44,7 @@ Ext.define('Ung.widget.Notifications', {
 
     fetchData: function (cb) {
         var me = this, vm = me.getViewModel(), notifCmp = me.down('#notif');
-        me.setLoading(true);
+        me.setLoading({ useTargetEl: true });
         Rpc.asyncData('rpc.notificationManager.getNotifications')
             .then(function (result) {
                 var notificationArr = '<ul style="margin: 0; padding: 0 10px 30px 30px;">', i;
