@@ -311,6 +311,7 @@ Ext.define('Ung.config.network.MainController', {
         Rpc.asyncData('rpc.execManager.execOutput', command1).then(function (result) {
             if (Ext.isEmpty(result) || result.search('Device not found') >= 0) {
                 statusView.setLoading(false);
+                vm.set('siStatus', stat);
                 return;
             }
             var lineparts = result.split(' ');
@@ -340,6 +341,7 @@ Ext.define('Ung.config.network.MainController', {
             Rpc.asyncData('rpc.execManager.execOutput', command2).then(function (result) {
                 if (Ext.isEmpty(result)) {
                     statusView.setLoading(false);
+                    vm.set('siStatus', stat);
                     return;
                 }
 
@@ -1115,11 +1117,11 @@ Ext.define('Ung.config.network.MainController', {
         interfacetypeRenderer: function(value, meta, record){
             var icon_src = '/skins/common/images/intf_nic';
             meta.tdCls = 'intf_icon';
-            if (record.get('isWirelessInterface')) { 
-                icon_src = '/skins/common/images/intf_wifi'; 
+            if (record.get('isWirelessInterface')) {
+                icon_src = '/skins/common/images/intf_wifi';
             }
-            if (record.get('isVlanInterface')) { 
-                icon_src = '/skins/common/images/intf_vlan'; 
+            if (record.get('isVlanInterface')) {
+                icon_src = '/skins/common/images/intf_vlan';
             }
             icon_src += record.get('configType') === 'DISABLED' ? '_disabled.png' : '.png';
             return '<img src="' + icon_src + '" />';

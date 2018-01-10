@@ -133,7 +133,7 @@ public class WebFilterQueryEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        String summary = getSessionEvent().getCClientAddr().getHostAddress() + I18nUtil.marktr("searched for") + " \"" + getTerm() + "\" " + I18nUtil.marktr("on") + getHost();
+        String summary = getSessionEvent().getCClientAddr().getHostAddress() + " " + I18nUtil.marktr("searched for") + " \"" + getTerm() + "\" " + I18nUtil.marktr("on") + " " + getHost();
         return summary;
     }
 }
