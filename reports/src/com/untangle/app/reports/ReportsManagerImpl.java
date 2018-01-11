@@ -29,6 +29,7 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.App;
 
 public class ReportsManagerImpl implements ReportsManager
 {
@@ -122,12 +123,13 @@ public class ReportsManagerImpl implements ReportsManager
          */
         AppProperties appProperties = findAppProperties( category );
         if ( appProperties != null ) {
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
-                logger.warn("Not showing report entries for \"" + category + "\" because of invalid license.");
+            App app = UvmContextFactory.context().appManager().app( appProperties.getName() );
+            if ( app == null ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed.");
                 return entries;
             }
-            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
-                logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed.");
+            if ( !app.isLicenseValid() ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because of invalid license.");
                 return entries;
             }
         }
@@ -150,10 +152,11 @@ public class ReportsManagerImpl implements ReportsManager
             if ( appProperties.getInvisible()) {
                 continue;
             }
-            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
+            App app = UvmContextFactory.context().appManager().app( appProperties.getName() );
+            if ( app == null ) {
                 continue;
             }
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
+            if ( ! app.isLicenseValid() ) {
                 continue;
             }
             org.json.JSONObject json = new org.json.JSONObject();
