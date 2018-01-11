@@ -35,7 +35,7 @@ class UvmContext:
     UVM managemnt
     """
     context = None
-    def __init__(self, tries=1, wait=10):
+    def __init__(self, tries=30, wait=10):
         """
         Connect to uvm as localhost with optional configurable tries and waits
         """
@@ -629,7 +629,7 @@ class RemapInterfaces(Form):
         """
         Display interface list
         """
-        msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
+        msg = '%-12s %-17s %-5s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
         self.display_title( msg )
 
         for index, interface in enumerate(self.interface_selections):
@@ -659,9 +659,9 @@ class RemapInterfaces(Form):
             if len(vendor) > 7:
                 vendor = vendor[:7] + "..."
 
-            msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), duplex, vendor, interface["macAddress"] )
+            msg = '%-12s %-17s %-5s %-5s  %-6s %-10s %-10s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), duplex, vendor, interface["macAddress"] )
             self.window.addstr( self.y_pos + index, self.x_pos, msg)
-            self.window.addstr( self.y_pos + index, self.x_pos + 29, msg[29:], select_mode)
+            self.window.addstr( self.y_pos + index, self.x_pos + 31, msg[31:], select_mode)
 
         self.y_pos = self.y_pos + len(self.interface_selections) + 1
         if self.selected_device is not None:
@@ -928,7 +928,7 @@ class AssignInterfaces(Form):
         """
         Display interfaces
         """
-        msg = '%-12s %-15s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
+        msg = '%-12s %-17s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
         self.display_title( msg )
 
         for index, interface in enumerate(self.mode_items["interface"]):
@@ -964,7 +964,7 @@ class AssignInterfaces(Form):
                     if i["interfaceId"] == interface["bridgedTo"]:
                         address = i["name"]
 
-            msg = '%-12s %-15s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
+            msg = '%-12s %-17s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
             if show_selected_only is True:
                 index = 0            
             self.window.addstr( self.y_pos + index, self.x_pos, msg, select_mode)
@@ -1454,7 +1454,13 @@ class FactoryDefaults(Form):
         self.window.refresh()
 
         uvm = UvmContext()
-        uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
+        try:
+            uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
+        except:
+            pass
+        uvm = None
+        print "Connecting to Untangle..."
+        sleep(30)
 
 class suspend_curses():
     """
