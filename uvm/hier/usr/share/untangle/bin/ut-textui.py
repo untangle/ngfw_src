@@ -158,26 +158,27 @@ class Screen(object):
         self.max_height, self.max_width = stdscreen.getmaxyx()
         self.current_mode = self.modes[0]
 
+        self.screen_height, self.screen_width = self.stdscreen.getmaxyx()
+
     def debug_message(self, msg, clear=False):
         """
         Print a message on the bottom of the screen
         """
-        height, width = self.stdscreen.getmaxyx()
         if clear is True:
             self.debug_x_pos = 0
 
         str_msg = str(msg)
-        if len(str_msg) + self.debug_x_pos > ( width - 1):
+        if len(str_msg) + self.debug_x_pos > ( self.screen_width - 1):
             self.debug_x_pos = 0
 
-        if len(str_msg) > width:
-            str_msg = str_msg[:width - 1]
+        if len(str_msg) > self.screen_width:
+            str_msg = str_msg[:self.screen_width - 1]
 
-        self.window.addstr( height - 1, self.debug_x_pos, str_msg )
+        self.window.addstr( self.screen_height - 1, self.debug_x_pos, str_msg )
 
         self.debug_x_pos += len(str_msg) + 1
 
-        if self.debug_x_pos >= width:
+        if self.debug_x_pos >= self.screen_width:
             self.debug_x_pos = 0
 
     def message(self, msg, cont=False, mode=None):
@@ -186,6 +187,9 @@ class Screen(object):
         """
         str_msg = str(msg)
         # Clear entire line
+
+        if self.y_pos > self.screen_height - 1:
+            self.y_pos = self.screen_height - 1
         self.stdscreen.hline(self.y_pos, 0, " " , 79)
 
         if mode is None:
@@ -851,7 +855,8 @@ class AssignInterfaces(Form):
         "validators": ["empty"]
     },{
         "text": "Use Peer DNS",
-        "key": "v4PPPoEUsePeerDns"
+        "key": "v4PPPoEUsePeerDns",
+        "validators": ["empty"]
     },{
         "text": "Primary DNS",
         "key": "v4PPPoEDns1",
@@ -950,8 +955,10 @@ class AssignInterfaces(Form):
                     if a["value"] == addressed:
                         addressed = a["text"]
 
-                if 'v4Address' in interface:
-                    address = interface['v4Address'] + '/' + str(interface['v4PrefixLength'])
+                if 'v4Address' in interface and interface['v4Address'] is not None:
+                    address = interface['v4Address']
+                    if  'v4PrefixLength' in interface and interface['v4PrefixLength'] is not None:
+                        address = address + '/' + str(interface['v4PrefixLength'])
             elif interface["configType"] == "BRIDGED":
                 for i in self.interface_selections:
                     if i["interfaceId"] == interface["bridgedTo"]:
@@ -1220,7 +1227,10 @@ class AssignInterfaces(Form):
         self.message("Saving network settings...")
         self.window.refresh()
         self.current_mode = None
-        uvm.context.networkManager().setNetworkSettings(networkSettings)
+        try:
+            uvm.context.networkManager().setNetworkSettings(networkSettings)
+        except:
+            pass
         uvm = None
         return False
 
