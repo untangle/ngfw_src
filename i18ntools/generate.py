@@ -77,7 +77,7 @@ def get_keys(module):
                 ## We also remove empty strings so xgettext wont complain
                 ## and also remove all \r and \n from inside strings
 
-                command = '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^'\\\\\\\\]*(?:\\\\\\\\.[^'\\\\\\\\]*))*'\.t\(\)/_('\\1')/g" | xgettext -j --copyright-holder="%s" -LJavascript -o %s -''' %(full_file_name, ngfw.copyright, pot.file_name)
+                command = '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' |  perl -pe "s/'((?:[^'\\\\\\]++|\\\\\\.)*)'\.t\(\)/_('\\1')/g" | xgettext -j --copyright-holder="%s" -LJavascript -o %s -''' %(full_file_name, ngfw.copyright, pot.file_name)
                 try:
                     pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     std_out, std_err = pipes.communicate()
