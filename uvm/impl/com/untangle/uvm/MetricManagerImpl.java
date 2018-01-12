@@ -222,7 +222,9 @@ public class MetricManagerImpl implements MetricManager
                         } catch (NumberFormatException exn) {
                             logger.warn("could not parse cpu speed: " + v);
                         }
-                    }
+                    } else if (n.equals("CPU part") && "0xd03".equals(matcher.group(2))) {
+		    	cpuModel = "ARM Cortex A53";
+		    }
                 }
             }
         } finally {
