@@ -757,22 +757,6 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
-     * Return all policy information.
-     *
-     * @return
-     *  List of JSONObjects containing policy settings.
-     */
-    public List<JSONObject> getPoliciesInfo()
-    {
-        ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
-        if ( policyManager != null ) {
-            policiesInfo = policyManager.getPoliciesInfo();
-        }
-        return policiesInfo;
-    }
-
-    /**
      * Return all interface information.
      *
      * @return

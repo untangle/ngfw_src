@@ -265,14 +265,6 @@ public interface ReportsManager
     Integer getTimeZoneOffset();
     
     /**
-     * Get current application categories that should be displayed
-     * 
-     * @return
-     *  List of JSONObjects containing policy settings.
-     */
-    List<JSONObject> getPoliciesInfo();
-    
-    /**
      * Get the list of interfaces ids and names
      *
      * @return
