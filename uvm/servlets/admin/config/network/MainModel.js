@@ -70,7 +70,20 @@ Ext.define('Ung.config.network.MainModel', {
         staticDnsEntries:   { data: '{settings.dnsSettings.staticEntries.list}' },
         localServers:       { data: '{settings.dnsSettings.localServers.list}' },
         // DHCP
-        staticDhcpEntries:  { data: '{settings.staticDhcpEntries.list}' },
+        staticDhcpEntries:  {
+            data: '{settings.staticDhcpEntries.list}',
+            fields:[{
+                name: 'macAddress',
+                type: 'string'
+            }, {
+                name: 'address',
+                sortType: 'asIp'
+            }, {
+                name: 'description',
+                type: 'string',
+                sortType: 'asUnString'
+            }]
+        },
         // Advanced
         devices:            { data: '{settings.devices.list}' },
         qosPriorities:      { data: '{settings.qosSettings.qosPriorities.list}' },
