@@ -35,7 +35,7 @@ class UvmContext:
     UVM managemnt
     """
     context = None
-    def __init__(self, tries=1, wait=10):
+    def __init__(self, tries=30, wait=10):
         """
         Connect to uvm as localhost with optional configurable tries and waits
         """
@@ -158,26 +158,27 @@ class Screen(object):
         self.max_height, self.max_width = stdscreen.getmaxyx()
         self.current_mode = self.modes[0]
 
+        self.screen_height, self.screen_width = self.stdscreen.getmaxyx()
+
     def debug_message(self, msg, clear=False):
         """
         Print a message on the bottom of the screen
         """
-        height, width = self.stdscreen.getmaxyx()
         if clear is True:
             self.debug_x_pos = 0
 
         str_msg = str(msg)
-        if len(str_msg) + self.debug_x_pos > ( width - 1):
+        if len(str_msg) + self.debug_x_pos > ( self.screen_width - 1):
             self.debug_x_pos = 0
 
-        if len(str_msg) > width:
-            str_msg = str_msg[:width - 1]
+        if len(str_msg) > self.screen_width:
+            str_msg = str_msg[:self.screen_width - 1]
 
-        self.window.addstr( height - 1, self.debug_x_pos, str_msg )
+        self.window.addstr( self.screen_height - 1, self.debug_x_pos, str_msg )
 
         self.debug_x_pos += len(str_msg) + 1
 
-        if self.debug_x_pos >= width:
+        if self.debug_x_pos >= self.screen_width:
             self.debug_x_pos = 0
 
     def message(self, msg, cont=False, mode=None):
@@ -186,6 +187,9 @@ class Screen(object):
         """
         str_msg = str(msg)
         # Clear entire line
+
+        if self.y_pos > self.screen_height - 1:
+            self.y_pos = self.screen_height - 1
         self.stdscreen.hline(self.y_pos, 0, " " , 79)
 
         if mode is None:
@@ -625,7 +629,7 @@ class RemapInterfaces(Form):
         """
         Display interface list
         """
-        msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
+        msg = '%-12s %-17s %-5s %-5s  %-6s %-10s %-10s' % ("Status", "Name", "Dev", "Speed", "Duplex", "Vendor", "MAC Address" )
         self.display_title( msg )
 
         for index, interface in enumerate(self.interface_selections):
@@ -655,9 +659,9 @@ class RemapInterfaces(Form):
             if len(vendor) > 7:
                 vendor = vendor[:7] + "..."
 
-            msg = '%-12s %-15s %-4s %-5s  %-6s %-10s %-10s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), duplex, vendor, interface["macAddress"] )
+            msg = '%-12s %-17s %-5s %-5s  %-6s %-10s %-10s' % (str(interface["connected"]), interface["name"], interface["deviceName"], str(interface["mbit"]), duplex, vendor, interface["macAddress"] )
             self.window.addstr( self.y_pos + index, self.x_pos, msg)
-            self.window.addstr( self.y_pos + index, self.x_pos + 29, msg[29:], select_mode)
+            self.window.addstr( self.y_pos + index, self.x_pos + 31, msg[31:], select_mode)
 
         self.y_pos = self.y_pos + len(self.interface_selections) + 1
         if self.selected_device is not None:
@@ -851,7 +855,8 @@ class AssignInterfaces(Form):
         "validators": ["empty"]
     },{
         "text": "Use Peer DNS",
-        "key": "v4PPPoEUsePeerDns"
+        "key": "v4PPPoEUsePeerDns",
+        "validators": ["empty"]
     },{
         "text": "Primary DNS",
         "key": "v4PPPoEDns1",
@@ -923,7 +928,7 @@ class AssignInterfaces(Form):
         """
         Display interfaces
         """
-        msg = '%-12s %-15s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
+        msg = '%-12s %-17s %-5s %-10s %-10s %-18s' % ("Status", "Name", "is Wan", "Config", "Addressed", "Address/Bridged To" )
         self.display_title( msg )
 
         for index, interface in enumerate(self.mode_items["interface"]):
@@ -950,14 +955,16 @@ class AssignInterfaces(Form):
                     if a["value"] == addressed:
                         addressed = a["text"]
 
-                if 'v4Address' in interface:
-                    address = interface['v4Address'] + '/' + str(interface['v4PrefixLength'])
+                if 'v4Address' in interface and interface['v4Address'] is not None:
+                    address = interface['v4Address']
+                    if  'v4PrefixLength' in interface and interface['v4PrefixLength'] is not None:
+                        address = address + '/' + str(interface['v4PrefixLength'])
             elif interface["configType"] == "BRIDGED":
                 for i in self.interface_selections:
                     if i["interfaceId"] == interface["bridgedTo"]:
                         address = i["name"]
 
-            msg = '%-12s %-15s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
+            msg = '%-12s %-17s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
             if show_selected_only is True:
                 index = 0            
             self.window.addstr( self.y_pos + index, self.x_pos, msg, select_mode)
@@ -1220,7 +1227,10 @@ class AssignInterfaces(Form):
         self.message("Saving network settings...")
         self.window.refresh()
         self.current_mode = None
-        uvm.context.networkManager().setNetworkSettings(networkSettings)
+        try:
+            uvm.context.networkManager().setNetworkSettings(networkSettings)
+        except:
+            pass
         uvm = None
         return False
 
@@ -1444,7 +1454,13 @@ class FactoryDefaults(Form):
         self.window.refresh()
 
         uvm = UvmContext()
-        uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
+        try:
+            uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
+        except:
+            pass
+        uvm = None
+        print "Connecting to Untangle..."
+        sleep(30)
 
 class suspend_curses():
     """

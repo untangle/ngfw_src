@@ -96,15 +96,7 @@ Ext.define('Ung.cmp.TagPicker', {
                 flex: 1,
                 editor: {
                     xtype: 'textfield',
-                    allowBlank: false,
-                    listeners: {
-                        focus: function (el) {
-                            el.setValue(Ext.htmlDecode(el.getValue()));
-                        },
-                        blur: function (el) {
-                            el.setValue(Ext.htmlEncode(el.getValue()));
-                        }
-                    }
+                    allowBlank: false
                 }
             }, {
                 xtype: 'widgetcolumn',
