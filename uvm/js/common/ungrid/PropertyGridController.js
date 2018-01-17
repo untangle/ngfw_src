@@ -114,6 +114,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
         delete propertyRecord.javaClass;
         delete propertyRecord.state;
         delete propertyRecord.attachments;
+        delete propertyRecord.tags;
 
         for( var k in propertyRecord ){
             if( propertyRecord[k] == null ){
