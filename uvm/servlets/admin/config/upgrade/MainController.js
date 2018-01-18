@@ -18,11 +18,7 @@ Ext.define('Ung.config.upgrade.MainController', {
             view = me.getView(),
             vm = me.getViewModel();
 
-        view.down('progressbar').wait({
-            interval: 500,
-            text: 'Checking for upgrades...'.t()
-        });
-        this.checkUpgrades();
+        view.getViewModel().set('settings', rpc.systemManager.getSettings());
 
         for( var key in this.settingsValueMap){
             for( var settingsKey in this.settingsValueMap[key]){
@@ -31,6 +27,12 @@ Ext.define('Ung.config.upgrade.MainController', {
                 }
             }
         }
+
+        view.down('progressbar').wait({
+            interval: 500,
+            text: 'Checking for upgrades...'.t()
+        });
+        this.checkUpgrades();
     },
 
     saveSettings: function () {
@@ -57,22 +59,28 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     checkUpgrades: function () {
         var v = this.getView();
-        Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
-            if(result) {
-                var upgradeButton = v.down('[name="upgradeButton"]');
-                if (upgradeButton)
-                    upgradeButton.show();
-            } else {
-                var upgradeText = v.down('[name="upgradeText"]');
-                if (upgradeText)
-                    upgradeText.show();
-            }
-            var progressbar = v.down('progressbar');
-            if (progressbar) {
-                progressbar.reset();
-                progressbar.hide();
-            }
-        });
+
+        setTimeout( function(){
+            Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
+                if(v.destroyed){
+                    return;
+                }
+                if(result) {
+                    var upgradeButton = v.down('[name="upgradeButton"]');
+                    if (upgradeButton)
+                        upgradeButton.show();
+                } else {
+                    var upgradeText = v.down('[name="upgradeText"]');
+                    if (upgradeText)
+                        upgradeText.show();
+                }
+                var progressbar = v.down('progressbar');
+                if (progressbar) {
+                    progressbar.reset();
+                    progressbar.hide();
+                }
+            });
+        }, 100);
     },
 
     downloadUpgrades: function() {
