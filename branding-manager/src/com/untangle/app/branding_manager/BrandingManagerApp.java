@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -22,7 +21,6 @@ import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.util.IOUtil;
@@ -32,9 +30,8 @@ import com.untangle.uvm.util.IOUtil;
  * */
 public class BrandingManagerApp extends AppBase implements com.untangle.uvm.BrandingManager
 {
-    private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");;
+    private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");
-    private static final String BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.png";
 
     private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Untangle";
     private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
