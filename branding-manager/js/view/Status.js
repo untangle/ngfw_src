@@ -10,7 +10,7 @@ Ext.define('Ung.apps.brandingmanager.view.Status', {
     items: [{
         border: false,
         bodyPadding: 10,
-        scrollable: 'y',
+        scrollable: true,
         items: [{
             xtype: 'component',
             cls: 'app-desc',
