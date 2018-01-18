@@ -16,7 +16,9 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+            if (ex) {
+                Util.handleException(ex); return;
+            }
             vm.set('settings', result);
             me.originalDefaultLogo = vm.get('settings').defaultLogo;
         });
@@ -37,7 +39,9 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
 
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+            if (ex) {
+                Util.handleException(ex); return;
+            }
             Util.successToast('Settings saved');
             me.getSettings();
             Ext.fireEvent('resetfields', v);
@@ -55,7 +59,7 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
 
         if (fileField.getValue().length === 0) {
             Ext.MessageBox.alert('Failed'.t(), 'Please select an image to upload.'.t() );
-            return;
+            return false;
         }
 
         formPanel.getForm().submit({
