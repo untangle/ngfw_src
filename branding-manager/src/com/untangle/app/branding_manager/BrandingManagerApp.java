@@ -50,7 +50,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     }
 
     static {
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new HashMap<FILE_PARSE_TYPE,String>();
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new HashMap<>();
         ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/installer.nsi");
         ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.NON_QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/SoftwareLicense.txt");
     }
@@ -205,7 +205,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     @Override
     public void initializeSettings()
     {
-        BrandingManagerSettings settings = new BrandingManagerSettings();
+        BrandingManagerSettings newSettings = new BrandingManagerSettings();
         logger.info("Initializing Settings...");
 
         /**
@@ -213,17 +213,17 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
          */
         String oemName = UvmContextFactory.context().oemManager().getOemName();
         if (oemName == null || oemName.equals("Untangle")) {
-            settings.setCompanyName(DEFAULT_UNTANGLE_COMPANY_NAME);
-            settings.setCompanyUrl(DEFAULT_UNTANGLE_URL);
+            newSettings.setCompanyName(DEFAULT_UNTANGLE_COMPANY_NAME);
+            newSettings.setCompanyUrl(DEFAULT_UNTANGLE_URL);
         } else {
-            settings.setCompanyName("MyCompany");
-            settings.setCompanyUrl("http://mycompany.com/");
+            newSettings.setCompanyName("MyCompany");
+            newSettings.setCompanyUrl("http://mycompany.com/");
         }
 
-        settings.setContactName("your network administrator");
-        settings.setContactEmail(null);
+        newSettings.setContactName("your network administrator");
+        newSettings.setContactEmail(null);
 
-        setSettings(settings);
+        setSettings(newSettings);
     }
 
     /**
@@ -298,10 +298,10 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
             return;
         }
 
-        BrandingManagerSettings settings = this.getSettings();
-        settings.binary_setLogo(logo);
-        settings.setDefaultLogo(false);
-        this.setSettings(settings);
+        BrandingManagerSettings newSettings = this.getSettings();
+        newSettings.binary_setLogo(logo);
+        newSettings.setDefaultLogo(false);
+        this.setSettings(newSettings);
     }
 
     /**
