@@ -6,7 +6,6 @@ package com.untangle.app.branding_manager;
 import java.io.Serializable;
 
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.app.AppSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -77,9 +76,9 @@ public class BrandingManagerSettings implements Serializable, JSONString
         logo = new byte[len];
 
         for(int x = 0;x < len;x++){
-            int lo_nib = (str.charAt((x * 2) + 0) - 'A');
-            int hi_nib = (str.charAt((x * 2) + 1) - 'A');
-            int value = (((hi_nib << 4) & 0xF0) | lo_nib);
+            int lowNibble = (str.charAt((x * 2) + 0) - 'A');
+            int highNibble = (str.charAt((x * 2) + 1) - 'A');
+            int value = (((highNibble << 4) & 0xF0) | lowNibble);
             logo[x] = (byte)value;
         }
 
@@ -95,10 +94,10 @@ public class BrandingManagerSettings implements Serializable, JSONString
         StringBuilder local = new StringBuilder();
 
         for(int x = 0;x < logo.length;x++){
-            char lo_nib = (char)((logo[x] & 0x0F) + 'A');
-            char hi_nib = (char)(((logo[x] >> 4) & 0x0F) + 'A');
-            local.append(lo_nib);
-            local.append(hi_nib);
+            char lowNibble = (char)((logo[x] & 0x0F) + 'A');
+            char highNibble = (char)(((logo[x] >> 4) & 0x0F) + 'A');
+            local.append(lowNibble);
+            local.append(highNibble);
         }
 
         return(local.toString());
