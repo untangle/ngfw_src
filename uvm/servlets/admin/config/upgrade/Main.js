@@ -14,9 +14,7 @@ Ext.define('Ung.config.upgrade.Main', {
     viewModel: {
         data: {
             title: 'Upgrade'.t(),
-            iconName: 'icon_config_upgrade',
-
-            settings: rpc.systemManager.getSettings(),
+            iconName: 'icon_config_upgrade'
         },
         formulas: {
             upgradeTime: {
