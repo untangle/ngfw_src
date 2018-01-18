@@ -25,6 +25,19 @@ Ext.define('Ung.Application', {
 
         Ext.fireEvent('afterlaunch'); // used in Main view ctrl
 
+        document.addEventListener( 'paste', function(evt){
+            var currentHash =  window.location.hash;
+            if(currentHash != ""){
+                return;
+            }
+
+            var url = evt.clipboardData.getData('text/plain');
+            if(url && url.indexOf('#') > -1){
+                var hashStart=url.substring(url.indexOf('#'));
+                Ung.app.redirectTo(hashStart);
+            }
+        });
+
         // check for reports app running in the first policy
         rpc.reportsRunning = false;
         var reportsApp = rpc.appManager.app('reports');
