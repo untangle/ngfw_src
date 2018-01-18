@@ -12,11 +12,15 @@ CLIENT_KEY="${SETTINGS_DIR}/remote-clients/client-${commonName}.key"
 CLIENT_CRT="${SETTINGS_DIR}/remote-clients/client-${commonName}.crt"
 
 OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/openvpn/openssl.cnf"
+INDEX_ATTR_FILE="@PREFIX@/usr/share/untangle/settings/openvpn/index.txt.attr"
 CERT_DURATION=3650 # 10 years
 
 generateClientKey()
 {
     local clientCsr=`mktemp || exit -3`
+
+    # make sure unique_subject is turned off
+    sed -e 's/unique_subject = yes/unique_subject = no/g' -i ${INDEX_ATTR_FILE}
 
     # make dirs if necessary
     mkdir -p `dirname $CLIENT_KEY`
