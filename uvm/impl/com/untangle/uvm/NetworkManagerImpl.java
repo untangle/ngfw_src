@@ -967,11 +967,16 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("null settings");
         }
         
+        boolean foundWan = false;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if (intf.getV4ConfigType() == null)
                 throw new RuntimeException("Missing V4 Config Type");
+            if ( intf.getConfigType() != InterfaceSettings.ConfigType.DISABLED && intf.getIsWan() )
+                foundWan = true;
         }
-
+        if (!foundWan) {
+            throw new RuntimeException("Must have at least one configured WAN interface.");
+        }
         if ( networkSettings.getHttpsPort() == networkSettings.getHttpPort() ) {
             throw new RuntimeException("HTTP and HTTPS services can not use the same port.");
         }
