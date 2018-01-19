@@ -1213,6 +1213,8 @@ public class NetworkManagerImpl implements NetworkManager
          * Check DHCP range and make sure it falls within the interface's address range
          */
         do {
+            boolean found;
+
             if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 break;
             if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
@@ -1234,8 +1236,6 @@ public class NetworkManagerImpl implements NetworkManager
                 addrs.add( new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() ) );
             }
 
-            boolean found;
-            
             found = false;
             for( IPMaskedAddress maskedAddr : addrs ) {
                 if ( maskedAddr.contains( intf.getDhcpRangeStart() ) ) {
@@ -1256,6 +1256,29 @@ public class NetworkManagerImpl implements NetworkManager
             if (!found)
                 throw new RuntimeException( "Invalid DHCP Range End: " + intf.getDhcpRangeEnd().getHostAddress() );
         } while ( false );
+
+        /**
+         * If this interface is bridged - checked that its bridged to somewhere valid
+         */
+        if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED ) {
+            Integer bridgedTo = intf.getBridgedTo();
+            if ( bridgedTo == null ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " bridged to null interface.");
+            }
+            InterfaceSettings bridgeIntf = findInterfaceId( bridgedTo );
+            if ( bridgeIntf == null ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " bridged to missing interface. (" + bridgeIntf.getInterfaceId() + ")");
+            }
+            if ( bridgeIntf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " must be bridged to addressed interface. (currently bridged to " + bridgeIntf.getInterfaceId() + ")");
+            }
+        }
     }
     
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
