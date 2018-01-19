@@ -18,11 +18,7 @@ Ext.define('Ung.config.upgrade.MainController', {
             view = me.getView(),
             vm = me.getViewModel();
 
-        view.down('progressbar').wait({
-            interval: 500,
-            text: 'Checking for upgrades...'.t()
-        });
-        this.checkUpgrades();
+        view.getViewModel().set('settings', rpc.systemManager.getSettings());
 
         for( var key in this.settingsValueMap){
             for( var settingsKey in this.settingsValueMap[key]){
@@ -31,6 +27,12 @@ Ext.define('Ung.config.upgrade.MainController', {
                 }
             }
         }
+
+        view.down('progressbar').wait({
+            interval: 500,
+            text: 'Checking for upgrades...'.t()
+        });
+        this.checkUpgrades();
     },
 
     saveSettings: function () {
@@ -57,8 +59,12 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     checkUpgrades: function () {
         var v = this.getView();
-        Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
-            try {
+
+        setTimeout( function(){
+            Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
+                if(v.destroyed){
+                    return;
+                }
                 if(result) {
                     var upgradeButton = v.down('[name="upgradeButton"]');
                     if (upgradeButton)
@@ -73,11 +79,8 @@ Ext.define('Ung.config.upgrade.MainController', {
                     progressbar.reset();
                     progressbar.hide();
                 }
-            } catch (err) {
-                //if down() throws an exception because the items are no longer visible
-                //ignore it
-            }
-        });
+            });
+        }, 100);
     },
 
     downloadUpgrades: function() {
