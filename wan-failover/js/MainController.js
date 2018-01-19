@@ -81,9 +81,15 @@ Ext.define('Ung.apps.wan-failover.MainController', {
         if (grid) grid.setLoading(true);
 
         this.getView().appManager.getWanStatus(function (result, ex) {
+            var i;
             if (grid) grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            vm.set('wanStatusData', result.list);
+            var list = [];
+            for (i=0;i<result.list.length;i++) {
+                if (result.list[i].systemName != null)
+                    list.push(result.list[i]);
+            }
+            vm.set('wanStatusData', list);
 
             var testList = vm.get('settings.tests.list');
             var wanWarnings = [];
@@ -91,13 +97,13 @@ Ext.define('Ung.apps.wan-failover.MainController', {
             var test;
 
             // first build a map of all enabled tests
-            if (testList) for (var i = 0 ; i < testList.length;i++) {
+            if (testList) for (i = 0;i < testList.length;i++) {
                 test = testList[i];
                 if (test.enabled) testMap[test.interfaceId] = true;
             }
 
             // now make sure each wan interface has an enabled test
-            Ext.Array.each(result.list, function (wan) {
+            Ext.Array.each(list, function (wan) {
                 if (!testMap[wan.interfaceId]) {
                     wanWarnings.push('<li>'  + Ext.String.format('Warning: Interface <i>{0}</i> needs a test configured!'.t(), wan.interfaceName) + '</li>');
                 }
