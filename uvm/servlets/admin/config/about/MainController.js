@@ -58,6 +58,9 @@ Ext.define('Ung.config.about.MainController', {
         rpc.licenseManager = rpc.UvmContext.licenseManager();
         Rpc.asyncData('rpc.licenseManager.reloadLicenses', true).then(function(result) {
             Rpc.asyncData('rpc.licenseManager.getLicenses').then(function(result) {
+                if(!vm.isDestroyed){
+                    return;
+                }
                 vm.set('licenses', result.list);
             });
         });

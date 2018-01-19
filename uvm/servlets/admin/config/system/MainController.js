@@ -21,6 +21,9 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.directPromise('rpc.systemManager.getTimeZone'),
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
         ], this).then(function (result) {
+            if(me.destroyed){
+                return;
+            }
             me.getView().setLoading(false);
 
             var languageSettings = result[0];
