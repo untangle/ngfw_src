@@ -278,8 +278,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         var changedData = me.getChangedData();
-        if(additionalChanged){
-            changedData= Ext.Object.merge(changedData,additionalChanged);
+        if(arguments.length == 1){
+            if(additionalChanged){
+                changedData= Ext.Object.merge(changedData,additionalChanged);
+            }
         }
 
         Ext.Ajax.request({
