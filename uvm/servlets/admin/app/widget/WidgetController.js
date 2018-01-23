@@ -24,6 +24,9 @@ Ext.define('Ung.widget.WidgetController', {
         }
     },
 
+    queuedSaveTaskWait: 0,
+    queuedSaveTaskMaxWait: 1000,
+    queuedSaveTaskDelay: 100,
     onAfterRender: function (widget) {
         var me = this, vm = me.getViewModel(), eventGrid = widget.down('eventreport > ungrid');
         // add to queue non report widgets when enabled
@@ -36,6 +39,18 @@ Ext.define('Ung.widget.WidgetController', {
 
         // for EVENT_LIST widgets save displayColumns setting on column hide/show
         if (eventGrid) {
+            me.queuedSaveTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                this.queuedSaveTaskWait = this.queuedSaveTaskWait - this.queuedSaveTaskDelay;
+                if(this.queuedSaveTaskWait > 0){
+                    this.queuedSaveTask.delay( this.queuedSaveTaskDelay );
+                }else{
+                    Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                        .then(function () {
+                        // console.log('saved');
+                    });
+                }
+            }, me) );
+
             eventGrid.addListener('columnhide', function () {
                 me.updateWidgetColumns(eventGrid);
             });
@@ -45,6 +60,7 @@ Ext.define('Ung.widget.WidgetController', {
         }
     },
 
+
     updateWidgetColumns: function (grid) {
         var me = this, vm = me.getViewModel(), columns = [];
         Ext.Array.each(grid.getColumns(), function (col) {
@@ -53,11 +69,8 @@ Ext.define('Ung.widget.WidgetController', {
             }
         });
         vm.set('widget.displayColumns', columns);
-        // save settings
-        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-        .then(function () {
-            // console.log('saved');
-        });
+        me.queuedSaveTaskWait = me.queuedSaveTaskMaxWait;
+        me.queuedSaveTask.delay( me.queuedSaveTaskDelay );
     },
 
     // onRender: function (widget) {
