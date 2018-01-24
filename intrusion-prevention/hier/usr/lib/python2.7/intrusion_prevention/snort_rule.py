@@ -42,7 +42,8 @@ class SnortRule:
             "sid": "-1",
             "gid": "1",
             "classtype": "uncategoried",
-            "msg": ""
+            "msg": "",
+            "metadata": None
         }
         
         in_quote = False
@@ -94,13 +95,16 @@ class SnortRule:
         if not key in self.options:
             return
 
-        find = key+":"+self.options[key]+";"
-        self.options[key] = value
+        if self.options[key] is None:
+            self.options[key] = value
+            new_options_raw = self.options_raw + " " + key + ":" + value + ";"
+        else:
+            find = key+":"+self.options[key]+";"
+            self.options[key] = value
 
-        new_options_raw = self.options_raw.replace(find, key + ":" + value + ";")
+            new_options_raw = self.options_raw.replace(find, key + ":" + value + ";")
+
         if self.options_raw != new_options_raw:
-            print self.options_raw
-            print new_options_raw
             self.options_raw = new_options_raw
         
     def set_msg(self, msg):
@@ -162,6 +166,28 @@ class SnortRule:
         Get category
         """
         return self.category
+
+    def get_metadata(self):
+        """
+        Get metadata in associative array
+        """
+        metadata = {}
+        if self.options["metadata"] is not None:
+            for field in self.options["metadata"].split(','):
+                (key,value) = field.split(' ')
+                metadata[key] = value
+        return metadata
+
+    def set_metadata(self, metadata):
+        """
+        Set metadata from associative array
+        """
+        if metadata is not None or len(metadata) > 0:
+            fields = []
+            for key in metadata:
+                fields.append(key + ' ' + metadata[key])
+            metadata = ",".join(fields)
+        self.set_options("metadata", metadata)
 
     def match(self, classtypes, categories, rule_ids):
         """
