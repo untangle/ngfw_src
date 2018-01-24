@@ -174,7 +174,7 @@ class SnortRule:
         metadata = {}
         if self.options["metadata"] is not None:
             for field in self.options["metadata"].split(','):
-                (key,value) = field.split(' ')
+                (key,value) = field.strip().split(' ', 1)
                 metadata[key] = value
         return metadata
 
