@@ -134,9 +134,9 @@ def main(argv):
 
         if patch != None and "activeGroups" in patch.settings:
             #
-            # For group changes, disable rule state preservation
+            # Perform updates (e.g.,from rule distributions) preserving existing modifications.
             #
-            settings.rules.update( settings, snort_conf, current_snort_rules, previous_snort_rules, False )
+            settings.rules.update( settings, snort_conf, current_snort_rules, previous_snort_rules, True )
         else:
             settings.rules.update( settings, snort_conf, current_snort_rules, previous_snort_rules )
 
@@ -149,6 +149,9 @@ def main(argv):
             if patch != None:
                 settings.set_patch(patch, defaults_profile)
             else:
+                #
+                # Disable unenabled rules.
+                #
                 settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
 
     if export_mode:
