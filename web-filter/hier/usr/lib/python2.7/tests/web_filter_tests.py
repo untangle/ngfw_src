@@ -19,6 +19,12 @@ import global_functions
 defaultRackId = 1
 app = None
 
+def setHttpHttpsPorts(httpPort, httpsPort):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['httpPort'] = httpPort
+    netsettings['httpsPort'] = httpsPort
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
 #
 # Just extends the web filter base tests
 #
@@ -62,6 +68,14 @@ class WebFilterTests(WebFilterBaseTests):
         post_events_block = global_functions.get_app_metric_value(self.app, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
+
+    def test_019_porn_is_blocked_alt_port(self):
+        setHttpHttpsPorts(8081,443)
+        result = self.get_web_request_results(url="http://playboy.com/", expected="blockpage")
+        setHttpHttpsPorts(80,443)
+        assert (result == 0)
+        found = self.check_events("playboy.com", "/", True)
+        assert( found )
 
     def test_100_reports_blocked_url(self):
         """check the Blocked Web Events report"""
