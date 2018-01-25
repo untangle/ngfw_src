@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**

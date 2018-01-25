@@ -6,11 +6,6 @@ package com.untangle.app.intrusion_prevention;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 
 /**

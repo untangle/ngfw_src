@@ -3,38 +3,18 @@
  */
 package com.untangle.app.intrusion_prevention;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.FileReader;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
-import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortStatisticsParser;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortUnified2Parser;
