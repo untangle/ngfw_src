@@ -4,23 +4,10 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     controller: 'app-intrusion-prevention',
 
     viewModel: {
+        data:{
+            settings: {}
+        },
         stores: {
-            activeGroups:{
-                storeId: 'profileStore',
-                fields: [{
-                    name: 'categories'
-                },{
-                    name: 'categoriesSelected'
-                },{
-                    name: 'classtypes',
-                },{
-                    name: 'classtypesSelected',
-                }],
-                data: '{settings.activeGroups}',
-                listeners:{
-                    datachanged: 'storedatachanged'
-                }
-            },
             rules: {
                 storeId: 'rulesStore',
                 fields: [{
@@ -50,7 +37,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     direction: 'ASC'
                 }],
                 listeners:{
-                    datachanged: 'storedatachanged'
+                    datachanged: 'storeDataChanged'
                 }
             },
             variables: {
@@ -68,82 +55,10 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     direction: 'ASC'
                 }],
                 listeners:{
-                    datachanged: 'storedatachanged'
+                    datachanged: 'storeDataChanged'
                 }
             }
-        },
-        formulas: {
-            getWizardClasstypes: function(get) {
-                var record = get('activeGroups').first();
-                var profileId = get('settings.profileId');
-                var currentClasstypes = record ? record.get('classtypes') : 'recommended';
-                var profileClasstypes = [];
-                if(currentClasstypes == 'custom'){
-                    profileClasstypes = record.get('classtypesSelected');
-                }else{
-                    get('wizardDefaults').profiles.forEach(function(profile){
-                        if(profile.profileId == profileId){
-                            profileClasstypes = profile.activeGroups.classtypesSelected;
-                        }
-                    });
-                }
-
-                var selected = [];
-                profileClasstypes.forEach(function(classtype){
-                    if(classtype[0] == '-'){
-                        return;
-                    }
-                    if(classtype[0] == '+'){
-                        classtype = classtype.substring(1);
-                    }
-                    selected.push(classtype);
-                });
-
-                var value = 'Recommended'.t();
-                if(currentClasstypes == 'custom'){
-                    value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
-                }
-                return {
-                    value: value,
-                    tip: selected.join(', ')
-                };
-            },
-            getWizardCategories: function(get){
-                var record = get('activeGroups').first();
-                var profileId = get('settings.profileId');
-                var currentCategories = record ? record.get('categories') : 'recommended';
-                var profileCategories = [];
-                if(currentCategories == 'custom'){
-                    profileCategories = record.get('categoriesSelected');
-                }else{
-                    get('wizardDefaults').profiles.forEach(function(profile){
-                        if(profile.profileId == profileId){
-                            profileCategories = profile.activeGroups.categoriesSelected;
-                        }
-                    });
-                }
-
-                var selected = [];
-                profileCategories.forEach(function(category){
-                    if(category[0] == '-'){
-                        return;
-                    }
-                    if(category[0] == '+'){
-                        category = category.substring(1);
-                    }
-                    selected.push(category);
-                });
-
-                var value = 'Recommended'.t();
-                if(currentCategories == 'custom'){
-                    value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
-                }
-                return {
-                    value: value,
-                    tip: selected.join(', ')
-                };
-            }
-        },
+        }
     },
 
     tabBar: {

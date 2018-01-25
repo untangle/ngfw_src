@@ -5,7 +5,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings',
-        }
+        },
     },
 
     getSettings: function () {
@@ -13,12 +13,18 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         v.appManager.getLastUpdateCheck(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
+            if (ex) {
+                Util.handleException(ex);
+                return;
+            }
             var lastUpdateCheck = result;
             vm.set('lastUpdateCheck', (lastUpdateCheck !== null && lastUpdateCheck.time !== 0 ) ? Util.timestampFormat(lastUpdateCheck) : "Never".t() );
 
             v.appManager.getLastUpdate(function (result, ex) {
-                if (ex) { Util.handleException(ex); return; }
+                if (ex) {
+                    Util.handleException(ex);
+                    return;
+                }
                 var lastUpdate = result;
                 vm.set('lastUpdate', ( lastUpdateCheck != null && lastUpdateCheck.time !== 0 && lastUpdate !== null && lastUpdate.time !== 0 ) ? Util.timestampFormat(lastUpdate) : "Never".t() );
             });
@@ -190,9 +196,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             timeout: 600000,
             success: function(response){
                 vm.set('settings', Ext.decode( response.responseText ) );
-                vm.set('profileStore', true);
+                vm.set('profileStoreLoad', true);
                 vm.set('rulesStoreLoad', true);
                 vm.set('variablesStoreLoad', true);
+                v.getController().updateStatus();
                 v.setLoading(false);
             },
             failure: function(response){
@@ -297,13 +304,17 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             timeout: 600000,
             success: function(response){
                 var r = Ext.decode( response.responseText );
+                vm.set('profileStoreLoad', true);
                 vm.set('rulesStoreLoad', true);
                 vm.set('variablesStoreLoad', true);
                 if( !r.success) {
                     Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
                 } else {
                     rpc.appManager.app('intrusion-prevention').reconfigure(Ext.bind(function(result, exception) {
-                        if (exception) { Util.handleException(ex); return; }
+                        if (exception) {
+                            Util.handleException(ex);
+                            return;
+                        }
 
                         v.setLoading(false);
                         me.getSettings();
@@ -355,14 +366,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         this.wizard.show();
     },
 
-    storedatachanged: function( store ){
+    storeDataChanged: function( store ){
         /*
          * Inexplicably, extjs does not see 'inline' data loads as "proper" store
          * reloads so it will never fire the 'load' event which logically sounds
          * like the correct event to listen to.
          *
-         * The problem occurs on saves where data is "reloade" but seen in
-         * the store as a wholesale change.  Which is ricidulous and on the next
+         * The problem occurs on saves where data is "reloaded" but seen in
+         * the store as a wholesale change.  Which is ridiculous and on the next
          * save in the same session, causes to see all records as modified
          * and therefore, send send ALL data back.
          *
@@ -381,15 +392,63 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
     },
 
+    /*
+     * Update bind variables for the Setup Wizard display on status screen.
+     * On first blush we could do these as formulas but the code is basically the
+     * same and would be duplicated.  So we do it here after the data has been
+     * loaded.
+     */
+    updateStatus: function(){
+        var me = this, vm = me.getViewModel();
+        var activeGroups = vm.get('settings.activeGroups');
+        var profileId= vm.get('settings.profileId');
+
+        var types = ['classtypes', 'categories'];
+        types.forEach(function(type){
+            var current = activeGroups[type];
+            var profile = {};
+
+            var rawSelected = null;
+            if(current == 'custom'){
+                rawSelected = Ext.clone(activeGroups[type+'Selected']);
+            }else{
+                vm.get('wizardDefaults').profiles.forEach(function(wizardProfile){
+                    if(wizardProfile.profileId == profileId){
+                        rawSelected = Ext.clone( wizardProfile.activeGroups[type+'Selected'] );
+                    }
+                });
+            }
+
+            var selected = [];
+            rawSelected.forEach(function(item){
+                if(item[0] == '-'){
+                    return;
+                }
+                if(item[0] == '+'){
+                    item = item.substring(1);
+                }
+                selected.push(item);
+            });
+            profile.selected = selected;
+
+            if(current == 'custom'){
+                profile.value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
+            }else{
+                profile.value = 'Recommended'.t();
+            }
+            profile.tip = selected.join(', ');
+            vm.set(type+'Profile', profile);
+        });
+    },
+
     /**
-     * In cases where we want to bind both to the value and tooltip (profile),
-     * bind the value to a formula and return an object containing 'value' and 'tip' keys.
+     * ExtJs does not seem to allow tooltip binding, so to get around this, create
+     * model variable with 'value' and 'tip' keys and when the value changes, 
+     * look at the bind parent value for that object and set the tooltip.
      */
     bindChange: function(cmp){
-        var bindValue = cmp.bind.value.getValue();
-        cmp.setValue(bindValue.value);
         cmp.getEl().set({
-            'data-qtip': bindValue.tip
+            'data-qtip': cmp.bind.value.stub.parentValue.tip
         });
     }
 
@@ -478,7 +537,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         if( newValue === false) {
             record.set('block', false);
         }
-        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'log', newValue );
+        this.getView().up('grid').getController().updateRule( record, 'log', newValue );
     },
 
     editorBlockChange: function( me, newValue, oldValue, eOpts ) {
@@ -487,7 +546,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         if( newValue === true ){
             record.set('log', true);
         }
-        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'block', newValue );
+        this.getView().up('grid').getController().updateRule( record, 'block', newValue );
     },
 
     actionRegex: /^([#]+|)\s*(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
@@ -567,6 +626,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
     classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
         var me = this, v = this.getView(), vm = this.getViewModel();
+        var description = value;
         var classtypeRecord = vm.get('classtypes').findRecord('name', value);
         if( classtypeRecord != null ){
             description = classtypeRecord.get('description');
@@ -825,18 +885,51 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         key: 'sid',
         regex: /\s+sid:([^;]+);/,
         quoted: false
+    },{
+        key: 'metadata',
+        regex: /\s+metadata:([^;]+);/,
+        quoted: false
     }],
     actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     updateRule: function( record, updatedKey, updatedValue){
+        var me = this, v = me.getView();
+        var gridSourced = record.store ? true : false;
+        var i, regex;
         var ruleValue = record.get('rule');
+
+        var metadataValue = null;
+        if( ( updatedKey == 'log' || updatedKey == 'block' ) &&
+            gridSourced ||
+            ( record.get(updatedKey) != updatedValue) ){
+            var metadata = [];
+            regex = null;
+            for(i = 0; i < this.updateRuleKeys.length; i++){
+                if(this.updateRuleKeys[i].key == "metadata"){
+                    regex = this.updateRuleKeys[i].regex;
+                }
+            }
+            var metadataFound = regex.test( ruleValue );
+            var matches = ruleValue.match(regex);
+            if( metadataFound && matches.length > 1 ){
+                matches[1].split(',').forEach(function(keypair){
+                    var kv = keypair.trim().split(" ");
+                    if( kv[0] == 'untangle_action' ){
+                        return;
+                    }
+                    metadata.push(kv[0].trim() + ' ' + kv[1].trim());
+                });
+            }
+            var date = new Date(Date.now() + Renderer.timestampOffset);
+            metadata.push('untangle_action ' + Ext.util.Format.date(date, "Y_m_d"));
+            metadataValue = metadata.join(', ');
+        }
 
         // Standard field (key:value;) replacements.
         var key;
         var value;
-        var regex;
         var quoted;
         var newField;
-        for( var i = 0; i < this.updateRuleKeys.length; i++ ){
+        for(i = 0; i < this.updateRuleKeys.length; i++ ){
             key = this.updateRuleKeys[i]['key'];
             regex = this.updateRuleKeys[i]['regex'];
             quoted = this.updateRuleKeys[i]['quoted'];
@@ -844,7 +937,15 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             if(updatedKey == key){
                 value = updatedValue;
             }else{
-                value = record.get(key);
+                if(key == "metadata"){
+                    if(metadataValue == null){
+                        continue;
+                    }else{
+                        value = metadataValue;
+                    }
+                }else{
+                    value = record.get(key);
+                }
             }
             value = (quoted ? '"' : '' ) + value + (quoted ? '"' : '' );
 

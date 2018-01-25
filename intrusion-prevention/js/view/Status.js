@@ -3,6 +3,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
     alias: 'widget.app-intrusion-prevention-status',
     itemId: 'status',
     title: 'Status'.t(),
+    scrollable: true,
 
     layout: 'border',
 
@@ -60,20 +61,20 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                     xtype: 'displayfield',
                     fieldLabel: "Classtypes".t(),
                     bind: {
-                        value: '{getWizardClasstypes}',
+                        value: '{classtypesProfile.value}',
                     },
                     listeners:{
                         change: 'bindChange'
-                    },
+                    }
                 }, {
                     xtype: 'displayfield',
                     fieldLabel: "Categories".t(),
                     bind: {
-                        value: '{getWizardCategories}'
+                        value: '{categoriesProfile.value}',
                     },
                     listeners:{
                         change: 'bindChange'
-                    },
+                    }
                 }]
             }, {
                 xtype: 'button',
@@ -114,8 +115,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
     }, {
         region: 'west',
         border: false,
-        width: 350,
-        minWidth: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         layout: 'fit',
         items: [{
