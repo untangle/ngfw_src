@@ -275,7 +275,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return changedDataSet;
     },
 
-    setSettings: function (additionalChanged) {
+    setSettings: function (overrideChangedData) {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         if (!Util.validateForms(v)) {
@@ -286,8 +286,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         var changedData = me.getChangedData();
         if(arguments.length == 1){
-            if(additionalChanged){
-                changedData= Ext.Object.merge(changedData,additionalChanged);
+            if(overrideChangedData){
+                changedData= overrideChangedData;
             }
         }
 
