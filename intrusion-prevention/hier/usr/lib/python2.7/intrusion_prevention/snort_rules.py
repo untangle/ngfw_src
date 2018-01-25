@@ -120,11 +120,26 @@ class SnortRules:
         Add a new rule to the list and search for variables.
         """
         self.rules[rule.rule_id] = rule
-                    
-    def modify_rule(self, rule):
+
+    def modify_rule(self, rule, reset_rule=False):
         """
         Alias for add_rule
         """
+        if reset_rule is not True:
+            # If untantgle_action found in rule metadata, use this rule but copy in the
+            # metadata tag and the current enabled and action settings.
+            if self.rules[rule.rule_id] is not None and self.rules[rule.rule_id].options["metadata"] is not None:
+                current_rule = self.rules[rule.rule_id]
+                current_metadata = current_rule.get_metadata()
+                if "untangle_action" in current_metadata:
+                    new_metadata = rule.get_metadata()
+                    for key in current_metadata:
+                        if key.startswith("untangle_"):
+                            new_metadata[key] = current_metadata[key]
+
+                    rule.enabled = current_rule.enabled
+                    rule.action = current_rule.action
+                    rule.set_metadata(new_metadata)
         self.add_rule(rule)
 
     def delete_rule(self, rule_id):
@@ -155,11 +170,20 @@ class SnortRules:
 
         for rid in self.rules:
             rule = self.rules[rid]
+            # If rule was modified by user, keep those settings instead of disabling the rule.
             if rule.match(classtypes_selected, categories_selected, rule_ids_selected) == False:
-                rule.set_action(False, False)
+                rule_untangle_modified = False
+                if rule.options["metadata"] is not None:
+                    rule_metadata = rule.get_metadata()
+                    if "untangle_action" in rule_metadata:
+                        rule_untangle_modified = True
+
+                if rule_untangle_modified is False:
+                    # Not modified, so disable rule
+                    rule.set_action(False, False)
             self.rules[rid] = rule
 
-    def update(self, settings, conf, current_rules=None, previous_rules=None, preserve_action=True):
+    def update(self, settings, conf, current_rules=None, previous_rules=None, reset_rules=False):
         """
         Determine differences in previous and current rules.
         If previous is not specified, then the difference will be just
@@ -212,11 +236,7 @@ class SnortRules:
                 #
                 # Replace modified rule
                 # 
-                new_rule = current_rules.get_rules()[rid]
-                if preserve_action == True:
-                    new_rule.enabled = self.get_rules()[rid].enabled
-                    new_rule.action = self.get_rules()[rid].action
-                self.modify_rule( new_rule )
+                self.modify_rule( current_rules.get_rules()[rid], reset_rules )
             else:
                 # 
                 # Add new rule
