@@ -144,20 +144,15 @@ def is_local_process_uid_authorized(req):
     hexport = "%04X" % remote_port
 
     # We have to attempt to read /proc/net/tcp several times.
-    # There is some race condition in the kernel and sometimes the socket we are looking for will not show up on the first read
-    # This loop hack appears to "fix" the issue as it always shows up on the second read if the first fails.
-    #
-    # Also sometimes /proc/net/tcp reports the incorrect UID. 
-    # As a result, we must also try again if the UID is not authorized
+    # This file is not immediately updated synchronously, so we must read it a few times until we find the socket in an established state
     uid = None
     for count in range(0,5):
-        # if count > 0:
-        #     apache.log_error('Failed to find/authorize UID [%s, %s:%s], attempting again... (try: %i)' % ( str(uid), str(remote_ip), str(remote_port), (count+1) ) )
         try:
             infile = open('/proc/net/tcp', 'r')
+            # for l in infile.read(500000).splitlines():
             for l in infile.readlines():
                 a = l.split()
-                if len(a) <= 2:
+                if len(a) <= 8:
                     continue
 
                 p = a[1].split(':')
@@ -167,13 +162,21 @@ def is_local_process_uid_authorized(req):
                 if p[0] == hexaddr and p[1] == hexport:
                     try:
                         uid = int(a[7])
+                        state = a[3]
                         
-                        # Found the UID
-                        # if its in the list of enabled UIDs
-                        if uid in uids:
-                            return True
-                    except:
-                        apache.log_error('Bad UID: %s' % a[7])
+                        # If socket state == established
+                        if state == "01":
+                            # If userid is in list of authorized userids
+                            if uid in uids:
+                                apache.log_error('UID %s authorized as localadmin on via %s:%s' % (str(uid), str(remote_ip), str(remote_port)))
+                                # apache.log_error('%s' % (l))
+                                return True
+                            else:
+                                apache.log_error('UID %s NOT authorized on via %s:%s' % (str(uid), str(remote_ip), str(remote_port)))
+                                # apache.log_error('%s' % (l))
+                                return False
+                    except Exception,e:
+                        apache.log_error('Bad line in /proc/net/tcp: %s: %s' % (line, traceback.format_exc(e)))
 
         except Exception,e:
             apache.log_error('Exception reading /proc/net/tcp: %s' % traceback.format_exc(e))
