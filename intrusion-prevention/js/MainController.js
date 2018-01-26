@@ -892,7 +892,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     }],
     actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     updateRule: function( record, updatedKey, updatedValue){
-        var me = this, v = me.getView();
+        var me = this;
         var gridSourced = record.store ? true : false;
         var i, regex;
         var ruleValue = record.get('rule');
@@ -908,20 +908,22 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
                     regex = this.updateRuleKeys[i].regex;
                 }
             }
-            var metadataFound = regex.test( ruleValue );
-            var matches = ruleValue.match(regex);
-            if( metadataFound && matches.length > 1 ){
-                matches[1].split(',').forEach(function(keypair){
-                    var kv = keypair.trim().split(" ");
-                    if( kv[0] == 'untangle_action' ){
-                        return;
-                    }
-                    metadata.push(kv[0].trim() + ' ' + kv[1].trim());
-                });
+            if(regex != null){
+                var metadataFound = regex.test( ruleValue );
+                var matches = ruleValue.match(regex);
+                if( metadataFound && matches.length > 1 ){
+                    matches[1].split(',').forEach(function(keypair){
+                        var kv = keypair.trim().split(" ");
+                        if( kv[0] == 'untangle_action' ){
+                            return;
+                        }
+                        metadata.push(kv[0].trim() + ' ' + kv[1].trim());
+                    });
+                }
+                var date = new Date(Date.now() + Renderer.timestampOffset);
+                metadata.push('untangle_action ' + Ext.util.Format.date(date, "Y_m_d"));
+                metadataValue = metadata.join(', ');
             }
-            var date = new Date(Date.now() + Renderer.timestampOffset);
-            metadata.push('untangle_action ' + Ext.util.Format.date(date, "Y_m_d"));
-            metadataValue = metadata.join(', ');
         }
 
         // Standard field (key:value;) replacements.
