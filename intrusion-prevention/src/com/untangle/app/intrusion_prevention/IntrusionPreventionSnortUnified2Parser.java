@@ -29,7 +29,7 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule;
 public class IntrusionPreventionSnortUnified2Parser
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final int MaximumProcessedRecords = 5000;
+    private final static int MaximumProcessedRecords = 5000;
 
 	private FileChannel fc;
 	private ByteBuffer bufSerialHeader = null;
@@ -194,15 +194,14 @@ public class IntrusionPreventionSnortUnified2Parser
             logger.warn( "Unable to open snort log for processing:", e );
 		}
         
-		int packet_count = 0;
-        int eventCount = 0;
+		int packetCount = 0;
 
         long pos = -1L;
         int recordCount = 0;
 		try {
             boolean abort = false;
 			while (fc.position() != fc.size()) {
-                logger.debug( "parse: packet count=" + ++packet_count + ", file size=" + fc.size() + ", position=" + fc.position() );
+                logger.debug( "parse: packet count=" + ++packetCount + ", file size=" + fc.size() + ", position=" + fc.position() );
 				try{
                     parseSerialHeader();
                 }catch( Exception e ){
