@@ -5,6 +5,7 @@ import pdb
 import os
 import re
 import subprocess
+import base64
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -27,6 +28,8 @@ vpnServerResult = 0
 vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
 vpnSite2SiteHostname = "untangle-268"
 tunnelUp = False
+ovpnlocaluser = "ovpnlocaluser"
+ovpnPasswd = "passwd"
 
 def setUpClient(vpn_enabled=True,vpn_export=False,vpn_exportNetwork="127.0.0.1",vpn_groupId=1,vpn_name=vpnClientName):
     return {
@@ -55,7 +58,7 @@ def waitForServerVPNtoConnect():
         if (len(listOfServers['list']) > 0):
             if (listOfServers['list'][0]['connected']):
                 # VPN has connected
-                break;
+                break
     return timeout
 
 def waitForClientVPNtoConnect():
@@ -68,7 +71,7 @@ def waitForClientVPNtoConnect():
             if (listOfServers['list'][0]['clientName']):
                 # VPN has connected
                 time.sleep(5) # wait for client to get connectivity
-                break;
+                break
     return timeout
 
 def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
@@ -81,7 +84,7 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
         if (result == ping_result_expected):
             # target is reachable if succ
             ping_result = True
-            break;
+            break
     return ping_result
 
 def configureVPNClientForConnection(clientLink):
@@ -99,6 +102,24 @@ def configureVPNClientForConnection(clientLink):
     if(unzipFiles == 0) and (removeOld == 0) and (moveNew == 0):
         result = 0
     return result
+
+def createLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': [{
+            'username': ovpnlocaluser, 
+            'firstName': 'OVPNfname', 
+            'lastName': 'OVPNlname', 
+            'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
+            'expirationTime': 0, 
+            'passwordBase64Hash': base64.b64encode(ovpnPasswd),
+            'email': 'test@example.com'
+            },]
+    }
+
+def removeLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': []
+    }
 
 class OpenVpnTests(unittest2.TestCase):
 
@@ -465,7 +486,89 @@ class OpenVpnTests(unittest2.TestCase):
         #check to see if the faceplate counters have incremented
         post_events_connect = global_functions.get_app_metric_value(app, "connect")
         assert(pre_events_connect < post_events_connect)
+
+    def test_070_createClientVPNTunnelUserPass(self):
+        global appData, vpnServerResult, vpnClientResult
+        if (vpnClientResult != 0 or vpnServerResult != 0):
+            raise unittest2.SkipTest("No paried VPN client available")
+
+        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
+        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
+        loopLimit = 5
+        while ((running == 0) and (loopLimit > 0)):
+            # OpenVPN is running, wait 5 sec to see if openvpn is done
+            loopLimit -= 1
+            time.sleep(5)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+        if loopLimit == 0:
+            # try killing the openvpn session as it is probably stuck
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            time.sleep(2)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+        if running == 0:
+            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            
+        appData = app.getSettings()
+        appData["serverEnabled"]=True
+        siteName = appData['siteName']
+        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
+        appData['remoteClients']['list'][:] = []  
+        appData['remoteClients']['list'].append(setUpClient())
+        #enable user/password authentication, set to local directory
+        appData['authUserPass']=True
+        appData["authenticationType"]="LOCAL_DIRECTORY"
+        app.setSettings(appData)
+        clientLink = app.getClientDistributionDownloadLink(vpnClientName,"zip")
+
+        #create Local Directory User for authentication
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+
+        #download, unzip, move config to correct directory
+        result = configureVPNClientForConnection(clientLink)
+        assert(result == 0)
+        
+        #create credentials file containing username/password
+        remote_control.run_command("echo " + ovpnlocaluser + " > /tmp/authUserPassFile; echo " + ovpnPasswd + " >> /tmp/authUserPassFile", host=global_functions.vpnClientVpnIP)
+        #connect to openvpn using the file
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+
+        timeout = waitForClientVPNtoConnect()
+        # fail if tunnel doesn't connect
+        assert(timeout > 0)
+        # ping the test host behind the Untangle from the remote testbox
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        
+        listOfClients = app.getActiveClients()
+        print "address " + listOfClients['list'][0]['address']
+        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
+
+        host_result = remote_control.run_command("host test.untangle.com", stdout=True)
+        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
+        ip_address_testuntangle = (match.group()).replace('address ','')
+
+        # stop the vpn tunnel on remote box
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        # openvpn takes time to shut down
+        time.sleep(3) 
+
+        assert(result==0)
+        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+
+        events = global_functions.get_events('OpenVPN','Connection Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'client_name', vpnClientName )
+        assert( found )
+
+        # Check to see if the faceplate counters have incremented. 
+        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        assert(pre_events_connect < post_events_connect)
+
+        #remove Local Directory User
+        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())        
+
     @staticmethod
     def finalTearDown(self):
         global app, appWeb
