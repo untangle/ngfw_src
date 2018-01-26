@@ -74,6 +74,9 @@ Ext.define('Bootstrap', {
             Highcharts.setOptions({
                 global: {
                     timezoneOffset: -(rpc.timeZoneOffset / 60000)
+                },
+                lang: {
+                    noData: 'Please wait ...'.t()
                 }
             });
         }
@@ -84,10 +87,8 @@ Ext.define('Bootstrap', {
 
         me.servletContext = servletContext;
 
-        console.log();
-
         if (servletContext === 'ADMIN' || servletContext === 'REPORTS') {
-            me.initRpc(); me.initHighcharts(); me.initTranslations();
+            me.initRpc(); me.initTranslations(); me.initHighcharts();
         }
 
         // check local storage
