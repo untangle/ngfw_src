@@ -89,21 +89,16 @@ Ext.define('Ung.view.reports.GraphReport', {
                     text: null
                 },
 
-                lang: { noData: '' },
                 noData: {
                     position: {
-                        verticalAlign: 'top',
-                        y: 20
+                        y: -20
                     },
                     style: {
-                        // fontFamily: 'Source Sans Pro',
-                        padding: 0,
-                        fontSize: '14px',
+                        fontSize: '16px',
                         fontWeight: 'normal',
-                        color: '#999',
+                        color: '#555',
                         textAlign: 'center'
-                    },
-                    useHTML: true
+                    }
                 },
 
                 // colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
@@ -364,6 +359,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             // if (reset) { me.reset(); }
+            me.chart.hideNoData();
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
 
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
@@ -421,11 +417,14 @@ Ext.define('Ung.view.reports.GraphReport', {
                 seriesData,
                 seriesName;
 
-            if (!me.data) { return; }
-
             // remove any existing series
             while (me.chart.series.length > 0) {
                 me.chart.series[0].remove(false);
+            }
+
+            if (!me.data || (Ext.isArray(me.data) && me.data.length === 0)) {
+                me.chart.showNoData('No Data!');
+                return;
             }
 
             if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
