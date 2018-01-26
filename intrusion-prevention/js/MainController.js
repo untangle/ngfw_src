@@ -409,11 +409,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var profile = {};
 
             var rawSelected = null;
-            if(current == 'custom'){
+            if(current === 'custom'){
                 rawSelected = Ext.clone(activeGroups[type+'Selected']);
             }else{
                 vm.get('wizardDefaults').profiles.forEach(function(wizardProfile){
-                    if(wizardProfile.profileId == profileId){
+                    if(wizardProfile.profileId === profileId){
                         rawSelected = Ext.clone( wizardProfile.activeGroups[type+'Selected'] );
                     }
                 });
@@ -421,17 +421,17 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
             var selected = [];
             rawSelected.forEach(function(item){
-                if(item[0] == '-'){
+                if(item[0] === '-'){
                     return;
                 }
-                if(item[0] == '+'){
+                if(item[0] === '+'){
                     item = item.substring(1);
                 }
                 selected.push(item);
             });
             profile.selected = selected;
 
-            if(current == 'custom'){
+            if(current === 'custom'){
                 profile.value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
             }else{
                 profile.value = 'Recommended'.t();
@@ -443,7 +443,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     /**
      * ExtJs does not seem to allow tooltip binding, so to get around this, create
-     * model variable with 'value' and 'tip' keys and when the value changes, 
+     * model variable with 'value' and 'tip' keys and when the value changes,
      * look at the bind parent value for that object and set the tooltip.
      */
     bindChange: function(cmp){
@@ -636,7 +636,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     },
 
     categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
         var description = value;
         var categoryRecord = vm.get('categories').findRecord('name', value);
         if( categoryRecord != null ){
@@ -898,13 +898,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         var ruleValue = record.get('rule');
 
         var metadataValue = null;
-        if( ( updatedKey == 'log' || updatedKey == 'block' ) &&
+        if( ( updatedKey === 'log' || updatedKey === 'block' ) &&
             gridSourced ||
-            ( record.get(updatedKey) != updatedValue) ){
+            ( record.get(updatedKey) !== updatedValue) ){
             var metadata = [];
             regex = null;
             for(i = 0; i < this.updateRuleKeys.length; i++){
-                if(this.updateRuleKeys[i].key == "metadata"){
+                if(this.updateRuleKeys[i].key === "metadata"){
                     regex = this.updateRuleKeys[i].regex;
                 }
             }
@@ -939,7 +939,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             if(updatedKey == key){
                 value = updatedValue;
             }else{
-                if(key == "metadata"){
+                if(key === "metadata"){
                     if(metadataValue == null){
                         continue;
                     }else{
@@ -1016,7 +1016,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
 
         var match = false;
         vm.get('variables').each( function( storeRecord ) {
-            if( ( storeRecord != v.record ) && ( newValue == storeRecord.get('variable') ) ){
+            if( ( storeRecord !== v.record ) && ( newValue == storeRecord.get('variable') ) ){
                 match = true;
             }
         });
