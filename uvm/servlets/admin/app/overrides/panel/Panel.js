@@ -10,7 +10,7 @@ Ext.define('Ung.overrides.panel.Panel', {
                     if(!me.scrollableTask){
                         me.scrollableTask = new Ext.util.DelayedTask( Ext.bind(function(){
                             if(this.container && this.container.dom){
-                                me.setScrollable(false);
+                                me.setScrollable('y');
                             }
                             me.scrollableTaskRan = true;
                         }, me) );
