@@ -33,7 +33,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     items: [{
         xtype: 'panel',
         region: 'west',
-        width: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         scrollable: true,
         layout: {
