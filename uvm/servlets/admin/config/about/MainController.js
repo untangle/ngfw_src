@@ -5,7 +5,6 @@ Ext.define('Ung.config.about.MainController', {
 
     control: {
         '#': {
-            beforerender: 'onBeforeRender',
             afterrender: 'onAfterRender'
         },
         '#licenses': {
@@ -13,21 +12,27 @@ Ext.define('Ung.config.about.MainController', {
         }
     },
 
-    onBeforeRender: function (view) {
-        try {
-            view.getViewModel().set({
-                kernelVersion: rpc.adminManager.getKernelVersion(),
-                modificationState: rpc.adminManager.getModificationState(),
-                rebootCount: rpc.adminManager.getRebootCount(),
-                activeSize: rpc.hostTable.getCurrentActiveSize(),
-                maxActiveSize: rpc.hostTable.getMaxActiveSize()
-            });
-        } catch (ex) {
-
-        }
-    },
-
     onAfterRender: function(view){
+        var me = this, vm = me.getViewModel();
+        Ext.Deferred.sequence([
+            Rpc.directPromise('rpc.adminManager.getKernelVersion'),
+            Rpc.directPromise('rpc.adminManager.getModificationState'),
+            Rpc.directPromise('rpc.adminManager.getRebootCount'),
+            Rpc.directPromise('rpc.hostTable.getCurrentActiveSize'),
+            Rpc.directPromise('rpc.hostTable.getMaxActiveSize'),
+        ], this).then(function (result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            vm.set({
+                kernelVersion: result[0],
+                modificationState: result[1],
+                rebootCount: result[2],
+                activeSize: result[3],
+                maxActiveSize: result[4]
+            });
+        });
+
         var accountComponent = view.down('[itemId=account]');
         if( accountComponent &&
             accountComponent.isHidden() ){
@@ -38,7 +43,8 @@ Ext.define('Ung.config.about.MainController', {
                     url: Util.getStoreUrl() + '?action=find_account&uid=' + serverUID,
                     type: 'GET',
                     success: function(response, opts) {
-                        if( response!=null &&
+                        if( !Util.isDestroyed(accountComponent) &&
+                            response!=null &&
                             response.account) {
                             accountComponent.setHtml('Account'.t() + ": " + response.account);
                             accountComponent.setVisible(true);
@@ -58,7 +64,7 @@ Ext.define('Ung.config.about.MainController', {
         rpc.licenseManager = rpc.UvmContext.licenseManager();
         Rpc.asyncData('rpc.licenseManager.reloadLicenses', true).then(function(result) {
             Rpc.asyncData('rpc.licenseManager.getLicenses').then(function(result) {
-                if(!vm.isDestroyed){
+                if(Util.isDestroyed(vm)){
                     return;
                 }
                 vm.set('licenses', result.list);
