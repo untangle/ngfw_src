@@ -19,7 +19,31 @@ Ext.define('Ung.util.Rpc', {
             if (context == null )
                 break;
             var part = ns[i];
-            context = context[part];
+
+            if(part.indexOf('(') > -1 && part.indexOf(')') > -1){
+                // Handle this context with arguments, such as finding an app by its name.
+
+                // Extract argument list from within parens.
+                argsList=part.substring(part.indexOf('(') + 1, part.indexOf(')') ).split(',');
+                var args = [];
+                argsList.forEach(function(arg){
+                    if(arg[0] == '"' && arg[arg.length-1] == '"'){
+                        // Strip quotes around argument.
+                        arg=arg.substring(1,arg.length-1);
+                    }
+                    args.push(arg);
+                });
+
+                // Pull the method.
+                part = part.substring(0, part.indexOf('('));
+                if(context[part] == null){
+                    break;
+                }
+                context = context[part].apply(null,args);
+            }else{
+                context = context[part];
+            }
+
             lastPart = part;
         }
         if (context == null ) {
