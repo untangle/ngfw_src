@@ -4,9 +4,9 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     itemId: 'advanced',
     title: 'Advanced'.t(),
     viewModel: true,
-    autoScroll: true,
     withValidation: true,
     bodyPadding: 10,
+    scrollable: true,
 
     tbar: [{
         xtype: 'tbtext',
@@ -78,9 +78,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },{
         xtype: 'fieldset',
         title: 'Server Configuration'.t(),
-        // padding: 10,
-        // margin: '20 0',
-        // cls: 'app-section',
 
         layout: {
             type: 'vbox',
@@ -89,7 +86,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
 
         items: [{
             xtype: 'app-openvpn-config-editor-grid',
-            // height: 300,
             listProperty: 'settings.serverConfiguration.list',
             itemId: 'server-config-editor-grid',
             bind: '{serverConfiguration}'
@@ -97,9 +93,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },{
         xtype: 'fieldset',
         title: 'Client Configuration'.t(),
-        // padding: 10,
-        // margin: '20 0',
-        // cls: 'app-section',
 
         layout: {
             type: 'vbox',
@@ -108,7 +101,6 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
 
         items: [{
             xtype: 'app-openvpn-config-editor-grid',
-            // height: 300,
             listProperty: 'settings.clientConfiguration.list',
             itemId: 'client-config-editor-grid',
             bind: '{clientConfiguration}'
