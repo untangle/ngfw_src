@@ -16,13 +16,16 @@ Ext.define('Ung.cmp.PropertyGrid', {
 
     cls: 'prop-grid',
 
+    disableSelection: true,
+
     viewConfig: {
         enableTextSelection: true,
         getRowClass: function(record) {
+            var cls = 'x-selectable'; // NGFW-11399 force selectable text
             if (record.get('value') === null || record.get('value') === '') {
-                return 'empty';
+                cls += ' empty';
             }
-            return;
+            return cls;
         }
     },
 
