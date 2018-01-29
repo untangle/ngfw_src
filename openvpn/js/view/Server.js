@@ -33,7 +33,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     items: [{
         xtype: 'panel',
         region: 'west',
-        width: 300,
+        width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
         scrollable: true,
         layout: {
@@ -104,6 +104,10 @@ Ext.define('Ung.apps.openvpn.view.Server', {
                 hidden: '{!settings.authUserPass}'
             },
             items: [{
+                xtype: 'displayfield',
+                margin: '10 0 10 0',
+                value: '<B>NOTE:</B> Enabling or disabling Username/Password Authentication will require existing remote client configuration files to be downloaded again.'
+            }, {
                 xtype: 'radiogroup',
                 fieldLabel: 'Authentication Method'.t(),
                 labelAlign: 'top',
@@ -280,7 +284,7 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
 
     columns: [{
         header: 'Group Name'.t(),
-        allowBlank: false, 
+        allowBlank: false,
         width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'name',

@@ -36,6 +36,11 @@ cite {
     color: #CCC;
 }
 
+/* NGFW-11398 - not visible fieldset in Safari 11 */
+.x-fieldset {
+    overflow: visible;
+}
+
 .nav-item {
     display: inline-block;
     height: 40px;
