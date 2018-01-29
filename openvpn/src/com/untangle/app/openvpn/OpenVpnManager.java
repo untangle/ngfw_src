@@ -779,8 +779,10 @@ public class OpenVpnManager
     private OpenVpnConfigItem findAnyConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
     {
         if (argList == null) return(null);
+        if (findName == null) return(null);
 
         for ( OpenVpnConfigItem item : argList) {
+            if (item.getOptionName() == null) continue;
             if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase()))
             return(item);
         }
@@ -795,9 +797,11 @@ public class OpenVpnManager
     private OpenVpnConfigItem findCustomConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
     {
         if (argList == null) return(null);
+        if (findName == null) return(null);
 
         for ( OpenVpnConfigItem item : argList) {
             if (item.getReadOnly() == true) continue;
+            if (item.getOptionName() == null) continue;
             if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase()))
             return(item);
         }
