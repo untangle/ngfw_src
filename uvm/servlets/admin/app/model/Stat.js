@@ -117,11 +117,15 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'uptimeFormatted',
             calculate: function (data) {
-                var numdays = Math.floor((data.uptime % 31536000) / 86400),
+                var numyears = Math.floor(data.uptime / 31536000),
+                    numdays = Math.floor((data.uptime % 31536000) / 86400),
                     numhours = Math.floor(((data.uptime % 31536000) % 86400) / 3600),
                     numminutes = Math.floor((((data.uptime % 31536000) % 86400) % 3600) / 60),
                     uptime = '';
 
+                if (numyears > 0) {
+                    uptime += numyears + 'y ';
+                }
                 if (numdays > 0) {
                     uptime += numdays + 'd ';
                 }
