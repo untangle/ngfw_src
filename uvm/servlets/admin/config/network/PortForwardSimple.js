@@ -239,12 +239,8 @@ Ext.define('Ung.config.network.PortForwardSimple', {
                 grid = me.getView().up('ungrid'),
                 record = vm.get('record');
             record.set('simple', false);
-            if (me.getView().record) {
-                me.getView().record.set(vm.get('record').getData());
-                grid.getController().editorWin(me.getView().record);
-            } else {
-                grid.getController().editorWin(null);
-            }
+
+            grid.getController().editorWin(record, me.getView().action);
             me.getView().close();
         }
     }
