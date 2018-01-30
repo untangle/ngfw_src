@@ -7,10 +7,7 @@ Ext.define('Ung.config.system.MainController', {
     },
 
     loadSettings: function () {
-        var me = this, vm = this.getViewModel(),
-            timeZones = [];
-
-        vm.set('isExpertMode', rpc.isExpertMode);
+        var me = this, vm = me.getViewModel();
 
         me.getView().setLoading(true);
         Ext.Deferred.sequence([
@@ -20,42 +17,42 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getDate'),
             Rpc.directPromise('rpc.systemManager.getTimeZone'),
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
-        ], this).then(function (result) {
-            if(me.destroyed){
-                return;
-            }
-            me.getView().setLoading(false);
+            Rpc.directPromise('rpc.appManager.app("http").getHttpSettings'),
+            Rpc.directPromise('rpc.appManager.app("ftp").getFtpSettings'),
+            Rpc.directPromise('rpc.appManager.app("smtp").getSmtpSettings'),
+            Rpc.directPromise('rpc.appManager.app("shield").getSettings'),
+            Rpc.directPromise('rpc.isExpertMode')
+            ], this).then(function(result){
+                if(Util.isDestroyed(me, vm)){
+                    return;
+                }
+                me.getView().setLoading(false);
 
-            var languageSettings = result[0];
-            languageSettings['language'] = languageSettings['source'] + '-' + languageSettings['language'];
+                var timeZones = [];
+                if (result[5]) {
+                    eval(result[5]).forEach(function (tz) {
+                        timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
+                    });
+                }
 
-            vm.set({
-                languageSettings: result[0],
-                languagesList: result[1],
-                systemSettings: result[2],
-                time: result[3],
-                timeZone: result[4],
-            });
+                // Massage language to include the appropriate source.
+                var languageSettings = result[0];
+                languageSettings['language'] = languageSettings['source'] + '-' + languageSettings['language'];
 
-            if (result[5]) {
-                eval(result[5]).forEach(function (tz) {
-                    timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
+                vm.set({
+                    languageSettings: result[0],
+                    languagesList: result[1],
+                    systemSettings: result[2],
+                    time: result[3],
+                    timeZone: result[4],
+                    timeZonesList: timeZones,
+                    httpSettings: result[6],
+                    ftpSettings: result[7],
+                    smtpSettings: result[8],
+                    shieldSettings: result[9],
+                    isExpertMode: result[10]
                 });
-                vm.set('timeZonesList', timeZones);
-            }
         });
-
-        // get shield settings
-        try {
-            rpc.shieldSettings = rpc.appManager.app('shield').getSettings();
-            vm.set('shieldSettings', rpc.shieldSettings);
-        } catch (ex) {
-            Util.handleException(ex);
-        }
-
-        // get protocols
-        me.initProtocols();
-
     },
 
     syncTime: function () {
@@ -66,10 +63,10 @@ Ext.define('Ung.config.system.MainController', {
             'Continue?'.t(),
             function(btn) {
                 if (btn === 'yes') {
-                    Ext.MessageBox.wait('Syncing time with the internet...'.t(), 'Please wait'.t());
-                    rpc.UvmContext.forceTimeSync(function (result, ex) {
+                    Ext.MessageBox.wait('Synchronizing time with the internet...'.t(), 'Please wait'.t());
+                    Rpc.asyncData('rpc.UvmContext.forceTimeSync').then(function(result, ex){
                         Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Util.handleException(ex); return; }
+                        if (ex) { Util.handleException(ex); return; }
                         if (result !== 0) {
                             Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
@@ -81,17 +78,15 @@ Ext.define('Ung.config.system.MainController', {
     },
 
     syncLanguage: function () {
-        Ext.MessageBox.wait('Syncing time with the internet...'.t(), 'Please wait'.t());
-        rpc.languageManager.synchronizeLanguage(function (result, ex) {
-            document.location.reload();
+        Ext.MessageBox.wait('Synchronizing languages with the internet...'.t(), 'Please wait'.t());
+        Rpc.asyncData('rpc.UvmContext.forceTimeSync').then(function(result, ex){
+           document.location.reload();
         });
     },
 
-
-
     saveSettings: function () {
-        var me = this, v = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = me.getView(),
+            vm = me.getViewModel();
 
         v.setLoading(true);
         if (vm.get('languageSettings.regionalFormats') === 'default') {
@@ -101,8 +96,6 @@ Ext.define('Ung.config.system.MainController', {
             vm.set('languageSettings.overrideThousandSep', '');
             vm.set('languageSettings.overrideTimestampFmt', '');
         }
-
-        rpc.shieldManager = rpc.appManager.app('shield');
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -126,31 +119,31 @@ Ext.define('Ung.config.system.MainController', {
         languageSettings['language'] = languageSplit[1];
         vm.set('languageSettings', languageSettings);
 
-        var sequence = [];
-        sequence.push(Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')));
-        sequence.push(Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')));
-        sequence.push(Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')));
-        sequence.push(Rpc.asyncPromise('rpc.shieldManager.setSettings', vm.get('shieldSettings')));
-
-        if (!rpc.smtpApp) rpc.smtpApp = rpc.appManager.app("smtp");
-        if (rpc.smtpApp) sequence.push(Rpc.asyncPromise('rpc.smtpApp.setSettings', vm.get('smtpSettings')));
-        if (!rpc.httpApp) rpc.httpApp = rpc.appManager.app("http");
-        if (rpc.httpApp) sequence.push(Rpc.asyncPromise('rpc.httpApp.setSettings', vm.get('httpSettings')));
-        if (!rpc.ftpApp) rpc.ftpApp = rpc.appManager.app("ftp");
-        if (rpc.ftpApp) sequence.push(Rpc.asyncPromise('rpc.ftpApp.setSettings', vm.get('ftpSettings')));
-
-        Ext.Deferred.sequence(sequence, this).then(function () {
-            v.setLoading(false);
-            me.loadSettings();
-            Util.successToast('System settings saved!');
-            Ext.fireEvent('resetfields', v);
-            if(vm.get('localizationChanged') == true){
-                window.location.reload();
-            }
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
+            Rpc.asyncPromise('rpc.appManager.app("shield").setSettings', vm.get('shieldSettings')),
+            Rpc.asyncPromise('rpc.appManager.app("smtp").setSettings', vm.get('smtpSettings')),
+            Rpc.asyncPromise('rpc.appManager.app("http").setSettings', vm.get('httpSettings')),
+            Rpc.asyncPromise('rpc.appManager.app("ftp").setSettings', vm.get('ftpSettings'))
+            ], this).then(function () {
+                if(Util.isDestroyed(me, v, vm)){
+                    return;
+                }
+                v.setLoading(false);
+                me.loadSettings();
+                Util.successToast('System settings saved!');
+                Ext.fireEvent('resetfields', v);
+                if(vm.get('localizationChanged') == true){
+                    window.location.reload();
+                }
         }, function (ex) {
-            v.setLoading(false);
-            console.error(ex);
             Util.handleException(ex);
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
+            v.setLoading(false);
         });
     },
 
@@ -251,45 +244,6 @@ Ext.define('Ung.config.system.MainController', {
                 Ext.MessageBox.alert('Failed', errorMsg);
             }
         });
-    },
-
-    getHttpSettings: function () {
-        var vm = this.getViewModel();
-        try {
-            if (rpc.appManager.app('http')) {
-                vm.set('httpSettings', rpc.appManager.app('http').getHttpSettings());
-            }
-        } catch (ex) {
-            if (ex) { console.error(ex); Util.handleException(ex); return; }
-        }
-    },
-    getFtpSettings: function () {
-        var vm = this.getViewModel();
-        try {
-            if (rpc.appManager.app('ftp')) {
-                vm.set('ftpSettings', rpc.appManager.app('ftp').getFtpSettings());
-            }
-        } catch (ex) {
-            if (ex) { console.error(ex); Util.handleException(ex); return; }
-        }
-    },
-
-    getSmtpSettings: function () {
-        var vm = this.getViewModel();
-        try {
-            if (rpc.appManager.app('smtp')) {
-                vm.set('smtpSettings', rpc.appManager.app('smtp').getSmtpSettings());
-            }
-        } catch (ex) {
-            if (ex) { console.error(ex); Util.handleException(ex); return; }
-        }
-    },
-
-    // Protocols methods
-    initProtocols: function () {
-        this.getHttpSettings();
-        this.getFtpSettings();
-        this.getSmtpSettings();
     },
 
     languageChange: function(combo, newValue, oldValue){
