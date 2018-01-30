@@ -85,8 +85,11 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var vm = this.getViewModel();
         this.mainGrid = v.up('grid');
 
+        if (v.action) {
+            this.action = v.action;
+        }
+
         if (!v.record) {
-//            v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
             v.record = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(this.mainGrid.emptyRow));
             v.record.set('markedForNew', true);
             this.action = 'add';
@@ -95,9 +98,13 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 windowTitle: 'Add'.t()
             });
         } else {
+            var rec = v.record.copy(null); // make a clean copy
+            if (rec.get('simple') === true) { // if simple mode, make it false (Port Forward Rules)
+                rec.set('simple', false);
+            }
             this.getViewModel().set({
-                record: v.record.copy(null),
-                windowTitle: 'Edit'.t()
+                record: rec,
+                windowTitle: v.action === 'add' ? 'Add'.t() : 'Edit'.t()
             });
         }
 
@@ -202,7 +209,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
             }
         }
 
-        if (!this.action) {
+        if (!this.action || this.action === 'edit') {
             for (var field in vm.get('record').modified) {
                 if (field !== 'conditions') {
                     v.record.set(field, vm.get('record').get(field));
@@ -216,9 +223,10 @@ Ext.define('Ung.cmp.RecordEditorController', {
     },
 
     onCancel: function () {
-        if (this.getView().record) { // discard changes on cancel
-            this.getView().record.reject();
-        }
+        // not OK if record was just added but not saved / synced with the store
+        // if (this.getView().record) { // discard changes on cancel
+        //     this.getView().record.reject();
+        // }
         this.getView().close();
     },
 
