@@ -1,164 +1,158 @@
 /**
- * rpc connectivity brain
+ * Rpc connectivity brain
  */
 Ext.define('Ung.util.Rpc', {
     alternateClassName: 'Rpc',
     singleton: true,
 
-    evalExp: function(ns, context, expression) {
-        if ( ns == null || context == null || expression == null ) {
-            console.error('Error: Invalid RPC expression: \'' + expression + '\'.');
-            Util.handleException('Invalid RPC expression: \'' + expression + '\'.');
+    /**
+     * With the full rpc path and arguments, verify that each node and the target method exists.
+     *
+     * If path does not exist, return null.
+     * Otherwise, return an object containing:
+     *  context The object to execute.
+     *  args    Arguments to execute in the context.
+     */
+    resolve: function() {
+        var args = [].slice.call(arguments).splice(1),
+            path = arguments[0],
+            nodes = path.split('.'),
+            method = nodes.pop(),
+            context = window;
+
+        if ( nodes === null || context === null || arguments[0] === null ) {
+            Util.handleException('Invalid RPC path: \'' + path + '\'.');
             return null;
         }
 
-        var lastPart = null;
-        var len = ns.length;
-
+        var len = nodes.length;
         for (var i = 0; i < len ; i++) {
-            if (context == null )
+            if (context === null ){
                 break;
-            var part = ns[i];
+            }
+            var node = nodes[i];
 
-            if(part.indexOf('(') > -1 && part.indexOf(')') > -1){
+            if(node.indexOf('(') > -1 && node.indexOf(')') > -1){
                 // Handle this context with arguments, such as finding an app by its name.
 
                 // Extract argument list from within parens.
-                argsList=part.substring(part.indexOf('(') + 1, part.indexOf(')') ).split(',');
-                var args = [];
-                argsList.forEach(function(arg){
-                    if(arg[0] == '"' && arg[arg.length-1] == '"'){
+                cargsList=node.substring(node.indexOf('(') + 1, node.indexOf(')') ).split(',');
+                var cargs = [];
+                cargsList.forEach(function(carg){
+                    if(carg[0] == '"' && carg[carg.length-1] == '"'){
                         // Strip quotes around argument.
-                        arg=arg.substring(1,arg.length-1);
+                        carg=carg.substring(1,carg.length-1);
                     }
-                    args.push(arg);
+                    cargs.push(carg);
                 });
 
                 // Pull the method.
-                part = part.substring(0, part.indexOf('('));
-                if(context[part] == null){
+                node = node.substring(0, node.indexOf('('));
+                if(context[node] == null){
                     break;
                 }
-                context = context[part].apply(null,args);
+                context = context[node].apply(null,cargs);
             }else{
-                context = context[part];
+                context = context[node];
+            }
+            if(context == null){
+                Util.handleException('Invalid RPC path: \'' + path + '\'. Attribute \'' + node + '\' is null');
+                return null;
             }
 
-            lastPart = part;
         }
-        if (context == null ) {
-            console.error('Error: Invalid RPC expression: \'' + expression + '\'. Attribute \'' + lastPart + '\' is null');
-            Util.handleException('Invalid RPC expression: \'' + expression + '\'. Attribute \'' + lastPart + '\' is null');
-            return null;
-        }
-
-        return context;
-    },
-
-    asyncData: function(expression /*, args */) {
-        var args = [].slice.call(arguments).splice(1),
-            ns = expression.split('.'),
-            method = ns.pop(),
-            context = window,
-            dfrd = new Ext.Deferred();
-
-        context = Ung.util.Rpc.evalExp(ns, context, expression);
-        if (!context) return null;
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.handleException('No such RPC method: \'' + expression + '\'');
+            Util.handleException('No such RPC method: \'' + path + '\'');
             return null;
         }
 
-        args.unshift(function (result, ex) {
+        return {
+            context: context[method],
+            args: args
+        };
+    },
+
+    /**
+     * Make RPC call as a deferred function and return promise.
+     */
+    asyncData: function() {
+        var resolveResults = this.resolve.apply(null, arguments);
+        if(resolveResults == null){
+            return;
+        }
+
+        var dfrd = new Ext.Deferred();
+
+        resolveResults.args.unshift(function (result, ex) {
             if (ex) {
                 console.error('Error: ' + ex);
                 Util.handleException(ex);
                 dfrd.reject(ex);
             }
-            // console.info(expression + ' (async data) ... OK');
             dfrd.resolve(result);
         });
 
-        context[method].apply(null, args);
+        resolveResults.context.apply(null, resolveResults.args);
         return dfrd.promise;
     },
 
-    directData: function(expression /*, args */) {
-        var ns = expression.split('.'),
-            method = ns.pop(),
-            context = window,
-            lastPart = null;
-
-        context = Ung.util.Rpc.evalExp(ns, context, expression);
-        if (!context) return null;
-
-        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            console.error('Error: No such RPC method: \'' + expression + '\' on attribute \'' + lastPart + '\'');
-            Util.handleException('No such RPC method: \'' + expression + '\' on attribute \'' + lastPart + '\'');
-            return null;
+    /**
+     * Make RPC call and return the results.
+     */
+    directData: function() {
+        var resolveResults = this.resolve.apply(null, arguments);
+        if(resolveResults == null){
+            return;
         }
 
         try {
-            return context[method].call();
+            return resolveResults.context.apply(null, resolveResults.args);
         } catch (ex) {
             Util.handleException(ex);
         }
         return null;
     },
 
-    asyncPromise: function(expression /*, args */) {
-        var args = [].slice.call(arguments).splice(1),
-            ns = expression.split('.'),
-            method = ns.pop(),
-            context = window;
-
-        context = Ung.util.Rpc.evalExp(ns, context, expression);
-        if (!context) return null;
-
-        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.handleException('No such RPC method: \'' + expression + '\'');
-            return null;
+    /**
+     * Return a function containing the RPC call in a deferred function that will return a promise.
+     * Suitable for calling in a sequence.
+     */
+    asyncPromise: function() {
+        var resolveResults = this.resolve.apply(null, arguments);
+        if( resolveResults == null){
+            return;
         }
 
         return function() {
             var dfrd = new Ext.Deferred();
-            args.unshift(function (result, ex) {
+            resolveResults.args.unshift(function (result, ex) {
                 if (ex) { dfrd.reject(ex); }
-                // console.info(expression + ' (async promise) ... OK');
                 dfrd.resolve(result);
             });
-            context[method].apply(null, args);
+            resolveResults.context.apply(null, resolveResults.args);
             return dfrd.promise;
         };
     },
 
-    directPromise: function(expression /*, args */) {
-        var ns = expression.split('.'),
-            method = ns.pop(),
-            context = window;
-
-        context = Ung.util.Rpc.evalExp(ns, context, expression);
-        if (!context) return null;
-
-        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.handleException('No such RPC method: \'' + expression + '\'');
-            return null;
+    /**
+     * Return a function containing the RPC call in a deferred function that will return a promise.
+     * Suitable for calling in a sequence.
+     */
+    directPromise: function() {
+        var resolveResults = this.resolve.apply(null, arguments);
+        if(resolveResults == null){
+            return;
         }
 
         return function() {
             var dfrd = new Ext.Deferred();
             try {
-                // console.info(expression + ' (direct promise) ... OK');
-                dfrd.resolve(context[method].call());
+                dfrd.resolve(resolveResults.context.apply(null, resolveResults.args));
             } catch (ex) {
                 dfrd.reject(ex);
             }
             return dfrd.promise;
         };
-    },
-
+    }
 });
