@@ -252,7 +252,7 @@ def checkSystem():
     #debug("checkSystem()")
 
     # check tune is loaded
-    ret = os.system('/sbin/modprobe -q iptable_tune');
+    ret = os.system('/sbin/modprobe -q iptable_tune || /bin/lsmod | grep -q iptable_tune');
     if ret != 0:
         debug("ERROR: Incompatible kernel detected (no tune)");
         sys.exit(1);
