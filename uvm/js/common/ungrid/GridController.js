@@ -48,7 +48,7 @@ Ext.define('Ung.cmp.GridController', {
 
     /** used for Port Forward Rules */
     addSimpleRecord: function () {
-        this.simpleEditorWin(null);
+        this.simpleEditorWin(null, 'add');
     },
 
     /**
@@ -99,15 +99,16 @@ Ext.define('Ung.cmp.GridController', {
         if (!record.get('simple')) {
             this.editorWin(record);
         } else {
-            this.simpleEditorWin(record);
+            this.simpleEditorWin(record, 'edit'); // action to be passed to main editor on Switch
         }
     },
 
-    editorWin: function (record) {
+    editorWin: function (record, action) {
         this.dialog = this.getView().add({
             xtype: this.getView().editorXtype,
             renderTo: Ext.getBody(),
-            record: record
+            record: record,
+            action: action // add or edit
         });
 
         // look for window overrides in the parent grid
@@ -117,10 +118,11 @@ Ext.define('Ung.cmp.GridController', {
         this.dialog.show();
     },
 
-    simpleEditorWin: function (record) {
+    simpleEditorWin: function (record, action) {
         this.simpledialog = this.getView().add({
             xtype: this.getView().simpleEditorAlias,
-            record: record
+            record: record,
+            action: action
         });
 
         // look for window overrides in the parent grid

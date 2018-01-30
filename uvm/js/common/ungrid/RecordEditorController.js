@@ -85,6 +85,10 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var vm = this.getViewModel();
         this.mainGrid = v.up('grid');
 
+        if (v.action) {
+            this.action = v.action;
+        }
+
         if (!v.record) {
 //            v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
             v.record = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(this.mainGrid.emptyRow));
@@ -97,7 +101,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         } else {
             this.getViewModel().set({
                 record: v.record.copy(null),
-                windowTitle: 'Edit'.t()
+                windowTitle: v.action === 'add' ? 'Add'.t() : 'Edit'.t()
             });
         }
 
