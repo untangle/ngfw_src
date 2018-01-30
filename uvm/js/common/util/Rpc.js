@@ -62,8 +62,12 @@ Ext.define('Ung.util.Rpc', {
 
         }
 
-        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
-            Util.handleException('No such RPC method: \'' + path + '\'');
+        if (!context.hasOwnProperty(method) ){
+            Util.handleException('No such RPC property or method: \'' + path + '\'');
+            return null;
+        }
+        if(!Ext.isFunction(context[method]) && args.length > 0){
+            Util.handleException('RPC property requsted but arguments : \'' + path + '\'');
             return null;
         }
 
@@ -79,6 +83,12 @@ Ext.define('Ung.util.Rpc', {
     asyncData: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if(resolveResults == null){
+            return;
+        }
+        if(!Ext.isFunction(resolveResults.context)){
+            // Asynchronously getting a property doesn't make any sense without writing
+            // an anonymoys function to handle it.  Don't allow it.
+            Util.handleException('Path \'' + arguments[0] + '\' is not a function, use a direct method instead');
             return;
         }
 
@@ -107,7 +117,7 @@ Ext.define('Ung.util.Rpc', {
         }
 
         try {
-            return resolveResults.context.apply(null, resolveResults.args);
+            return  Ext.isFunction(resolveResults.context) ? resolveResults.context.apply(null, resolveResults.args) : resolveResults.context;
         } catch (ex) {
             Util.handleException(ex);
         }
@@ -121,6 +131,12 @@ Ext.define('Ung.util.Rpc', {
     asyncPromise: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if( resolveResults == null){
+            return;
+        }
+        if(!Ext.isFunction(resolveResults.context)){
+            // Asynchronously getting a property doesn't make any sense without writing
+            // an anonymoys function to handle it.  Don't allow it.
+            Util.handleException('Path \'' + arguments[0] + '\' is not a function, use a direct method instead');
             return;
         }
 
@@ -148,7 +164,7 @@ Ext.define('Ung.util.Rpc', {
         return function() {
             var dfrd = new Ext.Deferred();
             try {
-                dfrd.resolve(resolveResults.context.apply(null, resolveResults.args));
+                dfrd.resolve( Ext.isFunction(resolveResults.context) ? resolveResults.context.apply(null, resolveResults.args) : resolveResults.context );
             } catch (ex) {
                 dfrd.reject(ex);
             }
