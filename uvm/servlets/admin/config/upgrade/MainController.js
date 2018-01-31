@@ -18,15 +18,25 @@ Ext.define('Ung.config.upgrade.MainController', {
             view = me.getView(),
             vm = me.getViewModel();
 
-        view.getViewModel().set('settings', rpc.systemManager.getSettings());
-
-        for( var key in this.settingsValueMap){
-            for( var settingsKey in this.settingsValueMap[key]){
-                if( vm.get(key) == settingsKey){
-                    vm.set(key, this.settingsValueMap[key][settingsKey]);
+        me.getView().setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            ], this).then(function(result){
+                if(Util.isDestroyed(me, view, vm)){
+                    return;
                 }
-            }
-        }
+                me.getView().setLoading(false);
+
+                view.getViewModel().set('settings', result[0]);
+
+                for( var key in this.settingsValueMap){
+                    for( var settingsKey in this.settingsValueMap[key]){
+                        if( vm.get(key) == settingsKey){
+                            vm.set(key, this.settingsValueMap[key][settingsKey]);
+                        }
+                    }
+                }
+        });
 
         view.down('progressbar').wait({
             interval: 500,
@@ -38,6 +48,7 @@ Ext.define('Ung.config.upgrade.MainController', {
     saveSettings: function () {
         var me = this, view = me.getView(),
             vm = me.getViewModel();
+
         view.setLoading('Saving ...');
 
         for( var key in this.settingsValueMap){
@@ -47,34 +58,45 @@ Ext.define('Ung.config.upgrade.MainController', {
                 }
             }
         }
-        rpc.systemManager.setSettings(function (result, ex) {
-            view.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            Util.successToast('Upgrade Settings'.t() + ' saved!');
-            me.loadSettings();
-            Ext.fireEvent('resetfields', view);
-        }, me.getViewModel().get('settings'));
+
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('settings')),
+            ], this).then(function () {
+                if(Util.isDestroyed(me, view, vm)){
+                    return;
+                }
+                view.setLoading(false);
+                me.loadSettings();
+                Util.successToast('Upgrade Settings'.t() + ' saved!');
+                Ext.fireEvent('resetfields', view);
+        }, function (ex) {
+            Util.handleException(ex);
+            if(Util.isDestroyed(me, view, vm)){
+                return;
+            }
+            v.setLoading(false);
+        });
 
     },
 
     checkUpgrades: function () {
-        var v = this.getView();
+        var view = this.getView();
 
         setTimeout( function(){
             Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
-                if(v.destroyed){
+                if(Util.isDestroyed(view)){
                     return;
                 }
                 if(result) {
-                    var upgradeButton = v.down('[name="upgradeButton"]');
+                    var upgradeButton = view.down('[name="upgradeButton"]');
                     if (upgradeButton)
                         upgradeButton.show();
                 } else {
-                    var upgradeText = v.down('[name="upgradeText"]');
+                    var upgradeText = view.down('[name="upgradeText"]');
                     if (upgradeText)
                         upgradeText.show();
                 }
-                var progressbar = v.down('progressbar');
+                var progressbar = view.down('progressbar');
                 if (progressbar) {
                     progressbar.reset();
                     progressbar.hide();
@@ -89,6 +111,9 @@ Ext.define('Ung.config.upgrade.MainController', {
         this.checkDownloadStatus=true;
 
         Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
             me.checkDownloadStatus=false;
 
             Ext.MessageBox.hide();
@@ -108,6 +133,9 @@ Ext.define('Ung.config.upgrade.MainController', {
         }
 
         Rpc.asyncData('rpc.systemManager.getDownloadStatus').then(function(result) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
             if(!me.checkDownloadStatus) {
                 return;
             }
