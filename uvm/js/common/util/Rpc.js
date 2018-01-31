@@ -89,13 +89,13 @@ Ext.define('Ung.util.Rpc', {
     asyncData: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if(resolveResults == null){
-            return;
+            return null;
         }
         if(!Ext.isFunction(resolveResults.context)){
             // Asynchronously getting a property doesn't make any sense without writing
             // an anonymoys function to handle it.  Don't allow it.
             Util.handleException('Path \'' + arguments[0] + '\' is not a function, use a direct method instead');
-            return;
+            return null;
         }
 
         var dfrd = new Ext.Deferred();
@@ -119,7 +119,7 @@ Ext.define('Ung.util.Rpc', {
     directData: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if(resolveResults == null){
-            return;
+            return null;
         }
 
         try {
@@ -137,13 +137,13 @@ Ext.define('Ung.util.Rpc', {
     asyncPromise: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if( resolveResults == null){
-            return;
+            return null;
         }
         if(!Ext.isFunction(resolveResults.context)){
             // Asynchronously getting a property doesn't make any sense without writing
             // an anonymoys function to handle it.  Don't allow it.
             Util.handleException('Path \'' + arguments[0] + '\' is not a function, use a direct method instead');
-            return;
+            return null;
         }
 
         return function() {
@@ -164,7 +164,7 @@ Ext.define('Ung.util.Rpc', {
     directPromise: function() {
         var resolveResults = this.resolve.apply(null, arguments);
         if(resolveResults == null){
-            return;
+            return null;
         }
 
         return function() {
