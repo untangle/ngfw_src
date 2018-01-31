@@ -21,6 +21,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_OVERLAPPED",
-    "title": "Cache Hit/Miss Statistics",
+    "title": "Cache Hit-Miss Statistics",
     "type": "TIME_GRAPH"
 }
