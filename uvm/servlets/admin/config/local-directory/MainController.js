@@ -9,30 +9,40 @@ Ext.define('Ung.config.local-directory.MainController', {
         }
     },
 
-    localDirectory: rpc.UvmContext.localDirectory(),
-
     loadSettings: function () {
         var me = this;
-        rpc.localDirectory = rpc.UvmContext.localDirectory();
-        Rpc.asyncData('rpc.localDirectory.getUsers')
-            .then(function (result) {
+
+        me.getView().setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.UvmContext.localDirectory.getUsers')
+            ], this).then(function (result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.getView().setLoading(false);
 
                 // set the local record fields we use to deal with the expiration time and add vs edit logic
-                for(var i = 0 ; i < result.list.length ; i++) {
-                    result.list[i].localEmpty = false;
+                var users = result[0];
+                for(var i = 0 ; i < users.list.length ; i++) {
+                    users.list[i].localEmpty = false;
 
-                    if (result.list[i].expirationTime == 0) {
-                        result.list[i].localExpires = new Date();
-                        result.list[i].localForever = true;
-                    }
-                    else {
-                        result.list[i].localExpires = new Date(result.list[i].expirationTime);
-                        result.list[i].localForever = false;
+                    if (users.list[i].expirationTime == 0) {
+                        users.list[i].localExpires = new Date();
+                        users.list[i].localForever = true;
+                    }else {
+                        users.list[i].localExpires = new Date(users.list[i].expirationTime);
+                        users.list[i].localForever = false;
                     }
                 }
 
-                me.getViewModel().set('usersData', result);
-            });
+                me.getViewModel().set('usersData', users);
+        }, function (ex) {
+            Util.handleException(ex);
+            if(Util.isDestroyed(me, v)){
+                return;
+            }
+            v.setLoading(false);
+        });
     },
 
     saveSettings: function () {
@@ -61,7 +71,6 @@ Ext.define('Ung.config.local-directory.MainController', {
                 });
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                // store.commitChanges();
             }
         });
 
@@ -87,14 +96,22 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
         }
 
-        Rpc.asyncData('rpc.localDirectory.setUsers', userlist)
-            .then(function (result) {
-                Util.successToast('Local Directory'.t() + ' settings saved!');
-            }).always(function () {
-                me.loadSettings();
-                view.setLoading(false);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.UvmContext.localDirectory.setUsers', userlist)
+            ], this).then(function (result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.getView().setLoading(false);
                 Ext.fireEvent('resetfields', view);
-            });
+
+        }, function (ex) {
+            Util.handleException(ex);
+            if(Util.isDestroyed(me, v)){
+                return;
+            }
+            v.setLoading(false);
+        });
     },
 
     statics:{

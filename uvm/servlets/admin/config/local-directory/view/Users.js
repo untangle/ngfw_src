@@ -90,9 +90,6 @@ Ext.define('Ung.config.local-directory.view.Users', {
             width: Renderer.timestampWidth,
             resizable: false,
             renderer: Ung.config.localdirectory.MainController.expirationRenderer
-            // renderer: function (value) {
-            //     return(value > 0 ? new Date(value) : 'Never'.t());
-            // }
         }],
         editorFields: [{
             xtype: 'textfield',
