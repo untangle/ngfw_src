@@ -53,7 +53,11 @@ Ext.define('Ung.util.Rpc', {
                 }
                 context = context[node].apply(null,cargs);
             }else{
-                context = context[node];
+                if(Ext.isFunction(context[node])){
+                    context = context[node].apply(null,null);
+                }else{
+                    context = context[node];
+                }
             }
             if(context == null){
                 Util.handleException('Invalid RPC path: \'' + path + '\'. Attribute \'' + node + '\' is null');
