@@ -43,7 +43,9 @@ Ext.define('Ung.util.Rpc', {
                         // Strip quotes around argument.
                         carg=carg.substring(1,carg.length-1);
                     }
-                    cargs.push(carg);
+                    if(carg.trim().length > 0){
+                        cargs.push(carg);
+                    }
                 });
 
                 // Pull the method.
