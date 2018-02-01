@@ -111,7 +111,7 @@ file.close()
 file = open( SOURCES_FILENAME, "w+" )
 file.write("## Auto Generated on %s\n" % datetime.datetime.now());
 file.write("## DO NOT EDIT. Changes will be overwritten.\n" + "\n");
-file.write("deb http://%s:untangle@%s/public/%s %s main non-free upstream" % (uid, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
+file.write("deb http://%s:untangle@%s/public/%s %s main non-free" % (uid, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
 file.flush()
 file.close()
 
