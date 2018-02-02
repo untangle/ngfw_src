@@ -89,6 +89,7 @@ Ext.define('Ung.view.reports.TextReport', {
                 endDate,
                 vm.get('globalConditions'), -1) // sql filters
                 .then(function(result) {
+                    if (!me.getView()) { return; }
                     me.getView().setLoading(false);
                     if (reps) { reps.getViewModel().set('fetching', false); }
                     me.processData(result.list);
@@ -97,6 +98,8 @@ Ext.define('Ung.view.reports.TextReport', {
 
                 })
                 .always(function() {
+                    if (!me.getView()) { return; }
+                    me.getView().setLoading(false);
                     if (reps) { reps.getViewModel().set('fetching', false); }
                 });
         },
