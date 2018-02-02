@@ -153,28 +153,34 @@ Ext.define('Ung.view.MainController', {
 
     // Quarantined Messages actions
     releaseMessages: function (btn) {
-        var me = this, mids = [],
-            selectedRecords = btn.up('grid').getSelection();
+        var me = this, mids = [], grid = btn.up('grid'),
+            selectedRecords = grid.getSelection();
         Ext.Array.each(selectedRecords, function (rec) {
             mids.push(rec.get('mailID'));
         });
+        grid.setLoading(true);
         rpc.releaseMessages(function (result, ex) {
+            grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             if (result.releaseCount > 0) {
-                btn.up('grid').getStore().remove(selectedRecords);
+                grid.getStore().remove(selectedRecords);
                 Util.successToast(Ext.String.format('Released {0} Messages'.t(), result.releaseCount));
             }
         }, me.token, mids);
     },
 
     releaseAndSafeList: function (btn) {
-        var me = this, vm = me.getViewModel(), addresses = [];
-        Ext.Array.each(btn.up('grid').getSelection(), function (rec) {
+        var me = this, vm = me.getViewModel(), grid = btn.up('grid'), addresses = []
+            selectedRecords = grid.getSelection();
+        Ext.Array.each(selectedRecords, function (rec) {
             addresses.push(rec.get('sender'));
         });
+        grid.setLoading(true);
         rpc.safelist(function (result, ex) {
+            grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
             if (result.safelistCount > 0) {
+                grid.getStore().remove(selectedRecords);
                 Util.successToast(Ext.String.format('Safelisted {0} Addresses'.t(), result.safelistCount));
             }
             // refresh safelist grid
