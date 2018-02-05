@@ -70,7 +70,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                     dataIndex: 'mode',
                     sortable: true,
                     width: Renderer.messagwWidth,
-                    rtype: 'mode',
+                    renderer: Ung.apps.ipsecvpn.MainController.modeRenderer,
                     filter: Renderer.stringFilter
                 }, {
                     header: 'Local IP'.t(),
