@@ -581,8 +581,18 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     editEntry: function () {
-        var me = this, vm = me.getViewModel();
-        vm.set('eEntry', vm.get('entry').copy(null));
+        var me = this, vm = me.getViewModel(),
+            eEntry = vm.get('entry').copy(null),
+            conditions = eEntry.get('conditions'), newConditions = [];
+
+        // NGFW-11484 - clone conditions objects to avoid issues when creating new reports
+        if (Ext.isArray(conditions)) {
+            Ext.Array.each(conditions, function (cond) {
+                newConditions.push(Ext.clone(cond));
+            });
+        }
+        eEntry.set('conditions', newConditions.length > 0 ? newConditions : null);
+        vm.set('eEntry', eEntry);
         vm.notify();
     },
 
