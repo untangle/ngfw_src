@@ -421,6 +421,13 @@ Ext.define('Ung.view.reports.EntryController', {
 
                 var modFields = entry.copyFrom(eEntry);
 
+                // NGFW-11362 - update report icon on graph style change
+                if (Ext.Array.contains(modFields, 'icon')) {
+                    var node = Ext.getStore('reportstree').findNode('uniqueId', entry.get('uniqueId'));
+                    if (!node) { return; }
+                    node.set('iconCls', 'fa ' + entry.get('icon'));
+                }
+
                 // if title or category changed, update route
                 if (Ext.Array.contains(modFields, 'category') || Ext.Array.contains(modFields, 'title')) {
                     Ext.getStore('reportstree').build();
