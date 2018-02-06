@@ -139,7 +139,7 @@ Ext.define('Ung.util.Rpc', {
     asyncPromise: function() {
         var resolveResult = this.resolve.apply(null, arguments);
 
-        if(resolveResult != null && !Ext.isFunction(resolveResult.context)){
+        if(resolveResult.context != null && !Ext.isFunction(resolveResult.context)){
             // Asynchronously getting a property doesn't make any sense without writing
             // an anonymous function to handle it.  Don't allow it.
             return Ext.Deferred.rejected("Path '" + arguments[0] + "' is not a function, use a direct method instead");
