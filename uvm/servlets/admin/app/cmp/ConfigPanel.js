@@ -71,6 +71,10 @@ Ext.define('Ung.cmp.ConfigPanel', {
                     }
                 });
             });
+        },
+
+        removed: function(){
+            this.getViewModel().set('panel.saveDisabled', false);
         }
     }
 
