@@ -241,7 +241,11 @@ Ext.define('Ung.view.extra.Users', {
         text: 'View Reports'.t(),
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
-        hrefTarget: '_self'
+        hrefTarget: '_self',
+        hidden: true,
+        bind: {
+            hidden: '{!reportsEnabled}'
+        }
     }],
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',
