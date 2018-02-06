@@ -434,7 +434,7 @@ public class CaptivePortalSSLEngine
         URIBuilder exauth = new URIBuilder();
         InetAddress hostAddr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
         int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
 
         // if the redirectUsingHostname flag is set we use the configured
         // hostname otherwise we use the address of the client interface 
