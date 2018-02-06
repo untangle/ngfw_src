@@ -13,7 +13,7 @@ Ext.define('Ung.util.Rpc', {
      *  context The object to execute.
      *  args    Arguments to execute in the context.
      */
-    resolve: function() {
+    getCommand: function() {
         var args = [].slice.call(arguments).splice(1),
             path = arguments[0],
             nodes = path.split('.'),
@@ -90,18 +90,18 @@ Ext.define('Ung.util.Rpc', {
      * Make RPC call as a deferred function and return promise.
      */
     asyncData: function() {
-        var resolveResult = this.resolve.apply(null, arguments);
-        if(resolveResult.context != null && !Ext.isFunction(resolveResult.context)){
+        var commandResult = this.getCommand.apply(null, arguments);
+        if(commandResult.context != null && !Ext.isFunction(commandResult.context)){
             // Asynchronously getting a property doesn't make any sense without writing
             // an anonymoys function to handle it.  Don't allow it.
             return Ext.Deferred.rejected("Path '" + arguments[0] + "' is not a function, use a direct method instead");
         }
 
-        if(resolveResult.context == null){
-            return Ext.Deferred.rejected(resolveResult.error);
+        if(commandResult.context == null){
+            return Ext.Deferred.rejected(commandResult.error);
         }else{
             var dfrd = new Ext.Deferred();
-            resolveResult.args.unshift(function (result, ex) {
+            commandResult.args.unshift(function (result, ex) {
                 if (ex) {
                     console.error('Error: ' + ex);
                     Util.handleException(ex);
@@ -110,7 +110,7 @@ Ext.define('Ung.util.Rpc', {
                 dfrd.resolve(result);
             });
 
-            resolveResult.context.apply(null, resolveResult.args);
+            commandResult.context.apply(null, commandResult.args);
             return dfrd.promise;
         }
     },
@@ -119,13 +119,13 @@ Ext.define('Ung.util.Rpc', {
      * Make RPC call and return the results.
      */
     directData: function() {
-        var resolveResult = this.resolve.apply(null, arguments);
-        if(resolveResult.context == null){
-            throw(resolveResult.error);
+        var commandResult = this.getCommand.apply(null, arguments);
+        if(commandResult.context == null){
+            throw(commandResult.error);
         }
 
         try {
-            return  Ext.isFunction(resolveResult.context) ? resolveResult.context.apply(null, resolveResult.args) : resolveResult.context;
+            return  Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context;
         } catch (ex) {
             Util.handleException(ex);
         }
@@ -137,24 +137,24 @@ Ext.define('Ung.util.Rpc', {
      * Suitable for calling in a sequence.
      */
     asyncPromise: function() {
-        var resolveResult = this.resolve.apply(null, arguments);
+        var commandResult = this.getCommand.apply(null, arguments);
 
-        if(resolveResult.context != null && !Ext.isFunction(resolveResult.context)){
+        if(commandResult.context != null && !Ext.isFunction(commandResult.context)){
             // Asynchronously getting a property doesn't make any sense without writing
             // an anonymous function to handle it.  Don't allow it.
             return Ext.Deferred.rejected("Path '" + arguments[0] + "' is not a function, use a direct method instead");
         }
 
-        if(resolveResult.context == null){
-            return Ext.Deferred.rejected(resolveResult.error);
+        if(commandResult.context == null){
+            return Ext.Deferred.rejected(commandResult.error);
         }else{
             return function() {
                 var dfrd = new Ext.Deferred();
-                resolveResult.args.unshift(function (result, ex) {
+                commandResult.args.unshift(function (result, ex) {
                     if (ex) { dfrd.reject(ex); }
                     dfrd.resolve(result);
                 });
-                resolveResult.context.apply(null, resolveResult.args);
+                commandResult.context.apply(null, commandResult.args);
                 return dfrd.promise;
             };
         }
@@ -165,14 +165,14 @@ Ext.define('Ung.util.Rpc', {
      * Suitable for calling in a sequence.
      */
     directPromise: function() {
-        var resolveResult = this.resolve.apply(null, arguments);
-        if(resolveResult.context == null){
-            return Ext.Deferred.rejected(resolveResult.error);
+        var commandResult = this.getCommand.apply(null, arguments);
+        if(commandResult.context == null){
+            return Ext.Deferred.rejected(commandResult.error);
         }else{
             return function() {
                 var dfrd = new Ext.Deferred();
                 try {
-                    dfrd.resolve( Ext.isFunction(resolveResult.context) ? resolveResult.context.apply(null, resolveResult.args) : resolveResult.context );
+                    dfrd.resolve( Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context );
                 } catch (ex) {
                     dfrd.reject(ex);
                 }
