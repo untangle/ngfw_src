@@ -134,11 +134,18 @@ Ext.define('Bootstrap', {
                 }
             }
 
-            return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex) {
-                console.log(ex);
-                Util.handleException(ex);
-                throw ex;
-            });
+            if(this.owner && this.owner.completionAction && this.owner.completionAction == 'reject'){
+                return this.owner.then(onFulfilled, null, onProgress).otherwise(function(ex){
+                    if(onRejected){
+                        onRejected.call(scope,ex);
+                    }
+                    console.log(ex);
+                    Util.handleException(ex);
+                    throw ex;
+                });
+            }else{
+                return this.owner.then(onFulfilled, onRejected, onProgress);
+            }
         };
 
         // load script dependencies after all initializations
