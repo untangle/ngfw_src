@@ -96,6 +96,10 @@ Ext.define('Ung.cmp.AppPanel', {
                 }
 
             }, 500);
+        },
+
+        removed: function(){
+            this.getViewModel().set('panel.saveDisabled', false);
         }
     }
 });
