@@ -21,7 +21,7 @@ Ext.define('Ung.apps.bandwidthcontrol.Main', {
             },
             hidden: true,
             bind: {
-                hidden: '{instance.runState !== "RUNNING"}'
+                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
             }
         }]
     },

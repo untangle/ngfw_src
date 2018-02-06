@@ -79,7 +79,7 @@ Ext.define('Ung.apps.openvpn.Main', {
             },
             hidden: true,
             bind: {
-                hidden: '{instance.runState !== "RUNNING"}'
+                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
             }
         }]
     },

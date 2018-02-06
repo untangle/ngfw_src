@@ -15,7 +15,7 @@ Ext.define('Ung.apps.phishblocker.Main', {
             },
             hidden: true,
             bind: {
-                hidden: '{instance.runState !== "RUNNING"}'
+                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
             }
         }]
     },

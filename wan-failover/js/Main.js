@@ -34,7 +34,7 @@ Ext.define('Ung.apps.wan-failover.Main', {
                     name: 'interfaceName'
                 },{
                     name: 'totalTestsFailed',
-                    sortType: 'asInt'                    
+                    sortType: 'asInt'
                 }]
             },
             pingListStore: {
@@ -57,7 +57,7 @@ Ext.define('Ung.apps.wan-failover.Main', {
             },
             hidden: true,
             bind: {
-                hidden: '{instance.runState !== "RUNNING"}'
+                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
             }
         }]
     },
