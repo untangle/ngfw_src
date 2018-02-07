@@ -97,17 +97,19 @@ Ext.define('Ung.util.Rpc', {
      * @param  dfrd Deferred object.
      * @param  ex   Exception.
      */
-    processException: function(dfrd, ex){
+    processException: function(dfrd, ex, handle){
         if( typeof(ex) == 'object'){
             if(ex.message && ex.message.indexOf("method not found") > -1){
                 ex.message = "possible argument count mis-match: " + ex.message;
             }
         }
         if(dfrd){
-            dfrd.reject(ex.toString());
+            dfrd.reject(ex);
         }
-        console.log(ex);
-        Util.handleException(ex.toString());
+        if(handle){
+            console.log(ex);
+            Util.handleException(ex.toString());
+        }
     },
 
     /**
@@ -127,7 +129,7 @@ Ext.define('Ung.util.Rpc', {
             var dfrd = new Ext.Deferred();
             commandResult.args.unshift(function (result, ex) {
                 if (ex) {
-                    Rpc.processException(dfrd, ex);
+                    Rpc.processException(dfrd, ex, true);
                 }
                 dfrd.resolve(result);
             });
@@ -149,7 +151,7 @@ Ext.define('Ung.util.Rpc', {
         try {
             return  Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context;
         } catch (ex) {
-            Rpc.processException(null, ex);
+            Rpc.processException(null, ex, true);
         }
         return null;
     },
@@ -174,7 +176,7 @@ Ext.define('Ung.util.Rpc', {
                 var dfrd = new Ext.Deferred();
                 commandResult.args.unshift(function (result, ex) {
                     if (ex) {
-                        Rpc.processException(dfrd, ex);
+                        Rpc.processException(dfrd, ex, true);
                     }
                     dfrd.resolve(result);
                 });
@@ -198,7 +200,7 @@ Ext.define('Ung.util.Rpc', {
                 try {
                     dfrd.resolve( Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context );
                 } catch (ex) {
-                    Rpc.processException(dfrd, ex);
+                    Rpc.processException(dfrd, ex, false);
                 }
                 return dfrd.promise;
             };
