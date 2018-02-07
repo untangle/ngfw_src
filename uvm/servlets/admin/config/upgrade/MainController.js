@@ -15,19 +15,18 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
     loadSettings: function () {
         var me = this,
-            view = me.getView(),
+            v = me.getView(),
             vm = me.getViewModel();
 
         me.getView().setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            Rpc.directPromise('rpc.systemManager.getSettings'),
             ], this).then(function(result){
-                if(Util.isDestroyed(me, view, vm)){
+                if(Util.isDestroyed(me, v, vm)){
                     return;
                 }
-                me.getView().setLoading(false);
 
-                view.getViewModel().set('settings', result[0]);
+                vm.set('settings', result[0]);
 
                 for( var key in this.settingsValueMap){
                     for( var settingsKey in this.settingsValueMap[key]){
@@ -36,9 +35,19 @@ Ext.define('Ung.config.upgrade.MainController', {
                         }
                     }
                 }
+                vm.set('panel.saveDisabled', false);
+        }, function(ex) {
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function() {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.setLoading(false);
         });
 
-        view.down('progressbar').wait({
+        v.down('progressbar').wait({
             interval: 500,
             text: 'Checking for upgrades...'.t()
         });
@@ -46,10 +55,10 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
 
     saveSettings: function () {
-        var me = this, view = me.getView(),
+        var me = this, v = me.getView(),
             vm = me.getViewModel();
 
-        view.setLoading('Saving ...');
+        v.setLoading(true);
 
         for( var key in this.settingsValueMap){
             for( var settingsKey in this.settingsValueMap[key]){
@@ -62,16 +71,19 @@ Ext.define('Ung.config.upgrade.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('settings')),
             ], this).then(function () {
-                if(Util.isDestroyed(me, view, vm)){
+                if(Util.isDestroyed(me, v, vm)){
                     return;
                 }
-                view.setLoading(false);
+                v.setLoading(false);
                 me.loadSettings();
                 Util.successToast('Upgrade Settings'.t() + ' saved!');
-                Ext.fireEvent('resetfields', view);
-        }, function (ex) {
-            Util.handleException(ex);
-            if(Util.isDestroyed(me, view, vm)){
+                Ext.fireEvent('resetfields', v);
+        }, function(ex) {
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function() {
+            if(Util.isDestroyed(v)){
                 return;
             }
             v.setLoading(false);
