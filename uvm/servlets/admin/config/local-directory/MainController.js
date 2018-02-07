@@ -10,17 +10,15 @@ Ext.define('Ung.config.local-directory.MainController', {
     },
 
     loadSettings: function () {
-        var me = this;
+        var me = this, v = me.getView(), vm = me.getViewModel();
 
-        me.getView().setLoading(true);
+        v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.UvmContext.localDirectory.getUsers')
+            Rpc.directPromise('rpc.UvmContext.localDirectory.getUsers')
             ], this).then(function (result) {
-                if(Util.isDestroyed(me)){
+                if(Util.isDestroyed(vm)){
                     return;
                 }
-                me.getView().setLoading(false);
-
                 // set the local record fields we use to deal with the expiration time and add vs edit logic
                 var users = result[0];
                 for(var i = 0 ; i < users.list.length ; i++) {
@@ -35,10 +33,13 @@ Ext.define('Ung.config.local-directory.MainController', {
                     }
                 }
 
-                me.getViewModel().set('usersData', users);
-        }, function (ex) {
-            Util.handleException(ex);
-            if(Util.isDestroyed(me, v)){
+                vm.set('usersData', users);
+        }, function(ex) {
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function() {
+            if(Util.isDestroyed(v)){
                 return;
             }
             v.setLoading(false);
@@ -46,17 +47,14 @@ Ext.define('Ung.config.local-directory.MainController', {
     },
 
     saveSettings: function () {
-        var view = this.getView();
-        var vm = this.getViewModel();
-        var me = this;
+        var me = this, v = me.getView(), vm = me.getViewModel();
 
-        if (!Util.validateForms(view)) {
+        if (!Util.validateForms(v)) {
             return;
         }
 
-        view.setLoading('Saving ...');
-        // used to update all tabs data
-        view.query('ungrid').forEach(function (grid) {
+        v.setLoading(true);
+        v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
 
             /**
@@ -74,7 +72,7 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
         });
 
-        var userlist = me.getViewModel().get('usersData');
+        var userlist = vm.get('usersData');
         var user;
 
         for(var i = 0 ; i < userlist.list.length ; i++) {
@@ -99,15 +97,18 @@ Ext.define('Ung.config.local-directory.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.UvmContext.localDirectory.setUsers', userlist)
             ], this).then(function (result) {
-                if(Util.isDestroyed(me)){
+                if(Util.isDestroyed(v, me)){
                     return;
                 }
-                me.getView().setLoading(false);
-                Ext.fireEvent('resetfields', view);
-
+                v.setLoading(false);
+                Ext.fireEvent('resetfields', v);
+                me.loadSettings();
         }, function (ex) {
-            Util.handleException(ex);
-            if(Util.isDestroyed(me, v)){
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function() {
+            if(Util.isDestroyed(v)){
                 return;
             }
             v.setLoading(false);
