@@ -87,6 +87,30 @@ Ext.define('Ung.util.Rpc', {
     },
 
     /**
+     * If we get an exception from within a deferred, we need to handlee it manually
+     * here.
+     *
+     * Also look for certain known JSONRpc exceptions that we just cand do from getCommand
+     * and try to clarify them:
+     *     -    "method not found" almost certainly means that we have an argument mismatch.
+     *
+     * @param  dfrd Deferred object.
+     * @param  ex   Exception.
+     */
+    processException: function(dfrd, ex){
+        if( typeof(ex) == 'object'){
+            if(ex.message && ex.message.indexOf("method not found") > -1){
+                ex.message = "possible argument count mis-match: " + ex.message;
+            }
+        }
+        if(dfrd){
+            dfrd.reject(ex.toString());
+        }
+        console.log(ex);
+        Util.handleException(ex.toString());
+    },
+
+    /**
      * Make RPC call as a deferred function and return promise.
      */
     asyncData: function() {
@@ -103,9 +127,7 @@ Ext.define('Ung.util.Rpc', {
             var dfrd = new Ext.Deferred();
             commandResult.args.unshift(function (result, ex) {
                 if (ex) {
-                    console.error('Error: ' + ex);
-                    Util.handleException(ex);
-                    dfrd.reject(ex);
+                    Rpc.processException(dfrd, ex);
                 }
                 dfrd.resolve(result);
             });
@@ -127,7 +149,7 @@ Ext.define('Ung.util.Rpc', {
         try {
             return  Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context;
         } catch (ex) {
-            Util.handleException(ex);
+            Rpc.processException(null, ex);
         }
         return null;
     },
@@ -151,7 +173,9 @@ Ext.define('Ung.util.Rpc', {
             return function() {
                 var dfrd = new Ext.Deferred();
                 commandResult.args.unshift(function (result, ex) {
-                    if (ex) { dfrd.reject(ex); }
+                    if (ex) {
+                        Rpc.processException(dfrd, ex);
+                    }
                     dfrd.resolve(result);
                 });
                 commandResult.context.apply(null, commandResult.args);
@@ -174,7 +198,7 @@ Ext.define('Ung.util.Rpc', {
                 try {
                     dfrd.resolve( Ext.isFunction(commandResult.context) ? commandResult.context.apply(null, commandResult.args) : commandResult.context );
                 } catch (ex) {
-                    dfrd.reject(ex);
+                    Rpc.processException(dfrd, ex);
                 }
                 return dfrd.promise;
             };
