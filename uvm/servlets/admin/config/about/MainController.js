@@ -13,7 +13,12 @@ Ext.define('Ung.config.about.MainController', {
     },
 
     onAfterRender: function(view){
-        var me = this, vm = me.getViewModel();
+        var me = this, v = me.getView(), vm = me.getViewModel();
+
+        // There's nothing to save on this form.
+        vm.set('panel.saveDisabled', true);
+
+        v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.adminManager.getKernelVersion'),
             Rpc.directPromise('rpc.adminManager.getModificationState'),
@@ -31,6 +36,11 @@ Ext.define('Ung.config.about.MainController', {
                 activeSize: result[3],
                 maxActiveSize: result[4]
             });
+        }).always(function() {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.setLoading(false);
         });
 
         var accountComponent = view.down('[itemId=account]');
