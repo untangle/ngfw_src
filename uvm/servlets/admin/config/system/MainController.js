@@ -18,6 +18,7 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
             Rpc.directPromise('rpc.isExpertMode')
         ];
+
         var dataNames = [
             'languageSettings',
             'languagesList',
