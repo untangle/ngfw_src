@@ -941,13 +941,38 @@ class CaptivePortalTests(unittest2.TestCase):
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
         app.setSettings(appData)
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_080.out /tmp/capture_test_080.out http://test.untangle.com/",stdout=True)
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_080.out http://test.untangle.com/",stdout=True)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_080.out")
         
         # revert back to standard ports
         setHttpHttpsPorts(80,443)
         assert ("8081" in result)                
         assert (search == 0)
+
+    def test_090_alwaysUseSecureCapture(self):
+        #Test 'Always use HTTPS for the capture page redirect' setting
+        global app, appData
+
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule(1))
+        appData["authenticationType"] = "NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600
+        appData['alwaysUseSecureCapture'] = True
+        app.setSettings(appData)
+
+        #check setting
+        result1 = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_090_1.out --no-check-certificate https://test.untangle.com/")
+        assert (result1 == 0)
+        search1 = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_090_1.out")
+        assert (search1 == 0)
+
+        #check http too
+        result2 = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_090_2.out --no-check-certificate http://test.untangle.com/")
+        assert (result2 == 0)
+        search2 = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_090_2.out")
+        assert (search2 == 0)
+        
     
     @staticmethod
     def finalTearDown(self):
