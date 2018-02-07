@@ -241,7 +241,7 @@ Ext.define('Ung.view.reports.Entry', {
                     ],
                     queryMode: 'local',
                     listeners: {
-                        change: 'reload'
+                        change: 'refresh'
                     }
                 }, {
                     xtype: 'component',
