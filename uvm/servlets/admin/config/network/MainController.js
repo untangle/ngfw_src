@@ -33,9 +33,9 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
-            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
-            Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+            Rpc.directPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.directPromise('rpc.networkManager.getInterfaceStatus'),
+            Rpc.directPromise('rpc.networkManager.getDeviceStatus'),
         ], this).then(function (result) {
             v.setLoading(false);
             var intfStatus, devStatus;
@@ -307,6 +307,15 @@ Ext.define('Ung.config.network.MainController', {
                 txerr: null,
                 txdrop: null
             };
+
+        vm.set('siStatus', {device: ''});
+
+        if(!symbolicDev){
+            console.log('set to empty?');
+            vm.set('siStatus', {});
+            return;
+        }
+
         statusView.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', command1).then(function (result) {
             if (Ext.isEmpty(result) || result.search('Device not found') >= 0) {
@@ -367,6 +376,11 @@ Ext.define('Ung.config.network.MainController', {
             arpView = this.getView().down('#interfaceArp'),
             symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
             arpCommand = 'arp -n -i ' + symbolicDev + ' | grep -v incomplete | tail -n +2';
+
+        if(!symbolicDev){
+            vm.set('siArp', []);
+            return;
+        }
 
         arpView.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', arpCommand).then(function (result) {
