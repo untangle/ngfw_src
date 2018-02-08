@@ -5,8 +5,7 @@ Ext.define('Ung.config.administration.MainController', {
 
     control: {
         '#': {
-            afterrender: 'loadAdmin',
-            tabchange: 'onTabChange'
+            afterrender: 'loadAdmin'
         },
         '#certificates': {
             beforerender: 'loadCertificates'
@@ -77,119 +76,123 @@ Ext.define('Ung.config.administration.MainController', {
         [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
     ],
 
-    onTabChange: function (tabPanel, newCard) {
-        // window.location.hash = '#config/administration/' + newCard.getItemId();
-        // Ung.app.redirectTo('#config/administration/' + newCard.getItemId(), false);
-    },
-
     loadAdmin: function () {
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = me.getView(),vm = me.getViewModel();
+
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.adminManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
-            Rpc.asyncPromise('rpc.skinManager.getSettings')
+            Rpc.directPromise('rpc.adminManager.getSettings'),
+            Rpc.directPromise('rpc.systemManager.getSettings'),
+            Rpc.directPromise('rpc.skinManager.getSkinsList'),
+            Rpc.directPromise('rpc.skinManager.getSettings')
         ], this).then(function(result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
                 skinsList: result[2],
                 skinSettings: result[3]
             });
-
-            // Ext.Array.each(v.query('ungrid'), function (grid) {
-            //     grid.getStore().commitChanges();
-            // });
-
+            vm.set('panel.saveDisabled', false);
         }, function(ex) {
-            console.error(ex);
-            Util.handleException(ex);
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
         }).always(function() {
+            if(Util.isDestroyed(v)){
+                return;
+            }
             v.setLoading(false);
         });
     },
 
     loadCertificates: function () {
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = me.getView(), vm = me.getViewModel();
 
         v.setLoading(true);
-        rpc.certificateManager = rpc.UvmContext.certificateManager();
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.certificateManager.getServerCertificateList'),
-            Rpc.asyncPromise('rpc.certificateManager.getRootCertificateInformation'),
-            Rpc.asyncPromise('rpc.certificateManager.validateActiveInspectorCertificates'),
+            Rpc.directPromise('rpc.UvmContext.certificateManager.getServerCertificateList'),
+            Rpc.directPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
+            Rpc.directPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
+            Rpc.directPromise('rpc.networkManager.getNetworkSettings'),
         ], this).then(function(result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            var hostname = result[3].hostName + (result[3].domainName ? '.' + result[3].domainName : '');
             vm.set({
                 serverCertificates: result[0],
                 rootCertificateInformation: result[1],
                 serverCertificateVerification: result[2],
+                hostName: hostname
             });
-
-            try {
-                var networkSettings = rpc.networkManager.getNetworkSettings();
-                vm.set('hostName', networkSettings.hostName + (networkSettings.domainName ? '.' + networkSettings.domainName : ''));
-            } catch(ex) {
-                Util.handleException(ex);
-            }
+            vm.set('panel.saveDisabled', false);
         }, function(ex) {
-            console.error(ex);
-            Util.handleException(ex);
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
         }).always(function() {
+            if(Util.isDestroyed(v)){
+                return;
+            }
             v.setLoading(false);
         });
     },
 
     refreshRootCertificate: function () {
-        var v = this.getView().down('#rootCertificateView'),
-            vm = this.getViewModel();
+        var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
+
         v.setLoading(true);
-        Rpc.asyncData('rpc.certificateManager.getRootCertificateInformation')
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateInformation')
             .then(function (result) {
-                vm.set('rootCertificateInformation', result);
-            }, function (ex) {
-                Util.handleException(ex);
-            }).always(function () {
-                v.setLoading(false);
-            });
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            vm.set('rootCertificateInformation', result);
+        }, function (ex) {
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function () {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.setLoading(false);
+        });
     },
 
     refreshServerCertificate: function () {
-        var v = this.getView().down('#serverCertificateView'),
-            vm = this.getViewModel();
+        var me = this, v = me.getView().down('#serverCertificateView'), vm = me.getViewModel();
+
         v.setLoading(true);
-        Rpc.asyncData('rpc.certificateManager.getServerCertificateList')
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getServerCertificateList')
             .then(function (result) {
-                vm.set('serverCertificates', result);
-            }, function (ex) {
-                Util.handleException(ex);
-            }).always(function () {
-                v.setLoading(false);
-            });
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            vm.set('serverCertificates', result);
+        }, function (ex) {
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
+        }).always(function () {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.setLoading(false);
+        });
     },
 
-    // validateCertificates: function () {
-    //     var vm = this.getViewModel();
-    //     Rpc.asyncData('rpc.certificateManager.validateActiveInspectorCertificates')
-    //         .then(function (result) {
-    //             vm.set('serverCertificateVerification', result);
-    //         }, function (ex) {
-    //             Util.handleException(ex);
-    //         });
-    // },
-
     saveSettings: function () {
-        var me = this,
-            view = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel();
 
-        if (!Util.validateForms(view)) {
+        if (!Util.validateForms(v)) {
             return;
         }
 
-        var subnets = view.down('textfield[name="administrationSubnets"]');
+        var subnets = v.down('textfield[name="administrationSubnets"]');
         if (subnets.rendered && !subnets.isValid()) {
             Ung.app.redirectTo('#config/administration/admin');
             Ext.MessageBox.alert('Warning'.t(), 'Invalid subnet.'.t());
@@ -197,9 +200,9 @@ Ext.define('Ung.config.administration.MainController', {
             return;
         }
 
-        view.setLoading(true);
+        v.setLoading(true);
 
-        view.query('ungrid').forEach(function (grid) {
+        v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             /**
              * Important!
@@ -213,12 +216,11 @@ Ext.define('Ung.config.administration.MainController', {
                 });
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                // store.commitChanges();
             }
         });
 
         // set certificates
-        view.down('#serverCertificateView').getStore().each(function (cert) {
+        v.down('#serverCertificateView').getStore().each(function (cert) {
             if (cert.get('httpsServer')) { vm.set('systemSettings.webCertificate', cert.get('fileName')); }
             if (cert.get('smtpsServer')) { vm.set('systemSettings.mailCertificate', cert.get('fileName')); }
             if (cert.get('ipsecServer')) { vm.set('systemSettings.ipsecCertificate', cert.get('fileName')); }
@@ -231,17 +233,21 @@ Ext.define('Ung.config.administration.MainController', {
         ], this).then(function() {
             // add 3 seconds timeout to avoid exception
             setTimeout(function () {
+                if(Util.isDestroyed(me, v)){
+                    return;
+                }
                 me.loadAdmin();
                 me.loadCertificates();
                 Util.successToast('Administration'.t() + ' settings saved!');
-                Ext.fireEvent('resetfields', view);
-                view.setLoading(false);
+                Ext.fireEvent('resetfields', v);
+                v.setLoading(false);
             }, 3000);
 
-        }, function(ex) {
-            view.setLoading(false);
-            console.error(ex);
-            Util.handleException(ex);
+        }, function (ex) {
+            if(!Util.isDestroyed(vm, v)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -252,9 +258,10 @@ Ext.define('Ung.config.administration.MainController', {
             netStatus, addressList, i;
 
         try {
-            netStatus = rpc.networkManager.getInterfaceStatus();
+            netStatus = Rpc.directData('rpc.networkManager.getInterfaceStatus');
         } catch (e) {
             Util.handleException(e);
+            return;
         }
 
         addressList = '';
@@ -272,9 +279,8 @@ Ext.define('Ung.config.administration.MainController', {
             title: btn.getText(),
             certMode: certMode,
             layout: 'fit',
-            width: 600,
+            width: Math.min(Renderer.calculateWith(1), 600),
             autoShow: true,
-            // height: (certMode === "ROOT" ? 320 : 360),
             height: 320,
             border: true,
             modal: true,
@@ -286,10 +292,6 @@ Ext.define('Ung.config.administration.MainController', {
                 defaults: {
                     anchor: '100%',
                     labelWidth: 170,
-                    // labelAlign: 'right'
-                    // listeners: {
-                    //     render: helptipRenderer
-                    // }
                 },
                 items: [{
                     xtype: 'textfield',
@@ -411,29 +413,41 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'ROOT') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.certificateManager.generateCertificateAuthority', certSubject, altNames)
-                .then(function (result) {
-                    Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
-                    me.certDialog.close();
-                    me.refreshRootCertificate();
-                }, function (ex) {
-                    Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
-                }).always(function () {
-                    me.certDialog.setLoading(false);
-                });
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', certSubject, altNames)
+            .then(function (result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
+                me.certDialog.close();
+                me.refreshRootCertificate();
+            }, function (ex) {
+                Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
+            }).always(function () {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.certDialog.setLoading(false);
+            });
         }
 
         if (certMode === 'SERVER') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.certificateManager.generateServerCertificate', certSubject, altNames)
-                .then(function (result) {
-                    me.certDialog.close();
-                    me.refreshServerCertificate();
-                }, function (ex) {
-                    Util.handleException('Error during certificate generation.'.t());
-                }).always(function () {
-                    me.certDialog.setLoading(false);
-                });
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateServerCertificate', certSubject, altNames)
+            .then(function (result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.certDialog.close();
+                me.refreshServerCertificate();
+            }, function (ex) {
+                Util.handleException('Error during certificate generation.'.t());
+            }).always(function () {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.certDialog.setLoading(false);
+            });
         }
 
         if (certMode === 'CSR') {
@@ -458,7 +472,7 @@ Ext.define('Ung.config.administration.MainController', {
                 xtype: 'form',
                 url: 'upload',
                 border: false,
-                width: 400,
+                width: Math.min(Renderer.calculateWith(1), 600),
                 layout: 'anchor',
                 items: [{
                     xtype: 'filefield',
@@ -511,21 +525,21 @@ Ext.define('Ung.config.administration.MainController', {
             Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
             return;
         }
-        // if (this.isDirty()) {
-        //     Ext.MessageBox.alert('Unsaved Changes'.t() ,'You must apply unsaved changes changes before you can delete this certificate.'.t());
-        //     return;
-        // }
         Ext.MessageBox.confirm('Are you sure you want to delete this certificate?'.t(),
             '<strong>SUBJECT:</strong> ' + record.get('certSubject') + '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer'),
             function(button) {
                 if (button === 'yes') {
-                    try {
-                        rpc.certificateManager.removeServerCertificate(record.get('fileName'));
+                    if(Util.isDestroyed(record)){
+                        return;
+                    }
+                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeServerCertificate', record.get('fileName'))
+                    .then(function (result) {
+                        if(Util.isDestroyed(me)){
+                            return;
+                        }
                         me.refreshServerCertificate();
                         Util.successToast('Certificate removed'.t());
-                    } catch (ex) {
-                        Util.handleException(ex);
-                    }
+                    });
                 }
             });
     }
