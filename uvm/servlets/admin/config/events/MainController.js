@@ -18,6 +18,10 @@ Ext.define('Ung.config.events.MainController', {
             Rpc.asyncPromise('rpc.eventManager.getSettings'),
             Rpc.asyncPromise('rpc.eventManager.getClassFields'),
         ], this).then(function(result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+
             vm.set({
                 settings: result[0],
                 classFields: result[1]
@@ -56,28 +60,31 @@ Ext.define('Ung.config.events.MainController', {
                 }],
                 data: []
             }) );
+            vm.set('panel.saveDisabled', false);
         }, function(ex) {
-            console.error(ex);
-            Util.handleException(ex);
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
         }).always(function() {
+            if(Util.isDestroyed(v)){
+                return;
+            }
             v.setLoading(false);
         });
-
-
     },
 
     saveSettings: function () {
         var me = this,
-            view = this.getView(),
+            v = this.getView(),
             vm = this.getViewModel();
 
-        if (!Util.validateForms(view)) {
+        if (!Util.validateForms(v)) {
             return;
         }
 
-        view.setLoading(true);
+        v.setLoading(true);
 
-        view.query('ungrid').forEach(function (grid) {
+        v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             /**
              * Important!
@@ -98,14 +105,21 @@ Ext.define('Ung.config.events.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.eventManager.setSettings', vm.get('settings')),
         ], this).then(function() {
+            if(Util.isDestroyed(me, v)){
+                return;
+            }
             me.loadEvents();
-            Util.successToast('Events'.t() + ' settings saved!');
-            Ext.fireEvent('resetfields', view);
+            Util.successToast('Events'.t() + ' ' + 'settings saved!'.t());
+            Ext.fireEvent('resetfields', v);
         }, function(ex) {
-            console.error(ex);
-            Util.handleException(ex);
+            if(!Util.isDestroyed(vm)){
+                vm.set('panel.saveDisabled', true);
+            }
         }).always(function() {
-            view.setLoading(false);
+            if(!Util.isDestroyed(v)){
+                vm.set('panel.saveDisabled', true);
+            }
+            v.setLoading(false);
         });
     },
 
