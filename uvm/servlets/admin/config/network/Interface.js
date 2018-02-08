@@ -1,10 +1,8 @@
 Ext.define('Ung.config.network.Interface', {
     extend: 'Ext.window.Window',
     alias: 'widget.config.interface',
-    width: 900,
+    width: Math.min(Renderer.calculateWith(1), 900),
     height: 600,
-    // minHeight: 400,
-    // maxHeight: Ext.getBody().getViewSize().height - 20,
     onEsc: Ext.emptyFn,
     closable: false,
     layout: 'border',
