@@ -45,11 +45,7 @@ Ext.define('Ung.config.email.MainController', {
         }
 
         v.setLoading(true);
-        Ext.Deferred.sequence(sequence, this).then(function(result, ex) {
-            if(ex){
-                vm.set('panel.saveDisabled', true);
-                return;
-            }
+        Ext.Deferred.sequence(sequence, this).then(function(result) {
             if(Util.isDestroyed(me, vm)){
                 return;
             }
@@ -126,7 +122,7 @@ Ext.define('Ung.config.email.MainController', {
             sequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").setSmtpSettingsWithoutSafelists', vm.get('smtpSettings')));
             sequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").getSafelistAdminView.replaceSafelist', 'GLOBAL', vm.get('globalSafeList')));
         }
-        Ext.Deferred.sequence(sequence, this).then(function(result, ex) {
+        Ext.Deferred.sequence(sequence, this).then(function(result) {
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }

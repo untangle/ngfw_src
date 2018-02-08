@@ -13,7 +13,7 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.directPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.directPromise('rpc.languageManager.getLanguagesList'),
             Rpc.directPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getDate'),
+            Rpc.directPromise('rpc.systemManager.getDate'),
             Rpc.directPromise('rpc.systemManager.getTimeZone'),
             Rpc.directPromise('rpc.systemManager.getTimeZones'),
             Rpc.directPromise('rpc.isExpertMode')
@@ -46,11 +46,7 @@ Ext.define('Ung.config.system.MainController', {
         }
 
         v.setLoading(true);
-        Ext.Deferred.sequence(rpcSequence, this).then(function(result, ex){
-            if(ex){
-                vm.set('panel.saveDisabled', true);
-                return;
-            }
+        Ext.Deferred.sequence(rpcSequence, this).then(function(result){
             if(Util.isDestroyed(vm, dataNames)){
                 return;
             }
