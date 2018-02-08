@@ -37,5 +37,13 @@ Ext.define('Ung.cmp.PropertyGrid', {
         },
         beforeexpand: 'onBeforeExpand',
         beforerender: 'onBeforeRender'
+    },
+
+    initComponent: function () {
+        var me = this;
+        if(me.emptyText){
+            me.emptyText = '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + this.emptyText + '</p>';
+        }
+        this.callParent(arguments);
     }
 });
