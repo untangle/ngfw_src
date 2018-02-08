@@ -182,6 +182,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             itemId: 'interfaceStatus',
             xtype: 'unpropertygrid',
             collapsible: false,
+            emptyText: 'Status not available'.t(),
             bind: {
                 source: '{siStatus}',
             },
