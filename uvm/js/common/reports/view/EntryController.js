@@ -570,14 +570,14 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         // startDate converted from UI to server date
-        startDate = Util.clientToServerDate(vm.get('startDate'));
+        startDate = Util.clientToServerDate(vm.get('f_startdate'));
         // endDate converted from UI to server date
-        endDate = Util.clientToServerDate(vm.get('endDate'));
+        endDate = Util.clientToServerDate(vm.get('f_enddate'));
 
         Ext.MessageBox.wait('Exporting Events...'.t(), 'Please wait'.t());
         var downloadForm = document.getElementById('downloadForm');
         downloadForm['type'].value = 'eventLogExport';
-        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(vm.get('startDate'), 'd.m.Y-H:i') + '-' + Ext.Date.format(vm.get('endDate'), 'd.m.Y-H:i')).replace(/ /g, '_');
+        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(vm.get('f_startdate'), 'd.m.Y-H:i') + '-' + Ext.Date.format(vm.get('f_enddate'), 'd.m.Y-H:i')).replace(/ /g, '_');
         downloadForm['arg2'].value = Ext.encode(entry);
         downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
         downloadForm['arg4'].value = columns.join(',');
