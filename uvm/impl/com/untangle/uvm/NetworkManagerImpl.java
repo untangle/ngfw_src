@@ -2267,7 +2267,9 @@ public class NetworkManagerImpl implements NetworkManager
         Pattern wiphyRegex = Pattern.compile(wiphyPattern);
         Integer maxChannel = 0;
 
-        channels.add(new Integer(-1));
+        // Automatic 2.4 Ghz
+        // disabled NGFW-11496
+        // channels.add(new Integer(-1));
 
         String wiphyId = "";
 
@@ -2314,7 +2316,9 @@ public class NetworkManagerImpl implements NetworkManager
             return channels;
         }
 	
-        if (maxChannel > 11) channels.add(1, new Integer( -2 ));
+        // Automatic 5 Ghz
+        // disabled NGFW-11496
+        // if (maxChannel > 11) channels.add(1, new Integer( -2 ));
 
         return channels;
     }
