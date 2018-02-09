@@ -30,16 +30,16 @@
             </c:otherwise>
         </c:choose>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
-        <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
+        <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" type="text/css" />
 
         <!-- FontAwesome -->
-        <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+        <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 
         <%-- Import custom fonts (see sass/_vars.scss)--%>
-        <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" />
-        <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" />
+        <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" type="text/css" />
+        <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" type="text/css" />
 
-        <link href="styles/ung-all.css" rel="stylesheet" />
+        <link href="styles/ung-all.css" rel="stylesheet" type="text/css" />
 
         <%-- app loader style --%>
         <style type="text/css">
