@@ -144,7 +144,13 @@ Ext.define('Bootstrap', {
                     throw ex;
                 });
             }else{
-                return this.owner.then(onFulfilled, onRejected, onProgress);
+                return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex){
+                    if(onRejected){
+                        console.log(ex);
+                        Util.handleException(ex);
+                        throw ex;
+                    }
+                });
             }
         };
 
