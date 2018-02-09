@@ -134,6 +134,14 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
+         * Fix missing access rules NGFW-11503
+         */
+        if (this.networkSettings.getAccessRules() == null) {
+            this.networkSettings.setAccessRules( defaultAccessRules() );
+            this.setNetworkSettings( this.networkSettings, false );
+        }
+
+        /**
          * If the settings file date is newer than the system files, re-sync them
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
