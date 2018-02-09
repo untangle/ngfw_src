@@ -1000,41 +1000,44 @@ class NetworkTests(unittest2.TestCase):
         targetDevice = 'eth0'
         mtuAutoValue = None
         # Get current MTU value due to bug 11599
-        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
-        # print ifconfigResults
-        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        arg = "ip addr show dev %s" % targetDevice
+        ifconfigResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        # print "ifconfigResults: %s" % ifconfigResults
+        reValue = re.search(r'mtu\s(\S+)', ifconfigResults)
         mtuValue = None
         if reValue:
              mtuAutoValue = reValue.group(1)
-        # print "mtuValue " + mtuValue
+        # print "mtuAutoValue: %s" % mtuAutoValue
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        # Set eth0 to 1480
+        # Set eth0 to 1460
         for i in range(len(netsettings['devices']['list'])):
             if netsettings['devices']['list'][i]['deviceName'] == targetDevice:
                 netsettings['devices']['list'][i]['mtu'] = mtuSetValue
                 break
         uvmContext.networkManager().setNetworkSettings(netsettings)
         # Verify the MTU is set
-        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
-        # print ifconfigResults
-        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        arg = "ip addr show dev %s" % targetDevice
+        ifconfigResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        # print "ifconfigResults: %s" % ifconfigResults
+        reValue = re.search(r'mtu\s(\S+)', ifconfigResults)
         mtuValue = None
         if reValue:
              mtuValue = reValue.group(1)
-        # print "mtuValue " + mtuValue
+        # print "mtuValue: %s" % mtuValue
         # manually set MTU back to original value due to bug 11599
         netsettings['devices']['list'][i]['mtu'] = mtuAutoValue
         uvmContext.networkManager().setNetworkSettings(netsettings)
         # Set MTU back to auto
         del netsettings['devices']['list'][i]['mtu']
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
-        # print ifconfigResults
-        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        arg = "ip addr show dev %s" % targetDevice
+        ifconfigResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        # print "ifconfigResults: %s" % ifconfigResults
+        reValue = re.search(r'mtu\s(\S+)', ifconfigResults)
         mtu2Value = None
         if reValue:
              mtu2Value = reValue.group(1)
-        # print "mtu2Value " + mtu2Value
+        # print "mtu2Value: %s " % mtu2Value
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (mtuValue == mtuSetValue)
         assert (mtu2Value == mtuAutoValue)
