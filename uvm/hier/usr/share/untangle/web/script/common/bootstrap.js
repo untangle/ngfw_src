@@ -108,7 +108,6 @@ Ext.define('Bootstrap', {
         // IMPORTANT! override the default models ext idProperty so it does not interfere with backend 'id'
         Ext.data.Model.prototype.idProperty = '_id';
 
-        // add default onRejected handler to then function of promises
         Ext.promise.Promise.prototype.then = function (onFulfilled, onRejected, onProgress, scope) {
             var ref;
 
@@ -134,24 +133,13 @@ Ext.define('Bootstrap', {
                 }
             }
 
-            if(this.owner && this.owner.completionAction && this.owner.completionAction == 'reject'){
-                return this.owner.then(onFulfilled, null, onProgress).otherwise(function(ex){
-                    if(onRejected){
-                        onRejected.call(scope,ex);
-                    }
-                    console.log(ex);
+
+            return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex){
+                if(ex != this.owner.completionValue){
                     Util.handleException(ex);
-                    throw ex;
-                });
-            }else{
-                return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex){
-                    if(onRejected){
-                        console.log(ex);
-                        Util.handleException(ex);
-                        throw ex;
-                    }
-                });
-            }
+                }
+                throw(ex);
+            }, this);
         };
 
         // load script dependencies after all initializations
