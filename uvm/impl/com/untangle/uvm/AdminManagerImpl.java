@@ -45,6 +45,10 @@ public class AdminManagerImpl implements AdminManager
 
     private AdminSettings settings;
 
+    /**
+     * Setup admin manager.
+     *
+     */
     protected AdminManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -89,16 +93,36 @@ public class AdminManagerImpl implements AdminManager
         logger.info("Initialized AdminManager");
     }
 
+    /**
+     * Return administrator settings.
+     * 
+     * @return
+     *     AdminSettings object.
+     */
     public AdminSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Write administrator settings.
+     * 
+     * @param newSettings
+     *     AdminSettings object.
+     */
     public void setSettings( final AdminSettings newSettings )
     {
         this.setSettings( newSettings, true );
     }
 
+    /**
+     * Write administrator settings.
+     * 
+     * @param newSettings
+     *     AdminSettings object.
+     * @param setRootPassword
+     *     boolean.  If true, set the root password from these settings.  
+     */
     private void setSettings( final AdminSettings newSettings, boolean setRootPassword )
     {
         /**
@@ -122,6 +146,12 @@ public class AdminManagerImpl implements AdminManager
             setRootPasswordAndShadowHash( this.settings );
     }
     
+    /**
+     * Return system version.
+     * 
+     * @return
+     *     String of the ngfw version.  If developer system, this will be "DEVEL_VERSION".
+     */
     public String getFullVersionAndRevision()
     {
         if (UvmContextFactory.context().isDevel())
@@ -145,6 +175,15 @@ public class AdminManagerImpl implements AdminManager
         return UvmContextImpl.context().getFullVersion();
     }
 
+    /**
+     * Return whether sytem has been modified from command line.
+     * 
+     * @return
+     *     String of the following values:
+     *     none         No history file exists.
+     *     blessed      History exists but has been approved.
+     *     yes (count)  History file exists and the count of imtems in it.
+     */
     public String getModificationState()
     {
         File zshHistoryFile = new File("/root/.zsh_history");
@@ -171,6 +210,12 @@ public class AdminManagerImpl implements AdminManager
         return "UNKNOWN";
     }
 
+    /**
+     * Return number of reboots and crashes
+     * 
+     * @return
+     *     String of the format "reboot_count (crash_count)"
+     */
     public String getRebootCount()
     {
         try {
@@ -187,6 +232,12 @@ public class AdminManagerImpl implements AdminManager
         return "Unknown";
     }
     
+    /**
+     * Return Linux kernel version.
+     * 
+     * @return
+     *     String of the Linux kernel version.
+     */
     public String getKernelVersion()
     {
         try {
@@ -203,6 +254,12 @@ public class AdminManagerImpl implements AdminManager
         return "Unknown";
     }
     
+    /**
+     * Return email address of administrator (admin) user.
+     * 
+     * @return
+     *     String of email address.
+     */
     public String getAdminEmail()
     {
         try {
@@ -216,6 +273,20 @@ public class AdminManagerImpl implements AdminManager
         return null;
     }
 
+    /**
+     * Send adminstrator login result to event log.
+     * 
+     * @param login
+     *        String username
+     * @param local
+     *        boolean.  If true, from 127.0.0.0, false otherwise.
+     * @param clientAddress 
+     *        Inet address.  Client login address.
+     * @param succeeded
+     *        boolean.  If true, login was succesful.  Otherwise false.
+     * @param reason
+     *        String.  Reason for login failure.
+     */
     public void logAdminLoginEvent( String login, boolean local, InetAddress clientAddress, boolean succeeded, String reason )
     {
         AdminLoginEvent loginEvent = new AdminLoginEvent( login, local, clientAddress, succeeded, reason );
@@ -225,6 +296,9 @@ public class AdminManagerImpl implements AdminManager
     /**
      * This sets the root password in /etc/shadow
      * and also sets the 'passwordHashShadow' value in the settings to the same hash
+     *
+     * @param settings
+     *        AdminSettings object containing administrator account to pull password.
      */
     private void setRootPasswordAndShadowHash( AdminSettings settings )
     {
