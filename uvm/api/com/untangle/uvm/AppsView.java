@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppSettings;
@@ -22,7 +25,7 @@ import com.untangle.uvm.app.AppMetric;
  * Names, and license state.
  */
 @SuppressWarnings("serial")
-public class AppsView implements Serializable
+public class AppsView implements Serializable, JSONString
 {
     private int policyId;
     private List<String> installable;
@@ -55,6 +58,12 @@ public class AppsView implements Serializable
     public String toString()
     {
         return "AppsView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + appMetrics;
+    }
+    
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 
 }
