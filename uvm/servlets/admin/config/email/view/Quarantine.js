@@ -77,7 +77,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
             }, {
                 xtype: 'component',
                 margin: '10 0 0 0',
-                html: Ext.String.format('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'.t(), rpc.networkManager.getPublicUrl())
+                html: Ext.String.format('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'.t(), Rpc.directData('rpc.networkManager.getPublicUrl'))
             }]
         }, {
             xtype: 'ungrid',
