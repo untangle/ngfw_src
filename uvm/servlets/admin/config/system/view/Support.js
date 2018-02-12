@@ -108,7 +108,7 @@ Ext.define('Ung.config.system.view.Support', {
                 xtype: 'button',
                 margin: '0 0 0 10',
                 text: 'Reset to Factory Defaults'.t(),
-                iconCls: 'fa fa-industry',
+                iconCls: 'fa fa-exclamation-circle',
                 handler: 'factoryDefaults'
             }]
         }]
