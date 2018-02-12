@@ -57,7 +57,20 @@ Ext.define('Ung.config.network.MainModel', {
             }
         },
         devInterfaces:      { source: '{interfaces}', filters: [{ property: 'isVlanInterface', value: false}] },
-        interfaceArp:       { data: '{siArp}' },
+        interfaceArp:       {
+            data: '{siArp}',
+            fields: [{
+                name: 'macAddress',
+                type: 'string'
+            }, {
+                name: 'address',
+                sortType: 'asIp'
+            }],
+            sorters: [{
+                property: 'address',
+                direction: 'ASC'
+            }],
+        },
         // Port Forward
         portForwardRules:   { data: '{settings.portForwardRules.list}' },
         // NAT
@@ -84,13 +97,71 @@ Ext.define('Ung.config.network.MainModel', {
                 sortType: 'asUnString'
             }]
         },
+        dynamicDhcpEntries:  {
+            data: [],
+            fields:[{
+                name: 'macAddress',
+                type: 'string'
+            }, {
+                name: 'address',
+                sortType: 'asIp'
+            }, {
+                name: 'hostname',
+                type: 'string',
+            }, {
+                name: 'date',
+                type: 'string',
+            }]
+        },
         // Advanced
         devices:            { data: '{settings.devices.list}' },
         qosPriorities:      { data: '{settings.qosSettings.qosPriorities.list}' },
         qosRules:           { data: '{settings.qosSettings.qosRules.list}' },
+        qosStatistics: {
+            data: [],
+            fields: [{
+                name: 'tokens'
+            },{
+                name: 'priority'
+            },{
+                name: 'rate'
+            },{
+                name: 'burst'
+            },{
+                name: 'ctokens'
+            },{
+                name: 'interface_name'
+            },{
+                name: 'sent'
+            }],
+            sorters: [{
+                property: 'interface_name',
+                direction: 'ASC'
+            }],
+        },
         filterRules:        { data: '{settings.filterRules.list}' },
         accessRules:        { data: '{settings.accessRules.list}' },
         upnpRules:          { data: '{settings.upnpSettings.upnpRules.list}' },
+        upnpStatus: {
+            data: [],
+            fields: [{
+                name: 'upnp_client_ip_address',
+                sortType: 'asIp'
+            },{
+                name: 'upnp_destination_port'
+            },{
+                name: 'upnp_protocol',
+                type: 'string'
+            },{
+                name:'upnp_client_port'
+            },{
+                name: 'bytes'
+            }],
+            sorters: [{
+                property: 'upnp_client_ip_address',
+                direction: 'ASC'
+            }],
+        },
         wanInterfaces: {
             source: '{interfaces}',
             filters: [{ property: 'configType', value: 'ADDRESSED' }, { property: 'isWan', value: true }]
