@@ -33,17 +33,17 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.directPromise('rpc.networkManager.getNetworkSettings'),
-            Rpc.directPromise('rpc.networkManager.getInterfaceStatus'),
-            Rpc.directPromise('rpc.networkManager.getDeviceStatus'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+            Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+            Rpc.directPromise('rpc.companyName'),
         ], this).then(function (result) {
-            v.setLoading(false);
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
             var intfStatus, devStatus;
 
-            rpc.networkSettings = result[0]; // update rpc.networkSettings with latest data (usually after save)
-
             result[0].interfaces.list.forEach(function (intf) {
-
                 if (result[1] && result[1].list.length > 0) {
                     intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
                         return intfSt.interfaceId === intf.interfaceId;
@@ -63,7 +63,10 @@ Ext.define('Ung.config.network.MainController', {
                 }
 
             });
+            vm.set('savedSettings', Ext.merge({}, result[0]));
             vm.set('settings', result[0]);
+
+            console.log(vm.get('settings'));
 
             // check if Allow SSH access rule is enabled
             var accessRulesSshEnabled = me.isSshAccessRuleEnabled(vm.get('settings'));
@@ -72,14 +75,18 @@ Ext.define('Ung.config.network.MainController', {
             var accessRulesLength = me.getAccessRulesCount(vm.get('settings'));
             vm.set('accessRulesLength', accessRulesLength);
 
-            // me.setPortForwardSimples(); // commented out as it should work withou ti
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
 
-        }, function (ex) {
+            vm.set('companyName', result[3]);
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            console.error(ex);
-            Util.handleException(ex);
+        }, function(ex) {
+            if(!Util.isDestroyed(vm, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -99,7 +106,6 @@ Ext.define('Ung.config.network.MainController', {
             interfacesStore.getRemovedRecords().length > 0) {
             vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
         }
-
 
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
@@ -220,18 +226,28 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     setNetworkSettings: function() {
-        var view = this.getView();
+        var v = this.getView();
         var vm = this.getViewModel();
         var me = this;
 
-        view.setLoading(true);
-        Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
-        .then(function(result) {
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.networkManager.setNetworkSettings', vm.get('settings'))
+        ]).then(function(result) {
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
             me.loadSettings();
             Util.successToast('Network'.t() + ' settings saved!');
-            Ext.fireEvent('resetfields', view);
-        }).always(function () {
-            view.setLoading(false);
+            Ext.fireEvent('resetfields', v);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -287,117 +303,124 @@ Ext.define('Ung.config.network.MainController', {
         this.getView().down('#interfacesGrid').getSelectionModel().select(0);
     },
 
+    interfaceStatusLinkMap:{
+        2: 'macAddress',
+        7: 'rxbytes',
+        8: 'rxpkts',
+        9: 'rxerr',
+        10: 'rxdrop',
+        13: 'txbytes',
+        14: 'txpkts',
+        15: 'txerr',
+        16: 'txdrop'
+    },
     getInterfaceStatus: function () {
-        var statusView = this.getView().down('#interfaceStatus'),
-            vm = this.getViewModel(),
+        var me = this,
+            v = me.getView().down('#interfaceStatus'),
+            vm = me.getViewModel(),
             symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
-            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
-            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
-            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
             stat = {
                 device: symbolicDev,
                 macAddress: null,
                 address: null,
-                mask: null,
                 v6Addr: null,
                 rxpkts: null,
+                rxbytes: null,
                 rxerr: null,
                 rxdrop: null,
                 txpkts: null,
+                txbytes: null,
                 txerr: null,
                 txdrop: null
             };
 
+        // This kind of simulates a "loading" in the status grid so the emptyText doesn't immediately appear.
         vm.set('siStatus', {device: ''});
 
         if(!symbolicDev){
-            console.log('set to empty?');
             vm.set('siStatus', {});
             return;
         }
 
-        statusView.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', command1).then(function (result) {
-            if (Ext.isEmpty(result) || result.search('Device not found') >= 0) {
-                statusView.setLoading(false);
-                vm.set('siStatus', stat);
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | tr "\\n" " " | tr -s " "'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip addr show dev ' + symbolicDev + ' | grep inet | grep global | tr "\\n" " " | tr -s " "')
+        ]).then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-            var lineparts = result.split(' ');
-            if (result.search('Ethernet') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: lineparts[4],
-                    rxpkts: lineparts[6].split(':')[1],
-                    rxerr: lineparts[7].split(':')[1],
-                    rxdrop: lineparts[8].split(':')[1],
-                    txpkts: lineparts[12].split(':')[1],
-                    txerr: lineparts[13].split(':')[1],
-                    txdrop: lineparts[14].split(':')[1]
-                });
-            }
-            if (result.search('Point-to-Point') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: '',
-                    rxpkts: lineparts[5].split(':')[1],
-                    rxerr: lineparts[6].split(':')[1],
-                    rxdrop: lineparts[7].split(':')[1],
-                    txpkts: lineparts[11].split(':')[1],
-                    txerr: lineparts[12].split(':')[1],
-                    txdrop: lineparts[13].split(':')[1]
-                });
-            }
-
-            Rpc.asyncData('rpc.execManager.execOutput', command2).then(function (result) {
-                if (Ext.isEmpty(result)) {
-                    statusView.setLoading(false);
-                    vm.set('siStatus', stat);
-                    return;
+            result[0].split(' ').forEach(function(item, index){
+                if( index in me.interfaceStatusLinkMap){
+                    stat[me.interfaceStatusLinkMap[index]] = item;
                 }
-
-                var linep = result.split(' ');
-                Ext.apply(stat, {
-                    address: linep[0].split(':')[1],
-                    mask: linep[2].split(':')[1]
-                });
-
-                Rpc.asyncData('rpc.execManager.execOutput', command3).then(function (result) {
-                    statusView.setLoading(false);
-                    Ext.apply(stat, {
-                        v6Addr: result
-                    });
-                    vm.set('siStatus', stat);
-                });
             });
+
+            var getNext = false;
+            result[1].split(' ').forEach(function(item, index){
+                if(getNext != false){
+                    if(stat[getNext] == null){
+                        stat[getNext] = [item];
+                    }else{
+                        stat[getNext].push(item);
+                    }
+                }
+                getNext = false;
+                if(item == 'inet'){
+                    getNext = 'address';
+                }else if( item == 'inet6'){
+                    getNext = 'v6Addr';
+                }
+            });
+            if(stat.address && typeof(stat.address) === 'object'){
+                stat.address = stat.address.join(', ');
+            }
+            if(stat.v6Addr && typeof(stat.v6Addr) === 'object'){
+                stat.v6Addr = stat.v6Addr.join(', ');
+            }
+            vm.set('siStatus', stat);
+            v.setLoading(false);
         });
     },
 
     getInterfaceArp: function () {
-        var vm = this.getViewModel(),
-            arpView = this.getView().down('#interfaceArp'),
-            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
-            arpCommand = 'arp -n -i ' + symbolicDev + ' | grep -v incomplete | tail -n +2';
+        var me = this,
+            vm = me.getViewModel(),
+            v = me.getView().down('#interfaceArp'),
+            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev');
 
         if(!symbolicDev){
             vm.set('siArp', []);
             return;
         }
 
-        arpView.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', arpCommand).then(function (result) {
-            var lines = Ext.isEmpty(result) ? []: result.split('\n');
-            var lparts, connections = [];
-            for (var i = 0 ; i < lines.length; i++ ) {
-                if (!Ext.isEmpty(lines[i])) {
-                    lparts = lines[i].split(/\s+/);
-                    connections.push({
-                        address: lparts[0],
-                        type: lparts[1],
-                        macAddress: lparts[2]
-                    });
-                }
+        v.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', 'ip neigh show dev ' + symbolicDev + ' | grep lladdr | tr -s " "')
+        .then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
+                return;
             }
+            var connections = [];
+            result.split("\n").forEach(function(row){
+                if(row.trim() == ""){
+                    return;
+                }
+                var address = null;
+                var macAddress = null;
+                row.split(" ").forEach(function(item, index){
+                    if(index == 0){
+                        address = item;
+                    }else if( index == 2){
+                        macAddress = item;
+                    }
+                });
+                connections.push({
+                    address: address,
+                    macAddress: macAddress
+                });
+            });
             vm.set('siArp', connections);
-            arpView.setLoading(false);
+            v.setLoading(false);
         });
     },
 
@@ -460,112 +483,95 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     refreshRoutes: function (cmp) {
-        var view = cmp.isXType('button') ? cmp.up('panel') : cmp;
-        view.down('textarea').setValue('');
-        view.setLoading(true);
-        Rpc.asyncData('rpc.execManager.exec', '/usr/share/untangle/bin/ut-routedump.sh')
-            .then(function (result) {
-                view.down('textarea').setValue(result.output);
-            }).always(function () {
-                view.setLoading(false);
-            });
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        v.down('textarea').setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-routedump.sh')
+        .then(function(result){
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.down('textarea').setValue(result);
+            v.setLoading(false);
+        });
     },
 
     refreshQosStatistics: function (cmp) {
-        var view = cmp.isXType('button') ? cmp.up('grid') : cmp,
+        var v = cmp.isXType('button') ? cmp.up('grid') : cmp,
             vm = this.getViewModel();
-        view.setLoading(true);
+
+        if(vm.get('settings.qosSettings.qosEnabled') !== vm.get('savedSettings.qosSettings.qosEnabled') ){
+            return;
+        }
+
+        v.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-status.py')
-            .then(function (result) {
-                var list = [];
-                try {
-                    list = eval(result);
-                    list.forEach(function(entry){
-                        entry['sent'] = parseInt(entry['sent'],10);
-                    });
-                    vm.set('qosStatistics', Ext.create('Ext.data.Store', {
-                        fields: [
-                            'tokens',
-                            'priority',
-                            'rate',
-                            'burst',
-                            'ctokens',
-                            'interface_name',
-                            'sent'
-                        ],
-                        sorters: [{
-                            property: 'interface_name',
-                            direction: 'ASC'
-                        }],
-                        data: list
-                    }) );
-                } catch (e) {
-                    Util.handleException('Unable to get QoS statistics');
-                    console.error('Could not execute /usr/share/untangle-netd/bin/qos-status.py output: ', result, e);
-                }
-            }).always(function () {
-                view.setLoading(false);
+        .then(function(result){
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            list = eval(result);
+            list.forEach(function(entry){
+                entry['sent'] = parseInt(entry['sent'],10);
             });
+
+            v.getStore().loadData(list);
+            v.setLoading(false);
+        });
     },
 
     refreshUpnpStatus: function (cmp) {
-        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        var v = cmp.isXType('button') ? cmp.up('grid') : cmp;
         var vm = this.getViewModel();
+
+        v.setLoading(true);
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
-            .then(function(result) {
-                vm.set('upnpStatus', Ext.create('Ext.data.Store', {
-                    fields: [
-                        'upnp_client_ip_address',
-                        'upnp_destination_port',
-                        'upnp_protocol',
-                        'upnp_client_port',
-                        'bytes'
-                    ],
-                    sorters: [{
-                        property: 'upnp_client_ip_address',
-                        direction: 'ASC'
-                    }],
-                    data: Ext.decode(result)["active"]
-                }) );
-            }).always(function () {
-                view.setLoading(false);
-            });
+        .then(function(result) {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            v.getStore().loadData(Ext.decode(result)["active"]);
+            v.setLoading(false);
+        });
     },
 
     deleteUpnp: function(view, u1, u2, u3, u4, record){
         var me = this;
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--delete', "'" + Ext.encode(record.data) + "'")
-            .then(function(result) {
-                me.refreshUpnpStatus(view);
-            });
+        .then(function(result) {
+            me.refreshUpnpStatus(view);
+        });
     },
 
     refreshDhcpLeases: function (cmp) {
-        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
-        view.setLoading(true);
+        var v = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        v.setLoading(true);
         Rpc.asyncData('rpc.execManager.execOutput', 'cat /var/lib/misc/dnsmasq.leases')
-            .then(function (result) {
-                var lines = result.split('\n'),
-                    leases = [], lineparts, i;
-                for (i = 0 ; i < lines.length ; i++) {
-                    if (lines[i] === null || lines[i] === '' ) {
-                        continue;
-                    }
-                    lineparts = lines[i].split(/\s+/);
-                    if (lineparts.length == 5 ) {
-                        leases.push({
-                            date: lineparts[0],
-                            macAddress: lineparts[1],
-                            address: lineparts[2],
-                            hostname: lineparts[3],
-                            clientId: lineparts[4]
-                        });
-                    }
+        .then(function (result) {
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            var lines = result.split('\n'),
+                leases = [], lineparts, i;
+            for (i = 0 ; i < lines.length ; i++) {
+                if (lines[i] === null || lines[i] === '' ) {
+                    continue;
                 }
-                view.getStore().loadData(leases);
-            }).always(function () {
-                view.setLoading(false);
-            });
+                lineparts = lines[i].split(/\s+/);
+                if (lineparts.length == 5 ) {
+                    leases.push({
+                        date: lineparts[0],
+                        macAddress: lineparts[1],
+                        address: lineparts[2],
+                        hostname: lineparts[3],
+                        clientId: lineparts[4]
+                    });
+                }
+            }
+            v.getStore().loadData(leases);
+            v.setLoading(false);
+        });
 
     },
     addStaticDhcpLease: function (view, rowIndex, colIndex, item, e, record) {
@@ -595,11 +601,16 @@ Ext.define('Ung.config.network.MainController', {
         text.push(output.getValue());
         text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
-        rpc.execManager.execEvil(function (result, ex) {
-            if (ex) { console.error(ex); Util.handleException(ex); return; }
-            // Save the filename.
+        Rpc.asyncData('rpc.execManager.execEvil', v.getViewModel().get('command'))
+        .then(function (result) {
+            if(Util.isDestroyed(v)){
+                return;
+            }
             me.readOutput(result, text, output, btn, vm);
-        }, v.getViewModel().get('command'));
+        }, function(ex){
+            Util.handleException(ex);
+            btn.setDisabled(false);
+        });
 
     },
     readOutput: function (resultReader, text, output, btn, vm) {
@@ -788,28 +799,28 @@ Ext.define('Ung.config.network.MainController', {
         var wirelessChannelsArr = [];
         if (me.editIntf.get('isWirelessInterface')) {
             Rpc.asyncData('rpc.networkManager.getWirelessChannels', me.editIntf.get('systemDev'))
-                .then(function(result) {
-                    if (result && result.list) {
-                        Ext.Array.each(result.list, function (ch) {
-                            if (me.wirelessChannelsMap[ch]) {
-                                wirelessChannelsArr.push(me.wirelessChannelsMap[ch]);
-                            }
-                        });
-                        me.dialog.getViewModel().set('wirelessChannelsList', wirelessChannelsArr);
-                    }
-                }, function (ex) {
-                    Util.handleException(ex);
-                });
+            .then(function(result) {
+                if (result && result.list) {
+                    Ext.Array.each(result.list, function (ch) {
+                        if (me.wirelessChannelsMap[ch]) {
+                            wirelessChannelsArr.push(me.wirelessChannelsMap[ch]);
+                        }
+                    });
+                    me.dialog.getViewModel().set('wirelessChannelsList', wirelessChannelsArr);
+                }
+            }, function (ex) {
+                Util.handleException(ex);
+            });
         }
 
         // check VRRP master
         if (me.editIntf.get('vrrpEnabled') && me.editIntf.get('interfaceId') > 0) {
             Rpc.asyncData('rpc.networkManager.isVrrpMaster', me.editIntf.get('interfaceId'))
-                .then(function(result) {
-                    me.dialog.getViewModel().set('vrrpmaster', result);
-                }, function (ex) {
-                    Util.handleException(ex);
-                });
+            .then(function(result) {
+                me.dialog.getViewModel().set('vrrpmaster', result);
+            }, function (ex) {
+                Util.handleException(ex);
+            });
         }
     },
     cancelEdit: function (button) {
@@ -884,9 +895,10 @@ Ext.define('Ung.config.network.MainController', {
 
     // used to set available parent interfaces
     onParentInterface: function (combo) {
+        var vm = combo.up('window').getViewModel();
         var data = [];
-        var record = combo.up('window').getViewModel().get('intf');
-        Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
+        var record = vm.get('intf');
+        Ext.Array.each(vm.get('settings').interfaces.list, function (intf) {
             if (intf.interfaceId !== record.get('interfaceId') && !intf.isVlanInterface) {
                 data.push([intf.interfaceId, intf.name]);
             }
@@ -904,6 +916,9 @@ Ext.define('Ung.config.network.MainController', {
             Rpc.asyncPromise('rpc.networkManager.renewDhcpLease', intf.get('interfaceId')),
             Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
         ], this).then(function (result) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
             var intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
                 return intfSt.interfaceId === intf.get('interfaceId');
             });
@@ -914,11 +929,13 @@ Ext.define('Ung.config.network.MainController', {
 
                 intf.set(intfStatus); // update interface with the new values
             }
+            me.dialog.setLoading(false);
         }, function (ex) {
+            if(!Util.isDestroyed(me)){
+                me.dialog.setLoading(false);
+            }
             console.error(ex);
             Util.handleException(ex);
-        }).always(function () {
-            me.dialog.setLoading(false);
         });
     },
 
