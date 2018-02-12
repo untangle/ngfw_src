@@ -81,12 +81,13 @@ Ext.define('Ung.config.administration.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.directPromise('rpc.adminManager.getSettings'),
-            Rpc.directPromise('rpc.systemManager.getSettings'),
-            Rpc.directPromise('rpc.skinManager.getSkinsList'),
-            Rpc.directPromise('rpc.skinManager.getSettings')
-        ], this).then(function(result) {
-            if(Util.isDestroyed(vm)){
+            Rpc.asyncPromise('rpc.adminManager.getSettings'),
+            Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
+            Rpc.asyncPromise('rpc.skinManager.getSettings')
+        ], this)
+        .then(function(result) {
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
             vm.set({
@@ -95,16 +96,14 @@ Ext.define('Ung.config.administration.MainController', {
                 skinsList: result[2],
                 skinSettings: result[3]
             });
+
             vm.set('panel.saveDisabled', false);
-        }, function(ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
-                return;
-            }
             v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -113,12 +112,13 @@ Ext.define('Ung.config.administration.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.directPromise('rpc.UvmContext.certificateManager.getServerCertificateList'),
-            Rpc.directPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
-            Rpc.directPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
-            Rpc.directPromise('rpc.networkManager.getNetworkSettings'),
-        ], this).then(function(result) {
-            if(Util.isDestroyed(vm)){
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getServerCertificateList'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+        ], this)
+        .then(function(result) {
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
             var hostname = result[3].hostName + (result[3].domainName ? '.' + result[3].domainName : '');
@@ -129,15 +129,12 @@ Ext.define('Ung.config.administration.MainController', {
                 hostName: hostname
             });
             vm.set('panel.saveDisabled', false);
-        }, function(ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
-                return;
-            }
             v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -146,20 +143,17 @@ Ext.define('Ung.config.administration.MainController', {
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateInformation')
-            .then(function (result) {
-            if(Util.isDestroyed(vm)){
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
             vm.set('rootCertificateInformation', result);
-        }, function (ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function () {
-            if(Util.isDestroyed(v)){
-                return;
-            }
             v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -168,20 +162,18 @@ Ext.define('Ung.config.administration.MainController', {
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.certificateManager.getServerCertificateList')
-            .then(function (result) {
-            if(Util.isDestroyed(vm)){
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
+
             vm.set('serverCertificates', result);
-        }, function (ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function () {
-            if(Util.isDestroyed(v)){
-                return;
-            }
             v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -230,7 +222,8 @@ Ext.define('Ung.config.administration.MainController', {
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
             Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
-        ], this).then(function() {
+        ], this)
+        .then(function() {
             // add 3 seconds timeout to avoid exception
             setTimeout(function () {
                 if(Util.isDestroyed(me, v)){
@@ -242,7 +235,6 @@ Ext.define('Ung.config.administration.MainController', {
                 Ext.fireEvent('resetfields', v);
                 v.setLoading(false);
             }, 3000);
-
         }, function (ex) {
             if(!Util.isDestroyed(vm, v)){
                 vm.set('panel.saveDisabled', true);
@@ -421,13 +413,13 @@ Ext.define('Ung.config.administration.MainController', {
                 Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
                 me.certDialog.close();
                 me.refreshRootCertificate();
+                me.certDialog.setLoading(false);
             }, function (ex) {
                 Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
-            }).always(function () {
-                if(Util.isDestroyed(me)){
+                if(!Util.isDestroyed(me)){
+                    me.certDialog.setLoading(false);
                     return;
                 }
-                me.certDialog.setLoading(false);
             });
         }
 
@@ -440,13 +432,12 @@ Ext.define('Ung.config.administration.MainController', {
                 }
                 me.certDialog.close();
                 me.refreshServerCertificate();
+                me.certDialog.setLoading(false);
             }, function (ex) {
                 Util.handleException('Error during certificate generation.'.t());
-            }).always(function () {
-                if(Util.isDestroyed(me)){
-                    return;
+                if(!Util.isDestroyed(me)){
+                    me.certDialog.setLoading(false);
                 }
-                me.certDialog.setLoading(false);
             });
         }
 
