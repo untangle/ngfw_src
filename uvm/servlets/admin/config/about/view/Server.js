@@ -17,8 +17,10 @@ Ext.define('Ung.config.about.view.Server', {
         title: 'About'.t(),
         items: [{
             xtype: 'component',
-            html: 'Do not publicly post or share the UID or account information.'.t() + '<br/>' +
-                'UID'.t() + ': ' + rpc.serverUID
+            bind:{
+                html: 'Do not publicly post or share the UID or account information.'.t() + '<br/>' +
+                    'UID'.t() + ': ' + '{serverUID}'
+            }
         },{
             xtype: 'component',
             itemId: 'account',
@@ -27,7 +29,7 @@ Ext.define('Ung.config.about.view.Server', {
         }]
     }, {
         bind: {
-            html: 'Build'.t() + ': <strong>' + rpc.fullVersionAndRevision + '</strong> <br />' +
+            html: 'Build'.t() + ': <strong>' + '{fullVersionAndRevision}' + '</strong> <br />' +
                 'Kernel'.t() + ': <strong>' + '{kernelVersion}' + '</strong> <br />' +
                 'History'.t() + ': <strong>' + '{modificationState}' + '</strong> <br />' +
                 'Reboots'.t() + ': <strong>' + '{rebootCount}' + '</strong> <br />' +
