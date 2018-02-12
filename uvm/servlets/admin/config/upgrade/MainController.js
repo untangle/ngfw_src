@@ -19,32 +19,28 @@ Ext.define('Ung.config.upgrade.MainController', {
             vm = me.getViewModel();
 
         me.getView().setLoading(true);
-        Ext.Deferred.sequence([
-            Rpc.directPromise('rpc.systemManager.getSettings'),
-            ], this).then(function(result){
-                if(Util.isDestroyed(me, v, vm)){
-                    return;
-                }
-
-                vm.set('settings', result[0]);
-
-                for( var key in this.settingsValueMap){
-                    for( var settingsKey in this.settingsValueMap[key]){
-                        if( vm.get(key) == settingsKey){
-                            vm.set(key, this.settingsValueMap[key][settingsKey]);
-                        }
-                    }
-                }
-                vm.set('panel.saveDisabled', false);
-        }, function(ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
+        Rpc.asyncData('rpc.systemManager.getSettings')
+        .then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
+
+            vm.set('settings', result);
+
+            for( var key in this.settingsValueMap){
+                for( var settingsKey in this.settingsValueMap[key]){
+                    if( vm.get(key) == settingsKey){
+                        vm.set(key, this.settingsValueMap[key][settingsKey]);
+                    }
+                }
+            }
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
 
         v.down('progressbar').wait({
@@ -68,34 +64,28 @@ Ext.define('Ung.config.upgrade.MainController', {
             }
         }
 
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('settings')),
-            ], this).then(function () {
-                if(Util.isDestroyed(me, v, vm)){
-                    return;
-                }
-                v.setLoading(false);
-                me.loadSettings();
-                Util.successToast('Upgrade Settings'.t() + ' saved!');
-                Ext.fireEvent('resetfields', v);
-        }, function(ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
+        Rpc.asyncData('rpc.systemManager.setSettings', vm.get('settings'))
+        .then(function () {
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-            v.setLoading(false);
+            me.loadSettings();
+            Util.successToast('Upgrade Settings'.t() + ' saved!');
+            Ext.fireEvent('resetfields', v);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
-
     },
 
     checkUpgrades: function () {
         var view = this.getView();
 
         setTimeout( function(){
-            Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
+            Rpc.asyncData('rpc.systemManager.upgradesAvailable')
+            .then(function (result) {
                 if(Util.isDestroyed(view)){
                     return;
                 }
@@ -122,7 +112,8 @@ Ext.define('Ung.config.upgrade.MainController', {
         Ext.MessageBox.progress("Downloading Upgrade...".t(), ".");
         this.checkDownloadStatus=true;
 
-        Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
+        Rpc.asyncData('rpc.systemManager.downloadUpgrades')
+        .then(function(result) {
             if(Util.isDestroyed(me)){
                 return;
             }
@@ -144,7 +135,8 @@ Ext.define('Ung.config.upgrade.MainController', {
             return;
         }
 
-        Rpc.asyncData('rpc.systemManager.getDownloadStatus').then(function(result) {
+        Rpc.asyncData('rpc.systemManager.getDownloadStatus')
+        .then(function(result) {
             if(Util.isDestroyed(me)){
                 return;
             }
@@ -187,7 +179,8 @@ Ext.define('Ung.config.upgrade.MainController', {
             duration: 180000
         });
 
-        rpc.systemManager.upgrade(Ext.bind(function (result, exception) {
+        Rpc.asyncData('rpc.systemManager.upgrade')
+        .then(function(result){
             // the upgrade will shut down the untangle-vm so often this returns an exception
             // either way show a wait dialog...
             Ext.MessageBox.hide();
@@ -212,7 +205,8 @@ Ext.define('Ung.config.upgrade.MainController', {
                     );
                 }
             });
-        }, this));
+
+        });
     },
 
     onUpgradeTimeChange: function (field, value) {
