@@ -1001,7 +1001,7 @@ class NetworkTests(unittest2.TestCase):
         mtuAutoValue = None
         # Get current MTU value due to bug 11599
         arg = "ip addr show dev %s" % targetDevice
-        ipAddrShowResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        ipAddrShowResults = subprocess.check_output(arg, shell=True)
         # print "ipAddrShowResults: %s" % ipAddrShowResults
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
@@ -1017,7 +1017,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         # Verify the MTU is set
         arg = "ip addr show dev %s" % targetDevice
-        ipAddrShowResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        ipAddrShowResults = subprocess.check_output(arg, shell=True)
         # print "ipAddrShowResults: %s" % ipAddrShowResults
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
@@ -1031,7 +1031,7 @@ class NetworkTests(unittest2.TestCase):
         del netsettings['devices']['list'][i]['mtu']
         uvmContext.networkManager().setNetworkSettings(netsettings)
         arg = "ip addr show dev %s" % targetDevice
-        ipAddrShowResults = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE).communicate()[0]
+        ipAddrShowResults = subprocess.check_output(arg, shell=True)
         # print "ipAddrShowResults: %s" % ipAddrShowResults
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtu2Value = None
