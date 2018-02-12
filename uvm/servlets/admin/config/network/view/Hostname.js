@@ -108,7 +108,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         items: [{
             xtype: 'component',
             margin: '0 0 10 0',
-            html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'radio',
             boxLabel: '<strong>' + 'Use IP address from External interface (default)'.t() + '</strong>',
@@ -117,7 +119,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
-            html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'radio',
             boxLabel: '<strong>' + 'Use Hostname'.t() + '</strong>',
@@ -126,7 +130,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 5 25',
-            html: Ext.String.format('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
@@ -141,7 +147,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
-            html: Ext.String.format('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'textfield',
             margin: '0 0 5 25',
