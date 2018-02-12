@@ -13,14 +13,13 @@ Ext.define('Ung.config.local-directory.MainController', {
         var me = this, v = me.getView(), vm = me.getViewModel();
 
         v.setLoading(true);
-        Ext.Deferred.sequence([
-            Rpc.directPromise('rpc.UvmContext.localDirectory.getUsers')
-            ], this).then(function (result) {
-                if(Util.isDestroyed(vm)){
+        Rpc.asyncData('rpc.UvmContext.localDirectory.getUsers')
+        .then(function (result) {
+                if(Util.isDestroyed(v, vm)){
                     return;
                 }
                 // set the local record fields we use to deal with the expiration time and add vs edit logic
-                var users = result[0];
+                var users = result;
                 for(var i = 0 ; i < users.list.length ; i++) {
                     users.list[i].localEmpty = false;
 
@@ -34,15 +33,14 @@ Ext.define('Ung.config.local-directory.MainController', {
                 }
 
                 vm.set('usersData', users);
+
+                v.setLoading(false);
+                vm.set('panel.saveDisabled', false);
         }, function(ex) {
-            if(!Util.isDestroyed(vm)){
+            if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
             }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
-                return;
-            }
-            v.setLoading(false);
         });
     },
 
@@ -94,24 +92,20 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
         }
 
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.UvmContext.localDirectory.setUsers', userlist)
-            ], this).then(function (result) {
-                if(Util.isDestroyed(v, me)){
-                    return;
-                }
-                v.setLoading(false);
-                Ext.fireEvent('resetfields', v);
-                me.loadSettings();
-        }, function (ex) {
-            if(!Util.isDestroyed(vm)){
-                vm.set('panel.saveDisabled', true);
-            }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
+        Rpc.asyncData('rpc.UvmContext.localDirectory.setUsers', userlist)
+        .then(function (result) {
+            if(Util.isDestroyed(v, me)){
                 return;
             }
             v.setLoading(false);
+            Ext.fireEvent('resetfields', v);
+            me.loadSettings();
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
