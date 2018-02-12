@@ -10,18 +10,16 @@ Ext.define('Ung.config.system.MainController', {
         var me = this, v= me.getView(), vm = me.getViewModel();
 
         var rpcSequence = [
-            Rpc.directPromise('rpc.languageManager.getLanguageSettings'),
-            Rpc.directPromise('rpc.languageManager.getLanguagesList'),
-            Rpc.directPromise('rpc.systemManager.getSettings'),
-            Rpc.directPromise('rpc.systemManager.getDate'),
-            Rpc.directPromise('rpc.systemManager.getTimeZone'),
-            Rpc.directPromise('rpc.systemManager.getTimeZones'),
+            Rpc.asyncPromise('rpc.languageManager.getLanguageSettings'),
+            Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            Rpc.asyncPromise('rpc.systemManager.getDate'),
+            Rpc.asyncPromise('rpc.systemManager.getTimeZone'),
+            Rpc.asyncPromise('rpc.systemManager.getTimeZones'),
             Rpc.directPromise('rpc.isExpertMode')
         ];
 
         var dataNames = [
             'languageSettings',
-            'languagesList',
             'systemSettings',
             'time',
             'timeZone',
@@ -29,31 +27,32 @@ Ext.define('Ung.config.system.MainController', {
             'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
-            rpcSequence.push(Rpc.directPromise('rpc.appManager.app("http").getHttpSettings'));
+            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
             dataNames.push('httpSettings');
         }
         if(Rpc.directData('rpc.appManager.app', 'ftp')){
-            rpcSequence.push(Rpc.directPromise('rpc.appManager.app("ftp").getFtpSettings'));
+            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("ftp").getFtpSettings'));
             dataNames.push('ftpSettings');
         }
         if(Rpc.directData('rpc.appManager.app', 'smtp')){
-            rpcSequence.push(Rpc.directPromise('rpc.appManager.app("smtp").getSmtpSettings'));
+            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").getSmtpSettings'));
             dataNames.push('smtpSettings');
         }
         if(Rpc.directData('rpc.appManager.app', 'shield')){
-            rpcSequence.push(Rpc.directPromise('rpc.appManager.app("shield").getSettings'));
+            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("shield").getSettings'));
             dataNames.push('shieldSettings');
         }
 
         v.setLoading(true);
-        Ext.Deferred.sequence(rpcSequence, this).then(function(result){
+        Ext.Deferred.sequence(rpcSequence, this)
+        .then(function(result){
             if(Util.isDestroyed(vm, dataNames)){
                 return;
             }
 
             var timeZones = [];
-            if (result[5]) {
-                eval(result[5]).forEach(function (tz) {
+            if (result[4]) {
+                eval(result[4]).forEach(function (tz) {
                     timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
                 });
             }
@@ -67,15 +66,24 @@ Ext.define('Ung.config.system.MainController', {
             });
 
             vm.set('panel.saveDisabled', false);
+
+            // Load language list.
+            if(!vm.get('languagesList')){
+                Rpc.asyncData('rpc.languageManager.getLanguagesList')
+                .then( function(result){
+                    if(!Util.isDestroyed(v,vm)){
+                        v.setLoading(false);
+                        vm.set('languagesList', result);
+                    }
+                });
+            }else{
+                v.setLoading(false);
+            }
         }, function(ex) {
-            if(!Util.isDestroyed(vm)){
+            if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
             }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
-                return;
-            }
-            v.setLoading(false);
         });
     },
 
@@ -88,9 +96,9 @@ Ext.define('Ung.config.system.MainController', {
             function(btn) {
                 if (btn === 'yes') {
                     Ext.MessageBox.wait('Synchronizing time with the internet...'.t(), 'Please wait'.t());
-                    Rpc.asyncData('rpc.UvmContext.forceTimeSync').then(function(result, ex){
+                    Rpc.asyncData('rpc.UvmContext.forceTimeSync')
+                    .then(function(result){
                         Ext.MessageBox.hide();
-                        if (ex) { Util.handleException(ex); return; }
                         if (result !== 0) {
                             Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
@@ -103,7 +111,8 @@ Ext.define('Ung.config.system.MainController', {
 
     syncLanguage: function () {
         Ext.MessageBox.wait('Synchronizing languages with the internet...'.t(), 'Please wait'.t());
-        Rpc.asyncData('rpc.UvmContext.forceTimeSync').then(function(result, ex){
+        Rpc.asyncData('rpc.languageManager.synchronizeLanguage')
+        .then(function(result, ex){
            document.location.reload();
         });
     },
@@ -139,6 +148,11 @@ Ext.define('Ung.config.system.MainController', {
 
         var languageSettings = vm.get('languageSettings');
         var languageSplit = languageSettings['language'].split('-');
+        if(languageSplit[0] != 'official' && languageSplit[0] != "community"){
+            // Something bad has happened; referve to known good language.
+            languageSplit[0] = "official";
+            languageSplit[1] = "en";
+        }
         languageSettings['source'] = languageSplit[0];
         languageSettings['language'] = languageSplit[1];
 
@@ -161,25 +175,23 @@ Ext.define('Ung.config.system.MainController', {
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("shield").setSettings', vm.get('shieldSettings')));
         }
 
-        Ext.Deferred.sequence(rpcSequence, this).then(function () {
+        Ext.Deferred.sequence(rpcSequence, this)
+        .then(function () {
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-            me.loadSettings();
             Util.successToast('System settings saved!');
             if(vm.get('localizationChanged') == true){
                 window.location.reload();
             }
             Ext.fireEvent('resetfields', v);
+            v.setLoading(false);
+            me.loadSettings();
         }, function (ex) {
-            if(!Util.isDestroyed(vm)){
+            if(!Util.isDestroyed(v, vm)){
+                v.setLoading(false);
                 vm.set('panel.saveDisabled', true);
             }
-        }).always(function() {
-            if(Util.isDestroyed(v)){
-                return;
-            }
-            v.setLoading(false);
         });
     },
 
@@ -191,14 +203,16 @@ Ext.define('Ung.config.system.MainController', {
     },
 
     manualReboot: function () {
+        var companyName = Rpc.directData('rpc.companyName');
+
         Ext.MessageBox.confirm('Manual Reboot Warning'.t(),
-            Ext.String.format('The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.'.t(), rpc.companyName),
+            Ext.String.format('The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.'.t(), companyName),
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.rebootBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to reboot {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to reboot {0} Server', companyName)); return; }
                         Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is rebooting.'.t(), rpc.companyName),
+                            Ext.String.format('The {0} Server is rebooting.'.t(), companyName),
                             'Please wait'.t(), {
                                 interval: 20, //bar will move fast!
                                 increment: 500,
@@ -211,14 +225,16 @@ Ext.define('Ung.config.system.MainController', {
     },
 
     manualShutdown: function () {
+        var companyName = Rpc.directData('rpc.companyName');
+
         Ext.MessageBox.confirm('Manual Shutdown Warning'.t(),
-            Ext.String.format('The {0} Server is about to shutdown.  This will stop all network operations.'.t(), rpc.companyName),
+            Ext.String.format('The {0} Server is about to shutdown.  This will stop all network operations.'.t(), companyName),
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.shutdownBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to shutdown {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to shutdown {0} Server', companyName)); return; }
                         Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is shutting down.'.t(), rpc.companyName),
+                            Ext.String.format('The {0} Server is shutting down.'.t(), companyName),
                             'Please wait'.t(), {
                                 interval: 20,
                                 increment: 500,
