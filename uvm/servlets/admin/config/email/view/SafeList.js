@@ -37,9 +37,7 @@ Ext.define('Ung.config.email.view.SafeList', {
 
         tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
-        // listProperty: '',
         emptyRow: {
-            // emailAddress: 'email@' + rpc.hostname + '.com'
         },
 
         topInsert: true,
