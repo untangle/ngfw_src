@@ -86,22 +86,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             action: 'refreshDhcpLeases'
         }],
 
-        store: {
-            data: [],
-            fields:[{
-                name: 'macAddress',
-                type: 'string'
-            }, {
-                name: 'address',
-                sortType: 'asIp'
-            }, {
-                name: 'hostname',
-                type: 'string',
-            }, {
-                name: 'date',
-                type: 'string',
-            }]
-        },
+        bind: '{dynamicDhcpEntries}',
 
         columns: [{
             header: 'MAC Address'.t(),
@@ -120,7 +105,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             header: 'Expiration Time'.t(),
             dataIndex: 'date',
             width: Renderer.timestampWidth,
-            renderer: function(value) { return Util.timestampFormat(value*1000); }
+            renderer: Renderer.timestamp
         }, {
             xtype: 'actioncolumn',
             width: Renderer.actionColumn,
