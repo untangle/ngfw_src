@@ -11,7 +11,7 @@ Ext.define('Ung.config.about.view.LicenseAgreement', {
         margin: 10,
         text: 'View License'.t(),
         iconCls: 'fa fa-file-text-o',
-        href: rpc.UvmContext.getLegalUrl() + '?' + Util.getAbout()
+        href: Rpc.directData('rpc.UvmContext.getLegalUrl') + '?' + Util.getAbout()
     }]
 
 });
