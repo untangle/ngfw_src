@@ -276,8 +276,8 @@ Ext.define('Ung.view.reports.EventReport', {
                 v.down('grid').getSelectionModel().select(0);
             }
 
-            if( v.up().down('ungridstatus') ){
-                v.up().down('ungridstatus').fireEvent('update');
+            if( v.up('entry').down('ungridstatus') ){
+                v.up('entry').down('ungridstatus').fireEvent('update');
             }
         }
     }

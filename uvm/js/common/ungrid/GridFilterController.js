@@ -12,7 +12,17 @@ Ext.define('Ung.cmp.GridFilterController', {
             routeFilter = field.up('panel').routeFilter,
             gridStatus = field.up('panel').down('ungridstatus');
 
-        grid.getStore().clearFilter();
+        /**
+         * remove only the filters added through filer data box
+         * leave alone the grid filters from columns or routes
+         */
+        grid.getStore().getFilters().each(function (filter) {
+            if (filter.isGridFilter || filter.source === 'route') {
+                return;
+            }
+            grid.getStore().removeFilter(filter);
+        });
+        // grid.getStore().clearFilter();
 
         // add route filter
         if (routeFilter) {
@@ -21,9 +31,10 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         if (!value) {
             field.getTrigger('clear').hide();
-            if( gridStatus ){
-                gridStatus.fireEvent('update');
-            }
+            // the grid status update is done through grid filterchange event
+            // if( gridStatus ){
+            //     gridStatus.fireEvent('update');
+            // }
             return;
         }
 
@@ -49,9 +60,5 @@ Ext.define('Ung.cmp.GridFilterController', {
         });
 
         field.getTrigger('clear').show();
-
-        if( gridStatus ){
-            gridStatus.fireEvent('update');
-        }
     }
 });

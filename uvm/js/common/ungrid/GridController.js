@@ -620,6 +620,20 @@ Ext.define('Ung.cmp.GridController', {
         } else {
             console.log('External action not defined!');
         }
+    },
+
+    /**
+     * updates the grid status each time filters are changed
+     */
+    updateFilterStatus: function (store, filters) {
+        var me = this, gridStatus = null;
+        try {
+            gridStatus = me.getView().up('panel').down('ungridstatus') || me.getView().up('entry').down('ungridstatus');
+        } catch (ex) {}
+
+        if (gridStatus) {
+            gridStatus.fireEvent('update');
+        }
     }
 
 });
