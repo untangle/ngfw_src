@@ -117,6 +117,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Username'.t(),
+        allowBlank: false,
         bind: {
             value: '{record.authUsername}',
             disabled: '{record.authUserPass == false}',
@@ -125,6 +126,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Password'.t(),
+        allowBlank: false,
         inputType: 'password',
         bind: {
             value: '{record.authPassword}',
