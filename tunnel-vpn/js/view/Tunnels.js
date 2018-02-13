@@ -50,7 +50,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         header: 'Tunnel ID'.t(),
         width: Renderer.idWidth,
         dataIndex: 'tunnelId',
-        rtype: 'tunnelid'
+        renderer: Ung.apps['tunnel-vpn'].MainController.tunnelidRenderer
     }, {
         header: 'Tunnel Name'.t(),
         width: Renderer.messageWidth,

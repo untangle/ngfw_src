@@ -30,13 +30,13 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
                 width: Renderer.messagwWidth,
                 dataIndex: 'blocked',
                 resizable: false,
-                rtype: 'action'
+                renderer: Ung.apps.adblocker.MainController.actionRenderer
             }, {
                 header: 'Slow'.t(),
                 width: Renderer.messagwWidth,
                 dataIndex: 'flagged',
                 resizable: false,
-                rtype: 'flagged'
+                renderer: Ung.apps.adblocker.MainController.modeRenderer
             }]
     }, {
         region: 'south',
@@ -76,13 +76,13 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
                 width: Renderer.messagwWidth,
                 dataIndex: 'blocked',
                 resizable: false,
-                rtype: 'action'
+                renderer: Ung.apps.adblocker.MainController.actionRenderer
             }, {
                 header: 'Slow'.t(),
                 width: Renderer.messagwWidth,
                 dataIndex: 'flagged',
                 resizable: false,
-                rtype: 'flagged'
+                renderer: Ung.apps.adblocker.MainController.modeRenderer
             }],
         editorFields: [{
             xtype: 'checkbox',

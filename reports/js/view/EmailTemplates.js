@@ -67,7 +67,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         header: 'Interval'.t(),
         width: Renderer.intervalWidth,
         dataIndex: 'interval',
-        rtype: 'timeInterval',
+        renderer: Renderer.timeInterval,
         editor: {
             xtype: 'combo',
             editable: false,
@@ -80,7 +80,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         header: 'Mobile'.t(),
         width: Renderer.booleanWidth,
         dataIndex: 'mobile',
-        rtype: 'boolean',
+        renderer: Renderer.boolean,
         editor: {
             xtype: 'checkbox',
             bind: '{record.mobile}'

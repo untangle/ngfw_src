@@ -346,11 +346,13 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
         return this.distributeWindow;
     },
 
-    groupRenderer: function(value, meta, record, row, col, store, grid){
-        var groupList = this.getViewModel().get('groups');
-        var grpname = 'Unknown'.t();
-        groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
-        return(grpname);
+    statics:{
+        groupRenderer: function(value, meta, record, row, col, store, grid){
+            var groupList = this.getViewModel().get('groups');
+            var grpname = 'Unknown'.t();
+            groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
+            return(grpname);
+        }
     }
 
 });

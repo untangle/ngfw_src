@@ -58,7 +58,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
         header: 'Action'.t(),
         dataIndex: 'action',
         width: Renderer.actionWidth,
-        rtype: 'action'
+        renderer: Ung.apps.applicationcontrol.MainController.actionRenderer
     }],
 
     // todo: continue this stuff
