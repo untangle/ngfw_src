@@ -56,7 +56,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         dataIndex: 'action',
         flex: 1,
         width: Renderer.messageWidth,
-        rtype: 'action'
+        renderer: Ung.apps.bandwidthcontrol.MainController.actionRenderer
     }],
 
     // todo: continue this stuff

@@ -60,7 +60,7 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
             header: 'Destination WAN'.t(),
             dataIndex: 'destinationWan',
             width: Renderer.messageWidth,
-            rtype: 'destinationWan'
+            renderer: Ung.apps['wan-balancer'].MainController.destinationWanRenderer
         }
     ],
 

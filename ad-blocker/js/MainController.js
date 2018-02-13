@@ -57,12 +57,14 @@ Ext.define('Ung.apps.adblocker.MainController', {
         });
     },
 
-    actionRenderer: function(value){
-        return value ? 'Block'.t() : 'Pass'.t();
-    },
+    statics:{
+        actionRenderer: function(value){
+            return value ? 'Block'.t() : 'Pass'.t();
+        },
 
-    flaggedRenderer: function(value){
-        return value ? 'Yes'.t() : '';
+        flaggedRenderer: function(value){
+            return value ? 'Yes'.t() : '';
+        }
     }
 
 });
