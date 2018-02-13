@@ -66,8 +66,6 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('savedSettings', Ext.merge({}, result[0]));
             vm.set('settings', result[0]);
 
-            console.log(vm.get('settings'));
-
             // check if Allow SSH access rule is enabled
             var accessRulesSshEnabled = me.isSshAccessRuleEnabled(vm.get('settings'));
             vm.set('accessRulesSshEnabled', accessRulesSshEnabled);
