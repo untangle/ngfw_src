@@ -56,12 +56,14 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         }, vm.get('settings'));
     },
 
-    actionRenderer: function(action){
-        switch(action.actionType) {
-            case 'ALLOW': return 'Allow'.t();
-            case 'BLOCK': return 'Block'.t();
-            case 'TARPIT': return 'Tarpit'.t();
-            default: return 'Unknown Action'.t() + ': ' + act;
+    statics: {
+        actionRenderer: function(action){
+            switch(action.actionType) {
+                case 'ALLOW': return 'Allow'.t();
+                case 'BLOCK': return 'Block'.t();
+                case 'TARPIT': return 'Tarpit'.t();
+                default: return 'Unknown Action'.t() + ': ' + act;
+            }
         }
     }
 

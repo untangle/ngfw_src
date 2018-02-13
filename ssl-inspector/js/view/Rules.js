@@ -53,7 +53,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         header: 'Action'.t(),
         dataIndex: 'action',
         width: Renderer.actionWidth,
-        rtype: 'action'
+        renderer: Ung.apps.sslinspector.MainController.actionRenderer
     }],
 
     // todo: continue this stuff

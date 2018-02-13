@@ -293,11 +293,13 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         }
     },
 
-    tunnelidRenderer: function(value){
-        if(value == -1){
-            return 'New'.t();
+    statics: {
+        tunnelidRenderer: function(value){
+            if(value == -1){
+                return 'New'.t();
+            }
+            return 'tun' + value;
         }
-        return 'tun' + value;
     }
 });
 
