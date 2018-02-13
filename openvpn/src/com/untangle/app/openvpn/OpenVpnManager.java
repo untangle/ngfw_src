@@ -450,12 +450,17 @@ public class OpenVpnManager
          */
         try {
             File baseDirectory = new File( "/etc/openvpn" );
-            if ( baseDirectory.exists()) {
+            if ( baseDirectory.exists() ) {
                 for ( File f : baseDirectory.listFiles()) {
-                    if ( f.getName() == null || !f.getName().endsWith(".conf") )
-                        continue;
-                    logger.debug("Deleting remoteServer conf file: " + f.getName());
-                    f.delete();
+                    if ( f.getName() == null ) continue;
+                    if (f.getName().endsWith(".conf")) {
+                        logger.debug("Deleting remoteServer conf file: " + f.getName());
+                        f.delete();
+                    }
+                    if (f.getName().endsWith(".auth")) {
+                        logger.debug("Deleting remoteServer auth file: " + f.getName());
+                        f.delete();
+                    }
                 }
             } else {
                 baseDirectory.mkdir();
@@ -515,15 +520,38 @@ public class OpenVpnManager
                 String line;
 
                 while ((line = cfgReader.readLine()) != null) {
+                    // remove any existing auth-user-pass
+                    if (line.contains("auth-user-pass")) {
+                        continue;
+                    }
+
+                    // look for 'dev tun' and change to 'dev tunx'
                     if (line.startsWith("dev ")) {
                         cfgWriter.write("dev tun" + Integer.toString(count) + "\n");
-                    } else {
-                        cfgWriter.write(line + "\n");
+                        continue;
                     }
+
+                    // no special handling so write the line as-is
+                    cfgWriter.write(line + "\n");
+                }
+
+                // if user+pass auth is enabled add the auth-user-pass option
+                if (server.getAuthUserPass()) {
+                    cfgWriter.write("auth-user-pass " + name + ".auth" + "\n");
                 }
 
                 cfgReader.close();
                 cfgWriter.close();
+
+                // if user+pass auth is enabled create the auth file
+                if (server.getAuthUserPass()) {
+                    File authFile = new File("/etc/openvpn/" + name + ".auth");
+                    BufferedWriter authWriter = new BufferedWriter( new FileWriter(authFile) );
+                    authWriter.write(server.getAuthUsername() + "\n");
+                    authWriter.write(server.getAuthPassword() + "\n");
+                    authWriter.close();
+                }
+
                 count += 1;
             } catch (Exception exn) {
                 logger.warn("Exception adjusting remote server configuration.", exn);
