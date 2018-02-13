@@ -24,7 +24,7 @@ Ext.define('Ung.util.Renderer', {
     // Icon
     iconWidth: 30,
     // Interval
-    intervalWidth: 60,
+    intervalWidth: 90,
     // IP Address
     ipWidth: 100,
     // Load measurement
