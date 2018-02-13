@@ -347,28 +347,28 @@ Ext.define('TableConfig', {
                 dataIndex: 'time_stamp',
                 width: Renderer.timestampWidth,
                 sortable: true,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'End Timestamp'.t(),
                 dataIndex: 'end_time',
                 width: Renderer.timestampWidth,
                 sortable: true,
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Bypassed'.t(),
                 dataIndex: 'bypassed',
                 width: Renderer.booleanWidth,
                 sortable: true,
-                rtype: 'boolean',
+                renderer: Renderer.boolean,
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Entitled'.t(),
                 dataIndex: 'entitled',
                 width: Renderer.booleanWidth,
                 sortable: true,
-                rtype: 'boolean',
+                renderer: Renderer.boolean,
                 filter: Renderer.booleanFilter,
             }, {
                 header: 'Protocol'.t(),
@@ -523,7 +523,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'bandwidth_control_priority',
-                rtype: 'priority'
+                renderer: Renderer.priority
             }, {
                 header: 'Rule'.t() + ' (Bandwidth Control)',
                 width: Renderer.messageWidth,
@@ -586,7 +586,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'application_control_lite_protocol',
-                rtype: 'protocol'
+                renderer: Renderer.protocol
             }, {
                 header: 'Blocked'.t() + ' (Application Control Lite)',
                 width: Renderer.booleanWidth,
@@ -650,28 +650,28 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'p2s_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'From-Server Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 's2p_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'To-Client Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'p2c_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'From-Client Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'c2p_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }]
         },
@@ -823,21 +823,21 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Start Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'End Timestamp'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Bypassed'.t(),
@@ -1007,7 +1007,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'bandwidth_control_priority',
-                rtype: 'priority'
+                renderer: Renderer.priority
             }, {
                 header: 'Rule'.t() + ' (Bandwidth Control)',
                 width: Renderer.messageWidth,
@@ -1062,7 +1062,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'application_control_lite_protocol',
-                rtype: 'protocol'
+                renderer: Renderer.protocol
             }, {
                 header: 'Blocked'.t() + ' (Application Control Lite)',
                 width: Renderer.booleanWidth,
@@ -1123,14 +1123,14 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 's2c_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }, {
                 header: 'From-Client Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'c2s_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }]
         },
@@ -1248,7 +1248,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
@@ -1554,7 +1554,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
@@ -1821,7 +1821,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Session Id'.t(),
@@ -2068,7 +2068,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Client'.t(),
@@ -2125,7 +2125,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Login'.t(),
@@ -2206,7 +2206,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Load (1-minute)'.t(),
@@ -2330,7 +2330,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Address'.t(),
@@ -2381,7 +2381,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'MAC Address'.t(),
@@ -2432,7 +2432,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Username'.t(),
@@ -2489,7 +2489,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Result'.t(),
@@ -2538,7 +2538,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
@@ -2552,7 +2552,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'interface_id',
-                rtype: 'interface'
+                renderer: Renderer.interface
             },{
                 header: 'Success'.t(),
                 width: Renderer.messageWidth,
@@ -2594,7 +2594,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Name'.t(),
@@ -2608,7 +2608,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'interface_id',
-                rtype: 'interface'
+                renderer: Renderer.interface
             },{
                 header: 'Interface OS'.t(),
                 width: Renderer.messageWidth,
@@ -2661,7 +2661,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Event Id'.t(),
@@ -2687,20 +2687,20 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_protocol',
-                // rtype: 'protocol',
+                // renderer: Renderer.protocol,
             },{
                 header: 'Login Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'connect_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Logout Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'goodbye_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Elapsed'.t(),
@@ -2714,21 +2714,21 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'net_interface',
-                rtype: 'interface'
+                renderer: Renderer.interface
             },{
                 header: 'RX Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'rx_bytes',
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             },{
                 header: 'TX Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'tx_bytes',
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             },{
                 header: 'Process'.t(),
                 width: Renderer.messageWidth,
@@ -2760,7 +2760,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Type'.t(),
@@ -2817,7 +2817,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Tunnel Name'.t(),
@@ -2832,14 +2832,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'in_bytes',
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }, {
                 header: 'Out Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'out_bytes',
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }]
         },
         tunnel_vpn_events: {
@@ -2863,7 +2863,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Type'.t(),
@@ -2920,7 +2920,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Tunnel Name'.t(),
@@ -2935,14 +2935,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'in_bytes',
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }, {
                 header: 'Out Bytes'.t(),
                 width: Renderer.sizeWidth,
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'out_bytes',
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }]
         },
         interface_stat_events: {
@@ -2962,7 +2962,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Interface Id'.t(),
@@ -2970,7 +2970,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'interface_id',
-                rtype: 'interface'
+                renderer: Renderer.interface
             }, {
                 header: 'RX Rate'.t(),
                 width: Renderer.sizeWidth,
@@ -3009,7 +3009,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
@@ -3070,7 +3070,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Event Id'.t(),
@@ -3108,7 +3108,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'hit_bytes',
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }, {
                 header: 'Miss Bytes'.t(),
                 width: Renderer.sizeWidth,
@@ -3116,7 +3116,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'miss_bytes',
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }]
         },
         captive_portal_user_events: {
@@ -3145,7 +3145,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
@@ -3231,7 +3231,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Sid'.t(),
@@ -3329,7 +3329,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Type'.t(),
@@ -3401,21 +3401,21 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Start Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'start_time',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'End Time'.t(),
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'end_time',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Client Name'.t(),
@@ -3447,7 +3447,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'rx_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
             }, {
                 header: 'TX Bytes'.t(),
                 width: Renderer.sizeWidth,
@@ -3455,7 +3455,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.numericFilter,
                 dataIndex: 'tx_bytes',
-                rtype: 'datasize',
+                renderer: Renderer.datasize,
             }]
         },
         alerts: {
@@ -3474,7 +3474,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Description'.t(),
@@ -3513,7 +3513,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Description'.t(),
@@ -3594,7 +3594,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Policy Id'.t(),
@@ -3727,7 +3727,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Address'.t(),
@@ -3747,7 +3747,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 dataIndex: 'size',
                 filter: Renderer.numericFilter,
-                rtype: 'datasize'
+                renderer: Renderer.datasize
             }, {
                 header: 'Reason'.t(),
                 width: Renderer.messageWidth,
@@ -3776,7 +3776,7 @@ Ext.define('TableConfig', {
                 width: Renderer.timestampWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
-                rtype: 'timestamp',
+                renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Username'.t(),
@@ -3796,7 +3796,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.stringFilter,
                 width: Renderer.uriWidth,
                 dataIndex: 'settings_file',
-                rtype: 'settingsFile'
+                renderer: Renderer.settingsFile
             },{
                 header: "Differences".t(),
                 width: Renderer.actionWidth,
