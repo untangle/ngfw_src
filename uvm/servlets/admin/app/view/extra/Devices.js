@@ -270,9 +270,7 @@ Ext.define('Ung.view.extra.Devices', {
     {
         xtype: 'ungridfilter'
     },{
-        xtype: 'ungridstatus',
-        tplFiltered: '{0} filtered, {1} total devices'.t(),
-        tplUnfiltered: '{0} devices'.t(),
+        xtype: 'ungridstatus'
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),
