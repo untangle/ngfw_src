@@ -54,15 +54,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
                     displayName: displayName
                 };
 
-                if( column.renderer &&
-                    !column.rtype ){
-                    config.renderer = column.renderer;
-                }else{
-                    if( column.rtype ){
-                        config.rtype = column.rtype;
-                        config.renderer = 'columnRenderer';
-                    }
-                }
+                config.renderer = column.renderer;
 
                 var key = column.dataIndex;
                 sourceConfig[key] = config;
@@ -144,24 +136,6 @@ Ext.define('Ung.cmp.PropertyGridController', {
         }
 
         vm.set( me.getBindRecordName(), propertyRecord );
-    },
-
-    columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
-        var rtype = view.grid.sourceConfig[record.id].rtype;
-        if(rtype != null){
-            if( !Renderer[rtype] ){
-                var gview = this.getView();
-                var parentController = gview.up(gview.parentView).getController();
-                if(parentController[rtype+'Renderer']){
-                    return parentController[rtype+'Renderer'](value);
-                }else{
-                    console.log('Missing renderer for rtype=' + rtype);
-                }
-            }else{
-                return Renderer[rtype](value);
-            }
-        }
-        return value;
     },
 
     /**

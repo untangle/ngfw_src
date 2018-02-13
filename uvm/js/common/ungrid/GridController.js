@@ -562,33 +562,6 @@ Ext.define('Ung.cmp.GridController', {
         view.reconfigure(null, view.initialConfig.columns);
     },
 
-    columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
-        var rtype = view.grid.getColumns()[columnIndex].rtype;
-        if(rtype != null){
-            if( !Renderer[rtype] ){
-                var parentController = null;
-                var methodName = rtype + 'Renderer';
-                while( view != null){
-                    parentController = view.getController();
-
-                    if( parentController && parentController[methodName]){
-                        break;
-                    }
-                    view = view.up();
-                }
-
-                if(parentController[methodName]){
-                    return parentController[methodName].apply(this, arguments);
-                }else{
-                    console.log('Missing renderer for rtype=' + rtype);
-                }
-            }else{
-                return Renderer[rtype].apply(this, arguments);
-            }
-        }
-        return value;
-    },
-
     /**
      * Used for extra column actions which can be added to the grid but are very specific to that context
      * The grid requires to have defined a parentView tied to the controller on which action method is implemented

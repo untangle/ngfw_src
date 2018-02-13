@@ -128,9 +128,6 @@ Ext.define('Ung.view.reports.EventReport', {
                 }
                 // TO REVISIT THIS BECASE OF STATEFUL
                 // grid.initComponentColumn(column);
-                if (column.rtype) {
-                    column.renderer = 'columnRenderer';
-                }
             });
 
             grid.reconfigure(me.tableConfig.columns);
