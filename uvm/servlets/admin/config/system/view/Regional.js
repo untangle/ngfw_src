@@ -237,7 +237,7 @@ Ext.define('Ung.config.system.view.Regional', {
                     bind: '{timeFormat}',
                     store: [
                         ['h:i:s a', 'h:i:s a (e.g. 06:45:35 PM) - default'],
-                        ['G:i:s', 'G:i:s (e.g. 18:45:35)']
+                        ['H:i:s', 'H:i:s (e.g. 18:45:35)']
                     ],
                     queryMode: 'local',
                     editable: false
