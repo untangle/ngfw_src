@@ -65,7 +65,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
 
     emptyText: 'No Remote Servers defined'.t(),
 
-    recordActions: ['delete'],
+    recordActions: ['edit','delete'],
     listProperty: 'settings.remoteServers.list',
     emptyRow: {
         javaClass: 'com.untangle.app.openvpn.OpenVpnRemoteServer',
@@ -91,5 +91,47 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
             vtype: 'openvpnName',
             bind: '{record.name}'
         }
+    }, {
+        header: 'Username',
+        width: 200,
+        dataIndex: 'authUsername',
+        renderer: function(value, meta, record) {
+            if (record.data.authUserPass) return(value);
+            return('[User/Pass Auth Disabled]'.t());
+        }
     }],
+
+    editorFields: [
+        Field.enableRule(),
+    {
+        xtype: 'textfield',
+        fieldLabel: 'Server Name'.t(),
+        readOnly: true,
+        name: 'serverName',
+        bind: '{record.name}'
+    }, {
+        xtype: 'checkbox',
+        fieldLabel: 'Username/Password Authentication',
+        name: 'authUserPass',
+        bind: '{record.authUserPass}'
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Username'.t(),
+        allowBlank: false,
+        bind: {
+            value: '{record.authUsername}',
+            disabled: '{record.authUserPass == false}',
+            hidden: '{record.authUserPass == false}'
+        },
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Password'.t(),
+        allowBlank: false,
+        inputType: 'password',
+        bind: {
+            value: '{record.authPassword}',
+            disabled: '{record.authUserPass == false}',
+            hidden: '{record.authUserPass == false}'
+        },
+    }]
 });
