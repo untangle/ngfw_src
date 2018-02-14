@@ -14,22 +14,26 @@ Ext.define('Ung.apps.reports.MainController', {
 
     getSettings: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();
-        vm.set('isExpertMode', rpc.isExpertMode);
 
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
-            // setTimeout(function () {
-            //     Ext.Array.each(v.query('field'), function (field) {
-            //         console.log(field.getFieldLabel());
-            //         field.resetOriginalValue();
-            //     });
-            // }, 500);
-            // intervals
-        });
+        Ext.Deferred.sequence([
+            Rpc.directPromise('rpc.isExpertMode'),
+            Rpc.asyncPromise('rpc.appManager.app("reports").getSettings')
+        ]).then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            vm.set('isExpertMode', result[0]);
+            vm.set('settings', result[1]);
 
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
     },
 
     emailTemplatesAfterRender: function(){
@@ -37,43 +41,41 @@ Ext.define('Ung.apps.reports.MainController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        // ?? formula again?
         var dayOfWeekList = [];
         for( var i in Renderer.dayOfWeekMap ){
             dayOfWeekList.push( [Number(i) ,Renderer.dayOfWeekMap[i]] );
         }
         vm.set('dayOfWeekList', dayOfWeekList);
 
-        /*
-         * Build list of active apps for categories
-         */
-        var appCategories = [];
-        // ?? right way to do rpc call?
-        rpc.reportsManager.getCurrentApplications(Ext.bind(function (results, ex ) {
-            if (ex) { Util.handleException(ex); return; }
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications'),
+            Rpc.asyncPromise('rpc.reportsManager.fixedReportsAllowGraphs'),
+            Rpc.asyncPromise('rpc.reportsManager.getRecommendedReportIds'),
+        ]).then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
 
-            results.list.forEach( function( app ){
+            var appCategories = [];
+            result[0].list.forEach( function( app ){
                 appCategories.push( app.displayName );
             });
-            vm.set('appCategories', appCategories);
-        }, this));
-        vm.set( 'configCategories', ['Hosts', 'Devices', 'Network', 'Administration', 'Events', 'System', 'Shield'] );
 
-        rpc.reportsManager.fixedReportsAllowGraphs(Ext.bind(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('fixedReportsAllowGraphs', result );
-        }, this));
+            vm.set({
+                appCategories: appCategories,
+                configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'Events', 'System', 'Shield'],
+                fixedReportsAllowGraphs: result[1],
+                emailRecommendedReportIds: result[2]
+            });
 
-        rpc.reportsManager.getRecommendedReportIds(Ext.bind(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('emailRecommendedReportIds', result.list );
-        }, this));
-
-        rpc.reportsManager.getRecommendedReportIds(Ext.bind(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            vm.set( 'emailRecommendedReportIds', result.list);
-        }, this));
-
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
     },
 
     setSettings: function () {
@@ -96,31 +98,47 @@ Ext.define('Ung.apps.reports.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData('rpc.appManager.app("reports").setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
     },
 
     checkGoogleDrive: function () {
-        var vm = this.getViewModel(), googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorApp, googleManager,
-            licenseManager = rpc.UvmContext.licenseManager();
-        try {
-            directoryConnectorLicense = licenseManager.isLicenseValid('directory-connector');
-            directoryConnectorApp = rpc.appManager.app('directory-connector');
-            if (directoryConnectorLicense && directoryConnectorApp) {
-                googleManager = directoryConnectorApp.getGoogleManager();
-                if (googleManager && googleManager.isGoogleDriveConnected()) {
-                    googleDriveConfigured = true;
+        var vm = this.getViewModel();
+
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.UvmContext.licenseManager.isLicenseValid', 'directory-connector'),
+            Rpc.asyncPromise('rpc.appManager.app', 'directory-connector'),
+        ]).then(function(result){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            var googleDriveConfigured = false;
+            if(result[0]){
+                var directoryConnector = result[1];
+                if(directoryConnector){
+                    var googleManager = directoryConnector.getGoogleManager();
+                    if(googleManager && googleManager.isGoogleDriveConnected()){
+                        googleDriveConfigured = true;
+                    }
                 }
             }
-        } catch (ex) {
-            Util.handleException(ex);
-        }
-        vm.set('googleDriveConfigured', googleDriveConfigured);
+            vm.set('googleDriveConfigured', 'googleDriveConfigured');
+        });
     },
 
     reportTypeRenderer: function (value) {
@@ -141,7 +159,7 @@ Ext.define('Ung.apps.reports.MainController', {
     },
 
     configureGoogleDrive: function () {
-        if (rpc.appManager.app('directory-connector')) {
+        if(Rpc.directData('rpc.appManager.app', 'directory-connector')){
             Ung.app.redirectTo('#service/directory-connector/google');
         } else {
             Ext.MessageBox.alert('Error'.t(), 'Google Drive requires Directory Connector application.'.t());
@@ -153,7 +171,9 @@ Ext.define('Ung.apps.reports.MainController', {
         formPanel.submit({
             waitMsg: 'Please wait while data is imported...'.t(),
             success: function () {
-                formPanel.down('filefield').reset();
+                if(!Util.isDestroyed(formpanel)){
+                    formPanel.down('filefield').reset();
+                }
                 // Ext.MessageBox.alert('Succeeded'.t(), 'Upload Data Succeeded'.t());
                 Util.successToast('Upload Data Succeeded'.t());
             },
