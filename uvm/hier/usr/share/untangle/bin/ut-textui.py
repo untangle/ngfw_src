@@ -318,7 +318,12 @@ class Screen(object):
         win.addstr(0,0, value)
         win.refresh()
         self.window.move(y, x + len(value) )
-        curses.curs_set(1)
+
+        try:
+            curses.curs_set(1)
+        except:
+            pass
+
         self.stdscreen.refresh()
         self.window.refresh()
         return textbox
@@ -1245,9 +1250,18 @@ class Ping(Screen):
         curses.echo()
         mode = curses.A_NORMAL
         self.message("Address to ping")
-        curses.curs_set(1)
+
+        try:
+            curses.curs_set(1)
+        except:
+            pass
+
         address = self.window.getstr(self.y_pos -1, 31, 50)
-        curses.curs_set(0)
+
+        try:
+            curses.curs_set(0)
+        except:
+            pass
 
         if len(address.strip()) == 0:
             self.process_continue = False
@@ -1499,10 +1513,19 @@ class Login(Screen):
         mode = curses.A_NORMAL
         label = "Administrator password: "
         self.message(label)
-        curses.curs_set(1)
+
+        try:
+            curses.curs_set(1)
+        except:
+            pass
+
         curses.noecho()
         password = self.window.getstr(self.y_pos -1, len(label), 50)
-        curses.curs_set(0)
+
+        try:
+            curses.curs_set(0)
+        except:
+            pass
 
         self.y_pos += 2
 
@@ -1531,7 +1554,10 @@ class UiApp(object):
     """
     def __init__(self, stdscreen):
         self.screen = stdscreen
-        curses.curs_set(0)
+        try:
+            curses.curs_set(0)
+        except:
+            pass
 
         authorized = False
         if Require_Auth:
