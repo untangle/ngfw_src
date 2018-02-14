@@ -16,71 +16,73 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             v = this.getView(),
             vm = this.getViewModel();
 
-        // Only do this if not configured!!!
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.metricManager.getMetricsAndStats'),
+            function(){ return Ext.Ajax.request({
+                url: "/admin/download",
+                method: 'POST',
+                params: {
+                    type: "IntrusionPreventionSettings",
+                    arg1: "wizard",
+                    arg2: vm.get('instance.id')
+                },
+                scope: this,
+                timeout: 600000
+            });
+        }], this).then(function (result) {
+            if(Util.isDestroyed(me, vm)){
+                return;
+            }
 
-        Ext.MessageBox.wait( "Determining recommended settings...".t(), "Please wait".t() );
-        Ext.Ajax.request({
-            url: "/admin/download",
-            method: 'POST',
-            params: {
-                type: "IntrusionPreventionSettings",
-                arg1: "wizard",
-                arg2: v.appManager.getAppSettings().id
-            },
-            scope: this,
-            timeout: 600000,
-            success: function(response){
-                var wizardDefaults = Ext.decode( response.responseText );
+            var stats = result[0];
+            var memoryTotal = stats.systemStats["MemTotal"];
+            var architecture = stats.systemStats["architecture"];
+            if( architecture == "i386"){
+                architecture = "32";
+            } else if( architecture == "amd64") {
+                architecture = "64";
+            } else {
+                architecture = "unknown";
+            }
 
-                // Determine profile to use based on system stats.
-                Rpc.asyncData('rpc.metricManager.getMetricsAndStats')
-                    .then(function (result) {
-                        var stats = result;
-                        var memoryTotal = stats.systemStats["MemTotal"];
-                        var architecture = stats.systemStats["architecture"];
-                        if( architecture == "i386"){
-                            architecture = "32";
-                        } else if( architecture == "amd64") {
-                            architecture = "64";
-                        } else {
-                            architecture = "unknown";
-                        }
+            var wizardDefaults = Ext.decode( result[1].responseText );
 
-                        var wizardProfile = null;
-                        wizardDefaults.profiles.forEach( function(profile){
-                            var match = false;
-                            systemStats = profile.systemStats;
-                            for( var statKey in systemStats ){
-                                if( statKey == "MemTotal") {
-                                    match = Ext.isEmpty(systemStats[statKey]) || ( memoryTotal < parseFloat(systemStats[statKey] * 1.10 ) ) ;
-                                } else if( statKey == "architecture") {
-                                    match = ( architecture == systemStats[statKey] );
-                                } else {
-                                    match = ( stats.systemStats[statKey] == systemStats[statKey] );
-                                }
-                                if(!match){
-                                    break;
-                                }
-                            }
-                            if( match && wizardProfile == null){
-                                wizardProfile = profile;
-                                wizardProfile.profileVersion = wizardDefaults.version;
-                            }
-                        });
-                        if(wizardProfile == null){
-                            wizardProfile = wizardDefaults.profiles[0];
-                        }
+            var wizardProfile = null;
+            wizardDefaults.profiles.forEach( function(profile){
+                var match = false;
+                systemStats = profile.systemStats;
+                for( var statKey in systemStats ){
+                    if( statKey == "MemTotal") {
+                        match = Ext.isEmpty(systemStats[statKey]) || ( memoryTotal < parseFloat(systemStats[statKey] * 1.10 ) ) ;
+                    } else if( statKey == "architecture") {
+                        match = ( architecture == systemStats[statKey] );
+                    } else {
+                        match = ( stats.systemStats[statKey] == systemStats[statKey] );
+                    }
+                    if(!match){
+                        break;
+                    }
+                }
+                if( match && wizardProfile == null){
+                    wizardProfile = profile;
+                    wizardProfile.profileVersion = wizardDefaults.version;
+                }
+            });
+            if(wizardProfile == null){
+                wizardProfile = wizardDefaults.profiles[0];
+            }
 
-                        vm.set('wizardProfile', wizardProfile);
-                        var settings = vm.get('settings');
-                        settings.configured = true;
-                        Ext.MessageBox.hide();
-                    });
-            },
-            failure: function(response){
-                Ext.MessageBox.alert( "Setup Wizard Error".t(), "Unable to obtain default settings.  Please run the Setup Wizard again.".t(), Ext.bind(function () {
-                    Ext.MessageBox.hide();
-                }, this));
+            vm.set('wizardProfile', wizardProfile);
+            var settings = vm.get('settings');
+            settings.configured = true;
+
+            v.setLoading(false);
+        }, function(ex){
+            if(!Util.isDestroyed(me, v )){
+                vm.set('nextBtn', null);
+                console.log(v.query('button'));
+                v.setLoading(false);
             }
         });
     },
@@ -200,7 +202,8 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             var app = this.getView().up('#appCard');
             app.getController().setSettings({
                 activeGroups: activeGroups,
-                profileId: settings.profileId
+                profileId: settings.profileId,
+                configured: true
             });
 
             var appState = app.down('appstate');

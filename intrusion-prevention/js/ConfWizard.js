@@ -179,6 +179,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizard', {
             hidden: true,
             bind: {
                 text: 'Next'.t() + ' - <strong>' + '{nextBtnText}' + '</strong>',
+                disabled: '{nextBtnDisabled}',
                 hidden: '{!nextBtn}'
             },
             iconCls: 'fa fa-chevron-circle-right',
