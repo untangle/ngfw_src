@@ -10,25 +10,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-
-        v.appManager.getLastUpdateCheck(function (result, ex) {
-            if (ex) {
-                Util.handleException(ex);
-                return;
-            }
-            var lastUpdateCheck = result;
-            vm.set('lastUpdateCheck', (lastUpdateCheck !== null && lastUpdateCheck.time !== 0 ) ? Util.timestampFormat(lastUpdateCheck) : "Never".t() );
-
-            v.appManager.getLastUpdate(function (result, ex) {
-                if (ex) {
-                    Util.handleException(ex);
-                    return;
-                }
-                var lastUpdate = result;
-                vm.set('lastUpdate', ( lastUpdateCheck != null && lastUpdateCheck.time !== 0 && lastUpdate !== null && lastUpdate.time !== 0 ) ? Util.timestampFormat(lastUpdate) : "Never".t() );
-            });
-        });
 
         vm.set('classtypes', Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description', 'priority' ],
@@ -184,50 +167,53 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             ]
         }));
 
-        Ext.Ajax.request({
-            url: "/admin/download",
-            method: 'POST',
-            params: {
-                type: "IntrusionPreventionSettings",
-                arg1: "load",
-                arg2: v.appManager.getAppSettings().id
-            },
-            scope: v.appManager,
-            timeout: 600000,
-            success: function(response){
-                vm.set('settings', Ext.decode( response.responseText ) );
-                vm.set('profileStoreLoad', true);
-                vm.set('rulesStoreLoad', true);
-                vm.set('variablesStoreLoad', true);
-                v.getController().updateStatus();
-                v.setLoading(false);
-            },
-            failure: function(response){
-                vm.set('settings', null );
-                v.setLoading(false);
-                console.log("Failed load");
+        var id = Rpc.directData('rpc.appManager.app("intrusion-prevention").getAppSettings.id');
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.appManager.app("intrusion-prevention").getLastUpdateCheck'),
+            Rpc.asyncPromise('rpc.appManager.app("intrusion-prevention").getLastUpdate'),
+            Rpc.directPromise('rpc.companyName'),
+            function(){ return Ext.Ajax.request({
+                url: "/admin/download",
+                method: 'POST',
+                params: {
+                    type: "IntrusionPreventionSettings",
+                    arg1: "load",
+                    arg2: vm.get('instance.id')
+                },
+                timeout: 600000});
+            },function(){ return Ext.Ajax.request({
+                url: "/admin/download",
+                method: 'POST',
+                params: {
+                    type: "IntrusionPreventionSettings",
+                    arg1: "wizard",
+                    arg2: vm.get('instance.id')
+                },
+                timeout: 600000});
+        }]).then(function(result){
+            if(Util.isDestroyed(me, vm)){
+                return;
             }
-        });
-        Ext.Ajax.request({
-            url: "/admin/download",
-            method: 'POST',
-            params: {
-                type: "IntrusionPreventionSettings",
-                arg1: "wizard",
-                arg2: v.appManager.getAppSettings().id
-            },
-            scope: this,
-            timeout: 600000,
-            success: function(response){
-                vm.set('wizardDefaults', Ext.decode( response.responseText ));
-            },
-            failure: function(response){
-                Ext.MessageBox.alert( "Setup Wizard Error".t(), "Unable to obtain default settings.  Please run the Setup Wizard again.".t(), Ext.bind(function () {
-                    Ext.MessageBox.hide();
-                }, this));
-            }
-        });
+            vm.set({
+                lastUpdateCheck: (result[0] !== null && result[0].time !== 0 ) ? Renderer.timestamp(result[0]) : "Never".t(),
+                lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
+                companyName: result[2],
+                settings: Ext.decode( result[3].responseText ),
+                wizardDefaults: Ext.decode( result[4].responseText ),
+                profileStoreLoad: true,
+                rulesStoreLoad: true,
+                variablesStoreLoad: true
+            });
 
+            v.getController().updateStatus();
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(me, v )){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
     },
 
     getChangedDataRecords: function(target){
@@ -275,7 +261,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return changedDataSet;
     },
 
-    setSettings: function (overrideChangedData) {
+    setSettings: function (additionalChanged) {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         if (!Util.validateForms(v)) {
@@ -286,8 +272,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         var changedData = me.getChangedData();
         if(arguments.length == 1){
-            if(overrideChangedData){
-                changedData= overrideChangedData;
+            if(additionalChanged){
+                changedData= Ext.Object.merge(changedData,additionalChanged);
             }
         }
 
@@ -298,37 +284,50 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             params: {
                 type: "IntrusionPreventionSettings",
                 arg1: "save",
-                arg2: v.appManager.getAppSettings().id
+                arg2: vm.get('instance.id')
             },
             scope: this,
-            timeout: 600000,
-            success: function(response){
-                var r = Ext.decode( response.responseText );
-                vm.set('profileStoreLoad', true);
-                vm.set('rulesStoreLoad', true);
-                vm.set('variablesStoreLoad', true);
-                if( !r.success) {
-                    Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
-                } else {
-                    rpc.appManager.app('intrusion-prevention').reconfigure(Ext.bind(function(result, exception) {
-                        if (exception) {
-                            Util.handleException(ex);
-                            return;
-                        }
+            timeout: 600000
+        }).then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
 
-                        v.setLoading(false);
-                        me.getSettings();
-                        Util.successToast('Settings saved...');
-                        Ext.fireEvent('resetfields', v);
-                    }, this));
-                }
-            },
-            failure: function(response){
+            var response = Ext.decode( result.responseText );
+            vm.set({
+                profileStoreLoad: true,
+                rulesStoreLoad: true,
+                variablesStoreLoad: true
+            });
+
+            if( !response.success) {
                 Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
+            } else {
+                Rpc.asyncData('rpc.appManager.app("intrusion-prevention").reconfigure')
+                .then( function(result){
+                    if(Util.isDestroyed(me, v, vm)){
+                        return;
+                    }
+                    v.setLoading(false);
+                    Util.successToast('Settings saved...');
+                    me.getSettings();
+                    Ext.fireEvent('resetfields', v);
+                }, function(result){
+                    if(!Util.isDestroyed(me, v, vm)){
+                        v.setLoading(false);
+                        vm.set('panel.saveDisabled', true);
+                    }
+                });
+            }
+        }, function(response){
+            Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
+            if(!Util.isDestroyed(me, v, vm)){
                 v.setLoading(false);
                 Util.successToast('Unable to save settings...');
+                return;
             }
         });
+
     },
 
     regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
@@ -360,8 +359,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     runWizard: function (btn) {
         this.wizard = this.getView().add({
-            xtype: 'app-intrusion-prevention-wizard',
-            appManager: this.getView().appManager
+            xtype: 'app-intrusion-prevention-wizard'
         });
         this.wizard.show();
     },
@@ -841,14 +839,15 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
     exportData: function(){
         var grid = this.getView(),
-            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass;
+            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass,
+            vm = grid.up('app-intrusion-prevention').getController().getViewModel();
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
         var downloadForm = document.getElementById('downloadForm');
         downloadForm["type"].value = "IntrusionPreventionSettings";
         downloadForm["arg1"].value = "export";
-        downloadForm["arg2"].value = grid.up('app-intrusion-prevention').getController().getView().appManager.getAppSettings().id;
+        downloadForm["arg2"].value = vm.get('instance.id');
         downloadForm["arg3"].value = gridName.trim().replace(/ /g, '_');
         downloadForm["arg4"].value = Ext.encode({rules: grid.up('app-intrusion-prevention').getController().getChangedDataRecords('rules')});
         downloadForm.submit();
@@ -1049,14 +1048,15 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
 
     exportData: function(){
         var grid = this.getView(),
-            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass;
+            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass,
+            vm = grid.up('app-intrusion-prevention').getController().getViewModel();
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
         var downloadForm = document.getElementById('downloadForm');
         downloadForm["type"].value = "IntrusionPreventionSettings";
         downloadForm["arg1"].value = "export";
-        downloadForm["arg2"].value = grid.up('app-intrusion-prevention').getController().getView().appManager.getAppSettings().id;
+        downloadForm["arg2"].value = vm.get('instance.id');
         downloadForm["arg3"].value = gridName.trim().replace(/ /g, '_');
         downloadForm["arg4"].value = Ext.encode({variables: grid.up('app-intrusion-prevention').getController().getChangedDataRecords('variables')});
         downloadForm.submit();

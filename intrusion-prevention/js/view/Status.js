@@ -94,7 +94,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             disabled: true,
             bind: {
                 collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                disabled: '{instance.runState !== "RUNNING"}',
+                hidden: '{instance.runState !== "RUNNING"}'
             },
 
             items: [{
@@ -107,7 +108,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 bind: '{lastUpdate}'
             }, {
                 xtype: 'component',
-                html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', rpc.companyName)
+                bind:{
+                    html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', '{companyName}')
+                }
             }]
         }, {
             xtype: 'appreports'
