@@ -6,20 +6,20 @@ Ext.define('Ung.apps.wan-failover.MainController', {
         '#': {
             beforerender: 'getSettings'
         },
-        '#wanStatus': {
-            afterrender: 'getWanStatus'
+        '#status': {
+            activate: 'getWanStatus'
         },
-        '#tests': {
-            afterrender: 'getWanStatus'
-        }
     },
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        this.getView().appManager.getSettings(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-
+        v.setLoading(true);
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             var testList = result.tests.list;
 
             // convert all milliseconds to seconds after load
@@ -30,6 +30,15 @@ Ext.define('Ung.apps.wan-failover.MainController', {
             }
 
             vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -64,26 +73,37 @@ Ext.define('Ung.apps.wan-failover.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     getWanStatus: function (cmp) {
-        var vm = this.getViewModel();
-        var grid;
+        var v = this.getView(), vm = this.getViewModel(),
+            grid = cmp.down('grid[itemId=wanStatus]') || cmp.up('grid[itemId=wanStatus]');
 
-        if (cmp) grid = (cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
-        if (grid) grid.setLoading(true);
-
-        this.getView().appManager.getWanStatus(function (result, ex) {
+        grid.setLoading(true);
+        Rpc.asyncData(v.appManager, 'getWanStatus')
+        .then(function(result){
+            if(Util.isDestroyed(vm, grid)){
+                return;
+            }
             var i;
-            if (grid) grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
             var list = [];
             for (i=0;i<result.list.length;i++) {
                 if (result.list[i].systemName != null)
@@ -110,6 +130,12 @@ Ext.define('Ung.apps.wan-failover.MainController', {
             });
 
             vm.set('wanWarnings', wanWarnings.join(''));
+            grid.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(vm, grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     }
 });
@@ -123,10 +149,15 @@ Ext.define('Ung.apps.wan-failover.SpecialController', {
         var vm = parent.getViewModel();
         var faceCombo = parent.down("[fieldIndex='interfaceCombo']");
         var pingCombo = parent.down("[fieldIndex='pingCombo']");
+        var form = btn.up('form');
 
-        var wanApp = rpc.appManager.app('wan-failover');
-        wanApp.getPingableHosts(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
+        form.setLoading('Generating Suggestions...'.t() );
+        Rpc.asyncData(btn.up('apppanel').appManager, 'getPingableHosts', faceCombo.getValue() )
+        .then(function(result){
+            if(Util.isDestroyed(form, pingCombo, vm)){
+                return;
+            }
+
             var pingData = [];
             for(var i = 0 ; i < result.list.length ; i++) {
                 pingData.push([result.list[i],result.list[i]]);
@@ -134,16 +165,25 @@ Ext.define('Ung.apps.wan-failover.SpecialController', {
             vm.set('pingListData', pingData);
             pingCombo.getStore().loadData(pingData);
             pingCombo.select(pingData[0][0]);
-        }, this), faceCombo.getValue());
+
+            form.setLoading(false);
+        }, function(ex){
+            if(!Util.isDestroyed(form)){
+                form.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     runWanTest: function(btn) {
         var record = btn.up('panel').ownerCt.record.data;
-        var wanApp = rpc.appManager.app('wan-failover');
-        wanApp.runTest(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
+
+        Rpc.asyncData(btn.up('apppanel').appManager, 'runTest', record )
+        .then(function(result){
             Ext.MessageBox.alert('Test Results'.t(), result.t());
-        }, this), record);
+        }, function(ex){
+            Util.handleException(ex);
+        });
     }
 
 });
