@@ -213,6 +213,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 
@@ -317,6 +318,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                         v.setLoading(false);
                         vm.set('panel.saveDisabled', true);
                     }
+                    Util.handleException(ex);
                 });
             }
         }, function(response){
@@ -326,6 +328,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 Util.successToast('Unable to save settings...');
                 return;
             }
+            Util.handleException(ex);
         });
 
     },

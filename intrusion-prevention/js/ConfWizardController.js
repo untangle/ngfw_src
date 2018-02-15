@@ -81,9 +81,9 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
         }, function(ex){
             if(!Util.isDestroyed(me, v )){
                 vm.set('nextBtn', null);
-                console.log(v.query('button'));
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 
