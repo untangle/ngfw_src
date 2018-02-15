@@ -157,8 +157,6 @@ Ext.define('Ung.util.Rpc', {
      * Make RPC call and return the results.
      */
     directData: function() {
-        console.log(arguments);
-        console.log(this);
         var commandResult = this.getCommand.apply(null, arguments);
         if(commandResult.context == null){
             throw(commandResult.error);
