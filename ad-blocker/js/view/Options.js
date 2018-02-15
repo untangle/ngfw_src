@@ -40,8 +40,8 @@ Ext.define('Ung.apps.ad-blocker.view.Options', {
             xtype: 'component',
             margin: '10 0 0 0',
             bind: {
-                html: Ext.String.format('The current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required.'.t(),
-                rpc.companyName, '{settings.lastUpdate || "Unknown"}')
+                html: Ext.String.format('The current filter list was last modified: {0}. You are free to disable filters and add new ones, however it is not required.'.t(),
+                '{lastUpdate}')
             }
         }]
     }]
