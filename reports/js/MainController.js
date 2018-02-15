@@ -18,7 +18,7 @@ Ext.define('Ung.apps.reports.MainController', {
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.asyncPromise('rpc.appManager.app("reports").getSettings')
+            Rpc.asyncPromise(v.appManager, 'getSettings')
         ]).then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -98,7 +98,7 @@ Ext.define('Ung.apps.reports.MainController', {
         });
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.appManager.app("reports").setSettings', vm.get('settings'))
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;

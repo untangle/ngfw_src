@@ -169,8 +169,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         var id = Rpc.directData('rpc.appManager.app("intrusion-prevention").getAppSettings.id');
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.appManager.app("intrusion-prevention").getLastUpdateCheck'),
-            Rpc.asyncPromise('rpc.appManager.app("intrusion-prevention").getLastUpdate'),
+            Rpc.asyncPromise(v.appManager, 'getLastUpdateCheck'),
+            Rpc.asyncPromise(v.appManager, 'getLastUpdate'),
             Rpc.directPromise('rpc.companyName'),
             function(){ return Ext.Ajax.request({
                 url: "/admin/download",
@@ -303,7 +303,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if( !response.success) {
                 Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
             } else {
-                Rpc.asyncData('rpc.appManager.app("intrusion-prevention").reconfigure')
+                Rpc.asyncData(v.appManager, 'reconfigure')
                 .then( function(result){
                     if(Util.isDestroyed(me, v, vm)){
                         return;
