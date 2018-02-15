@@ -958,6 +958,7 @@ class CaptivePortalTests(unittest2.TestCase):
         appData["authenticationType"] = "NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600
+        appData['disableSecureRedirect'] = False #this was set True in test_072, and never set back, causing this test to fail
         appData['alwaysUseSecureCapture'] = True
         app.setSettings(appData)
 
