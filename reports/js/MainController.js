@@ -33,6 +33,7 @@ Ext.define('Ung.apps.reports.MainController', {
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 
@@ -75,6 +76,7 @@ Ext.define('Ung.apps.reports.MainController', {
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 
@@ -114,6 +116,7 @@ Ext.define('Ung.apps.reports.MainController', {
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 
@@ -138,6 +141,8 @@ Ext.define('Ung.apps.reports.MainController', {
                 }
             }
             vm.set('googleDriveConfigured', 'googleDriveConfigured');
+        }, function(ex) {
+            Util.handleException(ex);
         });
     },
 
