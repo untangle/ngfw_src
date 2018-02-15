@@ -8,22 +8,36 @@ Ext.define('Ung.util.Rpc', {
     /**
      * With the full rpc path and arguments, verify that each node and the target method exists.
      *
+     * The first argument can be an already resolved RPC path.  If this is the case, then the
+     * second argument is the string path and subsequent arguments are arguments to that path mthod.
+     *
      * If path does not exist, return null.
      * Otherwise, return an object containing:
      *  context The object to execute.
      *  args    Arguments to execute in the context.
      */
     getCommand: function() {
-        var args = [].slice.call(arguments).splice(1),
-            path = arguments[0],
-            nodes = path.split('.'),
-            method = nodes.pop(),
-            context = window,
+        var path = arguments[0],
+            args, nodes, method, context,
             result = {
                 context: null,
                 args: null,
                 error: null
             };
+
+        if(path === undefined){
+            result.error = "Null path or rpc object";
+            return result;
+        }else if(typeof(path) === 'object'){
+            args = [].slice.call(arguments).splice(2);
+            context = arguments[0];
+            path = arguments[1];
+        }else{
+            args = [].slice.call(arguments).splice(1);
+            context = window;
+        }
+        nodes = path.split('.');
+        method = nodes.pop();
 
         if ( nodes === null || context === null || arguments[0] === null ) {
             result.error = "Invalid RPC path: '" + path + "'";
@@ -143,6 +157,8 @@ Ext.define('Ung.util.Rpc', {
      * Make RPC call and return the results.
      */
     directData: function() {
+        console.log(arguments);
+        console.log(this);
         var commandResult = this.getCommand.apply(null, arguments);
         if(commandResult.context == null){
             throw(commandResult.error);
