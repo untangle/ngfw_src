@@ -2,9 +2,9 @@ Ext.define('Ung.overrides.panel.Panel', {
     override: 'Ext.panel.Panel',
     listeners:{
         afterlayout: function(){
-            if(this.$className.startsWith('Ung.config') ||
-               this.$className.startsWith('Ung.apps') ||
-               this.$className.startsWith('Ung.view.extra')){
+            if(Ext.String.startsWith(this.$className, 'Ung.config') ||
+               Ext.String.startsWith(this.$className, 'Ung.apps') ||
+               Ext.String.startsWith(this.$className, 'Ung.view.extra')){
                 var me = this;
                 if(!me.scrollableTaskRan){
                     if(!me.scrollableTask){
