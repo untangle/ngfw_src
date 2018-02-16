@@ -11,26 +11,39 @@ Ext.define('Ung.apps.sslinspector.MainController', {
     onAfterRender: function () {
         var vm = this.getViewModel();
 
-        if (!rpc.certificateManager) {
-            rpc.certificateManager = rpc.UvmContext.certificateManager();
-        }
-        Rpc.asyncData('rpc.certificateManager.validateActiveInspectorCertificates')
-            .then(function (result) {
-                vm.set('serverCertificateVerification', result);
-            }, function (ex) {
-                Util.handleException(ex);
-            });
+        Rpc.asyncData('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates')
+        .then(function (result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            vm.set('serverCertificateVerification', result);
+        }, function (ex) {
+            Util.handleException(ex);
+        });
         this.getSettings();
         this.getTrustedCerts();
     },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+           vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -55,21 +68,37 @@ Ext.define('Ung.apps.sslinspector.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     getTrustedCerts: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        v.appManager.getTrustCatalog(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'getTrustCatalog')
+        .then(function(result){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
             vm.set('trustedCertData', result.list);
+        }, function(ex) {
+            Util.handleException(ex);
         });
     },
 
@@ -177,16 +206,23 @@ Ext.define('Ung.apps.sslinspector.SpecialGridController', {
 
     deleteTrustedCertificate: function(view, row, colIndex, item, e, record) {
         var me = this, v = this.getView(), vm = this.getViewModel();
-        var app = rpc.appManager.app('ssl-inspector');
 
         v.setLoading('Deleting Certificate...'.t());
-        app.removeTrustedCertificate(Ext.bind(function(result, ex) {
-        if (ex) { Util.handleException(ex); return; }
-            // this gives the app a little time to process the delete before we refresh
+        Rpc.asyncData(view.up('apppanel').appManager, 'removeTrustedCertificate', record.get("certAlias"))
+        .then(function(result){
+            if(Util.isDestroyed(me, v)){
+                return;
+            }
             var timer = setTimeout(function() {
+                if(Util.isDestroyed(me, v)){
+                    return;
+                }
                 me.getView().up('app-ssl-inspector').getController().getTrustedCerts();
                 v.setLoading(false);
             },500);
-        }, this), record.get("certAlias"));
+
+        }, function(ex) {
+            Util.handleException(ex);
+        });
     },
 });
