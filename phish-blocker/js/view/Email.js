@@ -44,18 +44,6 @@ Ext.define('Ung.apps.phishblocker.view.Email', {
             bind: {
                 value: '{settings.smtpConfig.msgAction}'
             }
-        }, {
-            xtype: 'fieldset',
-            width: '100%',
-            title: 'Note'.t(),
-            margin: '10 0',
-            padding: 10,
-            items: [{
-                xtype: 'component',
-                bind: {
-                    html: '<p>{lastUpdate}</p>'
-                }
-            }]
         }]
     }]
 });

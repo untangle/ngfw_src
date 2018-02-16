@@ -10,37 +10,55 @@ Ext.define('Ung.apps.phishblocker.MainController', {
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise(v.appManager, 'getLastUpdate')
+        ]).then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set({
+                settings: result[0],
+                lastUpdate: result[1] ? Renderer.timestamp(result[1]) : 'Never'.t()
+            });
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            console.log(result);
-            vm.set('settings', result);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
 
-        var lastUpdate = v.appManager.getLastUpdate();
-        // var lastUpdateCheck = v.appManager.getLastUpdateCheck();
-        // var signatureVersion = v.appManager.getSignatureVersion();
-
-
-        if (lastUpdate) {
-            vm.set('lastUpdate', 'Phish Blocker email signatures were last updated'.t() + ': <strong>' + Ext.util.Format.date(new Date(lastUpdate.time), 'timestamp_fmt'.t()) + '</strong>');
-        } else {
-            vm.set('lastUpdate', 'Phish Blocker email signatures were last updated'.t() + ': <strong>' + 'never'.t() + '</strong>');
-        }
     },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     }
-
 
 });
