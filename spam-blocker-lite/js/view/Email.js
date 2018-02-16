@@ -199,17 +199,6 @@ Ext.define('Ung.apps.spamblockerlite.view.Email', {
                 minValue: 0,
                 maxValue: 2147483647
             }]
-        }, {
-            xtype: 'fieldset',
-            title: 'Note'.t(),
-            margin: '10 0',
-            padding: 10,
-            items: [{
-                xtype: 'component',
-                bind: {
-                    html: '<p>{lastUpdateCheck}</p> <p>{lastUpdate}</p>'
-                }
-            }]
         }]
     }]
 
