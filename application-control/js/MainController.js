@@ -9,21 +9,46 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
     },
 
     onAfterRender: function () {
-        var me = this;
-        me.getView().appManager.getStatistics(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            me.getViewModel().set('statistics', result);
+        var me = this, v = me.getView(), vm = me.getViewModel();
+
+        v.setLoading(true);
+        Rpc.asyncData(v.appManager, 'getStatistics')
+        .then( function(result){
+            if(Util.isDestroyed(v)){
+                return;
+            }
+
+            vm.set('statistics', result);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v)){
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
         me.getSettings();
     },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+           vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -47,13 +72,24 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     statics: {
