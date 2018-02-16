@@ -29,20 +29,29 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
             text: 'Search'.t(),
             iconCls: 'fa fa-search',
             margin: '0 0 0 10',
-            handler: 'handleSiteLookup'
+            handler: 'handleSiteLookup',
+            bind:{
+                disabled: '{siteLookupInput.length === 0}'
+            }
         }],
     }, {
         xtype: 'displayfield',
         labelWidth: 160,
         fieldLabel: 'Last Search URL'.t(),
         fieldIndex: 'siteLookupAddress',
-        bind: '{siteLookupAddress}'
+        bind: {
+            value: '{siteLookupAddress}',
+            hidden: '{siteLookupAddress.length === 0}'
+        }
     }, {
         xtype: 'displayfield',
         labelWidth: 160,
         fieldLabel: 'Last Search Category'.t(),
         fieldIndex: 'siteLookupCategory',
-        bind: '{siteLookupCategory}'
+        bind: {
+            value: '{siteLookupCategory}',
+            hidden: '{siteLookupCategory.length === 0}'
+        }
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Suggest a different category'.t(),
@@ -50,7 +59,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
         labelWidth: 200,
         bind: {
             value: '{siteLookupCheckbox}',
-            disabled: '{siteLookupAddress.length === 0}'
+            hidden: '{siteLookupAddress.length === 0}'
         }
     }, {
         xtype: 'fieldset',
