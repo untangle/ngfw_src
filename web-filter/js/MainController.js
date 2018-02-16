@@ -6,19 +6,33 @@ Ext.define('Ung.apps.webfilter.MainController', {
         '#': {
             afterrender: 'getSettings',
         },
-        '#sitelookup': {
+        '#site-lookup': {
             afterrender: 'initSiteLookup'
         }
     },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
             vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
+
     },
 
     setSettings: function () {
@@ -41,29 +55,44 @@ Ext.define('Ung.apps.webfilter.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     clearHostCache: function () {
+        var v = this.getView();
         Ext.MessageBox.wait('Clearing Host Cache...'.t(), 'Please Wait'.t());
-        this.getView().appManager.clearCache(function (result, ex) {
+
+        Rpc.asyncData(v.appManager, 'clearCache', true)
+        .then(function(result){
             Ext.MessageBox.hide();
-            if (ex) { Util.handleException('There was an error clearing the host cache, please try again.'.t()); return; }
             Util.successToast('The Host Cache was cleared succesfully.'.t());
-        }, true);
+        }, function(ex) {
+            Util.handleException(ex);
+        });
     },
 
     initSiteLookup: function() {
         var v = this.getView(), vm = this.getViewModel();
         vm.set('siteLookupInput', '');
         vm.set('siteLookupAddress', '');
-        vm.set('siteLookpuCategory', '');
+        vm.set('siteLookupCategory', '');
         vm.set('siteLookupCheckbox', false);
         vm.set('siteLookupSuggest', '');
     },
@@ -72,10 +101,6 @@ Ext.define('Ung.apps.webfilter.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         var inputField = v.down("[fieldIndex='siteLookupInput']");
-        var showAddress = v.down("[fieldIndex='siteLookupAddress']");
-        var showCategory = v.down("[fieldIndex='siteLookupCategory']");
-        var suggestBox = v.down("[fieldIndex='siteLookupSuggest']");
-        var masterList = vm.get('settings.categories.list');
 
         if (inputField.getValue().length == 0) {
             Ext.MessageBox.alert('Site URL is empty'.t() , 'You must enter the Site URL for category search.'.t());
@@ -83,10 +108,17 @@ Ext.define('Ung.apps.webfilter.MainController', {
         }
 
         v.setLoading(true);
-
-        v.appManager.lookupSite(Ext.bind(function(result, ex) {
+        Rpc.asyncData(v.appManager, 'lookupSite', inputField.getValue())
+        .then(function(result){
+            if(Util.isDestroyed(v, vm, inputField)){
+                return;
+            }
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+
+            var showAddress = v.down("[fieldIndex='siteLookupAddress']");
+            var showCategory = v.down("[fieldIndex='siteLookupCategory']");
+            var suggestBox = v.down("[fieldIndex='siteLookupSuggest']");
+            var masterList = vm.get('settings.categories.list');
             showAddress.setValue(inputField.getValue());
             inputField.setValue('');
 
@@ -105,17 +137,20 @@ Ext.define('Ung.apps.webfilter.MainController', {
                 }
             }
             showCategory.setValue(categoryList.join(","));
-
-        }, this), inputField.getValue());
+        }, function(ex) {
+            if(!Util.isDestroyed(v)){
+                v.setLoading(false);
+                return;
+            }
+            Util.handleException(ex);
+        });
     },
 
     handleCategorySuggest: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         var showAddress = v.down("[fieldIndex='siteLookupAddress']");
-        var showCategory = v.down("[fieldIndex='siteLookupCategory']");
         var suggestBox = v.down("[fieldIndex='siteLookupSuggest']");
-        var checkBox = v.down("[fieldIndex='siteLookupCheckbox']");
 
         if (showAddress.getValue().length == 0) {
             Ext.MessageBox.alert('Last Search URL is empty'.t() , 'You must search for a Site URL before you can suggest a different category.'.t());
@@ -123,13 +158,18 @@ Ext.define('Ung.apps.webfilter.MainController', {
         }
 
         v.setLoading(true);
-
-        v.appManager.recategorizeSite(Ext.bind(function(result, ex) {
+        Rpc.asyncData(v.appManager, 'recategorizeSite', showAddress.getValue(), suggestBox.getValue())
+        .then(function(result){
+            if(Util.isDestroyed(v, vm, showAddress, suggestBox)){
+                return;
+            }
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+
+            var showCategory = v.down("[fieldIndex='siteLookupCategory']");
+            var checkBox = v.down("[fieldIndex='siteLookupCheckbox']");
 
             if (result == suggestBox.getValue()) {
-                Ext.MessageBox.alert('Suggestion Submitted'.t(), showAddress.getValue());
+                Ext.MessageBox.alert('Suggestion Submitted'.t(), showAddress.getValue() + ' - ' + vm.get('categories').findRecord('string', result).get('name'));
             } else {
                 Ext.MessageBox.alert('Unable to submit suggestion.'.t(), 'Please try again later.'.t());
             }
@@ -139,7 +179,13 @@ Ext.define('Ung.apps.webfilter.MainController', {
             suggestBox.setValue('');
             checkBox.setValue(false);
 
-        }, this), showAddress.getValue(), suggestBox.getValue());
+        }, function(ex) {
+            if(!Util.isDestroyed(v)){
+                v.setLoading(false);
+                return;
+            }
+            Util.handleException(ex);
+        });
     }
 
 });
