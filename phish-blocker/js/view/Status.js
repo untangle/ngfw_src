@@ -27,6 +27,25 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
             }
         }, {
             xtype: 'appstate',
+        },{
+            xtype: 'fieldset',
+            title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
+            defaults: {
+                labelWidth: 200
+            },
+            padding: 10,
+            collapsed: true,
+            disabled: true,
+            bind: {
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}'
+            },
+
+            items: [{
+                xtype: 'displayfield',
+                fieldLabel: "Last update".t(),
+                bind: '{lastUpdate}'
+            }]
         }, {
             xtype: 'appreports'
         }]
