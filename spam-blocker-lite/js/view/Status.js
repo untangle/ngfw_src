@@ -21,6 +21,34 @@ Ext.define('Ung.apps.spamblockerlite.view.Status', {
                 '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
         }, {
             xtype: 'appstate',
+        },{
+            xtype: 'fieldset',
+            title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
+            defaults: {
+                labelWidth: 200
+            },
+            padding: 10,
+            collapsed: true,
+            disabled: true,
+            bind: {
+                collapsed: '{instance.runState !== "RUNNING"}',
+                disabled: '{instance.runState !== "RUNNING"}',
+            },
+
+            items: [{
+                xtype: 'displayfield',
+                fieldLabel: "Last check for updates".t(),
+                bind: '{lastUpdateCheck}'
+            }, {
+                xtype: 'displayfield',
+                fieldLabel: "Last update".t(),
+                bind: '{lastUpdate}'
+            }, {
+                xtype: 'component',
+                bind:{
+                    html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', '{companyName}')
+                }
+            }]
         }, {
             xtype: 'appreports'
         }]
