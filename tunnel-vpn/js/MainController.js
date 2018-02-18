@@ -6,62 +6,61 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         '#': {
             afterrender: 'getSettings'
         },
-        '#tunnelStatus': {
-            afterrender: 'getTunnelStatus'
+        '#status': {
+            activate: 'getTunnelStatus'
+        },
+        '#log': {
+            activate: 'getTunnelLog'
         },
     },
 
     getTunnelStatus: function () {
-        var grid = this.getView().down('#tunnelStatus'),
+       var grid = this.getView().down('#tunnelStatus'),
             vm = this.getViewModel();
+
         grid.setLoading(true);
-        this.getView().appManager.getTunnelStatusList(function (result, ex) {
+        Rpc.asyncData(this.getView().appManager, 'getTunnelStatusList')
+        .then(function(result){
             grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            if ( result == null )
-                vm.set('tunnelStatusData', []);
-            else
-                vm.set('tunnelStatusData', result.list);
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+
+            vm.set('tunnelStatusData', !result ? [] : result.list);
+
+        }, function(ex) {
+            Util.handleException(ex);
         });
     },
 
     recycleTunnel: function(view, row, colIndex, item, e, record) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        var tunnelApp = rpc.appManager.app('tunnel-vpn');
+        var me = this, v = this.getView(), vm = this.getViewModel(), grid = this.getView().down('#tunnelStatus');
 
-        v.setLoading('Recycling...'.t());
-        tunnelApp.recycleTunnel(Ext.bind(function(result, ex) {
-        if (ex) { Util.handleException(ex); return; }
-            // this gives the app a couple seconds to process the disconnect before we refresh the list
+        grid.setLoading('Recycling...'.t());
+        Rpc.asyncData(this.getView().appManager, 'recycleTunnel', record.get("tunnelId"))
+        .then(function(result){
             var timer = setTimeout(function() {
+                if(Util.isDestroyed(grid, me)){
+                    return;
+                }
                 me.getTunnelStatus();
-                v.setLoading(false);
+                grid.setLoading(false);
             },2000);
-        }, this), record.get("tunnelId"));
+
+        }, function(ex) {
+            if(Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     getSettings: function () {
         var me = this,
             v = me.getView(),
             vm = me.getViewModel();
+
         v.setLoading(true);
-
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
-
-            var destinationTunnelData = [];
-            destinationTunnelData.push([-1, 'Any Available Tunnel'.t()]);
-            destinationTunnelData.push([0, 'Route Normally'.t()]);
-            if ( result.tunnels && result.tunnels.list ) {
-                for (var i = 0 ; i < result.tunnels.list.length ; i++) {
-                    var tunnel = result.tunnels.list[i];
-                    destinationTunnelData.push([tunnel.tunnelId, tunnel.name]);
-                }
-            }
-            vm.set('destinationTunnelData', destinationTunnelData);
-        });
 
         vm.set('providers',{
             Untangle: {
@@ -158,6 +157,35 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             data: providerComboListData
         }) );
 
+        v.setLoading(true);
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set('settings', result);
+            var destinationTunnelData = [];
+            destinationTunnelData.push([-1, 'Any Available Tunnel'.t()]);
+            destinationTunnelData.push([0, 'Route Normally'.t()]);
+            if ( result.tunnels && result.tunnels.list ) {
+                for (var i = 0 ; i < result.tunnels.list.length ; i++) {
+                    var tunnel = result.tunnels.list[i];
+                    destinationTunnelData.push([tunnel.tunnelId, tunnel.name]);
+                }
+            }
+            vm.set('destinationTunnelData', destinationTunnelData);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
+
     },
 
     setSettings: function () {
@@ -165,8 +193,14 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
         if (me.validateSettings() != true) return;
 
+        v.setLoading(true);
+        var sequence = [
+            Rpc.asyncPromise(v.appManager, 'setSettings', vm.get('settings') ),
+            Rpc.asyncPromise(v.appManager, 'getRunState')
+        ];
+
         var validSave = true;
-        var tunnelsToImport = [];
+        var tunnelNamesToImport = [];
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||
@@ -193,12 +227,8 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
                             tunnel.tunnelId = tunnelId;
                         }
                         if(tunnel.tempPath){
-                            tunnelsToImport.push({
-                                filename: tunnel.tempPath,
-                                provider: tunnel.provider,
-                                tunnelId: tunnel.tunnelId,
-                                name: tunnel.name
-                            });
+                            tunnelNamesToImport.push(tunnel.name);
+                            sequence.push( Rpc.asyncPromise(v.appManager, 'importTunnelConfig', tunnel.tempPath, tunnel.provider, tunnel.tunnelId));
                             delete tunnel.tempPath;
                         }
                     });
@@ -212,28 +242,39 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         }
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Ext.Deferred.sequence(sequence)
+        .then(function(result){
+            if(Util.isDestroyed(v, vm, tunnelNamesToImport, sequence)){
+                return;
+            }
+
             Util.successToast('Settings saved');
 
-            tunnelsToImport.forEach( function(tunnel){
-                v.appManager.importTunnelConfig(function (result, ex) {
-                    v.setLoading(false);
-                    if (ex) { Util.handleException(ex); return; }
-                    Util.successToast('Configuration imported'.t() + ': ' + tunnel.name);
-                }, tunnel.filename, tunnel.provider, tunnel.tunnelId);
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
+            result.shift();
+            var state = result.shift();
+            result.forEach(function(result, index){
+                Util.successToast('Configuration imported'.t() + ': ' + tunnelNamesToImport[index]);
             });
 
             me.getSettings();
 
-            if(tunnelsToImport.length > 0){
-                if( me.getView().appManager.getRunState() !== 'RUNNING'){
-                    me.getView().down('appstate > button').click();
+            if(sequence.length > 2){
+                // Added one or more tunnels but not powered on.
+                if( state !== 'RUNNING'){
+                    v.down('appstate > button').click();
                 }
             }
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     getNextAvailableTunnelId: function(current){
@@ -241,7 +282,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         var tunnel;
         var vm = this.getViewModel();
         var tunnels = vm.get('settings.tunnels.list');
-        var virtualInterfaces = rpc.networkManager.getNetworkSettings().virtualInterfaces.list;
+        var virtualInterfaces = Rpc.directData('rpc.networkManager.getNetworkSettings.virtualInterfaces.list');
 
         for( var i = 200; i < 240; i++ ){
             found = false;
@@ -280,17 +321,18 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         return(true);
     },
 
-    refreshTextArea: function(cmp)
+    getTunnelLog: function(cmp)
     {
-        var tunnelVpnApp = rpc.appManager.app('tunnel-vpn');
-        var target;
-
-        switch(cmp.target) {
-            case "tunnelLog":
-                target = this.getView().down('#tunnelLog');
-                target.setValue(tunnelVpnApp.getLogFile());
-                break;
-        }
+        var appPanel = cmp.up('apppanel');
+        Rpc.asyncData( appPanel.appManager, 'getLogFile')
+        .then(function(result){
+            if(Util.isDestroyed(appPanel)){
+                return;
+            }
+            appPanel.down('#tunnelLog').setValue(result);
+        }, function(ex){
+            Util.handleException(ex);
+        });
     },
 
     statics: {
@@ -354,7 +396,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
         var me = this,
             v = me.getView(),
             vm = me.getViewModel(),
-            appManager = v.up('app-tunnel-vpn').appManager,
             component = cmp;
 
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
@@ -366,13 +407,18 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             url: "upload",
             success: Ext.bind(function( form, action ) {
                 Ext.MessageBox.hide();
+                if(Util.isDestroyed(vm)){
+                    return;
+                }
                 var resultMsg = action.result.msg.split('&');
                 vm.set('fileResult', resultMsg[1]);
                 vm.set('record.tempPath', resultMsg[0]);
             }, this),
             failure: Ext.bind(function( form, action ) {
                 Ext.MessageBox.hide();
-                console.log(action);
+                if(Util.isDestroyed(component, vm)){
+                    return;
+                }
                 vm.set('fileResult', action.result.msg);
                 component.setValidation('Must upload valid VPN config file'.t());
             }, this)
