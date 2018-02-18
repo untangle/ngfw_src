@@ -11,7 +11,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Log', {
         iconCls: 'fa fa-refresh',
         text: 'Refresh',
         target: 'tunnelLog',
-        handler: 'refreshTextArea'
+        handler: 'getTunnelLog'
     }],
 
     items: [{
