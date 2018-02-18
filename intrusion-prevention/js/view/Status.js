@@ -94,8 +94,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             disabled: true,
             bind: {
                 collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}',
-                hidden: '{instance.runState !== "RUNNING"}'
+                disabled: '{instance.runState !== "RUNNING"}'
             },
 
             items: [{
