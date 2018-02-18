@@ -174,8 +174,8 @@ public class ApplicationControlApp extends AppBase
     {
         if (logger.isDebugEnabled()) {
             logger.debug("LOG EVENT (" + extraInfo + ") = " + evt.toString());
-            logEvent(evt);
         }
+        logEvent(evt);
     }
 
     /**
