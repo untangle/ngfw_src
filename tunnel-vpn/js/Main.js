@@ -4,18 +4,6 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
     controller: 'app-tunnel-vpn',
 
     viewModel: {
-        formulas: {
-            tunnelLog: {
-                get: function(get) {
-                    var tunnelApp = rpc.appManager.app('tunnel-vpn');
-                    var log = tunnelApp.getLogFile();
-                    if( log == null){
-                        log = 'No Tunnel VPN log information available.'.t();
-                    }
-                    return log;
-                }
-            }
-        },
         data: {
             autoReload: false,
             tunnelProviderSelected: false,
