@@ -433,7 +433,7 @@ def __get_ip_address(ifname):
     return ifaddr
 
 def __get_gateway(ifname):
-    cmd = "route -n | grep '[ \t]" + ifname + "' | grep 'UH[ \t]' | awk '{print $1}'"
+    cmd = "ip route | awk '/" + ifname + "\s+scope link/ {print $1}'"
     status, output = commands.getstatusoutput(cmd)
     if (not status) and output:
         return output
