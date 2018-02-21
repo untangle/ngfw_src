@@ -3,8 +3,8 @@
 # Sync Settings is takes the wan-balancer settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
 #
-# /etc/untangle-netd/iptables-rules.d/330-wan-balancer-rules
-# /etc/untangle-netd/post-network-hook.d/040-wan-balancer
+# /etc/untangle/iptables-rules.d/330-wan-balancer-rules
+# /etc/untangle/post-network-hook.d/040-wan-balancer
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -278,7 +278,7 @@ fixup_settings()
 if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
 
 # Write 330-wan-balancer iptables file
-filename = parser.prefix + "/etc/untangle-netd/iptables-rules.d/330-wan-balancer"
+filename = parser.prefix + "/etc/untangle/iptables-rules.d/330-wan-balancer"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )
@@ -295,7 +295,7 @@ if parser.verbosity > 0: print "Wrote %s" % filename
 
 
 # Write 040-wan-balancer post network hook file
-filename = parser.prefix + "/etc/untangle-netd/post-network-hook.d/040-wan-balancer"
+filename = parser.prefix + "/etc/untangle/post-network-hook.d/040-wan-balancer"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )
