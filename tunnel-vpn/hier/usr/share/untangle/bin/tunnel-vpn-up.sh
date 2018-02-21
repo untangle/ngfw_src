@@ -4,7 +4,7 @@ exec >> /var/log/uvm/tunnel.log 2>&1
 
 addRoute()
 {
-    /usr/share/untangle-netd/bin/add-uplink.sh $1 $2 uplink.$3 -4
+    /usr/share/untangle-sync-settings/bin/add-uplink.sh $1 $2 uplink.$3 -4
 }
 
 echo "`date`: dev:${dev} local:${ifconfig_local} remote:${ifconfig_remote} gateway:${route_vpn_gateway}"

@@ -30,7 +30,7 @@ public class ShieldApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(ShieldApp.class);
 
-    private static final String SHIELD_RULES_FILE = "/etc/untangle-netd/iptables-rules.d/600-shield";
+    private static final String SHIELD_RULES_FILE = "/etc/untangle/iptables-rules.d/600-shield";
 
     private final PipelineConnector[] connectors;
 

@@ -41,7 +41,7 @@ public class TunnelVpnManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn";
+    private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/350-tunnel-vpn";
     private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
     private static final String VALIDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-validate";
 

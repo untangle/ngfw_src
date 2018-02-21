@@ -428,7 +428,7 @@ public class IpsecVpnApp extends AppBase
          * not be so this is safe to run anytime and it will insert the rules if
          * not present
          */
-        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/710-ipsec");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
         result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -438,7 +438,7 @@ public class IpsecVpnApp extends AppBase
         } catch (Exception e) {
         }
 
-        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/711-xauth");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
         result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -448,7 +448,7 @@ public class IpsecVpnApp extends AppBase
         } catch (Exception e) {
         }
 
-        script = (System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
         result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");

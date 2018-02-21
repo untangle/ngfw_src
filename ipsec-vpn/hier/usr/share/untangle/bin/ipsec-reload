@@ -12,7 +12,7 @@
 /usr/share/untangle/bin/ipsec-create-statfile
 
 # Update the iptables rules
-/etc/untangle-netd/iptables-rules.d/710-ipsec
-/etc/untangle-netd/iptables-rules.d/711-xauth
+/etc/untangle/iptables-rules.d/710-ipsec
+/etc/untangle/iptables-rules.d/711-xauth
 
 exit 0
