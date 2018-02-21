@@ -62,7 +62,7 @@ public class IntrusionPreventionApp extends AppBase
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IntrusionPreventionEventMonitor ipsEventMonitor;    
 
-    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
+    private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
     private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";

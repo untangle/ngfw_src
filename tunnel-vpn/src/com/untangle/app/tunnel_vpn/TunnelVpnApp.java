@@ -234,7 +234,7 @@ public class TunnelVpnApp extends AppBase
              */
             if (!UvmContextFactory.context().isDevel()) {
                 File settingsFile = new File(settingsFilename);
-                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
+                File outputFile = new File("/etc/untangle/iptables-rules.d/350-tunnel-vpn");
                 if (settingsFile.lastModified() > outputFile.lastModified()) {
                     logger.warn("Settings file newer than interfaces files, Syncing...");
                     this.setSettings(readSettings);
@@ -483,7 +483,7 @@ public class TunnelVpnApp extends AppBase
         /**
          * Run the iptables script
          */
-        String output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn");
+        String output = UvmContextFactory.context().execManager().execOutput("/etc/untangle/iptables-rules.d/350-tunnel-vpn");
         String lines[] = output.split("\\r?\\n");
         for (String line : lines)
             logger.info("Adding tunnel-vpn iptables: " + line);

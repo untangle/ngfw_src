@@ -3,7 +3,7 @@
 # Sync Settings is takes the tunnel-vpn settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
 #
-# /etc/untangle-netd/iptables-rules.d/350-tunnel-vpn
+# /etc/untangle/iptables-rules.d/350-tunnel-vpn
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -233,7 +233,7 @@ fixup_settings()
 if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
 
 # Write 350-tunnel-vpn iptables file
-filename = parser.prefix + "/etc/untangle-netd/iptables-rules.d/350-tunnel-vpn"
+filename = parser.prefix + "/etc/untangle/iptables-rules.d/350-tunnel-vpn"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )

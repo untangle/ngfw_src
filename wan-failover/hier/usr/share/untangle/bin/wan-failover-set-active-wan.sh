@@ -116,14 +116,14 @@ update_default_link_rule
 update_dns_servers 
 
 # tell splitd to update its balance routes (if its running)
-if [ -x /etc/untangle-netd/post-network-hook.d/040-splitd ] ; then
+if [ -x /etc/untangle/post-network-hook.d/040-splitd ] ; then
     echo "[`date`] Inserting Balancing rules..."
-    /etc/untangle-netd/post-network-hook.d/040-splitd
+    /etc/untangle/post-network-hook.d/040-splitd
 fi
 # tell splitd to update its balance routes (if its running)
-if [ -x /etc/untangle-netd/post-network-hook.d/040-wan-balancer ] ; then
+if [ -x /etc/untangle/post-network-hook.d/040-wan-balancer ] ; then
     echo "[`date`] Inserting Balancing rules..."
-    /etc/untangle-netd/post-network-hook.d/040-wan-balancer
+    /etc/untangle/post-network-hook.d/040-wan-balancer
 fi
 
 

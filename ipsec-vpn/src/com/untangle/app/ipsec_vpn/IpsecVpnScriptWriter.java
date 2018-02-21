@@ -16,7 +16,7 @@ import com.untangle.uvm.UvmContextFactory;
 
 /**
  * This class has member functions to write the scripts that will be called by
- * untangle-netd to do all of the network configuration required by IPsec.
+ * untangle network stack to do all of the network configuration required by IPsec.
  * 
  * @author mahotz
  * 
@@ -26,9 +26,9 @@ public class IpsecVpnScriptWriter
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String IPTABLES_IPSEC_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/710-ipsec";
-    private static final String IPTABLES_XAUTH_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/711-xauth";
-    private static final String IPTABLES_GRE_SCRIPT = System.getProperty("prefix") + "/etc/untangle-netd/iptables-rules.d/712-gre";
+    private static final String IPTABLES_IPSEC_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec";
+    private static final String IPTABLES_XAUTH_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth";
+    private static final String IPTABLES_GRE_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre";
 
     private static final String TAB = "\t";
     private static final String RET = "\n";

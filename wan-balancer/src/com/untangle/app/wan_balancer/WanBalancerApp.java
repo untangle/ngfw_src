@@ -167,7 +167,7 @@ public class WanBalancerApp extends AppBase
              */
             if ( ! UvmContextFactory.context().isDevel() ) {
                 File settingsFile = new File( settingsFilename );
-                File outputFile = new File("/etc/untangle-netd/iptables-rules.d/330-wan-balancer-rules");
+                File outputFile = new File("/etc/untangle/iptables-rules.d/330-wan-balancer-rules");
                 if (settingsFile.lastModified() > outputFile.lastModified() ) {
                     logger.warn("Settings file newer than interfaces files, Syncing...");
                     this.setSettings( readSettings );
@@ -275,8 +275,8 @@ public class WanBalancerApp extends AppBase
         /**
          * Run the iptables script
          */
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/iptables-rules.d/330-splitd");        //remove old name
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/330-wan-balancer");
+        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle/iptables-rules.d/330-splitd");        //remove old name
+        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle/iptables-rules.d/330-wan-balancer");
         lines = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info("Adding wan-balancer iptables: " + line);
@@ -284,8 +284,8 @@ public class WanBalancerApp extends AppBase
         /**
          * Run the route script
          */
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/post-network-hook.d/040-splitd");        //remove old name
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/post-network-hook.d/040-wan-balancer");
+        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle/post-network-hook.d/040-splitd");        //remove old name
+        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle/post-network-hook.d/040-wan-balancer");
         lines = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info("Adding wan-balancer routes  : " + line);

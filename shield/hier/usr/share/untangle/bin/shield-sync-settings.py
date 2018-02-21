@@ -2,7 +2,7 @@
 
 # Sync Settings is takes the shield settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
-# /etc/untangle-netd/iptables-rules.d/600-shield
+# /etc/untangle/iptables-rules.d/600-shield
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -248,7 +248,7 @@ fixup_settings()
 if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
 
 # Write 330-wan-balancer iptables file
-filename = parser.prefix + "/etc/untangle-netd/iptables-rules.d/600-shield"
+filename = parser.prefix + "/etc/untangle/iptables-rules.d/600-shield"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )

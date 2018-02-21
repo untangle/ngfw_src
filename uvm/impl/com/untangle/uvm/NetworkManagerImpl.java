@@ -71,7 +71,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
-    private final String settingsFilenameBackup = "/etc/untangle-netd/network.js";
+    private final String settingsFilenameBackup = "/etc/untangle/network.js";
     
     /**
      * The current network settings
@@ -238,7 +238,7 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
 
         // Now sync those settings to the OS
-        String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename;
+        String cmd = "/usr/bin/sync-settings.py -v -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -560,7 +560,7 @@ public class NetworkManagerImpl implements NetworkManager
     public InterfaceStatus getInterfaceStatus( int interfaceId )
     {
         InterfaceStatus status = null;
-        String filename = "/var/lib/untangle-netd/interface-" + interfaceId + "-status.js";
+        String filename = "/var/lib/untangle-interface-status/interface-" + interfaceId + "-status.js";
 
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
@@ -658,7 +658,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     protected void insertRules( )
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle/iptables-rules.d/800-uvm" );
         if ( retCode < 0 )
             logger.warn("Unable to link iptables hook to update-rules script");
         
@@ -676,7 +676,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     protected void removeRules( )
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle/iptables-rules.d/800-uvm" );
         if ( retCode < 0 )
             logger.warn("Unable to link iptables hook to update-rules script");
         
@@ -2129,7 +2129,7 @@ public class NetworkManagerImpl implements NetworkManager
             tmpDir = Files.createTempDirectory( "tmp-sync-settings" );
 
             // apply settings in new dir
-            cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + " -p " + tmpDir.getFileName();
+            cmd = "/usr/bin/sync-settings.py -v -f " + settingsFilename + " -p " + tmpDir.getFileName();
             retCode = UvmContextFactory.context().execManager().execResult( cmd );
 
             if ( retCode != 0 ) {
@@ -2203,50 +2203,50 @@ public class NetworkManagerImpl implements NetworkManager
              * If only /etc/hosts and /etc/hosts.dnsmasq have been written, just restart dnsmasq
              */
             if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
             }
 
             /**
              * If only /etc/dnsmasq.d/dhcp-static has changed, just restart dnsmasq
              */
             if ( changedFiles.contains("/etc/dnsmasq.d/dhcp-static") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
             }
 
             /*
              * If only miniupnp config has been written, just restart miniupnpd
              */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle-netd/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
+            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
+                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-upnp"};
             }
 
             /*
              * If only miniupnp config has been written, just restart miniupnpd
              */
             if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
+                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-upnp"};
             }
 
             /**
              * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
              * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
-             * We still need to do a full network restart so new /var/lib/untangle-netd/interface-x-status.js files are written
+             * We still need to do a full network restart so new /var/lib/untangle-interface-status/interface-x-status.js files are written
              * with the new values (bug #12669 for more info)
              */
             //if ( changedFiles.contains("/etc/dnsmasq.conf") && changedFiles.size() == 1 ) {
-            //    return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+            //    return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
             //}
 
             /**
-             * If only /etc/untangle-netd/iptables-rules.d/* files are changed, just restart iptables rules
+             * If only /etc/untangle/iptables-rules.d/* files are changed, just restart iptables rules
              */
             int count = 0;
             for ( String changedFile : changedFiles ) {
-                if ( changedFile.startsWith("/etc/untangle-netd/iptables-rules.d/") )
+                if ( changedFile.startsWith("/etc/untangle/iptables-rules.d/") )
                     count++;
             }
             if ( count == changedFiles.size() ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/960-iptables"};
+                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/960-iptables"};
             }
         }
         catch ( Exception e ) {
