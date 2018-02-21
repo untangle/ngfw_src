@@ -77,11 +77,6 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlAddress;
     private Integer publicUrlPort;
 
-    /* DEPRECATED */
-    private List<FilterRule> inputFilterRules = null;
-    /* DEPRECATED */
-    private List<FilterRule> forwardFilterRules = null;
-    
     public NetworkSettings() { }
 
     public Integer getVersion() { return this.version; }
@@ -201,20 +196,6 @@ public class NetworkSettings implements Serializable, JSONString
     public int getLxcInterfaceId() { return this.lxcInterfaceId; }
     public void setLxcInterfaceId( int newValue ) { this.lxcInterfaceId = newValue; }
 
-    /**
-     * DEPRECATED
-     * replaced by getAccessRules
-     */
-    public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
-    public void setInputFilterRules( List<FilterRule> newValue ) { this.inputFilterRules = newValue; }
-
-    /**
-     * DEPRECATED
-     * replaced by getFilterRules
-     */
-    public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
-    public void setForwardFilterRules( List<FilterRule> newValue ) { this.forwardFilterRules = newValue; }
-    
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources
      */
