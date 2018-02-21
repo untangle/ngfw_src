@@ -124,6 +124,9 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
             File devFilePath = new File("/var/lib/untangle-interface-status");
             File[] devFileList = devFilePath.listFiles();
 
+            // if the directory doesn't exist we are finished
+            if (devFileList == null) return;
+
             for (int i = 0; i < devFileList.length; i++) {
                 if (devFileList[i].lastModified() > latestTimestamp) {
                     if (logger.isDebugEnabled()) logger.debug("New or updated file detected: " + devFileList[i].getAbsolutePath());
