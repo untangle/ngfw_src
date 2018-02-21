@@ -211,6 +211,7 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, catStr, app.getName());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
+                app.incrementFlagCount();
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle());
                 return app.generateNonce(bd);
@@ -224,6 +225,7 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
                 logger.debug("LOG: matched block rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
+                app.incrementFlagCount();
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle());
                 return app.generateNonce(bd);
@@ -234,6 +236,7 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.BLOCK_URL, catStr, app.getName());
                 logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
+                if (isFlagged) app.incrementFlagCount();
                 return null;
             }
         }
@@ -249,12 +252,14 @@ public abstract class DecisionEngine
             catStr = (bestCategoryStr == null ? filterRule.getDescription() : bestCategoryStr);
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
             WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
             return app.generateNonce(bd);
         } else if ((filterRule != null) && (filterRule.getFlagged())) {
             catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
             return null;
         }
 
@@ -279,6 +284,7 @@ public abstract class DecisionEngine
              */
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), (bestCategory.getBlocked() ? Boolean.TRUE : Boolean.FALSE), (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, bestCategory.getName(), app.getName());
             app.logEvent(hbe);
+            if (isFlagged) app.incrementFlagCount();
 
             /**
              * If the site was blocked return the nonce
@@ -297,6 +303,7 @@ public abstract class DecisionEngine
         // Since nothing matched, just log it and return null to allow the visit
         WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, I18nUtil.tr("None", i18nMap), app.getName());
         app.logEvent(hbe);
+        if (isFlagged) app.incrementFlagCount();
         return null;
     }
 
@@ -340,12 +347,14 @@ public abstract class DecisionEngine
             if (catStr == null) catStr = filterRule.getDescription();
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
             WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
             return app.generateNonce(bd);
         } else if (filterRule != null && (filterRule.getFlagged())) {
             if (catStr == null) catStr = filterRule.getDescription();
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
         }
 
         return null;
@@ -467,10 +476,12 @@ public abstract class DecisionEngine
         if (rule.getBlocked()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
             return rule;
         } else if (rule.getFlagged()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, catStr, app.getName());
             app.logEvent(hbe);
+            app.incrementFlagCount();
             return rule;
         }
 
