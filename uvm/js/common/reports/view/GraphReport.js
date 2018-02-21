@@ -701,11 +701,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 // },
                 plotOptions: {
                     series: {
-                        stacking: isColumnStacked ? 'normal' : undefined,
-                        dataGrouping: {
-                             approximation: isTimeGraph ? (entry.get('approximation') || 'sum') : undefined,
-                             dateTimeLabelFormats: timeLabelFormats.dataGrouping
-                        }
+                        stacking: isColumnStacked ? 'normal' : undefined
                     },
                     // pie graphs
                     pie: {
@@ -717,7 +713,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                     spline: {
                         shadow: true,
                         dataGrouping: {
-                            groupPixelWidth: 8
+                            groupPixelWidth: 8,
+                            approximation: entry.get('approximation') || 'sum',
+                            dateTimeLabelFormats: timeLabelFormats.dataGrouping
                         },
                     },
                     // time graphs
@@ -725,7 +723,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                         // shadow: true,
                         // fillOpacity: 0.3,
                         dataGrouping: {
-                            groupPixelWidth: 8
+                            groupPixelWidth: 8,
+                            approximation: entry.get('approximation') || 'sum',
+                            dateTimeLabelFormats: timeLabelFormats.dataGrouping
                         },
                     },
                     column: {
