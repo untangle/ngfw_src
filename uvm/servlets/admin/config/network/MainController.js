@@ -504,7 +504,7 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-status.py')
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/qos-status.py')
         .then(function(result){
             if(Util.isDestroyed(v)){
                 return;
