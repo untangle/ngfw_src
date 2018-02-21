@@ -38,6 +38,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 {
     private static final String STAT_SCAN = "scan";
     private static final String STAT_BLOCK = "block";
+    private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static int web_filter_deployCount = 0;
 
@@ -60,7 +61,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.replacementGenerator = buildReplacementGenerator();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+
+        if (getAppName().equals("web-filter")) {
+            this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        }
+
+        this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Pages flagged")));
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
@@ -307,7 +313,14 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     public void incrementBlockCount()
     {
-        this.incrementMetric(STAT_BLOCK);
+        if (getAppName().equals("web-filter")) {
+            this.incrementMetric(STAT_BLOCK);
+        }
+    }
+
+    public void incrementFlagCount()
+    {
+        this.incrementMetric(STAT_FLAG);
     }
 
     public void incrementPassCount()
@@ -418,7 +431,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             return;
         }
 
-        // existing settings loaded and no conversion was needed 
+        // existing settings loaded and no conversion was needed
         this.settings = readSettings;
         logger.debug("Loaded Settings: " + this.settings.toJSONString());
     }
