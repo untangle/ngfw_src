@@ -91,6 +91,7 @@ public class TunnelVpnManager
                     logger.info("Killing OpenVPN process: " + pid);
                     UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
                     UvmContextFactory.context().execManager().execOutput("kill -TERM " + pid);
+                    UvmContextFactory.context().execManager().execOutput("kill -KILL " + pid);
                     f.delete();
                 }
             }
