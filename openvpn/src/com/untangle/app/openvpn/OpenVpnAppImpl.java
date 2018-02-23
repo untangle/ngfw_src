@@ -713,7 +713,7 @@ public class OpenVpnAppImpl extends AppBase
             logger.info("Cleanup checking: " + target);
 
             // extract the server name from the config file name
-            String serverName = name.substring(0,name.indexOf("."));
+            String serverName = name.substring(0,name.lastIndexOf("."));
 
             // check the settings to see if this is a valid server
             found = false;
