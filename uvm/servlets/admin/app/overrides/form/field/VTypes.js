@@ -228,5 +228,30 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         });
         return valid;
     },
-    x500attributesText: 'Invalid x500 attribute found'.t()
+    x500attributesText: 'Invalid x500 attribute found'.t(),
+
+    // BPP/OSPF router id
+    routerId: function(value){
+        return this.mask.ip4AddrMaskRe.test(value);
+    },
+    routerIdText: 'Invalid Router ID'.t(),
+
+    // OSPF area id
+    routerArea: function(value){
+        return this.mask.ip4AddrMaskRe.test(value);
+    },
+    routerAreaText: 'Invalid Area'.t(),
+
+    // BPP/OSPF router AS
+    routerAs: function(value){
+        var number = parseInt(value, 10);
+        return (number > 0) && (number <= 4294967295);
+    },
+    routerAsText: 'Invalid Router AS'.t(),
+
+    metric: function(value){
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 16777214);        
+    },
+    metricText: 'Invalid metric number'.t()
 });

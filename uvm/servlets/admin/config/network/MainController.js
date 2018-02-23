@@ -18,6 +18,24 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #advanced': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
+        '#advanced #advanced #dynamicRouting': {
+            activate: Ung.controller.Global.onSubtabActivate,
+        },
+        '#advanced #advanced #dynamicRouting #dynamicRouting': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        // '#advanced #advanced #dynamicRouting #bgp': {
+        //     activate: Ung.controller.Global.onSubtabActivate,
+        // },
+        // '#advanced #advanced #dynamicRouting #bgp #bgp': {
+        //     beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        // },
+        // '#advanced #advanced #dynamicRouting #ospf': {
+        //     activate: Ung.controller.Global.onSubtabActivate,
+        // },
+        // '#advanced #advanced #dynamicRouting #ospf #ospf': {
+        //     beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        // },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
@@ -1244,6 +1262,26 @@ Ext.define('Ung.config.network.MainController', {
                 case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
                 case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
                 default: return 'Unknown'.t();
+            }
+        },
+
+        ospfAreaRenderer:function( value ){
+            var store = this.up('configpanel').getViewModel().getStore('ospfAreas');
+            var record = store.findRecord('ruleId', value);
+            if(record != null){
+                return record.get('comboValueField');
+            }else{
+                return 'Unknown'.t() + ' - ' + value;
+            }
+        },
+
+        ospfAreaTypeRenderer:function( value ){
+            var store = this.up('configpanel').getViewModel().getStore('ospfAreaTypes');
+            var record = store.findRecord('value', value);
+            if(record != null){
+                return record.get('type');
+            }else{
+                return 'Unknown'.t() + ' - ' + value;
             }
         }
 
