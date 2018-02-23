@@ -460,7 +460,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
                     {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
                     {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true},
+                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"],["OSPF","OSPF"]], visible: true},
                     {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
                     {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
 
@@ -504,11 +504,12 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }, {
                     header: 'Description',
                     width: Renderer.messageWidth,
-                    dataIndex: 'description'
+                    dataIndex: 'description',
+                    flex: 1
                 }, {
                     header: 'Conditions'.t(),
                     width: Renderer.conditionsWidth,
-                    flex: 1,
+                    flex: 3,
                     dataIndex: 'conditions',
                     renderer: 'conditionsRenderer'
                 }, {
@@ -835,6 +836,513 @@ Ext.define('Ung.config.network.view.Advanced', {
                 },
                 queryMode: 'local',
                 editable: false
+            }]
+        }, {
+            title: 'Dynamic Routing'.t(),
+            itemId: 'dynamicRouting',
+            scrollable: true,
+
+            defaults:{
+                margin: 10
+            },
+
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'Dynamic Routing Enabled'.t(),
+                labelAlign: 'right',
+                labelWidth: 160,
+                bind: '{settings.dynamicRoutingSettings.enabled}'
+            },{
+                xtype: 'tabpanel',
+                itemId: 'dynamicRouting',
+                layout: 'fit',
+                disabled: true,
+                hidden: true,
+                bind: {
+                    disabled: '{!settings.dynamicRoutingSettings.enabled}',
+                    hidden: '{!settings.dynamicRoutingSettings.enabled}'
+                },
+                items: [{
+                    xtype: 'panel',
+                    itemId: 'status',
+                    title: 'Status'.t(),
+                    scrollable: true,
+                    items:[{
+                    }]
+                },{
+                    xtype: 'panel',
+                    itemId: 'bgp',
+                    title: 'BGP'.t(),
+                    scrollable: true,
+
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: 'BGP Enabled'.t(),
+                        bind: '{settings.dynamicRoutingSettings.bgpEnabled}',
+                        margin: 10
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: 'Router ID'.t(),
+                        bind: {
+                            value: '{settings.dynamicRoutingSettings.bgpRouterId}',
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        emptyText: '[no router id]'.t(),
+                        blankText: 'Router ID must be specified.'.t(),
+                        vtype: 'routerId',
+                        margin: 10
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: 'Router AS'.t(),
+                        bind: {
+                            value: '{settings.dynamicRoutingSettings.bgpRouterAs}',
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        emptyText: '[no router as]'.t(),
+                        blankText: 'Router AS must be specified.'.t(),
+                        vtype: 'routerAs',
+                        margin: 10
+                    },{
+                        xtype: 'tabpanel',
+                        itemId: 'bgp',
+                        bind:{
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        items:[{
+                            xtype: 'ungrid',
+                            itemId: 'neighbors',
+                            title: 'Neighbors'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No BGP Neighbors defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.bgpNeighbors.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                ipAddress: '',
+                                as: '',
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteBgpNeighbor',
+                            },
+
+                            bind: {
+                                store: '{bgpNeighbors}'
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'IP Address',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'ipAddress'
+                            }, {
+                                header: 'AS',
+                                width: Renderer.idWidth,
+                                flex: 1,
+                                dataIndex: 'as'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                            {
+                                xtype:'textfield',
+                                bind: '{record.ipAddress}',
+                                fieldLabel: 'Target IP Address'.t(),
+                                emptyText: "[no target ip address]".t(),
+                                allowBlank: false,
+                                vtype: 'ip4Address'
+                            },{
+                                xtype:'textfield',
+                                bind: '{record.as}',
+                                fieldLabel: 'Target AS'.t(),
+                                emptyText: "[no target as]".t(),
+                                vtype: 'routerAs',
+                                allowBlank: false
+                            }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'networks',
+                            title: 'Networks'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No BGP Networks defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.bgpNetworks.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                network: '',
+                                prefix: 32,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork',
+                            },
+
+                            bind: {
+                                store: '{bgpNetworks}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Network',
+                                width: Renderer.networkWidth,
+                                flex: 1,
+                                dataIndex: 'network'
+                            }, {
+                                header: 'Netmask/Prefix'.t(),
+                                width: Renderer.ipWidth,
+                                dataIndex: 'prefix'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                                Field.network,
+                                Field.netMask
+                            ]
+                        }]
+                    }]
+                },{
+                    xtype: 'panel',
+                    itemId: 'ospf',
+                    title: 'OSPF'.t(),
+                    scrollable: true,
+
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: 'OSPF Enabled'.t(),
+                        bind: '{settings.dynamicRoutingSettings.ospfEnabled}',
+                        margin: 10
+                    },{
+                        xtype: 'tabpanel',
+                        itemId: 'ospf',
+
+                        bind:{
+                            disabled: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                        },
+
+                        items:[{
+                            xtype: 'ungrid',
+                            itemId: 'networks',
+                            title: 'Networks'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Networks defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfNetworks.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                network: '',
+                                prefix: 32,
+                                area: 0,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork',
+                            },
+
+                            bind: {
+                                store: '{ospfNetworks}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Network',
+                                width: Renderer.networkWidth,
+                                flex: 1,
+                                dataIndex: 'network'
+                            }, {
+                                header: 'Netmask/Prefix'.t(),
+                                width: Renderer.ipWidth,
+                                dataIndex: 'prefix'
+                            }, {
+                                header: 'Area',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'area',
+                                renderer: Ung.config.network.MainController.ospfAreaRenderer
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                                Field.network,
+                                Field.netMask,
+                            {
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.area}',
+                                    store: '{ospfAreas}'
+                                },
+                                displayField: 'comboValueField',
+                                valueField: 'ruleId',
+                                fieldLabel: 'Area'.t(),
+                                emptyText: "[enter area]".t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'areas',
+                            title: 'Areas'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Networks defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfAreas.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                area: '',
+                                type: 0,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteOspfArea',
+                            },
+
+                            bind: {
+                                store: '{ospfAreas}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Area',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'area'
+                            }, {
+                                header: 'Type',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'type',
+                                renderer: Ung.config.network.MainController.ospfAreaTypeRenderer
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                            {
+                                xtype:'textfield',
+                                bind: '{record.area}',
+                                fieldLabel: 'Area'.t(),
+                                emptyText: "[no area]".t(),
+                                vtyoe: 'routerArea',
+                                allowBlank: false
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.type}',
+                                    store: '{ospfAreaTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Type'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                             }]
+                        },{
+                            xtype: 'panel',
+                            // title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
+                            title: 'Advanced Options'.t(),
+                            padding: 10,
+                            // collapsed: true,
+
+                            // checkboxToggle: true,
+                            // checkbox: {
+                            //     bind: '{settings.dynamicRoutingSettings.somethingCheck}'
+                            // },
+
+                            defaults:{
+                                margin: 10,
+                                labelWidth: 200,
+                            },
+                            items:[{
+                                // router id (e.g. 12.34.5.66)
+                                xtype: 'textfield',
+                                fieldLabel: 'Router ID'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfRouterId}',
+                                emptyText: '[auto-generated]'.t(),
+                                vtype: 'routerId'
+                            },{
+                                // default metric (0-16777214)
+                                xtype: 'textfield',
+                                fieldLabel: 'Default Metric'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfDefaultMetric}',
+                                vtype: 'metric'
+                            },{
+                                // ABR type - cisco|ibm|shortcut|standard, def CISCO
+                                xtype: 'textfield',
+                                fieldLabel: 'ABR Type'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfAbrType}',
+                            },{
+                                // Auto cost reference bandwidth (MBits/s) def 100 (1-4294967)
+                                xtype: 'textfield',
+                                fieldLabel: 'Auto cost reference bandwidth (MBits/s)'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfAutoCost}',
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Default Information originate'.t(),
+
+                                // Radio select
+
+                                items:[{
+                                    // Default Information originate Never/Regular/Always
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Type'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType}'
+                                },{
+                                    // Metric (0-16777214)
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    // External Type 1/External Type 2
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Type'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateExternalType}',
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute Connected'.t(),
+                                collapsed: true,
+                                // disabled: true,
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled}'
+                                },
+                                items:[{
+                                    // Metric (0-16777214)
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    // External Type 1/External Type 2
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Type'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedExternalType}',
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute Static'.t(),
+                                collapsed: true,
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled}'
+                                },
+                                items:[{
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    // External Type 1/External Type 2
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Type'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticExternalType}',
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute BGP'.t(),
+                                collapsed: true,
+                                bind:{
+                                    disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                                },
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled}'
+                                },
+                                items:[{
+                                    // Metric (0-16777214)
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistBgpMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    // External Type 1/External Type 2
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Type'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistNgpExternalType}',
+                                }]
+                            }]
+                        }]
+                    }]
+                }]
             }]
         }]
     }]

@@ -91,9 +91,49 @@ Ext.define('Ung.config.network.MainModel', {
         filterRules:        { data: '{settings.filterRules.list}' },
         accessRules:        { data: '{settings.accessRules.list}' },
         upnpRules:          { data: '{settings.upnpSettings.upnpRules.list}' },
+        bgpNeighbors:       { data: '{settings.dynamicRoutingSettings.bgpNeighbors.list}' },
+        bgpNetworks:        { data: '{settings.dynamicRoutingSettings.bgpNetworks.list}' },
+        ospfNetworks:       { data: '{settings.dynamicRoutingSettings.ospfNetworks.list}' },
         wanInterfaces: {
             source: '{interfaces}',
             filters: [{ property: 'configType', value: 'ADDRESSED' }, { property: 'isWan', value: true }]
         },
+        ospfAreas: {
+            data: '{settings.dynamicRoutingSettings.ospfAreas.list}',
+            fields:[{
+                name: 'ruleId',
+                type: 'integer'
+            },{
+                name: 'area',
+                type: 'string'
+            },{
+                name: 'description',
+                type: 'string'
+            },{
+                name: 'comboValueField',
+                type: 'string',
+                convert: function(v, record){
+                    return record.get('area') + ' - ' + record.get('description');
+                }
+            }]
+        },
+        ospfAreaTypes: {
+            data: [{
+                value: 0,
+                type: 'Normal'.t()
+            },{
+                value: 1,
+                type: 'Stub'.t()
+            },{
+                value: 2,
+                type: 'Stub, no summary'.t()
+            },{
+                value: 3,
+                type: 'Not so stubby'.t()
+            },{
+                value: 4,
+                type: 'Not so stubby, no summary'.t()
+            }]
+        }
     }
 });
