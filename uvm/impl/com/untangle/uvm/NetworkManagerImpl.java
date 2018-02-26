@@ -2362,6 +2362,19 @@ public class NetworkManagerImpl implements NetworkManager
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
             }
 
+            /*
+             * If only quagga config has been written, just restart miniupnpd
+             */
+            boolean allQuagga = true;
+            for(String filename : changedFiles){
+                if(filename.contains("quagga") == false){
+                    allQuagga = false;
+                }
+            }
+            if(allQuagga){
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-quagga"};
+            }
+
             /**
              * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
              * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
