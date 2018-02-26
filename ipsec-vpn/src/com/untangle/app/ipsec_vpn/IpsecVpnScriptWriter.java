@@ -242,7 +242,7 @@ public class IpsecVpnScriptWriter
             script.write("# IpsecVpnNetwork - " + network.getDescription() + RET);
             script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
             script.write("ip link set " + iface + " up" + RET);
-            script.write("ip addr add " + iaddr + " dev " + iface + RET);
+            script.write("ip addr add " + iaddr + "/30 dev " + iface + RET);
 
             String netlist[] = network.getRemoteNetworks().split("\\n");
 
