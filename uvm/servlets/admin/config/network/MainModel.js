@@ -134,6 +134,65 @@ Ext.define('Ung.config.network.MainModel', {
                 value: 4,
                 type: 'Not so stubby, no summary'.t()
             }]
+        },
+        dymamicRoutes: {
+            data: [],
+            fields: [{
+                name: 'network',
+                sortType: 'asIp'
+            },{
+                name: 'prefix',
+                type: 'integer'
+            },{
+                name: 'via',
+                sortType: 'asIp'
+            },{
+                name: 'dev',
+                type: 'string'
+            },{
+                name: 'interface',
+                type: 'string'
+            },{
+                name: 'attributes'
+            }]
+        },
+        bgpStatus: {
+            data: [],
+            fields: [{
+                name: 'neighbor',
+                sortType: 'asIp'
+            },{
+                name: 'as',
+                type: 'integer'
+            },{
+                name: 'msgsRecv',
+                typ: 'integer'
+            },{
+                name: 'msgsSent',
+                typ: 'integer'
+            },{
+                name: 'uptime',
+                typ: 'integer'
+            }]
+        },
+        ospfStatus: {
+            data: [],
+            fields: [{
+                name: 'neighbor',
+                sortType: 'asIp'
+            },{
+                name: 'address',
+                sortType: 'asIp'
+            },{
+                name: 'time',
+                type: 'float'
+            },{
+                name: 'dev',
+                typ: 'string'
+            },{
+                name: 'interface',
+                typ: 'string'
+            }]
         }
     }
 });
