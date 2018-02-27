@@ -1,5 +1,12 @@
 #! /bin/bash
 
+oldVersion=""
+if [ "$1" = "configure" ] ; then
+  # oldVersion will be non-empty if untangle-linux-config has been
+  # configured before
+  oldVersion="$2"
+fi
+
 # right permissions for log dir
 UVM_LOGDIR="/var/log/uvm"
 /bin/chmod 775 ${UVM_LOGDIR}
@@ -45,6 +52,6 @@ sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 # touch settings file to force re-sync
-touch /usr/share/untangle/settings/untangle-vm/network.js
+echo $oldVersion | grep -q "13\.2" && touch /usr/share/untangle/settings/untangle-vm/network.js
 
 exit 0
