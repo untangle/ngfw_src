@@ -375,9 +375,12 @@ class UvmTests(unittest2.TestCase):
     def test_120_cert_is_in_backup(self):
         """check that the Server Certificate exists in the backup"""
 
+        #remove any old files associated with backup
+        subprocess.check_output("rm -rf /tmp/untangleBackup*")
+
         #copy a backup of apache.pem
         certFilePath = "/usr/share/untangle/settings/untangle-certificates/apache.pem"
-        os.system("cp "+certFilePath+" "+certFilePath+".backup")
+        subprocess.check_output("cp "+certFilePath+" "+certFilePath+".backup")
 
         #Modify apache.pem a little to verify the change is in the backup
         certFile = open(certFilePath)
@@ -387,26 +390,23 @@ class UvmTests(unittest2.TestCase):
         open(certFilePath, "w").write('\n'.join(lines))
 
         #Download backup
-        os.system("rm -f /tmp/untangleBackup.backup") # remove old backup file
-        result = os.system("wget -o /dev/null -t 1 --timeout=3 --post-data 'type=backup' http://localhost/admin/download -O /tmp/untangleBackup.backup")
-        assert(result == 0)
-
-        #remove any old files associated with backup
-        os.system("rm -f /tmp/files*")
-        os.system("rm -f /tmp/PUBVERSION")
-        os.system("rm -fr /tmp/usr")
-
-        #extract backup
-        os.system("tar -xf /tmp/untangleBackup.backup -C /tmp")
-        os.system("tar -xf "+glob.glob("/tmp/files*.tar.gz")[0] + " -C /tmp") #use glob since extracted file has timestamp
-
-        #Check the cert in the backup
-        newCertFilePath = "/tmp/usr/share/untangle/settings/untangle-certificates/apache.pem"
-        newCertFile = open(newCertFilePath, "r")
-        newCertFileLines = newCertFile.read().splitlines()
+        result = subprocess.check_output("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 3 --post-data 'type=backup' http://localhost/admin/download")
 
         #replace modified cert with backed-up original before testing.
-        os.system("cp "+certFilePath+".backup "+certFilePath)
+        subprocess.check_output("cp "+certFilePath+".backup "+certFilePath)
+
+        # does the backup exist
+        assert(result == 0)
+
+        #extract backup
+        subprocess.check_output("mkdir /tmp/untangleBackup")
+        subprocess.check_output("tar -xf /tmp/untangleBackup.backup -C /tmp/untangleBackup")
+        subprocess.check_output("tar -xf "+glob.glob("/tmp/untangleBackup/files*.tar.gz")[0] + " -C /tmp/untangleBackup") #use glob since extracted file has timestamp
+
+        #Check the cert in the backup
+        newCertFilePath = "/tmp/untangleBackup/usr/share/untangle/settings/untangle-certificates/apache.pem"
+        newCertFile = open(newCertFilePath, "r")
+        newCertFileLines = newCertFile.read().splitlines()
 
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
