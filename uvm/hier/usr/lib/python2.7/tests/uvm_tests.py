@@ -404,10 +404,11 @@ class UvmTests(unittest2.TestCase):
         newCertFilePath = "/tmp/usr/share/untangle/settings/untangle-certificates/apache.pem"
         newCertFile = open(newCertFilePath, "r")
         newCertFileLines = newCertFile.read().splitlines()
+
+        #replace modified cert with backed-up original before testing.
+        os.system("cp "+certFilePath+".backup "+certFilePath)
+
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
-
-        #replace modified cert with backed-up original
-        os.system("cp "+certFilePath+".backup "+certFilePath)
 
 test_registry.registerApp("uvm", UvmTests)
