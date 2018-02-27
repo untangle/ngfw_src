@@ -864,10 +864,129 @@ Ext.define('Ung.config.network.view.Advanced', {
                 },
                 items: [{
                     xtype: 'panel',
-                    itemId: 'status',
+                    width: '100%',
+                    region: 'south',
+                    itemId: 'dynamicRoutingStatus',
                     title: 'Status'.t(),
-                    scrollable: true,
+                    split: true,
+                    collapsible: false,
                     items:[{
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'dynamicRouteStatus',
+                        title: 'Aquired Dynamic Routes'.t(),
+
+                        emptyText: 'No Acquired Dynamic Routes found'.t(),
+
+                        bind: {
+                            store: '{dymamicRoutes}'
+                        },
+                        columns: [{
+                            header: 'Network'.t(),
+                            dataIndex:'network',
+                            width: Renderer.networkWidth
+                        },{
+                            header: 'Prefix'.t(),
+                            dataIndex: 'prefix',
+                            width: Renderer.previxWidth
+                        },{
+                            header: 'Via'.t(),
+                            dataIndex: 'via',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Interface'.t(),
+                            dataIndex: 'interface',
+                            width: Renderer.messageWidth,
+                            renderer: Renderer.interface
+                        },{
+                            header: 'Device'.t(),
+                            dataIndex: 'dev',
+                            width: Renderer.idWidth
+                        },{
+                            header: 'Attributes'.t(),
+                            dataIndex: 'attributes',
+                            width: Renderer.messageWdith,
+                            renderer: Ung.config.network.MainController.routeAttributes,
+                            flex: 1
+                        }],
+                    },{
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'bgpStatus',
+                        title: 'BGP Status'.t(),
+
+                        emptyText: 'No OSPF Status available'.t(),
+
+                        bind: {
+                            store: '{bgpStatus}',
+                            hidden: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        columns: [{
+                            header: 'Neighbor'.t(),
+                            dataIndex: 'neighbor',
+                            width: Renderer.networkWidth
+                        }, {
+                            header: 'AS'.t(),
+                            dataIndex: 'as',
+                            width: Renderer.idWidth
+                        }, {
+                            header: 'Msgs Recv'.t(),
+                            dataIndex: 'msgsRecv',
+                            width: Renderer.dataSize,
+                            renderer: Renderer.count
+                        }, {
+                            header: 'Msgs Sent'.t(),
+                            dataIndex: 'msgsSent',
+                            width: Renderer.dataSize,
+                            renderer: Renderer.count
+                        }, {
+                            header: 'Uptime'.t(),
+                            dataIndex: 'uptime',
+                            width: Renderer.timestampWidth,
+                            flex: 1,
+                            renderer: Renderer.elapsedTime
+                        }],
+                    }, {
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'ospfStatus',
+                        title: 'OSPF Status'.t(),
+
+                        emptyText: 'No OSPF Status available'.t(),
+
+                        bind: {
+                            store: '{ospfStatus}',
+                            hidden: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                        },
+                        columns: [{
+                            header: 'Neighbor ID'.t(),
+                            dataIndex: 'neighbor',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Neighbor Address'.t(),
+                            dataIndex: 'address',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Time Remaining'.t(),
+                            dataIndex: 'time',
+                            width: Renderer.timestamp
+                        },{
+                            header: 'Device'.t(),
+                            dataIndex: 'dev',
+                            width: Renderer.idWidth
+                        },{
+                            header: 'Interface'.t(),
+                            dataIndex: 'interface',
+                            width: Renderer.messageWidth,
+                            renderer: Renderer.interface,
+                            flex: 1
+                        }]
+                    }],
+                    tbar: [{
+                        xtype: 'button',
+                        iconCls: 'fa fa-refresh',
+                        text: 'Refresh',
+                        handler: 'getDynamicRoutingStatus'
                     }]
                 },{
                     xtype: 'panel',
