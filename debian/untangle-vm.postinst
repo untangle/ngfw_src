@@ -85,5 +85,7 @@ sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 # 14.0 upgrade
 sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
+# touch settings file to force re-sync
+touch /usr/share/untangle/settings/untangle-vm/network.js
 
 exit 0
