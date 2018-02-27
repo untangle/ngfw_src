@@ -37,47 +37,6 @@ if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
     /usr/share/untangle/bin/oem-apply.sh
 fi
 
-# 12.1 upgrade
-sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/stable-120x\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
-
-# 12.1 remove references to old distros
-sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\spicanto/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\sseagull/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\selectra/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\sthunder/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\shayate/d'  -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\scrypton/d' -i /etc/apt/sources.list.d/untangle.list
-
-# 12.1 remove old log files
-rm -f /var/log/restart-uvm.log
-rm -f /var/log/uvm/kernel-modules.log
-find /var/log/uvm -name '*crash*' -mtime +30 2>/dev/null | xargs rm -f
-
-# 12.1 remove old ntp servers from ntp.conf
-sed -e '/74.123/d' -i  /etc/ntp.conf
-
-# 12.1 upgrade
-if [ -d /var/lib/google-drive ] ; then
-    rm -rf /var/lib/google-drive/*
-fi
-
-# 12.2 upgrade
-rm -rf /usr/share/untangle/web/reports/data
-rm -rf /usr/lib/python2.7/reports/node
-sed -e 's/stable-121\s/stable-122 /g' -i /etc/apt/sources.list.d/untangle.list
-
-# 13.0 upgrade
-sed -e 's/stable-122\s/stable-130 /g' -i /etc/apt/sources.list.d/untangle.list
-rm -rf /usr/share/untangle/lib/untangle-node-idps
-rm -rf /usr/share/untangle/lib/untangle-node-ips
-rm -rf /usr/share/untangle/lib/untangle-node-web-filter-lite
-rm -f /var/log/uvm/node*
-
-# 13.1 upgrade
-sed -e 's/stable-130\s/stable-131 /g' -i /etc/apt/sources.list.d/untangle.list
-
 # 13.2 upgrade
 sed -e 's/stable-131\s/stable-132 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
