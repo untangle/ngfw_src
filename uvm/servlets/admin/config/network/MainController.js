@@ -18,24 +18,9 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #advanced': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
-        '#advanced #advanced #dynamicRouting': {
-            activate: Ung.controller.Global.onSubtabActivate,
+        '#dynamicRoutingStatus':{
+            activate: 'getDynamicRoutingStatus'
         },
-        '#advanced #advanced #dynamicRouting #dynamicRouting': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        // '#advanced #advanced #dynamicRouting #bgp': {
-        //     activate: Ung.controller.Global.onSubtabActivate,
-        // },
-        // '#advanced #advanced #dynamicRouting #bgp #bgp': {
-        //     beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        // },
-        // '#advanced #advanced #dynamicRouting #ospf': {
-        //     activate: Ung.controller.Global.onSubtabActivate,
-        // },
-        // '#advanced #advanced #dynamicRouting #ospf #ospf': {
-        //     beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        // },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
@@ -581,6 +566,133 @@ Ext.define('Ung.config.network.MainController', {
             javaClass: 'com.untangle.uvm.network.DhcpStaticEntry'
         };
         staticDhcpGrid.getStore().add(newDhcpEntry);
+    },
+
+    getDynamicRoutingStatus: function(view){
+        if(view.itemId != 'dynamicRoutingStatus'){
+            view = view.up('#dynamicRoutingStatus');
+        }
+        var vm = this.getViewModel();
+
+        view.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip route show proto zebra | tr -s " " '),
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip bgp summary" | sed -e "/Neighbor/,\\$!d" | sed -e "/Total/,\\$d" -e "1d" | tr -s " "'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip ospf neighbor" | sed -e "/Neighbor/,\\$!d" | sed -e "1d" | tr -s " "')
+        ]).then( function(result){
+            // !!! check view is not destroyed
+            view.setLoading(false);
+
+            // Build dynamic routes
+            var routeStore = view.down('#dynamicRouteStatus').getStore();
+            var routeStoreFields = routeStore.getModel().getFields();
+            var storeData = [];
+            var currentNetwork = null;
+            var firstNexthop = false;
+            var inFields = false;
+            result[0].split("\n").forEach(function(line){
+                line = line.trim();
+                if(line == "" ){
+                    return;
+                }
+                var columns = line.split(" ");
+                var row = {};
+                var i;
+                if(columns[0] == 'nexthop'){
+                    row = currentNetwork ? Ext.clone(currentNetwork) : {};
+                    columns.shift();
+                    if(firstNexthop == false){
+                        storeData.pop();
+                    }
+                    firstNexthop = true;
+                }else{
+                    var network = columns.shift().split('/');
+                    currentNetwork = {
+                        network: network[0],
+                        prefix: network[1],
+                        attributes: []
+                    };
+                    firstNexthop = false;
+                    row = currentNetwork;
+                }
+                for(i = 0; i < columns.length; i += 2){
+                    inFields = false;
+                    var columnName = columns[i];
+                    var columnValue = columns[i + 1];
+                    routeStoreFields.forEach(function(field){
+                        if(field.getName() == columnName){
+                            inFields = true;
+                        }
+                    });
+                    if(inFields){
+                        if(columnName == 'dev'){
+                            var interfaceRecord = vm.get('interfaces').findRecord('symbolicDev', columnValue);
+                            row['interface'] = interfaceRecord ? interfaceRecord.get('interfaceId') : columnValue;
+                        }
+                        row[columnName] = columnValue;
+                    }else{
+                        row['attributes'].push({name: columns[i], value: columnValue});
+                    }
+                }
+                storeData.push(row);
+            });
+            routeStore.loadData(storeData);
+
+            // Build BGP Neighbor status
+            storeData = [];
+            result[1].split("\n").forEach(function(line){
+                line = line.trim();
+                if(line == "" ){
+                    return;
+                }
+                var columns = line.split(" ");
+                if(columns[8] == 'never'){
+                    uptime = 0;
+                }else{
+                    uptimes = columns[8].split(':');
+                    uptime = parseInt(uptimes[uptimes.length -1],10) + (parseInt(uptimes[uptimes.length -2],10) * 60) + (parseInt(uptimes[uptimes.length -2],10) * 3600);
+                }
+                storeData.push({
+                    neighbor: columns[0],
+                    as: columns[2],
+                    msgsRecv: columns[3],
+                    msgsSent: columns[4],
+                    uptime: uptime
+                });
+            });
+            view.down('#bgpStatus').getStore().loadData(storeData);
+
+
+            // Build OSPF status
+            storeData = [];
+            result[2].split("\n").forEach(function(line){
+                line = line.trim();
+                if(line == "" ){
+                    return;
+                }
+                var columns = line.split(" ");
+
+                devs = columns[5].split(':');
+                dev = devs[0]
+                var interfaceRecord = vm.get('interfaces').findRecord('symbolicDev', dev);
+                interfaceId = interfaceRecord ? interfaceRecord.get('interfaceId') : dev;
+                storeData.push({
+                    neighbor: columns[0],
+                    address: columns[4],
+                    time: parseFloat(columns[3]),
+                    dev: dev,
+                    interface: interfaceId
+                });
+            });
+            view.down('#ospfStatus').getStore().loadData(storeData);
+
+            view.setLoading(false);
+
+        },function(ex){
+            view.setLoading(false);
+            console.error(ex);
+            Util.handleException(ex);
+        });
     },
 
     // Network Tests
@@ -1283,6 +1395,14 @@ Ext.define('Ung.config.network.MainController', {
             }else{
                 return 'Unknown'.t() + ' - ' + value;
             }
+        },
+
+        routeAttributes: function( value ){
+            var attributes = [];
+            value.forEach(function(entry){
+                attributes.push('<div class="tag-item">' + entry.name + ':'  + entry.value + '</div>');
+            });
+            return '<div class="tagpicker">' + attributes.join('') + '</div>';
         }
 
     }
