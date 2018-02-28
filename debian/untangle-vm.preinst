@@ -1,13 +1,5 @@
 #! /bin/bash
 
-ourInit() {
-  if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
-    invoke-rc.d $1 $2
-  else
-    /etc/init.d/$1 $2
-  fi
-}
-
 # If untangle-vm PID file exist and the process exists
 # stop the untangle-vm, launch the splash screen, and
 # launch uvm-restart to restart it after apt-get is done
