@@ -376,11 +376,11 @@ class UvmTests(unittest2.TestCase):
         """check that the Server Certificate exists in the backup"""
 
         #remove any old files associated with backup
-        subprocess.check_output("rm -rf /tmp/untangleBackup*")
+        subprocess.call("rm -rf /tmp/untangleBackup*", shell=True)
 
         #copy a backup of apache.pem
         certFilePath = "/usr/share/untangle/settings/untangle-certificates/apache.pem"
-        subprocess.check_output("cp "+certFilePath+" "+certFilePath+".backup")
+        subprocess.call("cp "+certFilePath+" "+certFilePath+".backup", shell=True)
 
         #Modify apache.pem a little to verify the change is in the backup
         certFile = open(certFilePath)
@@ -390,18 +390,18 @@ class UvmTests(unittest2.TestCase):
         open(certFilePath, "w").write('\n'.join(lines))
 
         #Download backup
-        result = subprocess.check_output("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 3 --post-data 'type=backup' http://localhost/admin/download")
+        result = subprocess.call("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 3 --post-data 'type=backup' http://localhost/admin/download", shell=True)
 
         #replace modified cert with backed-up original before testing.
-        subprocess.check_output("cp "+certFilePath+".backup "+certFilePath)
+        subprocess.call("cp "+certFilePath+".backup "+certFilePath, shell=True)
 
         # does the backup exist
         assert(result == 0)
 
         #extract backup
-        subprocess.check_output("mkdir /tmp/untangleBackup")
-        subprocess.check_output("tar -xf /tmp/untangleBackup.backup -C /tmp/untangleBackup")
-        subprocess.check_output("tar -xf "+glob.glob("/tmp/untangleBackup/files*.tar.gz")[0] + " -C /tmp/untangleBackup") #use glob since extracted file has timestamp
+        subprocess.call("mkdir /tmp/untangleBackup", shell=True)
+        subprocess.call("tar -xf /tmp/untangleBackup.backup -C /tmp/untangleBackup", shell=True)
+        subprocess.call("tar -xf "+glob.glob("/tmp/untangleBackup/files*.tar.gz")[0] + " -C /tmp/untangleBackup", shell=True) #use glob since extracted file has timestamp
 
         #Check the cert in the backup
         newCertFilePath = "/tmp/untangleBackup/usr/share/untangle/settings/untangle-certificates/apache.pem"

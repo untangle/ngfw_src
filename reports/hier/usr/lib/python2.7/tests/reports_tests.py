@@ -346,11 +346,11 @@ class ReportsTests(unittest2.TestCase):
 
         ## Verify that all images are intact.
         # copy mail from remote client
-        os.system("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
+        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP), shell=True)
         fp = open("/tmp/test_100_email_report_admin_file")
         email_string = fp.read()
         fp.close()
-        os.system("rm /tmp/test_100_email_report_admin_file")
+        subprocess.call("rm /tmp/test_100_email_report_admin_file", shell=True)
         # Delete the first line as it is blank and throws off the parser
         email_string = '\n'.join(email_string.split('\n')[1:])
         msg = email.message_from_string(email_string)
@@ -459,11 +459,11 @@ class ReportsTests(unittest2.TestCase):
 
         # Verify that all images are less than 350x350.
         # copy mail from remote client
-        os.system("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP))
+        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP), shell=True)
         fp = open("/tmp/test_102_email_admin_override_custom_report_mobile_file")
         email_string = fp.read()
         fp.close()
-        os.system("rm /tmp/test_102_email_admin_override_custom_report_mobile_file")
+        subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file", shell=True)
         # Delete the first line as it is blank and throws off the parser
         email_string = '\n'.join(email_string.split('\n')[1:])
         msg = email.message_from_string(email_string)
@@ -551,10 +551,10 @@ class ReportsTests(unittest2.TestCase):
         app.setSettings(settings)
         adminURL = global_functions.get_http_url()
         print "URL %s" % adminURL
-        resultLoginPage = os.system("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login")
+        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login", shell=True)
         assert (resultLoginPage == 0)
         
-        resultLoginPage = os.system("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=test&password=passwd" 2>&1 | grep -q Report')
+        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=test&password=passwd" 2>&1 | grep -q Report', shell=True)
         assert (resultLoginPage == 0)
         
     @staticmethod

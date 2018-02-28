@@ -87,14 +87,14 @@ class PhishBlockerTests(unittest2.TestCase):
     # verify daemon is running
     def test_009_clamdIsRunning(self):
         # wait for freshclam to finish updating sigs
-        freshClamResult = os.system("freshclam >/dev/null 2>&1")
+        freshClamResult = subprocess.call("freshclam >/dev/null 2>&1", shell=True)
         # wait for clam to get ready - trying to fix occasional failure of later tests
         timeout = 180
         result = 1
         while (result and timeout > 0):
             time.sleep(5)
             timeout -= 5
-            result = os.system("pidof clamd >/dev/null 2>&1")
+            result = subprocess.call("pidof clamd >/dev/null 2>&1", shell=True)
         assert (result == 0)
 
     # verify client is online
