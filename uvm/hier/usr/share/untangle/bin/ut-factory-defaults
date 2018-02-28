@@ -4,7 +4,7 @@
 # This file should be rewritten as a run-parts script on a /etc/untangle/restore.d directory
 # This would allow us to create plugins for other packages in the restore.d directory
 
-ourInit untangle-vm stop
+systemctl stop untangle-vm
 
 echo "Removing settings and configuration..."
 
@@ -53,6 +53,6 @@ if [ $? != 101 ] ; then # action is allowed, we're not in a chroot
 fi
 echo "Restoring File System State...done"
 
-ourInit untangle-vm start
+systemctl start untangle-vm
 
 exit 0

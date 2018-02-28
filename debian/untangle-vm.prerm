@@ -3,7 +3,7 @@
 
 if [ "$1" = "remove" ] ; then
    if [ -x /etc/init.d/untangle-vm ]; then
-     ourInit untangle-vm stop
+     systemctl stop untangle-vm
    fi
   echo "Note: Untangle virtual machine stopped."
 fi
