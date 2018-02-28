@@ -301,8 +301,8 @@ public class SystemManagerImpl implements SystemManager
             }
         );
         if( ( files.length > 0 ) && settings.getTimeSource().equals("manual") ){
-            UvmContextFactory.context().execManager().exec( "update-rc.d ntp remove" );
-            UvmContextFactory.context().execManager().exec( "service ntp stop" );
+            UvmContextFactory.context().execManager().exec( "systemctl disable ntp" );
+            UvmContextFactory.context().execManager().exec( "systemctl stop ntp" );
             logger.info("Time changed from NTP to manual");
         }else if( ( files.length == 0 ) && settings.getTimeSource().equals("ntp") ){
             UvmContextFactory.context().execManager().exec( "update-rc.d ntp defaults" );
@@ -853,10 +853,10 @@ public class SystemManagerImpl implements SystemManager
          */
         if ( settings.getCloudEnabled() ) {
             UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector defaults 95 5" );
-            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector restart" );
+            UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
         } else {
-            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector remove" );
-            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector stop" );
+            UvmContextFactory.context().execManager().exec( "systemctl disable untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
         }
     }
     
