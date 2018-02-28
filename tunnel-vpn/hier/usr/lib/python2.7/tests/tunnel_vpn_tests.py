@@ -5,6 +5,7 @@ import traceback
 import ipaddr
 import socket
 import os
+import subprocess
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -78,7 +79,7 @@ class TunnelVpnTests(unittest2.TestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
 
     def test_020_createVPNTunnel(self):
-        result = os.system("wget -o /dev/null -t 1 --timeout=3 " + vpnTunnelFile + " -O /tmp/config.zip")
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnTunnelFile + " -O /tmp/config.zip", shell=True)
         if (result != 0):
             raise unittest2.SkipTest("Unable to download VPN file: " + vpnTunnelFile)
         currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)

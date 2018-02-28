@@ -24,7 +24,7 @@ __orig_stdout = None
 __orig_stderr = None
 
 # set the key file permissions correctly just in case
-os.system("chmod 600 %s" % hostKeyFile)
+subprocess.call("chmod 600 %s" % hostKeyFile, shell=True)
 
 netsettings = uvmContext.networkManager().getNetworkSettings()
 for interface in netsettings['interfaces']['list']:

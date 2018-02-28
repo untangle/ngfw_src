@@ -2,6 +2,7 @@ import unittest2
 import time
 import sys
 import os
+import subprocess
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -29,7 +30,7 @@ class SpamBlockerLiteTests(SpamBlockerBaseTests):
 
     # verify daemon is running
     def test_009_IsRunning(self):
-        result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
+        result = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
         assert (result == 0)
 
 test_registry.registerApp("spam-blocker-lite", SpamBlockerLiteTests)

@@ -90,9 +90,9 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
 def configureVPNClientForConnection(clientLink):
     "download client config from passed link, unzip, and copy to correct location"
     #download config
-    os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost" + clientLink + " -O /tmp/clientconfig.zip")
+    subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost" + clientLink + " -O /tmp/clientconfig.zip", shell=True)
     #copy config to remote host
-    os.system("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
+    subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1", shell=True)
     #unzip files
     unzipFiles = remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
     #remove any existing openvpn config files
@@ -171,7 +171,7 @@ class OpenVpnTests(unittest2.TestCase):
         if (vpnHostResult != 0):
             raise unittest2.SkipTest("No paried VPN server available")
         # Download remote system VPN config
-        result = os.system("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip")
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip", shell=True)
         assert (result == 0) # verify the download was successful
         app.importClientConfig("/tmp/config.zip")
         # wait for vpn tunnel to form
@@ -299,10 +299,10 @@ class OpenVpnTests(unittest2.TestCase):
         # print clientLink
 
         # download client config file
-        result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip", shell=True)
         assert (result == 0)
         # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        os.system("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
+        subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1", shell=True)
         remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
         remote_control.run_command("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=global_functions.vpnClientVpnIP)
         remote_control.run_command("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.vpnClientVpnIP)
@@ -320,7 +320,7 @@ class OpenVpnTests(unittest2.TestCase):
 
                 # ping the test host behind the Untangle from the remote testbox
                 print "vpn pool address: " + vpnPoolAddressIP
-                result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
+                result1 = subprocess.call("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1", shell=True)
         if result1 == 0:        
             result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=vpnPoolAddressIP)
 

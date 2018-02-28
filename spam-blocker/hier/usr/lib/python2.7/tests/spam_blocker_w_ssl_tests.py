@@ -2,6 +2,7 @@ import unittest2
 import time
 import sys
 import os
+import subprocess
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -32,9 +33,9 @@ class SpamBlockerTests(SpamBlockerBaseTests):
     def test_009_IsRunningAndSSL(self):
         appSSL = appSP = uvmContext.appManager().app(self.appNameSSLInspector())
         appSSL.start()
-        result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
+        result = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
         assert (result == 0)
-        result = os.system( "ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1" )
+        result = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
         assert ( result == 0 )
 
 test_registry.registerApp("spam-blocker-w-ssl", SpamBlockerTests)
