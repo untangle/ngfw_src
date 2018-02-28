@@ -2,6 +2,7 @@ import unittest2
 import time
 import sys
 import os
+import subprocess
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -30,8 +31,8 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
     # verify daemon is running
     def test_009_clamdIsRunning(self):
         # wait for freshclam to finish updating sigs
-        os.system("freshclam >/dev/null 2>&1")
-        result = os.system("pidof clamd >/dev/null 2>&1")
+        subprocess.call("freshclam >/dev/null 2>&1", shell=True)
+        result = subprocess.call("pidof clamd >/dev/null 2>&1", shell=True)
         assert (result == 0)
 
 test_registry.registerApp("virus-blocker-lite", VirusBlockerLiteTests)

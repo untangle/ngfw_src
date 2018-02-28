@@ -104,7 +104,7 @@ class ApplicationControlTests(unittest2.TestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
 
     def test_012_classdIsRunning(self):
-        result = os.system("ps aux | grep classd | grep -v grep >/dev/null 2>&1")
+        result = subprocess.call("ps aux | grep classd | grep -v grep >/dev/null 2>&1", shell=True)
         assert (result == 0)
 
     def test_020_protoRule_Default_Google(self):
@@ -227,7 +227,7 @@ class ApplicationControlTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         for i in range(10):
             print "Test %i" % i
-            result = os.system("/etc/init.d/untangle-classd restart >/dev/null 2>&1")
+            result = subprocess.call("/etc/init.d/untangle-classd restart >/dev/null 2>&1", shell=True)
             assert (result == 0)
             result = remote_control.is_online()
             assert (result == 0)
