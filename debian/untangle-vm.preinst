@@ -8,7 +8,7 @@ if [ -f /var/run/uvm.pid ] ; then
 
         if [ -x /etc/init.d/untangle-vm ] ; then
             /usr/share/untangle/bin/ut-show-upgrade-splash start
-            ourInit untangle-vm stop || true
+            systemctl stop untangle-vm || true
         fi
 
         echo "Restarting untangle-vm after apt-get completes..."
