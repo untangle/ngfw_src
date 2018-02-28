@@ -94,7 +94,7 @@ Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
 Section: non-free/net
-Depends: untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-jessie-armel | untangle-kernel-modules-jessie-armhf, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
+Depends: untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-stretch-armel | untangle-kernel-modules-stretch-armhf, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
 
@@ -154,7 +154,7 @@ Conflicts: untangle-node-directory-connector, libradius1, radiusclient1
 Replaces: untangle-node-directory-connector
 Provides: untangle-node-directory-connector
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, libfreeradius-client-dev | libfreeradius-dev, freeradius-common, untangle-google-connector, xvfb
+Depends: untangle-vm, untangle-app-license, libfreeradius-dev, freeradius-common, untangle-google-connector, xvfb
 Description: The Untangle Directory Connector
  The Untangle Directory Connector.
 
