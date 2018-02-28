@@ -199,6 +199,18 @@ public class EventRuleCondition
         if ( value == null && "javaClass".equals(fieldName) ) {
             try { value = obj.get( "class" ); } catch (Exception e) {}
         }
+
+        // There has been some ambiguity between different JSON serializers over whether the first
+        // character is capitalized or not
+        // if the field is not found, try switching the case of the first letter and checking again
+        if ( value == null && java.lang.Character.isLowerCase(fieldName.charAt(0)) ) {
+            String altFieldName = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
+            try { value = obj.get( altFieldName ); } catch (Exception e) {}
+        }
+        if ( value == null && java.lang.Character.isUpperCase(fieldName.charAt(0)) ) {
+            String altFieldName = fieldName.substring(0,1).toLowerCase() + fieldName.substring(1);
+            try { value = obj.get( altFieldName ); } catch (Exception e) {}
+        }
         
         // if the attributeName contains a "." then recurse
         // "foo.bar" should get obj['foo']['bar']
