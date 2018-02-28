@@ -2,7 +2,7 @@
 
 if [ "$1" = "purge" ] ; then
     rm -f /etc/init.d/untangle-vm
-    update-rc.d untangle-vm remove > /dev/null
+    systemctl disable untangle-vm > /dev/null
 fi
 
 exit 0
