@@ -32,6 +32,12 @@ vpnServerVpnIP = "10.111.56.96"
 # special box within vpnServerVpnIP's network
 vpnServerVpnLanIP = "192.168.235.96"
 
+# special Untangle box configured as a OpenVPN server with User/Pass authentication enabled
+vpnServerUserPassVpnIP = "10.111.56.91"
+
+# special box within vpnServerUserPassVpnIP's network
+vpnServerUserPassVpnLanIP = "192.168.235.91"
+
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 vpnClientVpnIP = "10.111.5.20"  
 
