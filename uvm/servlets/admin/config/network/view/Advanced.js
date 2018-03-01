@@ -888,7 +888,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },{
                             header: 'Prefix'.t(),
                             dataIndex: 'prefix',
-                            width: Renderer.previxWidth
+                            width: Renderer.prefixWidth
                         },{
                             header: 'Via'.t(),
                             dataIndex: 'via',
