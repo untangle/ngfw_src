@@ -39,6 +39,8 @@ Ext.define('Ung.util.Renderer', {
     networkWidth: 120,
     // Port
     portWidth: 70,
+    // Network prefix
+    prefixWidth: 50,
     // Priority
     prioritytWidth: 70,
     // Protocol
