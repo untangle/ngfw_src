@@ -27,6 +27,8 @@ vpnClientResult = 0
 vpnServerResult = 0
 vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
 vpnSite2SiteHostname = "untangle-268"
+vpnSite2SiteUserPassFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
+vpnSite2SiteUserPassHostname = "untangle-8003"
 tunnelUp = False
 ovpnlocaluser = "ovpnlocaluser"
 ovpnPasswd = "passwd"
@@ -80,7 +82,7 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
-        result = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerVpnLanIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        result = subprocess.call(["ping","-W","5","-c","1",target_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (result == ping_result_expected):
             # target is reachable if succ
             ping_result = True
@@ -137,7 +139,7 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        global app, appWeb, appData, vpnHostResult, vpnClientResult, vpnServerResult
+        global app, appWeb, appData, vpnHostResult, vpnClientResult, vpnServerResult, vpnUserPassHostResult
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
@@ -147,6 +149,7 @@ class OpenVpnTests(unittest2.TestCase):
             raise Exception('app %s already instantiated' % self.appWebName())
         appWeb = uvmContext.appManager().instantiate(self.appWebName(), defaultRackId)
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnUserPassHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerUserPassVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
         if vpnClientResult == 0:
@@ -185,7 +188,7 @@ class OpenVpnTests(unittest2.TestCase):
         # print listOfServers
         assert(listOfServers['list'][0]['name'] == vpnSite2SiteHostname)
         tunnelUp = True
-   
+
     def test_030_disableRemoteClientVPNTunnel(self):
         global tunnelUp 
         if (not tunnelUp):
@@ -205,7 +208,50 @@ class OpenVpnTests(unittest2.TestCase):
         remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,1)
         assert (remoteHostResult)
         tunnelUp = False
-        
+
+        #remove server from remoteServers so it doesn't interfere with later tests
+        appData = app.getSettings()
+        appData["remoteServers"]["list"][:] = []
+        app.setSettings(appData)
+
+    def test_035_createVPNTunnel_userpass(self):
+        """Create Site-to-Site connection with username/password authentication"""
+        if (vpnUserPassHostResult != 0):
+            raise unittest2.SkipTest("User/Pass VPN server not available")
+
+        # Download remote system VPN config
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteUserPassFile + " -O /tmp/UserPassConfig.zip", shell=True)
+        assert(result == 0) #verify download was successful
+        app.importClientConfig("/tmp/UserPassConfig.zip")
+
+        #set username/password in remoteServer settings
+        appData = app.getSettings()
+        appData["serverEnabled"]=True
+        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
+        appData["remoteServers"]["list"][0]["authUserPass"]=True
+        appData["remoteServers"]["list"][0]["authUsername"]=ovpnlocaluser
+        appData["remoteServers"]["list"][0]["authPassword"]=ovpnPasswd
+        #enable user/password authentication, set to local directory
+        appData['authUserPass']=True
+        appData["authenticationType"]="LOCAL_DIRECTORY"
+        app.setSettings(appData)
+
+        #wait for vpn tunnel to form
+        timeout = waitForServerVPNtoConnect()
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(timeout > 0)
+
+        remoteHostResultUserPass = waitForPing(global_functions.vpnServerUserPassVpnLanIP,0)
+        assert(remoteHostResultUserPass)
+        listOfServers = app.getRemoteServersStatus()
+        #print listOfServers
+        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
+
+        #remove server from remoteServers so it doesn't interfere with later tests
+        appData = app.getSettings()
+        appData["remoteServers"]["list"][:] = []
+        app.setSettings(appData)
+
     def test_040_createClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
@@ -299,13 +345,9 @@ class OpenVpnTests(unittest2.TestCase):
         # print clientLink
 
         # download client config file
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip", shell=True)
-        assert (result == 0)
-        # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1", shell=True)
-        remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
-        remote_control.run_command("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=global_functions.vpnClientVpnIP)
-        remote_control.run_command("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.vpnClientVpnIP)
+        configureVPNClientForConnection(clientLink)
+
+        #connect openvpn tunnel
         remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
 
         result1 = 1
