@@ -673,7 +673,7 @@ Ext.define('Ung.config.network.MainController', {
                 var columns = line.split(" ");
 
                 devs = columns[5].split(':');
-                dev = devs[0]
+                dev = devs[0];
                 var interfaceRecord = vm.get('interfaces').findRecord('symbolicDev', dev);
                 interfaceId = interfaceRecord ? interfaceRecord.get('interfaceId') : dev;
                 storeData.push({
