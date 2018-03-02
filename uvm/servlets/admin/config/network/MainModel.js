@@ -135,6 +135,45 @@ Ext.define('Ung.config.network.MainModel', {
                 type: 'Not so stubby, no summary'.t()
             }]
         },
+        ospfAbrTypes:{
+            data: [{
+                value: 0,
+                type: 'Default'.t()
+            },{
+                value: 1,
+                type: 'Cisco'.t()
+            },{
+                value: 2,
+                type: 'IBM'.t()
+            },{
+                value: 3,
+                type: 'Shortcut'.t()
+            },{
+                value: 4,
+                type: 'Standard'.t()
+            }]
+        },
+        ospfDefaultInformationOriginates:{
+            data: [{
+                value: 0,
+                type: 'Never'.t()
+            },{
+                value: 1,
+                type: 'Regular'.t()
+            },{
+                value: 2,
+                type: 'Always'.t()
+            }]
+        },
+        ospfMetricTypes:{
+            data: [{
+                value: 1,
+                type: 'Type 1'.t()
+            },{
+                value: 2,
+                type: 'Type 2'.t()
+            }]
+        },
         dymamicRoutes: {
             data: [],
             fields: [{
