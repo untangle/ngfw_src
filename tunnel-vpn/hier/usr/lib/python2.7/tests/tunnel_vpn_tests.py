@@ -99,12 +99,20 @@ class TunnelVpnTests(unittest2.TestCase):
         while (not connected and timeout > 0):
             newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             if (currentWanIP != newWanIP):
+                listOfConnections = app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
                 connected = True
             else:
                 timeout-=1
             
+        # remove the added tunnel
+        appData['rules']['list'][:] = []
+        appData['tunnels']['list'][:] = []
+        app.setSettings(appData)
+
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
+        assert(connectStatus == "CONNECTED")
 
     @staticmethod
     def finalTearDown(self):
