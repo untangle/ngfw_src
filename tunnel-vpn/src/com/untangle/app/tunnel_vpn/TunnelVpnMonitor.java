@@ -57,7 +57,7 @@ class TunnelVpnMonitor implements Runnable
     private final TunnelVpnApp app;
 
     private Thread thread = null;
-    private volatile boolean isAlive = true;
+    private volatile boolean isAlive = false;
     private volatile long lastTrafficCheck = 0;
 
     protected TunnelVpnMonitor(TunnelVpnApp app, TunnelVpnManager manager)
@@ -115,10 +115,10 @@ class TunnelVpnMonitor implements Runnable
 
     public synchronized void stop()
     {
+        isAlive = false;
+
         if (thread != null) {
             logger.debug("Stopping TunnelVpn monitor");
-
-            isAlive = false;
             try {
                 thread.interrupt();
                 thread.join(THREAD_JOIN_TIME_MSEC);
