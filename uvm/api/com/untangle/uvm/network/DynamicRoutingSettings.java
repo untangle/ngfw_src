@@ -24,11 +24,13 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     private Boolean enabled = false;
     private Boolean bgpEnabled = false;
     private Boolean ospfEnabled = false;
+    private Boolean ospfUseDefaultMetricEnabled = false;
     private Boolean ospfRedistConnectedEnabled = false;
     private Boolean ospfRedistStaticEnabled = false;
     private Boolean ospfRedistBgpEnabled = false;
 
     private Integer ospfDefaultMetric = 0;
+    private Integer ospfAbrType = 0;
     private Integer ospfAutoCost = 0;
     private Integer ospfDefaultInformationOriginateType = 0;
     private Integer ospfDefaultInformationOriginateMetric = 0;
@@ -43,7 +45,6 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     private String bgpRouterId = "";
     private String bgpRouterAs = "";
     private String ospfRouterId = "";
-    private String ospfAbrType = "";
 
     private List<DynamicRouteBgpNeighbor> bgpNeighbors = null;
     private List<DynamicRouteNetwork> bgpNetworks = null;
@@ -75,11 +76,14 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     public String getOspfRouterId() { return this.ospfRouterId; }
     public void setOspfRouterId( String newValue ) { this.ospfRouterId = newValue; }
 
+    public Boolean getOspfUseDefaultMetricEnabled() { return this.ospfUseDefaultMetricEnabled; }
+    public void setOspfUseDefaultMetricEnabled( Boolean newValue ) { this.ospfUseDefaultMetricEnabled = newValue; }
+
     public Integer getOspfDefaultMetric() { return this.ospfDefaultMetric; }
     public void setOspfDefaultMetric( Integer newValue ) { this.ospfDefaultMetric = newValue; }
 
-    public String getOspfAbrtype() { return this.ospfAbrType; }
-    public void setOspfAbrType( String newValue ) { this.ospfAbrType = newValue; }
+    public Integer getOspfAbrType() { return this.ospfAbrType; }
+    public void setOspfAbrType( Integer newValue ) { this.ospfAbrType = newValue; }
 
     public Integer getOspfAutoCost() { return this.ospfAutoCost; }
     public void setOspfAutoCost( Integer newValue ) { this.ospfAutoCost = newValue; }

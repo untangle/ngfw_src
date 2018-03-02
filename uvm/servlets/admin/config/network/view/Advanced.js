@@ -1337,11 +1337,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                             padding: 10,
                             // collapsed: true,
 
-                            // checkboxToggle: true,
-                            // checkbox: {
-                            //     bind: '{settings.dynamicRoutingSettings.somethingCheck}'
-                            // },
-
                             defaults:{
                                 margin: 10,
                                 labelWidth: 200,
@@ -1354,16 +1349,33 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 emptyText: '[auto-generated]'.t(),
                                 vtype: 'routerId'
                             },{
-                                // default metric (0-16777214)
+                                xtype: 'checkbox',
+                                fieldLabel: 'Specify Default Metric'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}',
+                            },{
                                 xtype: 'textfield',
                                 fieldLabel: 'Default Metric'.t(),
-                                bind: '{settings.dynamicRoutingSettings.ospfDefaultMetric}',
-                                vtype: 'metric'
+                                disabled: true,
+                                hidden: true,
+                                bind: {
+                                    value: '{settings.dynamicRoutingSettings.ospfDefaultMetric}',
+                                    disabled: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}',
+                                    hidden: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}'
+                                },
+                                vtype: 'metric'                                    
                             },{
-                                // ABR type - cisco|ibm|shortcut|standard, def CISCO
-                                xtype: 'textfield',
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{settings.dynamicRoutingSettings.ospfAbrType}',
+                                    store: '{ospfAbrTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
                                 fieldLabel: 'ABR Type'.t(),
-                                bind: '{settings.dynamicRoutingSettings.ospfAbrType}',
+                                emptyText: "[enter area]".t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
                             },{
                                 // Auto cost reference bandwidth (MBits/s) def 100 (1-4294967)
                                 xtype: 'textfield',
@@ -1377,20 +1389,47 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                                 items:[{
                                     // Default Information originate Never/Regular/Always
-                                    xtype: 'textfield',
+                                    xtype: 'combo',
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType}',
+                                        store: '{ospfDefaultInformationOriginates}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
                                     fieldLabel: 'Type'.t(),
-                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType}'
+                                    emptyText: "[enter area]".t(),
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
                                 },{
                                     // Metric (0-16777214)
                                     xtype: 'textfield',
                                     fieldLabel: 'Metric'.t(),
-                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateMetric}',
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateMetric}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}'
+                                    },
                                     vtype: 'metric'
                                 },{
                                     // External Type 1/External Type 2
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Type'.t(),
-                                    bind: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateExternalType}',
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
                                 }]
                             },{
                                 xtype: 'fieldset',
@@ -1410,9 +1449,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     vtype: 'metric'
                                 },{
                                     // External Type 1/External Type 2
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Type'.t(),
-                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedExternalType}',
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistConnectedExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
                                 }]
                             },{
                                 xtype: 'fieldset',
@@ -1430,9 +1481,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     vtype: 'metric'
                                 },{
                                     // External Type 1/External Type 2
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Type'.t(),
-                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticExternalType}',
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistStaticExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
                                 }]
                             },{
                                 xtype: 'fieldset',
@@ -1454,9 +1517,22 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     vtype: 'metric'
                                 },{
                                     // External Type 1/External Type 2
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Type'.t(),
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistNgpExternalType}',
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistBgpExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
                                 }]
                             }]
                         }]
