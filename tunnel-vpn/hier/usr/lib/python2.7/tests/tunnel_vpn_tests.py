@@ -103,6 +103,7 @@ class TunnelVpnTests(unittest2.TestCase):
                 connectStatus = listOfConnections['list'][0]['stateInfo']
                 connected = True
             else:
+                time.sleep(1)
                 timeout-=1
             
         # remove the added tunnel
