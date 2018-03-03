@@ -1517,7 +1517,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     vtype: 'metric'
                                 },{
                                     // External Type 1/External Type 2
-                                    bind: '{settings.dynamicRoutingSettings.ospfRedistNgpExternalType}',
                                     xtype: 'combo',
                                     fieldLabel: 'Metric Type'.t(),
                                     hidden: true,
