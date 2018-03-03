@@ -59,6 +59,7 @@ class TunnelVpnMonitor implements Runnable
     private Thread thread = null;
     private volatile boolean isAlive = false;
     private volatile long lastTrafficCheck = 0;
+    private volatile long cycleCount = 0;
 
     protected TunnelVpnMonitor(TunnelVpnApp app, TunnelVpnManager manager)
     {
@@ -137,6 +138,8 @@ class TunnelVpnMonitor implements Runnable
      */
     private void checkTunnelProcesses()
     {
+        cycleCount += 1;
+
         for (TunnelVpnTunnelSettings tunnel : app.getSettings().getTunnels()) {
 
             TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnel.getTunnelId());
@@ -145,6 +148,8 @@ class TunnelVpnMonitor implements Runnable
                 status = new TunnelVpnTunnelStatus(tunnel.getTunnelId(), tunnel.getName());
                 tunnelStatusList.put(tunnel.getTunnelId(), status);
             }
+
+            status.setCycleCount(cycleCount);
 
             // ignore tunnels that are not enabled
             if (!tunnel.getEnabled()) continue;
@@ -182,6 +187,17 @@ class TunnelVpnMonitor implements Runnable
                 logger.warn("Failed to check openvpn pid file.", exn);
             }
         }
+
+        /*
+         * Tunnel status objects that didn't get updated are left over from a
+         * tunnel that was deleted so we clean them up here.
+         */
+        for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
+            Integer key = entry.getKey();
+            TunnelVpnTunnelStatus value = entry.getValue();
+            if (value.getCycleCount() != cycleCount) tunnelStatusList.remove(value.getTunnelId());
+        }
+
     }
 
     /**
@@ -392,16 +408,18 @@ class TunnelVpnMonitor implements Runnable
     {
         LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
 
-        // only call the process and stats functions if the app is running
-        if (app.getRunState() == AppSettings.AppState.RUNNING) {
-            checkTunnelProcesses();
-            generateTunnelStatistics();
+        // if the app is not running just return an empty list
+        if (app.getRunState() != AppSettings.AppState.RUNNING) {
+            return (statusList);
+        }
 
-            for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
-                Integer key = entry.getKey();
-                TunnelVpnTunnelStatus value = entry.getValue();
-                statusList.add(value);
-            }
+        checkTunnelProcesses();
+        generateTunnelStatistics();
+
+        for (Map.Entry<Integer, TunnelVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
+            Integer key = entry.getKey();
+            TunnelVpnTunnelStatus value = entry.getValue();
+            statusList.add(value);
         }
 
         return (statusList);
