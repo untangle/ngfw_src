@@ -18,6 +18,7 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
     private String tunnelName;
     private String stateInfo = STATE_DISCONNECTED;
     private String stateLast = STATE_DISCONNECTED;
+    private long cycleCount = 0;
     private long connectStamp = 0;
     private long xmitTotal = 0;
     private long xmitLast = 0;
@@ -54,6 +55,9 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
 
         public String getStateLast() { return(stateLast); }
         public void setStateLast(String argValue) { this.stateLast = argValue; }
+
+        public long getCycleCount() { return(cycleCount); }
+        public void setCycleCount(long argValue) { this.cycleCount = argValue; }
 
         public long getConnectStamp() { return(connectStamp); }
         public void setConnectStamp(long argValue) { this.connectStamp = argValue; }
