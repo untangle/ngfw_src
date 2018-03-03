@@ -217,28 +217,14 @@ public class NetworkManagerImpl implements NetworkManager
         configureInterfaceSettingsArray();
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
+
         /**
-         * Now that the settings have been successfully saved
-         * Restart networking
+         * Now actually sync the settings to the system
          */
         ExecManagerResult result;
         boolean errorOccurred = false;
         String errorStr = null;
-
-        String[] commands = getAppropriateNetworkRestartCommand( newSettings );
-        downCommand = commands[0];
-        upCommand = commands[1];
-        
-        // run down command (usually ifdown)
-        result = UvmContextFactory.context().execManager().exec( downCommand );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            for ( String line : lines )
-                logger.info( downCommand + ": " + line );
-        } catch (Exception e) {}
-
-        // Now sync those settings to the OS
-        String cmd = "/usr/bin/sync-settings.py -v -f " + settingsFilename;
+        String cmd = "/usr/bin/sync-settings.py -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -250,19 +236,6 @@ public class NetworkManagerImpl implements NetworkManager
         if ( result.getResult() != 0 ) {
             errorOccurred = true;
             errorStr = "sync-settings.py failed: returned " + result.getResult();
-        }
-        
-        // run up command (usually ifup)
-        result = UvmContextFactory.context().execManager().exec( upCommand );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            for ( String line : lines )
-                logger.info( upCommand + ": " + line );
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            errorOccurred = true;
-            errorStr = upCommand + " failed: returned " + result.getResult();
         }
         
         // notify interested parties that the settings have changed
@@ -2110,150 +2083,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         return deviceNames;
-    }
-
-    /**
-     * This method predicts the files that will change when syncing the new settings to the O/S
-     * It returns a list of files that will change (in content)
-     * If the prediction fails, null is returned
-     */
-    private LinkedList<String> predictUpdatedFiles( NetworkSettings newSettings )
-    {
-        ExecManagerResult result;
-        int retCode;
-        LinkedList<String> changedFiles = new LinkedList<String>();
-        Path tmpDir = null;
-        String cmd;
-        
-        try {
-            tmpDir = Files.createTempDirectory( "tmp-sync-settings" );
-
-            // apply settings in new dir
-            cmd = "/usr/bin/sync-settings.py -v -f " + settingsFilename + " -p " + tmpDir.getFileName();
-            retCode = UvmContextFactory.context().execManager().execResult( cmd );
-
-            if ( retCode != 0 ) {
-                logger.warn( "sync-settings.py failed: returned " + retCode );
-                return null;
-            }
-
-            cmd = "diff -rqP / " + tmpDir + " | grep -v '^Only in' | awk '{print $2}'";
-            result = UvmContextFactory.context().execManager().exec( cmd );
-            
-            if ( result.getResult() != 0 ) {
-                logger.warn( "diff failed: returned " + result.getResult() );
-                return null;
-            }
-            try {
-                String lines[] = result.getOutput().split("\\r?\\n");
-                for ( String line : lines ) {
-                    String filename = line.replaceAll("\\s","");
-                    if ( ! "".equals( filename ) )
-                        changedFiles.add( filename );
-                }
-            } catch (Exception e) {}
-        } catch ( Exception e ) {
-            logger.warn( "Failed to predict changed files", e );
-            try { Files.delete( tmpDir ); } catch ( Exception exc ) { logger.warn("Failed to delete directory " + tmpDir, exc); }
-        }
-
-        return changedFiles;
-    }
-
-    /**
-     * Usually when saving network settings we need to restart all of networking.
-     * However, in a few cases we can get away with just restarting a daemon or two.
-     *
-     * This method computes what is necessary for the provided new NetworkSettings.
-     * 
-     * Returns a string array. The first entry is the command to run before
-     * syncing settings, the second is the command to run after syncing settings
-     */
-    private String[] getAppropriateNetworkRestartCommand( NetworkSettings newSettings )
-    {
-        // default fullRestartCommands are full restart
-        //String[] fullRestartCommands = {"ifdown -a --exclude=lo", "ifup -a --exclude=lo"};
-        String[] fullRestartCommands = {"ifdown -a -v --exclude=lo", "ifup -a -v --exclude=lo"};
-
-        try {
-            LinkedList<String> changedFiles = predictUpdatedFiles( newSettings );
-
-            /**
-             * prediction failed, just do a full restart
-             */
-            if ( changedFiles == null )
-                return fullRestartCommands;
-
-            /**
-             * If nothing is new, we could do several things
-             * Currently we do nothing because in theory nothing has changed
-             * Alternatively, we could just do a full restart anyway
-             */
-            if ( changedFiles.size() == 0 ) {
-                logger.info("No config files changed. Skipping restart...");
-                return new String[] {"/bin/true", "/bin/true"};
-                //logger.info("No config files changed. Syncing settings anyway...");
-                //return fullRestartCommands;
-            }
-
-            for ( String filename : changedFiles )
-                logger.info("Changing file: " + filename);
-
-            /**
-             * If only /etc/hosts and /etc/hosts.dnsmasq have been written, just restart dnsmasq
-             */
-            if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
-            }
-
-            /**
-             * If only /etc/dnsmasq.d/dhcp-static has changed, just restart dnsmasq
-             */
-            if ( changedFiles.contains("/etc/dnsmasq.d/dhcp-static") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
-            }
-
-            /*
-             * If only miniupnp config has been written, just restart miniupnpd
-             */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-upnp"};
-            }
-
-            /*
-             * If only miniupnp config has been written, just restart miniupnpd
-             */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-upnp"};
-            }
-
-            /**
-             * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
-             * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
-             * We still need to do a full network restart so new /var/lib/untangle-interface-status/interface-x-status.js files are written
-             * with the new values (bug #12669 for more info)
-             */
-            //if ( changedFiles.contains("/etc/dnsmasq.conf") && changedFiles.size() == 1 ) {
-            //    return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/990-restart-dnsmasq"};
-            //}
-
-            /**
-             * If only /etc/untangle/iptables-rules.d/* files are changed, just restart iptables rules
-             */
-            int count = 0;
-            for ( String changedFile : changedFiles ) {
-                if ( changedFile.startsWith("/etc/untangle/iptables-rules.d/") )
-                    count++;
-            }
-            if ( count == changedFiles.size() ) {
-                return new String[] {"/bin/true", "/etc/untangle/post-network-hook.d/960-iptables"};
-            }
-        }
-        catch ( Exception e ) {
-            logger.warn("Exception",e);
-        }
-        
-        return fullRestartCommands;
     }
 
     /**
