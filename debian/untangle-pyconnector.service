@@ -1,0 +1,10 @@
+[Unit]
+Description=Untangle PyConnector
+
+[Service]
+Type=Simple
+ExecStart=/usr/share/untangle/bin/ut-pyconnector
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
