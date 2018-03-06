@@ -7,10 +7,10 @@ restart_ipsec()
     t_pid=`cat /var/run/pluto/pluto.pid`
     grep -q pluto /proc/${t_pid}/cmdline && {
         echo "[`date`] Restarting ipsec"
-        /etc/init.d/xl2tpd stop
-        /etc/init.d/ipsec stop
-        /etc/init.d/ipsec start
-        /etc/init.d/xl2tpd start
+        systemctl stop xl2tpd
+        systemctl stop ipsec
+        systemctl start ipsec
+        systemctl start xl2tpd
         /usr/share/untangle/bin/ipsec-create-statfile
         break
     }

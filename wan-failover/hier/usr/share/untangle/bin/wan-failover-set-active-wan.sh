@@ -89,7 +89,7 @@ update_dns_servers()
 
         mv ${t_temp} /etc/dnsmasq.conf
         chmod 664 /etc/dnsmasq.conf
-        /etc/init.d/dnsmasq restart
+        systemctl restart dnsmasq
     fi
     
     rm -f ${t_temp}

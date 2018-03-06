@@ -2,7 +2,7 @@
 
 # If openvpn is running - restart it
 if [ ! -z "`pidof openvpn`" ] ; then
-    /etc/init.d/openvpn restart
+    systemctl restart openvpn
 fi
 
 # HUP doesnt seem to work - openvpn dies on startup
