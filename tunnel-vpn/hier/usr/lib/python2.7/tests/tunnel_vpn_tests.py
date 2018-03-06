@@ -102,10 +102,12 @@ class TunnelVpnTests(unittest2.TestCase):
                 listOfConnections = app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
                 connected = True
+                listOfConnections = app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
             else:
                 time.sleep(1)
                 timeout-=1
-            
+
         # remove the added tunnel
         appData['rules']['list'][:] = []
         appData['tunnels']['list'][:] = []
