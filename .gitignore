@@ -8,9 +8,7 @@ downloads/output
 \#*#
 .#*
 *-stamp
-debian/*
-!debian/*.postinst
-!debian/*.service
+*.substvars
 GPATH
 GRTAGS
 GSYMS
