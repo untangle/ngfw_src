@@ -202,7 +202,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private void execDaemonControlEvil(String daemonName, String command)
     {
-        String cmd = (daemonName == null ? command : "/etc/init.d/" + daemonName + " " + command);        
+        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);        
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             reader.waitFor();
@@ -218,7 +218,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private void execDaemonControlSafe(String daemonName, String command)
     {
-        String cmd = (daemonName == null ? command : "/etc/init.d/" + daemonName + " " + command);
+        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);
         String output = UvmContextFactory.context().execManager().execOutput(cmd);
         try {
             String lines[] = output.split("\\r?\\n");

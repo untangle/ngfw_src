@@ -28,7 +28,6 @@ public class SyslogManagerImpl
     public static final String LOG_TAG = "uvm";
     public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
 
-    private static final String RSYSLOG = "/etc/init.d/rsyslog";
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
     private static final String CONF_LINE = ":msg, startswith, \" " + LOG_TAG + "\\[\" @";
 
@@ -106,7 +105,7 @@ public class SyslogManagerImpl
         // restart syslog
         File pidFile = new File("/var/run/rsyslogd.pid");
         if (pidFile.exists())
-            UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
+            UvmContextFactory.context().execManager().exec("systemctl rsyslog restart");
     }
     
     public static void setEnabled(EventSettings eventSettings)

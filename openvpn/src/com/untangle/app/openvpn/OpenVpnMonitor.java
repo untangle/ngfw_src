@@ -459,7 +459,7 @@ class OpenVpnMonitor implements Runnable
                 File procFile = new File("/proc/" + pid);
                 if ( ! procFile.exists() ) {
                     logger.warn("OpenVpn process for " + server.getName() + " (" + pid + ") missing. Restarting...");
-                    UvmContextFactory.context().execManager().exec( "/etc/init.d/openvpn restart " + server.getName() );
+                    UvmContextFactory.context().execManager().exec( "systemctl restart openvpn@" + server.getName() );
                 }
 
             } catch ( Exception e ) {
@@ -469,8 +469,8 @@ class OpenVpnMonitor implements Runnable
     }
 
     /**
-     * Checks that all enabled remote servers have a running OpenVpn process
-     * If one is missing it restarts it
+     * Checks that the main server has a running OpenVpn process
+     * If it is missing it restarts it
      */
     private void checkServerProcess()
     {
@@ -500,7 +500,7 @@ class OpenVpnMonitor implements Runnable
             File procFile = new File("/proc/" + pid);
             if ( ! procFile.exists() ) {
                 logger.warn("OpenVpn server process (" + pid + ") missing. Restarting...");
-                UvmContextFactory.context().execManager().exec( "/etc/init.d/openvpn restart server" );
+                UvmContextFactory.context().execManager().exec( "systemctl restart openvpn" );
             }
         } catch ( Exception e ) {
             logger.warn("Failed to check openvpn pid file.", e);

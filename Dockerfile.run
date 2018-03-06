@@ -8,7 +8,7 @@ VOLUME ${SRC}
 WORKDIR ${SRC}
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes untangle-development-runtime
-RUN /etc/init.d/postgresql start
+RUN systemctl start postgresql
 
 EXPOSE 80
 

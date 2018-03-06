@@ -31,9 +31,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
                 this.fileScannerAvailable = false;
             }
 
-            File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-
-            if (!daemonCheck.exists()) {
+            if (!isBdamInstalled()) {
                 this.fileScannerAvailable = false;
             }
 
@@ -104,8 +102,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     protected void preStart( boolean isPermanentTransition )
     {
         // skip the daemon stuff if package is not installed
-        File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-        if (daemonCheck.exists()) {
+        if (isBdamInstalled()) {
             UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
 
             // we only need to enable the monitoring since it will be disabled
@@ -124,11 +121,16 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     protected void postStop( boolean isPermanentTransition )
     {
         // skip the daemon stuff if the package is not installed
-        File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-        if (daemonCheck.exists()) {
+        if (isBdamInstalled()) {
             UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
         }
 
         super.postStop( isPermanentTransition );
+    }
+
+    protected boolean isBdamInstalled()
+    {
+        File daemonCheck = new File("/lib/systemd/system/untangle-bdamserver.service");
+        return daemonCheck.exists();
     }
 }

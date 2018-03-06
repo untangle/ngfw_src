@@ -227,7 +227,7 @@ class ApplicationControlTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         for i in range(10):
             print "Test %i" % i
-            result = subprocess.call("/etc/init.d/untangle-classd restart >/dev/null 2>&1", shell=True)
+            result = subprocess.call("systemctl restart untangle-classd >/dev/null 2>&1", shell=True)
             assert (result == 0)
             result = remote_control.is_online()
             assert (result == 0)

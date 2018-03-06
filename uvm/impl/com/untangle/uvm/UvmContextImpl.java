@@ -1142,7 +1142,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         // restart pyconnector now that the UID has been generated
-        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
+        this.execManager().execResult("systemctl restart untangle-pyconnector");
 
         return;
     }
