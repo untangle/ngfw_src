@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
 Uploaders: Untangle Buildbot <buildbot@untangle.com>
-Build-Depends: untangle-development-build
+Build-Depends: untangle-development-build, dh-systemd
 Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
