@@ -57,6 +57,7 @@ import com.untangle.uvm.network.DynamicRoutingSettings;
 import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
 import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
+import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -1492,6 +1493,12 @@ public class NetworkManagerImpl implements NetworkManager
                     area.setRuleId(++idx);
                 }
             }
+            if( networkSettings.getDynamicRoutingSettings().getOspfInterfaces() != null) {
+                idx = 0;
+                for (DynamicRouteOspfInterface intf : networkSettings.getDynamicRoutingSettings().getOspfInterfaces()) {
+                    intf.setRuleId(++idx);
+                }
+            }
         }
         
         
@@ -1739,6 +1746,9 @@ public class NetworkManagerImpl implements NetworkManager
 
         List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
         drSettings.setOspfNetworks(ospfNetworks);
+
+        List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
+        drSettings.setOspfInterfaces(ospfInterfaces);
 
         List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
 
