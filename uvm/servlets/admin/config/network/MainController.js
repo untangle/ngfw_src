@@ -1547,3 +1547,43 @@ Ext.define('Ung.config.network.MainController', {
 
     }
 });
+
+Ext.define('Ung.config.network.cmp.OspfAreaRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unospfarearecordeditor',
+
+    controller: 'unospfarearecordeditorcontroller'
+
+});
+
+Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unospfarearecordeditorcontroller',
+
+    onApply: function () {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if (!this.action) {
+            for (var fieldName in vm.get('record').modified) {
+                v.record.set(fieldName, vm.get('record').get(fieldName));
+            }
+        }else if (this.action === 'add') {
+            this.mainGrid.getStore().add(v.record);
+        }
+
+        v.query('[itemId=unvirtuallinkgrid]').forEach( function( grid ){
+            var ouFiltersData = vm.get('record').get('virtualLinks');
+            var ouFilters = [];
+            grid.getStore().each( function(record){
+                if (record.get('markedForDelete')){
+                    return;
+                }
+                ouFilters.push(record.get('field1'));
+            });
+            ouFiltersData.list = ouFilters;
+            vm.get('record').set('virtualLinks', ouFiltersData);
+            v.up('grid').getView().refresh();
+        });
+        v.close();
+    }
+});
