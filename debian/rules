@@ -35,9 +35,3 @@ override_dh_install-indep:
 	@dh_installdirs -i
 	rake install
 	find debian/untangle-libuvm/usr/share/untangle -type f -print0 | xargs -0 chmod 644
-
-override_dh_systemd_enable:
-	dh_systemd_enable --no-enable --name=untangle-pyconnector
-
-override_dh_systemd_start:
-	dh_systemd_start --no-start --name=untangle-pyconnector
