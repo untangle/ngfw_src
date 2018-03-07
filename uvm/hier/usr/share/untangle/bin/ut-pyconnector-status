@@ -1,21 +1,13 @@
 #!/usr/bin/env python
 
+import subprocess
 import sys
 import os
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 def check_pyconnector_running():
-     pid_filename = "/var/run/ut-pyconnector.pid"
-     pid = None
-     if os.access(pid_filename, os.F_OK):
-          pid_file = open(pid_filename, "r")
-          pid_file.seek(0)
-          pid = pid_file.readline().strip()
-
-     # if theres already a pid file and the process exits
-     if (os.path.exists("/proc/%s" % pid)):
-          return True
-     return False
+     rc = subprocess.call("systemctl is-active untangle-pyconnector")
+     return rc == 0
 
 def check_pyconnector_status():
      status_filename = "/var/run/ut-pyconnector.status"
