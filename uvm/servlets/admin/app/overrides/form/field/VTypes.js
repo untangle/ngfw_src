@@ -251,7 +251,19 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     metric: function(value){
         var number = parseInt(value, 10);
-        return (number >= 0) && (number <= 16777214);        
+        return (number >= 0) && (number <= 16777214);
     },
-    metricText: 'Invalid metric number'.t()
+    metricText: 'Invalid metric number'.t(),
+
+    routerInterval: function(value){
+        var number = parseInt(value, 10);
+        return (number > 0) && (number <= 65535);
+    },
+    routerIntervalText: 'Invalid interval'.t(),
+
+    routerPriority: function(value){
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 65535);
+    },
+    routerPriorityText: 'Invalid router priority'.t()
 });
