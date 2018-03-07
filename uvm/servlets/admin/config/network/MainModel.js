@@ -117,6 +117,16 @@ Ext.define('Ung.config.network.MainModel', {
                 }
             }]
         },
+        ospfInterfaces: {
+            data: '{settings.dynamicRoutingSettings.ospfInterfaces.list}',
+            fields:[{
+                name: 'ruleId',
+                type: 'integer'
+            },{
+                name: 'description',
+                type: 'string'
+            }]
+        },
         ospfAreaTypes: {
             data: [{
                 value: 0,
@@ -135,6 +145,18 @@ Ext.define('Ung.config.network.MainModel', {
                 type: 'Not so stubby, no summary'.t()
             }]
         },
+        ospfAuthenticationTypes: {
+            data: [{
+                value: 0,
+                type: 'None'.t()
+            },{
+                value: 1,
+                type: 'Text'.t()
+            },{
+                value: 2,
+                type: 'MD5'.t()
+            }]
+        },
         ospfAbrTypes:{
             data: [{
                 value: 0,
@@ -151,6 +173,22 @@ Ext.define('Ung.config.network.MainModel', {
             },{
                 value: 4,
                 type: 'Standard'.t()
+            }]
+        },
+        ospfDevices:{
+            data: [],
+            fields:[{
+                name: 'dev',
+                type: 'string'
+            },{
+                name: 'interface',
+                type: 'string'
+            },{
+                name: 'comboValueField',
+                type: 'string',
+                convert: function(v, record){
+                    return record.get('dev') + ' - ' + record.get('interface');
+                }
             }]
         },
         ospfDefaultInformationOriginates:{
