@@ -96,7 +96,7 @@ public class SettingsManagerImpl implements SettingsManager
             
             String[] cmds  = { "/usr/bin/rename 's/untangle-node-//' " + System.getProperty("uvm.settings.dir") + "/*",
                                "/usr/bin/rename 's/untangle-casing-//' " + System.getProperty("uvm.settings.dir") + "/*",
-                               "service apache2 restart",
+                               "systemctl reload apache2",
 
                                "/bin/sed " +
                                "-e 's/NodeManager/AppManager/g' " +

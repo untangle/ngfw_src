@@ -213,7 +213,7 @@ public class TomcatManagerImpl implements TomcatManager
         writeIncludes();
         writeModPythonConf();
 
-        UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
+        UvmContextFactory.context().execManager().exec("systemctl reload apache2");
     }
     
     protected void startTomcat()
