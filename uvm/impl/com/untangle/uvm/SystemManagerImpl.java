@@ -159,7 +159,7 @@ public class SystemManagerImpl implements SystemManager
         /**
          * If pyconnector state does not match the settings, re-sync them
          */
-        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-active untangle-pyconnector");
+        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled untangle-pyconnector");
         if ( (0 == exitValue) && !settings.getCloudEnabled() )
             syncPyconnectorStart();
         if ( (0 != exitValue) && settings.getCloudEnabled() )
