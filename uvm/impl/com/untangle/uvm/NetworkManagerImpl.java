@@ -1757,6 +1757,7 @@ public class NetworkManagerImpl implements NetworkManager
         ospfArea.setDescription("Backbone");
         ospfArea.setArea("0.0.0.0");
         ospfArea.setType(0);
+        ospfArea.setVirtualLinks(new LinkedList<InetAddress>());
         ospfAreas.add(ospfArea);
 
         drSettings.setOspfAreas(ospfAreas);

@@ -1198,7 +1198,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 network: '',
                                 prefix: 32,
                                 area: 0,
-                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork',
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork'
                             },
 
                             bind: {
@@ -1278,6 +1278,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 type: 0,
                                 authentication: 0,
                                 javaClass: 'com.untangle.uvm.network.DynamicRouteOspfArea',
+                                virtualLinks: {
+                                    javaClass: "java.util.LinkedList",
+                                    list: []
+                                }
                             },
 
                             bind: {
@@ -1314,6 +1318,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 dataIndex: 'authentication',
                                 renderer: Ung.config.network.MainController.ospfInterfaceAuthenticationRenderer
                             }],
+
+                            editorXtype: 'ung.cmp.unospfarearecordeditor',
                             editorFields: [
                                 Field.enableRule(),
                                 Field.description,
@@ -1336,6 +1342,51 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 queryMode: 'local',
                                 editable: false,
                                 allowBlank: false
+                            },{
+                                xtype: 'container',
+                                layout: 'column',
+                                margin: '0 0 5 0',
+                                width: 800,
+                                hidden: true,
+                                disabled: true,
+                                bind:{
+                                    hidden: '{record.type}',
+                                    disabled: '{record.type}'
+                                },
+                                items: [{
+                                    xtype: 'label',
+                                    html: 'Virtual Links'.t(),
+                                    width: 190,
+                                },{
+                                    xtype: 'ungrid',
+                                    itemId: 'unvirtuallinkgrid',
+                                    width: 305,
+                                    border: false,
+                                    titleCollapse: true,
+                                    tbar: ['@addInline'],
+                                    recordActions: ['delete'],
+                                    bind: '{record.virtualLinks.list}',
+                                    maxHeight: 140,
+                                    emptyRow: {
+                                        field1: ''
+                                    },
+                                    columns: [{
+                                        header: 'Virtual Link Address'.t(),
+                                        dataIndex: 'field1',
+                                        width: 200,
+                                        flex: 1,
+                                        editor : {
+                                            xtype: 'textfield',
+                                            vtype: 'ip4Address',
+                                            emptyText: '[enter virtual address]'.t(),
+                                            allowBlank: false
+                                        }
+                                    }]
+                                },{
+                                    xtype: 'label',
+                                    html: '(optional)'.t(),
+                                    cls: 'boxlabel'
+                                }]
                             },{
                                 xtype: 'combo',
                                 bind: {
