@@ -21,6 +21,9 @@ Ext.define('Ung.config.network.MainController', {
         '#dynamicRoutingStatus':{
             activate: 'getDynamicRoutingStatus'
         },
+        '#ospfInterfaces':{
+            activate: 'getOspfInterfaces'
+        },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
@@ -102,7 +105,6 @@ Ext.define('Ung.config.network.MainController', {
             interfacesStore.getRemovedRecords().length > 0) {
             vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
         }
-
 
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
@@ -595,6 +597,9 @@ Ext.define('Ung.config.network.MainController', {
                 if(line == "" ){
                     return;
                 }
+                if(line.indexOf("Exiting:") > -1){
+                    return;
+                }
                 var columns = line.split(" ");
                 var row = {};
                 var i;
@@ -645,12 +650,21 @@ Ext.define('Ung.config.network.MainController', {
                 if(line == "" ){
                     return;
                 }
+                if(line.indexOf("Exiting:") > -1){
+                    return;
+                }
                 var columns = line.split(" ");
                 if(columns[8] == 'never'){
                     uptime = 0;
                 }else{
-                    uptimes = columns[8].split(':');
-                    uptime = parseInt(uptimes[uptimes.length -1],10) + (parseInt(uptimes[uptimes.length -2],10) * 60) + (parseInt(uptimes[uptimes.length -2],10) * 3600);
+                    var uptimes = columns[8].trim().split(/[dhm]/);
+                    if(uptimes.length > 1){
+                        uptime = (parseInt(uptimes[0],10) * 3600 * 24) + (parseInt(uptimes[1],10) * 3600) + (parseInt(uptimes[2],10) * 60);
+                    }else{
+                        uptimes = columns[8].split(':');
+                        uptime = parseInt(uptimes[uptimes.length -1],10) + (parseInt(uptimes[uptimes.length -2],10) * 60) + (parseInt(uptimes[uptimes.length -3],10) * 3600);
+                    }
+                    uptime *= 1000;
                 }
                 storeData.push({
                     neighbor: columns[0],
@@ -668,6 +682,9 @@ Ext.define('Ung.config.network.MainController', {
             result[2].split("\n").forEach(function(line){
                 line = line.trim();
                 if(line == "" ){
+                    return;
+                }
+                if(line.indexOf("Exiting:") > -1){
                     return;
                 }
                 var columns = line.split(" ");
@@ -693,6 +710,105 @@ Ext.define('Ung.config.network.MainController', {
             console.error(ex);
             Util.handleException(ex);
         });
+    },
+
+    getOspfInterfaces: function(view, cmp){
+        var vm = null;
+        if(this == window){
+            vm = view.getViewModel();
+        }else{
+            vm = this.getViewModel();
+        }
+
+        view.setLoading(true);
+
+        var interfacesInUse = [];
+        if(cmp.isXType('combo')){
+            var currentValue = cmp.getBind().value.getRawValue();
+            cmp.up('#ospfInterfaces').getStore().getData().each(function(interface){
+                if(interface.get('dev') == currentValue){
+                    return;
+                }
+                interfacesInUse.push(interface.get('dev'));
+            });
+        }
+
+        var interfaceData = [];
+        var dev;
+        vm.get('settings.interfaces').list.forEach( function(interface){
+            if( interface["configType"] != "ADDRESSED" || interface["v4ConfigType"] != "STATIC"){
+                return;
+            }
+            dev = interface['symbolicDev'];
+            if(interfacesInUse.indexOf(dev) > -1){
+                return;
+            }
+            interfaceData.push({
+                'dev': dev,
+                'interface': interface['name'],
+            });
+        });
+
+        // !!! convert to sequence in 14.0.
+        var app = Rpc.directData('rpc.UvmContext.appManager').app('ipsec-vpn');
+        var settings, networkId;
+        if(app){
+            settings = app.getSettings();
+            networkId = 1;
+            settings.networks.list.forEach(function(network){
+                if(network.active){
+                    dev = 'gre' + networkId.toString();
+                    if(interfacesInUse.indexOf(dev) > -1){
+                        return;
+                    }
+                    interfaceData.push({
+                        dev: dev,
+                        interface: network.description
+                    });
+                }
+                networkId++;
+            });
+        }
+
+        app = Rpc.directData('rpc.UvmContext.appManager').app('openvpn');
+        if(app){
+            settings = app.getSettings();
+            networkId = 1;
+            settings.remoteServers.list.forEach(function(network){
+                if(network.enabled){
+                    dev = 'tun' + networkId.toString();
+                    if(interfacesInUse.indexOf(dev) > -1){
+                        return;
+                    }
+                    interfaceData.push({
+                        dev: dev,
+                        interface: network.name
+                    });
+                }
+                networkId++;
+            });
+        }
+
+        app = Rpc.directData('rpc.UvmContext.appManager').app('tunnel-vpn');
+        if(app){
+            settings = app.getSettings();
+            settings.tunnels.list.forEach(function(network){
+                if(network.enabled){
+                    dev = 'tun' + network.tunnelId.toString();
+                    if(interfacesInUse.indexOf(dev) > -1){
+                        return;
+                    }
+                    interfaceData.push({
+                        dev: dev,
+                        interface: network.name
+                    });
+                }
+            });
+        }
+
+        vm.get('ospfDevices').loadData(interfaceData);
+
+        view.setLoading(false);
     },
 
     // Network Tests
@@ -1235,6 +1351,10 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     statics: {
+        ospfInterfaceComboBeforeRender: function(cmp){
+            var view = cmp.up('config-network');
+            view.getController().getOspfInterfaces(view, cmp);
+        },
         connectedIconRenderer: function(value){
             switch (value) {
                 case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
@@ -1397,13 +1517,33 @@ Ext.define('Ung.config.network.MainController', {
             }
         },
 
+        ospfInterfaceAuthenticationRenderer:function( value ){
+            var store = this.up('configpanel').getViewModel().getStore('ospfAuthenticationTypes');
+            var record = store.findRecord('value', value);
+            if(record != null){
+                return record.get('type');
+            }else{
+                return 'Unknown'.t() + ' - ' + value;
+            }
+        },
+
+        ospDeviceRenderer: function( value ){
+            var store = this.up('configpanel').getViewModel().getStore('ospfDevices');
+            var record = store.findRecord('dev', value);
+            if(record != null){
+                return record.get('interface');
+            }else{
+                return 'Unknown'.t() + ' - ' + value;
+            }
+        },
+
         routeAttributes: function( value ){
             var attributes = [];
             value.forEach(function(entry){
                 attributes.push('<div class="tag-item">' + entry.name + ':'  + entry.value + '</div>');
             });
             return '<div class="tagpicker">' + attributes.join('') + '</div>';
-        }
+        },
 
     }
 });

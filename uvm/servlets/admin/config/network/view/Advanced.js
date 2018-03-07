@@ -1266,7 +1266,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                             tbar: ['@add', '->', '@import', '@export'],
                             recordActions: ['edit', 'delete'],
 
-                            emptyText: 'No OSPF Networks defined'.t(),
+                            emptyText: 'No OSPF Areas defined'.t(),
 
                             listProperty: 'settings.dynamicRoutingSettings.ospfAreas.list',
 
@@ -1276,6 +1276,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 description: '',
                                 area: '',
                                 type: 0,
+                                authentication: 0,
                                 javaClass: 'com.untangle.uvm.network.DynamicRouteOspfArea',
                             },
 
@@ -1306,6 +1307,12 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 flex: 1,
                                 dataIndex: 'type',
                                 renderer: Ung.config.network.MainController.ospfAreaTypeRenderer
+                            }, {
+                                header: 'Authentication',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'authentication',
+                                renderer: Ung.config.network.MainController.ospfInterfaceAuthenticationRenderer
                             }],
                             editorFields: [
                                 Field.enableRule(),
@@ -1329,7 +1336,214 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 queryMode: 'local',
                                 editable: false,
                                 allowBlank: false
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.authentication}',
+                                    store: '{ospfAuthenticationTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Authentication'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
                              }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'ospfInterfaces',
+                            title: 'Interface Overrides'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Interfaces defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfInterfaces.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                helloInterval: 10,
+                                deadInterval: 40,
+                                retransmitInterval: 5,
+                                transmitDelay: 1,
+                                autoInterfaceCost: true,
+                                authentication: 0,
+                                routerPriority: 1,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteOspfInterface',
+                            },
+
+                            bind: {
+                                store: '{ospfInterfaces}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Device',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'dev'
+                            }, {
+                                header: 'Interface',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'dev',
+                                renderer: Ung.config.network.MainController.ospDeviceRenderer
+                            }, {
+                                header: 'Hello Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'helloInterval'
+                            }, {
+                                header: 'Dead Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'deadInterval'
+                            }, {
+                                header: 'Retransmit Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'retransmitInterval'
+                            }, {
+                                header: 'Transmit Delay',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'transmitDelay'
+                            }, {
+                                header: 'Authentication',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'authentication',
+                                renderer: Ung.config.network.MainController.ospfInterfaceAuthenticationRenderer
+                            }, {
+                                header: 'Router Priority',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'routerPriority'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                            {
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.dev}',
+                                    store: '{ospfDevices}'
+                                },
+                                displayField: 'comboValueField',
+                                valueField: 'dev',
+                                fieldLabel: 'Device'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false,
+                                listeners: {
+                                    beforerender: Ung.config.network.MainController.ospfInterfaceComboBeforeRender
+                                },
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Hello Interval'.t(),
+                                bind: '{record.helloInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Dead Interval'.t(),
+                                bind: '{record.deadInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Retransmit Interval'.t(),
+                                bind: '{record.retransmitInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Transmit Delay'.t(),
+                                bind: '{record.transmitDelay}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'checkbox',
+                                fieldLabel: 'Auto Interface Cost'.t(),
+                                bind: '{record.autoInterfaceCost}'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Interface Cost'.t(),
+                                disabled: true,
+                                hidden: true,
+                                bind:{
+                                    value: '{record.interfaceCost}',
+                                    disabled: '{record.autoInterfaceCost}',
+                                    hidden: '{record.autoInterfaceCost}'
+                                },
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.authentication}',
+                                    store: '{ospfAuthenticationTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Authentication'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Password'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationPassword}',
+                                    disabled: '{record.authentication != 1}',
+                                    hidden: '{record.authentication != 1}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Key ID'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationKeyId}',
+                                    disabled: '{record.authentication != 2}',
+                                    hidden: '{record.authentication != 2}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Key'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationKey}',
+                                    disabled: '{record.authentication != 2}',
+                                    hidden: '{record.authentication != 2}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Router Priority'.t(),
+                                bind: '{record.routerPriority}',
+                                vtype: 'routerPriority'
+                            }]
                         },{
                             xtype: 'panel',
                             // title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
