@@ -28,6 +28,7 @@ public class DynamicRouteOspfArea implements JSONString, Serializable
     private String area = "";
     private Integer type = 0;
     private Integer authentication = 0;
+    private List<InetAddress> virtualLinks = null;
 
     public DynamicRouteOspfArea() {}
 
@@ -45,6 +46,9 @@ public class DynamicRouteOspfArea implements JSONString, Serializable
 
     public Integer getAuthentication() { return authentication; }
     public void setAuthentication( Integer authentication ) { this.authentication = authentication;}
+
+    public List<InetAddress> getVirtualLinks() { return virtualLinks; }
+    public void setVirtualLinks( List<InetAddress> virtualLinks ) { this.virtualLinks = virtualLinks;}
 
     public String toJSONString()
     {
