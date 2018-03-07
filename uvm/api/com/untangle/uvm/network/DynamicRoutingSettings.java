@@ -50,6 +50,7 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     private List<DynamicRouteNetwork> bgpNetworks = null;
     private List<DynamicRouteNetwork> ospfNetworks = null;
     private List<DynamicRouteOspfArea> ospfAreas = null;
+    private List<DynamicRouteOspfInterface> ospfInterfaces = null;
 
     public Boolean getEnabled() { return this.enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
@@ -129,6 +130,9 @@ public class DynamicRoutingSettings implements Serializable, JSONString
 
     public List<DynamicRouteOspfArea> getOspfAreas() { return this.ospfAreas; }
     public void setOspfAreas( List<DynamicRouteOspfArea> newValue ) { this.ospfAreas = newValue; }
+
+    public List<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
+    public void setOspfInterfaces( List<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
 
 
     public String toJSONString()
