@@ -3,7 +3,8 @@ Description=Untangle PyConnector
 
 [Service]
 Type=Simple
-ExecStart=/usr/share/untangle/bin/ut-pyconnector
+#ExecStart=/usr/share/untangle/bin/ut-pyconnector -d 2
+ExecStart=/usr/share/untangle/bin/ut-pyconnector -d 1
 Restart=always
 
 [Install]
