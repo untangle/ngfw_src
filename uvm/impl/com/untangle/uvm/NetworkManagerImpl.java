@@ -533,7 +533,7 @@ public class NetworkManagerImpl implements NetworkManager
     public InterfaceStatus getInterfaceStatus( int interfaceId )
     {
         InterfaceStatus status = null;
-        String filename = "/var/lib/untangle-interface-status/interface-" + interfaceId + "-status.js";
+        String filename = "/var/lib/interface-status/interface-" + interfaceId + "-status.js";
 
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
