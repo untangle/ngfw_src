@@ -70,6 +70,7 @@ public class NetworkSettings implements Serializable, JSONString
     private UpnpSettings upnpSettings;
     private DnsSettings dnsSettings;
     private NetflowSettings netflowSettings;
+    private DynamicRoutingSettings dynamicRoutingSettings;
 
     private String dnsmasqOptions;
 
@@ -191,6 +192,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public NetflowSettings getNetflowSettings() { return this.netflowSettings; }
     public void setNetflowSettings( NetflowSettings newValue ) { this.netflowSettings = newValue; }
+    
+    public DynamicRoutingSettings getDynamicRoutingSettings() { return this.dynamicRoutingSettings; }
+    public void setDynamicRoutingSettings( DynamicRoutingSettings newValue ) { this.dynamicRoutingSettings = newValue; }
     
     public String getDnsmasqOptions() { return this.dnsmasqOptions; }
     public void setDnsmasqOptions( String newValue ) { this.dnsmasqOptions = newValue; }
