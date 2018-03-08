@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # This script reads all of the IP addresses from the interface status files
-# located in /var/lib/untangle-interface-status. The platform creates and removes status
+# located in /var/lib/interface-status. The platform creates and removes status
 # files there as system interfaces come and go. This includes WAN, LAN and
 # others such as OpenVPN, L2TP, GRE, etc.
 #
@@ -18,7 +18,7 @@ import os
 import sys
 import json
 
-statpath = '/var/lib/untangle-interface-status'
+statpath = '/var/lib/interface-status'
 fullname = None
 facelist = {}
 

@@ -121,7 +121,7 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
         if (logger.isDebugEnabled()) logger.debug("Scanning interface status files");
 
         try {
-            File devFilePath = new File("/var/lib/untangle-interface-status");
+            File devFilePath = new File("/var/lib/interface-status");
             File[] devFileList = devFilePath.listFiles();
 
             // if the directory doesn't exist we are finished
