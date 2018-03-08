@@ -3799,6 +3799,7 @@ Ext.define('TableConfig', {
                 rtype: 'settingsFile'
             },{
                 header: "Differences".t(),
+                dataIndex: 'settings_file',
                 width: Renderer.actionWidth,
                 xtype: 'actioncolumn',
                 align: 'center',
