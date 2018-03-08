@@ -44,14 +44,28 @@ if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
     /usr/share/untangle/bin/oem-apply.sh
 fi
 
-# 13.2 upgrade
-sed -e 's/stable-131\s/stable-132 /g' -i /etc/apt/sources.list.d/untangle.list
+#
+# 14.0 upgrade
+#
+
+# Point to stable-140
+sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
+
+# We no longer use upstream
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 
-# 14.0 upgrade
-sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
-# touch settings file to force re-sync
-echo $oldVersion | grep -q "13\.2" && touch /usr/share/untangle/settings/untangle-vm/network.js
+# If upgrading from 13.2 - do the conversion
+if echo $oldVersion | grep -q "13\.2" ; then
+    # kill the automatic uvm-restart
+    # We don't want the untangle-vm to launch until after the reboot
+    killall -INT uvm-restart
+    killall uvm-restart
+    killall -9 uvm-restart
+
+    # start the post-upgrade task (will wait on apt to finish)
+    nohup /usr/share/untangle/bin/ut-stretch-post-upgrade.sh >> /var/log/uvm/stretch.log 2>&1 &
+fi
+
+
 
 exit 0

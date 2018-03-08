@@ -1,0 +1,35 @@
+#!/bin/dash
+
+# This script is launched by the untangle-vm.postinst
+# It will run some jessie -> stretch conversion tasks after apt-get is complete
+
+
+echo "`date -Iseconds` $0: $0 $@ $$"
+
+# Wait for apt-get to complete
+while true; do
+    if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
+        echo "`date -Iseconds` $0: Waiting for apt-get to complete..."
+        sleep 10
+    else
+        /bin/rm -f $pidfile
+        echo "`date -Iseconds` $0: Running conversion"
+
+        echo "`date -Iseconds` $0: sync-settings"
+        /usr/bin/sync-settings.py
+        echo "Result: $?"
+
+        echo "`date -Iseconds` $0: Rebooting in 30 seconds"
+        echo "Rebooting in 30 seconds...\n\"touch /tmp/abort\" to stop" | wall
+        sleep 10
+        echo "Rebooting in 20 seconds...\n\"touch /tmp/abort\" to stop" | wall
+        sleep 10
+        echo "Rebooting in 10 seconds...\n\"touch /tmp/abort\" to stop" | wall
+        sleep 10
+        if [ -f /tmp/abort ] ; then
+            exit
+        else
+            reboot
+        fi
+    fi
+done
