@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * QoS settings.
+ * NetFlow settings.
  */
 @SuppressWarnings("serial")
 public class NetflowSettings implements Serializable, JSONString
