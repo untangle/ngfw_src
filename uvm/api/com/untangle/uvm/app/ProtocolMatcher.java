@@ -33,7 +33,7 @@ public class ProtocolMatcher
      * but will never matching inside the JVM because they are not processed by the UVM
      * As such they are allowed (for iptables based rules) but will never match
      */
-    private static final String[] OTHER_MARKERS = { "icmp", "gre", "esp", "ah", "sctp" };
+    private static final String[] OTHER_MARKERS = { "icmp", "gre", "esp", "ah", "sctp", "ospf" };
     
     private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher(MARKER_ANY);
     private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher(MARKER_TCP);
