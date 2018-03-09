@@ -20,7 +20,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/ipsec-vpn_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/ipsec-vpn.svg" width="80" height="80"/>' +
                 '<h3>IPsec VPN</h3>' +
                 '<p>' + 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t() + '</p>'
         }, {

@@ -18,7 +18,7 @@ Ext.define('Ung.config.email.Main', {
     viewModel: {
         data: {
             title: 'Email'.t(),
-            iconName: 'icon_config_email',
+            iconName: 'email',
 
             globalSafeList: null,
         }

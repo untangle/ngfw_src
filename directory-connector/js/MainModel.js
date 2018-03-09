@@ -5,7 +5,7 @@ Ext.define('Ung.apps.directoryconnector.MainModel', {
 
     data: {
         // title: 'Events'.t(),
-        // iconName: 'icon_config_events',
+        // iconName: 'events',
 
         settings: null,
         record: null
