@@ -17,7 +17,8 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     onInit: function () {
-        var me = this, vm = me.getViewModel(), path = '', node;
+        var me = this, vm = me.getViewModel(),
+            tree = me.lookup('tree');
 
         // set the context (ADMIN or REPORTS)
         vm.set('context', Ung.app.context);
@@ -25,46 +26,76 @@ Ext.define('Ung.view.reports.MainController', {
         me.getView().setLoading(false);
 
         me.buildTablesStore();
-        vm.bind('{hash}', function (hash) {
-            if (!hash) { me.resetView(); return; }
 
-            // on create new report reset and apply new entry
-            if (hash === 'create') {
-                me.getViewModel().set('selection', null);
-                me.resetView();
-                me.getView().down('entry').getController().reset();
-                me.getView().down('entry').getViewModel().set({
-                    entry: null,
-                    eEntry: Ext.create('Ung.model.Report')
-                });
-                me.lookup('cards').setActiveItem('report');
-                return;
-            }
-
-            if (Ung.app.context === 'REPORTS') {
-                path = '/reports/' + window.location.hash.replace('#', '');
-                node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#', ''));
-            } else {
-                path = window.location.hash.replace('#', '');
-                node = Ext.getStore('reportstree').findNode('url', window.location.hash.replace('#reports/', ''));
-            }
-
-            // selected node icon/text for category stats
-            vm.set('selection', { icon: node.get('icon'), text: node.get('text') });
-
-            // breadcrumb selection
-            me.lookup('breadcrumb').setSelection(node);
-
-            // tree selection
-            me.lookup('tree').collapseAll();
-            me.lookup('tree').selectPath(path, 'slug', '/', Ext.emptyFn, me);
-
-            me.showNode(node); // shows the selected report or category stats
-        });
         vm.bind('{fetching}', function (val) {
             if (!val) { Ext.MessageBox.hide(); } // hide any loading message box
         });
+
+        /**
+         * When route changes select report path
+         */
+        vm.bind('{query.route}', function (route) {
+            var path = (route.cat || '') + (route.rep ? ('/' + route.rep) : '');
+            if (!path) {
+                tree.collapseAll();
+                tree.setSelection(null);
+                me.showNode(tree.getStore().getRoot());
+            }
+
+            me.lookup('tree').selectPath(path, 'slug', '/', function (success, lastNode) {
+                if (!success) { return; }
+                if (!lastNode.isLeaf()) {
+                    lastNode.expand();
+                }
+            }, me);
+            me.buildStats();
+        });
+
+        // When conditions query string changes, update disble state of the reports nodes in the tree
+        vm.bind('{query.conditions}', function (conditions) {
+            var root = Ext.getStore('reportstree').getRoot(), conds = [], disabledCategory;
+            Ext.Array.each(conditions, function (c) {
+                conds.push(c.column);
+            });
+
+            root.eachChild(function (catNode) {
+                disabledCategory = true;
+                catNode.eachChild(function (repNode) { // report node
+                    if (conds.length > 0) {
+                        if (TableConfig.containsColumns(repNode.get('table'), conds)) {
+                            repNode.set('disabled', false);
+                            disabledCategory = false;
+                        } else {
+                            repNode.set('disabled', true);
+                        }
+                    } else {
+                        repNode.set('disabled', false);
+                        disabledCategory = false;
+                    }
+                });
+                catNode.set('disabled', disabledCategory);
+            });
+            me.buildStats();
+        });
     },
+
+    // Redirect on selecting report from the tree
+    onSelectReport: function (el, node) {
+        var me = this, vm = me.getViewModel(), condsQuery = '';
+
+        Ext.Array.each(vm.get('query.conditions'), function (c) {
+            condsQuery += '&' + c.column + ( c.operator === '=' ? '=' : encodeURIComponent('\'' + c.operator + '\'') ) + c.value;
+        });
+
+        if (Ung.app.context === 'REPORTS') {
+            Ung.app.redirectTo('#' + node.get('url'));
+        } else {
+            Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
+        }
+        // Ung.app.redirectTo(Ung.app.context === 'REPORTS' ? '#' : '#reports?' + node.get('url') + condsQuery);
+        me.showNode(node);
+    },
+
 
     buildTablesStore: function () {
         if (!rpc.reportsManager) { return; }
@@ -74,22 +105,10 @@ Ext.define('Ung.view.reports.MainController', {
         });
     },
 
-    // check if data is fetching and cancel selection if true
-    beforeSelectReport: function (el, node) {
-        var me = this, vm = me.getViewModel();
-        if (vm.get('fetching')) {
-            Ext.MessageBox.wait('Data is fetching...'.t(), 'Please wait'.t(), { text: '' });
-            return false;
-        }
-        if (Ung.app.context === 'REPORTS') {
-            Ung.app.redirectTo('#' + node.get('url'));
-        } else {
-            Ung.app.redirectTo('#reports/' + node.get('url'));
-        }
-    },
-
     showNode: function (node) {
         var me = this, record;
+
+        me.getViewModel().set('selection', node.isRoot() ? null : node);
 
         if (node.isLeaf()) {
             // report node
@@ -102,7 +121,7 @@ Ext.define('Ung.view.reports.MainController', {
             me.lookup('cards').setActiveItem('report');
         } else {
             me.lookup('cards').setActiveItem('category');
-            me.buildStats(node);
+            // me.buildStats(node);
             node.expand();
         }
     },
@@ -168,10 +187,11 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     /**
-     * builds statistics for categories
+     * Builds statistics for categories, based on global conditions too
      */
-    buildStats: function (node) {
+    buildStats: function () {
         var me = this, vm = me.getViewModel(),
+            node = vm.get('selection'),
             stats = {
                 set: false,
                 reports: {
@@ -190,7 +210,7 @@ Ext.define('Ung.view.reports.MainController', {
         if (!node) { node = Ext.getStore('reportstree').getRoot(); }
 
         node.cascade(function (n) {
-            if (n.isRoot()) { return; }
+            if (n.isRoot() || n.get('disabled')) { return; }
             if (n.isLeaf()) {
                 stats.reports.total += 1;
                 if (!n.get('readOnly')) { stats.reports.custom += 1; }

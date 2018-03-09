@@ -209,12 +209,6 @@ cite {
 }
 
 
-.x-grid-row {
-    color: #333;
-    //font-family: 'Source Sans Pro', sans-serif;
-    //font-size: 13px;
-}
-
 .x-grid-dirty-cell {
     color: blue;
 }
@@ -933,4 +927,46 @@ a.view-reports {
 
 .editable-column {
     background-color: rgba(250, 250, 250, 0.6);
+}
+
+
+
+
+.x-grid-cell.anchor {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.x-grid-row {
+    color: #333;
+    //font-family: 'Source Sans Pro', sans-serif;
+    //font-size: 13px;
+    &.disabled {
+        .x-tree-icon {
+            color: #CCC;
+        }
+        .x-tree-node-text {
+            color: #CCC;
+            font-weight: 100;
+        }
+        img {
+            opacity: 0.3;
+            filter: gray;
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+        }
+    }
+}
+
+.x-grid-item-over {
+    .disabled {
+        background-color: #FFF;
+    }
+}
+
+.x-grid-item-selected {
+    .disabled {
+        background-color: #FFF;
+    }
 }

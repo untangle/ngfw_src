@@ -71,28 +71,32 @@ Ext.define('Ung.controller.Global', {
             'config/:configName/:configView': 'onConfig',
             'config/:configName/:configView/:subView': 'onConfig',
             'reports': { before: 'detectChanges', action: 'onReports' },
-            'reports/create': { before: 'detectChanges', action: 'onReports' },
-            'reports/:category': { before: 'detectChanges', action: 'onReports' },
-            'reports/:category/:entry': { before: 'detectChanges', action: 'onReports', conditions: { ':entry': '(.*)' } },
+            'reports:params': {
+                before: 'detectChanges',
+                action: 'onReports',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                }
+            },
             'sessions': { before: 'detectChanges', action: 'onSessions' },
             'sessions/:params': {
                 action: 'onSessions',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                    ':params' : '([0-9a-zA-Z.?&=-]+)'
                 }
             },
             'hosts': { before: 'detectChanges', action: 'onHosts' },
             'hosts/:params': {
                 action: 'onHosts',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                    ':params' : '([0-9a-zA-Z.?&=-]+)'
                 }
             },
             'devices': { before: 'detectChanges', action: 'onDevices' },
             'devices/:params': {
                 action: 'onDevices',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z.\?\&=\-]+)'
+                    ':params' : '([0-9a-zA-Z.?&=-]+)'
                 }
             },
             'users': { before: 'detectChanges', action: 'onUsers' },
@@ -240,7 +244,7 @@ Ext.define('Ung.controller.Global', {
         });
 
         if (!appInstance || !appProps) {
-            Util.handleException("Unable to find app: " + app);
+            Util.handleException('Unable to find app: ' + app);
             return;
         }
 
@@ -331,16 +335,48 @@ Ext.define('Ung.controller.Global', {
         }
     },
 
-    onReports: function (categoryName, reportName) {
-        var reportsVm = this.getReportsView().getViewModel();
-        var hash = '';
-        if (categoryName) {
-            hash += categoryName;
+    onReports: function (query) {
+        var reportsVm = this.getReportsView().getViewModel(),
+            route = {}, conditions = [],
+            condsQuery = '', decoded, parts, key, sep, val;
+
+        if (query) {
+            Ext.Array.each(query.replace('?', '').split('&'), function (part) {
+                decoded = decodeURIComponent(part);
+
+                if (decoded.indexOf('\'') >= 0) {
+                    parts = decoded.split('\'');
+                    key = parts[0];
+                    sep = parts[1];
+                    val = parts[2];
+                } else {
+                    parts = decoded.split('=');
+                    key = parts[0];
+                    sep = '=';
+                    val = parts[1];
+                }
+
+                if (key === 'cat' || key === 'rep') {
+                    route[key] = val;
+                } else {
+                    conditions.push({
+                        column: key,
+                        operator: sep,
+                        value: val,
+                        autoFormatValue: true,
+                        javaClass: 'com.untangle.app.reports.SqlCondition'
+                    });
+                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+                }
+            });
         }
-        if (reportName) {
-            hash += '/' + reportName;
-        }
-        reportsVm.set('hash', hash);
+
+        reportsVm.set('query', {
+            route: route,
+            conditions: conditions,
+            string: condsQuery
+        });
+
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 

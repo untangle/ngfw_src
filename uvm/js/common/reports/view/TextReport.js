@@ -87,7 +87,7 @@ Ext.define('Ung.view.reports.TextReport', {
                 entry.getData(), // entry
                 startDate,
                 endDate,
-                vm.get('globalConditions'), -1) // sql filters
+                vm.get('query.conditions'), -1) // sql filters
                 .then(function(result) {
                     if (!me.getView()) { return; }
                     me.getView().setLoading(false);

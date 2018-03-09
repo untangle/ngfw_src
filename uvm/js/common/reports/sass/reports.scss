@@ -281,3 +281,42 @@ span.fa:before {
     font-size: 12px;
     // font-weight: 600;
 }
+
+.x-grid-cell.anchor {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.x-grid-row {
+    color: #333;
+    //font-family: 'Source Sans Pro', sans-serif;
+    //font-size: 13px;
+    &.disabled {
+        .x-tree-icon {
+            color: #CCC;
+        }
+        .x-tree-node-text {
+            color: #CCC;
+            font-weight: 100;
+        }
+        img {
+            opacity: 0.3;
+            filter: gray;
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+        }
+    }
+}
+
+.x-grid-item-over {
+    .disabled {
+        background-color: #FFF;
+    }
+}
+
+.x-grid-item-selected {
+    .disabled {
+        background-color: #FFF;
+    }
+}
