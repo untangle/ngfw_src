@@ -29,7 +29,7 @@ Ext.define('Ung.view.apps.SimpleItem', {
                 if (get('licenseMessage')) {
                     html += '<span class="license">' + get('licenseMessage') +  '</span>';
                 }
-                html += '<img src="' + '/skins/modern-rack/images/admin/apps/' + get('app.name') + '_80x80.png" width=80 height=80/>' +
+                html += '<img src="' + '/icons/apps/' + get('app.name') + '.svg" width=80 height=80/>' +
                         '<span class="app-name">' + get('app.displayName') + '</span>';
 
                 if (get('parentPolicy')) {

@@ -88,7 +88,7 @@ Ext.define('Ung.cmp.AppsPicker', {
                 dataIndex: 'displayName',
                 flex: 1,
                 renderer: function (val, meta, record) {
-                    var str = '<img src="/skins/modern-rack/images/admin/apps/' + record.get('name') + '_17x17.png" style="width: 12px; height: 12px; vertical-align: middle;"/> ';
+                    var str = '<img src="/icons/apps/' + record.get('name') + '.svg" style="width: 12px; height: 12px; vertical-align: middle;"/> ';
                     if (!record.get('parentPolicy')) {
                         str += '<strong>' + val + '</strong>';
                     } else {

@@ -5,7 +5,7 @@ Ext.define('Ung.config.administration.MainModel', {
 
     data: {
         title: 'Administration'.t(),
-        iconName: 'icon_config_administration',
+        iconName: 'administration',
 
         adminSettings: null,
         systemSettings: null,

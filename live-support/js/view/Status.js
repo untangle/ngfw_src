@@ -17,7 +17,7 @@ Ext.define('Ung.apps.livesupport.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/live-support_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/live-support.svg" width="80" height="80"/>' +
                 '<h3>Live Support</h3>' +
                 '<p>' + 'Live Support provides on-demand help for any technical issues.'.t() + '</p>'
         }, {

@@ -15,7 +15,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/tunnel-vpn_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/tunnel-vpn.svg" width="80" height="80"/>' +
                 '<h3>Tunnel VPN</h3>' +
                 '<p>' + 'Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services.'.t() + '</p>'
         }, {
