@@ -16,7 +16,7 @@ Ext.define('Ung.apps.webfilter.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/web-filter_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/web-filter.svg" width="80" height="80"/>' +
                 '<h3>Web Filter</h3>' +
                 '<p>' + 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
         }, {

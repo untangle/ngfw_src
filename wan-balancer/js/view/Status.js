@@ -14,7 +14,7 @@ Ext.define('Ung.apps.wan-balancer.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/wan-balancer_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/wan-balancer.svg" width="80" height="80"/>' +
                 '<h3>WAN Balancer</h3>' +
                 '<p>' + 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t() + '</p>'
         }, {
