@@ -3813,6 +3813,7 @@ Ext.define('TableConfig', {
                 renderer: Renderer.settingsFile
             },{
                 header: "Differences".t(),
+                dataIndex: 'settings_file',
                 width: Renderer.actionWidth,
                 xtype: 'actioncolumn',
                 align: 'center',

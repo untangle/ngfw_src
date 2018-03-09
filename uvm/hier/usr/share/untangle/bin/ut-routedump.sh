@@ -17,6 +17,10 @@ for i in main balance default local ; do
     echo
 done
 
+echo " = IPv4 Dynamic Routing = "
+ip -4 route show proto zebra
+echo
+
 awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv4 Table $table = "
     ip -4 route show table $table

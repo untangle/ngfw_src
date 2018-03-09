@@ -39,6 +39,8 @@ Ext.define('Ung.util.Renderer', {
     networkWidth: 120,
     // Port
     portWidth: 70,
+    // Network prefix
+    prefixWidth: 50,
     // Priority
     prioritytWidth: 70,
     // Protocol
@@ -242,10 +244,11 @@ Ext.define('Ung.util.Renderer', {
 
     elapsedTime: function( value ){
         var total = parseInt(value / 1000,10);
+        var days = (parseInt(total / (3600 * 24),10));
         var hours = (parseInt(total / 3600,10) % 24);
         var minutes = (parseInt(total / 60,10) % 60);
         var seconds = parseInt(total % 60,10);
-        var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+        var result = (days > 0 ? ( days < 10 ? '0' + days : days) + ':' : '' ) + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
         return result;
     },
 

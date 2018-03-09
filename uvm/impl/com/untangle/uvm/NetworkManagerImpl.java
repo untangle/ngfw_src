@@ -53,6 +53,11 @@ import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
+import com.untangle.uvm.network.DynamicRoutingSettings;
+import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
+import com.untangle.uvm.network.DynamicRouteNetwork;
+import com.untangle.uvm.network.DynamicRouteOspfArea;
+import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -129,6 +134,14 @@ public class NetworkManagerImpl implements NetworkManager
             
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
+
+            /* 13.2 (dynamic routing) conversion */
+            if(this.networkSettings.getVersion() < 7){
+                this.networkSettings.setDynamicRoutingSettings( defaultDynamicRoutingSettings() );
+                this.networkSettings.setAccessRules( addDynamicRoutingAccessRules( this.networkSettings.getAccessRules() ) );
+                this.networkSettings.setVersion( 7 );
+                this.setNetworkSettings( this.networkSettings);
+            }
 
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -764,7 +777,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 6 ); // Currently on v6 (as of v13.1)
+            newSettings.setVersion( 7 ); // Currently on v6 (as of v13.1)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -921,6 +934,7 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setQosSettings( defaultQosSettings() );
             newSettings.setUpnpSettings( defaultUpnpSettings() );
             newSettings.setNetflowSettings( new NetflowSettings() );
+            newSettings.setDynamicRoutingSettings( defaultDynamicRoutingSettings() );
             newSettings.setDnsSettings( new DnsSettings() );
             newSettings.setFilterRules( new LinkedList<FilterRule>() );
             newSettings.setAccessRules( defaultAccessRules() );
@@ -1423,6 +1437,43 @@ public class NetworkManagerImpl implements NetworkManager
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             sanitizeInterfaceSettings( intf );
         }
+
+        /**
+         *  Sanitize dynamic routing settings
+         */
+        if (networkSettings.getDynamicRoutingSettings() != null ){
+            if( networkSettings.getDynamicRoutingSettings().getBgpNeighbors() != null) {
+                idx = 0;
+                for (DynamicRouteBgpNeighbor neighbor : networkSettings.getDynamicRoutingSettings().getBgpNeighbors()) {
+                    neighbor.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getBgpNetworks() != null) {
+                idx = 0;
+                for (DynamicRouteNetwork network : networkSettings.getDynamicRoutingSettings().getBgpNetworks()) {
+                    network.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfNetworks() != null) {
+                idx = 0;
+                for (DynamicRouteNetwork network : networkSettings.getDynamicRoutingSettings().getOspfNetworks()) {
+                    network.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfAreas() != null) {
+                idx = 0;
+                for (DynamicRouteOspfArea area : networkSettings.getDynamicRoutingSettings().getOspfAreas()) {
+                    area.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfInterfaces() != null) {
+                idx = 0;
+                for (DynamicRouteOspfInterface intf : networkSettings.getDynamicRoutingSettings().getOspfInterfaces()) {
+                    intf.setRuleId(++idx);
+                }
+            }
+        }
+        
         
     }
 
@@ -1655,6 +1706,94 @@ public class NetworkManagerImpl implements NetworkManager
         return upnpSettings;
     }
 
+    private DynamicRoutingSettings defaultDynamicRoutingSettings()
+    {
+        DynamicRoutingSettings drSettings = new DynamicRoutingSettings();
+
+        drSettings.setEnabled( false );
+        List<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
+        drSettings.setBgpNeighbors(bgpNeighbors);
+
+        List<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
+        drSettings.setBgpNetworks(bgpNetworks);
+
+        List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
+        drSettings.setOspfNetworks(ospfNetworks);
+
+        List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
+        drSettings.setOspfInterfaces(ospfInterfaces);
+
+        List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
+
+        DynamicRouteOspfArea ospfArea = new DynamicRouteOspfArea();
+        ospfArea.setRuleId(1);
+        ospfArea.setDescription("Backbone");
+        ospfArea.setArea("0.0.0.0");
+        ospfArea.setType(0);
+        ospfArea.setVirtualLinks(new LinkedList<InetAddress>());
+        ospfAreas.add(ospfArea);
+
+        drSettings.setOspfAreas(ospfAreas);
+
+        return drSettings;
+    }
+
+    private List<FilterRule> addDynamicRoutingAccessRules(List<FilterRule> accessRules){
+
+        if(accessRules != null){
+            List<FilterRule> dynamicRoutingRules = defaultDynamicRoutingAcessRules();
+            for(FilterRule accessRule: accessRules){
+                if(accessRule.getDescription().startsWith("Allow Dynamic Routing")){
+                    break;
+                }
+                if(accessRule.getDescription().startsWith("Allow AH/ESP")){
+                    int index = accessRules.lastIndexOf(accessRule);
+                    for(FilterRule rule: dynamicRoutingRules){
+                        accessRules.add(index, rule);
+                        index++;
+                    }
+                    break;
+                }
+            }
+        }
+
+        return accessRules;
+    }
+
+    private List<FilterRule> defaultDynamicRoutingAcessRules()
+    {
+        List<FilterRule> rules = new LinkedList<FilterRule>();
+        List<FilterRuleCondition> conditions;
+
+        FilterRule filterRuleBgp = new FilterRule();
+        filterRuleBgp.setReadOnly( true );
+        filterRuleBgp.setEnabled( true );
+        filterRuleBgp.setIpv6Enabled( true );
+        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179) on WANs" );
+        filterRuleBgp.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "179" ));
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "wan" ));
+        filterRuleBgp.setConditions( conditions );
+
+        FilterRule filterRuleOspf = new FilterRule();
+        filterRuleOspf.setReadOnly( true );
+        filterRuleOspf.setEnabled( true );
+        filterRuleOspf.setIpv6Enabled( true );
+        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF on WANs" );
+        filterRuleOspf.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "OSPF" ));
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "wan" ));
+        filterRuleOspf.setConditions( conditions );
+
+        rules.add(filterRuleBgp);
+        rules.add(filterRuleOspf);
+
+        return rules;
+    }
+
     private List<FilterRule> defaultAccessRules()
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
@@ -1864,6 +2003,8 @@ public class NetworkManagerImpl implements NetworkManager
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
         filterRuleUpnpC.setConditions( conditions );
 
+        List<FilterRule> dynamicRoutingRules = defaultDynamicRoutingAcessRules();
+        
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
         filterRuleAhEsp.setEnabled( true );
@@ -1963,7 +2104,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleBlock.setReadOnly( true );
         List<FilterRuleCondition> rule4Conditions = new LinkedList<FilterRuleCondition>();
         filterRuleBlock.setConditions( rule4Conditions );
-        
+
         rules.add( filterRuleSsh );
         rules.add( filterRuleHttpsWan );
         rules.add( filterRuleHttpsNonWan );
@@ -1975,6 +2116,11 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleUpnp );
         rules.add( filterRuleUpnpB );
         rules.add( filterRuleUpnpC );
+
+        for(FilterRule rule: dynamicRoutingRules){
+            rules.add(rule);
+        }
+
         rules.add( filterRuleAhEsp );
         rules.add( filterRuleIke );
         rules.add( filterRuleNatT );
