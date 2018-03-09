@@ -16,7 +16,7 @@ Ext.define('Ung.apps.webmonitor.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/web-monitor_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/web-monitor.svg" width="80" height="80"/>' +
                 '<h3>Web Monitor</h3>' +
                 '<p>' + 'Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
         }, {

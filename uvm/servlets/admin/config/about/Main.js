@@ -13,7 +13,7 @@ Ext.define('Ung.config.about.Main', {
     viewModel: {
         data: {
             title: 'About'.t(),
-            iconName: 'icon_config_about',
+            iconName: 'about',
 
             kernelVersion: '',
             modificationState: '',

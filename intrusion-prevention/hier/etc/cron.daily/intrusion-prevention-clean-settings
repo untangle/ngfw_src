@@ -1,0 +1,11 @@
+#!/bin/dash
+
+# Delete settings files older than 7 days that are no longer used
+# This is necessary because intrusion prevention settings are very large
+# and keeping many old versions is not realistic
+/usr/bin/find /usr/share/untangle/settings/intrusion-prevention/ -mtime +7 -type f -name '*version*' | while read f ; do
+    if [ "`/usr/bin/find -L /usr/share/untangle/settings/intrusion-prevention/ -xtype l -samefile $f`" = "" ]; then
+       /bin/rm -f $f
+    fi
+done
+

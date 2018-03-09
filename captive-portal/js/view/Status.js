@@ -14,7 +14,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/captive-portal_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/captive-portal.svg" width="80" height="80"/>' +
                 '<h3>Captive Portal</h3>' +
                 '<p>' + 'Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'.t() + '</p>'
         }, {
