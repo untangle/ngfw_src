@@ -85,7 +85,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
             flex: 1,
             renderer: function (val, meta, rec) {
                 return '<strong>' + val + '</strong>';
-                // return '<img src="/skins/modern-rack/images/admin/apps/' + rec.get('name') + '_80x80.png" width=16 height=16/>' + '<strong>' + val + '</strong>';
+                // return '<img src="/icons/apps/' + rec.get('name') + '.svg" width=16 height=16/>' + '<strong>' + val + '</strong>';
             }
         }, {
             header: 'Inherited from',

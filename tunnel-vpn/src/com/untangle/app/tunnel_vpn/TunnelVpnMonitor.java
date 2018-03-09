@@ -145,10 +145,11 @@ class TunnelVpnMonitor implements Runnable
             TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnel.getTunnelId());
 
             if (status == null) {
-                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId(), tunnel.getName());
+                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId());
                 tunnelStatusList.put(tunnel.getTunnelId(), status);
             }
 
+            status.setTunnelName(tunnel.getName());
             status.setCycleCount(cycleCount);
 
             // ignore tunnels that are not enabled
@@ -215,9 +216,11 @@ class TunnelVpnMonitor implements Runnable
             status = tunnelStatusList.get(tunnel.getTunnelId());
 
             if (status == null) {
-                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId(), tunnel.getName());
+                status = new TunnelVpnTunnelStatus(tunnel.getTunnelId());
                 tunnelStatusList.put(tunnel.getTunnelId(), status);
             }
+
+            status.setTunnelName(tunnel.getName());
 
             // if the tunnel is enabled grab the stats from the daemon
             if (tunnel.getEnabled()) {

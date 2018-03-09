@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.ConfigPanel', {
             style: {
                 color: '#CCC'
             },
-            bind: { html: '<img src="/skins/modern-rack/images/admin/config/{iconName}.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{title}</strong>' }
+            bind: { html: '<img src="/icons/config/{iconName}.svg" style="vertical-align: middle;" width="17" height="17"/> <strong>{title}</strong>' }
         }])
     }, {
         xtype: 'toolbar',

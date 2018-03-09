@@ -16,7 +16,7 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/phish-blocker_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/phish-blocker.svg" width="80" height="80"/>' +
                 '<h3>Phish Blocker</h3>' +
                 '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
         }, {
