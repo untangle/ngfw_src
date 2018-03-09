@@ -31,7 +31,7 @@ Ext.define('Ung.view.apps.RackItem', {
             items: [{
                 xtype: 'component',
                 bind: {
-                    html: '<img src="/skins/modern-rack/images/admin/apps/{app.name}_80x80.png" width=42 height=42/>'
+                    html: '<img src="/icons/apps/{app.name}.svg" width=42 height=42/>'
                 }
             }, {
                 xtype: 'container',
@@ -61,7 +61,7 @@ Ext.define('Ung.view.apps.RackItem', {
                 }]
             }]
             // bind: {
-            //     html: '<img src="/skins/modern-rack/images/admin/apps/{app.name}_80x80.png" width=42 height=42 style="float: left;"/>' +
+            //     html: '<img src="/icons/apps/{app.name}.svg" width=42 height=42 style="float: left;"/>' +
             //         '<p>{app.displayName}' +
             //         '<br/><span style="font-size: 12px;"><i class="fa fa-file-text-o"></i> {app.parentPolicy}</span></p>'
             // }

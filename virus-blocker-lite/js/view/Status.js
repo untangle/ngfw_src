@@ -16,7 +16,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/virus-blocker-lite_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/virus-blocker-lite.svg" width="80" height="80"/>' +
                 '<h3>Virus Blocker Lite</h3>' +
                 '<p>' + 'Virus Blocker detects and blocks malware before it reaches users\' desktops or mailboxes.'.t() + '</p>'
         }, {

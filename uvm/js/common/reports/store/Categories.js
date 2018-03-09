@@ -12,9 +12,9 @@ Ext.define('Ung.store.Categories', {
         name: 'icon', type: 'string',
         calculate: function (cat) {
             if (cat.type === 'system') {
-                return '/skins/modern-rack/images/admin/config/icon_config_' + cat.name + '.png';
+                return '/icons/config/' + cat.name + '.svg';
             }
-            return '/skins/modern-rack/images/admin/apps/' + cat.name + '_80x80.png';
+            return '/icons/apps/' + cat.name + '.svg';
         }
     }, {
         name: 'slug', type: 'string',

@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.MainModel', {
     },
     data: {
         title: 'Network'.t(),
-        iconName: 'icon_config_network',
+        iconName: 'network',
 
         // si = selected interface (from grid)
         settings: null,

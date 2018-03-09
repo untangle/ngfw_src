@@ -5,7 +5,7 @@ Ext.define('Ung.config.system.MainModel', {
 
     data: {
         title: 'System'.t(),
-        iconName: 'icon_config_system',
+        iconName: 'system',
 
         time: null,
         languageSettings: null,

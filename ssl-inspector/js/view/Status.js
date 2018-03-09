@@ -16,7 +16,7 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/ssl-inspector_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/ssl-inspector.svg" width="80" height="80"/>' +
                 '<h3>SSL Inspector</h3>' +
                 '<p>' + 'SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrypted streams.'.t() + '</p>'
         }, {
