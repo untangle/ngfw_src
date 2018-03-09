@@ -32,10 +32,9 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
     public static final String STATE_DISCONNECTED = "DISCONNECTED";
     public static final String STATE_CONNECTED = "CONNECTED";
 
-    public TunnelVpnTunnelStatus(int tunnelId, String tunnelName)
+    public TunnelVpnTunnelStatus(int tunnelId)
     {
         this.tunnelId = tunnelId;
-        this.tunnelName = tunnelName;
     }
 
 // THIS IS FOR ECLIPSE - @formatter:off
