@@ -204,7 +204,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
             Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                             entry.getData(), // entry
-                            vm.get('globalConditions'), // etra conditions
+                            vm.get('query.conditions'), // global conditions
                             limit,
                             startDate, // start date
                             endDate) // end date

@@ -345,7 +345,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 entry.getData(), // entry
                 startDate,
                 endDate,
-                vm.get('globalConditions'), -1) // sql filters
+                vm.get('query.conditions'), -1) // sql filters
                 .then(function (result) {
                     me.data = result.list;
                     me.setSeries();

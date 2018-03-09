@@ -117,8 +117,15 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
-        // vm.bind('{f_startdate}', function () { me.reload(); });
-        // vm.bind('{f_enddate}', function () { me.reload(); });
+        /**
+         * When query string changes, reload the chart data with the new conditions
+         */
+        vm.bind('{query.string}', function (conditionsQuery) {
+            if (!me.conditionsQuery || me.conditionsQuery !== conditionsQuery) {
+                me.conditionsQuery = conditionsQuery;
+                me.reload();
+            }
+        });
     },
 
     /**
@@ -564,7 +571,7 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         var conditions = [];
-        Ext.Array.each(Ext.clone(vm.get('globalConditions')), function (cnd) {
+        Ext.Array.each(Ext.clone(vm.get('query.conditions')), function (cnd) {
             delete cnd._id;
             conditions.push(cnd);
         });

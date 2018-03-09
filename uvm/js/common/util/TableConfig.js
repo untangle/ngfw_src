@@ -184,6 +184,20 @@ Ext.define('TableConfig', {
 
     // end new methods
 
+    // checks if a table contains at least one of the columns passed as param
+    containsColumns: function (table, columns) {
+        var contains = false, fields = TableConfig.tableConfig[table].fields;
+        Ext.Array.each(fields, function (field) {
+            Ext.Array.each(columns, function (col) {
+                if (field.name === col) {
+                    contains = true;
+                }
+            });
+        });
+        return contains;
+    },
+
+
     tableConfig: {
         sessions: {
             fields: [{

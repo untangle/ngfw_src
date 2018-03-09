@@ -18,6 +18,8 @@ Ext.define('Ung.view.Main', {
             href: '#'
         }]
     }, {
+        xtype: 'globalconditions',
+    }, {
         xtype: 'toolbar',
         dock: 'top',
         style: {
@@ -66,22 +68,57 @@ Ext.define('Ung.controller.Global', {
     config: {
         routes: {
             '': 'onMain',
-            ':category': 'onMain',
-            ':category/:entry': { action: 'onMain', conditions: { ':entry': '(.*)' } },
+            ':params': {
+                action: 'onMain',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                }
+            }
         }
     },
 
-    onMain: function (categoryName, reportName) {
-        var reportsVm = this.getReportsView().getViewModel();
-        var hash = ''; // used to handle reports tree selection
+    onMain: function (query) {
+        var reportsVm = this.getReportsView().getViewModel(),
+            route = {}, conditions = [],
+            condsQuery = '', decoded, parts, key, sep, val;
 
-        if (categoryName) {
-            hash += categoryName;
+        if (query) {
+            Ext.Array.each(query.replace('?', '').split('&'), function (part) {
+                decoded = decodeURIComponent(part);
+
+                if (decoded.indexOf('\'') >= 0) {
+                    parts = decoded.split('\'');
+                    key = parts[0];
+                    sep = parts[1];
+                    val = parts[2];
+                } else {
+                    parts = decoded.split('=');
+                    key = parts[0];
+                    sep = '=';
+                    val = parts[1];
+                }
+
+                if (key === 'cat' || key === 'rep') {
+                    route[key] = val;
+                } else {
+                    conditions.push({
+                        column: key,
+                        operator: sep,
+                        value: val,
+                        autoFormatValue: true,
+                        javaClass: 'com.untangle.app.reports.SqlCondition'
+                    });
+                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+                }
+            });
         }
-        if (reportName) {
-            hash += '/' + reportName;
-        }
-        reportsVm.set('hash', hash);
+
+        reportsVm.set('query', {
+            route: route,
+            conditions: conditions,
+            string: condsQuery
+        });
+
     }
 });
 
@@ -169,4 +206,3 @@ Ext.define('Ung.ChartApplication', {
         Ext.fireEvent('init');
     }
 });
-

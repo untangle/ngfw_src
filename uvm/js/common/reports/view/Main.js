@@ -12,11 +12,24 @@ Ext.define('Ung.view.reports.Main', {
             context: null,
             fetching: false,
             selection: null,
-            editing: false
+            editing: false,
+            query: {},
+        },
+        formulas: {
+            conditionsText: function (get) {
+                var conds = get('query.conditions'), html = [];
+                Ext.Array.each(conds, function (cond) {
+                    html.push(TableConfig.getColumnHumanReadableName(cond.column) + ' ' + cond.operator + ' ' + cond.value);
+                });
+                if (html.length === 0) { return; }
+                return 'Reports for: ' + html.join(', ');
+            }
         }
     },
 
     dockedItems: [{
+        xtype: 'globalconditions',
+    }, {
         xtype: 'toolbar',
         dock: 'top',
         style: {
@@ -57,7 +70,7 @@ Ext.define('Ung.view.reports.Main', {
         split: true,
         border: false,
 
-        // singleExpand: true,
+        singleExpand: true,
         useArrows: true,
         rootVisible: false,
         plugins: 'responsive',
@@ -71,49 +84,55 @@ Ext.define('Ung.view.reports.Main', {
             selectionModel: {
                 type: 'treemodel',
                 pruneRemoved: false
+            },
+            getRowClass: function(node) {
+                if (node.get('disabled')) {
+                    return 'disabled';
+                }
             }
         },
 
         dockedItems: [{
-            xtype: 'textfield',
-            margin: '1',
-            emptyText: 'Filter reports ...',
-            enableKeyEvents: true,
-            flex: 1,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    hidden: true,
-                    handler: 'onTreeFilterClear'
-                }
-            },
-            listeners: {
-                change: 'filterTree',
-                buffer: 100
-            }
-        }, {
             xtype: 'toolbar',
             dock: 'bottom',
             ui: 'footer',
-            hidden: true,
-            bind: {
-                hidden: '{context !== "ADMIN"}'
-            },
             items: [{
-                xtype: 'segmentedbutton',
-                allowToggle: false,
+                xtype: 'textfield',
+                emptyText: 'Filter reports ...',
+                enableKeyEvents: true,
                 flex: 1,
-                items: [{
-                    text: 'Create New'.t(),
-                    iconCls: 'fa fa-plus fa-lg',
-                    scale: 'medium',
-                    handler: 'newReport',
-                }, {
-                    text: 'Import'.t(),
-                    iconCls: 'fa fa-external-link-square fa-lg fa-rotate-180',
-                    scale: 'medium',
-                    handler: 'newImport',
-                }]
+                triggers: {
+                    clear: {
+                        cls: 'x-form-clear-trigger',
+                        hidden: true,
+                        handler: 'onTreeFilterClear'
+                    }
+                },
+                listeners: {
+                    change: 'filterTree',
+                    buffer: 100
+                }
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-plus-circle',
+                text: 'Add/Import'.t(),
+                hidden: true,
+                bind: {
+                    hidden: '{context !== "ADMIN"}'
+                },
+                menu: {
+                    plain: true,
+                    mouseLeaveDelay: 0,
+                    items: [{
+                        text: 'Create New'.t(),
+                        iconCls: 'fa fa-plus fa-lg',
+                        handler: 'newReport', // not working yet
+                    }, {
+                        text: 'Import'.t(),
+                        iconCls: 'fa fa-download',
+                        handler: 'newImport'
+                    }]
+                }
             }]
         }],
 
@@ -126,7 +145,15 @@ Ext.define('Ung.view.reports.Main', {
         }],
 
         listeners: {
-            beforeselect: 'beforeSelectReport'
+            // prevent node selection if disabled
+            beforeselect: function (el, node) {
+                if (node.get('disabled')) { return false; }
+            },
+            // prevent node expand if disabled
+            beforeitemexpand: function (node) {
+                if (node.get('disabled')) { return false; }
+            },
+            select: 'onSelectReport'
         },
 
         responsiveConfig: {
@@ -157,6 +184,12 @@ Ext.define('Ung.view.reports.Main', {
                     '<i class="fa fa-bar-chart fa-2x"></i>' +
                     '<i class="fa fa-list-ul fa-2x"></i>' +
                     '<i class="fa fa-align-left fa-2x"></i>'
+            }, {
+                xtype: 'component',
+                margin: '0 0 20 0',
+                bind: {
+                    html: '{conditionsText}'
+                }
             }, {
                 xtype: 'container',
                 cls: 'stats',
