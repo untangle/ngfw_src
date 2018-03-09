@@ -1138,20 +1138,6 @@ Ext.define('Ung.view.reports.Entry', {
             bind: {
                 hidden: '{!dataCk.checked || eEntry}',
             }
-        }, {
-            /**
-             * Global conditions which apply to all reports
-             */
-            region: 'south',
-            xtype: 'globalconditions',
-            itemId: 'sqlFilters',
-            weight: 25,
-            height: 280,
-            animCollapse: false,
-            titleCollapse: true,
-            collapsible: true,
-            collapsed: true,
-            split: true
         }]
 
     }]
