@@ -6,10 +6,10 @@
 
 echo "`date -Iseconds` $0: $0 $@ $$"
 
-# Wait for apt-get to complete
+# Wait for upgrade(apt-get) to complete
 while true; do
-    if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
-        echo "`date -Iseconds` $0: Waiting for apt-get to complete..."
+    if ps -C apt-get,aptitude,dpkg,ut-upgrade.py >/dev/null 2>&1; then
+        echo "`date -Iseconds` $0: Waiting for upgrade to complete..."
         sleep 10
     else
         /bin/rm -f $pidfile
