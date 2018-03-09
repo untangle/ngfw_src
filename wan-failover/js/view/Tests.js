@@ -103,13 +103,17 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
         fieldLabel: 'Description'.t(),
         bind: '{record.description}'
     }, {
-        xtype: 'textfield',
+        xtype: 'numberfield',
+        allowDecimals: false,
+        minValue: 1,
         fieldLabel: 'Testing Interval (seconds)'.t(),
-        bind: '{record.delayMilliseconds}',
+        bind: '{record.delayMilliseconds}'
     }, {
-        xtype: 'textfield',
+        xtype: 'numberfield',
+        allowDecimals: false,
+        minValue: 1,
         fieldLabel: 'Timeout (seconds)'.t(),
-        bind: '{record.timeoutMilliseconds}',
+        bind: '{record.timeoutMilliseconds}'
     }, {
         xtype: 'combobox',
         fieldLabel: 'Failure Threshold'.t(),
