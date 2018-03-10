@@ -113,8 +113,15 @@ def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None
             break
         else:
             iperf_tries -= 1
-    # kill iperf receiver    
-    remote_control.run_command("pkill iperf", host=receiverIP)
+
+    # kill iperf receiver and verify
+    iperfRunning = 0
+    timeout = 60
+    while iperfRunning == 0 and timeout > 0:
+        timeout -= 1
+        remote_control.run_command("pkill iperf", host=receiverIP)
+        time.sleep(1)
+        iperfRunning = remote_control.run_command("pidof iperf", host=receiverIP)
 
     lines = report.split("\n")
     udp_speed = None
