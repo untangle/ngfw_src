@@ -1,9 +1,11 @@
 /**
- * Reports Global Conditions toolbar used only in Reports
+ * Reports Global Conditions toolbar used in Reports or Dashboard
   */
- Ext.define('Ung.reports.cmp.GlobalConditions', {
+Ext.define('Ung.reports.cmp.GlobalConditions', {
     extend: 'Ext.toolbar.Toolbar',
     alias: 'widget.globalconditions',
+
+    context: 'REPORTS', // can be 'REPORTS' or 'DASHBOARD'
 
     docked: 'top',
     ui: 'footer',
@@ -254,25 +256,32 @@
          * Create new route based on new global conditions, and redirect to the new location
          */
         redirect: function () {
-            var me = this, vm = me.getViewModel(),
-                newQuery = (Ung.app.context === 'REPORTS') ? '#' : '#reports',
-                route = vm.get('query.route'),
+            var me = this, view = me.getView(), vm = me.getViewModel(),
+                newQuery = '', route,
                 conditions = vm.get('query.conditions');
 
-            console.log(route);
+            if (view.context === 'REPORTS') {
+                newQuery = (Ung.app.context === 'REPORTS') ? '#' : '#reports';
+                route = vm.get('query.route');
+                if (route.cat) {
+                    newQuery += '?cat=' + route.cat;
+                }
 
-            if (route.cat) {
-                newQuery += '?cat=' + route.cat;
+                if (route.rep) {
+                    newQuery += '&rep=' + route.rep;
+                }
+
+                Ext.Array.each(conditions, function (cond) {
+                    newQuery += (route.cat ? '&' : '?') + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + cond.value;
+                });
             }
 
-            if (route.rep) {
-                newQuery += '&rep=' + route.rep;
+            if (view.context === 'DASHBOARD') {
+                Ext.Array.each(conditions, function (cond) {
+                    newQuery += '#dashboard?' + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + cond.value;
+                });
             }
 
-            Ext.Array.each(conditions, function (cond) {
-                newQuery += (route.cat ? '&' : '?') + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + cond.value;
-            });
-            console.log(newQuery);
             Ung.app.redirectTo(newQuery);
         },
 

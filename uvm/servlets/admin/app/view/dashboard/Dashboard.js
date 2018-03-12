@@ -4,7 +4,7 @@
 Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.ung-dashboard',
-    itemId: 'dashboard',
+    itemId: 'dashboardMain',
 
     /* requires-start */
     requires: [
@@ -62,6 +62,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             },
             handler: 'toggleManager'
         }])
+    }, {
+        xtype: 'globalconditions',
+        context: 'DASHBOARD'
     }],
 
     config: {
