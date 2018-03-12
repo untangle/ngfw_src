@@ -16,7 +16,7 @@ while true; do
         echo "`date -Iseconds` $0: Running conversion"
 
         echo "`date -Iseconds` $0: sync-settings"
-        /usr/bin/sync-settings.py
+        /usr/bin/sync-settings.py -n
         echo "Result: $?"
 
         echo "`date -Iseconds` $0: Rebooting in 30 seconds"
