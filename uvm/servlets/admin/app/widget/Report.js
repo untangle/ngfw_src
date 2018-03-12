@@ -40,7 +40,7 @@ Ext.define('Ung.widget.Report', {
         cls: 'header',
         itemId: 'header',
         bind: {
-            html: '<h1><a href="#reports/{entry.url}">{entry.localizedTitle}</a></h1><p><a href="#reports/{entry.categorySlug}">{entry.category}</a></p>' +
+            html: '<h1><a href="#reports?{entry.url}">{entry.localizedTitle}</a></h1><p><a href="#reports?cat={entry.categorySlug}">{entry.category}</a></p>' +
                 '<div class="actions">' +
                     '<a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-bars fa-lg" data-action="menu"></i></a>' +
@@ -56,7 +56,7 @@ Ext.define('Ung.widget.Report', {
                 '<i class="fa fa-times fa-lg" data-action="closemenu"></i>' +
                 '<a data-action="download" style="display: {entry.type === "TIME_GRAPH" || entry.type === "TIME_GRAPH_DYNAMIC" || entry.type === "PIE_GRAPH" ? "auto" : "none"};"><i class="fa fa-download fa-lg" data-action="download"></i> ' + 'Download (image)'.t() + '</a>' +
                 '<a data-action="export" style="display: {entry.type === "EVENT_LIST" ? "auto" : "none"};"><i class="fa fa-download fa-lg" data-action="export"></i> ' + 'Export (CSV)'.t() + '</a>' +
-                '<a data-action="reports" data-url="#reports/{entry.url}"><i class="fa fa-external-link-square fa-lg"></i> ' + 'Open in Reports'.t() + '</a>' +
+                '<a data-action="reports" data-url="#reports?{entry.url}"><i class="fa fa-external-link-square fa-lg"></i> ' + 'Open in Reports'.t() + '</a>' +
                 '<hr/>' +
                 '<label style="color: #999; margin: 10px 0; display: block;">' + 'Settings'.t() + '</label>' +
                 '<label style="float: left; width: 20%; padding: 5px 0;">' + 'Size'.t() +':</label> <a data-action="size-SMALL" class="size {widget.size === "SMALL" ? "selected" : ""}">S</a>' +

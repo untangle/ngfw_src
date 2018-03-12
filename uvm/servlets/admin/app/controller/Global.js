@@ -75,7 +75,7 @@ Ext.define('Ung.controller.Global', {
                 before: 'detectChanges',
                 action: 'onReports',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                    ':params' : '(.*)'
                 }
             },
             'sessions': { before: 'detectChanges', action: 'onSessions' },
@@ -132,13 +132,13 @@ Ext.define('Ung.controller.Global', {
 
         if (dirtyFields || dirtyGrids) {
             Ext.MessageBox.confirm('Warning'.t(), 'There are unsaved settings which will be lost. Do you want to continue?'.t(),
-            function(btn) {
-                if (btn === 'yes') {
-                    action.resume(); // if user wants to loose changes move on
-                } else {
-                    Ung.app.redirectTo(Ung.app.hashBackup); // otherwise keep it in same view and reset the hash to reflect the same view
-                }
-            });
+                function(btn) {
+                    if (btn === 'yes') {
+                        action.resume(); // if user wants to loose changes move on
+                    } else {
+                        Ung.app.redirectTo(Ung.app.hashBackup); // otherwise keep it in same view and reset the hash to reflect the same view
+                    }
+                });
         } else {
             action.resume();
         }
