@@ -50,13 +50,22 @@ Ext.define('Ung.controller.Global', {
     config: {
         refs: {
             mainView: '#main',
-            dashboardView: '#dashboard',
+            dashboardView: '#dashboardMain',
             appsView: '#apps',
             reportsView: '#reports',
         },
 
         routes: {
             '': { before: 'detectChanges', action: 'onDashboard' },
+            'dashboard': { before: 'detectChanges', action: 'onDashboard' },
+            'dashboard:params': {
+                before: 'detectChanges',
+                action: 'onDashboard',
+                conditions: {
+                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                }
+            },
+
             'apps': { before: 'detectChanges', action: 'onApps' },
             'apps/:policyId': { before: 'detectChanges', action: 'onApps' },
             'apps/:policyId/:app': { before: 'detectChanges', action: 'onApps' },
@@ -181,8 +190,45 @@ Ext.define('Ung.controller.Global', {
     },
 
 
-    onDashboard: function () {
-        this.getMainView().getViewModel().set('activeItem', 'dashboard');
+    onDashboard: function (query) {
+        var dashboardVm = this.getDashboardView().getViewModel(),
+            conditions = [],
+            condsQuery = '', decoded, parts, key, sep, val;
+
+        if (query) {
+            Ext.Array.each(query.replace('?', '').split('&'), function (part) {
+                decoded = decodeURIComponent(part);
+
+                if (decoded.indexOf('\'') >= 0) {
+                    parts = decoded.split('\'');
+                    key = parts[0];
+                    sep = parts[1];
+                    val = parts[2];
+                } else {
+                    parts = decoded.split('=');
+                    key = parts[0];
+                    sep = '=';
+                    val = parts[1];
+                }
+
+                conditions.push({
+                    column: key,
+                    operator: sep,
+                    value: val,
+                    autoFormatValue: true,
+                    javaClass: 'com.untangle.app.reports.SqlCondition'
+                });
+                condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+
+            });
+        }
+
+        dashboardVm.set('query', {
+            conditions: conditions,
+            string: condsQuery
+        });
+
+        this.getMainView().getViewModel().set('activeItem', 'dashboardMain');
     },
 
     onApps: function (policyId, app, view, subView) {

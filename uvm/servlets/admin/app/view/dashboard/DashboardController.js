@@ -24,7 +24,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     listen: {
         global: {
-            init: 'loadWidgets',
+            init: 'onInit',
             // appinstall: 'onAppInstall',
             // addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
             reportsInstall: 'loadWidgets',
@@ -75,6 +75,21 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         });
     },
+
+    onInit: function () {
+        var me = this, vm = me.getViewModel();
+        me.loadWidgets();
+
+        // refresh report widgets on global conditions update
+        vm.bind('{query}', function () {
+            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widgetCmp) {
+                widgetCmp.lastFetchTime = null;
+                DashboardQueue.add(widgetCmp);
+            });
+        });
+
+    },
+
 
     /**
      * Load initial dashboard widgets
@@ -283,23 +298,23 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-        .then(function() {
-            Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
-            Ext.getStore('widgets').sync();
-            vm.set('managerVisible', false);
+            .then(function() {
+                Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+                Ext.getStore('widgets').sync();
+                vm.set('managerVisible', false);
 
-            // remove widgets from dashboard if removed from store (manager)
-            Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
-                if (Ext.getStore('widgets').find('entryId', widgetCmp.getItemId()) < 0) {
-                    dashboard.remove(widgetCmp);
-                } else {
-                    if (refetch) {
-                        widgetCmp.lastFetchTime = null;
+                // remove widgets from dashboard if removed from store (manager)
+                Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
+                    if (Ext.getStore('widgets').find('entryId', widgetCmp.getItemId()) < 0) {
+                        dashboard.remove(widgetCmp);
+                    } else {
+                        if (refetch) {
+                            widgetCmp.lastFetchTime = null;
+                        }
                     }
-                }
-            });
+                });
 
-        });
+            });
 
     },
 
