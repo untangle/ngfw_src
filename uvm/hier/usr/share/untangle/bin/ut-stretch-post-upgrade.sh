@@ -17,7 +17,12 @@ while true; do
 
         echo "`date -Iseconds` $0: sync-settings"
         /usr/bin/sync-settings.py -n
-        echo "Result: $?"
+        if [ $? != 0 ] ; then
+            echo
+            echo "sync-settings failed! Not rebooting!"
+            echo "sync-settings failed!\nSee /var/log/uvm/stretch.log for more info" | wall
+            echo
+            exit
 
         echo "`date -Iseconds` $0: Rebooting in 30 seconds"
         echo "Rebooting in 30 seconds...\n\"touch /tmp/abort\" to stop" | wall
