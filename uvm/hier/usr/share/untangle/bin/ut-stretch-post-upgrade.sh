@@ -23,6 +23,7 @@ while true; do
             echo "sync-settings failed!\nSee /var/log/uvm/stretch.log for more info" | wall
             echo
             exit
+        fi
 
         echo "`date -Iseconds` $0: Rebooting in 30 seconds"
         echo "Rebooting in 30 seconds...\n\"touch /tmp/abort\" to stop" | wall
