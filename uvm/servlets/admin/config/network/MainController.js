@@ -18,6 +18,15 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #advanced': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
+        '#advanced #dynamicRouting': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #dynamicRouting #bgp': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #dynamicRouting #ospf': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
         '#dynamicRoutingStatus':{
             activate: 'getDynamicRoutingStatus'
         },
@@ -43,7 +52,6 @@ Ext.define('Ung.config.network.MainController', {
             Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
             Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
         ], this).then(function (result) {
-            v.setLoading(false);
             var intfStatus, devStatus;
 
             rpc.networkSettings = result[0]; // update rpc.networkSettings with latest data (usually after save)
@@ -81,7 +89,7 @@ Ext.define('Ung.config.network.MainController', {
             // me.setPortForwardSimples(); // commented out as it should work withou ti
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
-
+            v.setLoading(false);
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
@@ -713,14 +721,13 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     getOspfInterfaces: function(view, cmp){
+        var me = this;
         var vm = null;
         if(this == window){
             vm = view.getViewModel();
         }else{
             vm = this.getViewModel();
         }
-
-        view.setLoading(true);
 
         var interfacesInUse = [];
         if(cmp.isXType('combo')){
@@ -733,82 +740,94 @@ Ext.define('Ung.config.network.MainController', {
             });
         }
 
-        var interfaceData = [];
-        var dev;
-        vm.get('settings.interfaces').list.forEach( function(interface){
-            if( interface["configType"] != "ADDRESSED" || interface["v4ConfigType"] != "STATIC"){
+       view.setLoading(true);
+
+        runInterfaceTaskDelay = 1000;
+        var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            // !!! look for destroyed objects in 14.0
+            var networkInterfaces = vm.get('settings.interfaces');
+            if(!networkInterfaces){
+                runInterfaceTask.delay( runInterfaceTaskDelay );                
                 return;
             }
-            dev = interface['symbolicDev'];
-            if(interfacesInUse.indexOf(dev) > -1){
-                return;
+
+            var interfaceData = [];
+            var dev;
+            networkInterfaces.list.forEach( function(interface){
+                if( interface["configType"] != "ADDRESSED" || interface["v4ConfigType"] != "STATIC"){
+                    return;
+                }
+                dev = interface['symbolicDev'];
+                if(interfacesInUse.indexOf(dev) > -1){
+                    return;
+                }
+                interfaceData.push({
+                    'dev': dev,
+                    'interface': interface['name'],
+                });
+            });
+
+            // !!! convert to sequence in 14.0.
+            var app = Rpc.directData('rpc.UvmContext.appManager').app('ipsec-vpn');
+            var settings, networkId;
+            if(app){
+                settings = app.getSettings();
+                networkId = 1;
+                settings.networks.list.forEach(function(network){
+                    if(network.active){
+                        dev = 'gre' + networkId.toString();
+                        if(interfacesInUse.indexOf(dev) > -1){
+                            return;
+                        }
+                        interfaceData.push({
+                            dev: dev,
+                            interface: network.description
+                        });
+                    }
+                    networkId++;
+                });
             }
-            interfaceData.push({
-                'dev': dev,
-                'interface': interface['name'],
-            });
-        });
 
-        // !!! convert to sequence in 14.0.
-        var app = Rpc.directData('rpc.UvmContext.appManager').app('ipsec-vpn');
-        var settings, networkId;
-        if(app){
-            settings = app.getSettings();
-            networkId = 1;
-            settings.networks.list.forEach(function(network){
-                if(network.active){
-                    dev = 'gre' + networkId.toString();
-                    if(interfacesInUse.indexOf(dev) > -1){
-                        return;
+            app = Rpc.directData('rpc.UvmContext.appManager').app('openvpn');
+            if(app){
+                settings = app.getSettings();
+                networkId = 1;
+                settings.remoteServers.list.forEach(function(network){
+                    if(network.enabled){
+                        dev = 'tun' + networkId.toString();
+                        if(interfacesInUse.indexOf(dev) > -1){
+                            return;
+                        }
+                        interfaceData.push({
+                            dev: dev,
+                            interface: network.name
+                        });
                     }
-                    interfaceData.push({
-                        dev: dev,
-                        interface: network.description
-                    });
-                }
-                networkId++;
-            });
-        }
+                    networkId++;
+                });
+            }
 
-        app = Rpc.directData('rpc.UvmContext.appManager').app('openvpn');
-        if(app){
-            settings = app.getSettings();
-            networkId = 1;
-            settings.remoteServers.list.forEach(function(network){
-                if(network.enabled){
-                    dev = 'tun' + networkId.toString();
-                    if(interfacesInUse.indexOf(dev) > -1){
-                        return;
+            app = Rpc.directData('rpc.UvmContext.appManager').app('tunnel-vpn');
+            if(app){
+                settings = app.getSettings();
+                settings.tunnels.list.forEach(function(network){
+                    if(network.enabled){
+                        dev = 'tun' + network.tunnelId.toString();
+                        if(interfacesInUse.indexOf(dev) > -1){
+                            return;
+                        }
+                        interfaceData.push({
+                            dev: dev,
+                            interface: network.name
+                        });
                     }
-                    interfaceData.push({
-                        dev: dev,
-                        interface: network.name
-                    });
-                }
-                networkId++;
-            });
-        }
+                });
+            }
 
-        app = Rpc.directData('rpc.UvmContext.appManager').app('tunnel-vpn');
-        if(app){
-            settings = app.getSettings();
-            settings.tunnels.list.forEach(function(network){
-                if(network.enabled){
-                    dev = 'tun' + network.tunnelId.toString();
-                    if(interfacesInUse.indexOf(dev) > -1){
-                        return;
-                    }
-                    interfaceData.push({
-                        dev: dev,
-                        interface: network.name
-                    });
-                }
-            });
-        }
-
-        vm.get('ospfDevices').loadData(interfaceData);
-
-        view.setLoading(false);
+            vm.get('ospfDevices').loadData(interfaceData);
+            view.setLoading(false);
+        }, me) );
+        runInterfaceTask.delay( runInterfaceTaskDelay );
     },
 
     // Network Tests
