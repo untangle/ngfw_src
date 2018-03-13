@@ -63,8 +63,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             handler: 'toggleManager'
         }])
     }, {
-        xtype: 'globalconditions',
-        context: 'DASHBOARD'
+        xtype: 'toolbar',
+        padding: 5,
+        dock: 'top',
+        items: [{
+            xtype: 'globalconditions',
+            context: 'DASHBOARD'
+        }]
     }],
 
     config: {
