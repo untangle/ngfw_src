@@ -874,7 +874,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         xtype: 'ungrid',
                         split: true,
                         itemId: 'dynamicRouteStatus',
-                        title: 'Aquired Dynamic Routes'.t(),
+                        title: 'Acquired Dynamic Routes'.t(),
 
                         emptyText: 'No Acquired Dynamic Routes found'.t(),
 
