@@ -915,7 +915,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         itemId: 'bgpStatus',
                         title: 'BGP Status'.t(),
 
-                        emptyText: 'No OSPF Status available'.t(),
+                        emptyText: 'No BGP Status available'.t(),
 
                         bind: {
                             store: '{bgpStatus}',
@@ -1597,17 +1597,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                             }]
                         },{
                             xtype: 'panel',
-                            // title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
                             title: 'Advanced Options'.t(),
+                            itemId: 'advancedOptions',
                             padding: 10,
-                            // collapsed: true,
 
                             defaults:{
                                 margin: 10,
                                 labelWidth: 200,
                             },
                             items:[{
-                                // router id (e.g. 12.34.5.66)
                                 xtype: 'textfield',
                                 fieldLabel: 'Router ID'.t(),
                                 bind: '{settings.dynamicRoutingSettings.ospfRouterId}',
@@ -1650,10 +1648,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 xtype: 'fieldset',
                                 title: 'Default Information originate'.t(),
 
-                                // Radio select
-
                                 items:[{
-                                    // Default Information originate Never/Regular/Always
                                     xtype: 'combo',
                                     bind: {
                                         value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType}',
@@ -1667,7 +1662,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     editable: false,
                                     allowBlank: false
                                 },{
-                                    // Metric (0-16777214)
                                     xtype: 'textfield',
                                     fieldLabel: 'Metric'.t(),
                                     hidden: true,
@@ -1679,7 +1673,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     },
                                     vtype: 'metric'
                                 },{
-                                    // External Type 1/External Type 2
                                     xtype: 'combo',
                                     fieldLabel: 'Metric Type'.t(),
                                     hidden: true,
@@ -1700,20 +1693,17 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 xtype: 'fieldset',
                                 title: 'Redistribute Connected'.t(),
                                 collapsed: true,
-                                // disabled: true,
 
                                 checkboxToggle: true,
                                 checkbox: {
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled}'
                                 },
                                 items:[{
-                                    // Metric (0-16777214)
                                     xtype: 'textfield',
                                     fieldLabel: 'Metric'.t(),
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedMetric}',
                                     vtype: 'metric'
                                 },{
-                                    // External Type 1/External Type 2
                                     xtype: 'combo',
                                     fieldLabel: 'Metric Type'.t(),
                                     hidden: true,
@@ -1745,7 +1735,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistStaticMetric}',
                                     vtype: 'metric'
                                 },{
-                                    // External Type 1/External Type 2
                                     xtype: 'combo',
                                     fieldLabel: 'Metric Type'.t(),
                                     hidden: true,
@@ -1775,13 +1764,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled}'
                                 },
                                 items:[{
-                                    // Metric (0-16777214)
                                     xtype: 'textfield',
                                     fieldLabel: 'Metric'.t(),
                                     bind: '{settings.dynamicRoutingSettings.ospfRedistBgpMetric}',
                                     vtype: 'metric'
                                 },{
-                                    // External Type 1/External Type 2
                                     xtype: 'combo',
                                     fieldLabel: 'Metric Type'.t(),
                                     hidden: true,
