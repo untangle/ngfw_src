@@ -18,19 +18,19 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #advanced': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
-        '#advanced #dynamicRouting': {
+        '#advanced #dynamic_routing': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
-        '#advanced #dynamicRouting #bgp': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamicRouting #ospf': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#dynamicRoutingStatus':{
+        '#advanced #dynamic_routing #status':{
             activate: 'getDynamicRoutingStatus'
         },
-        '#ospfInterfaces':{
+        '#advanced #dynamic_routing #bgp': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #dynamic_routing #ospf': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #dynamic_routing #ospf #interfaces':{
             activate: 'getOspfInterfaces'
         },
         '#troubleshooting': {
@@ -579,8 +579,8 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     getDynamicRoutingStatus: function(view){
-        if(view.itemId != 'dynamicRoutingStatus'){
-            view = view.up('#dynamicRoutingStatus');
+        if(view.itemId != 'status'){
+            view = view.up('#status');
         }
         var vm = this.getViewModel();
 
@@ -594,7 +594,7 @@ Ext.define('Ung.config.network.MainController', {
             view.setLoading(false);
 
             // Build dynamic routes
-            var routeStore = view.down('#dynamicRouteStatus').getStore();
+            var routeStore = view.down('#dynamic_routing_status').getStore();
             var routeStoreFields = routeStore.getModel().getFields();
             var storeData = [];
             var currentNetwork = null;
@@ -682,8 +682,7 @@ Ext.define('Ung.config.network.MainController', {
                     uptime: uptime
                 });
             });
-            view.down('#bgpStatus').getStore().loadData(storeData);
-
+            view.down('#bgp_status').getStore().loadData(storeData);
 
             // Build OSPF status
             storeData = [];
@@ -709,7 +708,7 @@ Ext.define('Ung.config.network.MainController', {
                     interface: interfaceId
                 });
             });
-            view.down('#ospfStatus').getStore().loadData(storeData);
+            view.down('#ospf_status').getStore().loadData(storeData);
 
             view.setLoading(false);
 
@@ -732,7 +731,7 @@ Ext.define('Ung.config.network.MainController', {
         var interfacesInUse = [];
         if(cmp.isXType('combo')){
             var currentValue = cmp.getBind().value.getRawValue();
-            cmp.up('#ospfInterfaces').getStore().getData().each(function(interface){
+            cmp.up('#interfaces').getStore().getData().each(function(interface){
                 if(interface.get('dev') == currentValue){
                     return;
                 }
@@ -740,9 +739,9 @@ Ext.define('Ung.config.network.MainController', {
             });
         }
 
-       view.setLoading(true);
+        view.setLoading(true);
 
-        runInterfaceTaskDelay = 1000;
+        runInterfaceTaskDelay = 100;
         var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
             // !!! look for destroyed objects in 14.0
             var networkInterfaces = vm.get('settings.interfaces');
@@ -1548,6 +1547,7 @@ Ext.define('Ung.config.network.MainController', {
 
         ospDeviceRenderer: function( value ){
             var store = this.up('configpanel').getViewModel().getStore('ospfDevices');
+            console.log(store);
             var record = store.findRecord('dev', value);
             if(record != null){
                 return record.get('interface');
