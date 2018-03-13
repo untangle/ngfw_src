@@ -825,6 +825,9 @@ Ext.define('Ung.config.network.MainController', {
 
             vm.get('ospfDevices').loadData(interfaceData);
             view.setLoading(false);
+            if(view.itemId && view.itemId == 'interfaces'){
+                view.reconfigure();
+            }
         }, me) );
         runInterfaceTask.delay( runInterfaceTaskDelay );
     },
@@ -1547,7 +1550,6 @@ Ext.define('Ung.config.network.MainController', {
 
         ospDeviceRenderer: function( value ){
             var store = this.up('configpanel').getViewModel().getStore('ospfDevices');
-            console.log(store);
             var record = store.findRecord('dev', value);
             if(record != null){
                 return record.get('interface');
