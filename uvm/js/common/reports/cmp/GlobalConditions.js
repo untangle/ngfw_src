@@ -104,6 +104,15 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                         }
                     }
                 }
+            }, {
+                xtype: 'checkbox',
+                itemId: 'add_fmt',
+                boxLabel: 'AutoFormat Value'.t(),
+                value: true,
+                disabled: true,
+                bind: {
+                    disabled: '{!rg.value}'
+                }
             }, '-', {
                 text: '<strong>' + 'More conditions ...'.t() + '</strong>',
                 handler: 'onMoreConditions'
@@ -198,6 +207,17 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                             me.redirect();
                                         }
                                     }
+                                }, '-', {
+                                    xtype: 'checkbox',
+                                    boxLabel: 'Autoformat Value'.t(),
+                                    margin: 5,
+                                    value: cond.autoFormatValue,
+                                    listeners: {
+                                        change: function (el, val) {
+                                            cond.autoFormatValue = val;
+                                            me.redirect();
+                                        }
+                                    }
                                 }],
                                 listeners: {
                                     beforehide: function (el) {
@@ -239,20 +259,23 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conds = vm.get('query.conditions'),
                 col = menu.down('#add_column').getValue(),
                 op = menu.down('#add_operator').getValue(),
-                val = menu.down('#add_value').getValue();
+                val = menu.down('#add_value').getValue(),
+                fmt = menu.down('#add_fmt').getValue();
 
             menu.down('#add_column').reset();
             menu.down('#add_operator').setValue('=');
             menu.down('#add_value').setValue('');
+            menu.down('#add_fmt').setValue(true);
 
             if (!col || !op || !val) {
                 return;
             }
+
             conds.push({
                 column: col,
                 operator: op,
                 value: val,
-                autoFormatValue: true,
+                autoFormatValue: fmt,
                 javaClass: 'com.untangle.app.reports.SqlCondition'
             });
             me.redirect();
@@ -277,14 +300,15 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     newQuery += '&rep=' + route.rep;
                 }
 
-                Ext.Array.each(conditions, function (cond) {
-                    newQuery += (route.cat ? '&' : '?') + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + encodeURIComponent(cond.value);
+                Ext.Array.each(conditions, function (cond, idx) {
+                    newQuery += (idx === 0 && !route.cat) ? '?' : '&';
+                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
                 });
             }
 
             if (view.context === 'DASHBOARD') {
                 Ext.Array.each(conditions, function (cond) {
-                    newQuery += '#dashboard?' + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + encodeURIComponent(cond.value);
+                    newQuery += '#dashboard?' + cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
                 });
             }
 
