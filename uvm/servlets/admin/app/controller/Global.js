@@ -70,6 +70,8 @@ Ext.define('Ung.controller.Global', {
             'config/:configName': { before: 'detectChanges', action: 'onConfig' },
             'config/:configName/:configView': 'onConfig',
             'config/:configName/:configView/:subView': 'onConfig',
+            'config/:configName/:configView/:subView/:subView': 'onConfig',
+            'config/:configName/:configView/:subView/:subView/:subView': 'onConfig',
             'reports': { before: 'detectChanges', action: 'onReports' },
             'reports/create': { before: 'detectChanges', action: 'onReports' },
             'reports/:category': { before: 'detectChanges', action: 'onReports' },
@@ -212,17 +214,20 @@ Ext.define('Ung.controller.Global', {
 
 
     loadApp: function (policyId, app, view, subView) {
+        var subViews = [];
+        for( var i = 3; i < arguments.length; i++){
+            if(typeof(arguments[i]) != 'string'){
+                break;
+            }
+            subViews.push(arguments[i]);
+        }
         var me = this, mainView = me.getMainView();
         if (mainView.down('app-' + app)) {
             // if app card already exists activate it and select given view
             mainView.getViewModel().set('activeItem', 'appCard');
-            mainView.down('app-' + app).setActiveItem(view || 0);
-            if(subView){
-                var subViewTarget = mainView.down('tabpanel').down('tabpanel');
-                if(subViewTarget){
-                    subViewTarget.setActiveTab(subView);
-                }
-            }
+            var viewTarget = mainView.down('app-' + app).setActiveItem(view || 0);
+            mainView.down('app-' + app).subViews = subViews;
+            Ung.controller.Global.onSubtabActivate(viewTarget);
             return;
         } else {
             // eventually do not remove the old card
@@ -259,7 +264,7 @@ Ext.define('Ung.controller.Global', {
                             itemId: 'appCard',
                             appManager: result,
                             activeTab: view || 0,
-                            subTab: subView || 0,
+                            subViews: subViews || [],
                             viewModel: {
                                 data: {
                                     // policyId: policyId,
@@ -289,19 +294,21 @@ Ext.define('Ung.controller.Global', {
 
 
     onConfig: function (config, view, subView) {
+        var subViews = [];
+        for( var i = 2; i < arguments.length; i++){
+            if(typeof(arguments[i]) != 'string'){
+                break;
+            }
+            subViews.push(arguments[i]);
+        } 
         var me = this, mainView = me.getMainView();
         mainView.getViewModel().set('activeItem', 'config');
         if (config) {
             if (mainView.down('config-' + config)) {
-                // if config card already exists activate it and select given view
                 mainView.getViewModel().set('activeItem', 'configCard');
                 var viewTarget = mainView.down('config-' + config).setActiveItem(view || 0);
-                if(subView){
-                    var subViewTarget = viewTarget.down('tabpanel');
-                    if(subViewTarget){
-                        subViewTarget.setActiveTab(subView);
-                    }
-                }
+                mainView.down('config-' + config).subViews = subViews;
+                Ung.controller.Global.onSubtabActivate(viewTarget);
                 return;
             } else {
                 mainView.remove('configCard');
@@ -315,7 +322,7 @@ Ext.define('Ung.controller.Global', {
                         name: config,
                         itemId: 'configCard',
                         activeTab: view || 0,
-                        subTab: subView || 0,
+                        subViews: subViews || [],
                         listeners: {
                             deactivate: function () {
                                 // remove the config container
@@ -395,24 +402,48 @@ Ext.define('Ung.controller.Global', {
     statics: {
         //
         // These two methods are used on tab panels with their own sub-tab panels and added
-        // to the controller.  See openvon/server and virus-blocker/advanced.
+        // to the controller.  See openvpn/server and virus-blocker/advanced.
         //
         onSubtabActivate: function(panel){
+            var me = this;
             var parentPanel = panel.up('apppanel') || panel.up('configpanel');
-            var subTab = parentPanel.subTab;
-            if(subTab == 0){
-                return;
-            }
-            // Get the first child tabpanel (could be us!)
-            while( (panel != null ) && ( panel.isXType('tabpanel') == false ) ){
-                panel = panel.down('tabpanel');
-            }
-            if(panel){
-                panel.setActiveItem(subTab);
-            }
+
+            // While we're setting tabs, don't trigger the subtab activation.
+            // Doing so will loop back into onConfig for a partial path, short-circuiting
+            // the loop wer'e doing here.
+            Ung.controller.Global.ignoreActivate = true;
+
+            var runInterfaceTaskDelay = 250;
+            parentPanel.subViews.forEach(function(subView){
+                var targetPanel = panel.down('[itemId='+subView+']');
+                var parentPanel = targetPanel.up('tabpanel');
+                parentPanel.setActiveItem(subView);
+                panel = targetPanel;
+
+                if(targetPanel.tab){
+                    // For deeply nested tabs, settng the active item sets the tab panel
+                    // properly but not the tab itself.  To verify tis properly set, we
+                    // spawn a delayed task to keep trying to change the tabbar manually.
+                    var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                        if(parentPanel.destroyed){
+                            return;
+                        }
+                        if(parentPanel.tabBar.activeTab != targetPanel.tab){
+                            runInterfaceTask.delay( runInterfaceTaskDelay );
+                        }
+                        parentPanel.tabBar.setActiveTab(targetPanel.tab);
+                    }, me) );
+                    runInterfaceTask.delay( runInterfaceTaskDelay );
+                }
+            });
+            Ung.controller.Global.ignoreActivate = false;
         },
 
+        ignoreActivate: false,
         onBeforeSubtabChange: function (tabPanel, card, oldCard) {
+            if(Ung.controller.Global.ignoreActivate){
+                return;
+            }
             var hash = window.location.hash;
             var id = tabPanel.itemId;
             if( id && hash.indexOf(id) > -1 ){
