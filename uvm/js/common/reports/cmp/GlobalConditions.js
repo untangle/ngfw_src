@@ -278,13 +278,13 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 }
 
                 Ext.Array.each(conditions, function (cond) {
-                    newQuery += (route.cat ? '&' : '?') + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + cond.value;
+                    newQuery += (route.cat ? '&' : '?') + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + encodeURIComponent(cond.value);
                 });
             }
 
             if (view.context === 'DASHBOARD') {
                 Ext.Array.each(conditions, function (cond) {
-                    newQuery += '#dashboard?' + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + cond.value;
+                    newQuery += '#dashboard?' + cond.column + ( cond.operator === '=' ? '=' : encodeURIComponent('\'' + cond.operator + '\'') ) + encodeURIComponent(cond.value);
                 });
             }
 

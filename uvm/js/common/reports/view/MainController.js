@@ -84,7 +84,7 @@ Ext.define('Ung.view.reports.MainController', {
         var me = this, vm = me.getViewModel(), condsQuery = '';
 
         Ext.Array.each(vm.get('query.conditions'), function (c) {
-            condsQuery += '&' + c.column + ( c.operator === '=' ? '=' : encodeURIComponent('\'' + c.operator + '\'') ) + c.value;
+            condsQuery += '&' + c.column + ( c.operator === '=' ? '=' : encodeURIComponent('\'' + c.operator + '\'') ) + encodeURIComponent(c.value);
         });
 
         if (Ung.app.context === 'REPORTS') {
