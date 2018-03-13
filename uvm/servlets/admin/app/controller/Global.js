@@ -193,33 +193,26 @@ Ext.define('Ung.controller.Global', {
     onDashboard: function (query) {
         var dashboardVm = this.getDashboardView().getViewModel(),
             conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val;
+            condsQuery = '', decoded, parts, key, sep, val, fmt;
 
         if (query) {
             Ext.Array.each(query.replace('?', '').split('&'), function (part) {
                 decoded = decodeURIComponent(part);
 
-                if (decoded.indexOf('\'') >= 0) {
-                    parts = decoded.split('\'');
-                    key = parts[0];
-                    sep = parts[1];
-                    val = parts[2];
-                } else {
-                    parts = decoded.split('=');
-                    key = parts[0];
-                    sep = '=';
-                    val = parts[1];
-                }
+                parts = decoded.split(':');
+                key = parts[0];
+                sep = parts[1];
+                val = parts[2];
+                fmt = parts[3];
 
                 conditions.push({
                     column: key,
                     operator: sep,
                     value: val,
-                    autoFormatValue: true,
+                    autoFormatValue: fmt ? true : false,
                     javaClass: 'com.untangle.app.reports.SqlCondition'
                 });
-                condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + encodeURIComponent(val);
-
+                condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
             });
         }
 
@@ -384,21 +377,21 @@ Ext.define('Ung.controller.Global', {
     onReports: function (query) {
         var reportsVm = this.getReportsView().getViewModel(),
             route = {}, conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val;
+            condsQuery = '', decoded, parts, key, sep, val, fmt;
 
         if (query) {
             Ext.Array.each(query.replace('?', '').split('&'), function (part) {
                 decoded = decodeURIComponent(part);
 
-                if (decoded.indexOf('\'') >= 0) {
-                    parts = decoded.split('\'');
+                if (decoded.indexOf(':') > 0) {
+                    parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
                     val = parts[2];
+                    fmt = parts[3];
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
-                    sep = '=';
                     val = parts[1];
                 }
 
@@ -409,10 +402,10 @@ Ext.define('Ung.controller.Global', {
                         column: key,
                         operator: sep,
                         value: val,
-                        autoFormatValue: true,
+                        autoFormatValue: fmt === 1 ? true : false,
                         javaClass: 'com.untangle.app.reports.SqlCondition'
                     });
-                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + encodeURIComponent(val);
+                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
                 }
             });
         }
