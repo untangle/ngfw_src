@@ -404,6 +404,8 @@ Ext.define('Ung.controller.Global', {
         // These two methods are used on tab panels with their own sub-tab panels and added
         // to the controller.  See openvpn/server and virus-blocker/advanced.
         //
+        activateTaskDelay: 250,
+        activateTaskDelayMax: 5000,
         onSubtabActivate: function(panel){
             var me = this;
             var parentPanel = panel.up('apppanel') || panel.up('configpanel');
@@ -413,7 +415,7 @@ Ext.define('Ung.controller.Global', {
             // the loop wer'e doing here.
             Ung.controller.Global.ignoreActivate = true;
 
-            var runInterfaceTaskDelay = 250;
+            var runActivateTaskDelay = 250;
             parentPanel.subViews.forEach(function(subView){
                 var targetPanel = panel.down('[itemId='+subView+']');
                 var parentPanel = targetPanel.up('tabpanel');
@@ -424,16 +426,18 @@ Ext.define('Ung.controller.Global', {
                     // For deeply nested tabs, settng the active item sets the tab panel
                     // properly but not the tab itself.  To verify tis properly set, we
                     // spawn a delayed task to keep trying to change the tabbar manually.
-                    var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                    var activateTaskExpire = (new Date().getTime() / 1000) + 5000;
+                    var runActivateTask = new Ext.util.DelayedTask( Ext.bind(function(){
                         if(parentPanel.destroyed){
                             return;
                         }
-                        if(parentPanel.tabBar.activeTab != targetPanel.tab){
-                            runInterfaceTask.delay( runInterfaceTaskDelay );
+                        if( ( parentPanel.tabBar.activeTab != targetPanel.tab) &&
+                            ( activateTaskExpire >  ( new Date().getTime() / 1000) ) ){
+                            runActivateTask.delay( Ung.controller.Global.activateTaskDelay );
                         }
                         parentPanel.tabBar.setActiveTab(targetPanel.tab);
                     }, me) );
-                    runInterfaceTask.delay( runInterfaceTaskDelay );
+                    runActivateTask.delay( Ung.controller.Global.activateTaskDelay );
                 }
             });
             Ung.controller.Global.ignoreActivate = false;
