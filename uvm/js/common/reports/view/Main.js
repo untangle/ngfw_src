@@ -28,7 +28,12 @@ Ext.define('Ung.view.reports.Main', {
     },
 
     dockedItems: [{
-        xtype: 'globalconditions',
+        xtype: 'toolbar',
+        padding: 5,
+        dock: 'top',
+        items: [{
+            xtype: 'globalconditions'
+        }]
     }, {
         xtype: 'toolbar',
         dock: 'top',
