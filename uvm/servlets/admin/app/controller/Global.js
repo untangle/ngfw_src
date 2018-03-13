@@ -218,7 +218,7 @@ Ext.define('Ung.controller.Global', {
                     autoFormatValue: true,
                     javaClass: 'com.untangle.app.reports.SqlCondition'
                 });
-                condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+                condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + encodeURIComponent(val);
 
             });
         }
@@ -412,7 +412,7 @@ Ext.define('Ung.controller.Global', {
                         autoFormatValue: true,
                         javaClass: 'com.untangle.app.reports.SqlCondition'
                     });
-                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + encodeURIComponent(val);
                 }
             });
         }
