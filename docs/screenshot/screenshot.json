@@ -172,6 +172,36 @@
         "url": "/admin/index.do#config/network/advanced/netflow",
         "type": "remove_nav"
     },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/dynamicRoutingStatus",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp/neighbors",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp/networks",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/networks",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/areas",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/ospfInterfaces",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/advancedOptions",
+        "type": "remove_nav"
+    },{
         "url": "/admin/index.do#config/network/troubleshooting",
         "type": "remove_nav"
     },{
