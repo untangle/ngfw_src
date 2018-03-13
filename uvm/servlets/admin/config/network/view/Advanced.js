@@ -839,7 +839,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'Dynamic Routing'.t(),
-            itemId: 'dynamicRouting',
+            itemId: 'dynamic_routing',
             scrollable: true,
 
             defaults:{
@@ -854,7 +854,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.dynamicRoutingSettings.enabled}'
             },{
                 xtype: 'tabpanel',
-                itemId: 'dynamicRouting',
+                itemId: 'dynamic_routing',
                 layout: 'fit',
                 disabled: true,
                 hidden: true,
@@ -866,14 +866,14 @@ Ext.define('Ung.config.network.view.Advanced', {
                     xtype: 'panel',
                     width: '100%',
                     region: 'south',
-                    itemId: 'dynamicRoutingStatus',
+                    itemId: 'status',
                     title: 'Status'.t(),
                     split: true,
                     collapsible: false,
                     items:[{
                         xtype: 'ungrid',
                         split: true,
-                        itemId: 'dynamicRouteStatus',
+                        itemId: 'dynamic_routing_status',
                         title: 'Acquired Dynamic Routes'.t(),
 
                         emptyText: 'No Acquired Dynamic Routes found'.t(),
@@ -912,7 +912,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     },{
                         xtype: 'ungrid',
                         split: true,
-                        itemId: 'bgpStatus',
+                        itemId: 'bgp_status',
                         title: 'BGP Status'.t(),
 
                         emptyText: 'No BGP Status available'.t(),
@@ -949,7 +949,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }, {
                         xtype: 'ungrid',
                         split: true,
-                        itemId: 'ospfStatus',
+                        itemId: 'ospf_status',
                         title: 'OSPF Status'.t(),
 
                         emptyText: 'No OSPF Status available'.t(),
@@ -1402,7 +1402,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                              }]
                         },{
                             xtype: 'ungrid',
-                            itemId: 'ospfInterfaces',
+                            itemId: 'interfaces',
                             title: 'Interface Overrides'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
@@ -1598,7 +1598,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },{
                             xtype: 'panel',
                             title: 'Advanced Options'.t(),
-                            itemId: 'advancedOptions',
+                            itemId: 'advanced_options',
                             padding: 10,
 
                             defaults:{
