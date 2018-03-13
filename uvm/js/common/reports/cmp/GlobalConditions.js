@@ -2,22 +2,28 @@
  * Reports Global Conditions toolbar used in Reports or Dashboard
   */
 Ext.define('Ung.reports.cmp.GlobalConditions', {
-    extend: 'Ext.toolbar.Toolbar',
+    extend: 'Ext.container.Container',
     alias: 'widget.globalconditions',
 
     context: 'REPORTS', // can be 'REPORTS' or 'DASHBOARD'
 
-    docked: 'top',
-    ui: 'footer',
-
     viewModel: true,
 
-    // height: 36,
-    style: {
-        background: '#e4e4e4'
+    layout: {
+        type: 'hbox',
+        align: 'middle'
     },
+
+    // height: 36,
+    // style: {
+    //     background: '#e4e4e4'
+    // },
     items: [{
         xtype: 'component',
+        margin: '0 10 0 0',
+        style: {
+            fontSize: '11px'
+        },
         html: '<strong>' + 'Global Conditions:'.t() + '</strong>'
     }, {
         xtype: 'container',
