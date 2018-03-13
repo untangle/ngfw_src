@@ -353,6 +353,7 @@ Depends: untangle-libuvm,
          untangle-libuvmcore,
          untangle-libuvmthirdparty,
          untangle-development-runtime,
+	 systemd-sysv,
 	 untangle-sync-settings,
 	 ipset,
          gzip, zip, unzip
