@@ -83,8 +83,10 @@ Ext.define('Ung.view.reports.MainController', {
     onSelectReport: function (el, node) {
         var me = this, vm = me.getViewModel(), condsQuery = '';
 
+        console.log(vm.get('query.conditions'));
+
         Ext.Array.each(vm.get('query.conditions'), function (c) {
-            condsQuery += '&' + c.column + ( c.operator === '=' ? '=' : encodeURIComponent('\'' + c.operator + '\'') ) + encodeURIComponent(c.value);
+            condsQuery += '&' + c.column + ':' + encodeURIComponent(c.operator) + ':' + encodeURIComponent(c.value) + ':' + (c.autoFormatValue === true ? 1 : 0);
         });
 
         if (Ung.app.context === 'REPORTS') {
