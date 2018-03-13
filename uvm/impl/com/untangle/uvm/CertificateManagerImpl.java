@@ -131,9 +131,9 @@ public class CertificateManagerImpl implements CertificateManager
         File localCertFile = new File(LOCAL_CRT_FILE);
         File localKeyFile = new File(LOCAL_KEY_FILE);
         if ((localCertFile.exists() == false) || (localKeyFile.exists() == false)) {
-            String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-            logger.info("Creating default locally signed apache certificate for " + hostName);
-            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
+            String fqdn = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
+            logger.info("Creating default locally signed apache certificate for " + fqdn);
+            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + fqdn);
         }
 
         // Get the fingerprint for the configured web cert and the active
