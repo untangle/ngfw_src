@@ -15,10 +15,16 @@ Ext.define('Ung.view.Main', {
             xtype: 'button',
             html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
             hrefTarget: '_self',
-            href: '#'
+            href: ''
         }]
     }, {
-        xtype: 'globalconditions',
+        xtype: 'toolbar',
+        dock: 'top',
+        ui: 'footer',
+        style: { background: '#D8D8D8' },
+        items: [{
+            xtype: 'globalconditions'
+        }]
     }, {
         xtype: 'toolbar',
         dock: 'top',
@@ -71,7 +77,7 @@ Ext.define('Ung.controller.Global', {
             ':params': {
                 action: 'onMain',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                    ':params' : '(.*)'
                 }
             }
         }
@@ -80,21 +86,21 @@ Ext.define('Ung.controller.Global', {
     onMain: function (query) {
         var reportsVm = this.getReportsView().getViewModel(),
             route = {}, conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val;
+            condsQuery = '', decoded, parts, key, sep, val, fmt;
 
         if (query) {
             Ext.Array.each(query.replace('?', '').split('&'), function (part) {
                 decoded = decodeURIComponent(part);
 
-                if (decoded.indexOf('\'') >= 0) {
-                    parts = decoded.split('\'');
+                if (decoded.indexOf(':') >= 0) {
+                    parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
                     val = parts[2];
+                    fmt = parseInt(parts[3], 10);
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
-                    sep = '=';
                     val = parts[1];
                 }
 
@@ -105,10 +111,10 @@ Ext.define('Ung.controller.Global', {
                         column: key,
                         operator: sep,
                         value: val,
-                        autoFormatValue: true,
+                        autoFormatValue: fmt === 1 ? true : false,
                         javaClass: 'com.untangle.app.reports.SqlCondition'
                     });
-                    condsQuery += '&' + key + ( sep === '=' ? '=' : encodeURIComponent('\'' + sep + '\'') ) + val;
+                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
                 }
             });
         }

@@ -289,8 +289,10 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 newQuery = '', route,
                 conditions = vm.get('query.conditions');
 
+            // view.context refers to dashboard or reports in admin servlet
+            // app.context refers to admin or reports servlet
             if (view.context === 'REPORTS') {
-                newQuery = (Ung.app.context === 'REPORTS') ? '#' : '#reports';
+                newQuery = (Ung.app.context === 'REPORTS') ? '' : '#reports';
                 route = vm.get('query.route');
                 if (route.cat) {
                     newQuery += '?cat=' + route.cat;
