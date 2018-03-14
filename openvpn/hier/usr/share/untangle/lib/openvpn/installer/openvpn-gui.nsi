@@ -8,6 +8,7 @@
 
 ; OpenVPN install script for Windows, using NSIS
 ; WebFooL whas here ;-)
+; mahotz was here too!
 
 SetCompressor lzma
 
@@ -31,8 +32,9 @@ SetCompressor lzma
 !insertmacro GetOptions
 
 ; Default service settings
+; The at-PREFIX-at tag lets this work in prod and dev dev environments
 !define OPENVPN_CONFIG_EXT   "ovpn"
-!define UNTANGLE_SETTINGS_DIR "/usr/share/untangle/settings/openvpn"
+!define UNTANGLE_SETTINGS_DIR "@PREFIX@/usr/share/untangle/settings/openvpn"
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
