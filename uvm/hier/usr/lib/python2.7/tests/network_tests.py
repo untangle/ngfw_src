@@ -31,7 +31,7 @@ run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
 dyndns_resolver = "8.8.8.8"
-office_ftp_client = "10.111.5.20"
+office_ftp_client = "10.111.56.23"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
 
 def getUsableName(dyn_checkip):
