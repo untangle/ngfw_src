@@ -5,17 +5,9 @@ Ext.define('Ung.cmp.AppPanel', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        ui: 'navigation',
+        // ui: 'navigation',
         dock: 'top',
-        border: false,
-        style: {
-            background: '#333435',
-            zIndex: 9997
-        },
-        defaults: {
-            border: false,
-        },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+        items: [{
             xtype: 'button',
             iconCls: 'fa fa-arrow-circle-left fa-lg',
             hrefTarget: '_self',
@@ -33,7 +25,7 @@ Ext.define('Ung.cmp.AppPanel', {
                 html: '<img src="/icons/apps/{props.name}.svg" style="vertical-align: middle;" width="17" height="17"/> {props.displayName}' +
                     ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.runState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
             }
-        }])
+        }]
     }, {
         xtype: 'toolbar',
         dock: 'bottom',

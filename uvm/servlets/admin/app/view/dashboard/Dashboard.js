@@ -39,34 +39,14 @@ Ext.define('Ung.view.dashboard.Dashboard', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        ui: 'navigation',
         dock: 'top',
-        border: false,
-        style: {
-            background: '#333435',
-            zIndex: 9997
-        },
-        defaults: {
-            xtype: 'button',
-            border: false,
-            hrefTarget: '_self'
-        },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+        ui: 'footer',
+        style: { background: '#D8D8D8' },
+        items: [{
             text: 'Manage Widgets'.t(),
             iconCls: 'fa fa-cog',
-            hidden: true,
-            bind: {
-                userCls: '{managerVisible ? "pressed" : ""}',
-                // iconCls: 'fa {!managerVisible ? "fa-arrow-left" : "fa-arrow-down" }',
-                hidden: '{managerVisible}'
-            },
             handler: 'toggleManager'
-        }])
-    }, {
-        xtype: 'toolbar',
-        padding: 5,
-        dock: 'top',
-        items: [{
+        }, '-', {
             xtype: 'globalconditions',
             context: 'DASHBOARD'
         }]
