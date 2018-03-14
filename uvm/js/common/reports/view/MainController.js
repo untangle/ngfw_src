@@ -88,7 +88,7 @@ Ext.define('Ung.view.reports.MainController', {
         });
 
         if (Ung.app.context === 'REPORTS') {
-            Ung.app.redirectTo('#' + node.get('url'));
+            Ung.app.redirectTo(node.get('url') + condsQuery);
         } else {
             Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
         }
