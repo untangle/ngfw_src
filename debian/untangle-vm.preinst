@@ -6,15 +6,16 @@
 if [ -f /var/run/uvm.pid ] ; then
     if ps p $(cat /var/run/uvm.pid) >/dev/null 2>&1; then
 
-        if [ -x /etc/init.d/untangle-vm ] ; then
-            /usr/share/untangle/bin/ut-show-upgrade-splash start
-            systemctl stop untangle-vm || true
-        fi
+        /usr/share/untangle/bin/ut-show-upgrade-splash start
+
+        echo "Stopping untangle-vm..."
+        systemctl stop untangle-vm
+        # /etc/init.d/untangle-vm stop || true
+        echo "Stopped  untangle-vm  $?"
 
         echo "Restarting untangle-vm after apt-get completes..."
         rm -f /var/log/uvm/restart.log
         nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
-        exit 0
     fi
 fi
 
