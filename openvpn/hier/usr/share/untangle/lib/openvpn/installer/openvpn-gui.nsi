@@ -633,7 +633,9 @@ Section -post
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayIcon" "$INSTDIR\icon.ico"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "DisplayVersion" "${OPENVPN_VERSION}"
 
-
+	; Start the interactive service
+	DetailPrint "Starting OpenVPN Interactive Service"
+	SimpleSC::StartService "OpenVPNServiceInteractive" "" 10
 
 SectionEnd
 
