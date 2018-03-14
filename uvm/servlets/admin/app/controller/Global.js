@@ -56,13 +56,19 @@ Ext.define('Ung.controller.Global', {
         },
 
         routes: {
-            '': { before: 'detectChanges', action: 'onDashboard' },
-            'dashboard': { before: 'detectChanges', action: 'onDashboard' },
+            '': { before: 'detectChanges', action: 'onRoute' },
             'dashboard:params': {
                 before: 'detectChanges',
-                action: 'onDashboard',
+                action: 'onRoute',
                 conditions: {
-                    ':params' : '([0-9a-zA-Z._%!\'?&=-]+)'
+                    ':params' : '(.*)'
+                }
+            },
+            'reports:params': {
+                before: 'detectChanges',
+                action: 'onRoute',
+                conditions: {
+                    ':params' : '(.*)'
                 }
             },
 
@@ -81,14 +87,7 @@ Ext.define('Ung.controller.Global', {
             'config/:configName/:configView/:subView': 'onConfig',
             'config/:configName/:configView/:subView/:subView': 'onConfig',
             'config/:configName/:configView/:subView/:subView/:subView': 'onConfig',
-            'reports': { before: 'detectChanges', action: 'onReports' },
-            'reports:params': {
-                before: 'detectChanges',
-                action: 'onReports',
-                conditions: {
-                    ':params' : '(.*)'
-                }
-            },
+
             'sessions': { before: 'detectChanges', action: 'onSessions' },
             'sessions/:params': {
                 action: 'onSessions',
@@ -166,64 +165,60 @@ Ext.define('Ung.controller.Global', {
         });
     },
 
+    /**
+     * Common method used for routing Dashboard and Reports based on conditions query
+     */
+    onRoute: function (query) {
+        var hash = window.location.hash, view, viewModel,
+            route = {}, conditions = [], condsQuery = '',
+            decoded, parts, key, sep, val, fmt;
 
-    onAppInstall: function () {
-        // refetch current applications and rebuild reports tree
-        if (rpc.reportsManager) {
-            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
-                Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
-                Ext.getStore('reportstree').build();
-            });
+        if (hash === '' || Ext.String.startsWith(hash, '#') || Ext.String.startsWith(hash, '#dashboard')) {
+            view = 'dashboardMain';
+            viewModel = this.getDashboardView().getViewModel();
         }
-    },
-
-    setExpertMode: function () {
-        rpc.isExpertMode = true;
-        this.getMainView().getViewModel().set('isExpertMode', true);
-        Ung.app.redirectTo('#apps');
-        // Ung.app.redirectTo(window.location.hash.replace('|expert', ''));
-    },
-
-    setNoExpertMode: function () {
-        rpc.isExpertMode = false;
-        this.getMainView().getViewModel().set('isExpertMode', false);
-        Ung.app.redirectTo('#apps');
-        // this.redirectTo(window.location.hash.replace('|noexpert', ''));
-    },
-
-
-    onDashboard: function (query) {
-        var dashboardVm = this.getDashboardView().getViewModel(),
-            conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val, fmt;
+        if (Ext.String.startsWith(hash, '#reports')) {
+            view = 'reports';
+            viewModel = this.getReportsView().getViewModel();
+        }
 
         if (query) {
             Ext.Array.each(query.replace('?', '').split('&'), function (part) {
                 decoded = decodeURIComponent(part);
 
-                parts = decoded.split(':');
-                key = parts[0];
-                sep = parts[1];
-                val = parts[2];
-                fmt = parts[3];
-
-                conditions.push({
-                    column: key,
-                    operator: sep,
-                    value: val,
-                    autoFormatValue: fmt ? true : false,
-                    javaClass: 'com.untangle.app.reports.SqlCondition'
-                });
-                condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                if (decoded.indexOf(':') > 0) {
+                    parts = decoded.split(':');
+                    key = parts[0];
+                    sep = parts[1];
+                    val = parts[2];
+                    fmt = parseInt(parts[3], 10);
+                } else {
+                    parts = decoded.split('=');
+                    key = parts[0];
+                    val = parts[1];
+                }
+                if (key === 'cat' || key === 'rep') {
+                    route[key] = val;
+                } else {
+                    conditions.push({
+                        column: key,
+                        operator: sep,
+                        value: val,
+                        autoFormatValue: fmt === 1 ? true : false,
+                        javaClass: 'com.untangle.app.reports.SqlCondition'
+                    });
+                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                }
             });
         }
 
-        dashboardVm.set('query', {
+        viewModel.set('query', {
+            route: route,
             conditions: conditions,
             string: condsQuery
         });
 
-        this.getMainView().getViewModel().set('activeItem', 'dashboardMain');
+        this.getMainView().getViewModel().set('activeItem', view);
     },
 
     onApps: function (policyId, app, view, subView) {
@@ -245,6 +240,16 @@ Ext.define('Ung.controller.Global', {
         }
     },
 
+    onAppInstall: function () {
+        // refetch current applications and rebuild reports tree
+        if (rpc.reportsManager) {
+            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
+                Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
+                Ext.getStore('reportstree').build();
+            });
+        }
+    },
+
     onService: function (app, view, subView) {
         var me = this;
         this.getMainView().getViewModel().set('activeItem', 'apps');
@@ -254,7 +259,6 @@ Ext.define('Ung.controller.Global', {
 
 
     },
-
 
     loadApp: function (policyId, app, view, subView) {
         var subViews = [];
@@ -335,7 +339,6 @@ Ext.define('Ung.controller.Global', {
         });
     },
 
-
     onConfig: function (config, view, subView) {
         var subViews = [];
         for( var i = 2; i < arguments.length; i++){
@@ -343,7 +346,7 @@ Ext.define('Ung.controller.Global', {
                 break;
             }
             subViews.push(arguments[i]);
-        } 
+        }
         var me = this, mainView = me.getMainView();
         mainView.getViewModel().set('activeItem', 'config');
         if (config) {
@@ -381,49 +384,18 @@ Ext.define('Ung.controller.Global', {
         }
     },
 
-    onReports: function (query) {
-        var reportsVm = this.getReportsView().getViewModel(),
-            route = {}, conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val, fmt;
+    setExpertMode: function () {
+        rpc.isExpertMode = true;
+        this.getMainView().getViewModel().set('isExpertMode', true);
+        Ung.app.redirectTo('#apps');
+        // Ung.app.redirectTo(window.location.hash.replace('|expert', ''));
+    },
 
-        if (query) {
-            Ext.Array.each(query.replace('?', '').split('&'), function (part) {
-                decoded = decodeURIComponent(part);
-
-                if (decoded.indexOf(':') > 0) {
-                    parts = decoded.split(':');
-                    key = parts[0];
-                    sep = parts[1];
-                    val = parts[2];
-                    fmt = parts[3];
-                } else {
-                    parts = decoded.split('=');
-                    key = parts[0];
-                    val = parts[1];
-                }
-
-                if (key === 'cat' || key === 'rep') {
-                    route[key] = val;
-                } else {
-                    conditions.push({
-                        column: key,
-                        operator: sep,
-                        value: val,
-                        autoFormatValue: fmt === 1 ? true : false,
-                        javaClass: 'com.untangle.app.reports.SqlCondition'
-                    });
-                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
-                }
-            });
-        }
-
-        reportsVm.set('query', {
-            route: route,
-            conditions: conditions,
-            string: condsQuery
-        });
-
-        this.getMainView().getViewModel().set('activeItem', 'reports');
+    setNoExpertMode: function () {
+        rpc.isExpertMode = false;
+        this.getMainView().getViewModel().set('isExpertMode', false);
+        Ung.app.redirectTo('#apps');
+        // this.redirectTo(window.location.hash.replace('|noexpert', ''));
     },
 
     onMonitor: function(id, xtype, params){
