@@ -20,11 +20,11 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     // },
     items: [{
         xtype: 'component',
-        margin: '0 10 0 0',
+        margin: '0 5',
         style: {
             fontSize: '11px'
         },
-        html: '<strong>' + 'Global Conditions:'.t() + '</strong>'
+        html: '<strong>' + 'Conditions:'.t() + '</strong>'
     }, {
         xtype: 'container',
         layout: 'hbox'

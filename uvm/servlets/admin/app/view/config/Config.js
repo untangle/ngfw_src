@@ -16,34 +16,18 @@ Ext.define('Ung.view.config.Config', {
     controller: 'config',
     viewModel: true,
     scrollable: true,
-    dockedItems: [{
-        xtype: 'toolbar',
-        ui: 'navigation',
-        dock: 'top',
-        border: false,
-        style: {
-            background: '#333435',
-            zIndex: 9997
-        },
-        defaults: {
-            xtype: 'button',
-            border: false,
-            hrefTarget: '_self'
-        },
-        items: Ext.clone(Util.subNav)
-    }],
 
     items: [{
         xtype: 'dataview',
         store: {data: [
-                { name: 'Network'.t(), url: 'network', icon: 'network.svg' },
-                { name: 'Administration'.t(), url: 'administration', icon: 'administration.svg' },
-                { name: 'Events'.t(), url: 'events', icon: 'events.svg' },
-                { name: 'Email'.t(), url: 'email', icon: 'email.svg' },
-                { name: 'Local Directory'.t(), url: 'local-directory', icon: 'local-directory.svg' },
-                { name: 'Upgrade'.t(), url: 'upgrade', icon: 'upgrade.svg' },
-                { name: 'System'.t(), url: 'system', icon: 'system.svg' },
-                { name: 'About'.t(), url: 'about', icon: 'about.svg' }
+            { name: 'Network'.t(), url: 'network', icon: 'network.svg' },
+            { name: 'Administration'.t(), url: 'administration', icon: 'administration.svg' },
+            { name: 'Events'.t(), url: 'events', icon: 'events.svg' },
+            { name: 'Email'.t(), url: 'email', icon: 'email.svg' },
+            { name: 'Local Directory'.t(), url: 'local-directory', icon: 'local-directory.svg' },
+            { name: 'Upgrade'.t(), url: 'upgrade', icon: 'upgrade.svg' },
+            { name: 'System'.t(), url: 'system', icon: 'system.svg' },
+            { name: 'About'.t(), url: 'about', icon: 'about.svg' }
         ]},
         tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +

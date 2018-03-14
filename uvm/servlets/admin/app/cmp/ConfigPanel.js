@@ -15,7 +15,7 @@ Ext.define('Ung.cmp.ConfigPanel', {
         defaults: {
             border: false,
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+        items: [{
             text: 'Back to Config',
             iconCls: 'fa fa-arrow-circle-left fa-lg',
             hrefTarget: '_self',
@@ -27,7 +27,7 @@ Ext.define('Ung.cmp.ConfigPanel', {
                 color: '#CCC'
             },
             bind: { html: '<img src="/icons/config/{iconName}.svg" style="vertical-align: middle;" width="17" height="17"/> <strong>{title}</strong>' }
-        }])
+        }]
     }, {
         xtype: 'toolbar',
         dock: 'bottom',

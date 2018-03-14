@@ -503,27 +503,21 @@ cite {
 }
 
 .x-toolbar-navigation .x-btn {
-    padding: 10px 7px;
+    padding: 18px 10px;
     background: transparent;
     border-radius: 0;
     transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
     &.logo {
         padding: 6px 7px 2px 7px;
     }
-    &.upper {
-        .x-btn-inner {
-            text-transform: uppercase;
-            font-weight: 400;
-        }
-    }
     .x-btn-inner {
         font-family: $custom-font;
-        font-size: 13px;
+        font-size: 14px;
         color: #CCC;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
     &.x-btn-over {
-        background: transparent;
+        background: #333333;
         .x-btn-inner {
             color: #FFF;
         }
@@ -532,9 +526,13 @@ cite {
         }
     }
 
+    &.x-btn-menu-active {
+        background: #333333;
+    }
+
     .x-btn-icon-el {
         color: #999;
-        font-size: 14px;
+        // font-size: 14px;
         margin-bottom: 0 !important;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
@@ -546,14 +544,13 @@ cite {
         }
     }
     &.pressed {
-        // background: #3a3a3a;
-        background: transparent;
+        background: #3a3a3a;
         .x-btn-inner {
-            color: #8efb6c;
+            color: #FFF;
         }
         .x-btn-icon-el {
             // color: #6abc50;
-            color: #8efb6c;
+            color: #FFF;
         }
     }
 }
@@ -752,29 +749,33 @@ span.fa:before {
     background: transparent !important;
 }
 
-.account-btn {
-    background: transparent !important;
-}
-.account-menu {
+.heading-menu {
     border: 0;
     .x-menu-body {
         background: #1b1e26;
     }
     .x-menu-item-focus {
-        background: none;
+        background: #3a3a3a;
         .x-menu-item-text, .x-menu-item-icon {
             color: #FFF;
         }
     }
     .x-menu-item-text {
         font-family: $custom-font;
-        font-size: 13px;
+        font-size: 14px;
         color: #CCC;
-        line-height: 40px;
+        line-height: 36px;
+        padding: 0 10px;
     }
     .x-menu-item-icon {
         color: #CCC;
-        top: 15px;
+        font-size: 14px;
+        top: 12px;
+        left: 10px;
+    }
+    .x-menu-item-separator {
+        height: 1px;
+        background-color: #555;
     }
 }
 

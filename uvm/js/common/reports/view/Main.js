@@ -29,8 +29,9 @@ Ext.define('Ung.view.reports.Main', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        padding: 5,
         dock: 'top',
+        ui: 'footer',
+        style: { background: '#D8D8D8' },
         items: [{
             xtype: 'globalconditions'
         }]
@@ -74,7 +75,7 @@ Ext.define('Ung.view.reports.Main', {
         region: 'west',
         split: true,
         border: false,
-
+        bodyBorder: false,
         singleExpand: true,
         useArrows: true,
         rootVisible: false,
