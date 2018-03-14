@@ -19,7 +19,7 @@ import json
 from uvm import Uvm
 
 officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
-iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
+iperfServers = [('10.111.0.0/16','10.111.56.23'), # Office network
                 #('10.112.0.0/16','10.112.56.44')
                 ] # ATS VM
 iperfServer = ""
@@ -39,14 +39,14 @@ vpnServerUserPassVpnIP = "10.111.56.91"
 vpnServerUserPassVpnLanIP = "192.168.235.91"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
-vpnClientVpnIP = "10.111.5.20"  
+vpnClientVpnIP = "10.111.56.23"  
 
 testServerHost = 'test.untangle.com'
 testServerIp = socket.gethostbyname(testServerHost)
 ftpServer = socket.gethostbyname(testServerHost)
 
 # Servers running remote syslog
-listSyslogServer = '10.111.5.20'
+listSyslogServer = '10.111.56.23'
 
 accountFileServer = "10.111.56.29"
 accountFile = "/tmp/account_login.json"
