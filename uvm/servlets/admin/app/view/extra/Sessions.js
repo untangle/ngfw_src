@@ -16,30 +16,6 @@ Ext.define('Ung.view.extra.Sessions', {
 
     layout: 'border',
 
-    dockedItems: [{
-        xtype: 'toolbar',
-        ui: 'navigation',
-        dock: 'top',
-        border: false,
-        style: {
-            background: '#333435',
-            zIndex: 9997
-        },
-        defaults: {
-            xtype: 'button',
-            border: false,
-            hrefTarget: '_self'
-        },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-            xtype: 'component',
-            margin: '0 0 0 10',
-            style: {
-                color: '#CCC'
-            },
-            html: 'Current Sessions'.t()
-        }])
-    }],
-
     defaults: {
         border: false
     },

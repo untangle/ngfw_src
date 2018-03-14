@@ -6,14 +6,6 @@ Ext.define('Ung.util.Util', {
     // defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
     defaultColors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'], // from old UI
 
-    subNav: [
-        '->',
-        { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', hrefTarget: '_self', bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Sessions'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Sessions'.t() } } },
-        { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', hrefTarget: '_self', bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Hosts'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Hosts'.t() } } },
-        { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', hrefTarget: '_self', bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Devices'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Devices'.t() } } },
-        { text: 'Users'.t(), iconCls: 'fa fa-users', href: '#users', hrefTarget: '_self', bind: { userCls: '{activeItem === "users" ? "pressed" : ""}' }, plugins: 'responsive', responsiveConfig: { 'width >= 768': { text: 'Users'.t(), tooltip: '', }, 'width < 768': { text: '', tooltip: 'Users'.t() } } }
-    ],
-
     baseCategories: [
         { name: 'hosts', type: 'system', displayName: 'Hosts', viewPosition: 1 },
         { name: 'devices', type: 'system', displayName: 'Devices', viewPosition: 2 },
@@ -775,7 +767,7 @@ Ext.define('Ung.util.Util', {
      * For example, go to a form and quickly click away while an RPC call is going on but before
      * the resulting method has been called.  Or just very long backend calls that the user clicks away
      * from out of impatience.  Without this check, subsequent calls to the scoped variables will fail
-     * and won't be apparent unless the user has a developer console enabled.  
+     * and won't be apparent unless the user has a developer console enabled.
      * This method us used to test any number of objects for the destroyed proprty and returns true if any are.
      */
     isDestroyed: function(){

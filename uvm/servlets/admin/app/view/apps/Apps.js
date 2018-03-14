@@ -31,17 +31,9 @@ Ext.define('Ung.view.apps.Apps', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        ui: 'navigation',
+        // ui: 'navigation',
         dock: 'top',
-        border: false,
-        style: {
-            background: '#333435',
-            // zIndex: 9997
-        },
-        defaults: {
-            border: false
-        },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+        items: [{
             xtype: 'button',
             html: 'Back to Apps',
             iconCls: 'fa fa-arrow-circle-left',
@@ -84,7 +76,7 @@ Ext.define('Ung.view.apps.Apps', {
                 html: '<i class="fa fa-angle-right fa-lg"></i> &nbsp;&nbsp;&nbsp;&nbsp; Install Apps in &nbsp;<i class="fa fa-file-text-o"></i> <strong>{policyName}</strong> policy',
                 hidden: '{onInstalledApps || !policyManagerInstalled}'
             }
-        }])
+        }]
     }],
 
 

@@ -17,6 +17,9 @@
         "Rpc": true,
         "rpc": true,
         "Util": true,
-        "TableConfig": true
+        "TableConfig": true,
+        "DashboardQueue": true,
+        "Renderer": true,
+        "Converter": true
     }
 }
