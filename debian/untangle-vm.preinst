@@ -10,7 +10,11 @@ if [ -f /var/run/uvm.pid ] ; then
 
         echo "Stopping untangle-vm..."
         systemctl stop untangle-vm
-        # /etc/init.d/untangle-vm stop || true
+
+        # Keep this here so that on 13.2 -> 14.0 upgrade we correctly stop the untangle-vm
+        # This can be removed in 14.1
+        /etc/init.d/untangle-vm stop || true
+
         echo "Stopped  untangle-vm  $?"
 
         echo "Restarting untangle-vm after apt-get completes..."
