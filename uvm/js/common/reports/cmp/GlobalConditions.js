@@ -452,6 +452,11 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                             bind: '{record.value}'
                         }
                     }, {
+                        xtype: 'checkcolumn',
+                        text: 'AutoFormat'.t(),
+                        width: 70,
+                        dataIndex: 'autoFormatValue'
+                    }, {
                         xtype: 'actioncolumn',
                         width: 40,
                         align: 'center',
