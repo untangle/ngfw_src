@@ -328,7 +328,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 Util.successToast('Unable to save settings...');
                 return;
             }
-            Util.handleException(ex);
+            Util.handleException(response);
         });
 
     },
