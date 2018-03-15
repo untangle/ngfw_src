@@ -333,8 +333,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 endDate = null;
             } else {
                 // if it's a report, convert UI client start date to server date
-                startDate = Util.clientToServerDate(vm.get('f_startdate'));
-                endDate = Util.clientToServerDate(vm.get('f_enddate'));
+                startDate = Util.clientToServerDate(vm.get('time.range.since'));
+                endDate = Util.clientToServerDate(vm.get('time.range.until'));
             }
 
             // if (reset) { me.reset(); }

@@ -34,6 +34,9 @@ Ext.define('Ung.view.reports.Main', {
         style: { background: '#D8D8D8' },
         items: [{
             xtype: 'globalconditions'
+        }, '-', {
+            xtype: 'timeconditions',
+            reference: 'time'
         }]
     }, {
         xtype: 'toolbar',
@@ -171,6 +174,7 @@ Ext.define('Ung.view.reports.Main', {
         itemId: 'cards',
         reference: 'cards',
         border: false,
+        bodyBorder: false,
         layout: 'card',
         cls: 'reports-all',
         defaults: {

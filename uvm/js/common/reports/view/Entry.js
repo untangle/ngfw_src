@@ -15,6 +15,8 @@ Ext.define('Ung.view.reports.Entry', {
          */
         xtype: 'form',
         layout: 'border',
+        border: false,
+        bodyBorder: false,
         dockedItems: [{
             xtype: 'toolbar',
             border: false,
@@ -104,6 +106,29 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     hidden: '{entry.type === "EVENT_LIST" || entry.type === "TEXT" || eEntry}',
                     disabled: '{fetching}'
+                }
+            }, {
+                xtype: 'combo',
+                itemId: 'eventsLimitSelector',
+                hidden: true,
+                disabled: true,
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}',
+                    disabled: '{fetching}'
+                },
+                editable: false,
+                value: 1000,
+                store: [
+                    [100, '100 ' + 'Events'.t()],
+                    [500, '500 ' + 'Events'.t()],
+                    [1000, '1000 ' + 'Events'.t()],
+                    [5000, '5000 ' + 'Events'.t()],
+                    [10000, '10000 ' + 'Events'.t()],
+                    [50000, '50000 ' + 'Events'.t()],
+                ],
+                queryMode: 'local',
+                listeners: {
+                    change: 'refresh'
                 }
             }, {
                 itemId: 'dashboardBtn',
@@ -204,123 +229,6 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{!eEntry.readOnly}'
                 },
                 html: '<i class="fa fa-info-circle fa-lg"></i> ' + 'This is a default <strong>read-only</strong> report. Any changes can be saved as a New Report with a different title.'
-            }, {
-                /**
-                 * Date Range / Refresh toolbar
-                 * visible only when viewing reports but not when editing them
-                 */
-                xtype: 'toolbar',
-                itemId: 'actionsToolbar',
-                ui: 'footer',
-                dock: 'bottom',
-                style: {
-                    background: '#F5F5F5'
-                },
-                hidden: true,
-                bind: {
-                    hidden: '{!entry || eEntry}'
-                },
-                items: [{
-                    xtype: 'combo',
-                    itemId: 'eventsLimitSelector',
-                    hidden: true,
-                    disabled: true,
-                    bind: {
-                        hidden: '{entry.type !== "EVENT_LIST"}',
-                        disabled: '{fetching}'
-                    },
-                    editable: false,
-                    value: 1000,
-                    store: [
-                        [100, '100 ' + 'Events'.t()],
-                        [500, '500 ' + 'Events'.t()],
-                        [1000, '1000 ' + 'Events'.t()],
-                        [5000, '5000 ' + 'Events'.t()],
-                        [10000, '10000 ' + 'Events'.t()],
-                        [50000, '50000 ' + 'Events'.t()],
-                    ],
-                    queryMode: 'local',
-                    listeners: {
-                        change: 'refresh'
-                    }
-                }, {
-                    xtype: 'component',
-                    html: 'Since'.t() + ':'
-                }, {
-                    // range till now in hours
-                    xtype: 'combo',
-                    reference: 'sinceDate',
-                    publishes: 'value',
-                    // fieldLabel: 'Since'.t(),
-                    // labelWidth: 'auto',
-                    width: 100,
-                    margin: '0 10 0 0',
-                    value: 24,
-                    editable: false,
-                    store: [
-                        [1, '1 hour'.t()],
-                        [3, '3 hours'.t()],
-                        [6, '6 hours'.t()],
-                        [12, '12 hours'.t()],
-                        [24, '1 day'.t()],
-                        [24 * 3, '3 days'.t()],
-                        [24 * 7, '1 week'.t()],
-                        [24 * 14, '2 weeks'.t()],
-                        [24 * 30, '1 month'.t()]
-                    ],
-                    queryMode: 'local',
-                    disabled: true,
-                    bind: {
-                        disabled: '{r_customRangeCk.value || fetching}'
-                    }
-                }, {
-                    xtype: 'checkbox',
-                    reference: 'r_customRangeCk',
-                    publishes: 'value',
-                    boxLabel: 'Date Range'.t(),
-                    disabled: true,
-                    bind: {
-                        disabled: '{fetching}'
-                    }
-                }, {
-                    xtype: 'daterange',
-                    hidden: true,
-                    disabled: true,
-                    bind: {
-                        startDate: '{f_startdate}',
-                        endDate: '{f_enddate}',
-                        hidden: '{!r_customRangeCk.value}',
-                        disabled: '{fetching}'
-                    }
-                }, {
-                    xtype: 'segmentedbutton',
-                    allowToggle: false,
-                    items: [{
-                        text: 'Refresh'.t(),
-                        iconCls: 'fa fa-refresh',
-                        itemId: 'refreshBtn',
-                        handler: 'refresh',
-                        disabled: true,
-                        bind: {
-                            disabled: '{autoRefresh || fetching}'
-                        }
-                    }, {
-                        text: 'Auto'.t() + ' (5 sec)',
-                        reference: 'r_autoRefreshBtn',
-                        enableToggle: true,
-                        publishes: 'pressed',
-                        disabled: true,
-                        bind: {
-                            iconCls: '{r_autoRefreshBtn.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                            disabled: '{r_customRangeCk.value}'
-                        }
-                        // handler: 'setAutoRefresh'
-                    }],
-                    hidden: true,
-                    bind: {
-                        hidden: '{eEntry}'
-                    }
-                }]
             }]
         }, {
             /**
