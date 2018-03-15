@@ -1,5 +1,5 @@
 /**
- * Reports Global Conditions toolbar used in Reports or Dashboard
+ * Reports Global Conditions used in Reports or Dashboard
   */
 Ext.define('Ung.reports.cmp.GlobalConditions', {
     extend: 'Ext.container.Container',

@@ -195,19 +195,19 @@ Ext.define('Ung.view.reports.EventReport', {
                 endDate = null;
             } else {
                 // if it's a report, convert UI client start date to server date
-                startDate = Util.clientToServerDate(vm.get('f_startdate'));
-                endDate = Util.clientToServerDate(vm.get('f_enddate'));
+                startDate = Util.clientToServerDate(vm.get('time.range.since'));
+                endDate = Util.clientToServerDate(vm.get('time.range.until'));
             }
 
             me.getView().setLoading(true);
             if (reps) { reps.getViewModel().set('fetching', true); }
 
             Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
-                            entry.getData(), // entry
-                            vm.get('query.conditions'), // global conditions
-                            limit,
-                            startDate, // start date
-                            endDate) // end date
+                entry.getData(), // entry
+                vm.get('query.conditions'), // global conditions
+                limit,
+                startDate,
+                endDate)
                 .then(function(result) {
                     if (!me.getView()) { return; }
                     me.getView().setLoading(false);

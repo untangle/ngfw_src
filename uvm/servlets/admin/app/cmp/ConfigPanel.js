@@ -5,16 +5,9 @@ Ext.define('Ung.cmp.ConfigPanel', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        ui: 'navigation',
+        // ui: 'navigation',
         dock: 'top',
         border: false,
-        style: {
-            background: '#333435',
-            zIndex: 9997
-        },
-        defaults: {
-            border: false,
-        },
         items: [{
             text: 'Back to Config',
             iconCls: 'fa fa-arrow-circle-left fa-lg',
@@ -23,9 +16,6 @@ Ext.define('Ung.cmp.ConfigPanel', {
         }, '-', {
             xtype: 'component',
             padding: '0 5',
-            style: {
-                color: '#CCC'
-            },
             bind: { html: '<img src="/icons/config/{iconName}.svg" style="vertical-align: middle;" width="17" height="17"/> <strong>{title}</strong>' }
         }]
     }, {

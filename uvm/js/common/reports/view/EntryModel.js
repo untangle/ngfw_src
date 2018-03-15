@@ -6,11 +6,7 @@ Ext.define('Ung.view.reports.EntryModel', {
         eEntry: null, // editable entry, copy of the selected entry
         reportData: [],
         _currentData: [],
-        globalConditions: [],
         autoRefresh: false,
-
-        f_startdate: null,
-        f_enddate: null,
 
         tableColumns: [],
 
