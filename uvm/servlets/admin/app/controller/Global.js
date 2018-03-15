@@ -421,6 +421,9 @@ Ext.define('Ung.controller.Global', {
                 var parentPanel = targetPanel.up('tabpanel');
                 parentPanel.setActiveItem(subView);
                 panel = targetPanel;
+                if(parentPanel.disabled){
+                    return false;
+                }
 
                 if(targetPanel.tab){
                     // For deeply nested tabs, settng the active item sets the tab panel
