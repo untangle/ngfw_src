@@ -126,6 +126,14 @@ Ext.define('Ung.view.reports.EntryController', {
                 me.reload();
             }
         });
+
+        /**
+         * When time range changes reload report
+         */
+        vm.bind('{time.range}', function () {
+            me.reload();
+        });
+
     },
 
     /**

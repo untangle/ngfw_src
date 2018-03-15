@@ -18,9 +18,6 @@ Ext.define('Ung.cmp.AppPanel', {
         }, '-', {
             xtype: 'component',
             padding: '0 5',
-            style: {
-                color: '#CCC'
-            },
             bind: {
                 html: '<img src="/icons/apps/{props.name}.svg" style="vertical-align: middle;" width="17" height="17"/> {props.displayName}' +
                     ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.runState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
