@@ -24,6 +24,8 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     listProperty: 'settings.rules.list',
     ruleJavaClass: 'com.untangle.app.bandwidth_control.BandwidthControlRuleCondition',
 
+    emptyText: 'No Rules defined'.t(),
+
     emptyRow: {
         ruleId: 0,
         enabled: true,

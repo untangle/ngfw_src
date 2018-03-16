@@ -15,16 +15,33 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
     // use a callback function needed for config wizard
     getSettings: function (cb) {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.directPromise('rpc.networkManager.getNetworkSettings.qosSettings.qosEnabled')
+        ],this).then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
             vm.set({
-                settings: result,
-                isConfigured: result.configured,
-                qosEnabled: rpc.networkManager.getNetworkSettings().qosSettings.qosEnabled
+                settings: result[0],
+                isConfigured: result[0].configured,
+                qosEnabled: result[1]
             });
-            if (cb) { cb(result.configured); }
+            if (cb) {
+                cb(vm.get('isConfigured'));
+            }
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -48,13 +65,24 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     runWizard: function (btn) {
@@ -66,7 +94,7 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
                 // when wizard is finished, reload settings and try to start the app
                 finish: function () {
                     me.getSettings(function (configured) {
-                        if (configured && me.getView().appManager.getRunState() !== 'RUNNING') {
+                        if (configured && Rpc.directData(me.getView().appManager, 'getRunState') !== 'RUNNING') {
                             me.getView().down('appstate > button').click();
                         }
                     });
