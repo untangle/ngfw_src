@@ -158,10 +158,9 @@ public abstract class DecisionEngine
         }
 
         // restrict google applications
-        // If restricting google app access, verify google domain and add restrict header.
         if (app.getSettings().getRestrictGoogleApps()) {
-            UrlMatcher matcher = new UrlMatcher("*google*");
-            if (matcher.isMatch(host, uri.toString())) {
+            String allowedDomains = app.getSettings().getRestrictGoogleAppsDomain();
+            if (allowedDomains != null && !"".equals(allowedDomains.trim()) && port == 443) {
                 header.addField("X-GoogApps-Allowed-Domains", app.getSettings().getRestrictGoogleAppsDomain());
             }
         }
