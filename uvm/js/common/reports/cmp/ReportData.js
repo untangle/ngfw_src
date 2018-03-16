@@ -4,7 +4,6 @@ Ext.define('Ung.reports.cmp.ReportData', {
 
     viewModel: true,
 
-    border: false,
     store: { data: [] },
     columns: [],
     bbar: ['->', {
