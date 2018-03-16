@@ -20,15 +20,18 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
     },
 
     ranges: [
-        { text: '1 Hour ago'.t(), value: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 1) },
-        { text: '3 Hours ago', value: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 3) },
-        { text: '12 Hours ago', value: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 12) },
-        { text: 'Today', value: Ext.Date.clearTime(new Date()) },
-        { text: '24 Hours ago', value: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 24) },
-        { text: 'Yesterday', value: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, 1) },
-        { text: 'This Week', value: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, (new Date()).getDay()) },
-        { text: 'This Month', value: Ext.Date.getFirstDateOfMonth(new Date()) }
+        { text: '1 Hour ago'.t(), value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 1), until: null } },
+        { text: '6 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 6), until: null } },
+        // { text: '12 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 12), until: null } },
+        { text: 'Today', value: { since: Ext.Date.clearTime(new Date()), until: null } },
+        // { text: '24 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 24), until: null } },
+        { text: 'Yesterday', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, 1), until: null } },
+        { text: 'This Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, (new Date()).getDay()), until: null } },
+        { text: 'Last Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, (new Date()).getDay() + 7), until: null } },
+        { text: 'This Month', value: { since: Ext.Date.getFirstDateOfMonth(new Date()), until: null } }
     ],
+
+    rangeHistory: [],
 
     items: [{
         xtype: 'component',
@@ -50,12 +53,9 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
             listeners: {
                 click: function (menu, item) {
                     if (item.type !== 'range') {
-                        // menu.up('button').setText(item.text);
-                        menu.up('timeconditions').setSince(item.value);
-                        menu.up('timeconditions').setUntil(null);
-                        menu.up('timeconditions').setRange();
+                        menu.up('timeconditions').setRange(item.value);
                     } else {
-                        this.up('timeconditions').setCustomRange();
+                        menu.up('timeconditions').setCustomRange();
                     }
                 }
             }
@@ -63,36 +63,87 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
     }],
 
     /** Updates the since/until dates and publishes into viewmodel */
-    setRange: function () {
+    setRange: function (val, addToHistory) {
         var me = this, btnText;
-
-        this.range = {
-            since: this.getSince(),
-            until: this.getUntil()
-        };
+        this.range = val;
 
         var existingRange = Ext.Array.findBy(me.ranges, function (r) {
-            return Ext.Date.isEqual(r.value, me.getRange().since);
+            return Ext.Date.isEqual(r.value.since, me.getRange().since);
         });
 
-        if (existingRange) {
+        if (existingRange && !this.range.until) {
             btnText = existingRange.text;
         } else {
-            btnText = Ext.Date.format(this.getSince(), rpc.translations.timestamp_fmt);
-            if (this.getUntil()) {
-                btnText += ' \u0020\u2794\u0020 ' + Ext.Date.format(this.getUntil(), rpc.translations.timestamp_fmt);
+            btnText = Ext.Date.format(this.range.since, rpc.translations.timestamp_fmt);
+            if (this.range.until) {
+                btnText += ' \u0020\u2794\u0020 ' + Ext.Date.format(this.range.until, rpc.translations.timestamp_fmt);
             }
+            if (addToHistory) {
+                if (me.rangeHistory.length >= 5) {
+                    Ext.Array.removeAt(me.rangeHistory, me.rangeHistory.length - 1);
+                }
+                me.rangeHistory.unshift({
+                    text: btnText,
+                    inHistory: true,
+                    value: Ext.clone(val)
+                });
+            }
+            me.setRangeHistory();
         }
 
-        this.down('component').setHtml('<strong>' + (this.getUntil() ? 'Time Range'.t() : 'Since'.t()) + ':</strong>');
+        this.down('component').setHtml('<strong>' + (this.range.until ? 'Time Range'.t() : 'Since'.t()) + ':</strong>');
         this.down('button').setText(btnText);
         this.publishState();
     },
 
     /** Sets the menu item default ranges */
-    setMenuItems: function () {
+    setRangeHistory: function () {
+        var me = this, menu = this.down('button').getMenu(), rangeMenuItems = [];
+
+        if (menu.down('#historyItem')) {
+            menu.remove(menu.down('#historyItem'));
+        }
+        if (this.rangeHistory.length > 0) {
+            rangeMenuItems = this.rangeHistory;
+            rangeMenuItems.push({
+                xtype: 'menuseparator'
+            }, {
+                text: 'Clear History'.t(),
+                iconCls: 'fa fa-eraser'
+            });
+            menu.add({
+                text: 'Time Range History'.t(),
+                itemId: 'historyItem',
+                iconCls: 'fa fa-history',
+                menu: {
+                    plain: true,
+                    showSeparator: false,
+                    mouseLeaveDelay: 0,
+                    items: rangeMenuItems,
+                    listeners: {
+                        click: function (menu, item) {
+                            if (item.value) {
+                                me.setRange(item.value, false);
+                            } else {
+                                me.rangeHistory = [];
+                                me.setRangeHistory();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    },
+
+
+    afterRender: function () {
         var menu = this.down('button').getMenu();
-        menu.removeAll();
+        this.callParent(arguments);
+        this.setRange({
+            since: Ext.Date.clearTime(new Date()),
+            until: null
+        }); // initially loads today data
+
         menu.add(this.ranges);
         menu.add({
             xtype: 'menuseparator'
@@ -103,23 +154,28 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
         });
     },
 
-
-    afterRender: function () {
-        this.callParent(arguments);
-        this.setSince(Ext.Date.clearTime(new Date())); // initially loads today data
-        this.setMenuItems();
-        this.setRange();
-    },
-
     /**
      * shows a dialog to setup some specific date/time range
      */
     setCustomRange: function () {
-        var me = this;
-        var since = Ext.clone(this.getSince()),
-            until = this.getUntil() ? Ext.clone(this.getUntil()) : new Date(); // until needs to be a date in this range picker
+        var me = this, range = this.getRange(), d = new Date(),
+            since, until;
 
-        var dialog = this.add({
+        d.setMinutes(Math.floor(d.getMinutes()/10) * 10, 0, 0); // round new date to 10 mminutes interval
+
+        since = Ext.Date.clone(range.since);
+        until = range.until ? Ext.Date.clone(range.until) : d; // until needs to be a date in this range picker
+
+        if (me.dialog) {
+            me.dialog.down('#startDate').setValue(since);
+            me.dialog.down('#startTime').setValue(since);
+            me.dialog.down('#endDate').setValue(until);
+            me.dialog.down('#endTime').setValue(until);
+            me.dialog.showBy(me.down('button'), 'tl-bl?');
+            return;
+        }
+
+        me.dialog = me.add({
             xtype: 'window',
             renderTo: Ext.getBody(),
             modal: true,
@@ -263,15 +319,17 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
             }, {
                 text: 'Apply'.t(),
                 iconCls: 'fa fa-check',
-                handler: function (el) {
-                    me.setSince(since);
-                    me.setUntil(!dialog.down('#untilNow').getValue() ? until : null);
-                    me.setRange();
-                    dialog.hide();
+                handler: function () {
+                    var toHistory = !me.dialog.down('#untilNow').getValue();
+                    me.setRange({
+                        since: since,
+                        until: toHistory ? until : null
+                    }, toHistory);
+                    me.dialog.hide();
                 }
             }]
         });
 
-        dialog.showBy(me.down('button'), 'tl-bl?');
+        me.dialog.showBy(me.down('button'), 'tl-bl?');
     }
 });
