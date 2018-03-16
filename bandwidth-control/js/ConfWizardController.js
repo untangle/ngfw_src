@@ -15,23 +15,26 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         var me = this,
             vm = this.getViewModel();
 
-        // vm.set('nextBtnText', this.getView().getLayout().getNext().getTitle());
-
         Rpc.asyncData('rpc.networkManager.getNetworkSettings')
-            .then(function (result) {
-                me.networkSettings = result;
-                vm.set('interfaces', result.interfaces.list);
+        .then(function (result) {
+            if(Util.isDestroyed(me, vm)){
+                return;
+            }
+            me.networkSettings = result;
+            vm.set('interfaces', result.interfaces.list);
 
-                var u = 0, d = 0, intf;
-                for (var i = 0 ; i < result.interfaces.list.length ; i++ ) {
-                    intf = result.interfaces.list[i];
-                    if (intf.isWan) {
-                        u += intf.uploadBandwidthKbps || 0;
-                        d += intf.downloadBandwidthKbps || 0;
-                    }
+            var u = 0, d = 0, intf;
+            for (var i = 0 ; i < result.interfaces.list.length ; i++ ) {
+                intf = result.interfaces.list[i];
+                if (intf.isWan) {
+                    u += intf.uploadBandwidthKbps || 0;
+                    d += intf.downloadBandwidthKbps || 0;
                 }
-                vm.set('bandwidthLabel', Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d/1000, u, u/1000));
-            });
+            }
+            vm.set('bandwidthLabel', Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d/1000, u, u/1000));
+        },function(ex){
+            Util.handleException(ex);
+        });
     },
 
     onActivateCard: function (panel) {
@@ -78,12 +81,15 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
                     Ext.MessageBox.wait('Configuring WAN...'.t(), 'Please wait'.t());
                     Metrics.stop();
                     Rpc.asyncData('rpc.networkManager.setNetworkSettings', this.networkSettings)
-                        .then(function () {
-                            Metrics.start();
-                            v.getLayout().next();
-                        }).always(function () {
-                            Ext.MessageBox.hide();
-                        });
+                    .then(function () {
+                        if(Util.isDestroyed(Metrics, v)){
+                            return;
+                        }
+                        Metrics.start();
+                        v.getLayout().next();
+                    }).always(function () {
+                        Ext.MessageBox.hide();
+                    });
                 } else {
                     v.getLayout().next();
                 }
