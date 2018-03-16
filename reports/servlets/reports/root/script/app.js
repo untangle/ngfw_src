@@ -24,6 +24,9 @@ Ext.define('Ung.view.Main', {
         style: { background: '#D8D8D8' },
         items: [{
             xtype: 'globalconditions'
+        }, '-', {
+            xtype: 'timeconditions',
+            reference: 'time'
         }]
     }, {
         xtype: 'toolbar',
