@@ -1601,6 +1601,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                             itemId: 'advanced_options',
                             padding: 10,
 
+                            bind:{
+                                disabled: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                            },
+
                             defaults:{
                                 margin: 10,
                                 labelWidth: 200,
@@ -1625,7 +1629,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     disabled: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}',
                                     hidden: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}'
                                 },
-                                vtype: 'metric'                                    
+                                vtype: 'metric'
                             },{
                                 xtype: 'combo',
                                 bind: {
@@ -1640,10 +1644,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 editable: false,
                                 allowBlank: false
                             },{
-                                // Auto cost reference bandwidth (MBits/s) def 100 (1-4294967)
                                 xtype: 'textfield',
                                 fieldLabel: 'Auto cost reference bandwidth (MBits/s)'.t(),
                                 bind: '{settings.dynamicRoutingSettings.ospfAutoCost}',
+                                vtype: 'routerAutoCost'
                             },{
                                 xtype: 'fieldset',
                                 title: 'Default Information originate'.t(),
