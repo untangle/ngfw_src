@@ -311,20 +311,18 @@ cite {
 
 .report-header {
     font-family: $custom-font-condensed;
-    // box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-    // background: #F5F5F5;
-    // padding: 5px 10px;
-    h1 {
+    h2 {
         margin: 0;
         font-family: $custom-font-condensed;
         font-weight: 400;
-        font-size: 32px;
+        font-size: 24px;
         span {
             color: #CCC;
         }
     }
     p {
         margin: 0;
+        font-size: 14px;
         color: #555;
     }
 }
