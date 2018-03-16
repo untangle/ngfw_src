@@ -219,6 +219,9 @@ Ext.define('Ung.cmp.AppSessionsController', {
         }
         this.updateMetricsCount++;
         var appMetrics = Ext.getStore('metrics').findRecord('appId', vm.get('instance.id'));
+        if(!appMetrics){
+            return;
+        }
         var newVal = appMetrics.get('metrics').list.filter(function (metric) {
             return metric.name === 'live-sessions';
         })[0].value || 0;
