@@ -24,22 +24,23 @@ import java.io.FileWriter;
  */
 public class LocalDirectoryImpl implements LocalDirectory
 {
+    private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
+    private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
+    private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
+    private final static String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle Local Directory.\n" +
+                                                   "# If you modify this file manually, your changes will be overwritten!\n\n";
+
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
-
-    private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
-
-    private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
-
-    private final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle Local Directory.\n" +
-                                            "# If you modify this file manually, your changes will be overwritten!\n\n";
-
     private LinkedList<LocalDirectoryUser> currentList;
+    private NetworkSaveHookCallback networkSaveHookCallback = new NetworkSaveHookCallback();
 
     public LocalDirectoryImpl()
     {
         loadUsersList();
+
+        // install a callback for network settings changes
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, networkSaveHookCallback);
     }
 
     private boolean accountExpired(LocalDirectoryUser user)
@@ -387,4 +388,27 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         return (secbuff.toString());
     }
+
+    /**
+     * This hook is called when network settings are changed
+     * This is necessary becaus saving network setttings writes /etc/ppp/chap-secrets
+     * and we need to append local directory information onto that file
+     */
+    private class NetworkSaveHookCallback implements HookCallback
+    {
+        NetworkSaveHookCallback()
+        {
+        }
+
+        public String getName()
+        {
+            return "local-directory-network-settings-change-hook";
+        }
+
+        public void callback(Object... args)
+        {
+            updateChapSecrets(currentList);
+        }
+    }
+
 }
