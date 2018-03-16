@@ -224,21 +224,51 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
     }
 
+    /**
+     * This takes the local directory user information and appends it to
+     * /etc/ppp/chap-secrets
+     *
+     * The IPsec L2TP feature uses LocalDirectory for login credentials so
+     * any time we load or save the list we'll call this function which will
+     * export all of the user/pass info to the chap-secrets file
+     *
+     * This is necessary because L2TP (xl2tpd) uses pppd to authenticate users
+     * So the passwords need to be written to chap-secrets.
+     *
+     * XXX:
+     * Unfortunately, /etc/ppp/chap-secrets is managed by sync-settings
+     * Modifying this file directly outside of sync-settings will break the change
+     * detection in sync-settings.
+     * sync-settings will write its version, then we will append the info here
+     * and then next time sync-settings runs it will see a difference.
+     * This will cause unnecssary network restarts if:
+     * 1) There is PPPoE on a WAN interface
+     * 2) L2TP is enabled
+     * 3) Local Directory is non empty
+     *
+     * Unfortunately there is no easy fix to this because there is no way
+     * to tell xl2tpd/pppd to use a separate secretes file.
+     * The solution would be to move local directory into network settings
+     * or change sync-settings to read local directory settings (or all
+     * settings
+     *
+     * @param list The list of LocalDirectoryUsers
+     */
     private void updateChapSecrets(LinkedList<LocalDirectoryUser> list)
     {
-        /**
-         * The IPsec L2TP feature uses LocalDirectory for login credentials so
-         * any time we load or save the list we'll call this function which will
-         * export all of the user/pass info to the chap-secrets file
-         */
-
-        String chapFile = "/tmp/chap-secrets.l2tp";
+        if (list == null)
+            return;
+        if (list.size() == 0)
+            return;
+        String chapFile = "/etc/ppp/chap-secrets";
 
         try {
-            // put all the username/password pairs into a temp file for L2TP
-            FileWriter chap = new FileWriter(chapFile, false);
+            // append all the username/password pairs to chap-secrets file
+            FileWriter chap = new FileWriter(chapFile, true);
 
             for (LocalDirectoryUser user : list) {
+                if (user.getUsername() == null || user.getPasswordBase64Hash() == null)
+                    continue;
                 byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
                 String userPassword = new String(rawPassword);
                 chap.write(user.getUsername() + "\t\t");
@@ -249,12 +279,6 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             chap.flush();
             chap.close();
-
-            /**
-             * Once we have the temp file we call the magic script to merge them
-             * into the global chap-secrets file
-             */
-            UvmContextFactory.context().execManager().exec("/usr/share/untangle/bin/ut-chap-manager L2TP " + chapFile);
         }
 
         catch (Exception exn) {
