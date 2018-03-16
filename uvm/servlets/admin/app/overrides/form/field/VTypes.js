@@ -13,7 +13,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         ipAddrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
         cidrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
         ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-        openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/
+        openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
+        positiveInteger: /^[0-9]+$/
     },
 
     isSinglePortValid: function(val) {
@@ -244,26 +245,47 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     // BPP/OSPF router AS
     routerAs: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
         var number = parseInt(value, 10);
         return (number > 0) && (number <= 4294967295);
     },
     routerAsText: 'Invalid Router AS'.t(),
 
     metric: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
         var number = parseInt(value, 10);
         return (number >= 0) && (number <= 16777214);
     },
     metricText: 'Invalid metric number'.t(),
 
     routerInterval: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
         var number = parseInt(value, 10);
         return (number > 0) && (number <= 65535);
     },
     routerIntervalText: 'Invalid interval'.t(),
 
     routerPriority: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
         var number = parseInt(value, 10);
         return (number >= 0) && (number <= 65535);
     },
-    routerPriorityText: 'Invalid router priority'.t()
+    routerPriorityText: 'Invalid router priority'.t(),
+
+    routerAutoCost: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 4294967);
+    },
+    routerAutoCostText: 'Invalid auto cost reference bandwidth'.t()
 });
