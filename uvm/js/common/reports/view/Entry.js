@@ -18,69 +18,67 @@ Ext.define('Ung.view.reports.Entry', {
         border: false,
         bodyBorder: false,
         dockedItems: [{
-            xtype: 'toolbar',
-            border: false,
-            dock: 'top',
-            cls: 'report-header',
-            padding: 5,
-            style: {
-                background: '#FFF'
-            },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            // using 2 headings, 1 for selected entry, other for editing entry
-            items: [{
-                xtype: 'component',
-                hidden: true,
-                bind: {
-                    html: '<h1><span>{entry.category} /</span> {entry.title}</h1>',
-                    hidden: '{eEntry}'
-                }
-            }, {
-                xtype: 'component',
-                hidden: true,
-                bind: {
-                    html: '<h1><span>{eEntry.category || "category"} /</span> {eEntry.title || "title"}</h1>',
-                    hidden: '{!eEntry}'
-                }
-            }]
-        }, {
             /**
              * top toolbar containing report entry available actions
              */
             xtype: 'toolbar',
             dock: 'top',
-            ui: 'footer',
+            border: false,
+            cls: 'report-header',
+            padding: '5 10',
+            style: { background: '#FFF' },
+            // ui: 'footer',
+            defaults: {
+                focusable: false
+            },
             items: [{
                 xtype: 'component',
                 hidden: true,
                 bind: {
-                    html: '{entry.description}',
+                    html: '<h2><span>{entry.category} /</span> {entry.title}</h2><p>{entry.description}</p>',
                     hidden: '{eEntry}'
                 }
             }, {
                 xtype: 'component',
                 hidden: true,
                 bind: {
-                    html: '{eEntry.description}',
+                    html: '<h2><span>{eEntry.category || "category"} /</span> {eEntry.title || "title"}</h2><p>{eEntry.description}</p>',
                     hidden: '{!eEntry}'
                 }
-            }, '->', {
+            }, {
                 xtype: 'component',
                 html: '<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>',
                 hidden: true,
                 bind: {
                     hidden: '{!fetching}'
                 }
+            }, '->', {
+                text: 'Refresh'.t(),
+                iconCls: 'fa fa-refresh',
+                itemId: 'refreshBtn',
+                handler: 'refresh',
+                disabled: true,
+                bind: {
+                    disabled: '{r_autoRefreshBtn.pressed || fetching}'
+                }
             }, {
-                xtype: 'checkbox',
-                boxLabel: 'Data View'.t(),
+                text: 'Auto'.t() + ' (5 sec)',
+                reference: 'r_autoRefreshBtn',
+                enableToggle: true,
+                publishes: 'pressed',
+                bind: {
+                    iconCls: '{r_autoRefreshBtn.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                }
+                // handler: 'setAutoRefresh'
+            }, '-', {
+                // xtype: 'checkbox',
+                text: 'Data View'.t(),
                 reference: 'dataCk',
+                enableToggle: true,
                 hidden: true,
                 disabled: true,
                 bind: {
+                    iconCls: '{dataCk.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
                     hidden: '{!entry || entry.type === "EVENT_LIST" || eEntry}',
                     disabled: '{fetching}'
                 }
@@ -1044,7 +1042,7 @@ Ext.define('Ung.view.reports.Entry', {
             width: 400,
             minWidth: 400,
             bind: {
-                hidden: '{!dataCk.checked || eEntry}',
+                hidden: '{!dataCk.pressed || eEntry}',
             }
         }]
 
