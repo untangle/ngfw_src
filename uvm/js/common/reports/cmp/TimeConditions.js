@@ -104,7 +104,7 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
             menu.remove(menu.down('#historyItem'));
         }
         if (this.rangeHistory.length > 0) {
-            rangeMenuItems = this.rangeHistory;
+            rangeMenuItems = Ext.clone(this.rangeHistory);
             rangeMenuItems.push({
                 xtype: 'menuseparator'
             }, {
