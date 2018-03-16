@@ -3,14 +3,8 @@ Ext.define('Ung.view.reports.EventReport', {
     alias: 'widget.eventreport',
 
     viewModel: {
-        data: { eventsData: [], propsData: [] },
+        data: { propsData: [] },
         stores: {
-            events: {
-                data: '{eventsData}',
-                listeners: {
-                    datachanged: 'onDataChanged'
-                }
-            },
             props: {
                 data: '{propsData}'
             }
@@ -36,7 +30,7 @@ Ext.define('Ung.view.reports.EventReport', {
         itemId: 'eventsGrid',
         reference: 'eventsGrid',
         region: 'center',
-        bind: '{events}',
+        store: { data: [] },
         plugins: ['gridfilters'],
         selModel: {
             type: 'rowmodel'
@@ -80,6 +74,9 @@ Ext.define('Ung.view.reports.EventReport', {
 
             // find and set the widget component if report is rendered inside a widget
             view.setWidget(view.up('reportwidget'));
+
+            // add store datachange listener here, as it won't work in view definition
+            view.down('grid').getStore().on('datachanged', function () { me.onDataChanged(); } );
 
             // hide property grid if rendered inside widget
             if (view.getWidget() || view.up('new-widget')) {
@@ -164,7 +161,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
         onDeactivate: function () {
             this.modFields = { uniqueId: null };
-            this.getViewModel().set('eventsData', []);
+            this.getView().down('grid').getStore().loadData([]);
             this.getView().down('grid').getSelectionModel().deselectAll();
         },
 
@@ -178,7 +175,7 @@ Ext.define('Ung.view.reports.EventReport', {
             if (!entry) { return; }
 
             if (reset) {
-                vm.set('eventsData', []);
+                me.getView().down('grid').getStore().loadData([]);
                 me.setupGrid();
             }
 
@@ -241,7 +238,7 @@ Ext.define('Ung.view.reports.EventReport', {
                 break;
             }
             reader.closeConnection();
-            vm.set('eventsData', eventData);
+            grid.getStore().loadData(eventData);
         },
 
         onEventSelect: function (el, record) {
