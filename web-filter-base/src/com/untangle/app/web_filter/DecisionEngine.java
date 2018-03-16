@@ -161,7 +161,10 @@ public abstract class DecisionEngine
         if (app.getSettings().getRestrictGoogleApps()) {
             String allowedDomains = app.getSettings().getRestrictGoogleAppsDomain();
             if (allowedDomains != null && !"".equals(allowedDomains.trim()) && port == 443) {
-                header.addField("X-GoogApps-Allowed-Domains", app.getSettings().getRestrictGoogleAppsDomain());
+                UrlMatcher matcher = new UrlMatcher("*google*");
+                if (matcher.isMatch(host, uri.toString()) || host.contains("google")) {
+                    header.addField("X-GoogApps-Allowed-Domains", app.getSettings().getRestrictGoogleAppsDomain());
+                }
             }
         }
 
