@@ -339,12 +339,14 @@ def print_report(total_only=False):
         current_file_count += 1
         total_required_count += len(Validators[file_path])
         current_required_count += len(Validators[file_path])
+        show_path = False
         for validator in Validators[file_path]:
             if Type_name is not None and validator.tree["name"] != Type_name:
                 continue
             report = validator.get_report()
-            if total_only is False and validator.valid is not True:
+            if total_only is False and validator.valid is not True and show_path is False:
                 print file_path
+                show_path = True
             if total_only is False and validator.valid is not True or Show_valid is True:
                 print("\t" +validator.get_definition())
                 print("\t\t" + "\n\t".join(report))
