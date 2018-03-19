@@ -27,7 +27,7 @@ import com.untangle.uvm.util.IOUtil;
 
 /**
  * Branding manager
- * */
+ */
 public class BrandingManagerApp extends AppBase implements com.untangle.uvm.BrandingManager
 {
     private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");
@@ -107,7 +107,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     }
 
     /**
-     * Pre branding manager start.  
+     * Pre branding manager start.
      * Set the file logo.
      *
      * @param isPermanentTransition
