@@ -76,10 +76,56 @@ Ext.define('Ung.view.reports.GraphReport', {
                     marginRight: isWidget ? undefined : 20,
                     spacing: isWidget ? [5, 5, 10, 5] : [30, 10, 15, 10],
                     style: { fontFamily: 'Roboto Condensed', fontSize: '10px' },
-                    backgroundColor: 'transparent'
+                    backgroundColor: 'transparent',
+                    selectedrange: null,
+                    events: {
+                        selection: function (event) {
+                            if (isWidget) { return; } // applies only when viewing the report
+                            if (event.resetSelection) {
+                                me.chart.update({
+                                    exporting: {
+                                        buttons: {
+                                            timerangeButton: {
+                                                enabled: false
+                                            }
+                                        }
+                                    }
+                                });
+                                me.chart.selectedrange = null;
+                            } else {
+                                me.chart.update({
+                                    exporting: {
+                                        buttons: {
+                                            timerangeButton: {
+                                                enabled: true
+                                            }
+                                        }
+                                    }
+                                });
+                                me.chart.selectedrange = {
+                                    min: event.xAxis[0].min,
+                                    max: event.xAxis[0].max
+                                };
+                            }
+                        }
+                    }
                 },
                 exporting: {
-                    enabled: false
+                    enabled: true,
+                    buttons: {
+                        contextButton: {
+                            enabled: false // disable default contextButton
+                        },
+                        timerangeButton: {
+                            text: 'Apply this timerange'.t(),
+                            align: 'center',
+                            enabled: false, // this updates based on zoom selection
+                            y: 10,
+                            onclick: function() {
+                                Ext.fireEvent('timerangechange', me.chart.selectedrange);
+                            }
+                        }
+                    }
                 },
                 navigator: { enabled: false },
                 rangeSelector : { enabled: false },
@@ -355,6 +401,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 })
                 .always(function () {
                     if (reps) { reps.getViewModel().set('fetching', false); }
+                    me.chart.zoomOut();
                     me.chart.hideLoading();
                 });
         },
@@ -666,15 +713,12 @@ Ext.define('Ung.view.reports.GraphReport', {
                             color: isWidget ? (Ung.dashboardSettings.theme !== 'DARK' ? '#EEE' : '#444') : '#EEE',
                             label: {
                                 text: Ext.Date.format(d, 'Y-m-d'),
-                                rotation: 0,
                                 y: 15,
                                 style: {
                                     fontSize: '12px',
                                     color: '#999'
                                 }
-                                // rotation:
-                            },
-                            zIndex: 900
+                            }
                         });
                     }
                 });

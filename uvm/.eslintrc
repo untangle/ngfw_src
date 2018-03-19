@@ -13,6 +13,7 @@
     },
     "globals": {
         "Ext": true,
+        "Highcharts": true,
         "Ung": true,
         "Rpc": true,
         "rpc": true,
@@ -20,6 +21,7 @@
         "TableConfig": true,
         "DashboardQueue": true,
         "Renderer": true,
-        "Converter": true
+        "Converter": true,
+        "Theme": true
     }
 }

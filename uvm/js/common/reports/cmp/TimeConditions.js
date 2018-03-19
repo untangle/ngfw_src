@@ -33,6 +33,30 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
 
     rangeHistory: [],
 
+    controller: {
+        listen: {
+            global: {
+                timerangechange: 'onTimeRangeChange'
+            }
+        },
+        // applies timerange from zoomed in time reports
+        onTimeRangeChange: function (range) {
+            if (!range) { return; }
+            var me = this,
+                start = new Date(range.min),
+                end = new Date(range.max);
+
+            // round dates to 10 minutes itervals
+            start.setMinutes(Math.floor(start.getMinutes()/10) * 10, 0, 0);
+            end.setMinutes(Math.ceil(start.getMinutes()/10) * 10, 0, 0);
+
+            me.getView().setRange({
+                since: start,
+                until: end
+            }, true);
+        }
+    },
+
     items: [{
         xtype: 'component',
         margin: '0 5 0 0',
