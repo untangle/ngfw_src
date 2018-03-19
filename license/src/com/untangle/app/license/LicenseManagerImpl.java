@@ -52,6 +52,9 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 
+/**
+ * License manager
+ */
 public class LicenseManagerImpl extends AppBase implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
@@ -119,6 +122,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private Pulse pulse = null;
 
+    /**
+     * Setup license manager application.
+     * 
+     * * Launch the synchronization task.
+     *
+     * @param appSettings       License manager application settings.
+     * @param appProperties     Licese manager application properties
+     */
     public LicenseManagerImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -130,12 +141,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         this.pulse.start();
     }
 
-    @Override
-    protected void preStop( boolean isPermanentTransition )
-    {
-        logger.debug("preStop()");
-    }
-
+    /**
+     * Pre license manager start.
+     * Reload the licenses.
+     *
+     * @param isPermanentTransition
+     *  If true, the app is permenant
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
@@ -145,6 +157,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         UvmContextFactory.context().licenseManager().reloadLicenses( false );
     }
 
+    /**
+     * Get the pineliene connector(???)
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -153,6 +170,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     
     /**
      * Reload all of the licenses from the file system.
+     *
+     * @param
+     *     blocking If true, block the current context until we're finished.  Otherwise, launch a new non-blocking thread.
      */
     @Override
     public final void reloadLicenses( boolean blocking )
@@ -165,6 +185,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             }
         } else {
             Thread t = new Thread(new Runnable() {
+                    /**
+                     * Launch the license synchronize routine.
+                     */
                     public void run()
                     {
                         try {
@@ -178,6 +201,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
     }
 
+    /**
+     * From the existing license map, return the first matching string identifier (e.g.,"virus")
+     * 
+     * @param  identifier Identifier to find.
+     * @param  exactMatch If true, identifier must match license name excactly.  Otherwise, return the first license that begins with the identifier.
+     * @return
+     *     Matching license.  Return an invalid license if not found.
+     */
     @Override
     public final License getLicense(String identifier, boolean exactMatch)
     {
@@ -237,12 +268,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return license;
     }
 
+    /**
+     * Return the license for the exactly matching identifier.
+     * 
+     * @param  identifier Application name to find.
+     * @return            License of matching identifier or an invalid license if not found.
+     */
     @Override
     public final License getLicense(String identifier)
     {
         return getLicense(identifier, true);
     }
-    
+
+    /**
+     * For the specify identifier, determine if license is valid.
+     * 
+     * @param  identifier Application name to find.
+     * @return            true if license is valid, false otherwise.
+     */
     @Override
     public final boolean isLicenseValid(String identifier)
     {
@@ -259,18 +302,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             return isValid;
     }
 
+    /**
+     * Get list of all licenses.
+     * 
+     * @return License List.
+     */
     @Override
     public final List<License> getLicenses()
     {
         return this.licenseList;
     }
     
+    /**
+     * Determine if product has premium license.
+     * 
+     * @return true if at least one license is valid.
+     */
     @Override
     public final boolean hasPremiumLicense()
     {
         return validLicenseCount() > 0;
     }
 
+    /**
+     * Determine number of valid licenses.
+     * 
+     * @return count of valid licenses.
+     */
     @Override
     public int validLicenseCount()
     {
@@ -286,12 +344,23 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return validCount;
     }
     
+    /**
+     * Return the lowest valid license seat.
+     * 
+     * @return Number of seats.
+     */
     @Override
     public int getSeatLimit( )
     {
         return getSeatLimit( true );
     }
 
+    /**
+     * Calculate the lowest license seat for valid subscriptions.
+     * 
+     * @param  lienency If non-zero seats, calculate seats based on a value higher than actual.  Otherwise, use strict seat value. 
+     * @return          Calculated seat number.
+     */
     @Override
     public int getSeatLimit( boolean lienency )
     {
@@ -317,6 +386,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return seats;
     }
 
+    /**
+     * For the specified applicaton, attempt to get a trial license.
+     * 
+     * @param  appName   Application name to request.
+     * @throws Exception Throw excepton based on inability or general errors conecting license server.
+     */
     @Override
     public void requestTrialLicense( String appName ) throws Exception
     {
@@ -441,12 +516,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         UvmContextFactory.context().licenseManager().reloadLicenses( true );
     }
 
+    /**
+     * Not used.  Use methods in uvm class.
+     * 
+     * @return null
+     */
     public Object getSettings()
     {
         /* These are controlled using the methods in the uvm class */
         return null;
     }
 
+    /**
+     * Not used.  Use methods in uvm class.
+     * @param settings null
+     */
     public void setSettings(Object settings)
     {
         /* These are controlled using the methods in the uvm class */
@@ -544,7 +628,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /** 
      * This remove a license from the list of current licenses
-     * Returns true if a license was removed, false otherwise
+     *
+     * @param revoke LicenseRevocation object to revoke in licenses.
+     * @return true if a license was removed, false otherwise
      */
     private synchronized boolean _revokeLicense(LicenseRevocation revoke)
     {
@@ -626,7 +712,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * This takes the passed argument and inserts it into the current licenses
      * If there is currently an existing license for that product it will be removed
-     * Returns true if a license was added or modified, false otherwise
+     *
+     * @param license License object to add.
+     * @return true if a license was added or modified, false otherwise
      */
     private synchronized boolean _insertOrUpdate(License license)
     {
@@ -773,6 +861,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Verify the validity of a license
+     *
+     * @param license License object for a subscription.
+     * @return true if license is valid, false otherwise.
      */
     private boolean _isLicenseValid(License license)
     {
@@ -838,6 +929,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Convert the bytes to a hex string
+     *
+     * @param data Array of bytes to convert to a hext string.
+     * @return String of hex values for the passed byte array.
      */
     private String _toHex(byte data[])
     {
@@ -855,6 +949,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * Set the current settings to new Settings
      * Also save the settings to disk if save is true
+     *
+     * @param newSettings LicenseSetttings to save.
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
@@ -897,6 +993,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * Returns an estimate of # devices on the network
      * This is not meant to be very accurate - it is just an estimate
+     *
+     * @return Number of estimated devices on the network.
      */
     private int _getEstimatedNumDevices()
     {
@@ -905,6 +1003,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Returns the url for the license server API
+     *
+     * @return license agreement.
      */
     private String _getLicenseUrl()
     {
@@ -937,14 +1037,26 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses... done" );
     }
     
+    /**
+     * Task to run the synchronoization routine. 
+     */
     private class LicenseSyncTask implements Runnable
     {
+        /**
+         * Launch the license synchronize routine.
+         */
         public void run()
         {
             _syncLicensesWithServer();    
         }
     }
     
+    /**
+     * Determine if application is GPL-based.
+     * 
+     * @param  identifier Application name.
+     * @return            true if GPL, false otherwise.
+     */
     private boolean isGPLApp(String identifier)
     {
         switch ( identifier ) {
@@ -987,6 +1099,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
     }
 
+    /**
+     * Determine if application is obsolete.
+     * 
+     * @param  identifier Application name.
+     * @return            true if applicatio is obsolete, false otherwise.
+     */
     private boolean isObsoleteApp(String identifier)
     {
         if ("untangle-node-kav".equals(identifier)) return true;
@@ -1000,6 +1118,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return false;
     }
     
+    /**
+     * Set a license to valid.
+     * 
+     * @param license License object to set.
+     */
     private void _setValidAndStatus(License license)
     {
         if (_isLicenseValid(license)) {
@@ -1010,6 +1133,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
     }
 
+    /**
+     * If passed value is null, return an empty string.  Otherwise return the object's string value.
+     * 
+     * @param  foo Passed value.
+     * @return     String of the value.
+     */
     private static String nullToEmptyStr( Object foo )
     {
         if ( foo == null )
@@ -1018,6 +1147,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             return foo.toString();
     }
 
+    /**
+     * Get the lienency gift value.
+     * 
+     * @return Number of lienency seats.
+     */
     private static int getLienencyGift()
     {
         try {
