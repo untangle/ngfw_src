@@ -8,14 +8,20 @@ Ext.define('Ung.config.network.MainController', {
         '#interfaces': { beforerender: 'onInterfaces' },
         '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
-        '#qosStatistics': { afterrender: 'refreshQosStatistics' },
-        '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
+        '#qos_statistics': { afterrender: 'refreshQosStatistics' },
+        '#upnp_status': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
         'networktest': { afterrender: 'networkTestRender' },
         '#advanced': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
         '#advanced #advanced': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #qos': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#advanced #upnp': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
         '#advanced #dynamic_routing': {
