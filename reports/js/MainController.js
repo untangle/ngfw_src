@@ -66,7 +66,7 @@ Ext.define('Ung.apps.reports.MainController', {
                 appCategories: appCategories,
                 configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'Events', 'System', 'Shield'],
                 fixedReportsAllowGraphs: result[1],
-                emailRecommendedReportIds: result[2]
+                emailRecommendedReportIds: result[2].list
             });
 
             vm.set('panel.saveDisabled', false);
