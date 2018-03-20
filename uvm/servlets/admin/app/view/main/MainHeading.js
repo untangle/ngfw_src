@@ -108,12 +108,16 @@ Ext.define('Ung.view.main.MainHeading', {
             }, {
                 text: 'Apps'.t(),
                 iconCls: 'fa fa-th',
-                href: '#apps',
+                href: '#apps' // href is not bindable in menu items, so no policy id passed from men uitem
             }, {
                 text: 'Config'.t(),
                 iconCls: 'fa fa-cog',
                 href: '#config'
             }, {
+                /**
+                 * todo: fix responsive config/binding conflict
+                 * binding takes precedence over responsiveConfig, so Reports is visible in menu even if it shouldn't
+                 */
                 text: 'Reports'.t(),
                 iconCls: 'fa fa-line-chart',
                 href: '#reports',
@@ -153,10 +157,13 @@ Ext.define('Ung.view.main.MainHeading', {
             }, {
                 text: 'Account Settings'.t(),
                 iconCls: 'fa fa-user-circle',
+                hrefTarget: '_blank',
+                href: Util.getStoreUrl() + '?action=my_account&' + Util.getAbout(),
                 responsiveConfig: null
             }, {
                 text: 'Logout'.t(),
                 iconCls: 'fa fa-sign-out',
+                href: '/auth/logout?url=/admin&realm=Administrator',
                 responsiveConfig: null
             }],
             listeners: {
