@@ -88,7 +88,7 @@
     <body>
         <div id="app-loader">
             <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
-                <img src="/images/BrandingLogo.png"/>
+                <img src="/images/BrandingLogo.png" style="max-width: 150px; max-height: 140px;"/>
                 <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
             </div>
         </div>

@@ -163,7 +163,7 @@ def is_local_process_uid_authorized(req):
                     try:
                         uid = int(a[7])
                         state = a[3]
-                        
+
                         # If socket state == established
                         if state == "01":
                             # If userid is in list of authorized userids
@@ -321,7 +321,7 @@ def write_error_page(req, msg):
 <div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">
 <div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">
 <center>
-<img alt=\"\" src=\"/images/BrandingLogo.png\" /><br /><br />
+<img alt=\"\" src=\"/images/BrandingLogo.png\" style=\"max-width: 150px; max-height: 140px;\"/><br /><br />
 <b>%s</b><br /><br />
 <em>%s</em>
 </center><br /><br />
