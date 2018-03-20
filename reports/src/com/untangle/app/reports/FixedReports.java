@@ -2036,7 +2036,7 @@ public class FixedReports
                 "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") +
                 "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
-            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-legend", 60);
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-legend", 300);
             Thread.sleep(1000);
             webbrowser.takeScreenshot(filename);
         } catch (org.openqa.selenium.TimeoutException e) {
