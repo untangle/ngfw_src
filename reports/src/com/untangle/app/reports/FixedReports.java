@@ -806,9 +806,13 @@ public class FixedReports
         }
 
         webbrowser = null;
-        try{
-            webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
-        }catch(Exception e){}
+        if(WebBrowser.exists()){
+            try{
+                webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
+            }catch(Exception e){
+                logger.warn("Unable to start WebBrowser instance: ",e);
+            }
+        }
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
 
