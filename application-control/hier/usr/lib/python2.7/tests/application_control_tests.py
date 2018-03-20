@@ -231,6 +231,8 @@ class ApplicationControlTests(unittest2.TestCase):
             assert (result == 0)
             result = remote_control.is_online()
             assert (result == 0)
+            # delay so we don't trigger systemd throttling of 5 restarts in 10 seconds
+            time.sleep(3)
         # give it some time to recover for future tests
         for i in range(5):
             result = remote_control.is_online()
