@@ -98,6 +98,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 editable: false
             }, {
                 xtype: 'tabpanel',
+                itemId: 'qos',
                 layout: 'fit',
                 disabled: true,
                 hidden: true,
@@ -107,6 +108,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 },
                 items: [{
                     xtype: 'ungrid',
+                    itemId: 'bandwidth',
                     title: 'WAN Bandwidth'.t(),
                     scrollable: true,
                     tbar: [{
@@ -176,6 +178,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }, {
                     xtype: 'panel',
+                    itemId: 'rules',
                     title: 'QoS Rules'.t(),
                     scrollable: true,
 
@@ -309,6 +312,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }, {
                     xtype: 'ungrid',
+                    itemId: 'priorities',
                     title: 'QoS Priorities'.t(),
                     scrollable: true,
 
@@ -388,7 +392,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }, {
                     xtype: 'ungrid',
-                    itemId: 'qosStatistics',
+                    itemId: 'qos_statistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
                     scrollable: true,
@@ -558,6 +562,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }
             },{
                 xtype: 'tabpanel',
+                itemId: 'upnp',
                 layout: 'fit',
                 disabled: true,
                 hidden: true,
@@ -567,11 +572,12 @@ Ext.define('Ung.config.network.view.Advanced', {
                 },
                 items: [{
                     xtype: 'panel',
+                    itemId: 'status',
                     title: 'Status'.t(),
                     scrollable: true,
                     items:[{
                         xtype: 'ungrid',
-                        itemId: 'upnpStatus',
+                        itemId: 'upnp_status',
                         region: 'center',
 
                         enableColumnHide: false,
@@ -635,6 +641,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 },{
                     xtype: 'panel',
+                    itemId: 'access_control_rules',
                     title: 'Access Control Rules'.t(),
                     scrollable: true,
                     items: [{
