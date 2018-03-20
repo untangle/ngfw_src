@@ -44,7 +44,7 @@ public class WebBrowser
     private WebDriver driver = null;
 
     private String tempDirectory = "/tmp/webbrowser";
-    private static String chromeDriver = "/usr/lib/chromium/chromedriver";
+    private static String chromeDriver = "/usr/bin/chromedriver";
     private static String chromeBrowser = "/usr/bin/chromium";
 
     private Integer displaySequence = 1;
