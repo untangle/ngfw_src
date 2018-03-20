@@ -51,14 +51,14 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 columns: 1,
                 vertical: true,
                 items: [
-                    { boxLabel: 'Username'.t(), name: 'rb', inputValue: 'username', bind: { disabled: '{disabledConds.username}' } },
-                    { boxLabel: 'Protocol'.t(), name: 'rb', inputValue: 'protocol', bind: { disabled: '{disabledConds.protocol}' } },
-                    { boxLabel: 'Hostname'.t(), name: 'rb', inputValue: 'hostname', bind: { disabled: '{disabledConds.hostname}' } },
-                    { boxLabel: 'Client'.t(), name: 'rb', inputValue: 'c_client_addr', bind: { disabled: '{disabledConds.c_client_addr}' } },
-                    { boxLabel: 'Server'.t(), name: 'rb', inputValue: 's_server_addr', bind: { disabled: '{disabledConds.s_server_addr}' } },
-                    { boxLabel: 'Client Port', name: 'rb', inputValue: 'c_client_port', bind: { disabled: '{disabledConds.c_client_port}' } },
-                    { boxLabel: 'Server Port'.t(), name: 'rb', inputValue: 's_server_port', bind: { disabled: '{disabledConds.s_server_port}' } },
-                    { boxLabel: 'Policy Id'.t(), name: 'rb', inputValue: 'policy_id', bind: { disabled: '{disabledConds.policy_id}' } }
+                    { boxLabel: 'Username'.t(), name: 'col', inputValue: 'username', bind: { disabled: '{disabledConds.username}' } },
+                    { boxLabel: 'Protocol'.t(), name: 'col', inputValue: 'protocol', bind: { disabled: '{disabledConds.protocol}' } },
+                    { boxLabel: 'Hostname'.t(), name: 'col', inputValue: 'hostname', bind: { disabled: '{disabledConds.hostname}' } },
+                    { boxLabel: 'Client'.t(), name: 'col', inputValue: 'c_client_addr', bind: { disabled: '{disabledConds.c_client_addr}' } },
+                    { boxLabel: 'Server'.t(), name: 'col', inputValue: 's_server_addr', bind: { disabled: '{disabledConds.s_server_addr}' } },
+                    { boxLabel: 'Client Port', name: 'col', inputValue: 'c_client_port', bind: { disabled: '{disabledConds.c_client_port}' } },
+                    { boxLabel: 'Server Port'.t(), name: 'col', inputValue: 's_server_port', bind: { disabled: '{disabledConds.s_server_port}' } },
+                    { boxLabel: 'Policy Id'.t(), name: 'col', inputValue: 'policy_id', bind: { disabled: '{disabledConds.policy_id}' } }
                 ]
             }, '-', {
                 xtype: 'combobox',
@@ -188,18 +188,18 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                     vertical: true,
                                     value: cond.operator,
                                     items: [
-                                        { boxLabel: 'equals [=]'.t(), name: 'rb', inputValue: '=' },
-                                        { boxLabel: 'not equals [!=]'.t(), name: 'rb', inputValue: '!=' },
-                                        { boxLabel: 'greater than [>]'.t(), name: 'rb', inputValue: '>' },
-                                        { boxLabel: 'less than [<]'.t(), name: 'rb', inputValue: '<' },
-                                        { boxLabel: 'greater or equal [>=]'.t(), name: 'rb', inputValue: '>=' },
-                                        { boxLabel: 'less or equal [<=]', name: 'rb', inputValue: '<=' },
-                                        { boxLabel: 'like'.t(), name: 'rb', inputValue: 'like' },
-                                        { boxLabel: 'not like'.t(), name: 'rb', inputValue: 'not like' },
-                                        { boxLabel: 'is'.t(), name: 'rb', inputValue: 'is' },
-                                        { boxLabel: 'is not'.t(), name: 'rb', inputValue: 'is not' },
-                                        { boxLabel: 'in'.t(), name: 'rb', inputValue: 'in' },
-                                        { boxLabel: 'not in'.t(), name: 'rb', inputValue: 'not in' }
+                                        { boxLabel: 'equals [=]'.t(), name: 'op', inputValue: '=' },
+                                        { boxLabel: 'not equals [!=]'.t(), name: 'op', inputValue: '!=' },
+                                        { boxLabel: 'greater than [>]'.t(), name: 'op', inputValue: '>' },
+                                        { boxLabel: 'less than [<]'.t(), name: 'op', inputValue: '<' },
+                                        { boxLabel: 'greater or equal [>=]'.t(), name: 'op', inputValue: '>=' },
+                                        { boxLabel: 'less or equal [<=]', name: 'op', inputValue: '<=' },
+                                        { boxLabel: 'like'.t(), name: 'op', inputValue: 'like' },
+                                        { boxLabel: 'not like'.t(), name: 'op', inputValue: 'not like' },
+                                        { boxLabel: 'is'.t(), name: 'op', inputValue: 'is' },
+                                        { boxLabel: 'is not'.t(), name: 'op', inputValue: 'is not' },
+                                        { boxLabel: 'in'.t(), name: 'op', inputValue: 'in' },
+                                        { boxLabel: 'not in'.t(), name: 'op', inputValue: 'not in' }
                                     ],
                                     listeners: {
                                         change: function (rg, val) {
