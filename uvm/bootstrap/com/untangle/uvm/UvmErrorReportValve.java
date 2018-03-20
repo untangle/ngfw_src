@@ -78,7 +78,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         throws IOException
     {
         String companyName = Main.getMain().getCompanyName();
-        
+
         w.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
         w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
         w.write("<head>\n");
@@ -96,7 +96,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">\n");
         w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
         w.write("<center>");
-        w.write("<img alt=\"\" src=\"/images/BrandingLogo.png\" /><br /><br />\n");
+        w.write("<img alt=\"\" src=\"/images/BrandingLogo.png\" style=\"max-width: 150px; max-height: 140px;\"/><br /><br />\n");
         w.write("<b>");
         w.write(tr("{0} Server", companyName, i18nMap));
         w.write("</b><br /><br />\n");
@@ -118,7 +118,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         String tr = i18nMap.get(value);
         return null == tr ? value : tr;
     }
-    
+
     private String tr(String value, Object[] objects, Map<String, String> i18nMap)
     {
         return MessageFormat.format( tr(value,i18nMap), objects);

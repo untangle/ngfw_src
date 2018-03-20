@@ -16,7 +16,7 @@ Ext.define('Ung.view.main.Offline', {
         style: { background: '#FFF' },
         items: [{
             xtype: 'component',
-            html: '<img src="/images/BrandingLogo.png"/>',
+            html: '<img src="/images/BrandingLogo.png" style="max-width: 166px; max-height: 100px;" />',
             width: 166,
             height: 100
         }, {
