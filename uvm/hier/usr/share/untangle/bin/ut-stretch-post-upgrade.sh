@@ -36,9 +36,12 @@ while true; do
         echo "Rebooting in 10 seconds...\n\"touch /tmp/abort\" to stop" | wall
         sleep 10
         if [ -f /tmp/abort ] ; then
-            exit
+            exit 0
         else
+            echo "Rebooting...\n" | wall
+            echo "Rebooting..."
             reboot
+            exit 0
         fi
     fi
 done
