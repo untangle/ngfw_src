@@ -1,3 +1,6 @@
+/**
+ *  $Id:$
+ */
 package com.untangle.app.smtp.web.euv;
 
 import java.io.IOException;
@@ -17,7 +20,7 @@ import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet that when given a module name returns a javascript hash containing
- * all the key-value pairs in that module.
+ * all the key-value pairs for localization.
  * 
  */
 @SuppressWarnings("serial")
@@ -28,6 +31,14 @@ public class I18NServlet extends HttpServlet
     /** character encoding */
     private static final String CHARACTER_ENCODING = "utf-8";
 
+    /**
+     * Handle the request for the desired language.
+     * 
+     * @param  req              HttpServletRequest object containing the "module" request.
+     * @param  resp             HttpServletResponse object that will be written to with the requested localization.
+     * @throws ServletException If there's an problem with the servlet.
+     * @throws IOException      General input/ooutput error.
+     */
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -54,6 +65,9 @@ public class I18NServlet extends HttpServlet
 
     /**
      * Creates a JSONObject [JSONObject,JSONArray,JSONNUll] from the map values.
+     * @param  map           String (english) to String (target language) mapping.
+     * @return               JSONObject of the mapping
+     * @throws JSONException Any problem creating the json object.
      */
     protected JSONObject createJSON(Map<String,String> map) throws JSONException 
     {

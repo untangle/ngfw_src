@@ -21,6 +21,14 @@ public class EmailServlet extends HttpServlet
 {
     private static final String REQ_DIGEST_VIEW = "/WEB-INF/jsp/email.jsp";
 
+    /**
+     * Setup the servlet
+     * 
+     * @param  req              HttpServletRequest object.
+     * @param  resp             HttpServeletResponse object.
+     * @throws ServletException If there's an problem with the servlet.
+     * @throws IOException      General input/ooutput error.
+     */
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
