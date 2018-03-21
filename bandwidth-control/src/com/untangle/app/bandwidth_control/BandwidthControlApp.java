@@ -24,6 +24,9 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.AppBase;
 
+/**
+ * The Bandwidth Control App is an app dedicated to shaping and controlling bandwidth usage
+ */
 public class BandwidthControlApp extends AppBase
 {
     public static final String STAT_PRIORITIZE = "prioritize";
@@ -48,6 +51,11 @@ public class BandwidthControlApp extends AppBase
     private final UserQuotaExceededHook userQuotaExceededHook = new UserQuotaExceededHook();
     private final UserQuotaRemovedHook userQuotaRemovedHook = new UserQuotaRemovedHook();
    
+    /**
+     * Create an BandwidthControlApp instance
+     * @param appSettings The appSettings object
+     * @param appProperties The appProperties object
+     */
     public BandwidthControlApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -59,6 +67,10 @@ public class BandwidthControlApp extends AppBase
         this.connectors = new PipelineConnector[] { connector };
     }
 
+    /**
+     * The postInit() hook
+     * This loads the settings from file or initializes them if necessary
+     */
     @Override
     protected void postInit()
     {
@@ -82,6 +94,11 @@ public class BandwidthControlApp extends AppBase
         }
     }
         
+    /**
+     * The preStart() hook
+     * This registers the callbacks and does some sanity checks
+     * @param isPermanentTransition - true if this is a permanent transition
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -110,6 +127,11 @@ public class BandwidthControlApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_REMOVED, this.userQuotaRemovedHook );
     }
 
+    /**
+     * The preStop() hook
+     * This unregisters all the hooks
+     * @param isPermanentTransition - true if this is a permanent transition
+     */
     @Override
     protected void preStop( boolean isPermanentTransition ) 
     {
@@ -122,6 +144,9 @@ public class BandwidthControlApp extends AppBase
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_REMOVED, this.userQuotaRemovedHook );
     }
 
+    /**
+     * Initializes the settings to the default settings
+     */
     @Override
     public void initializeSettings()
     {
@@ -134,21 +159,38 @@ public class BandwidthControlApp extends AppBase
         this.setSettings(this.settings);
     }
 
+    /**
+     * Get the current settings
+     * @return settings
+     */
     public BandwidthControlSettings getSettings()
     {
         return this.settings;
     }
     
+    /**
+     * Set the current settings
+     * @param newSettings - the new settings
+     */
     public void setSettings( BandwidthControlSettings newSettings )
     {
         this._setSettings(newSettings, true);
     }
 
+    /**
+     * Get only the current rules from the current settings
+     * @return the rules
+     */
     public List<BandwidthControlRule> getRules()
     {
         return this.settings.getRules();
     }
-    
+
+    /**
+     * Overwrite the existing rules in the settings with the specified rules
+     * And save the new settings
+     * @param rules - the new rules
+     */
     public void setRules( List<BandwidthControlRule> rules )
     {
         BandwidthControlSettings newSettings = getSettings();
@@ -156,6 +198,12 @@ public class BandwidthControlApp extends AppBase
         this.setSettings(newSettings);
     }
 
+    /**
+     * Load the set the current settings to the suggested defaults
+     * for the type of organization specified.
+     * This is called by the setup wizard
+     * @param defaultConfiguration (ie "school")
+     */
     public void wizardLoadDefaults( String defaultConfiguration )
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -178,6 +226,13 @@ public class BandwidthControlApp extends AppBase
         }
     }
 
+    /**
+     * Add Host Quota rules to the existing ruleset.
+     * This is called by the setup wizard
+     * @param quotaTimeSec - the quota lifetime
+     * @param quotaBytes - the quota size
+     * @param overQuotaPriority - the priority of traffic over-quota
+     */
     public void wizardAddHostQuotaRules(int quotaTimeSec, long quotaBytes, int overQuotaPriority)
     {
         /**
@@ -221,6 +276,13 @@ public class BandwidthControlApp extends AppBase
         return;
     }
 
+    /**
+     * Add User Quota rules to the existing ruleset.
+     * This is called by the setup wizard
+     * @param quotaTimeSec - the quota lifetime
+     * @param quotaBytes - the quota size
+     * @param overQuotaPriority - the priority of traffic over-quota
+     */
     public void wizardAddUserQuotaRules(int quotaTimeSec, long quotaBytes, int overQuotaPriority)
     {
         /**
@@ -264,11 +326,20 @@ public class BandwidthControlApp extends AppBase
         return;
     }
     
+    /**
+     * Increment the count of the specified mentric by the specified amount
+     * @param stat - the name of the metric
+     * @param delta - the amount to increment metric
+     */
     public void incrementCount( String stat, long delta )
     {
         this.adjustMetric( stat, delta );
     }
 
+    /**
+     * Check the license
+     * @return true if license is valid, false otherwise
+     */
     public boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BANDWIDTH_CONTROL))
@@ -277,9 +348,10 @@ public class BandwidthControlApp extends AppBase
     }
 
     /**
-     * This forces the app to reevaluate all sessions
-     * of the specified addr.
+     * This forces the app to reevaluate all sessions of the specified host address.
      * This is useful when hosts are tagged or when quotas have expired
+     * @param addr - the address
+     * @param reason - this is just printed in log statements for logging/debugging
      */
     public void reprioritizeHostSessions(InetAddress addr, String reason)
     {
@@ -290,9 +362,10 @@ public class BandwidthControlApp extends AppBase
     }
 
     /**
-     * This forces the app to reevaluate all sessions
-     * of the specified addr.
-     * This is useful when hosts are tagged or when quotas have expired
+     * This forces the app to reevaluate all sessions of the specified username.
+     * This is useful when hosts are tagged or when quotas have expired.
+     * @param username - the username
+     * @param reason - this is just printed in log statements for logging/debugging
      */
     public void reprioritizeUserSessions(String username, String reason)
     {
@@ -302,6 +375,10 @@ public class BandwidthControlApp extends AppBase
         this.handler.reprioritizeUserSessions(username, reason);
     }
     
+    /**
+     * Get the pipeline connectors for this ad blocker
+     * @return the pipelineconnectors array
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -310,7 +387,10 @@ public class BandwidthControlApp extends AppBase
 
     /**
      * Set the current settings to new Settings
-     * Also save the settings to disk if save is true
+     * Also save the settings to disk if save is specified
+     * 
+     * @param newSettings - the new settings
+     * @param save - if true, save to disk, if false just set current settings
      */
     private void _setSettings(BandwidthControlSettings newSettings, boolean save)
     {
@@ -335,11 +415,13 @@ public class BandwidthControlApp extends AppBase
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
     }
 
     /**
-     * Resets IDs to unique IDs
+     * Resets rule IDs to unique IDs
      * Also sets app parameter and other in-memory meta-data on Rules
+     * @param settings - the settings to fixup
      */
     private void _processSettings(BandwidthControlSettings settings)
     {
@@ -363,45 +445,129 @@ public class BandwidthControlApp extends AppBase
         }
     }
 
+    /**
+     * HostTaggedHook is a hook registered for when a host gets a tag (in the host table)
+     * This proceeds to reprioritize existing sessions for said host in case they change
+     */
     private class HostTaggedHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-tagged"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "host tagged"); }
     }
 
+    /**
+     * HostQuotaGivenHook is a hook registered for when a host gets a quota (in the host table)
+     * This proceeds to reprioritize existing sessions for said host in case they change
+     */
     private class HostQuotaGivenHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-given-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota given"); }
     }
 
+    /**
+     * HostQuotaExceededHook is a hook registered for when a host exceeds a quota (in the host table)
+     * This proceeds to reprioritize existing sessions for said host in case they change
+     */
     private class HostQuotaExceededHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota exceeded"); }
     }
 
+    /**
+     * HostQuotaRemovedHook is a hook registered for when a host has a quota removed (in the host table)
+     * This proceeds to reprioritize existing sessions for said host in case they change
+     */
     private class HostQuotaRemovedHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-removed-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeHostSessions((InetAddress)o, "quota removed"); }
     }
 
+    /**
+     * UserQuotaGivenHook is a hook registered for when a user gets a quota (in the user table)
+     * This proceeds to reprioritize existing sessions for said user in case they change
+     */
     private class UserQuotaGivenHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-given-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota given"); }
     }
 
+    /**
+     * UserQuotaExceededHook is a hook registered for when a user exceeds a quota (in the user table)
+     * This proceeds to reprioritize existing sessions for said user in case they change
+     */
     private class UserQuotaExceededHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota exceeded"); }
     }
 
+    /**
+     * UserQuotaRemovedHook is a hook registered for when a user has a quota removed (in the user table)
+     * This proceeds to reprioritize existing sessions for said user in case they change
+     */
     private class UserQuotaRemovedHook implements HookCallback
     {
+        /**
+         * @return the Name of the hook
+         */
         public String getName() { return "bandwidth-control-quota-removed-hook"; }
+
+        /**
+         * The callback function
+         * @param args - the hook args
+         */
         public void callback( Object... args ) { Object o = args[0]; reprioritizeUserSessions((String)o, "quota removed"); }
     }
     

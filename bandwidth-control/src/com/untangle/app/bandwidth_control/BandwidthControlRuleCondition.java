@@ -7,24 +7,40 @@ import com.untangle.uvm.app.RuleCondition;
 
 /**
  * This is a matching criteria for a Bandwidth Control Rule
+ * It does not extend the basic RuleCondition in any way
+ * It is its only object just for type verification
  */
 @SuppressWarnings("serial")
 public class BandwidthControlRuleCondition extends RuleCondition 
 {
     private BandwidthControlApp app;
     
+    /**
+     * Instantiate a BandwidthControlRuleCondition
+     */
     public BandwidthControlRuleCondition( )
     {
         super();
     }
     
-    public BandwidthControlRuleCondition( ConditionType matcherType, String value )
+    /**
+     * Instantiate a BandwidthControlRuleCondition
+     * @param conditionType - the type of condition
+     * @param value - the value of the conditionType
+     */
+    public BandwidthControlRuleCondition( ConditionType conditionType, String value )
     {
-        super( matcherType, value );
+        super( conditionType, value );
     }
 
-    public BandwidthControlRuleCondition( ConditionType matcherType, String value, Boolean invert )
+    /**
+     * Instantiate a BandwidthControlRuleCondition
+     * @param conditionType - the type of condition
+     * @param value - the value of the conditionType
+     * @param invert - if true means "not equal" instead of equal
+     */
+    public BandwidthControlRuleCondition( ConditionType conditionType, String value, Boolean invert )
     {
-        super( matcherType, value, invert );
+        super( conditionType, value, invert );
     }
 }
