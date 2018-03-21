@@ -1,3 +1,6 @@
+/**
+ * $Id: BandwidthControlSessionState.java,v 1.00 2018/03/20 20:08:04 dmorris Exp $
+ */
 package com.untangle.app.bandwidth_control;
 
 /**
@@ -7,6 +10,9 @@ package com.untangle.app.bandwidth_control;
  */
 public class BandwidthControlSessionState
 {
+    /**
+     * Instantiate a BandwidthControlSessionState
+     */
     public BandwidthControlSessionState()
     {
         this.chunkCount = 0;
