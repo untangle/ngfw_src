@@ -7,6 +7,9 @@ if [ "$1" = "configure" ] ; then
   oldVersion="$2"
 fi
 
+# remove old conffiles
+rm -f /etc/init.d/untangle-pyconnector /etc/default/pyconnector
+
 # right permissions for log dir
 UVM_LOGDIR="/var/log/uvm"
 /bin/chmod 775 ${UVM_LOGDIR}
