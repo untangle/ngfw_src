@@ -77,14 +77,15 @@ Ext.define('Ung.apps.webfilter.MainController', {
 
     clearHostCache: function () {
         var v = this.getView();
-        Ext.MessageBox.wait('Clearing Host Cache...'.t(), 'Please Wait'.t());
+        Ext.MessageBox.wait('Clearing Category URL Cache...'.t(), 'Please Wait'.t());
 
         Rpc.asyncData(v.appManager, 'clearCache', true)
         .then(function(result){
             Ext.MessageBox.hide();
-            Util.successToast('The Host Cache was cleared succesfully.'.t());
+            Util.successToast('The Category URL Cache was cleared succesfully.'.t());
         }, function(ex) {
             Util.handleException(ex);
+            Ext.MessageBox.hide();
         });
     },
 
