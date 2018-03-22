@@ -14,7 +14,7 @@ Ext.define('Ung.apps.virusblocker.Main', {
         formulas: {
             getSignatureTimestamp: {
                 get: function(get) {
-                    var stamp = this.getView().appManager.getLastSignatureUpdate();
+                    var stamp = Rpc.directData(this.getView().appManager, 'getLastSignatureUpdate');
                     if ((stamp == null) || (stamp === 0)) return('unknown');
                     return(Util.timestampFormat(stamp));
                 }
