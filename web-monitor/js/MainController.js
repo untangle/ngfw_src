@@ -79,6 +79,7 @@ Ext.define('Ung.apps.webmonitor.MainController', {
             Ext.MessageBox.hide();
             Util.successToast('The Category URL Cache was cleared succesfully.'.t());
         },function(ex){
+            Ext.MessageBox.hide();
             Util.handleException(ex);
         });
     }

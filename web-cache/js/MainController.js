@@ -100,6 +100,7 @@ Ext.define('Ung.apps.webcache.MainController', {
             }
             me.lookupReference('clearCacheConsent').setValue(false);
         }, function(ex) {
+            Ext.MessageBox.hide();
             Util.handleException(ex);
         });
     }
