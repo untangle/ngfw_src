@@ -12,6 +12,9 @@ class CRAM_MD5Observer extends ClearObserver
 
     static final String[] MECH_NAMES = new String[] { "CRAM-MD5".toLowerCase() };
 
+    /**
+     * Setup for CRAM-MD5 authenciation
+     */
     CRAM_MD5Observer() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }

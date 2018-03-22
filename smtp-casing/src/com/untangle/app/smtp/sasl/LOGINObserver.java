@@ -38,22 +38,41 @@ class LOGINObserver extends ClearObserver
     private String m_id;
     private boolean m_lastServerResponseUsername = false;
 
+    /**
+     * Setup login observer.
+     */
     LOGINObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 
+    /**
+     * Return if exchange of authentiation ID is found.
+     * 
+     * @return FeatureStatus of YES if m_id is specified.  NO otherwise.
+     */
     @Override
     public FeatureStatus exchangeAuthIDFound()
     {
         return m_id == null ? FeatureStatus.UNKNOWN : FeatureStatus.YES;
     }
 
+    /**
+     * Return the authentication id.
+     * 
+     * @return String of the authentication id.  null if not specified.
+     */
     @Override
     public String getAuthID()
     {
         return m_id;
     }
 
+    /**
+     * Handle client data.
+     *
+     * @param  buf ByteBuffer of client data.
+     * @return     true if data was able to be handled, false otherwise.
+     */
     @Override
     public boolean clientData(ByteBuffer buf)
     {
@@ -77,6 +96,12 @@ class LOGINObserver extends ClearObserver
         return false;
     }
 
+    /**
+     * Handle server data.
+     * 
+     * @param  buf ByteBuffer of server data.
+     * @return     Always false.
+     */
     @Override
     public boolean serverData(ByteBuffer buf)
     {
@@ -94,6 +119,11 @@ class LOGINObserver extends ClearObserver
         return false;
     }
 
+    /**
+     * Perform processing on buffer such as removing trailing nulls, leading/trailing whitespace, etc.
+     *
+     * @param buf ByteBuffer to process.
+     */
     private void fixupBuffer(ByteBuffer buf)
     {
         if (!buf.hasRemaining()) {
