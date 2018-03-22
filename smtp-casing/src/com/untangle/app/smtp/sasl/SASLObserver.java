@@ -49,6 +49,14 @@ public abstract class SASLObserver
     private final boolean m_supportsIntegrity;
     private final int m_maxMessageSz;
 
+    /**
+     * Setup SASLObserver.
+     *
+     * @param mechName  Mechanism name.
+     * @param supportsPrivacy true if supports privacy, false otherwise.
+     * @param supportsIntegrity true if supprots integrity, false otherwise.
+     * @param maxMessageSz maximium supported message size.
+     */
     SASLObserver(String mechName, boolean supportsPrivacy, boolean supportsIntegrity, int maxMessageSz) {
         m_mechName = mechName;
         m_supportsPrivacy = supportsPrivacy;
@@ -98,10 +106,25 @@ public abstract class SASLObserver
         return m_mechName;
     }
 
+    /**
+     * Specifies whether exchange using privacy is supported.
+     * 
+     * @return FeatureStatus of UNKNOWN, YES, or NO.
+     */
     public abstract FeatureStatus exchangeUsingPrivacy();
 
+    /**
+     * Specifies whether exchange using integrity is supported.
+     * 
+     * @return FeatureStatus of UNKNOWN, YES, or NO.
+     */
     public abstract FeatureStatus exchangeUsingIntegrity();
 
+    /**
+     * Specifies whether exchange using authentication identifier is supported.
+     * 
+     * @return FeatureStatus of UNKNOWN, YES, or NO.
+     */
     public abstract FeatureStatus exchangeAuthIDFound();
 
     /**
@@ -120,6 +143,8 @@ public abstract class SASLObserver
      * to know if we're observing (a) SASL stuff or (b) protocol stuff. <br>
      * <br>
      * This method then acts as a "hint" as to the disposition of the exchange, based on the SASL data.
+     *
+     * @return FeatureStatus of YES, NO, or UNKNOWN
      */
     public abstract FeatureStatus exchangeComplete();
 
@@ -136,8 +161,20 @@ public abstract class SASLObserver
      */
     public abstract boolean initialClientData(ByteBuffer buf);
 
+    /**
+     * Handle additional client data.
+     * 
+     * @param  buf ByteBuffer of the additional client data.
+     * @return     Always false.
+     */
     public abstract boolean clientData(ByteBuffer buf);
 
+    /**
+     * Handle server data.
+     * 
+     * @param  buf ByteBuffer of server data.
+     * @return     Always false.
+     */
     public abstract boolean serverData(ByteBuffer buf);
 
 }
