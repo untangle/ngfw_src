@@ -56,10 +56,10 @@ class OpenVpnMonitor implements Runnable
     private static final int NAME_INDEX    = 1;
     private static final int ADDRESS_INDEX = 2;
     private static final int ADDRESS_POOL_INDEX = 3;
-    private static final int RX_INDEX      = 4;
-    private static final int TX_INDEX      = 5;
-    private static final int START_INDEX   = 7;
-    private static final int TOTAL_INDEX   = 9;
+    private static final int RX_INDEX      = 5;
+    private static final int TX_INDEX      = 6;
+    private static final int START_INDEX   = 8;
+    private static final int TOTAL_INDEX   = 12;
 
     protected static final Logger logger = Logger.getLogger( OpenVpnMonitor.class );
 
@@ -334,7 +334,7 @@ class OpenVpnMonitor implements Runnable
         if ( !valueArray[TYPE_INDEX].equals( "CLIENT_LIST" )) return;
 
         if ( valueArray.length != TOTAL_INDEX ) {
-            logger.info( "Strange client description, ignoring: " + line );
+            logger.info( "Unexpected client description length: " + valueArray.length + " Ignoring: " + line );
             return;
         }
 
@@ -459,7 +459,7 @@ class OpenVpnMonitor implements Runnable
                 File procFile = new File("/proc/" + pid);
                 if ( ! procFile.exists() ) {
                     logger.warn("OpenVpn process for " + server.getName() + " (" + pid + ") missing. Restarting...");
-                    UvmContextFactory.context().execManager().exec( "systemctl restart openvpn@" + server.getName() );
+                    UvmContextFactory.context().execManager().exec( "systemctl restart openvpn@" + server.getName() + ".service" );
                 }
 
             } catch ( Exception e ) {
@@ -500,7 +500,7 @@ class OpenVpnMonitor implements Runnable
             File procFile = new File("/proc/" + pid);
             if ( ! procFile.exists() ) {
                 logger.warn("OpenVpn server process (" + pid + ") missing. Restarting...");
-                UvmContextFactory.context().execManager().exec( "systemctl restart openvpn" );
+                UvmContextFactory.context().execManager().exec( "systemctl restart openvpn@server.service" );
             }
         } catch ( Exception e ) {
             logger.warn("Failed to check openvpn pid file.", e);
