@@ -17,31 +17,55 @@ Ext.define('Ung.apps.openvpn.MainController', {
     getActiveClients: function () {
         var grid = this.getView().down('#activeClients'),
             vm = this.getViewModel();
+
         grid.setLoading(true);
-        this.getView().appManager.getActiveClients(function (result, ex) {
-            grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(this.getView().appManager, 'getActiveClients')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
             vm.set('clientStatusData', result.list);
+
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
     getRemoteServers: function () {
         var grid = this.getView().down('#remoteServers'),
             vm = this.getViewModel();
+
         grid.setLoading(true);
-        this.getView().appManager.getRemoteServersStatus(function (result, ex) {
-            grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(this.getView().appManager, 'getRemoteServersStatus')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
+
             vm.set('serverStatusData', result.list);
+
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
 
             // set a flag on existing users to prevent changing the name
             for(var i = 0 ; i < result.remoteClients.list.length ; i++) {
@@ -49,6 +73,15 @@ Ext.define('Ung.apps.openvpn.MainController', {
             }
 
             vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
 
         // trigger active clients/servers fetching when instance run state changes
@@ -93,13 +126,24 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     validateSettings: function() {
@@ -205,32 +249,50 @@ Ext.define('Ung.apps.openvpn.MainController', {
     },
 
     configureAuthenticationMethod: function (btn) {
-        var vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
         var policyId = vm.get('policyId');
         var authType = this.getViewModel().get('settings.authenticationType');
-        var dircon = rpc.appManager.app('directory-connector');
 
-        switch (authType) {
-            case 'LOCAL_DIRECTORY':
-                Ung.app.redirectTo('#config/local-directory');
-                break;
-            case 'RADIUS':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
-                break;
-            case 'ACTIVE_DIRECTORY':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/active-directory');
-                break;
-            case 'ANY_DIRCON':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
-                break;
-            default: return;
-        }
+        Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+        .then( function(directoryConnectorApp){
+            if(Util.isDestroyed(me, policyId, authType)){
+                return;
+            }
+
+            // Default to local directory
+            var checkDirectoryConnector = false;
+            url = '#config/local-directory';
+            switch (authType) {
+                case 'RADIUS':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector/radius';
+                    break;
+                case 'ACTIVE_DIRECTORY':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector/active-directory';
+                    break;
+                case 'ANY_DIRCON':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector';
+                    break;
+            }
+            if( checkDirectoryConnector && directoryConnectorApp == null){
+                me.showMissingServiceWarning();
+            }else{
+                Ung.app.redirectTo(url);
+            }
+
+        },function(ex){
+            Util.handleException(ex);
+        });
+    },
+
+    showMissingServiceWarning: function() {
+        Ext.MessageBox.alert('Service Not Installed'.t(), 'The Directory Connector application must be installed to use this feature.'.t());
     }
-
 });
+
+
 
 Ext.define('Ung.apps.openvpn.SpecialGridController', {
     extend: 'Ung.cmp.GridController',
@@ -288,7 +350,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
             }],
             bbar: ['->', {
                 name: 'close',
-                iconCls: 'cancel-icon',
+                iconCls: 'fa fa-window-close',
                 text: 'Close'.t(),
                 handler: function() {
                     this.distributeWindow.close();
@@ -299,46 +361,48 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 this.destroy();
             },
             populate: function( record ) {
+                var me = this;
                 this.record = record;
                 this.setTitle('Download OpenVPN Client'.t() + ' | ' + record.data.name);
 
-                var windowsLink = this.down('[name="downloadWindowsInstaller"]');
-                var untangleLink = this.down('[name="downloadUntangleConfigurationFile"]');
-                var genericLink = this.down('[name="downloadGenericConfigurationFile"]');
-                var chromebookLink = this.down('[name="downloadChromebookConfigurationFile"]');
+                var clients = [{
+                  name: 'downloadWindowsInstaller',
+                  type: 'exe',
+                  message: 'Click here to download this client\'s Windows setup.exe file.'.t()
+                },{
+                  name: 'downloadUntangleConfigurationFile',
+                  type: 'zip',
+                  message: 'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN clients or other OS\'s (apple/linux/etc).'.t()
+                },{
+                  name: 'downloadGenericConfigurationFile',
+                  type: 'ovpn',
+                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline.'.t()
+                },{
+                  name: 'downloadChromebookConfigurationFile',
+                  type: 'onc',
+                  message: 'Click here to download this client\'s configuration onc file for Chromebook.'.t()
+                }];
 
-                windowsLink.update('Loading...'.t());
-                genericLink.update('Loading...'.t());
-                untangleLink.update('Loading...'.t());
-                chromebookLink.update('Loading...'.t());
+                Ext.MessageBox.wait("Building OpenVPN Clients...".t(), "Please Wait".t());
+                var builders = [];
+                clients.forEach( function(client){
+                    client["link"] = me.down('[name="' + client.name + '"]');
+                    client["link"].update('Loading...'.t());
+                    builders.push( Rpc.asyncPromise( 'rpc.appManager.app(openvpn).getClientDistributionDownloadLink', me.record.data.name, client.type ) );
+                });
 
-                Ext.MessageBox.wait("Building OpenVPN Client...".t(), "Please Wait".t());
-                var openvpnApp = rpc.appManager.app('openvpn');
-                var loadSemaphore = 3;
-
-                openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                    if (exception) { Util.handleException(exception); return; }
-                    windowsLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s Windows setup.exe file.'.t() + '</a>');
-                    if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "exe" );
-
-                openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                    if (exception) { Util.handleException(exception); return; }
-                    genericLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN clients or other OS\'s (apple/linux/etc).'.t() + '</a>');
-                    if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "zip" );
-
-                openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                    if (exception) { Util.handleException(exception); return; }
-                    untangleLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline.'.t() + '</a>');
-                    if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "ovpn" );
-
-                openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                    if (exception) { Util.handleException(exception); return; }
-                    chromebookLink.update('&bull;&nbsp;<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration onc file for Chromebook.'.t() + '</a>');
-                    if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
-                }, this), this.record.data.name, "onc" );
+                Ext.Deferred.sequence(builders)
+                .then(function(result){
+                    if(Util.isDestroyed(clients)){
+                        return;
+                    }
+                    result.forEach( function(client, index){
+                        clients[index].link.update('&bull;&nbsp;<a href="'+client+'" target="_blank">'+clients[index].message + '</a>');
+                    });
+                },function(ex){
+                    Util.handleException(ex);
+                });
+                Ext.MessageBox.hide();
             }
         });
 
