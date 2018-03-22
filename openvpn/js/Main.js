@@ -60,7 +60,7 @@ Ext.define('Ung.apps.openvpn.Main', {
         formulas: {
             getSiteUrl: {
                 get: function(get) {
-                    var publicUrl = rpc.networkManager.getPublicUrl();
+                    var publicUrl = Rpc.directData('rpc.networkManager.getPublicUrl');
                     return(publicUrl.split(":")[0] + ":" + get('settings.port'));
                 }
             }
