@@ -14,14 +14,28 @@ Ext.define('Ung.apps.virusblocker.MainController', {
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise(v.appManager, 'isFileScannerAvailable')
+        ])
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set('settings', result[0]);
+            vm.set('isFileScannerAvailable', result[1]);
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
-        });
-        v.appManager.isFileScannerAvailable(function (result,ex) {
-            vm.set('isFileScannerAvailable', result);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -45,14 +59,24 @@ Ext.define('Ung.apps.virusblocker.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     }
-
 
 });
