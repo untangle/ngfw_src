@@ -111,6 +111,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private String wirelessSsid = null;
     public static enum WirelessEncryption { NONE, WPA1, WPA12, WPA2 };
     private WirelessEncryption wirelessEncryption = null;
+    public static enum WirelessMode { AP, CLIENT };
+    private WirelessMode wirelessMode = AP;
     private String wirelessPassword = null;
     private Integer wirelessChannel = null;
     public static enum WirelessRadioMode { W80211B, W80211BG, W80211BGN }; 
@@ -309,6 +311,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public WirelessEncryption getWirelessEncryption( ) { return this.wirelessEncryption; }
     public void setWirelessEncryption( WirelessEncryption newValue ) { this.wirelessEncryption = newValue; }
+
+    public WirelessMode getWirelessMode( ) { return this.wirelessMode; }
+    public void setWirelessMode( WirelessMode newValue ) { this.wirelessMode = newValue; }
 
     public String getWirelessPassword( ) { return this.wirelessPassword; }
     public void setWirelessPassword( String newValue ) { this.wirelessPassword = newValue; }
