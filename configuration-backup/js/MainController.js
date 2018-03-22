@@ -20,6 +20,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             Ext.MessageBox.hide();
         },function(ext){
             Util.handleException(ex);
+            Ext.MessageBox.hide();
         });
     },
 
