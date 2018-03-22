@@ -16,6 +16,11 @@ systemctl stop openvpn
 
 sleep .5
 
+# In stretch openvpn doesn't autostart all configs by default so we
+# uncomment the AUTOSTART line and reload the updated configuration
+sed -i -e 's/#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
+systemctl daemon-reload
+
 # Verify/set the links to the settings files from /etc/openvpn
 mkdir -p /etc/openvpn/data
 ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/server.key /etc/openvpn/data/server.key
