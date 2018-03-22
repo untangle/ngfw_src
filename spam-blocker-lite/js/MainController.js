@@ -23,8 +23,8 @@ Ext.define('Ung.apps.spamblockerlite.MainController', {
 
             vm.set({
                 settings: result[0],
-                lastUpdateCheck: result[1] ? Renderer.timestamp(result[1]) : 'Never'.t(),
-                lastUpdate: result[2] ? Renderer.timestamp(result[2]) : 'Never'.t()
+                lastUpdateCheck: result[1].time ? Renderer.timestamp(result[1].time) : 'Never'.t(),
+                lastUpdate: result[2].time ? Renderer.timestamp(result[2].time) : 'Never'.t()
             });
 
             v.lookup('predefinedStrength').setValue(result[0].smtpConfig.strength);

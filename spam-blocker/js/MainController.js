@@ -10,38 +10,58 @@ Ext.define('Ung.apps.spamblocker.MainController', {
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
-        v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
-            v.lookup('predefinedStrength').setValue(result.smtpConfig.strength);
-        });
 
-        var lastUpdate = v.appManager.getLastUpdate();
-        var lastUpdateCheck = v.appManager.getLastUpdateCheck();
-        if (lastUpdate) {
-            vm.set('lastUpdate', 'Spam Blocker was last updated'.t() + ': <strong>' + Ext.util.Format.date(new Date(lastUpdate.time), 'timestamp_fmt'.t()) + '</strong>');
-        } else {
-            vm.set('lastUpdate', 'Spam Blocker was last updated'.t() + ': <strong>' + 'never'.t() + '</strong>');
-        }
-        if (lastUpdateCheck) {
-            vm.set('lastUpdateCheck', 'Spam Blocker last checked for updates'.t() + ': <strong>' + Ext.util.Format.date(new Date(lastUpdateCheck.time), 'timestamp_fmt'.t()) + '</strong>');
-        } else {
-            vm.set('lastUpdateCheck', 'Spam Blocker last checked for updates'.t() + ': <strong>' + 'never'.t() + '</strong>');
-        }
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise(v.appManager, 'getLastUpdateCheck'),
+            Rpc.asyncPromise(v.appManager, 'getLastUpdate')
+        ]).then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set({
+                settings: result[0],
+                lastUpdateCheck: result[1].time ? Renderer.timestamp(result[1].time) : 'Never'.t(),
+                lastUpdate: result[2].time ? Renderer.timestamp(result[2].time) : 'Never'.t()
+            });
+
+            v.lookup('predefinedStrength').setValue(result[0].smtpConfig.strength);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     setStrength: function (combo, newValue, oldValue) {
