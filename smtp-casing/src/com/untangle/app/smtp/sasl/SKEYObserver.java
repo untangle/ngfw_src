@@ -11,6 +11,9 @@ class SKEYObserver extends InitialIDObserver
 
     static final String[] MECH_NAMES = new String[] { "SKEY".toLowerCase() };
 
+    /**
+     * Setup SKEYObserver
+     */
     SKEYObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
