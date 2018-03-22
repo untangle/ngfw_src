@@ -234,6 +234,7 @@ Ext.define('Ung.cmp.Grid', {
             }, this ) );
         }
 
+        var action = null;
         if (this.recordActions &&
             (me.initialConfig.actionColumnsAdded !== true) ){
 
@@ -243,7 +244,7 @@ Ext.define('Ung.cmp.Grid', {
             var initialConfigColumns = Ext.clone(me.initialConfig.columns);
             var column;
             for (i = 0; i < this.recordActions.length; i += 1) {
-                var action = this.recordActions[i];
+                action = this.recordActions[i];
                 if (action === 'changePassword') {
                     column = {
                         xtype: 'actioncolumn',
@@ -316,19 +317,6 @@ Ext.define('Ung.cmp.Grid', {
                 }
 
                 if (action === 'reorder') {
-                    this.sortableColumns = false;
-                    Ext.apply( viewConfig, {
-                        plugins: {
-                            ptype: 'gridviewdragdrop',
-                            dragText: 'Drag and drop to reorganize'.t(),
-                            // allow drag only from drag column icons
-                            dragZone: {
-                                onBeforeDrag: function (data, e) {
-                                    return Ext.get(e.target).hasCls('fa-arrows');
-                                }
-                            }
-                        }
-                    });
                     column = Column.reorder;
                     columns.unshift(column);
                     initialConfigColumns.unshift(column);
@@ -340,6 +328,30 @@ Ext.define('Ung.cmp.Grid', {
                 actionColumnsAdded: true
             });
          }
+
+        if (this.recordActions &&
+            (me.initialConfig.actionColumnsAdded === true) ){
+            for (i = 0; i < this.recordActions.length; i += 1) {
+                action = this.recordActions[i];
+
+                if (action === 'reorder') {
+                    this.sortableColumns = false;
+                    Ext.apply( viewConfig, {
+                        enableTextSelection: false,
+                        plugins: {
+                            ptype: 'gridviewdragdrop',
+                            dragText: 'Drag and drop to reorganize'.t(),
+                            // allow drag only from drag column icons
+                            dragZone: {
+                                onBeforeDrag: function (data, e) {
+                                    return Ext.get(e.target).hasCls('fa-arrows');
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
 
         Ext.apply(this, {
             columns: columns,
