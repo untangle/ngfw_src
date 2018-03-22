@@ -14,22 +14,38 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
 
     backupNow: function (btn) {
         Ext.MessageBox.wait('Backing up... This may take a few minutes.'.t(), 'Please wait'.t());
-        this.getView().appManager.sendBackup(function(result, ex) {
+
+        Rpc.asyncData(this.getView().appManager, 'sendBackup')
+        .then(function(result){
             Ext.MessageBox.hide();
-            if (ex) { Util.handleException(ex); return; }
+        },function(ext){
+            Util.handleException(ex);
         });
     },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
             vm.set('settings', result);
             var googleDrive = new Ung.cmp.GoogleDrive();
             vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
             vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
 
     },
@@ -42,14 +58,24 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         }
 
         v.setLoading(true);
-
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
 
     }
 
