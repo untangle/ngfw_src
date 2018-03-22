@@ -29,14 +29,26 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel(), policies, selNode;
-        v.setLoading(true);
 
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            me.settings = result;
+        v.setLoading(true);
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
             vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
+
     },
 
     // this saves only the rules as the policies are saved on the fly
@@ -59,13 +71,24 @@ Ext.define('Ung.apps.policymanager.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     onRootChange: function (newRoot) {
@@ -92,10 +115,16 @@ Ext.define('Ung.apps.policymanager.MainController', {
         var me = this, policiesStore = [[0, 'None'.t()]];
         me.selectedPolicyId = selectedNode.get('policyId');
         me.selectedPolicyName = selectedNode.get('name');
+
         Rpc.asyncData('rpc.appManager.getAppsView', selectedNode.get('policyId'))
-            .then(function (result) {
-                me.buildApps(result);
-            });
+        .then(function (result) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
+            me.buildApps(result);
+        }, function(ex) {
+            Util.handleException(ex);
+        });
     },
 
     buildApps: function (policy) {
@@ -171,17 +200,23 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
     onStart: function (btn) {
         var me = this, rec = btn.getViewModel().get('record'),
-            appManager = rpc.appManager.app(rec.get('instanceId'));
+            appManager = Rpc.directData('rpc.appManager.app', rec.get('instanceId'));
 
         if (appManager) {
             Ext.Msg.wait('Starting ' + rec.get('displayName'), me.selectedPolicyName, { interval: 500, text: '' });
-            appManager.start(function (result, ex) {
-                if (ex) { Ext.Msg.alert('Error', ex.message); return false; }
-                Rpc.asyncData('rpc.appManager.getAppsView', me.selectedPolicyId)
-                    .then(function (result2) {
-                        me.buildApps(result2);
-                        Ext.Msg.close();
-                    });
+            Ext.Deferred.sequence([
+                Rpc.directPromise(appManager, 'start'),
+                Rpc.directPromise('rpc.appManager.getAppsView', me.selectedPolicyId)
+            ]).then(function(result){
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.buildApps(result[1]);
+                Ext.Msg.close();
+
+            }, function(ex){
+                Ext.Msg.close();
+                Util.handleException(ex);
             });
         }
     },
@@ -192,13 +227,19 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
         if (appManager) {
             Ext.Msg.wait('Stopping ' + rec.get('displayName'), me.selectedPolicyName, { interval: 500, text: '' });
-            appManager.stop(function (result, ex) {
-                if (ex) { Ext.Msg.alert('Error', ex.message); return false; }
-                Rpc.asyncData('rpc.appManager.getAppsView', me.selectedPolicyId)
-                    .then(function (result2) {
-                        me.buildApps(result2);
-                        Ext.Msg.close();
-                    });
+            Ext.Deferred.sequence([
+                Rpc.directPromise(appManager, 'stop'),
+                Rpc.directPromise('rpc.appManager.getAppsView', me.selectedPolicyId)
+            ]).then(function(result){
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                me.buildApps(result[1]);
+                Ext.Msg.close();
+
+            }, function(ex){
+                Ext.Msg.close();
+                Util.handleException(ex);
             });
         }
     },
@@ -206,25 +247,32 @@ Ext.define('Ung.apps.policymanager.MainController', {
     removePolicy: function (view, rowIndex, colIndex, item, e, record) {
         var me = this, vm = me.getViewModel(), idx;
 
-        Ext.Array.each(me.settings.policies.list, function (p, index) {
+        Ext.Array.each(vm.get('settings.policies.list'), function (p, index) {
             if (p.policyId === record.get('policyId')) {
                 idx = index;
             }
         });
 
-        Ext.Array.removeAt(me.settings.policies.list, idx);
+        Ext.Array.removeAt(vm.get('settings.policies.list'), idx);
 
-        // view.setLoading(true);
-        me.getView().appManager.setSettings(function (result, ex) {
-            // view.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        view.setLoading(true);
+        Rpc.asyncData(me.getView().appManager, 'setSettings', vm.get('settings'))
+        .then( function(result){
+            if(Util.isDestroyed(view, vm, record)){
+                return;
+            }
+            view.setLoading(false);
             if (me.selectedPolicyId === record.get('policyId')) {
                 me.selectedPolicyId = null;
                 vm.set('appsData', []);
             }
             Ext.getStore('policiestree').build();
-            me.getSettings();
-        }, me.settings);
+        }, function(ex) {
+            if(Util.isDestroyed(view)){
+                view.setLoading(true);
+            }
+            Util.handleException(ex);
+        });
     },
 
     editPolicy: function (view, rowIndex, colIndex, item, e, record) {
@@ -236,7 +284,11 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     showEditor: function (rec) {
-        var me = this, policiesStore = [[0, 'None'.t()]], initialName;
+        var me = this, 
+            vm = this.getViewModel(),
+            policiesStore = [[0, 'None'.t()]], 
+            initialName;
+
         if (!me.lookup('tree')) { return; }
         me.lookup('tree').getRootNode().cascadeBy(function (node) {
             if (node.isRoot()) { return; }
@@ -267,7 +319,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 items: [{
                     xtype: 'hidden',
                     name: 'policyId',
-                    value: rec ? rec.get('policyId') : me.settings.nextPolicyId
+                    value: rec ? rec.get('policyId') : vm.get('settings.nextPolicyId')
                 }, {
                     xtype: 'hidden',
                     name: 'javaClass',
@@ -328,31 +380,43 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     savePolicy: function (btn) {
-        var me = this, win = btn.up('window'), values = btn.up('form').getValues();
+        var me = this, 
+            vm = this.getViewModel(),
+            win = btn.up('window'), 
+            values = btn.up('form').getValues();
 
         values.policyId = parseInt(values.policyId, 10);
         values.parentId = parseInt(values.parentId, 10);
 
-
+        console.log(vm.get('settings.policies.list'));
         if (btn.action === 'save') {
-            var editPolicy = Ext.Array.findBy(me.settings.policies.list, function (policy) {
+            var editPolicy = Ext.Array.findBy(vm.get('settings.policies.list'), function (policy) {
                 return policy.policyId === values.policyId;
             });
             Ext.apply(editPolicy, values);
         } else {
-            me.settings.policies.list.push(values);
+            vm.get('settings.policies.list').push(values);
         }
 
+        // Save just this policy, not all other changes.
         win.setLoading(true);
-        me.getView().appManager.setSettings(function (result, ex) {
+        Rpc.asyncData(me.getView().appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(vm)){
+                // win and btn cclaim to be destroyed at this point but not really?
+                return;
+            }
             win.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+
             if (btn.action === 'add') {
                 me.selectedPolicyId = values.policyId;
             }
             Ext.getStore('policiestree').build();
-            me.getSettings();
-        }, me.settings);
+        }, function(ex) {
+            win.setLoading(true);
+            Util.handleException(ex);
+        });
+
         win.close();
     }
 
