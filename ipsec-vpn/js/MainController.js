@@ -8,7 +8,11 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         },
         '#status': {
             beforerender: 'onStatusBeforeRender'
-        }
+        },
+        '#ipsec-state': { afterrender: 'refreshIpsecStateInfo' },
+        '#ipsec-policy': { afterrender: 'refreshIpsecPolicyInfo' },
+        '#ipsec-log': { afterrender: 'refreshIpsecSystemLog' },
+        '#l2tp-log': { afterrender: 'refreshIpsecVirtualLog' },
     },
 
     onStatusBeforeRender: function() {
@@ -25,53 +29,92 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     getVirtualUsers: function() {
         var grid = this.getView().down('#virtualUsers'),
             vm = this.getViewModel();
+
         grid.setLoading(true);
-        this.getView().appManager.getVirtualUsers(function(result, ex) {
-            grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(this.getView().appManager, 'getVirtualUsers')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
+
             vm.set('virtualUserData', result.list);
+
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
     getTunnelStatus: function() {
         var grid = this.getView().down('#tunnelStatus'),
             vm = this.getViewModel();
+
         grid.setLoading(true);
-        this.getView().appManager.getTunnelStatus(function(result, ex) {
-            grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(this.getView().appManager, 'getTunnelStatus')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
+
             vm.set('tunnelStatusData', result.list);
+
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
     getSettings: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
-        var x,y;
+
         v.setLoading(true);
-        v.appManager.getSettings(function(result, ex) {
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus')
+        ]).then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            var wanListData = me.calculateNetworks( result[1], result[2] );
+            vm.set('wanListData', wanListData);
+
+            var settings = result[0];
+            var x,y;
+            for( x = 0 ; x < settings.tunnels.list.length; x++ ) {
+                settings.tunnels.list[x].localInterface = 0;
+                for( y = 0 ; y < wanListData.length ; y++) {
+                    if (settings.tunnels.list[x].left == wanListData[y][1]) {
+                        settings.tunnels.list[x].localInterface = wanListData[y][0];
+                    }
+                }
+            }
+
+            for( x = 0 ; x < settings.networks.list.length; x++ ) {
+                settings.networks.list[x].localInterface = 0;
+                for( y = 0 ; y < wanListData.length ; y++) {
+                    if (settings.networks.list[x].localAddress == wanListData[y][1]) {
+                        settings.networks.list[x].localInterface = wanListData[y][0];
+                    }
+                }
+            }
+
+            vm.set('settings', settings);
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
-            var wanListData = me.calculateNetworks();
-
-            for( x = 0 ; x < result.tunnels.list.length; x++ ) {
-                result.tunnels.list[x].localInterface = 0;
-                for( y = 0 ; y < wanListData.length ; y++) {
-                    if (result.tunnels.list[x].left == wanListData[y][1]) {
-                        result.tunnels.list[x].localInterface = wanListData[y][0];
-                    }
-                }
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
             }
-
-            for( x = 0 ; x < result.networks.list.length; x++ ) {
-                result.networks.list[x].localInterface = 0;
-                for( y = 0 ; y < wanListData.length ; y++) {
-                    if (result.networks.list[x].localAddress == wanListData[y][1]) {
-                        result.networks.list[x].localInterface = wanListData[y][0];
-                    }
-                }
-            }
-
-            vm.set('settings', result);
+            Util.handleException(ex);
         });
     },
 
@@ -99,16 +142,27 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function(result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
-    calculateNetworks: function() {
+    calculateNetworks: function(netSettings, intStatus) {
         var vm = this.getViewModel();
         var leftDefault = '0.0.0.0';
         var leftSubnetDefault = '0.0.0.0/0';
@@ -116,8 +170,6 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         var x,y;
 
         // we need the interface list and the status list so we can get the IP address of active interfaces
-        var netSettings = rpc.networkManager.getNetworkSettings();
-        var intStatus = rpc.networkManager.getInterfaceStatus();
         var counter = 0;
 
         wanListData.push([ counter++ , '' , '- ' + 'Custom'.t() + ' -' ]);
@@ -157,8 +209,6 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             }
         }
 
-        vm.set('wanListData', wanListData);
-
         Ung.util.Util.setAppStorageValue('ipsec.leftDefault', leftDefault);
         Ung.util.Util.setAppStorageValue('ipsec.leftSubnetDefault', leftSubnetDefault);
 
@@ -178,44 +228,100 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         }
     },
 
-    refreshTextArea: function(cmp)
-    {
-        var ipsecApp = rpc.appManager.app('ipsec-vpn');
-        var target;
+    refreshIpsecStateInfo: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
 
-        switch(cmp.target) {
-            case "ipsecStateInfo":
-                target = this.getView().down('#ipsecStateInfo');
-                target.setValue(ipsecApp.getStateInfo());
-                break;
-            case "ipsecPolicyInfo":
-                target = this.getView().down('#ipsecPolicyInfo');
-                target.setValue(ipsecApp.getPolicyInfo());
-                break;
-            case "ipsecSystemLog":
-                target = this.getView().down('#ipsecSystemLog');
-                target.setValue(ipsecApp.getLogFile());
-                break;
-            case "ipsecVirtualLog":
-                target = this.getView().down('#ipsecVirtualLog');
-                target.setValue(ipsecApp.getVirtualLogFile());
-                break;
-        }
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData( v.up('app-ipsec-vpn').appManager, 'getStateInfo')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
+    },
+
+    refreshIpsecPolicyInfo: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
+
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData( v.up('app-ipsec-vpn').appManager, 'getPolicyInfo')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
+    },
+
+    refreshIpsecSystemLog: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
+
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData( v.up('app-ipsec-vpn').appManager, 'getLogFile')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
+    },
+
+    refreshIpsecVirtualLog: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
+
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData( v.up('app-ipsec-vpn').appManager, 'getVirtualLogFile')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
     },
 
     disconnectUser: function(view, row, colIndex, item, e, record) {
         var me = this, v = this.getView(), vm = this.getViewModel();
-        var ipsecApp = rpc.appManager.app('ipsec-vpn');
 
-        v.setLoading('Disconnecting...'.t());
-        ipsecApp.virtualUserDisconnect(Ext.bind(function(result, ex) {
-        if (ex) { Util.handleException(ex); return; }
+        var target = v.down('#virtualUsers');
+        target.setLoading('Disconnecting...'.t());
+        Rpc.asyncData( v.appManager, 'virtualUserDisconnect', record.get("clientAddress"), record.get("clientUsername"))
+        .then( function(result){
+            if(Util.isDestroyed(target, me)){
+                return;
+            }
+
             // this gives the app a couple seconds to process the disconnect before we refresh the list
             var timer = setTimeout(function() {
+                if(Util.isDestroyed(target, me)){
+                    return;
+                }
                 me.getVirtualUsers();
-                v.setLoading(false);
+                target.setLoading(false);
             },2000);
-        }, this), record.get("clientAddress"), record.get("clientUsername"));
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                target.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
+
     },
 
     statics:{
