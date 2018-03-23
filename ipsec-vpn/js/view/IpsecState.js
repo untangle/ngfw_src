@@ -11,7 +11,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecState', {
         iconCls: 'fa fa-refresh',
         text: 'Refresh',
         target: 'ipsecStateInfo',
-        handler: 'refreshTextArea'
+        handler: 'refreshIpsecStateInfo'
     }],
 
     items: [{
