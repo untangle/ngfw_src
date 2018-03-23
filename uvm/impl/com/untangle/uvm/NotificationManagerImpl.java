@@ -56,12 +56,19 @@ public class NotificationManagerImpl implements NotificationManager
 
     private ExecManager execManager = null;
 
+    /**
+     * Create a NotificationManager instance
+     */
     public NotificationManagerImpl()
     {
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         this.i18nUtil = new I18nUtil(i18nMap);
     }
 
+    /**
+     * Run all notification/sanity checks and produce a list
+     * of admin notifications for the administrator
+     */
     public synchronized List<String> getNotifications()
     {
         LinkedList<String> notificationList = new LinkedList<String>();
@@ -79,13 +86,13 @@ public class NotificationManagerImpl implements NotificationManager
         try { testRendundantApps(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testBridgeBackwards(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testInterfaceErrors(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testDnsmasqRunning(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testSpamDNSServers(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testZveloDNSServers(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testEventWriteTime(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testEventWriteDelay(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testShieldEnabled(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testRoutesToReachableAddresses(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
-        try { testServerConf(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testLicenseCompliance(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
 
         /**
@@ -101,6 +108,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test tests to see if upgrades are available
+     * @param notificationList - the current list of notifications
      */
     private void testUpgrades(List<String> notificationList)
     {
@@ -114,6 +122,7 @@ public class NotificationManagerImpl implements NotificationManager
     /**
      * This test iterates through the DNS settings on each WAN and tests them individually
      * It creates a notification for each non-working DNS server
+     * @param notificationList - the current list of notifications
      */
     private boolean testDNS(List<String> notificationList)
     {
@@ -149,6 +158,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test tests connectivity to key servers in the untangle datacenter
+     * @param notificationList - the current list of notifications
      */
     private void testConnectivity(List<String> notificationList)
     {
@@ -175,6 +185,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test that pyconnector is connected to cmd.untangle.com
+     * @param notificationList - the current list of notifications
      */
     private void testConnector(List<String> notificationList)
     {
@@ -200,6 +211,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /*
      * This test that disk free % is less than 75%
+     * @param notificationList - the current list of notifications
      */
     private void testDiskFree(List<String> notificationList)
     {
@@ -219,6 +231,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * Looks for somewhat comman errors in kern.log related to problematic disks
+     * @param notificationList - the current list of notifications
      */
     private void testDiskErrors(List<String> notificationList)
     {
@@ -238,6 +251,7 @@ public class NotificationManagerImpl implements NotificationManager
     /**
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
+     * @param notificationList - the current list of notifications
      */
     private void testDupeApps(List<String> notificationList)
     {
@@ -273,6 +287,7 @@ public class NotificationManagerImpl implements NotificationManager
      * Web Filter and Web Filter Lite
      * Spam Blocker and Spam Blocker Lite
      * Web Filter and Web Monitor
+     * @param notificationList - the current list of notifications
      */
     private void testRendundantApps(List<String> notificationList)
     {
@@ -309,6 +324,7 @@ public class NotificationManagerImpl implements NotificationManager
      * This test iterates through each bridged interface and tests that the bridge its in is not
      * "plugged in backwards"
      * It does this by checking the location of the bridge's gateway
+     * @param notificationList - the current list of notifications
      */
     private void testBridgeBackwards(List<String> notificationList)
     {
@@ -459,6 +475,7 @@ public class NotificationManagerImpl implements NotificationManager
      * This test iterates through each interface and tests for
      * TX and RX errors on each interface.
      * It creates notification if there are a "high number" of errors
+     * @param notificationList - the current list of notifications
      */
     private void testInterfaceErrors(List<String> notificationList)
     {
@@ -507,7 +524,24 @@ public class NotificationManagerImpl implements NotificationManager
     }
 
     /**
+     * This tests that dnsmasq process is running.
+     * If dnsmasq is not running there is some critical issue
+     * @param notificationList - the current list of notifications
+     */
+    private void testDnsmasqRunning(List<String> notificationList)
+    {
+        int result = this.execManager.execResult("/usr/bin/pgrep dnsmasq");
+        if ( result != 0 ) {
+            String notificationText = "";
+            notificationText += i18nUtil.tr("DNS and DHCP services are not functioning.");
+            notificationList.add(notificationText);
+        }
+
+    }
+
+    /**
      * This test tests to make sure public DNS servers are not used if spam blocking applications are installed
+     * @param notificationList - the current list of notifications
      */
     private void testSpamDNSServers(List<String> notificationList)
     {
@@ -604,6 +638,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * Tests that zvelo queries can be resolved correctly
+     * @param notificationList - the current list of notifications
      */
     @SuppressWarnings("rawtypes")
     private void testZveloDNSServers(List<String> notificationList)
@@ -709,6 +744,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test that the event writing time on average is not "too" slow.
+     * @param notificationList - the current list of notifications
      */
     private void testEventWriteTime(List<String> notificationList)
     {
@@ -733,6 +769,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test that the event writing delay is not too long
+     * @param notificationList - the current list of notifications
      */
     private void testEventWriteDelay(List<String> notificationList)
     {
@@ -757,6 +794,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test tests for "nf_queue full" messages in kern.log
+     * @param notificationList - the current list of notifications
      */
     private void testQueueFullMessages(List<String> notificationList)
     {
@@ -771,6 +809,7 @@ public class NotificationManagerImpl implements NotificationManager
 
     /**
      * This test that the shield is enabled
+     * @param notificationList - the current list of notifications
      */
     private void testShieldEnabled( List<String> notificationList )
     {
@@ -798,6 +837,12 @@ public class NotificationManagerImpl implements NotificationManager
         }
     }
 
+    /**
+     * Test all the routes that each one is reachable
+     * If a "next hop" of a route is not reachable then the route is almost certainly not valid
+     * If tests if its "reachable" by just seeing if ARP resolution works
+     * @param notificationList - the current list of notifications
+     */
     private void testRoutesToReachableAddresses( List<String> notificationList )
     {
         int result;
@@ -833,41 +878,18 @@ public class NotificationManagerImpl implements NotificationManager
 
     }
 
-    private void testServerConf( List<String> notificationList )
-    {
-        try {
-            String arch = System.getProperty("sun.arch.data.model") ;
-
-            // only check 64-bit machines
-            if ( arch == null || ! "64".equals( arch ) )
-                return;
-
-            // check total memory, return if unable to check total memory
-            String result = this.execManager.execOutput( "awk '/MemTotal:/ {print $2}' /proc/meminfo" );
-            if ( result == null )
-                return;
-            result = result.trim();
-            if ( "".equals(result) )
-                return;
-
-            int memTotal = Integer.parseInt( result );
-            if ( memTotal < 1900000 ) {
-                String notificationText = i18nUtil.tr("Running 64-bit with less than 2 gigabytes RAM is not suggested.");
-                notificationList.add(notificationText);
-            }
-        } catch (Exception e) {
-            logger.warn("Exception testing system: ",e);
-        }
-    }
-
+    /**
+     * Test that the licenses are correctly sized
+     */
     private void testLicenseCompliance( List<String> notificationList )
     {
         int currentSize = UvmContextFactory.context().hostTable().getCurrentActiveSize();
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( true );
-        int actualSeatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( false );
+        //int actualSeatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( false );
 
         if ( seatLimit > 0 && currentSize > seatLimit ) {
-            String notificationText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + actualSeatLimit + ")";
+            //String notificationText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + actualSeatLimit + ")";
+            String notificationText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + ")";
             notificationList.add(notificationText);
         }
      }
