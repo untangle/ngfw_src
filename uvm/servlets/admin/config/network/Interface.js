@@ -772,6 +772,18 @@ Ext.define('Ung.config.network.Interface', {
                 maskRe: /[a-zA-Z0-9\-_=. ]/
                 //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/
             }, {
+                // mode
+                xtype: 'combo',
+                fieldLabel: 'Mode'.t(),
+                value: 'AP',
+                bind: '{intf.wirelessMode}',
+                editable: false,
+                store: [
+                    ['AP', 'AP'.t()],
+                    ['CLIENT', 'Client'.t()],
+                ],
+                queryMode: 'local'
+            }, {
                 // encryption
                 xtype: 'combo',
                 fieldLabel: 'Encryption'.t(),
@@ -803,7 +815,8 @@ Ext.define('Ung.config.network.Interface', {
                 xtype: 'combo',
                 bind: {
                     value: '{intf.wirelessChannel}',
-                    store: '{wirelessChannelsList}'
+                    store: '{wirelessChannelsList}',
+                    hidden: '{intf.wirelessMode === "CLIENT"}'
                 },
                 fieldLabel: 'Channel'.t(),
                 editable: false,
