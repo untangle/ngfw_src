@@ -15,6 +15,9 @@ while true; do
         /bin/rm -f $pidfile
         echo "`date -Iseconds` $0: Running conversion"
 
+        echo "`date -Iseconds` $0: apt-get clean"
+        apt-get clean
+
         echo "`date -Iseconds` $0: sync-settings"
         /usr/bin/sync-settings.py -n
         if [ $? != 0 ] ; then
