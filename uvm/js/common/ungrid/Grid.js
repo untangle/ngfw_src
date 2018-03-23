@@ -143,7 +143,7 @@ Ext.define('Ung.cmp.Grid', {
             if( this.tbar ){
                 this.tbar.splice( this.tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
                     xtype: 'checkbox',
-                    hidden: !rpc.isExpertMode,
+                    hidden: !Rpc.directData('rpc.isExpertMode'),
                     hideLabel: true,
                     margin: '0 5px 0 5px',
                     boxLabel: Ext.String.format("{0} All".t(), column.header),

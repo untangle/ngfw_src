@@ -122,7 +122,7 @@ Ext.define('Ung.apps.reports.view.Data', {
     }, {
         // fix isExpertMode
         title: 'Data'.t(),
-        hidden: !rpc.isExpertMode,
+        hidden: !Rpc.directData('rpc.isExpertMode'),
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Host'.t(),
