@@ -11,7 +11,7 @@ Ext.define('Ung.apps.ipsecvpn.view.L2tpLog', {
         iconCls: 'fa fa-refresh',
         text: 'Refresh',
         target: 'ipsecVirtualLog',
-        handler: 'refreshTextArea'
+        handler: 'refreshIpsecVirtualLog'
     }],
 
     items: [{
