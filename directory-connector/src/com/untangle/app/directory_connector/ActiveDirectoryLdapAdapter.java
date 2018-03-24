@@ -12,10 +12,6 @@
  */
 package com.untangle.app.directory_connector;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,13 +28,10 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONSerializer;
-import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.app.directory_connector.GroupEntry;
 import com.untangle.app.directory_connector.ActiveDirectoryServer;
 import com.untangle.app.directory_connector.UserEntry;
-import com.untangle.uvm.servlet.ServletUtils;
 
 /**
  * Implementation of the Ldap adapter which understands uniqueness of

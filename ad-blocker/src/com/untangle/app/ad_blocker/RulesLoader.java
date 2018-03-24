@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
-import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.app.ad_blocker.cookies.CookieElement;
 import com.untangle.uvm.app.GenericRule;

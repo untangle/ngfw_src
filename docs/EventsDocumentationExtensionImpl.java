@@ -13,7 +13,6 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import java.beans.Introspector;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 

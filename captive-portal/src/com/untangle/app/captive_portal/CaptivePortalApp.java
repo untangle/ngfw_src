@@ -27,7 +27,6 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.IPMaskedAddress;

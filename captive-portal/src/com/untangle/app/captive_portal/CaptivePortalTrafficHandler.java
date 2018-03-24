@@ -10,15 +10,11 @@ import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 /**
  * This class contains the main traffic handlers where we decide if traffic

@@ -4,7 +4,6 @@
 package com.untangle.app.clam;
 
 import java.io.File;
-import java.lang.Thread;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.virus_blocker.VirusClientContext;
 import com.untangle.app.virus_blocker.VirusClientSocket;
