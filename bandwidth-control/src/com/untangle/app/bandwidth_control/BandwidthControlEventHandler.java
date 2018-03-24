@@ -8,10 +8,7 @@ import java.util.List;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
@@ -19,7 +16,6 @@ import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 /**
  * This is the traffic EventHandler responsible for Bandwidth Control

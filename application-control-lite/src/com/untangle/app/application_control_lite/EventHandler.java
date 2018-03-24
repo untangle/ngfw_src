@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;

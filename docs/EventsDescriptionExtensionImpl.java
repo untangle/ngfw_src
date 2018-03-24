@@ -11,11 +11,8 @@ package com.untangle.uvm;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import java.beans.Introspector;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 

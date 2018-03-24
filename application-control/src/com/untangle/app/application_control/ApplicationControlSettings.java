@@ -6,6 +6,7 @@ package com.untangle.app.application_control;
 
 import java.util.LinkedList;
 import java.util.Hashtable;
+import java.io.Serializable;
 import org.json.JSONString;
 import org.json.JSONObject;
 
@@ -16,7 +17,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
-public class ApplicationControlSettings implements java.io.Serializable, JSONString
+public class ApplicationControlSettings implements Serializable, JSONString
 {
     private LinkedList<ApplicationControlProtoRule> protoList = null;
     private LinkedList<ApplicationControlLogicRule> logicList = null;

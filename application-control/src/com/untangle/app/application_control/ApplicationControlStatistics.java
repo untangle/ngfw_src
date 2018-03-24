@@ -4,9 +4,9 @@
 
 package com.untangle.app.application_control;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import java.io.Serializable;
 import org.json.JSONString;
 import org.json.JSONObject;
 
@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
-public class ApplicationControlStatistics implements java.io.Serializable, org.json.JSONString
+public class ApplicationControlStatistics implements Serializable, JSONString
 {
     // counters for sessions, allowed, flagged, and blocked
     private AtomicLong sessionCount = new AtomicLong();

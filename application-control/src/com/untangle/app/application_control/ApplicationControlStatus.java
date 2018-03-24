@@ -6,7 +6,6 @@ package com.untangle.app.application_control;
 
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import org.apache.log4j.Logger;
-import java.nio.ByteBuffer;
 
 /**
  * Class to track the classification status of a network session.

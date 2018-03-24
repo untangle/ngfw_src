@@ -6,16 +6,12 @@ package com.untangle.app.bandwidth_control;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Iterator;
 import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
-import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.HookManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;

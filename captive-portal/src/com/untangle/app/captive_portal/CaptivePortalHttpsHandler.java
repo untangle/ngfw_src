@@ -9,10 +9,8 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 /**

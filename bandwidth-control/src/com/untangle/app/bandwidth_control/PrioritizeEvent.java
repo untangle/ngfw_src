@@ -4,7 +4,6 @@
 package com.untangle.app.bandwidth_control;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;

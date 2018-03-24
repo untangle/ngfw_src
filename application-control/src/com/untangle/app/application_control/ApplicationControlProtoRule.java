@@ -15,7 +15,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
-public class ApplicationControlProtoRule implements java.io.Serializable, org.json.JSONString
+public class ApplicationControlProtoRule implements Serializable, JSONString
 {
     private int id;
     private String guid;

@@ -6,9 +6,6 @@ package com.untangle.app.captive_portal;
 
 import java.util.Hashtable;
 import org.apache.log4j.Logger;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
-import com.untangle.uvm.HostTableEntry;
 
 /**
  * When a user is forced to log out, their cookie must be expired. There's no

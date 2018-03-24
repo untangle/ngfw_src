@@ -7,10 +7,8 @@ package com.untangle.app.captive_portal;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 
 /**
