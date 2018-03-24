@@ -3,8 +3,6 @@
  */
 package com.untangle.jnetcap;
 
-import java.net.InetAddress;
-
 @SuppressWarnings("unused") //JNI
 public class NetcapUDPSession extends NetcapSession 
 {

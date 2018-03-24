@@ -4,7 +4,6 @@
 package com.untangle.app.openvpn;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;

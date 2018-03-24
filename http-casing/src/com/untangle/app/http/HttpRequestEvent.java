@@ -3,9 +3,7 @@
  */
 package com.untangle.app.http;
 
-import java.sql.Timestamp;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;

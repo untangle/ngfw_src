@@ -7,10 +7,8 @@ package com.untangle.app.ipsec_vpn;
 import java.util.LinkedList;
 import java.io.FileWriter;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.UvmContextFactory;
 

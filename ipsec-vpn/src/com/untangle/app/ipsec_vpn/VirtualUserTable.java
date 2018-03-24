@@ -5,12 +5,10 @@
 package com.untangle.app.ipsec_vpn;
 
 import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 
 /**

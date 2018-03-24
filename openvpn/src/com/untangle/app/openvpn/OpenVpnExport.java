@@ -3,8 +3,6 @@
  */
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.app.IPMaskedAddress;
 
 /**

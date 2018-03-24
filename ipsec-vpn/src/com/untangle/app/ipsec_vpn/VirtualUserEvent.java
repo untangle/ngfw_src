@@ -9,7 +9,6 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Class for recording the details for VPN clients that connect to the server.

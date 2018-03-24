@@ -3,7 +3,6 @@
  */
 package com.untangle.jvector;
 
-import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.*;

@@ -10,9 +10,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.net.InetAddress;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.ExecManagerResult;
-
 import org.apache.log4j.Logger;
 
 /**
