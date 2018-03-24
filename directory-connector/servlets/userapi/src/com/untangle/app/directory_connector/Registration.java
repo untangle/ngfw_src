@@ -19,7 +19,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.app.directory_connector.DirectoryConnectorApp;
 import com.untangle.app.directory_connector.LoginEvent;

@@ -4,17 +4,10 @@
 
 package com.untangle.app.captive_portal;
 
-import java.net.InetAddress;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 
 import com.untangle.app.http.HttpEventHandler;
-import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.RequestLineToken;
-import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.app.http.HeaderToken;

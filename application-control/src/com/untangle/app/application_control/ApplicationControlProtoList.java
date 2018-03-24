@@ -13,7 +13,6 @@ import java.io.FileReader;
 import java.io.File;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 /**
  * Class for managing the list of Vineyard/Procera/SandVine applications which

@@ -4,14 +4,8 @@
 
 package com.untangle.app.application_control;
 
-import java.util.Arrays;
 import java.util.List;
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ConnectException;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.AppSession;
@@ -19,14 +13,10 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.AppSession;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 /**
  * This is the main event handler where we pass traffic to the daemon for

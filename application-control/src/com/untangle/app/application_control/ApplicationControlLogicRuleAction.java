@@ -5,16 +5,9 @@
 package com.untangle.app.application_control;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Class used to represent the action associated with a logic rule
@@ -23,7 +16,7 @@ import com.untangle.uvm.vnet.AppSession;
  * 
  */
 @SuppressWarnings("serial")
-public class ApplicationControlLogicRuleAction implements java.io.Serializable, org.json.JSONString
+public class ApplicationControlLogicRuleAction implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 

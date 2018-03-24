@@ -12,28 +12,20 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.app.License;
-import com.untangle.uvm.app.SessionTuple;
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.PortRange;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
