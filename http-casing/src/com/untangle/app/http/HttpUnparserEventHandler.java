@@ -18,7 +18,6 @@ import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * An HTTP <code>Unparser</code>.

@@ -13,17 +13,11 @@
 package com.untangle.app.license;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
-import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.net.URL;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +25,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Iterator;
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.apache.http.HttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.HttpGet;

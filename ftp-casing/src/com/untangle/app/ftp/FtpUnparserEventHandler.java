@@ -14,7 +14,6 @@ import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**

@@ -6,7 +6,6 @@ package com.untangle.app.ftp;
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,9 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.app.ftp.FtpCommand;

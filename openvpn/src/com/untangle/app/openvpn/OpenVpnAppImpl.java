@@ -3,8 +3,6 @@
  */
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Random;
 import java.util.List;

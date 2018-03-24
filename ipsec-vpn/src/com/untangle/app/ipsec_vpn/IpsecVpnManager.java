@@ -6,18 +6,10 @@ package com.untangle.app.ipsec_vpn;
 
 import java.util.LinkedList;
 import java.util.Formatter;
-import java.util.List;
-import java.io.File;
 import java.io.FileWriter;
-import java.net.InetAddress;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.json.JSONString;
-import org.json.JSONObject;
 
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 

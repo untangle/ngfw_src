@@ -5,13 +5,10 @@ package com.untangle.app.ftp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.PipelineConnector;

@@ -5,7 +5,6 @@ package com.untangle.app.http;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.net.URI;
@@ -14,9 +13,7 @@ import java.net.URISyntaxException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
 import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.ChunkToken;

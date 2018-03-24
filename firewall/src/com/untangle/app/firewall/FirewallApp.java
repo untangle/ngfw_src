@@ -3,7 +3,6 @@
  */
 package com.untangle.app.firewall;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,6 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 public class FirewallApp extends AppBase

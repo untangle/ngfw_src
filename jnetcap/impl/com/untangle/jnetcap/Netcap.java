@@ -1,13 +1,8 @@
 /* $HeadURL$ */
 package com.untangle.jnetcap;
 
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.util.regex.Pattern;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collections;
-import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
