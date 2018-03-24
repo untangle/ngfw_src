@@ -12,11 +12,8 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Timer;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONSerializer;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManager;
@@ -27,7 +24,6 @@ import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 
 /**

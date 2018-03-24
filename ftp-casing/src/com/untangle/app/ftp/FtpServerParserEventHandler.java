@@ -4,18 +4,13 @@
 package com.untangle.app.ftp;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.util.AsciiCharBuffer;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;

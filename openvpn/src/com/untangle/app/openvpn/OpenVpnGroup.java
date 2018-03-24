@@ -6,8 +6,6 @@ package com.untangle.app.openvpn;
 import java.net.InetAddress;
 import java.util.LinkedList;
 
-import com.untangle.uvm.app.IPMaskedAddress;
-
 /**
  * A VPN group of address and clients.
  */

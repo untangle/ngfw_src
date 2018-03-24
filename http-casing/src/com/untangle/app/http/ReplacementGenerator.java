@@ -13,7 +13,6 @@ import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 

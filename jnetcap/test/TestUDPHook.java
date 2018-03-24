@@ -3,8 +3,6 @@ import com.untangle.jnetcap.*;
 
 import java.util.LinkedList;
 
-import java.util.regex.Pattern;
-
 class TestUDPHook implements NetcapCallback {
     protected final int numTransforms;
     protected boolean verbose = false;

@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.I18nUtil;
 
 public class BlockPageUtil
