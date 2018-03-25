@@ -4,7 +4,6 @@
 package com.untangle.app.smtp.safelist;
 
 import java.io.Serializable;
-import com.untangle.app.smtp.SmtpMessageEvent;
 
 import org.json.JSONObject;
 import org.json.JSONString;

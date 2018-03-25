@@ -2,10 +2,8 @@ package com.untangle.app.smtp.handler;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.mail.internet.MimeMessage;
 

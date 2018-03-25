@@ -6,8 +6,6 @@ package com.untangle.app.spam_blocker;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 class TarpitEventHandler extends AbstractEventHandler

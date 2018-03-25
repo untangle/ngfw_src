@@ -30,7 +30,6 @@ import com.untangle.app.smtp.quarantine.store.InboxSummary;
 import com.untangle.app.smtp.quarantine.store.QuarantineStore;
 import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.util.I18nUtil;
 
 /**

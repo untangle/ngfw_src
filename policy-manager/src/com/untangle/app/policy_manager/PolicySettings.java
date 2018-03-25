@@ -3,9 +3,6 @@
  */
 package com.untangle.app.policy_manager;
 
-import java.util.List;
-import java.util.LinkedList;
-
 /**
  * Policy Settings
  */

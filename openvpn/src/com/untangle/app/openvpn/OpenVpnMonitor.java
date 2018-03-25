@@ -15,7 +15,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
@@ -26,11 +25,8 @@ import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.util.I18nUtil;
 
 
 class OpenVpnMonitor implements Runnable

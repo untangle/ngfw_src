@@ -5,13 +5,8 @@ package com.untangle.app.smtp.mime;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
 
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Set;
-
 import javax.mail.Address;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 

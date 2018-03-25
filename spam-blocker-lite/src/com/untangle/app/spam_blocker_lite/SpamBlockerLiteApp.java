@@ -9,7 +9,6 @@ import com.untangle.app.spam_blocker.SpamBlockerBaseApp;
 import com.untangle.app.spam_blocker.SpamSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.DaemonManager;
 
 public class SpamBlockerLiteApp extends SpamBlockerBaseApp
 {

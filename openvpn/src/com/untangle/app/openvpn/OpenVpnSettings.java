@@ -3,7 +3,6 @@
  */
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 

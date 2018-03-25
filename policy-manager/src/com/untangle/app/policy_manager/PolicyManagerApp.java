@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.PolicyManager.PolicyManagerResult;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.util.Pulse;
