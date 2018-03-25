@@ -9,12 +9,10 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Iterator;
-import java.lang.Math;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Conntrack;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionMinuteEvent;

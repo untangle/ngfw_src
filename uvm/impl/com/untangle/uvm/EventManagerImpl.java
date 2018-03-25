@@ -11,23 +11,17 @@ import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.SyslogManagerImpl;
 
-import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

@@ -6,7 +6,6 @@ package com.untangle.uvm;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -18,15 +17,11 @@ import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.ObjectCrumb;
@@ -35,9 +30,6 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.SocketQueueListener;
 import com.untangle.jvector.Vector;
-import com.untangle.jvector.Relay;
-
-import org.apache.log4j.Logger;
 
 /**
  * Abstract base class for all live sessions

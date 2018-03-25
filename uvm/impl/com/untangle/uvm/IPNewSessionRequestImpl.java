@@ -8,7 +8,6 @@ import java.util.Map;
 import java.net.InetAddress;
 
 import com.untangle.jnetcap.NetcapSession;
-import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;

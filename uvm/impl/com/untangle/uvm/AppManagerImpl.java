@@ -3,10 +3,7 @@
  */
 package com.untangle.uvm;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,13 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppManagerSettings;
@@ -39,7 +30,6 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.License;
-import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
 

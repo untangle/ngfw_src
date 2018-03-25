@@ -4,8 +4,6 @@
 package com.untangle.uvm.vnet;
 
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.ArrayList;
 
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.vnet.SessionEventHandler;

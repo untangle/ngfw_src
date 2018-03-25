@@ -5,10 +5,8 @@ package com.untangle.uvm;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
-
 
 /**
  * The Manager for the dashboard
