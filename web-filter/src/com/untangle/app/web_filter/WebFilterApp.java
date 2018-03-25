@@ -5,13 +5,9 @@ package com.untangle.app.web_filter;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Iterator;
 
-import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -20,14 +16,11 @@ import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.app.PortRange;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.GenericRule;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.app.web_filter.WebFilterBase;
 import com.untangle.app.web_filter.WebFilterReplacementGenerator;
 import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterSettings;
-import com.untangle.app.web_filter.WebFilterEvent;
 
 public class WebFilterApp extends WebFilterBase
 {
