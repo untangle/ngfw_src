@@ -3,26 +3,9 @@
  */
 package com.untangle.app.web_filter;
 
-import java.net.InetAddress;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.BufferUnderflowException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
-
 import org.apache.log4j.Logger;
 
-import com.untangle.app.http.HttpMethod;
-import com.untangle.app.http.RequestLine;
-import com.untangle.app.http.RequestLineToken;
-import com.untangle.app.http.HttpRequestEvent;
-import com.untangle.app.http.HeaderToken;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 

@@ -4,18 +4,11 @@
 
 package com.untangle.app.virus_blocker;
 
-import java.lang.StringBuilder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.Serializable;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URL;
-import javax.net.ssl.HttpsURLConnection;
-
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.vnet.AppSession;
 

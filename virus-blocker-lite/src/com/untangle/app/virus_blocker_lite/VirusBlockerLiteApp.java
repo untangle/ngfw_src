@@ -4,7 +4,6 @@
 package com.untangle.app.virus_blocker_lite;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.app.virus_blocker.VirusBlockerBaseApp;

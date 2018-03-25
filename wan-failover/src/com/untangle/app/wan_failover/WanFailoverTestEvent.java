@@ -3,9 +3,6 @@
  */
 package com.untangle.app.wan_failover;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 

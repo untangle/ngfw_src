@@ -9,12 +9,10 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.KeyManagerFactory;
 
 import java.net.InetAddress;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.io.FileInputStream;
 import java.security.cert.CertificateException;

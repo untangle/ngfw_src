@@ -1,7 +1,5 @@
 package com.untangle.app.web_filter;
 
-import java.net.InetAddress;
-
 import com.untangle.app.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;

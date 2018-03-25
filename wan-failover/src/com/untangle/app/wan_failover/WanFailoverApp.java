@@ -3,13 +3,8 @@
  */
 package com.untangle.app.wan_failover;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,8 +14,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;

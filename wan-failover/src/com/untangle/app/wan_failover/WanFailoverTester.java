@@ -3,7 +3,6 @@
  */
 package com.untangle.app.wan_failover;
 
-import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;

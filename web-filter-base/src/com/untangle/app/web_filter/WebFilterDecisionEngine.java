@@ -3,20 +3,16 @@
  */
 package com.untangle.app.web_filter;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
@@ -24,7 +20,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
@@ -34,14 +29,11 @@ import org.xbill.DNS.Type;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
-import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterBase;
-import com.untangle.app.web_filter.WebFilterSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Does blacklist lookups from zvelo API.
