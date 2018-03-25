@@ -3,16 +3,10 @@
  */
 package com.untangle.uvm;
 
-import java.util.List;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Comparator;
-import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
@@ -21,8 +15,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.QuotaEvent;
 
 /**

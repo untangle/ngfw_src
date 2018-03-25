@@ -8,15 +8,10 @@ import java.util.List;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,8 +41,6 @@ import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosRuleCondition;
 import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
-import com.untangle.uvm.network.DnsStaticEntry;
-import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;

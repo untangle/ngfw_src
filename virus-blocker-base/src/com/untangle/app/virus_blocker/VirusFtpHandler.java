@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -20,7 +19,6 @@ import com.untangle.app.ftp.FtpReply;
 import com.untangle.app.ftp.FtpEventHandler;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.AppSession;

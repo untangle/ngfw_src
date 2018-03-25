@@ -12,7 +12,6 @@ import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 

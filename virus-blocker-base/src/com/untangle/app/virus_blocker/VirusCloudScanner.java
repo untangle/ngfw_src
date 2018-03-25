@@ -4,7 +4,6 @@
 
 package com.untangle.app.virus_blocker;
 
-import java.lang.StringBuilder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.URL;
@@ -12,7 +11,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 

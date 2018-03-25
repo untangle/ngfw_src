@@ -13,26 +13,19 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.NetcapSession;
-import com.untangle.jvector.IncomingSocketQueue;
-import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.Relay;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.GeographyManager;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionNatEvent;
 import com.untangle.uvm.app.SessionStatsEvent;
 import com.untangle.uvm.app.PolicyManager;
-import com.untangle.uvm.app.HostnameLookup;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
