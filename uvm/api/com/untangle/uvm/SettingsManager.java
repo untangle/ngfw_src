@@ -1,7 +1,5 @@
 package com.untangle.uvm;
 
-import java.util.Map;
-
 public interface SettingsManager
 {
     /**

@@ -4,14 +4,9 @@
 package com.untangle.uvm.app;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.NetworkManager;
 
 /**
  * An interface to test for an address.

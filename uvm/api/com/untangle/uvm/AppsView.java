@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

@@ -4,8 +4,6 @@
 package com.untangle.uvm.app;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
 
 import com.untangle.uvm.logging.LogEvent;
 

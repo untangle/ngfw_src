@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;

@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.io.File;
-
 public interface HookManager
 {
     public static String SETTINGS_CHANGE = "settings-change";

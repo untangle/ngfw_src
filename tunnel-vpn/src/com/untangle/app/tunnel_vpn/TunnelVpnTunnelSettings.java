@@ -3,7 +3,6 @@
  */
 package com.untangle.app.tunnel_vpn;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.LinkedList;
 

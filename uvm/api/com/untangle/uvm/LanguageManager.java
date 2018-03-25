@@ -6,8 +6,6 @@ package com.untangle.uvm;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
-
 /**
  * Allows the user to customize the language of the product.
  *

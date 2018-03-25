@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.io.File;
-
 public interface PluginManager
 {
     void loadPlugins();

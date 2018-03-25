@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
