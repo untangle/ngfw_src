@@ -23,9 +23,9 @@ public class UrlMatcher
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private Map<String, List<GenericRule>> ruleByKeyword = new ConcurrentHashMap<String, List<GenericRule>>();
-    private Map<String, String> keywordByRule = new ConcurrentHashMap<String, String>();
-    private static Map<String, Pattern> patterns = new ConcurrentHashMap<String, Pattern>();
+    private Map<String, List<GenericRule>> ruleByKeyword = new ConcurrentHashMap<>();
+    private Map<String, String> keywordByRule = new ConcurrentHashMap<>();
+    private static Map<String, Pattern> patterns = new ConcurrentHashMap<>();
 
     /**
      * The keywords are chosen such that
@@ -70,7 +70,7 @@ public class UrlMatcher
         String keyword = findKeyword(rule.getString());
         List<GenericRule> oldEntry = ruleByKeyword.get(keyword);
         if (oldEntry == null) {
-            oldEntry = new ArrayList<GenericRule>();
+            oldEntry = new ArrayList<>();
             ruleByKeyword.put(keyword, oldEntry);
         }
         oldEntry.add(rule);
@@ -117,7 +117,7 @@ public class UrlMatcher
         String result = "";
 
         Matcher matcher = KEYWORD_PATTERN.matcher(rule);
-        List<String> candidates = new LinkedList<String>();
+        List<String> candidates = new LinkedList<>();
         while (matcher.find()) {
             candidates.add(matcher.group());
         }
@@ -221,7 +221,7 @@ public class UrlMatcher
     public GenericRule findMatch(String uri)
     {
         Matcher matcher = URI_CANDIDATE_PATTERN.matcher(uri);
-        LinkedList<String> candidates = new LinkedList<String>();
+        LinkedList<String> candidates = new LinkedList<>();
         while (matcher.find()) {
             candidates.add(matcher.group());
         }

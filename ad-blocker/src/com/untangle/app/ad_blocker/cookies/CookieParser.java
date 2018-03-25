@@ -38,7 +38,7 @@ public class CookieParser
 
         int state = KEY_STATE;
 
-        Map<String, String> hashMap = new HashMap<String, String>();
+        Map<String, String> hashMap = new HashMap<>();
 
         StringBuilder keyBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();
