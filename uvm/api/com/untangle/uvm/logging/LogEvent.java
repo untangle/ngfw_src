@@ -9,8 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Calendar;
 
 import org.apache.log4j.Logger;

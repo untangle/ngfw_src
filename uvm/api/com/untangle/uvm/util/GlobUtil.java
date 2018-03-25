@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;

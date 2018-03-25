@@ -3,16 +3,12 @@
  */
 package com.untangle.uvm.network;
 
-import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
  * Dynamic route class used for BGP and ospf. 

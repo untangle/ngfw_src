@@ -5,8 +5,6 @@ package com.untangle.uvm.event;
 
 import java.net.InetAddress;
 
-import org.json.JSONObject;
-
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
