@@ -11,8 +11,6 @@ import java.util.Arrays;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.app.AppSettings;
-
 /**
  * The immutable properties of a App
  */

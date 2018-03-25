@@ -5,7 +5,6 @@
 package com.untangle.app.tunnel_vpn;
 
 import java.net.InetAddress;
-import java.util.Date;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;

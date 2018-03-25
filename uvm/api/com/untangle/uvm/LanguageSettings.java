@@ -5,9 +5,6 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 
-import java.util.List;
-import java.util.LinkedList;
-
 /**
  * Uvm language settings.
  */

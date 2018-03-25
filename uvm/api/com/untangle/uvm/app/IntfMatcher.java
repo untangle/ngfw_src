@@ -7,8 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
-
 
 /**
  * An matcher for interfaces

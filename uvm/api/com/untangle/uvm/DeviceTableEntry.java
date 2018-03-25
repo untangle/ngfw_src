@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Objects;
 import java.util.List;
 import java.util.LinkedList;
