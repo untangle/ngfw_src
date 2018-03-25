@@ -428,9 +428,12 @@ public class ReportEntry implements Serializable, JSONString
          * If there are no distinct values, nothing to show
          * Just return
          */
-        if ( distinctValues.length == 0 ) {
-            return sqlToStatement( conn, "select null", null);
-        }
+        // we actually just want to return a normal query with the normal timerange in this case
+        // it just won't have any data series because there are no "top" data series to show
+        // NGFW-11438
+        // if ( distinctValues.length == 0 ) {
+        //     return sqlToStatement( conn, "select null", null);
+        // }
 
         String timeQuery;
         timeQuery = "SELECT " +
