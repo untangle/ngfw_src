@@ -6,7 +6,6 @@ package com.untangle.uvm.event;
 import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.uvm.event.EventRule;
