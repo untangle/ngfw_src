@@ -51,7 +51,7 @@ public class AdBlockerApp extends AppBase
     // maybe use cache? not for now
     public static final boolean USE_CACHE = false;
     public static final int MAX_CACHED_ENTRIES = 1000;
-    protected Map<String, GenericRule> cache = new ConcurrentHashMap<String, GenericRule>();
+    protected Map<String, GenericRule> cache = new ConcurrentHashMap<>();
 
     public static final String LIST_URL = "https://easylist-downloads.adblockplus.org/easylist.txt";
 
@@ -333,7 +333,7 @@ public class AdBlockerApp extends AppBase
         List<GenericRule> cookieList = settings.getCookies();
         List<GenericRule> userCookieList = settings.getUserCookies();
         if (cookieList != null || userCookieList != null) {
-            Map<String, GenericRule> newCookieMap = new ConcurrentHashMap<String, GenericRule>();
+            Map<String, GenericRule> newCookieMap = new ConcurrentHashMap<>();
             for (GenericRule sr : cookieList) {
                 if ( sr.getEnabled() != null && sr.getEnabled() )
                     newCookieMap.put(sr.getString(), sr);

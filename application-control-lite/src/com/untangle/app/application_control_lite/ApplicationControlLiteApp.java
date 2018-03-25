@@ -139,7 +139,7 @@ public class ApplicationControlLiteApp extends AppBase
      */
     public void reconfigure()
     {
-        HashSet<ApplicationControlLitePattern> enabledPatternsSet = new HashSet<ApplicationControlLitePattern>();
+        HashSet<ApplicationControlLitePattern> enabledPatternsSet = new HashSet<>();
 
         logger.info("Reconfigure()");
 
