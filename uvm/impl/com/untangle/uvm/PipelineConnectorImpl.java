@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import java.util.Set;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
@@ -13,14 +12,10 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.SessionEventHandler;
-import com.untangle.uvm.app.App;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.

@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest

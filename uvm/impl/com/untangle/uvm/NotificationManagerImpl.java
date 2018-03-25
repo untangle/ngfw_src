@@ -5,9 +5,7 @@ package com.untangle.uvm;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Date;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -23,9 +21,7 @@ import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.app.Reporting;
-import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.StaticRoute;
 

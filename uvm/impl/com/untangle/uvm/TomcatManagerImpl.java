@@ -3,29 +3,19 @@
  */
 package com.untangle.uvm;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
-import java.net.JarURLConnection;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Map;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -50,10 +40,6 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
-
-import org.apache.tomcat.JarScanner;
-import org.apache.tomcat.JarScannerCallback;
-import org.apache.tomcat.util.scan.StandardJarScanner; 
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
