@@ -11,7 +11,7 @@ import org.json.JSONString;
  * Settings for a given WAN Test
  */
 @SuppressWarnings("serial")
-public class WanTestSettings implements Serializable
+public class WanTestSettings implements Serializable, JSONString
 {
     private static final int BUCKET_SIZE_MIN = 10;
     private static final int BUCKET_SIZE_MAX = 50;

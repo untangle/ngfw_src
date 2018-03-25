@@ -3,7 +3,6 @@
  */
 package com.untangle.app.web_cache;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.json.JSONString;

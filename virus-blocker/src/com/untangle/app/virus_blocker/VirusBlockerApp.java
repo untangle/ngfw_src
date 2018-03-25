@@ -7,8 +7,6 @@ package com.untangle.app.virus_blocker;
 import java.io.File;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.DaemonManager;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.app.virus_blocker.VirusBlockerBaseApp;

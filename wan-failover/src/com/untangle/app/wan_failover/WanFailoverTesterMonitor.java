@@ -5,15 +5,11 @@ package com.untangle.app.wan_failover;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
