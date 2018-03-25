@@ -271,7 +271,7 @@ class PolicyManagerTests(unittest2.TestCase):
         rules["list"].append(newRule)
         secondRackWebfilter.setBlockedUrls(rules)
         # verify traffic is now blocked (third rack inherits web filter from second rack)
-        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # direct traffic to second rack after local authentication
