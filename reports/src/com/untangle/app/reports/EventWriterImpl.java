@@ -3,22 +3,15 @@
  */
 package com.untangle.app.reports;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +19,6 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HookManager;
 import com.untangle.uvm.logging.LogEvent;
 
 

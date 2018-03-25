@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.lang.InterruptedException;
 import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.LinkedList;

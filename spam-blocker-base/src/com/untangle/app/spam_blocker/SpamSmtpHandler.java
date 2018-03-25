@@ -12,7 +12,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -22,13 +21,11 @@ import org.apache.log4j.Logger;
 
 import com.untangle.app.smtp.MailExport;
 import com.untangle.app.smtp.MailExportFactory;
-import com.untangle.app.smtp.SmtpSettings;
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.app.smtp.Response;
 import com.untangle.app.smtp.SmtpTransaction;
 import com.untangle.app.smtp.TemplateTranslator;
 import com.untangle.app.smtp.WrappedMessageGenerator;
-import com.untangle.app.smtp.AddressKind;
 import com.untangle.app.smtp.handler.ScannedMessageResult;
 import com.untangle.app.smtp.handler.SmtpEventHandler;
 import com.untangle.app.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;

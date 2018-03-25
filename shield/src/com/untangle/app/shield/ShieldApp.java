@@ -3,13 +3,6 @@
  */
 package com.untangle.app.shield;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.Iterator;
 import java.io.File;
@@ -18,11 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 

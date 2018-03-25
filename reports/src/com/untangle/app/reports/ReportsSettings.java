@@ -3,15 +3,12 @@
  */
 package com.untangle.app.reports;
 
-import java.util.List;
 import java.util.LinkedList;
 import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AlertRule;
 
 /**

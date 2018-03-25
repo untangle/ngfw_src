@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;

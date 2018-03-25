@@ -3,8 +3,6 @@
  */
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
-
 @SuppressWarnings("serial")
 public class OpenVpnRemoteServer implements java.io.Serializable
 {

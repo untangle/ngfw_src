@@ -28,7 +28,6 @@ import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.app.App;
 
 /**
