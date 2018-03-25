@@ -14,15 +14,12 @@
 package com.untangle.app.ssl_inspector;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 
-import com.untangle.uvm.vnet.Token;
-import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 

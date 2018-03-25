@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.io.File;
-
 import org.json.JSONObject;
 
 public interface CloudManager

@@ -5,16 +5,9 @@
 package com.untangle.app.ssl_inspector;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Class used to represent the action associated with a rule

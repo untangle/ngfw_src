@@ -18,7 +18,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
-public class SslInspectorSettings implements Serializable, org.json.JSONString
+public class SslInspectorSettings implements Serializable, JSONString
 {
     private Integer version;
 

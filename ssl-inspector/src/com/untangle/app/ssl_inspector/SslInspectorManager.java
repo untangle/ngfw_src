@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.security.MessageDigest;
 import java.security.KeyStore;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.GlobUtil;
 
 import org.apache.log4j.Logger;
 

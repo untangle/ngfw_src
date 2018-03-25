@@ -4,7 +4,6 @@
 package com.untangle.uvm.app;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 

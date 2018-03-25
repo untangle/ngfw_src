@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.Date;
 
 /**
  * the System Manager API

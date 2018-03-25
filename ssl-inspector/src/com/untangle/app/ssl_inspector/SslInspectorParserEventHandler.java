@@ -13,7 +13,6 @@
 
 package com.untangle.app.ssl_inspector;
 
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;

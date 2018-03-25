@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.internet.MimeBodyPart;
-
 /**
  * Interface for sending email.
  */

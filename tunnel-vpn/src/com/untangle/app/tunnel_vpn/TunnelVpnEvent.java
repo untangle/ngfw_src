@@ -5,7 +5,6 @@
 package com.untangle.app.tunnel_vpn;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
