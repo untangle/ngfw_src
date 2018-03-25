@@ -4,7 +4,6 @@
 package com.untangle.uvm.admin.servlet;
 
 import java.io.IOException;
-import java.util.Random;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;

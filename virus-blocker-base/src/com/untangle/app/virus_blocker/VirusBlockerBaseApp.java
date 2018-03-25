@@ -5,10 +5,8 @@ package com.untangle.app.virus_blocker;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +25,6 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 

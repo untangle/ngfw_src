@@ -3,13 +3,11 @@
  */
 package com.untangle.uvm;
 
-import java.net.InetSocketAddress;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.event.EventSettings;

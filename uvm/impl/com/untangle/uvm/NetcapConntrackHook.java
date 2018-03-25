@@ -4,8 +4,6 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
-import java.util.Iterator;
-import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;

@@ -5,13 +5,10 @@ package com.untangle.uvm;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.net.InetAddress;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -19,16 +16,12 @@ import java.nio.file.Paths;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMonitor;
-import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 

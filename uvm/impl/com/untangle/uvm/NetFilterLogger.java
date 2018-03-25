@@ -7,7 +7,6 @@ package com.untangle.uvm;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.SelectionKey;

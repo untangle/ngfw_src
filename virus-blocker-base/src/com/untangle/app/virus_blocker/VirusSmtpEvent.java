@@ -3,11 +3,7 @@
  */
 package com.untangle.app.virus_blocker;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.uvm.util.I18nUtil;
 

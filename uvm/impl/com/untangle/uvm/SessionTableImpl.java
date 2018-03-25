@@ -19,7 +19,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.util.Pulse;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
