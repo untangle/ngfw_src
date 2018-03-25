@@ -274,7 +274,7 @@ class ReportsTests(unittest2.TestCase):
         """
         # Delete any old csv file if it exists
         csv_tmp = "/tmp/test_50_export_report_events.csv"
-        subprocess.call(('rm %s' % csv_tmp), shell=True)
+        subprocess.call(('/bin/rm -f %s' % csv_tmp), shell=True)
 
         remote_control.run_command("wget -q -O /dev/null http://test.untangle.com")
         remote_control.run_command("wget -q -O /dev/null http://www.untangle.com")

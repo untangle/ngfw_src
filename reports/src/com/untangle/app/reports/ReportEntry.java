@@ -433,6 +433,7 @@ public class ReportEntry implements Serializable, JSONString
         // NGFW-11438
         // if ( distinctValues.length == 0 ) {
         //     return sqlToStatement( conn, "select null", null);
+        //     return sqlToStatement( conn, "select 1 where 1 = 2", null);
         // }
 
         String timeQuery;
