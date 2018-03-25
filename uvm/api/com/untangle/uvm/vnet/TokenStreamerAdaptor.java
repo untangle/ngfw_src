@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm.vnet;
 
-import java.nio.ByteBuffer;
-
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.TCPStreamer;

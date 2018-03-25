@@ -15,10 +15,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import java.lang.ClassLoader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,9 +31,7 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.Iterator;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.http.HttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -56,12 +50,6 @@ import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.UvmException;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppProperties;
-import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.SettingsManager;
 
 /**
