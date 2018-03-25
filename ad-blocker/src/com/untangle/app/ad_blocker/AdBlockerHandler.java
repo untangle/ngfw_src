@@ -55,7 +55,7 @@ public class AdBlockerHandler extends HttpEventHandler
     public void handleTCPNewSession( AppTCPSession session )
     {
         super.handleTCPNewSession( session );
-        Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
+        Map<RequestLineToken, List<String>> killers = new HashMap<>();
         session.attach( killers );
     }
     
@@ -339,7 +339,7 @@ public class AdBlockerHandler extends HttpEventHandler
             return;
         logger.debug("checking client cookie");
 
-        List<String> cookieKillers = new LinkedList<String>();
+        List<String> cookieKillers = new LinkedList<>();
 
         Map<RequestLineToken, List<String>> killers = (Map<RequestLineToken, List<String>>) session.attachment();
         killers.put(requestLine, cookieKillers);
@@ -392,7 +392,7 @@ public class AdBlockerHandler extends HttpEventHandler
     private List<String> makeCookieKillers(String cookie, String host)
     {
         logger.debug("making cookie killers");
-        List<String> l = new LinkedList<String>();
+        List<String> l = new LinkedList<>();
 
         String cookieKiller = makeCookieKiller(cookie, host);
         l.add(cookieKiller);

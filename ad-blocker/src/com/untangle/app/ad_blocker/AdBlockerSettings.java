@@ -15,14 +15,14 @@ import com.untangle.uvm.app.GenericRule;
 @SuppressWarnings("serial")
 public class AdBlockerSettings implements java.io.Serializable, org.json.JSONString
 {
-    private List<GenericRule> blockingRules = new LinkedList<GenericRule>();
-    private List<GenericRule> userBlockingRules = new LinkedList<GenericRule>();
-    private List<GenericRule> passingRules = new LinkedList<GenericRule>();
-    private List<GenericRule> userPassingRules = new LinkedList<GenericRule>();
-    private List<GenericRule> passedClients = new LinkedList<GenericRule>();
-    private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
-    private List<GenericRule> cookies = new LinkedList<GenericRule>();
-    private List<GenericRule> userCookies = new LinkedList<GenericRule>();
+    private List<GenericRule> blockingRules = new LinkedList<>();
+    private List<GenericRule> userBlockingRules = new LinkedList<>();
+    private List<GenericRule> passingRules = new LinkedList<>();
+    private List<GenericRule> userPassingRules = new LinkedList<>();
+    private List<GenericRule> passedClients = new LinkedList<>();
+    private List<GenericRule> passedUrls = new LinkedList<>();
+    private List<GenericRule> cookies = new LinkedList<>();
+    private List<GenericRule> userCookies = new LinkedList<>();
     
     private String lastUpdate;
 
@@ -67,7 +67,7 @@ public class AdBlockerSettings implements java.io.Serializable, org.json.JSONStr
 
     public List<GenericRule> getUserRules()
     {
-        List<GenericRule> result = new ArrayList<GenericRule>();
+        List<GenericRule> result = new ArrayList<>();
         result.addAll(userBlockingRules);
         result.addAll(userPassingRules);
         return result;
@@ -75,8 +75,8 @@ public class AdBlockerSettings implements java.io.Serializable, org.json.JSONStr
 
     public void setUserRules(List<GenericRule> userRules)
     {
-        userBlockingRules = new LinkedList<GenericRule>();
-        userPassingRules = new LinkedList<GenericRule>();
+        userBlockingRules = new LinkedList<>();
+        userPassingRules = new LinkedList<>();
         for (GenericRule r : userRules) {
             if (r.getBlocked() != null && !r.getBlocked()) {
                 userPassingRules.add(r);
@@ -88,7 +88,7 @@ public class AdBlockerSettings implements java.io.Serializable, org.json.JSONStr
 
     public List<GenericRule> getRules()
     {
-        List<GenericRule> result = new LinkedList<GenericRule>();
+        List<GenericRule> result = new LinkedList<>();
         result.addAll(blockingRules);
         result.addAll(passingRules);
         return result;
@@ -96,8 +96,8 @@ public class AdBlockerSettings implements java.io.Serializable, org.json.JSONStr
 
     public void setRules(List<GenericRule> rules)
     {
-        blockingRules = new LinkedList<GenericRule>();
-        passingRules = new LinkedList<GenericRule>();
+        blockingRules = new LinkedList<>();
+        passingRules = new LinkedList<>();
         for (GenericRule r : rules) {
             if (r.getBlocked() != null && !r.getBlocked()) {
                 passingRules.add(r);

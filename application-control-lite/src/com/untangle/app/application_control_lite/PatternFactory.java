@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class PatternFactory
 {
-    private static Map<String,Pattern> _cachedPatterns = new HashMap<String,Pattern>();
+    private static Map<String,Pattern> _cachedPatterns = new HashMap<>();
     private static final Logger logger = Logger.getLogger(PatternFactory.class);
 
     /**
