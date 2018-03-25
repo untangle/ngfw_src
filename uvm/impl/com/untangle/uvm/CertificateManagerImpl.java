@@ -6,17 +6,13 @@ package com.untangle.uvm;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.KeyStore;
 import java.text.SimpleDateFormat;
-import java.util.regex.Matcher;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -29,8 +25,6 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;

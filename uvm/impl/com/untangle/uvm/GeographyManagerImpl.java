@@ -4,12 +4,7 @@
 
 package com.untangle.uvm;
 
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.URLEncoder;
-import java.net.URL;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.util.Date;
 import java.util.Collection;

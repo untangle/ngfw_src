@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
@@ -18,8 +17,6 @@ import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppProperties;
-import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;

@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ConnectivityTester;
-import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 
 public class ConnectivityTesterImpl implements ConnectivityTester

@@ -6,7 +6,6 @@ package com.untangle.uvm.vnet;
 import java.net.InetSocketAddress;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
