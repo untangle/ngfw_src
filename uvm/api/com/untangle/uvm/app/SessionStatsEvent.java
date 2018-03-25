@@ -3,9 +3,7 @@
  */
 package com.untangle.uvm.app;
 
-import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;

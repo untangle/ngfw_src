@@ -3,10 +3,7 @@
  */
 package com.untangle.uvm.app;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.I18nUtil;
 
 /**
  * This event stores the activity of a session on a given minute

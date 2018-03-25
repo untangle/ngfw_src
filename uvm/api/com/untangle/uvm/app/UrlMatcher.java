@@ -3,10 +3,8 @@
  */
 package com.untangle.uvm.app;
 
-import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 

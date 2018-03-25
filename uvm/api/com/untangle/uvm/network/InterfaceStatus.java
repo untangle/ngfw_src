@@ -4,15 +4,10 @@
 package com.untangle.uvm.network;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
-
-import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
  * This object represents the current status/config of an interface.

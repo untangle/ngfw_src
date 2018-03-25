@@ -6,23 +6,16 @@ package com.untangle.uvm.app;
 import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
-import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
-import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.IntMatcher;
@@ -33,7 +26,6 @@ import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.app.ProtocolMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 import com.untangle.uvm.app.DirectoryConnector;
-import com.untangle.uvm.util.GlobUtil;
 
 /**
  * This is a matching criteria for a generic Rule
