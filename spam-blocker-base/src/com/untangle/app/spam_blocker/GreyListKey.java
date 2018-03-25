@@ -5,8 +5,6 @@ package com.untangle.app.spam_blocker;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 @SuppressWarnings("serial")
 public class GreyListKey implements Serializable

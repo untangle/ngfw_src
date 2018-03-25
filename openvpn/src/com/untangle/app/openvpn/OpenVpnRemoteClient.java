@@ -3,10 +3,7 @@
  */
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
 import java.util.LinkedList;
-
-import com.untangle.uvm.app.IPMaskedAddress;
 
 @SuppressWarnings("serial")
 public class OpenVpnRemoteClient implements java.io.Serializable

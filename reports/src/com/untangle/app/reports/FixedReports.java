@@ -6,27 +6,19 @@ package com.untangle.app.reports;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.uvm.WebBrowser;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
 import java.net.URLEncoder;
-
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,11 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.lang.Integer;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
 import org.json.JSONObject;
 

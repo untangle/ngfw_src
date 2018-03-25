@@ -3,13 +3,10 @@
  */
 package com.untangle.app.spam_blocker;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.net.InetAddress;
 
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.app.smtp.AddressKind;
 import com.untangle.app.smtp.SmtpMessageEvent;

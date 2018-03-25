@@ -6,13 +6,9 @@ package com.untangle.app.phish_blocker;
 import java.util.Map;
 
 import com.untangle.app.smtp.WrappedMessageGenerator;
-import com.untangle.app.smtp.quarantine.QuarantineAppView;
-import com.untangle.app.smtp.safelist.SafelistAppView;
 import com.untangle.app.spam_blocker.SpamReport;
-import com.untangle.app.spam_blocker.SpamSmtpConfig;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Protocol Handler which is called-back as scanable messages

@@ -9,7 +9,6 @@ import java.util.Date;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamScanner;
-import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinScanner implements SpamScanner

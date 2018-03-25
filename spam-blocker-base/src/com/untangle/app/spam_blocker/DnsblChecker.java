@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
