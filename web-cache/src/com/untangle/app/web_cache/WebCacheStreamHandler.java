@@ -8,15 +8,11 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
 import java.io.IOException;
 
-import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppSession;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 /**
  * This is the main network event handler

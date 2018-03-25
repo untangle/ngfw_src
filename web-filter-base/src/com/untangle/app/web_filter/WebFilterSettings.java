@@ -11,13 +11,12 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.GenericRule;
-import com.untangle.uvm.app.AppSettings;
 
 /**
  * WebFilter settings.
  */
 @SuppressWarnings("serial")
-public class WebFilterSettings implements Serializable
+public class WebFilterSettings implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 

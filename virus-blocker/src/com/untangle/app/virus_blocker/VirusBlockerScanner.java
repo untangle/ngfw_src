@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.virus_blocker.VirusScanner;
 import com.untangle.app.virus_blocker.VirusScannerResult;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.AppSession;
 
 public class VirusBlockerScanner implements VirusScanner

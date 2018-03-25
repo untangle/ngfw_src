@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.app.web_filter.WebFilterBase;
 
 @SuppressWarnings("serial")

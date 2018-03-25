@@ -5,19 +5,14 @@
 package com.untangle.app.web_cache;
 
 import java.util.Timer;
-import java.util.Hashtable;
 import java.util.LinkedList;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import java.nio.channels.Selector;
 
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.PortRange;
-import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;

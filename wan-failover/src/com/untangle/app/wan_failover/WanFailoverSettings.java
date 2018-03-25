@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 @SuppressWarnings("serial")
-public class WanFailoverSettings implements Serializable
+public class WanFailoverSettings implements Serializable, JSONString
 {
     private List<WanTestSettings> tests;
 

@@ -3,12 +3,8 @@
  */
 package com.untangle.app.virus_blocker_lite;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.virus_blocker.VirusScanner;
@@ -16,7 +12,6 @@ import com.untangle.app.virus_blocker.VirusScannerResult;
 import com.untangle.app.virus_blocker.VirusBlockerState;
 import com.untangle.app.virus_blocker.VirusCloudScanner;
 import com.untangle.app.virus_blocker.VirusCloudFeedback;
-import com.untangle.app.virus_blocker.VirusCloudResult;
 import com.untangle.app.clam.ClamScannerClientLauncher;
 import com.untangle.uvm.vnet.AppSession;
 

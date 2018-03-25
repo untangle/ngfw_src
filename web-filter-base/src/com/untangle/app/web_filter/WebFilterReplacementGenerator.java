@@ -3,11 +3,7 @@
  */
 package com.untangle.app.web_filter;
 
-import java.net.InetAddress;
-
-import com.untangle.app.web_filter.WebFilterBlockDetails;
 import com.untangle.app.web_filter.WebFilterReplacementGenerator;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
 /**

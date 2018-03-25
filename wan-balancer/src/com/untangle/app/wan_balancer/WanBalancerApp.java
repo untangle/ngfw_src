@@ -3,9 +3,7 @@
  */
 package com.untangle.app.wan_balancer;
 
-import java.util.BitSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.io.File;
 
@@ -14,8 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;

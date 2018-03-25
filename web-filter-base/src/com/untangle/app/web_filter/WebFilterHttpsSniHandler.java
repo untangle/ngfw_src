@@ -4,7 +4,6 @@
 
 package com.untangle.app.web_filter;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.BufferUnderflowException;
@@ -16,8 +15,6 @@ import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;

@@ -17,7 +17,6 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 @SuppressWarnings("serial")
