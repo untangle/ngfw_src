@@ -242,12 +242,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
 
                 vm.set('disabledConds', disabledConds); // updates disabled conditions
                 conditionsHolder.add(conditionsButtons); // updates the conditions buttons
-
-                // check if conditions can be applied on current report selection, delayed a bit
-                // Ext.defer(function () {
-                //     me.checkDisabledSelection();
-                // }, 1000);
-
             });
         },
 

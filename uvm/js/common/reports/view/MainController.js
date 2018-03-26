@@ -43,7 +43,11 @@ Ext.define('Ung.view.reports.MainController', {
             }
 
             me.lookup('tree').selectPath(path, 'slug', '/', function (success, lastNode) {
-                if (!success) { return; }
+                if (!success) {
+                    // the route do not match any cat/report selection
+                    if (path !== '') { Ext.fireEvent('invalidquery'); }
+                    return;
+                }
                 if (!lastNode.isLeaf()) {
                     lastNode.expand();
                 }
