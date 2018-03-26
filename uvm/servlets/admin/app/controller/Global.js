@@ -39,9 +39,15 @@ Ext.define('Ung.controller.Global', {
     ],
 
     listen: {
+        controller: {
+            '#': {
+                unmatchedroute: 'onUnmatchedRoute'
+            }
+        },
         global: {
             appinstall: 'onAppInstall',
-            resetfields: 'onResetFields' // used to reset the fields after saving the settings
+            resetfields: 'onResetFields', // used to reset the fields after saving the settings
+            invalidquery: 'onUnmatchedRoute'
         }
     },
 
@@ -169,7 +175,7 @@ Ext.define('Ung.controller.Global', {
      * Common method used for routing Dashboard and Reports based on conditions query
      */
     onRoute: function (query) {
-        var hash = window.location.hash, view, viewModel,
+        var hash = window.location.hash, view, viewModel, validQuery = true,
             route = {}, conditions = [], condsQuery = '',
             decoded, parts, key, sep, val, fmt;
 
@@ -200,16 +206,25 @@ Ext.define('Ung.controller.Global', {
                 if (key === 'cat' || key === 'rep') {
                     route[key] = val;
                 } else {
-                    conditions.push({
-                        column: key,
-                        operator: sep,
-                        value: val,
-                        autoFormatValue: fmt === 1 ? true : false,
-                        javaClass: 'com.untangle.app.reports.SqlCondition'
-                    });
-                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                    if (!key || !sep || !val) {
+                        validQuery = false;
+                    } else {
+                        conditions.push({
+                            column: key,
+                            operator: sep,
+                            value: val,
+                            autoFormatValue: fmt === 1 ? true : false,
+                            javaClass: 'com.untangle.app.reports.SqlCondition'
+                        });
+                        condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                    }
                 }
             });
+        }
+
+        if (!validQuery) {
+            Ext.fireEvent('invalidquery');
+            return;
         }
 
         viewModel.set('query', {
@@ -219,6 +234,10 @@ Ext.define('Ung.controller.Global', {
         });
 
         this.getMainView().getViewModel().set('activeItem', view);
+    },
+
+    onUnmatchedRoute: function () {
+        this.getMainView().getViewModel().set('activeItem', 'invalidRoute');
     },
 
     onApps: function (policyId, app, view, subView) {
