@@ -1762,23 +1762,21 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleBgp.setReadOnly( true );
         filterRuleBgp.setEnabled( true );
         filterRuleBgp.setIpv6Enabled( true );
-        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179) on WANs" );
+        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179)" );
         filterRuleBgp.setBlocked( false );
         conditions = new LinkedList<FilterRuleCondition>();
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "179" ));
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "wan" ));
         filterRuleBgp.setConditions( conditions );
 
         FilterRule filterRuleOspf = new FilterRule();
         filterRuleOspf.setReadOnly( true );
         filterRuleOspf.setEnabled( true );
         filterRuleOspf.setIpv6Enabled( true );
-        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF on WANs" );
+        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF" );
         filterRuleOspf.setBlocked( false );
         conditions = new LinkedList<FilterRuleCondition>();
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "OSPF" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "wan" ));
         filterRuleOspf.setConditions( conditions );
 
         rules.add(filterRuleBgp);
