@@ -198,10 +198,6 @@ class ReportsTests(unittest2.TestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
 
-    # FIXME
-    # Syslog settings now live in config > events
-    # I'm not sure why this test passes, since the syslog functionality has been removed from reports
-    # FIXME
     def test_040_remote_syslog(self):
         if (not can_syslog):
             raise unittest2.SkipTest('Unable to syslog through ' + syslog_server_host)
@@ -223,15 +219,17 @@ class ReportsTests(unittest2.TestCase):
             if rule['enabled'] and rule['block']:
                 targetRuleId = rule['ruleId']
                 break
-        # Setup syslog to send events to syslog host
-        newSyslogSettings = app.getSettings()
-        newSyslogSettings["syslogEnabled"] = True
-        newSyslogSettings["syslogPort"] = 514
-        newSyslogSettings["syslogProtocol"] = "UDP"
-        newSyslogSettings["syslogHost"] = syslog_server_host
-        app.setSettings(newSyslogSettings)
+        # Setup syslog to send events to syslog host in /config/events/syslog
+        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings["syslogEnabled"] = True
+        syslogSettings["syslogPort"] = 514
+        syslogSettings["syslogProtocol"] = "UDP"
+        syslogSettings["syslogHost"] = syslog_server_host
+        uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
+        today = datetime.now()
+        timestamp = today.strftime('%Y-%m-%d %H:%M')
         result = remote_control.is_online(tries=1)
         # flush out events
         app.flushEvents()
@@ -249,24 +247,34 @@ class ReportsTests(unittest2.TestCase):
         # parse the output and look for a rule that matches the expected values
         tries = 5
         found_count = 0
-        strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
-        while (tries > 0 and found_count < 2):
+        strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId),str('\"timeStamp\":\"%s' % timestamp)]
+        num_string_find = len(strings_to_find)
+        while (tries > 0 and found_count < num_string_find):
             # get syslog results on server
-            rsyslogResult = remote_control.run_command("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=syslog_server_host, stdout=True)
+            rsyslogResult = remote_control.run_command("sudo tail -n 100 /var/log/syslog | grep 'FirewallEvent'", host=syslog_server_host, stdout=True)
             tries -= 1
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
+                found_count = 0
                 for string in strings_to_find:
                     if not string in line:
                         print "missing: %s" % string
-                        continue
+                        # continue
+                        break
                     else:
                         found_count += 1
                         print "found: %s" % string
-                break
+                # break if all the strings have been found.
+                if found_count == num_string_find:
+                    break
             time.sleep(2)
+
+        # Disable syslog
+        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings["syslogEnabled"] = False
+        uvmContext.eventManager().setSettings( syslogSettings )
             
-        assert(found_count == len(strings_to_find))
+        assert(found_count == num_string_find)
 
     def test_050_export_report_events(self):
         """
