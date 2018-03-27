@@ -59,7 +59,7 @@ class ArgumentParser(object):
                 handlers[opt[0]](opt[1])
             return args
         except getopt.GetoptError, exc:
-            print exc
+            print(exc)
             printUsage()
             exit(1)
 
@@ -113,7 +113,7 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
         else:
             target = " -j MARK --set-mark 0x%04X/0x%04X " % ( int(route_rule.get('destinationWan'))<<8 ,0xff00) 
     else:
-        print "ERROR: invalid route rule target: %s" + str(route_rule)
+        print("ERROR: invalid route rule target: %s" + str(route_rule))
         return
 
     description = "Route Rule #%i" % int(route_rule['ruleId'])
@@ -252,7 +252,7 @@ try:
     settingsFile.close()
     settings = json.loads(settingsData)
 except IOError,e:
-    print "Unable to read settings file: ",e
+    print("Unable to read settings file: ",e)
     exit(1)
 
 try:
@@ -261,7 +261,7 @@ try:
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
 except IOError,e:
-    print "Unable to read network settings file: ",e
+    print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
@@ -275,7 +275,7 @@ NetworkUtil.settings = networkSettings
 
 fixup_settings()
 
-if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
+if parser.verbosity > 0: print("Syncing %s to system..." % parser.file)
 
 # Write 330-wan-balancer iptables file
 filename = parser.prefix + "/etc/untangle/iptables-rules.d/330-wan-balancer"
@@ -291,7 +291,7 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
 
 # Write 040-wan-balancer post network hook file
@@ -308,5 +308,5 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
