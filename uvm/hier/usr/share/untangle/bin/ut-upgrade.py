@@ -45,7 +45,7 @@ upgrade_log = open("/var/log/uvm/upgrade.log", "a")
 try:
      opts, args = getopt.getopt(sys.argv[1:], "q", ['quiet'])
 except getopt.GetoptError, err:
-     print str(err)
+     print(str(err))
      printUsage()
      sys.exit(2)
 
@@ -65,7 +65,7 @@ def log(str):
         pass
     try:
         if not QUIET:
-            print str
+            print(str)
     except: 
         pass
 

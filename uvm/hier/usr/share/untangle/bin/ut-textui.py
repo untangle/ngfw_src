@@ -50,7 +50,7 @@ class UvmContext:
             if tries == 0:
                 break
             else:
-                print "Connecting to Untangle..."
+                print("Connecting to Untangle...")
             sleep(wait)
         raise
 
@@ -162,7 +162,7 @@ class Screen(object):
 
     def debug_message(self, msg, clear=False):
         """
-        Print a message on the bottom of the screen
+        print(a message on the bottom of the screen)
         """
         if clear is True:
             self.debug_x_pos = 0
@@ -1473,7 +1473,7 @@ class FactoryDefaults(Form):
         except:
             pass
         uvm = None
-        print "Connecting to Untangle..."
+        print("Connecting to Untangle...")
         sleep(30)
 
 class suspend_curses():
@@ -1607,7 +1607,7 @@ def usage():
     """
     Show usage
     """
-    print "usage"
+    print("usage")
 
 def signal_handler( signla, frame):
     return
@@ -1640,7 +1640,7 @@ def main(argv):
         uvm = UvmContext(tries=30)
         uvm = None
     except:
-        print "Untangle is unavailable at this time"
+        print("Untangle is unavailable at this time")
         sys.exit(1)
 
     curses.wrapper(UiApp)

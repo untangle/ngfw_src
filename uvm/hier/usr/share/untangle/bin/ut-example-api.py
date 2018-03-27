@@ -3,5 +3,5 @@ import uvm
 import sys
 
 uvm = uvm.Uvm().getUvmContext()
-print uvm.getServerUID()
+print(uvm.getServerUID())
 

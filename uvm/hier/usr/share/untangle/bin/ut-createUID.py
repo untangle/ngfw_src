@@ -51,7 +51,7 @@ class ArgumentParser(object):
                 handlers[opt[0]](opt[1])
             return args
         except getopt.GetoptError, exc:
-            print exc
+            print(exc)
             printUsage()
             exit(1)
 
@@ -85,10 +85,10 @@ try:
     elif re.match(r'^9\.*',ver) != None:
         debian_distro='stretch'
     else:
-        print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
+        print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
 except Exception,e:
     traceback.print_exc()
-    print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
+    print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
 
 # last two bytes in UID have special meaning 
 platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9', 'jessie':'3', 'stretch':'4' }

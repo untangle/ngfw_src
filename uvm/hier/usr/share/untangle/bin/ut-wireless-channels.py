@@ -2,6 +2,6 @@
 import uvm
 
 uvm = uvm.Uvm().getUvmContext()
-print uvm.networkManager().getWirelessChannels( "wlan0" )
+print(uvm.networkManager().getWirelessChannels( "wlan0" ))
 
 
