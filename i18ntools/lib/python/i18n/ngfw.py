@@ -56,7 +56,7 @@ class Ngfw:
         try:
             settings = json.load(ngfw_file)
         except:
-            print "\n".join(str(v) for v in sys.exc_info())
+            print("\n".join(str(v) for v in sys.exc_info()))
         for key in settings:
             self.__dict__[key] = settings[key]
             if key == "json_parse_directories":
