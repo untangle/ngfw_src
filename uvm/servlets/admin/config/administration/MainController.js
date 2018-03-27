@@ -429,6 +429,9 @@ Ext.define('Ung.config.administration.MainController', {
                 .then(function (result) {
                     me.certDialog.close();
                     me.refreshServerCertificate();
+                    if (result === false) {
+                        Ext.MessageBox.alert('Error'.t(), 'Certificate greation failed. Please confirm the information provided is valid and try again.'.t());
+                    }
                 }, function (ex) {
                     Util.handleException('Error during certificate generation.'.t());
                 }).always(function () {
