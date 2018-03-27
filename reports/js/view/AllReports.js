@@ -42,10 +42,10 @@ Ext.define('Ung.apps.reports.view.AllReports', {
         dataIndex: 'displayOrder'
     }, {
         header: 'View'.t(),
+        menuText: 'View'.t(),
         xtype: 'actioncolumn',
         width: 70,
         align: 'center',
-        hideable: false,
         iconCls: 'fa fa-external-link-square',
         isDisabled: 'isDisabledCategory',
         handler: function (view, rowIndex, colIndex, item, e, record) {
