@@ -82,15 +82,15 @@ def get_keys(module):
                     pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     std_out, std_err = pipes.communicate()
                     if pipes.returncode != 0:
-                        print "error!"
+                        print("error!")
                     elif len(std_err):
-                        print full_file_name
-                        print std_err
+                        print(full_file_name)
+                        print(std_err)
                         sys.exit(1)
                 except Exception as e:
-                    print Exception
-                    print e
-                    print sys.exc_info()[0]
+                    print(Exception)
+                    print(e)
+                    print(sys.exc_info()[0])
                     sys.exit(1)
 
                 ##
@@ -101,15 +101,15 @@ def get_keys(module):
                     pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     std_out, std_err = pipes.communicate()
                     if pipes.returncode != 0:
-                        print "error!"
+                        print("error!")
                     elif len(std_err):
-                        print full_file_name
-                        print std_err
+                        print(full_file_name)
+                        print(std_err)
                         sys.exit(1)
                 except Exception as e:
-                    print Exception
-                    print e
-                    print sys.exc_info()[0]
+                    print(Exception)
+                    print(e)
+                    print(sys.exc_info()[0])
                     sys.exit(1)
 
                 shutil.move("/tmp/generated-locations.pot", pot.file_name)
@@ -171,28 +171,28 @@ def main(argv):
     #
     # Process source files
     #
-    print "Processing source files..."
+    print("Processing source files...")
     pot.reset()
     modules = ngfw.modules
     for module in modules:
-        print "\t" + module
+        print("\t" + module)
         get_keys(module)
 
     # Change comments to not have path leading to "ngfw"
-    print "Converting comments..."
+    print("Converting comments...")
     pot.load()
     invalid_msg_id_count = 0
     for record in pot.records:
         if record.is_valid_msg_id() == False:
             invalid_msg_id_count = invalid_msg_id_count + 1
-            print "Invalid string found:"
-            print record
-            print 
+            print("Invalid string found:")
+            print(record)
+            print("")
 
         for (comment_index, comment) in enumerate(record.comment):
             record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
     if invalid_msg_id_count > 0:
-        print "Invalid string count: %d" % invalid_msg_id_count
+        print("Invalid string count: %d" % invalid_msg_id_count)
     pot.save()
 
     pot.rename(pot_file_name)

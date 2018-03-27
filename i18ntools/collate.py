@@ -77,19 +77,19 @@ def main(argv):
         if language == "ga":
             continue
         for po_file_name in glob.glob(po_path+"/*.po"):
-            print po_file_name,
+            print(po_file_name,)
             po_file = i18n.PoFile(language, po_file_name)
             po_file.load()
-            print "records=%d" % (len(po_file.records))
+            print("records=%d" % (len(po_file.records)))
             if not language in language_po_total_record_counts:
                 language_po_total_record_counts[language] = 0
             language_po_total_record_counts[language] += len(po_file.records)
             for record in po_file.records:
                 collated_po_files[language].add_record(record)
 
-    print "Results:"
+    print("Results:")
     for language in language_po_total_record_counts:
-        print "language=%s, total_records=%d" % (language, language_po_total_record_counts[language])
+        print("language=%s, total_records=%d" % (language, language_po_total_record_counts[language]))
 
     #
     # Save collated files
@@ -99,7 +99,7 @@ def main(argv):
             continue
         if collated_po_file.language == "test":
             continue
-        print "file=%s, non-duplicate records=%d" % (collated_po_file.file_name, len(collated_po_file.records))
+        print("file=%s, non-duplicate records=%d" % (collated_po_file.file_name, len(collated_po_file.records)))
         collated_po_file.save()
 
 if __name__ == "__main__":
