@@ -9,17 +9,17 @@ from uvm.settings_reader import get_app_settings_item
 
 
 def usage():
-    print """\
+    print("""\
 usage: %s [options] uvm|app basename|app settings_name
 Options:
   -l | --lower                  lower case output
   -d | --default                default value if setting is None/null
-""" % sys.argv[0]
+""" % sys.argv[0])
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "ld:", ['lower','default'])
 except getopt.GetoptError, err:
-     print str(err)
+     print(str(err))
      usage()
      sys.exit(2)
 
@@ -46,7 +46,7 @@ if location == "uvm":
 elif location == "app":
     setting = get_app_settings_item(base, name)
 else:
-    print "usage: %s [uvm|app] [basename|app] settings_name" % sys.argv[0]
+    print("usage: %s [uvm|app] [basename|app] settings_name" % sys.argv[0])
     sys.exit(1)
 
 if setting == None:
@@ -55,5 +55,5 @@ if setting == None:
 if option_to_lower:
     setting  = str(setting).lower();
 
-print setting
+print(setting)
 
