@@ -282,10 +282,10 @@ class TunnelVpnMonitor implements Runnable
 
                 /*
                  * We expect something that looks like this:
-                 * 1506443582,CONNECTED,SUCCESS,10.8.8.27,181.215.110.250
+                 * 1522187757,CONNECTED,SUCCESS,10.8.8.113,185.93.1.93,1194,,
                  */
                 String array[] = line.split(",");
-                if (array.length != 5) continue;
+                if (array.length < 5) continue;
 
                 status.setConnectStamp(Long.valueOf(array[0]));
                 status.setStateInfo(array[1]);
