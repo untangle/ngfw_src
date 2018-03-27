@@ -70,14 +70,15 @@ Ext.define('Ung.view.apps.AppsController', {
         });
 
         // when policy changes get the apps, this is needed because
-        vm.bind('{policyId}', function (val) {
+        vm.bind('{policyId}', function () {
             if (Ext.getStore('policiestree').getCount() > 0) {
                 var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
                 if (policyNode) {
                     vm.set('policyName', policyNode.get('name'));
                     me.getApps();
                 } else {
-                    Ung.app.redirectTo('#apps/1'); // redirect to main policy if in apps view
+                    Ext.fireEvent('invalidquery');
+                    // Ung.app.redirectTo('#apps/1'); // redirect to main policy if in apps view
                 }
             }
         });
