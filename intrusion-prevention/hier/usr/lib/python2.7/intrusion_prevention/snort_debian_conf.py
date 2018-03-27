@@ -42,7 +42,7 @@ class SnortDebianConf:
             if match_var:
                 line = "DEBIAN_SNORT_" + match_var.group(1) + "=" + '"' + self.variables[match_var.group(1)] + '"'
             if self._debug:
-                print self.__class__.__name__ + ":" + inspect.stack()[0][3] + ":line=" + line
+                print(self.__class__.__name__ + ":" + inspect.stack()[0][3] + ":line=" + line)
             conf_file.write( line + "\n" )
         conf_file.close()
         
