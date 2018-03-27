@@ -1,8 +1,14 @@
+
 Ext.define('Ung.view.Main', {
-    extend: 'Ung.view.reports.Main', // defined in module
-    // layout: 'border',
-    viewModel: {
-        data: { servlet: 'REPORTS' }
+    extend: 'Ext.panel.Panel',
+    layout: 'card',
+    border: false,
+    bodyBorder: false,
+
+    viewModel: {},
+
+    bind: {
+        activeItem: '{activeItem}'
     },
     dockedItems: [{
         xtype: 'toolbar',
@@ -19,6 +25,41 @@ Ext.define('Ung.view.Main', {
             html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
             hrefTarget: '_self',
             href: '#'
+        }, {
+            xtype: 'component',
+            style: { color: '#CCC' },
+            html: '<h2>' + 'Reports'.t() + '</h2>'
+        }]
+    }],
+    items: [{
+        xtype: 'ung.reports',
+        itemId: 'reports',
+        viewModel: {
+            data: { servlet: 'REPORTS' }
+        }
+    }, {
+        xtype: 'container',
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
+        padding: 50,
+        itemId: 'invalidRoute',
+        items: [{
+            xtype: 'component',
+            style: {
+                textAlign: 'center'
+            },
+            html: '<i class="fa fa-warning fa-5x fa-gray"></i> <h1>Invalid route!</h1>'
+        }, {
+            xtype: 'button',
+            iconCls: 'fa fa-arrow-left',
+            scale: 'medium',
+            focusable: false,
+            text: 'Click to go go back'.t(),
+            handler: function() {
+                Ext.util.History.back();
+            }
         }]
     }]
 });
@@ -32,9 +73,17 @@ Ext.define('Ung.controller.Global', {
         'ReportsTree'
     ],
 
-    refs: {
-        reportsView: '#reports',
+    listen: {
+        controller: {
+            '#': {
+                unmatchedroute: 'onUnmatchedRoute'
+            }
+        },
+        global: {
+            invalidquery: 'onUnmatchedRoute'
+        }
     },
+
     config: {
         routes: {
             '': 'onMain',
@@ -48,7 +97,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onMain: function (query) {
-        var reportsVm = this.getReportsView().getViewModel(),
+        var reportsVm = Ung.app.getMainView().down('#reports').getViewModel(), validQuery = true,
             route = {}, conditions = [],
             condsQuery = '', decoded, parts, key, sep, val, fmt;
 
@@ -71,16 +120,25 @@ Ext.define('Ung.controller.Global', {
                 if (key === 'cat' || key === 'rep') {
                     route[key] = val;
                 } else {
-                    conditions.push({
-                        column: key,
-                        operator: sep,
-                        value: val,
-                        autoFormatValue: fmt === 1 ? true : false,
-                        javaClass: 'com.untangle.app.reports.SqlCondition'
-                    });
-                    condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                    if (!key || !sep || !val) {
+                        validQuery = false;
+                    } else {
+                        conditions.push({
+                            column: key,
+                            operator: sep,
+                            value: val,
+                            autoFormatValue: fmt === 1 ? true : false,
+                            javaClass: 'com.untangle.app.reports.SqlCondition'
+                        });
+                        condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                    }
                 }
             });
+        }
+
+        if (!validQuery) {
+            Ext.fireEvent('invalidquery');
+            return;
         }
 
         reportsVm.set('query', {
@@ -89,6 +147,11 @@ Ext.define('Ung.controller.Global', {
             string: condsQuery
         });
 
+        Ung.app.getMainView().getViewModel().set('activeItem', 'reports');
+    },
+
+    onUnmatchedRoute: function () {
+        Ung.app.getMainView().getViewModel().set('activeItem', 'invalidRoute');
     }
 });
 
