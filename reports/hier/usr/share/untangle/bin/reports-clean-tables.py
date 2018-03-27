@@ -6,11 +6,11 @@ from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
 
 def usage():
-     print """\
+     print("""\
 usage: %s [options] <retention in days>
 Options:
     -d <driver>     : "postgresql" or "sqlite"
-""" % sys.argv[0]
+""" % sys.argv[0])
 
 class ArgumentParser(object):
     def __init__(self):
@@ -31,7 +31,7 @@ class ArgumentParser(object):
                   handlers[opt[0]](opt[1])
              return args
         except getopt.GetoptError, exc:
-             print exc
+             print(exc)
              usage()
              exit(1)
 
@@ -73,10 +73,10 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           #obj = eval(name)
           try:
                if "cleanup_tables" in dir(app):
-                    # print "%s.cleanup_tables()" % name
+                    # print("%s.cleanup_tables()" % name)
                     app.cleanup_tables( cutoff )
           except:
-               print "%s.cleanup_tables() Exception:" % name
+               print("%s.cleanup_tables() Exception:" % name)
                traceback.print_exc()
     
 
