@@ -85,7 +85,7 @@ class TunnelVpnTests(unittest2.TestCase):
         currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
         if (currentWanIP == ""):
             raise unittest2.SkipTest("Unable to get WAN IP")
-        print "Original WAN IP: " + currentWanIP
+        print("Original WAN IP: " + currentWanIP)
         app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
         appData = app.getSettings()

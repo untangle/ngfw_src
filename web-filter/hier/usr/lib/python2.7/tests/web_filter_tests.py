@@ -102,7 +102,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings["passReferers"] = False
         self.app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
-        print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
+        print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
         self.block_url_list_clear()
         self.pass_url_list_clear()
@@ -116,7 +116,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings["passReferers"] = True
         self.app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
-        print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
+        print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
         self.block_url_list_clear()
         self.pass_url_list_clear()
@@ -150,23 +150,23 @@ class WebFilterTests(WebFilterBaseTests):
 
         # get the IP address of the block page
         ipfind = remote_control.run_command("grep 'Location' /tmp/web_filter_base_test_120.log", stdout=True)
-        # print 'ipFind %s' % ipfind
+        # print('ipFind %s' % ipfind)
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
-        # print 'Block page IP address is %s' % blockPageIP
+        # print('Block page IP address is %s' % blockPageIP)
         blockParamaters = re.findall( r'\?(.*)\s', ipfind )
         paramaters = blockParamaters[0]
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
-        # print "unBlockParameters %s" % unBlockParameters
-        print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock"
+        # print("unBlockParameters %s" % unBlockParameters)
+        print("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
         self.app.flushAllUnblockedSites()
 
-        print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
+        print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0)
         assert (resultButton == 0)
         assert (resultUnBlock == 0)
@@ -189,15 +189,15 @@ class WebFilterTests(WebFilterBaseTests):
 
         # get the IP address of the block page
         ipfind = remote_control.run_command("grep 'Location' /tmp/%s.log"%fname,stdout=True)
-        print 'ipFind %s' % ipfind
+        print('ipFind %s' % ipfind)
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
-        # print 'Block page IP address is %s' % blockPageIP
+        # print('Block page IP address is %s' % blockPageIP)
         blockParamaters = re.findall( r'\?(.*)\s', ipfind )
         paramaters = blockParamaters[0]
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password=atstest"
-        # print "unBlockParameters %s" % unBlockParameters
+        # print("unBlockParameters %s" % unBlockParameters)
         remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         resultUnBlock = remote_control.run_command("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
 
@@ -208,7 +208,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         self.app.setSettings(settings)
         self.block_url_list_clear()
-        print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
+        print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
 
     def test_010_0000_rule_condition_src_addr(self):
@@ -1010,7 +1010,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_day_of_week_list(self):
         "test DAY_OF_WEEK in a list"
         dayname = (calendar.day_name[datetime.date.today().weekday()]).lower()
-        print dayname
+        print(dayname)
         self.rule_add("DAY_OF_WEEK","xyz," + dayname + ",zyx")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()

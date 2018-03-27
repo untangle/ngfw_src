@@ -95,7 +95,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert (result == 0)
         md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         self.md5StdNum = md5StdNum
-        # print "md5StdNum <%s>" % md5StdNum
+        # print("md5StdNum <%s>" % md5StdNum)
         assert (result == 0)
 
         try:
@@ -208,7 +208,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
+        print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
         assert (md5StdNum != md5TestNum)
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
@@ -231,7 +231,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nukePassSites()
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
-        print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
+        print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
         assert (md5StdNum == md5TestNum)
 
     def test_100_eventlog_httpVirus(self):
@@ -324,7 +324,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to relay through ' + testsite)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
-        print "fname: %s" % fname
+        print("fname: %s" % fname)
         result = remote_control.run_command("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
@@ -401,7 +401,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Email Events',None,1)
-        # print events['list'][0]
+        # print(events['list'][0])
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com",
@@ -423,7 +423,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftpServer + "/debian-live-8.6.0-amd64-standard.iso")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum)
+        print("md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum))
         assert (md5LargePDFClean == md5TestNum)
 
     def test_300_disableAllScans(self):

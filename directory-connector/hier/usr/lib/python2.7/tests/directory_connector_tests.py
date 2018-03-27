@@ -144,7 +144,7 @@ def get_list_of_username_mapped():
     entries = uvmContext.hostTable().getHosts()['list']
     usernames = []
     for entry in entries:
-        print entry
+        print(entry)
         if entry['usernameDirectoryConnector'] != None and entry['usernameDirectoryConnector'] != "":
             usernames.append(entry['usernameDirectoryConnector'])
     return usernames
@@ -155,7 +155,7 @@ def add_ad_settings(ldap_secure=False):
     """
     # test the settings before saving them.
     test_result_string = app.getActiveDirectoryManager().getStatusForSettings(create_ad_settings(ldap_secure)["activeDirectorySettings"]["servers"]["list"][0])
-    print 'AD test_result_string %s' % test_result_string
+    print('AD test_result_string %s' % test_result_string)
     if ("success" in test_result_string):
         # settings are good so save them
         app.setSettings(create_ad_settings())
@@ -170,7 +170,7 @@ def add_radius_settings():
     """
     # test the settings before saving them.
     test_result_string = app.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
-    print 'RADIUS test_result_string %s' % test_result_string
+    print('RADIUS test_result_string %s' % test_result_string)
     if ("success" in test_result_string):
         # settings are good so save them
         app.setSettings(create_radius_settings())
@@ -207,8 +207,8 @@ def find_name_in_host_table (hostname='test'):
     session_list = host_list['list']
     # find session generated with netcat in session table.
     for i in range(len(session_list)):
-        print session_list[i]
-        # print "------------------------------"
+        print(session_list[i])
+        # print("------------------------------")
         if (session_list[i]['address'] == remote_control.clientIP) and (session_list[i]['username'] == hostname):
             found_test_session = True
             break
@@ -267,7 +267,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
-        print 'result %s' % result
+        print('result %s' % result)
 
         assert (result == 0)
 
@@ -278,7 +278,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
-        print 'result %s' % result
+        print('result %s' % result)
 
         assert (result == 0)
 
@@ -294,9 +294,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         test_name_lower = test_name.lower()
         result = register_username(http_admin, test_name)
         user_list = get_list_of_username_mapped()
-        # print 'test_name %s' % test_name
-        # print 'result %s' % result
-        # print 'user_list %s' % user_list
+        # print('test_name %s' % test_name)
+        # print('result %s' % result)
+        # print('user_list %s' % user_list)
         found_username = find_name_in_host_table(test_name_lower)
         assert(found_username)
         assert (result == 0)
@@ -321,8 +321,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # Force at least one upper-case character
         result = register_username(http_admin, test_name.title())
         user_list = get_list_of_username_mapped()
-        # print 'result %s' % result
-        # print 'num %s' % numUsers
+        # print('result %s' % result)
+        # print('num %s' % numUsers)
         test_name = test_name.lower()
         found_username = find_name_in_host_table(test_name)
 
@@ -342,8 +342,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         test_name = test_name.lower()
         result = register_username_old(http_admin, test_name)
         user_list = get_list_of_username_mapped()
-        # print 'result %s' % result
-        # print 'num %s' % numUsers
+        # print('result %s' % result)
+        # print('num %s' % numUsers)
         found_username = find_name_in_host_table(test_name)
 
         assert(found_username)
@@ -357,7 +357,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
-        print 'result %s' % result
+        print('result %s' % result)
         assert (result == 0)
 
         string_to_find = "authentication success"
@@ -375,7 +375,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
-        print 'result %s' % result
+        print('result %s' % result)
         assert (result == 0)
 
         string_to_find = "authentication success"
@@ -395,7 +395,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=False)
-        print 'result %s' % result
+        print('result %s' % result)
         assert (result == 0)
 
         appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
@@ -407,7 +407,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             userName = appADData[i]['uid']
             if (AD_USER in userName):
                 result = 0
-            # print 'userName %s' % userName
+            # print('userName %s' % userName)
         assert (result == 0)
 
     def test_051_checkListOfADUsers_Secure(self):
@@ -419,7 +419,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=True)
-        print 'result %s' % result
+        print('result %s' % result)
         assert (result == 0)
 
         appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
@@ -431,7 +431,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             userName = appADData[i]['uid']
             if (AD_USER in userName):
                 result = 0
-            # print 'userName %s' % userName
+            # print('userName %s' % userName)
         assert (result == 0)
 
     def test_060_setRadiusSettings(self):
@@ -449,7 +449,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
                 break
             else:
                 attempts += 1
-        print 'test_result_string %s attempts %s' % (test_result_string, attempts) # debug line
+        print('test_result_string %s attempts %s' % (test_result_string, attempts) ) # debug line
         assert ("success" in test_result_string)
 
     @staticmethod

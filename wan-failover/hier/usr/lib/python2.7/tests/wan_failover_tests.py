@@ -50,15 +50,15 @@ def offline_wan_count():
 def wait_for_wan_offline(maxWait=120,increment=1):
     offline_count = offline_wan_count()
     original_offline_count = offline_count
-    print "original : offline_count: %s"%(str(original_offline_count))
+    print("original : offline_count: %s"%(str(original_offline_count)))
     while maxWait > 0:
         time.sleep(increment)
         offline_count = offline_wan_count()
         maxWait = maxWait - increment
-        print "current  : offline_count: %s"%(str(offline_count))
+        print("current  : offline_count: %s"%(str(offline_count)))
         if (offline_count > original_offline_count):
             break
-    print "final    : offline_count: %s"%(str(offline_count))
+    print("final    : offline_count: %s"%(str(offline_count)))
 
 def set_interface_field( interfaceId, netsettings, fieldName, value ):
     for interface in netsettings['interfaces']['list']:
@@ -113,9 +113,8 @@ class WanFailoverTests(unittest2.TestCase):
         indexOfWans = global_functions.get_wan_tuples()
 
     def setUp(self):
-        print
-
-    # verify client is online
+        print() # verify client is online
+        
     def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -165,7 +164,7 @@ class WanFailoverTests(unittest2.TestCase):
         nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            print "Testing interface : " + str(wanIndex)
+            print("Testing interface : " + str(wanIndex))
             build_wan_test(wanIndex, "arp")
 
         time.sleep(30)
@@ -295,7 +294,7 @@ class WanFailoverTests(unittest2.TestCase):
                     offlineWanIndex = wanIndex
                     build_wan_test(offlineWanIndex, "ping", pingHost="192.168.244.1")
                     invalidWanIP = wanIndexTup[2]
-                    print "InvalidIP is %s" % invalidWanIP
+                    print("InvalidIP is %s" % invalidWanIP)
                 else:
                     build_wan_test(wanIndex, "ping")
 
@@ -308,7 +307,7 @@ class WanFailoverTests(unittest2.TestCase):
                 # Skip the WAN IP address check part of the test if test box only has one WAN
                 for x in range(0, 8):
                     result = global_functions.get_public_ip_address()
-                    print "IP address %s and invalidWanIP %s" % (result,invalidWanIP)
+                    print("IP address %s and invalidWanIP %s" % (result,invalidWanIP))
                     assert (result != invalidWanIP)    
 
     def test_065_all_wan_offline_but_one(self):
@@ -331,7 +330,7 @@ class WanFailoverTests(unittest2.TestCase):
                 else:
                     validWanIP = wanIndexTup[2]
                     build_wan_test(upWanIndex, "ping", pingHost="8.8.8.8")
-                    print "validIP is %s" % validWanIP
+                    print("validIP is %s" % validWanIP)
 
             wait_for_wan_offline()
 
@@ -343,7 +342,7 @@ class WanFailoverTests(unittest2.TestCase):
 
             for x in range(0, 8):
                 result = global_functions.get_public_ip_address()
-                print "IP address %s and validWanIP %s" % (result,validWanIP)
+                print("IP address %s and validWanIP %s" % (result,validWanIP))
                 assert (result == validWanIP)    
 
         # Check to see if the faceplate counters have incremented. 

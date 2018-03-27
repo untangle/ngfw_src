@@ -85,7 +85,7 @@ class IntrusionPreventionInterface:
         try:
             connection = opener.open(request)
         except Exception, e:
-            print e
+            print(e)
             connection = e
 
         if connection.code == 200:
@@ -490,8 +490,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print "pre_count: %i"%pre_count
-        print "post_count: %i"%post_count
+        print("pre_count: %i"%pre_count)
+        print("post_count: %i"%post_count)
         assert(pre_count < post_count)
 
     def test_041_variable_modify(self):
@@ -520,8 +520,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print "pre_count: %i"%pre_count
-        print "post_count: %i"%post_count
+        print("pre_count: %i"%pre_count)
+        print("post_count: %i"%post_count)
         assert(pre_count == post_count)
 
     def test_042_variable_delete(self):
@@ -550,8 +550,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print "pre_count: %i"%pre_count
-        print "post_count: %i"%post_count
+        print("pre_count: %i"%pre_count)
+        print("post_count: %i"%post_count)
         assert(pre_count > post_count)
 
     #
@@ -733,9 +733,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         post_events_detect = global_functions.get_app_metric_value(app,"detect")
         post_events_block = global_functions.get_app_metric_value(app,"block")
 
-        print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
-        print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
-        print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
+        print("pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan)))
+        print("pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect)))
+        print("pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block)))
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_detect < post_events_detect)
         assert(pre_events_block < post_events_block)
@@ -779,7 +779,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                "blocked", True,
                                                min_date=startTime )
 
-        print "found: %s"%str(found)
+        print("found: %s"%str(found))
         assert(not found)
 
     def test_071_bypass_tcp_block(self):
@@ -817,7 +817,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                "blocked", True,
                                                min_date=startTime )
 
-        print "found: %s"%str(found)
+        print("found: %s"%str(found))
         assert(not found)
 
     @staticmethod

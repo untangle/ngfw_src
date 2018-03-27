@@ -201,7 +201,7 @@ class IPsecTests(unittest2.TestCase):
         pairMatchNotFound = True
         listOfPairs = ""
         for hostConfig in configuredHostIPs:
-            print hostConfig[0]
+            print(hostConfig[0])
             listOfPairs += str(hostConfig[0]) + ", "
             if (wan_IP in hostConfig[0]):
                 appendTunnel(addIPSecTunnel(ipsecHost,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
@@ -304,7 +304,7 @@ class IPsecTests(unittest2.TestCase):
         ipsecSettings["vpnflag"] = False
         app.setSettings(ipsecSettings)
         for hostConfig in configuredHostIPs:
-            print hostConfig[0]
+            print(hostConfig[0])
             listOfPairs += str(hostConfig[0]) + ", "
             if (wan_IP in hostConfig[0]):
                 appendTunnel(addIPSecTunnel(ipsecHostname,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
@@ -328,7 +328,7 @@ class IPsecTests(unittest2.TestCase):
     def finalTearDown(self):
         global app, appAD
         # Restore original settings to return to initial settings
-        # print "orig_netsettings <%s>" % orig_netsettings
+        # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

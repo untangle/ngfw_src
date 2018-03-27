@@ -30,7 +30,7 @@ defaultRackId = 1
 
 def setWeightOfWan(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
-        print "Invalid interface: " + str(interfaceId)
+        print("Invalid interface: " + str(interfaceId))
         return
     appData = app.getSettings()
     if (interfaceId == "all"):
@@ -82,7 +82,7 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
     return rule
 
 def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
-    print "wanDestination: %s" % wanDestination
+    print("wanDestination: %s" % wanDestination)
     global ruleCounter
     appData = app.getSettings()
     name = "test route " + str(ruleValue) + " Wan " + str(wanDestination)
@@ -206,9 +206,7 @@ class WanBalancerTests(unittest2.TestCase):
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
     def setUp(self):
-        print
-
-    # verify client is online
+        print() # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -218,10 +216,10 @@ class WanBalancerTests(unittest2.TestCase):
 
     def test_020_stickySession(self):
         result = global_functions.get_public_ip_address()
-        print "Initial IP address %s" % result
+        print("Initial IP address %s" % result)
         for x in range(0, 8):
             result2 = global_functions.get_public_ip_address()
-            print "Test IP address %s" % result2
+            print("Test IP address %s" % result2)
             assert (result == result2)
     
     def test_030_heavyWeightWan(self):
@@ -237,7 +235,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that only the weighted interface is used 10 times
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
-                print "Weighted IP %s and retrieved IP %s" % (weightedIP, result)
+                print("Weighted IP %s and retrieved IP %s" % (weightedIP, result))
                 assert (result == weightedIP)
             # reset weight to zero
             setWeightOfWan(wanIndex, 0)
@@ -278,7 +276,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that only the routed interface is used 10 times
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
-                print "Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
         nukeWanBalancerRouteRules()
 
@@ -294,14 +292,14 @@ class WanBalancerTests(unittest2.TestCase):
         port80IP = indexOfWans[0][2]
         port443Index = indexOfWans[1][0]
         port443IP = indexOfWans[1][2]
-        print "index443 %s" % port443Index
+        print("index443 %s" % port443Index)
         buildSingleWanRouteRule("DST_PORT",80,(port80Index))
         buildSingleWanRouteRule("DST_PORT",443,(port443Index))
 
         for x in range(0, 9):
             result80 = global_functions.get_public_ip_address()
             result443 = global_functions.get_public_ip_address(base_URL="https://test.untangle.com",extra_options="--no-check-certificate --secure-protocol=auto")
-            print "80 IP %s and 443 IP %s" % (result80, result443)
+            print("80 IP %s and 443 IP %s" % (result80, result443))
             assert (result80 == port80IP)
             assert (result443 == port443IP)
 
@@ -329,7 +327,7 @@ class WanBalancerTests(unittest2.TestCase):
 
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
-                print "Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
                 subprocess.check_output("ip route flush cache", shell=True)
         
@@ -349,11 +347,11 @@ class WanBalancerTests(unittest2.TestCase):
         routedIPGateway = routedIndexTup[3]
         appendRouteRule(createRouteRule(ip_address_testdestination,32,routedIPGateway))
         result1 = global_functions.get_public_ip_address()
-        print "Routed IP %s and retrieved IP %s" % (routedIP, result1)
+        print("Routed IP %s and retrieved IP %s" % (routedIP, result1))
         # Add WAN route IP to Balancer
         buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,weightedIndexTup[0])
         result2 = global_functions.get_public_ip_address(extra_options="--no-check-certificate --secure-protocol=auto")
-        print "Routed IP %s and retrieved IP %s" % (routedIP, result2)
+        print("Routed IP %s and retrieved IP %s" % (routedIP, result2))
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == routedIP)
@@ -394,7 +392,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that other interfaces are used 10 times
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
-                print "Weighted IP %s and retrieved IP %s" % (weightedIP, result)
+                print("Weighted IP %s and retrieved IP %s" % (weightedIP, result))
                 assert (result != weightedIP)
             # reset weight to zero and interface to valid rule
             setWeightOfWan(wanIndex, 0)
@@ -426,7 +424,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
-                print "WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
             buildWanTestRule(wanIndex, "ping", "192.168.244.1")
@@ -444,7 +442,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
-                print "WAN Down WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("WAN Down WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result != routedIP)
 
         nukeWanBalancerRules();
@@ -474,7 +472,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
-                print "Network Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
             buildWanTestRule(wanIndex, "ping", "192.168.244.1")
@@ -492,7 +490,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
-                print "WAN Down Network Routed IP %s and retrieved IP %s" % (routedIP, result)
+                print("WAN Down Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
 
         nukeFailoverRules()
@@ -532,7 +530,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
-                print "NAT 1:1 IP %s External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result)
+                print("NAT 1:1 IP %s External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result))
                 assert (result == wanExternalIP)
             # now down the selected wan and see if traffic flows out the other wan
             buildWanTestRule(wanIndex, "ping", "192.168.244.1")
@@ -550,7 +548,7 @@ class WanBalancerTests(unittest2.TestCase):
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
-                print "WAN Down NAT 1:1 IP %s  External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result)
+                print("WAN Down NAT 1:1 IP %s  External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result))
                 assert (result == wanExternalIP)
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 

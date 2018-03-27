@@ -27,9 +27,9 @@ smtpServerHost = global_functions.testServerHost
 def getLatestMailSender():
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
     results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
-    # print "Results from getting mailpkg.tar <%s>" % results
+    # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
-    # print "Results from untaring mailpkg.tar <%s>" % results
+    # print("Results from untaring mailpkg.tar <%s>" % results)
 
 def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
     mailResult = None
@@ -137,7 +137,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
             events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
             assert(events != None)
-            # print events['list'][0]
+            # print(events['list'][0])
             found = global_functions.check_events( events.get('list'), 5,
                                                 'c_server_addr', ip_address_testuntangle,
                                                 's_server_port', 25,
@@ -208,7 +208,7 @@ class PhishBlockerTests(unittest2.TestCase):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
         tlsSMTPResult = sendPhishMail(host=smtpServerHost, useTLS=True)
-        # print "TLS  : " + str(tlsSMTPResult)
+        # print("TLS  : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
        
     def test_060_checkTLSwSSLInspector(self):
@@ -218,7 +218,7 @@ class PhishBlockerTests(unittest2.TestCase):
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         appSSL.start()
         tlsSMTPResult = sendPhishMail(mailfrom="test060", host=smtpServerHost, useTLS=True)
-        # print "TLS  : " + str(tlsSMTPResult)
+        # print("TLS  : " + str(tlsSMTPResult))
         appSSL.stop()
         assert(tlsSMTPResult == 0)
 
