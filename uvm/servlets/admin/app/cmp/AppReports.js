@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.AppReports', {
     bind: {
         collapsed: '{instance.runState !== "RUNNING"}',
         disabled: '{instance.runState !== "RUNNING"}',
-        hidden: '{!reportsEnabled}'
+        hidden: '{!reportsAppStatus.enabled}'
     },
 
     items: [{

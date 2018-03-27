@@ -483,22 +483,28 @@
         }
     }
 
-
-    .drag-handle {
-        background: url(/root/drag-handle.png) no-repeat center right;
-        cursor: move;
-        opacity: 0;
-        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
-        .x-grid-cell-inner {
-            padding: 0;
+    .reorder .x-grid-cell-inner {
+        padding: 0;
+        i {
+            font-size: 9px;
+            color: #999;
+            cursor: move;
+            padding: 5px 0;
         }
     }
-
-    .x-grid-item-over {
-        .drag-handle {
-            opacity: 1;
-        }
+    .enable .x-grid-cell-inner {
+        padding: 3px 0 4px 3px;
+        // i {
+        //     font-size: 9px;
+        //     color: #999;
+        //     cursor: move;
+        //     padding: 5px 0;
+        // }
     }
+    .x-btn-remove-small {
+        padding: 3px;
+    }
+
 }
 
 .menu-icon {

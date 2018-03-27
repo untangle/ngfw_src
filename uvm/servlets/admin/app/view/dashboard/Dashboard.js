@@ -6,21 +6,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     alias: 'widget.ung-dashboard',
     itemId: 'dashboardMain',
 
-    /* requires-start */
-    requires: [
-        'Ung.view.dashboard.DashboardController',
-        'Ung.view.dashboard.Queue',
-        'Ung.widget.Report',
-
-        'Ung.widget.WidgetController',
-        'Ung.widget.Information',
-        'Ung.widget.Resources',
-        'Ung.widget.CpuLoad',
-        'Ung.widget.NetworkInformation',
-        'Ung.widget.NetworkLayout',
-        'Ung.widget.MapDistribution'
-    ],
-    /* requires-end */
     controller: 'dashboard',
     viewModel: {
         data: {
@@ -37,23 +22,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }
     },
 
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'top',
-        ui: 'footer',
-        style: { background: '#D8D8D8' },
-        items: [{
-            text: 'Manage Widgets'.t(),
-            iconCls: 'fa fa-cog',
-            handler: 'toggleManager'
-        }, '-', {
-            xtype: 'globalconditions',
-            context: 'DASHBOARD'
-        }]
-    }],
-
     config: {
-        settings: null // the dashboard settings object
+        settings: null // the dashboard settings object / not used, need to check
     },
 
     layout: 'border',
@@ -64,97 +34,38 @@ Ext.define('Ung.view.dashboard.Dashboard', {
 
     items: [{
         region: 'west',
-        // title: 'Manage Widgets'.t(),
-
         dockedItems: [{
-            xtype: 'toolbar',
-            border: false,
-            dock: 'top',
-            cls: 'report-header',
-            // height: 53,
-            padding: '10 5',
-            items: [{
-                xtype: 'component',
-                html: '<h2 style="margin: 0;">' + 'Manage Widgets'.t() + '</h2>'
-            }, '->', {
-                xtype: 'tool',
-                type: 'close',
-                callback: 'toggleManager'
-            }]
-        }, {
-            xtype: 'toolbar',
-            dock: 'top',
-            padding: 10,
-            style: {
-                background: '#FFF'
-            },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            hidden: true,
-            bind: {
-                hidden: '{!reportsInstalled}'
-            },
-            items: [{
-                xtype: 'label',
-                bind: {
-                    html: '<strong>' + 'Timeframe'.t() + '</strong>: ' + '{timeframeText}'
-                }
-            }, {
-                xtype: 'slider',
-                bind: '{timeframe}',
-                increment: 1,
-                minValue: 1,
-                maxValue: 24,
-                publishes: 'value',
-                publishOnComplete: false
-            }
-            // , {
-            //     xtype: 'combo',
-            //     itemId: 'theme',
-            //     fieldLabel: 'Theme'.t(),
-            //     editable: false,
-            //     store: [
-            //         ['DEFAULT', 'Default'.t()],
-            //         ['DARK', 'Dark'.t()],
-            //         ['SAND', 'Sand'.t()]
-            //     ],
-            //     queryMode: 'local',
-            //     bind: {
-            //         value: '{theme}',
-            //     },
-            //     allowBlank: false
-            // }
-            ]
-        }, {
             xtype: 'toolbar',
             dock: 'top',
             ui: 'footer',
+            style: { background: '#D8D8D8' },
             items: [{
-                itemId: 'addWidgetBtn',
-                text: 'Add'.t(),
-                iconCls: 'fa fa-plus-circle',
-                handler: 'addWidget',
-                hidden: true,
-                bind: {
-                    hidden: '{!reportsInstalled}'
-                }
+                xtype: 'component',
+                html: 'Manage Widgets'.t()
             }, '->', {
-                text: 'Import'.t(),
-                iconCls: 'fa fa-download',
-                tooltip: 'Import'.t(),
-                handler: 'importWidgets'
-            }, {
-                text: 'Export'.t(),
-                iconCls: 'fa fa-upload',
-                tooltip: 'Export'.t(),
-                handler: 'exportWidgets'
+                iconCls: 'fa fa-cog',
+                focusable: false,
+                menu: {
+                    plain: true,
+                    showSeparator: false,
+                    mouseLeaveDelay: 0,
+                    items: [
+                        { text: 'Import'.t(), iconCls: 'fa fa-download', handler: 'importWidgets' },
+                        { text: 'Export'.t(), iconCls: 'fa fa-upload', handler: 'exportWidgets' },
+                        '-',
+                        { text: 'Create New'.t(), iconCls: 'fa fa-area-chart', handler: 'addWidget' },
+                        '-',
+                        { text: 'Reorder'.t(), iconCls: 'fa fa-sort', handler: 'reorderWidgets' },
+                        '-',
+                        { text: 'Reset to Defaults'.t(), iconCls: 'fa fa-rotate-left', handler: 'resetDashboard' }
+                    ]
+                }
             }]
         }],
 
         itemId: 'dashboardManager',
         reference: 'dashboardManager',
+        xtype: 'grid',
         width: 250,
         minWidth: 250,
         maxWidth: 350,
@@ -162,9 +73,10 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         animCollapse: false,
         floatable: false,
         cls: 'widget-manager',
+        disableSelection: true,
         split: true,
-        xtype: 'grid',
         hideHeaders: true,
+        rowLines: false,
         hidden: true,
         bind: {
             hidden: '{!managerVisible}'
@@ -174,11 +86,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             plugins: {
                 ptype: 'gridviewdragdrop',
                 dragText: 'Drag and drop to reorganize'.t(),
-                // dragZone: {
-                //     onBeforeDrag: function (data, e) {
-                //         return Ext.get(e.target).hasCls('drag-handle');
-                //     }
-                // }
+                dragZone: {
+                    onBeforeDrag: function (data, e) {
+                        return Ext.get(e.target).hasCls('fa-align-justify');
+                    }
+                }
             },
             stripeRows: false,
             getRowClass: function (record) {
@@ -192,6 +104,14 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         },
         columns: [{
             width: 28,
+            align: 'center',
+            hidden: true,
+            renderer: function (val, meta) {
+                meta.tdCls = 'reorder';
+                return '<i class="fa fa-align-justify"></i>';
+            }
+        }, {
+            width: 20,
             align: 'center',
             sortable: false,
             hideable: false,
@@ -226,11 +146,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             itemmouseleave : 'onItemLeave',
             cellclick: 'onItemClick'
         },
-        fbar: [{
-            text: 'Reset'.t(),
-            iconCls: 'fa fa-rotate-left',
-            handler: 'resetDashboard'
-        }, '->', {
+        fbar: ['->', {
+            text: 'Cancel'.t(),
+            iconCls: 'fa fa-ban',
+            handler: 'toggleManager'
+        }, {
             text: 'Apply'.t(),
             iconCls: 'fa fa-floppy-o',
             handler: 'applyChanges'
@@ -243,7 +163,69 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         bodyPadding: 8,
         border: false,
         bodyBorder: false,
-        scrollable: true
+        scrollable: true,
+        dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'top',
+            ui: 'footer',
+            style: { background: '#D8D8D8' },
+            items: [{
+                text: 'Settings'.t(),
+                iconCls: 'fa fa-cog',
+                handler: 'toggleManager',
+                hidden: true,
+                bind: {
+                    hidden: '{managerVisible}'
+                }
+            }, {
+                xtype: 'globalconditions',
+                context: 'DASHBOARD',
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled}'
+                }
+            }, {
+                xtype: 'container',
+                itemId: 'since',
+                margin: '0 5',
+                layout: {
+                    type: 'hbox',
+                    align: 'middle'
+                },
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled}'
+                },
+                items: [{
+                    xtype: 'component',
+                    margin: '0 5 0 0',
+                    style: {
+                        fontSize: '11px'
+                    },
+                    html: '<strong>' + 'Since:'.t() + '</strong>'
+                }, {
+                    xtype: 'button',
+                    iconCls: 'fa fa-clock-o',
+                    text: 'Today'.t(),
+                    focusable: false,
+                    menu: {
+                        plain: true,
+                        showSeparator: false,
+                        mouseLeaveDelay: 0,
+                        items: [
+                            { text: '1 Hour ago'.t(), value: 1 },
+                            { text: '3 Hours ago'.t(), value: 3 },
+                            { text: '6 Hours ago'.t(), value: 6 },
+                            { text: '12 Hours ago'.t(), value: 12 },
+                            { text: '24 Hours ago'.t(), value: 24 }
+                        ],
+                        listeners: {
+                            click: 'updateSince'
+                        }
+                    }
+                }],
+            }]
+        }]
     }],
     listeners: {
         showwidgeteditor: 'showWidgetEditor'

@@ -216,11 +216,11 @@ Ext.define('Ung.view.extra.Users', {
         xtype: 'button',
         text: 'View Reports'.t(),
         iconCls: 'fa fa-line-chart',
-        href: '#reports/users',
+        href: '#reports?cat=users',
         hrefTarget: '_self',
         hidden: true,
         bind: {
-            hidden: '{!reportsEnabled}'
+            hidden: '{!reportsAppStatus.enabled}'
         }
     }],
     bbar: ['->', {
