@@ -73,7 +73,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         animCollapse: false,
         floatable: false,
         cls: 'widget-manager',
-        disableSelection: true,
+        // disableSelection: true, // if disabled the drag/drop ordering does not work
         split: true,
         hideHeaders: true,
         rowLines: false,
