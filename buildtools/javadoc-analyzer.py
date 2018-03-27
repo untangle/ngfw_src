@@ -162,7 +162,7 @@ class JavaDocValidator:
 
         if Debug:
             print("\tvalidating %s" % (self.get_definition()))
-            print self.tree
+            print(self.tree)
         if "documentation" not in self.tree or self.tree["documentation"] is None:
             self.missing = True
             return
@@ -345,7 +345,7 @@ def print_report(total_only=False):
                 continue
             report = validator.get_report()
             if total_only is False and validator.valid is not True and show_path is False:
-                print file_path
+                print(file_path)
                 show_path = True
             if total_only is False and validator.valid is not True or Show_valid is True:
                 print("\t" +validator.get_definition())
