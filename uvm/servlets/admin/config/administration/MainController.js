@@ -425,20 +425,21 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'SERVER') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.UvmContext.certificateManager.generateServerCertificate', certSubject, altNames)
-            .then(function (result) {
-                if(Util.isDestroyed(me)){
-                    return;
-                }
-                me.certDialog.close();
-                me.refreshServerCertificate();
-                me.certDialog.setLoading(false);
-            }, function (ex) {
-                Util.handleException('Error during certificate generation.'.t());
-                if(!Util.isDestroyed(me)){
+            Rpc.asyncData('rpc.certificateManager.generateServerCertificate', certSubject, altNames)
+                .then(function (result) {
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
+                    me.certDialog.close();
+                    me.refreshServerCertificate();
+                    if (result === false) {
+                        Ext.MessageBox.alert('Error'.t(), 'Certificate greation failed. Please confirm the information provided is valid and try again.'.t());
+                    }
+                }, function (ex) {
+                    Util.handleException('Error during certificate generation.'.t());
+                }).always(function () {
                     me.certDialog.setLoading(false);
-                }
-            });
+                });
         }
 
         if (certMode === 'CSR') {
