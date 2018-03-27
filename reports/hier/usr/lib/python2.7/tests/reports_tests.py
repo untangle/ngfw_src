@@ -161,7 +161,7 @@ class ReportsTests(unittest2.TestCase):
         global app, orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host, web_app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             # report app is normally installed.
-            # print "App %s already installed" % self.appName()
+            # print("App %s already installed" % self.appName())
             # raise Exception('app %s already instantiated' % self.appName())
             app = uvmContext.appManager().app(self.appName())
         else:
@@ -188,8 +188,7 @@ class ReportsTests(unittest2.TestCase):
                     can_syslog = True
                
     def setUp(self):
-        print
-                
+        print(                )
     # verify client is online
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -204,7 +203,7 @@ class ReportsTests(unittest2.TestCase):
 
         firewall_app = None
         if (uvmContext.appManager().isInstantiated("firewall")):
-            print "App %s already installed" % "firewall"
+            print("App %s already installed" % "firewall")
             firewall_app = uvmContext.appManager().app("firewall")
         else:
             firewall_app = uvmContext.appManager().instantiate("firewall", default_policy_id)
@@ -254,16 +253,16 @@ class ReportsTests(unittest2.TestCase):
             rsyslogResult = remote_control.run_command("sudo tail -n 100 /var/log/syslog | grep 'FirewallEvent'", host=syslog_server_host, stdout=True)
             tries -= 1
             for line in rsyslogResult.splitlines():
-                print "\nchecking line: %s " % line
+                print("\nchecking line: %s " % line)
                 found_count = 0
                 for string in strings_to_find:
                     if not string in line:
-                        print "missing: %s" % string
+                        print("missing: %s" % string)
                         # continue
                         break
                     else:
                         found_count += 1
-                        print "found: %s" % string
+                        print("found: %s" % string)
                 # break if all the strings have been found.
                 if found_count == num_string_find:
                     break
@@ -304,11 +303,11 @@ class ReportsTests(unittest2.TestCase):
         post_data += "&arg4=time_stamp,c_client_addr,s_server_addr,s_server_port,username,hostname,host,uri,web_filter_blocked,web_filter_flagged,web_filter_reason,web_filter_category"
         post_data += "&arg5=" + str(an_hour_ago_epoch)  # epoch start time
         post_data += "&arg6=" + str(current_epoch)  # epach end time
-        # print post_data
+        # print(post_data)
         
         subprocess.call(("wget -q -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
         result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
-        print "Result of wc on %s : %s" % (csv_tmp,str(result))
+        print("Result of wc on %s : %s" % (csv_tmp,str(result)))
         assert(result > 3)
 
     def test_100_email_report_admin(self):
@@ -479,13 +478,13 @@ class ReportsTests(unittest2.TestCase):
         mime_content_ids = []
         for part in msg.walk():
             if part.get_content_maintype() == "image":
-                # print "Image found"
+                # print("Image found")
                 for index, key in enumerate(part.keys()):
                     if key == "Content-ID":
                         email_image = part.get_payload(decode=True)
                         im = Image.open(StringIO(email_image))
                         (image_width,image_height) = im.size
-                        print "Image width: %d height: %d" % (image_width, image_height)
+                        print("Image width: %d height: %d" % (image_width, image_height))
                         assert(image_width < 350 and image_height < 350)
 
     def test_103_email_report_verify_apps(self):
@@ -518,7 +517,7 @@ class ReportsTests(unittest2.TestCase):
         apps = []
         for name in ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]:
             if (uvmContext.appManager().isInstantiated(name)):
-                print "App %s already installed" % name
+                print("App %s already installed" % name)
             else:
                 apps.append( uvmContext.appManager().instantiate(name, default_policy_id) )
             
@@ -558,7 +557,7 @@ class ReportsTests(unittest2.TestCase):
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email='test', access=True))  # password = passwd
         app.setSettings(settings)
         adminURL = global_functions.get_http_url()
-        print "URL %s" % adminURL
+        print("URL %s" % adminURL)
         resultLoginPage = subprocess.call("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login", shell=True)
         assert (resultLoginPage == 0)
         

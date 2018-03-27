@@ -25,14 +25,14 @@ smtpServerHost = global_functions.testServerHost
 def getLatestMailSender():
     remote_control.run_command("rm -f mailpkg.tar") # remove all previous mail packages
     results = remote_control.run_command("wget -q http://test.untangle.com/test/mailpkg.tar")
-    # print "Results from getting mailpkg.tar <%s>" % results
+    # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
-    # print "Results from untaring mailpkg.tar <%s>" % results
+    # print("Results from untaring mailpkg.tar <%s>" % results)
 
 def sendSpamMail(host=smtpServerHost, useTLS=False):
     mailResult = None
     randomAddress = global_functions.random_email()
-    print "randomAddress: " + randomAddress
+    print("randomAddress: " + randomAddress)
     if useTLS:
         mailResult = remote_control.run_command("python mailsender.py --from=atstest@test.untangle.com --to=" + randomAddress + " ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
     else:
@@ -135,7 +135,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         assert( events != None )
         assert( events.get('list') != None )
 
-        print events['list'][0]
+        print(events['list'][0])
         found = global_functions.check_events( events.get('list'), 10,
                                                's_server_addr', test_untangle_IP,
                                                's_server_port', 25,
@@ -161,7 +161,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         curQuarantine = appSP.getQuarantineMaintenenceView()
         curQuarantineList = curQuarantine.listInboxes()
         for checkAddress in curQuarantineList['list']:
-            print checkAddress
+            print(checkAddress)
             if (checkAddress['address'] == to_address) and (checkAddress['totalMails'] > 0): addressFound = True
         assert(addressFound)
 
@@ -177,7 +177,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         addressFound = False
         curQuarantine = appSP.getQuarantineUserView()
         curQuarantineList = curQuarantine.getInboxRecords(to_address)
-        #print curQuarantineList
+        #print(curQuarantineList)
         assert(len(curQuarantineList['list']) > 0)
 
     def test_050_userQuarantinePurge(self):
@@ -195,7 +195,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         curQuarantineList = curQuarantine.getInboxRecords(to_address)
         initialLen = len(curQuarantineList['list'])
         mailId = curQuarantineList['list'][0]['mailID'];
-        print mailId
+        print(mailId)
         curQuarantine.purge(to_address, [mailId]);
 
         curQuarantineListAfter = curQuarantine.getInboxRecords(to_address)
@@ -254,11 +254,11 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         # just check that the headers were added
         for line in lines:
             if 'X-spam-status' in line:
-                # print line
+                # print(line)
                 match = re.search(r'\sscore\=([0-9.-]+)\srequired\=([0-9.]+) ', line)
                 spamScore =  match.group(1)
                 requiredScore =  match.group(2)
-                print "spamScore: " + spamScore + " requiredScore: " + requiredScore
+                print("spamScore: " + spamScore + " requiredScore: " + requiredScore)
                 return
         assert False 
         # assert(float(spamScore) > 0)
@@ -273,12 +273,12 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         # Make sure SSL Inspector is off
         appSSL.stop()
         tlsSMTPResult, to_address = sendSpamMail(useTLS=True)
-        # print "TLS 1 : " + str(tlsSMTPResult)
+        # print("TLS 1 : " + str(tlsSMTPResult))
         assert(tlsSMTPResult != 0)
         appData['smtpConfig']['allowTls'] = True
         app.setSettings(appData)
         tlsSMTPResult, to_address = sendSpamMail(host=global_functions.testServerHost, useTLS=True)
-        # print "TLS 2 : " + str(tlsSMTPResult)
+        # print("TLS 2 : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
         
     
@@ -296,14 +296,14 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         appSSL.setSettings(appSSLData)
         appSSL.start()
         tlsSMTPResult, to_address = sendSpamMail(useTLS=True)
-        # print "TLS 090 : " + str(tlsSMTPResult)
+        # print("TLS 090 : " + str(tlsSMTPResult))
         appSSL.stop()
         assert(tlsSMTPResult == 0)
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
         assert( events != None )
         assert( events.get('list') != None )
 
-        print events['list'][0]
+        print(events['list'][0])
         found = global_functions.check_events( events.get('list'), 5,
                                                's_server_addr', test_untangle_IP,
                                                's_server_port', 25,

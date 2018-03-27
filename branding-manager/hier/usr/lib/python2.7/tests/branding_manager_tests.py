@@ -55,12 +55,12 @@ class BrandingManagerTests(unittest2.TestCase):
     def initialSetUp(self):
         global appData, app, appWeb
         if (uvmContextLongTimeout.appManager().isInstantiated(self.appName())):
-            print "ERROR: App %s already installed" % self.appName()
+            print("ERROR: App %s already installed" % self.appName())
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContextLongTimeout.appManager().instantiate(self.appName(), defaultRackId)
         appData = app.getSettings()
         if (uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
-            print "ERROR: App %s already installed" % self.appNameWeb()
+            print("ERROR: App %s already installed" % self.appNameWeb())
             raise Exception('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), defaultRackId)
 
@@ -90,45 +90,45 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        print "looking for: \"%s\""%newCompanyName
-        print "in :\"%s\""%matchText
+        print("looking for: \"%s\""%newCompanyName)
+        print("in :\"%s\""%matchText)
         assert(newCompanyName in matchText)
 
         # Verify email address is in the contact link
         myRegex = re.compile('mailto:(.*?)\?', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        print "looking for: \"%s\""%newContactEmail
-        print "in :\"%s\""%matchText
+        print("looking for: \"%s\""%newContactEmail)
+        print("in :\"%s\""%matchText)
         assert(newContactEmail in matchText)
 
         # Verify contact name is in the mailto
         myRegex = re.compile('mailto:.*?>(.*?)<\/a>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        print "looking for: \"%s\""%newContactName
-        print "in :\"%s\""%matchText
+        print("looking for: \"%s\""%newContactName)
+        print("in :\"%s\""%matchText)
         assert(newContactName in matchText)
 
         # Verify URL is in the Logo box
         myRegex = re.compile('<a href\=\"(.*?)\"><img .* src\=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
-        print "looking for: \"%s\""%newURL
-        print "in :\"%s\""%matchText
+        print("looking for: \"%s\""%newURL)
+        print("in :\"%s\""%matchText)
         assert(newURL in matchText)
        
         # Check login page for branding
         internalAdmin = None
-        # print "IP address <%s>" % internalAdmin
+        # print("IP address <%s>" % internalAdmin)
         result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
-        # print "page is <%s>" % result
+        # print("page is <%s>" % result)
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        print "looking for: \"%s\""%newCompanyName
-        print "in :\"%s\""%matchText
+        print("looking for: \"%s\""%newCompanyName)
+        print("in :\"%s\""%matchText)
         assert(newCompanyName in matchText)
 
     def test_021_changeBranding_bannerMessage_added(self):

@@ -420,7 +420,7 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
         v3command += " -X " + v3PrivacyPassphrase
     v3command += " " +  global_functions.get_lan_ip() + " | grep untangle"
 
-    print "v1v2command = " + v1v2command
+    print("v1v2command = " + v1v2command)
     return( v1v2command, v3command )
 
 def trySnmpCommand(command):
@@ -451,7 +451,7 @@ class NetworkTests(unittest2.TestCase):
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        print wan_IP
+        print(wan_IP)
         device_in_office = global_functions.is_in_office_network(wan_IP)
         self.ftpUserName, self.ftpPassword = global_functions.get_live_account_info("ftp")
         
@@ -466,11 +466,11 @@ class NetworkTests(unittest2.TestCase):
                 else:
                     run_ftp_inbound_tests = False
             except:
-                print "Socket test failed to %s" % remote_control.clientIP
+                print("Socket test failed to %s" % remote_control.clientIP)
                 run_ftp_inbound_tests = False
 
     def setUp(self):
-        print
+        print()
         pass
 
     def test_010_clientIsOnline(self):
@@ -495,7 +495,7 @@ class NetworkTests(unittest2.TestCase):
         # Add Alias IP
         AliasIP = appendAliases(remote_control.interface)
         if AliasIP:
-            # print "AliasIP <%s>" % AliasIP
+            # print("AliasIP <%s>" % AliasIP)
             result = remote_control.run_command("ping -c 1 %s" % AliasIP)
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             assert (result == 0)
@@ -560,7 +560,7 @@ class NetworkTests(unittest2.TestCase):
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
         remote_control.run_command("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
         result = remote_control.run_command("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
-        print "result: %s" % str(result)
+        print("result: %s" % str(result))
         assert(result == 0)
 
     # test port forward to multiple ports (tcp port 80,443)
@@ -646,7 +646,7 @@ class NetworkTests(unittest2.TestCase):
             setFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
             # Determine current outgoing IP
             result = global_functions.get_public_ip_address()
-            # print "result " + result + " wanIP " + myWANs[wanIP]
+            # print("result " + result + " wanIP " + myWANs[wanIP])
             assert (result == myWANs[wanIP])
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -655,7 +655,7 @@ class NetworkTests(unittest2.TestCase):
     def test_060_bypassRules(self):
         appFW = None
         if (uvmContext.appManager().isInstantiated(self.appNameFW())):
-            print "ERROR: App %s already installed" % self.appNameFW()
+            print("ERROR: App %s already installed" % self.appNameFW())
             raise Exception('app %s already instantiated' % self.appNameFW())
         appFW = uvmContext.appManager().instantiate(self.appNameFW(), defaultRackId)
         nukeFirstLevelRule('bypassRules')
@@ -699,7 +699,7 @@ class NetworkTests(unittest2.TestCase):
         portResult = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
         epsvResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
         eprtResult = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -709,7 +709,7 @@ class NetworkTests(unittest2.TestCase):
     def test_071_ftpModesFirewalled(self):
         appFW = None
         if (uvmContext.appManager().isInstantiated(self.appNameFW())):
-            print "ERROR: App %s already installed" % self.appNameFW()
+            print("ERROR: App %s already installed" % self.appNameFW())
             raise Exception('app %s already instantiated' % self.appNameFW())
         appFW = uvmContext.appManager().instantiate(self.appNameFW(), defaultRackId)
 
@@ -726,7 +726,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -743,7 +743,7 @@ class NetworkTests(unittest2.TestCase):
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -763,7 +763,7 @@ class NetworkTests(unittest2.TestCase):
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -785,7 +785,7 @@ class NetworkTests(unittest2.TestCase):
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -809,7 +809,7 @@ class NetworkTests(unittest2.TestCase):
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        print("portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult))
         assert (pasvResult == 0)
         assert (portResult == 0)
         assert (epsvResult == 0)
@@ -836,13 +836,13 @@ class NetworkTests(unittest2.TestCase):
         nukeDNSRules()
         addDNSRule(createDNSRule(global_functions.ftpServer,"www.foobar.com"))
         result_mod = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_IP, stdout=True)
-        # print "Results of www.foobar.com <%s>" % result
+        # print("Results of www.foobar.com <%s>" % result)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result_mod)
         ip_address_foobar = (match.group()).replace('address ','')
-        # print "IP address of www.foobar.com <%s>" % ip_address_foobar
-        print "Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftpServer),str(ip_address_foobar))
+        # print("IP address of www.foobar.com <%s>" % ip_address_foobar)
+        print("Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftpServer),str(ip_address_foobar)))
         assert(global_functions.ftpServer == ip_address_foobar)
 
     # Test dynamic hostname
@@ -866,7 +866,7 @@ class NetworkTests(unittest2.TestCase):
             try:
                 result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" http://test.untangle.com/cgi-bin/myipaddress.py", shell=True)
             except subprocess.CalledProcessError, e:
-                print e.output
+                print(e.output)
                 time.sleep(1)
                 continue
             break
@@ -876,7 +876,7 @@ class NetworkTests(unittest2.TestCase):
         if dyn_hostname == "":
             raise unittest2.SkipTest('Skipping since all dyndns names already used')
         else:
-            print "Using name: %s" % dyn_hostname
+            print("Using name: %s" % dyn_hostname)
         dynDNSUserName, dynDNSPassword = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
         if dynDNSUserName == "message":
@@ -902,7 +902,7 @@ class NetworkTests(unittest2.TestCase):
             result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
             match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
             dynIP = (match.group()).replace('address ','')
-            print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
+            print("IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP))
             dynIpFound = False
             if outsideIP == dynIP or outsideIP2 == dynIP:
                 dynIpFound = True
@@ -934,7 +934,7 @@ class NetworkTests(unittest2.TestCase):
         interfaceIP = interface.get('v4StaticAddress')
         interfacePrefix = interface.get('v4StaticPrefix')
         interfaceNet = interfaceIP + "/" + str(interfacePrefix)
-        print "using interface: %i %s\n" % (interfaceId, interface.get('name'))
+        print("using interface: %i %s\n" % (interfaceId, interface.get('name')))
         # get next IP not used
 
         # verify that this NIC is connected (otherwise keepalive wont claim address)
@@ -1002,12 +1002,12 @@ class NetworkTests(unittest2.TestCase):
         # Get current MTU value due to bug 11599
         arg = "ip addr show dev %s" % targetDevice
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        # print "ipAddrShowResults: %s" % ipAddrShowResults
+        # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
         if reValue:
              mtuAutoValue = reValue.group(1)
-        # print "mtuAutoValue: %s" % mtuAutoValue
+        # print("mtuAutoValue: %s" % mtuAutoValue)
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Set eth0 to 1460
         for i in range(len(netsettings['devices']['list'])):
@@ -1018,12 +1018,12 @@ class NetworkTests(unittest2.TestCase):
         # Verify the MTU is set
         arg = "ip addr show dev %s" % targetDevice
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        # print "ipAddrShowResults: %s" % ipAddrShowResults
+        # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
         if reValue:
              mtuValue = reValue.group(1)
-        # print "mtuValue: %s" % mtuValue
+        # print("mtuValue: %s" % mtuValue)
         # manually set MTU back to original value due to bug 11599
         netsettings['devices']['list'][i]['mtu'] = mtuAutoValue
         uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -1032,12 +1032,12 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         arg = "ip addr show dev %s" % targetDevice
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        # print "ipAddrShowResults: %s" % ipAddrShowResults
+        # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtu2Value = None
         if reValue:
              mtu2Value = reValue.group(1)
-        # print "mtu2Value: %s " % mtu2Value
+        # print("mtu2Value: %s " % mtu2Value)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (mtuValue == mtuSetValue)
         assert (mtu2Value == mtuAutoValue)
@@ -1208,8 +1208,8 @@ class NetworkTests(unittest2.TestCase):
             sessionList = result['list']
             # find session generated with netcat in session table.
             for i in range(len(sessionList)):
-                # print sessionList[i]
-                # print "------------------------------"
+                # print(sessionList[i])
+                # print("------------------------------")
                 if (sessionList[i]['preNatClient'] == remote_control.clientIP) and \
                    (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
                    (sessionList[i]['postNatServerPort'] == 80) and \
@@ -1227,8 +1227,8 @@ class NetworkTests(unittest2.TestCase):
         hostList = result['list']
         # find session generated with netcat in session table.
         for i in range(len(hostList)):
-            # print hostList[i]
-            # print "------------------------------"
+            # print(hostList[i])
+            # print("------------------------------")
             if (hostList[i]['address'] == remote_control.clientIP):
                 foundHost = True
                 break
@@ -1331,8 +1331,8 @@ class NetworkTests(unittest2.TestCase):
         hostList = result['list']
         # find session generated with netcat in session table.
         for i in range(len(hostList)):
-            # print hostList[i]
-            # print "------------------------------"
+            # print(hostList[i])
+            # print("------------------------------")
             if (hostList[i]['address'] == remote_control.clientIP):
                 foundHost = hostList[i]
                 break
@@ -1341,7 +1341,7 @@ class NetworkTests(unittest2.TestCase):
         if foundHost.get('macAddress') == None:
             raise unittest2.SkipTest('Skipping because we dont know the MAC')
         
-        print foundHost.get('macAddress')
+        print(foundHost.get('macAddress'))
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
 
@@ -1491,7 +1491,7 @@ class NetworkTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         # Restore original settings to return to initial settings
-        # print "orig_netsettings <%s>" % orig_netsettings
+        # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
 

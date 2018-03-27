@@ -94,7 +94,7 @@ class ShieldTests(unittest2.TestCase):
     def finalTearDown(self):
         global orig_netsettings
         # Restore original settings to return to initial settings
-        # print "orig_netsettings <%s>" % orig_netsettings
+        # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         settings = app.getSettings()
