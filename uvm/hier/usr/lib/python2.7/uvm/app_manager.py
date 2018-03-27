@@ -10,7 +10,7 @@ class AppManager(Manager):
         if ( Manager.policyId == None ): app = self.__appManager.instantiate( packageName )
         else: app = self.__appManager.instantiate( packageName, Manager.policyId )
         appSettings = app.getAppSettings()
-        print appSettings["id"]
+        print(appSettings["id"])
         return appSettings
 
     def api_start( self, appIdString ):
@@ -30,7 +30,7 @@ class AppManager(Manager):
         for appId in instanceIds["list"]:
             app = self.__get_app(appId)
             if app == None:
-                print "App Missing: " + str(appId)
+                print("App Missing: " + str(appId))
                 continue
 
             appSettings = app.getAppSettings()
@@ -52,7 +52,7 @@ class AppManager(Manager):
 
     def api_instances(self):
         for v in self.get_instances():
-            print "%-4s\t%-21s\t%-15s\t%s" % (v[0], v[1], v[3], v[2])
+            print("%-4s\t%-21s\t%-15s\t%s" % (v[0], v[1], v[3], v[2]))
 
     def api_sessions(self,appIdString = None):
         if ( appIdString != None ): appIds = [ int(appIdString) ]
@@ -77,20 +77,20 @@ class AppManager(Manager):
 
         sessions = app.liveSessions()["list"]
         if ( sessions == None ):
-            print "NULL Session Desc (appId:%i)" % ( appId )
+            print("NULL Session Desc (appId:%i)" % ( appId ))
             return
 
-        print "Live sessions for %s" % ( app.getAppProperties()["name"])
-        print "Protocol CState SState Client:Client_Port -> Server:Server_Port Created Last Activity"
+        print("Live sessions for %s" % ( app.getAppProperties()["name"]))
+        print("Protocol CState SState Client:Client_Port -> Server:Server_Port Created Last Activity")
         for session in sessions: self.__print_session(session)
 
     def __print_session(self,session):
-        print "%s\t%15s : %-5d  -> %15s : %-5d\n" % ( self.formatProtocol(session["protocol"])[1], session["clientAddr"],session["clientPort"], session["serverAddr"],session["serverPort"] ),
+        print("%s\t%15s : %-5d  -> %15s : %-5d\n" % ( self.formatProtocol(session["protocol"])[1], session["clientAddr"],session["clientPort"], session["serverAddr"],session["serverPort"] ),)
 
     def __get_app( self, appId, raiseException = False ):
         app = self.__appManager.app( appId )
         if ( app == None ):
-            print "NULL App (appId:%i)" % (appId)
+            print("NULL App (appId:%i)" % (appId))
             if ( raiseException ): raise Exception("NULL App Context (appId:%i)" % (appId))
             return None
         return app
