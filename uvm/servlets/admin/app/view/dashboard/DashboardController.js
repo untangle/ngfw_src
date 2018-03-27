@@ -12,6 +12,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     viewModel: true,
     control: {
         '#': {
+            afterrender: 'onAfterRender',
             activate: 'onActivate',
             deactivate: 'onDeactivate',
         },
@@ -24,10 +25,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     listen: {
         global: {
-            init: 'onInit',
-            // appinstall: 'onAppInstall',
-            // addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
-            reportsInstall: 'loadWidgets',
             widgetaction: 'onWidgetAction'
         },
         store: {
@@ -37,18 +34,53 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
-    // not used
-    // onAfterRender: function (view) {
-    //     // var me = this;
-    //     // me.getViewModel().bind('{theme}', function (theme) {
-    //     //     Ung.dashboardSettings.theme = theme;
-    //     //     Ext.Array.each(me.lookup('dashboard').query('graphreport'), function (graph) {
-    //     //         graph.getController().setStyles();
-    //     //     });
-    //     // });
+    onAfterRender: function () {
+        var me = this, vm = me.getViewModel(), text;
 
-    // },
+        /**
+         * Fetch dashboard settings
+         */
+        Rpc.asyncData('rpc.dashboardManager.getSettings')
+            .then(function (result) {
+                Ung.dashboardSettings = result;
+                Ext.getStore('widgets').loadData(result.widgets.list);
 
+                if (result.timeframe === 1) {
+                    text = '1 Hour ago'.t();
+                } else {
+                    text = result.timeframe + ' Hours ago'.t();
+                }
+
+                me.getView().down('#since > button').setText(text);
+
+                Ung.app.reportscheck();
+            });
+
+        /**
+         * (re)load widgets when Reports App installed/removed or enabled/disabled
+         */
+        vm.bind('{reportsAppStatus}', function () {
+            me.loadWidgets();
+        });
+
+        /**
+         * On global conditions change refetch data based on new conditions
+         * Using {query.string} because it fires only when the value changes, unlike {query} only
+         */
+        vm.bind('{query.string}', function () {
+            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widgetCmp) {
+                if (widgetCmp.lastFetchTime) {
+                    widgetCmp.lastFetchTime = null;
+                    DashboardQueue.add(widgetCmp);
+                }
+            });
+        });
+
+    },
+
+    /**
+     * Helper method used to slowfire resize or scroll events
+     */
     debounce: function (fn, delay) {
         var timer = null;
         var me = this;
@@ -60,7 +92,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         };
     },
 
-    // monitor scrolling/resizing
+    /**
+     * Checks if widget is visible or not in viewport
+     * Based on it's visibility it will be added to queue for fetching data
+     */
     updateWidgetsVisibility: function () {
         var dashboard = this.lookup('dashboard'),
             widgets = dashboard.query('reportwidget');
@@ -76,26 +111,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         });
     },
 
-    onInit: function () {
-        var me = this, vm = me.getViewModel();
-        me.loadWidgets();
-
-        // refresh report widgets on global conditions update
-        vm.bind('{query}', function () {
-            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widgetCmp) {
-                widgetCmp.lastFetchTime = null;
-                DashboardQueue.add(widgetCmp);
-            });
-        });
-
-    },
-
-
     /**
-     * Load initial dashboard widgets
+     * Render widgets into the dashboard
      */
     loadWidgets: function() {
-        // console.log('loadWidgets');
         var me = this, vm = me.getViewModel(),
             dashboard = me.lookup('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
@@ -117,6 +136,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
                     lastFetchTime: null,
+                    visible: true,
                     viewModel: {
                         data: {
                             widget: widget
@@ -125,7 +145,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 });
             }
             else {
-                if (vm.get('reportsEnabled')) {
+                if (vm.get('reportsAppStatus.installed') && vm.get('reportsAppStatus.enabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
 
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
@@ -134,11 +154,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             itemId: widget.get('entryId'),
                             lastFetchTime: null,
                             visible: true,
-                            // bind: {
-                            //     userCls: 'theme-{theme}'
-                            // },
-                            // refreshIntervalSec: widget.get('refreshIntervalSec'),
-                            // refreshIntervalSec: 10,
                             viewModel: {
                                 data: {
                                     widget: widget,
@@ -146,7 +161,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                                 }
                             }
                         });
-                        // DashboardQueue.add(wg);
                     } else {
                         widgetsCmp.push({
                             xtype: 'component',
@@ -167,12 +181,27 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         if (!me.widgetsRendered) {
             me.widgetsRendered = true;
-
             // add scroll/resize events
             dashboard.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
             dashboard.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
         }
     },
+
+    updateSince: function (menu, item) {
+        var me = this, dashboard = me.lookup('dashboard');
+        menu.up('button').setText(item.text);
+        Ung.dashboardSettings.timeframe = item.value;
+
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+            .then(function() {
+                Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
+                    widgetCmp.lastFetchTime = null;
+                });
+                me.updateWidgetsVisibility();
+            });
+
+    },
+
 
     onResize: function (view) {
         if (view.down('window')) {
@@ -181,8 +210,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     toggleManager: function () {
-        var vm = this.getViewModel();
+        var me = this, vm = me.getViewModel(),
+            columns = me.lookup('dashboardManager').getColumns();
+
         vm.set('managerVisible', !vm.get('managerVisible'));
+        if (!vm.get('managerVisible')) {
+            columns[0].setHidden(true);
+        }
     },
 
     /**
@@ -237,15 +271,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     enableRenderer: function (value, meta, record) {
         var vm = this.getViewModel();
+        meta.tdCls = 'enable';
         if (record.get('type') !== 'ReportEntry') {
-            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
+            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
         }
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
-        if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="fa fa-info-circle fa-lg"></i>';
+        if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsAppStatus.enabled')) {
+            return '<i class="fa fa-info-circle"></i>';
         }
-        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
+        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
     },
 
     /**
@@ -256,13 +291,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 400; ' + (!enabled ? 'color: #777;' : 'color: #000;') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
+            return '<span style="' + (!enabled ? 'font-weight: 400; color: #777;' : 'font-weight: 600; color: #000;') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
-        if (vm.get('reportsInstalled')) {
+        if (vm.get('reportsAppStatus.installed')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 400; ' + ((unavailApp || !enabled) ? 'color: #777;' : 'color: #000;') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="' + ((unavailApp || !enabled) ? 'font-weight: 400; color: #777;' : 'font-weight: 600; color: #000;') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
                 return title;
             } else {
                 return 'Unknown Widget'.t();
@@ -277,8 +312,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
-        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard'),
-            tf = me.getView().down('slider').getValue(), refetch = false;
+        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard');
 
         // drom record selected for removal
         Ext.getStore('widgets').each(function (record) {
@@ -290,27 +324,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
 
-        if (Ung.dashboardSettings.timeframe !== tf) {
-            Ung.dashboardSettings.timeframe = tf;
-            refetch = true;
-        }
-
-        // Ung.dashboardSettings.theme = me.getView().down('#theme').getValue();
-
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
             .then(function() {
                 Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
                 Ext.getStore('widgets').sync();
-                vm.set('managerVisible', false);
+                me.toggleManager();
 
                 // remove widgets from dashboard if removed from store (manager)
                 Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
                     if (Ext.getStore('widgets').find('entryId', widgetCmp.getItemId()) < 0) {
                         dashboard.remove(widgetCmp);
-                    } else {
-                        if (refetch) {
-                            widgetCmp.lastFetchTime = null;
-                        }
                     }
                 });
 
@@ -324,18 +347,18 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             vm = this.getViewModel(),
             entry, widgetCmp;
 
-        if (cellIndex === 0) {
+        if (cellIndex === 1) {
             // toggle visibility or show alerts
 
             if (record.get('type') !== 'ReportEntry') {
                 record.set('enabled', !record.get('enabled'));
             } else {
-                if (!vm.get('reportsInstalled')) {
-                    Ext.Msg.alert('Install required'.t(), 'To enable App Widgets please install Reports first!'.t());
+                if (!vm.get('reportsAppStatus.installed')) {
+                    Ext.Msg.alert('Info'.t(), 'To enable App Widgets please install Reports first!'.t());
                     return;
                 }
-                if (!vm.get('reportsRunning')) {
-                    Ext.Msg.alert('Reports'.t(), 'To view App Widgets enable the Reports App first!'.t());
+                if (!vm.get('reportsAppStatus.enabled')) {
+                    Ext.Msg.alert('Info'.t(), 'To view App Widgets enable the Reports App first!'.t());
                     return;
                 }
 
@@ -384,7 +407,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
 
-        if (cellIndex === 1) {
+        if (cellIndex === 2) {
             // highlights in the dashboard the widget which receives click event in the manager grid
             widgetCmp = dashboard.down('#' + record.get('entryId')) || dashboard.down('#' + record.get('type'));
             if (widgetCmp && !widgetCmp.isHidden()) {
@@ -653,6 +676,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     onActivate: function () {
         DashboardQueue.paused = false;
         this.updateWidgetsVisibility();
+        // var me = this;
+        // if (me.activated) {
+        //     return;
+        // }
+        // me.activated = true;
     },
 
     onDeactivate: function () {
@@ -679,6 +707,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         });
         me.addWin.show();
+    },
+
+    reorderWidgets: function () {
+        var me = this, columns = me.lookup('dashboardManager').getColumns();
+        columns[0].setHidden(false);
     },
 
     exportWidgets: function () {

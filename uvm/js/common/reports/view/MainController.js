@@ -3,36 +3,51 @@ Ext.define('Ung.view.reports.MainController', {
     alias: 'controller.reports',
 
     control: {
-        '#': { afterrender: 'onAfterRender', deactivate: 'resetView' }
+        '#': {
+            deactivate: 'resetView'
+        }
     },
 
     listen: {
         global: {
-            init: 'onInit'
+            initialload: 'onInitialLoad'
         }
     },
 
-    onAfterRender: function () {
-        this.getView().setLoading(true);
-    },
-
-    onInit: function () {
+    onInitialLoad: function () {
         var me = this, vm = me.getViewModel(),
+            view = me.getView(),
             tree = me.lookup('tree');
 
-        // set the context (ADMIN or REPORTS)
+        // me.getView().setLoading(false);
+        // set the reports view context (ADMIN or REPORTS)
         vm.set('context', Ung.app.context);
-
-        me.getView().setLoading(false);
-
         me.buildTablesStore();
 
+        /**
+         * When Reports App is installed/removed or enabled/disabled
+         * show appropriate card
+         */
+        vm.bind('{reportsAppStatus}', function (status) {
+            view.remove(view.down('#loader'));
+            if (status.installed && status.enabled) {
+                view.getLayout().setActiveItem(1);
+                me.buildStats();
+            } else {
+                view.getLayout().setActiveItem(0);
+            }
+        });
+
+        /**
+         * While fetching report data show loading indicators
+         */
         vm.bind('{fetching}', function (val) {
             if (!val) { Ext.MessageBox.hide(); } // hide any loading message box
         });
 
+
         /**
-         * When route changes select report path
+         * When query route changes select report path
          */
         vm.bind('{query.route}', function (route) {
             var path = (route.cat || '') + (route.rep ? ('/' + route.rep) : '');
@@ -44,18 +59,22 @@ Ext.define('Ung.view.reports.MainController', {
 
             me.lookup('tree').selectPath(path, 'slug', '/', function (success, lastNode) {
                 if (!success) {
-                    // the route do not match any cat/report selection
-                    if (path !== '') { Ext.fireEvent('invalidquery'); }
-                    return;
+                    if (!success) {
+                        // the route do not match any cat/report selection
+                        if (path !== '') { Ext.fireEvent('invalidquery'); }
+                        return;
+                    }
                 }
                 if (!lastNode.isLeaf()) {
                     lastNode.expand();
                 }
             }, me);
-            me.buildStats();
         });
 
-        // When conditions query string changes, update disble state of the reports nodes in the tree
+        /**
+         * When conditions query string changes,
+         * enable/disable reports tree nodes for which conditions do not apply
+         */
         vm.bind('{query.conditions}', function (conditions) {
             var root = Ext.getStore('reportstree').getRoot(), conds = [], disabledCategory;
             Ext.Array.each(conditions, function (c) {
@@ -83,7 +102,9 @@ Ext.define('Ung.view.reports.MainController', {
         });
     },
 
-    // Redirect on selecting report from the tree
+    /**
+     * Redirects (updates route) based on selected reports tree node
+     */
     onSelectReport: function (el, node) {
         var me = this, vm = me.getViewModel(), condsQuery = '';
 
@@ -96,19 +117,24 @@ Ext.define('Ung.view.reports.MainController', {
         } else {
             Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
         }
-        // Ung.app.redirectTo(Ung.app.context === 'REPORTS' ? '#' : '#reports?' + node.get('url') + condsQuery);
         me.showNode(node);
     },
 
-
+    /**
+     * Adds table confinguration to the view model,
+     * and it's used in editing report settings
+     */
     buildTablesStore: function () {
         if (!rpc.reportsManager) { return; }
         var me = this, vm = me.getViewModel();
         Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
-            vm.set('tables', result); // used in advanced report settings table name
+            vm.set('tables', result);
         });
     },
 
+    /**
+     * Applies node selection to the entry
+     */
     showNode: function (node) {
         var me = this, record;
 
@@ -132,20 +158,14 @@ Ext.define('Ung.view.reports.MainController', {
 
 
     /**
-     * the tree item renderer used after filtering tree
+     * Tree item renderer used after filtering tree
      */
-    treeNavNodeRenderer: function(value, meta, record) {
-        // if (!record.isLeaf()) {
-        //     meta.tdCls = 'x-tree-category';
-        // }
-        // if (!record.get('readOnly') && record.get('uniqueId')) {
-        //     meta.tdCls = 'x-tree-custom-report';
-        // }
+    treeNavNodeRenderer: function(value) {
         return this.rendererRegExp ? value.replace(this.rendererRegExp, '<span style="font-weight: bold; background: #EEE; color: #000; border-bottom: 1px #000 solid;">$1</span>') : value;
     },
 
     /**
-     * filters reports tree
+     * Filters the tree
      */
     filterTree: function (field, value) {
         var me = this, tree = me.lookup('tree');
@@ -171,7 +191,7 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     /**
-     * resets the view to an initial state
+     * Resets the view to an initial state
      */
     resetView: function () {
         var me = this, tree = me.lookup('tree'), breadcrumb = me.lookup('breadcrumb');
@@ -191,7 +211,7 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     /**
-     * Builds statistics for categories, based on global conditions too
+     * Builds statistics for categories, based on global conditions
      */
     buildStats: function () {
         var me = this, vm = me.getViewModel(),
@@ -243,6 +263,7 @@ Ext.define('Ung.view.reports.MainController', {
         Ung.app.redirectTo('#reports/create');
     },
 
+    // show import dialog on import
     newImport: function () {
         var me = this;
         var dialog = me.getView().add({
@@ -251,7 +272,7 @@ Ext.define('Ung.view.reports.MainController', {
         dialog.show();
     },
 
-
+    // exports categories
     exportCategoryReports: function () {
         var me = this, vm = me.getViewModel(), reportsArr = [], category, reports;
 

@@ -251,11 +251,11 @@ Ext.define('Ung.view.extra.Devices', {
         xtype: 'button',
         text: 'View Reports'.t(),
         iconCls: 'fa fa-line-chart',
-        href: '#reports/devices',
+        href: '#reports?cat=devices',
         hrefTarget: '_self',
         hidden: true,
         bind: {
-            hidden: '{!reportsEnabled}'
+            hidden: '{!reportsAppStatus.enabled}'
         }
     }],
     bbar: ['->', {

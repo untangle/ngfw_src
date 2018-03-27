@@ -34,12 +34,10 @@ Ext.define('Ung.view.main.MainHeading', {
         bind: { userCls: '{(activeItem === "config" || activeItem === "configCard") ? "pressed" : ""}' },
     }, {
         text: 'Reports'.t(),
-        iconCls: 'fa fa-line-chart fa-lg',
+        iconCls: 'fa fa-area-chart fa-lg',
         href: '#reports',
-        hidden: true,
         bind: {
             userCls: '{activeItem === "reports" ? "pressed" : ""}',
-            hidden: '{!reportsInstalled || !reportsRunning}'
         }
     }, '->', {
         text: 'Sessions'.t(),
@@ -114,17 +112,9 @@ Ext.define('Ung.view.main.MainHeading', {
                 iconCls: 'fa fa-cog',
                 href: '#config'
             }, {
-                /**
-                 * todo: fix responsive config/binding conflict
-                 * binding takes precedence over responsiveConfig, so Reports is visible in menu even if it shouldn't
-                 */
                 text: 'Reports'.t(),
                 iconCls: 'fa fa-line-chart',
-                href: '#reports',
-                hidden: true,
-                bind: {
-                    hidden: '{!reportsInstalled || !reportsRunning}'
-                }
+                href: '#reports'
             }, {
                 xtype: 'menuseparator'
             }, {

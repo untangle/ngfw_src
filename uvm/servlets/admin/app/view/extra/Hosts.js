@@ -438,11 +438,11 @@ Ext.define('Ung.view.extra.Hosts', {
         xtype: 'button',
         text: 'View Reports'.t(),
         iconCls: 'fa fa-line-chart',
-        href: '#reports/hosts',
+        href: '#reports?cat=hosts',
         hrefTarget: '_self',
         hidden: true,
         bind: {
-            hidden: '{!reportsEnabled}'
+            hidden: '{!reportsAppStatus.enabled}'
         }
     }],
     bbar: ['->', {
