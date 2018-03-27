@@ -430,11 +430,12 @@ Ext.define('Ung.config.administration.MainController', {
                     if(Util.isDestroyed(me)){
                         return;
                     }
+                    if (result === false) {
+                        Util.handleException('Certificate generation failed. Please confirm the information provided is valid and try again.'.t());
+                        return;
+                    }
                     me.certDialog.close();
                     me.refreshServerCertificate();
-                    if (result === false) {
-                        Ext.MessageBox.alert('Error'.t(), 'Certificate greation failed. Please confirm the information provided is valid and try again.'.t());
-                    }
                 }, function (ex) {
                     Util.handleException('Error during certificate generation.'.t());
                 }).always(function () {
