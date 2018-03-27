@@ -176,9 +176,9 @@ class AdBlockerTests(unittest2.TestCase):
         result = app.getListLastUpdate()
         today_str = datetime.datetime.utcnow().strftime("%d %b %Y")
         yesterday_str = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime("%d %b %Y")
-        print "Last Update: \"%s\"" % (result)
-        print "Today: \"%s\"" % (today_str)
-        print "Yesterday: \"%s\"" % (yesterday_str)
+        print("Last Update: \"%s\"" % (result))
+        print("Today: \"%s\"" % (today_str))
+        print("Yesterday: \"%s\"" % (yesterday_str))
         assert((today_str in result) or (yesterday_str in result))
 
     @staticmethod

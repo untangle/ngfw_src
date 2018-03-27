@@ -36,9 +36,9 @@ test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 def get_latest_mail_pkg():
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
     results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
-    # print "Results from getting mailpkg.tar <%s>" % results
+    # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
-    # print "Results from untaring mailpkg.tar <%s>" % results
+    # print("Results from untaring mailpkg.tar <%s>" % results)
 
 def create_alert_rule(description, field, operator, value, field2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None):
     return {
@@ -152,7 +152,7 @@ class UvmTests(unittest2.TestCase):
 
             pat = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
             version = uvmContext.getFullVersion()
-            print "------------------------------------------------------"
+            print("------------------------------------------------------")
             if ('subcat' in link):
                 subLinks.extend(link['subcat'])
             for i, subLink in enumerate(subLinks):
@@ -161,7 +161,7 @@ class UvmTests(unittest2.TestCase):
                 else:
                     subLink = link['fragment']
                 url = "http://wiki.untangle.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
-                print "Checking %s = %s " % (subLink, url)
+                print("Checking %s = %s " % (subLink, url))
                 req = urllib2.Request( url, headers=hdr) 
                 ret = urllib2.urlopen( req, context=ctx )
                 time.sleep(.1) # dont flood wiki
@@ -172,23 +172,23 @@ class UvmTests(unittest2.TestCase):
                 assert(patmatch)
                 page = link['page'][i] #set 'page' to expected wiki page value from page array
                 if (patmatch.group(1)):
-                    print "Result: \"%s\"" % patmatch.group(1)
+                    print("Result: \"%s\"" % patmatch.group(1))
                     
                     if (patmatch.group(1) == "index.php/%s" % (page)):
-                        print "Page is correct: %s" % (page)
+                        print("Page is correct: %s" % (page))
                     else:
-                        print "******Sent to wrong page. Page should be %s, but you were sent to index.php/%s" % (page, patmatch.group(1))
+                        print("******Sent to wrong page. Page should be %s, but you were sent to index.php/%s" % (page, patmatch.group(1)))
                         testResults = False
                         failedLinks += 1
                 else:
-                    print "******Failed to get result for %s.  Expecting: %s" % (subLink,page)
+                    print("******Failed to get result for %s.  Expecting: %s" % (subLink,page))
                     # check all help links before failing the test
                     testResults = False
                     failedLinks += 1
                 linkCount += 1
-                print "------------------------------------------------------"
-        print "%d Help Links were checked" % (linkCount)
-        print "%d Links failed to resolve correctly" % (failedLinks)
+                print("------------------------------------------------------")
+        print("%d Help Links were checked" % (linkCount))
+        print("%d Links failed to resolve correctly" % (failedLinks))
         assert(testResults)
 
     def test_020_about_info(self):
@@ -217,14 +217,14 @@ class UvmTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.appManager().isInstantiated(self.appNameSpamCase())):
-            print "smtp case present"
+            print("smtp case present")
         else:
-            print "smtp not present"
+            print("smtp not present")
             uvmContext.appManager().instantiate(self.appNameSpamCase(), 1)
         appSP = uvmContext.appManager().app(self.appNameSpamCase())
         origAppDataSP = appSP.getSmtpSettings()
         origMailsettings = uvmContext.mailSender().getSettings()
-        # print appDataSP
+        # print(appDataSP)
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = global_functions.testServerHost
         newMailsettings['smtpPort'] = "6800"
@@ -343,7 +343,7 @@ class UvmTests(unittest2.TestCase):
         events = global_functions.get_events('Administration','Admin Login Events',None,10)
         assert(events != None)
         for i in events.get('list'):
-            print i
+            print(i)
         found = global_functions.check_events( events.get('list'), 10,
                                                'client_addr', "127.0.1.1",
                                                'reason', 'X',
@@ -358,7 +358,7 @@ class UvmTests(unittest2.TestCase):
         fullName = uvmContext.networkManager().getFullyQualifiedHostname()
         netsettings = uvmContext.networkManager().getNetworkSettings()
 
-        print "Checking HostsFileManager records for " + fullName
+        print("Checking HostsFileManager records for " + fullName)
 
         # perform a DNS lookup for our hostname against every non-WAN interface
         # and make sure the value returned matches the address of the interface
@@ -367,7 +367,7 @@ class UvmTests(unittest2.TestCase):
                 if 'v4StaticAddress' in interface:
                     netaddr = interface['v4StaticAddress']
                     if netaddr:
-                        print "Checking hostname resolution for %s" % netaddr
+                        print("Checking hostname resolution for %s" % netaddr)
                         output = subprocess.check_output("dig +short @" + netaddr + " " + fullName, shell=True)
                         result = output.strip()
                         assert(result == netaddr)

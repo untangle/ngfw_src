@@ -23,7 +23,7 @@ app = None
 def touchProtoRule( protoGusername, flag = True, block =True ):
     global appSettings,app
     for rec in appSettings['protoRules']['list']:
-        # print "appSettings: " + str(rec)
+        # print("appSettings: " + str(rec))
         if (rec['name'] == protoGusername):
             rec['flag'] = flag
             rec['block'] = block
@@ -226,7 +226,7 @@ class ApplicationControlTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         for i in range(10):
-            print "Test %i" % i
+            print("Test %i" % i)
             result = subprocess.call("systemctl restart untangle-classd >/dev/null 2>&1", shell=True)
             assert (result == 0)
             result = remote_control.is_online()

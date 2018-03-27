@@ -175,11 +175,11 @@ def nukeRules():
     app.setRules(rules)
 
 def printResults( wget_speed_pre, wget_speed_post, expected_speed, allowed_speed ):
-        print "Pre Results   : %s KB/s" % str(wget_speed_pre)
-        print "Post Results  : %s KB/s" % str(wget_speed_post)
-        print "Expected Post : %s KB/s" % str(expected_speed)
-        print "Allowed Post  : %s KB/s" % str(allowed_speed)
-        print "Summary: %s < %s = %s" % (wget_speed_post, allowed_speed, str( wget_speed_post < allowed_speed ))
+        print("Pre Results   : %s KB/s" % str(wget_speed_pre))
+        print("Post Results  : %s KB/s" % str(wget_speed_post))
+        print("Expected Post : %s KB/s" % str(expected_speed))
+        print("Allowed Post  : %s KB/s" % str(allowed_speed))
+        print("Summary: %s < %s = %s" % (wget_speed_post, allowed_speed, str( wget_speed_post < allowed_speed )))
 
 class BandwidthControlTests(unittest2.TestCase):
 
@@ -262,7 +262,7 @@ class BandwidthControlTests(unittest2.TestCase):
     def test_012_qosLimit(self):
         global preDownSpeedKbsec, wanLimitKbit
 
-        print "\nSetting WAN limit: %i Kbps" % (wanLimitKbit)
+        print("\nSetting WAN limit: %i Kbps" % (wanLimitKbit))
 
         postDownSpeedKbsec = global_functions.get_download_speed()
 
@@ -692,7 +692,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
         # Look for tag
         entry = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
-        print entry['tags']['list']
+        print(entry['tags']['list'])
         found = False
         for tag in entry['tags']['list']:
             if tag['name'] == 'penalty-box':

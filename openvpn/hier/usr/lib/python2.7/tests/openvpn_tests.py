@@ -185,7 +185,7 @@ class OpenVpnTests(unittest2.TestCase):
         remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,0)
         assert (remoteHostResult)
         listOfServers = app.getRemoteServersStatus()
-        # print listOfServers
+        # print(listOfServers)
         assert(listOfServers['list'][0]['name'] == vpnSite2SiteHostname)
         tunnelUp = True
 
@@ -194,7 +194,7 @@ class OpenVpnTests(unittest2.TestCase):
         if (not tunnelUp):
             raise unittest2.SkipTest("previous test test_020_createVPNTunnel failed")
         appData = app.getSettings()
-        # print appData
+        # print(appData)
         i=0
         found = False
         for remoteGuest in appData['remoteServers']['list']:
@@ -244,7 +244,7 @@ class OpenVpnTests(unittest2.TestCase):
         remoteHostResultUserPass = waitForPing(global_functions.vpnServerUserPassVpnLanIP,0)
         assert(remoteHostResultUserPass)
         listOfServers = app.getRemoteServersStatus()
-        #print listOfServers
+        #print(listOfServers)
         assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
 
         #remove server from remoteServers so it doesn't interfere with later tests
@@ -282,7 +282,7 @@ class OpenVpnTests(unittest2.TestCase):
         appData['remoteClients']['list'].append(setUpClient())
         app.setSettings(appData)
         clientLink = app.getClientDistributionDownloadLink(vpnClientName,"zip")
-        # print clientLink
+        # print(clientLink)
 
         #download, unzip, move config to correct directory
         result = configureVPNClientForConnection(clientLink)
@@ -298,11 +298,11 @@ class OpenVpnTests(unittest2.TestCase):
         result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
         
         listOfClients = app.getActiveClients()
-        print "address " + listOfClients['list'][0]['address']
-        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
+        print("address " + listOfClients['list'][0]['address'])
+        print("vpn address 1 " + listOfClients['list'][0]['poolAddress'])
 
         host_result = remote_control.run_command("host test.untangle.com", stdout=True)
-        # print "host_result <%s>" % host_result
+        # print("host_result <%s>" % host_result)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
         ip_address_testuntangle = (match.group()).replace('address ','')
 
@@ -342,7 +342,7 @@ class OpenVpnTests(unittest2.TestCase):
         appData['groups']['list'][0]['fullTunnel'] = True
         app.setSettings(appData)
         clientLink = app.getClientDistributionDownloadLink(vpnFullClientName,"zip")
-        # print clientLink
+        # print(clientLink)
 
         # download client config file
         configureVPNClientForConnection(clientLink)
@@ -361,7 +361,7 @@ class OpenVpnTests(unittest2.TestCase):
                 vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 
                 # ping the test host behind the Untangle from the remote testbox
-                print "vpn pool address: " + vpnPoolAddressIP
+                print("vpn pool address: " + vpnPoolAddressIP)
                 result1 = subprocess.call("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1", shell=True)
         if result1 == 0:        
             result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=vpnPoolAddressIP)
@@ -370,9 +370,9 @@ class OpenVpnTests(unittest2.TestCase):
             # webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
             webresult = remote_control.run_command("wget --timeout=4 -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
 
-            print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
+            print("result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult))
         else:
-            print "No VPN IP address found"
+            print("No VPN IP address found")
         # Shutdown VPN on both sides.
         # Delete profile on server
         appData['remoteClients']['list'][:] = []  
@@ -381,7 +381,7 @@ class OpenVpnTests(unittest2.TestCase):
         # kill the client side
         remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
         time.sleep(3) # openvpn takes time to shut down
-        # print ("result " + str(result) + " webresult " + str(webresult))
+        # print(("result " + str(result) + " webresult " + str(webresult)))
         assert(result1==0)
         assert(result2==0)
         assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
@@ -416,9 +416,9 @@ class OpenVpnTests(unittest2.TestCase):
         appData['remoteClients']['list'][:] = []
         appData['remoteClients']['list'].append(setUpClient())
         app.setSettings(appData)
-        #print appData
+        #print(appData)
         clientLink = app.getClientDistributionDownloadLink(vpnClientName, "zip")
-        print clientLink
+        print(clientLink)
         
         #download, unzip, move config to correct directory
         result = configureVPNClientForConnection(clientLink)
@@ -433,11 +433,11 @@ class OpenVpnTests(unittest2.TestCase):
         result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
 
         listOfClients = app.getActiveClients()
-        print "address " + listOfClients['list'][0]['address']
-        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
+        print("address " + listOfClients['list'][0]['address'])
+        print("vpn address 1 " + listOfClients['list'][0]['poolAddress'])
 
         host_result = remote_control.run_command("host test.untangle.com", stdout=True)
-        print "host_result <%s>" % host_result
+        print("host_result <%s>" % host_result)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
         ip_address_testuntangle = (match.group()).replace('address ','')
 
@@ -474,9 +474,9 @@ class OpenVpnTests(unittest2.TestCase):
         appData['remoteClients']['list'][:] = []
         appData['remoteClients']['list'].append(setUpClient())
         app.setSettings(appData)
-        #print appData
+        #print(appData)
         clientLink = app.getClientDistributionDownloadLink(vpnClientName, "zip")
-        print clientLink
+        print(clientLink)
 
         #download, unzip, move config to correct directory
         result = configureVPNClientForConnection(clientLink)
@@ -503,11 +503,11 @@ class OpenVpnTests(unittest2.TestCase):
         result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
 
         listOfClients = app.getActiveClients()
-        print "address " + listOfClients['list'][0]['address']
-        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
+        print("address " + listOfClients['list'][0]['address'])
+        print("vpn address 1 " + listOfClients['list'][0]['poolAddress'])
 
         host_result = remote_control.run_command("host test.untangle.com", stdout=True)
-        print "host_result <%s>" % host_result
+        print("host_result <%s>" % host_result)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
         ip_address_testuntangle = (match.group()).replace('address ','')
 
@@ -582,8 +582,8 @@ class OpenVpnTests(unittest2.TestCase):
         result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
         
         listOfClients = app.getActiveClients()
-        print "address " + listOfClients['list'][0]['address']
-        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
+        print("address " + listOfClients['list'][0]['address'])
+        print("vpn address 1 " + listOfClients['list'][0]['poolAddress'])
 
         host_result = remote_control.run_command("host test.untangle.com", stdout=True)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)

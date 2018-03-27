@@ -34,7 +34,7 @@ class SmtpTests(unittest2.TestCase):
     def test_010_runTests(self):
         l = app.getTests();
         for name in l['list']:
-            print app.runTests(name);
+            print(app.runTests(name))
             
         
 

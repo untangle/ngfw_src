@@ -30,7 +30,7 @@ signal.signal(signal.SIGQUIT, signal_handler)
 signal.signal(signal.SIGALRM, signal_handler)
 
 ##
-## Timeout class used for with print statements to handle
+## Timeout class used for with print() statements to handle
 ## case of stdout going away.
 ##
 class timeout:
@@ -76,7 +76,7 @@ class DumpReader:
                 count = count + 1
 
                 with timeout(seconds=5):
-                    print line
+                    print(line)
                 if count == 1:
                     break;
             h.close()
@@ -110,7 +110,7 @@ class DumpReader:
 			
             if show_lines == 1:
                 with timeout(seconds=5):
-                    print line.strip()
+                    print(line.strip())
                     sys.stdout.flush()
         self.last_line_count = line_count
 
@@ -131,11 +131,11 @@ def cleanup( path ):
 ## Script usage
 ##
 def usage():
-    print "usage"
-    print "--help\tShow usage"
-    print "--timeout <sec>\tTime to run in seconds"
-    print "--filename <filename>\tFile to write"
-    print "--arguments <list>\tcpdump arguments"
+    print("usage")
+    print("--help\tShow usage")
+    print("--timeout <sec>\tTime to run in seconds")
+    print("--filename <filename>\tFile to write")
+    print("--arguments <list>\tcpdump arguments")
 
 ##
 ## Main 
@@ -172,9 +172,9 @@ def main(argv):
             arguments = arg
 
     if _debug == True:
-        print "timeout=" + str(timeout)
-        print "filename=" + filename
-        print "arguments=" + arguments
+        print("timeout=" + str(timeout))
+        print("filename=" + filename)
+        print("arguments=" + arguments)
 
     path = "/".join( filename.split( "/" )[0:-1] )
     if os.path.isdir( path ) == False:

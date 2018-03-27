@@ -77,22 +77,22 @@ def verify_iperf_configuration(wanIP):
             iperfServer = iperfServerSet[1]
             break
     if iperfServer == "":
-        print "No iperf server in the same network"
+        print("No iperf server in the same network")
         return False
     # Check to see if iperf endpoint is reachable
     iperfServerReachable = subprocess.call(["ping -c 1 " + iperfServer + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
     if iperfServerReachable != 0:
-        print "iperf Server is unreachable."
+        print("iperf Server is unreachable.")
         return False
     # Check to see if some other test is using iperf for UDP testing
     iperfRunning = remote_control.run_command("pidof iperf", host=iperfServer)
     if iperfRunning == 0:
-        print "iperf is already running on server."
+        print("iperf is already running on server.")
         return False
     # Check that the client has iperf
     clientHasIperf = remote_control.run_command("test -x /usr/bin/iperf")
     if clientHasIperf != 0:
-        print "iperf not installed on client."
+        print("iperf not installed on client.")
         return False
     return True
 
@@ -152,7 +152,7 @@ def get_download_speed():
         # adjust value if MB or KB
         if "MB/s" in result:
             bandwidth_speed *= 1000
-        # print "bandwidth_speed <%s>" % bandwidth_speed
+        # print("bandwidth_speed <%s>" % bandwidth_speed)
         return bandwidth_speed
     except Exception,e:
         return None
@@ -160,7 +160,7 @@ def get_download_speed():
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
     reports = uvmContextLongTimeout.appManager().app("reports")
     if reports == None:
-        print "WARNING: reports app not found"
+        print("WARNING: reports app not found")
         return None
 
     reports.flushEvents()
@@ -169,7 +169,7 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
 
     reportEntry = reportsManager.getReportEntry( eventEntryCategory, eventEntryTitle )
     if reportEntry == None:
-        print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
+        print("WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle))
         return None
 
     events = reportsManager.getEvents( reportEntry, conditions, limit )
@@ -186,19 +186,19 @@ def find_event( events, num_events, *args, **kwargs):
     if num_events == 0:
         return None
     if len(events) == 0:
-        print "No events in list"
+        print("No events in list")
         return None
     if kwargs.get('min_date') == None:
         min_date = test_start_time
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
-        print "Invalid argument length"
+        print("Invalid argument length")
         return None
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
-            print "failed to find event checked: %i total: %i" % (num_checked, len(events)) 
+            print("failed to find event checked: %i total: %i" % (num_checked, len(events)) )
             break
         event = events[num_checked]
         num_checked += 1
@@ -213,7 +213,7 @@ def find_event( events, num_events, *args, **kwargs):
             else:
                 ts = datetime.datetime.fromtimestamp((time_stamp['time']/1000)+1)#round up
             if ts < min_date:
-                print "ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat())
+                print("ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat()))
                 continue
 
         # check each expected value
@@ -231,9 +231,9 @@ def find_event( events, num_events, *args, **kwargs):
                     alternateValue = 1
                 else:
                     alternateValue = 0
-            #print "key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )
+            #print("key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
             if str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue):
-                print "mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) )
+                print("mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
                 allMatched = False
                 break
 
@@ -273,19 +273,19 @@ def send_test_email(mailhost=testServerHost):
     try:
        smtpObj = smtplib.SMTP(mailhost)
        smtpObj.sendmail(sender, receivers, message)
-       print "Successfully sent email through " + mailhost
+       print("Successfully sent email through " + mailhost)
        return 1
     except smtplib.SMTPException, e:
-       print "Error: unable to send email through " + mailhost + " " + str(e)
+       print("Error: unable to send email through " + mailhost + " " + str(e))
        return 0
 
 def get_app_metric_value(app, label):
     metric = app.getMetric(label)
     if metric == None:
-        print "Missing metric: %s"%str(label) 
+        print("Missing metric: %s"%str(label) )
         return 0
     if metric.get('value') == None:
-        print "Missing metric value: %s"%str(label) 
+        print("Missing metric value: %s"%str(label) )
         return 0
     return metric.get('value')
 
@@ -433,7 +433,7 @@ def random_email(length=10):
    return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + testServerHost
     
 def __get_ip_address(ifname):
-    print "ifname <%s>" % ifname
+    print("ifname <%s>" % ifname)
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         ifaddr = socket.inet_ntoa(fcntl.ioctl(

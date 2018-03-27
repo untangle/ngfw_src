@@ -91,7 +91,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
             result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_options + " " +  url)
         else:
-            print "wget -4 -t 2 -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected
+            print("wget -4 -t 2 -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected)
             result = remote_control.run_command("wget -q -4 -t 2 -O - " + extra_options + " " + url + " 2>&1 | grep -q " + expected)
         return result
 

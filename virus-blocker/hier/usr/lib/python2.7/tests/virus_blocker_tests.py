@@ -47,13 +47,13 @@ class VirusBlockTests(VirusBlockerBaseTests):
         assert ( result == 0 )
 
         # give it up to 20 minutes to download signatures for the first time
-        print "Waiting for server to start..."
+        print("Waiting for server to start...")
         for i in xrange(1200):
             time.sleep(1)
             result = subprocess.call("cat /var/log/bdamserver.log | grep -q 'Server is started' >/dev/null 2>&1", shell=True)
             if result == 0:
                 break
-        print "Number of sleep cycles waiting for bdamserver %d" % i
+        print("Number of sleep cycles waiting for bdamserver %d" % i)
 
         # do a scan - this forces it to wait until the signatures are done downloading
         result = subprocess.call("touch /tmp/bdamtest ; bdamclient -p 127.0.0.1:1344 /tmp/bdamtest >/dev/null 2>&1", shell=True)
@@ -86,7 +86,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.run_command("wget -q -O /tmp/temp_230_httpVirusBlocked_file http://test.untangle.com/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_230_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum)
+        print("md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum))
         assert (md5SmallVirus != md5TestNum)
 
     # test the cloud scanner with http using our special large test virus
@@ -95,7 +95,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.run_command("wget -q -O /tmp/temp_240_httpVirusBlocked_file http://test.untangle.com/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_240_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum)
+        print("md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum))
         assert (md5LargeVirus != md5TestNum)
 
     # test the cloud scanner with ftp using our special small test virus
@@ -107,7 +107,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum)
+        print("md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum))
         assert (md5SmallVirus != md5TestNum)
 
     # test the cloud scanner with ftp using our special large test virus
@@ -119,7 +119,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum)
+        print("md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum))
         assert (md5LargeVirus != md5TestNum)
 
     # test the cloud scanner with http using our special large clean file
@@ -128,7 +128,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.run_command("wget -q -O /tmp/temp_270_httpMemoryClean_file http://test.untangle.com/5MB.zip")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_270_httpMemoryClean_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargeClean <%s> vs md5TestNum <%s>" % (md5LargeClean, md5TestNum)
+        print("md5LargeClean <%s> vs md5TestNum <%s>" % (md5LargeClean, md5TestNum))
         assert (md5LargeClean == md5TestNum)
 
     # turn off forceMemoryMode when we are finished
