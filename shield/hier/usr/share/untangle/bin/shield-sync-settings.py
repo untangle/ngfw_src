@@ -56,7 +56,7 @@ class ArgumentParser(object):
                 handlers[opt[0]](opt[1])
             return args
         except getopt.GetoptError, exc:
-            print exc
+            print(exc)
             printUsage()
             exit(1)
 
@@ -79,7 +79,7 @@ def check_settings( settings ):
 # fix settings if they are weird
 def fixup_settings( ):
     if 'requestPerSecondLimit' not in settings:
-        print "ERROR: no action requestPerSecondLimit in settings"
+        print("ERROR: no action requestPerSecondLimit in settings")
     settings['action'] = 30
 
     return
@@ -92,7 +92,7 @@ def write_iptables_shield_rule( file, shield_rule, verbosity=0 ):
     if 'ruleId' not in shield_rule:
         return
     if 'action' not in shield_rule:
-        print "ERROR: invalid shield rule - no action"
+        print("ERROR: invalid shield rule - no action")
         return
 
     action = shield_rule['action'];
@@ -222,7 +222,7 @@ try:
     settingsFile.close()
     settings = json.loads(settingsData)
 except IOError,e:
-    print "Unable to read settings file: ",e
+    print("Unable to read settings file: ",e)
     exit(1)
 
 try:
@@ -231,7 +231,7 @@ try:
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
 except IOError,e:
-    print "Unable to read network settings file: ",e
+    print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
@@ -245,7 +245,7 @@ NetworkUtil.settings = networkSettings
 
 fixup_settings()
 
-if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
+if parser.verbosity > 0: print("Syncing %s to system..." % parser.file)
 
 # Write 330-wan-balancer iptables file
 filename = parser.prefix + "/etc/untangle/iptables-rules.d/600-shield"
@@ -261,6 +261,6 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
 

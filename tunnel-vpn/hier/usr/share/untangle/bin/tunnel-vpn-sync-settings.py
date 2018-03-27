@@ -57,7 +57,7 @@ class ArgumentParser(object):
                 handlers[opt[0]](opt[1])
             return args
         except getopt.GetoptError, exc:
-            print exc
+            print(exc)
             printUsage()
             exit(1)
 
@@ -96,7 +96,7 @@ def write_iptables_rule( file, rule, verbosity=0 ):
         return
     tunnelId = rule.get('tunnelId')
     if tunnelId <= -2:
-        print "Invalid tunnelId: " + tunnelId 
+        print("Invalid tunnelId: " + tunnelId )
         return
 
     if tunnelId == 0:
@@ -207,7 +207,7 @@ try:
     settingsFile.close()
     settings = json.loads(settingsData)
 except IOError,e:
-    print "Unable to read settings file: ",e
+    print("Unable to read settings file: ",e)
     exit(1)
 
 try:
@@ -216,7 +216,7 @@ try:
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
 except IOError,e:
-    print "Unable to read network settings file: ",e
+    print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
@@ -230,7 +230,7 @@ NetworkUtil.settings = networkSettings
 
 fixup_settings()
 
-if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
+if parser.verbosity > 0: print("Syncing %s to system..." % parser.file)
 
 # Write 350-tunnel-vpn iptables file
 filename = parser.prefix + "/etc/untangle/iptables-rules.d/350-tunnel-vpn"
@@ -245,7 +245,7 @@ write_iptables_file( file, parser.verbosity )
 file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
 # Write the auth.txt files
 for tunnel in settings.get('tunnels').get('list'):
@@ -264,7 +264,7 @@ for tunnel in settings.get('tunnels').get('list'):
     file.write("%s\n%s\n" % (username,password));
     file.flush()
     file.close()
-    if parser.verbosity > 0: print "Wrote %s" % filename
+    if parser.verbosity > 0: print("Wrote %s" % filename)
 
 
 
