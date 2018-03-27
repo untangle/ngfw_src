@@ -66,11 +66,11 @@ class SnortRule:
             
     def dump(self):
         """
-        Print snort rule
+        print(snort rule)
         """
-        print "rule dump"
+        print("rule dump")
         for prop, value in vars(self).iteritems():
-            print prop, ": ", value
+            print(prop, ": ", value)
 
     def set_action(self, log, block):
         """
