@@ -96,6 +96,8 @@ Ext.define('Ung.view.reports.TextReport', {
 
                     if (cb) { cb(result.list); }
 
+                }, function () {
+                    if (cb) { cb(); }
                 })
                 .always(function() {
                     if (!me.getView()) { return; }

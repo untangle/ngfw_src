@@ -13,7 +13,6 @@ Ext.define('Ung.view.main.MainController', {
         global: {
             afterlaunch: 'afterLaunch',
             openregister: 'openRegister'
-            // onreports: 'onReports'
         }
     },
 
