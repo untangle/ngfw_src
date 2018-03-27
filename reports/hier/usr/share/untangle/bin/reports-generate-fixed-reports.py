@@ -7,7 +7,7 @@ uvm = uvm.Uvm().getUvmContext(timeout=600)
 
 reportsApp = uvm.appManager().app("reports");
 if reportsApp == None:
-    print "Reports not installed"
+    print("Reports not installed")
     sys.exit(1)
 
 try:

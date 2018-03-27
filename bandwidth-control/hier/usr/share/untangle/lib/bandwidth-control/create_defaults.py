@@ -45,7 +45,7 @@ for profile in "school","business","metered","home":
     jsonobj = copy.deepcopy(master_json)
     jsonobj['rules']['list'] = rulelist
 
-    print "Writing \"%s\" profile to \"defaults_%s.json\" file" % (profile, profile)
+    print("Writing \"%s\" profile to \"defaults_%s.json\" file" % (profile, profile))
     outfile = open('defaults_%s.json.tmp'%profile,'wb')
     json.dump(jsonobj,outfile)
     outfile.close()
