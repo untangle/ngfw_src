@@ -1,7 +1,7 @@
 Ext.define('Ung.cmp.AppState', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.appstate',
-    title: '<i class="fa fa-power-off"></i> ' + "Power".t(),
+    title: '<i class="fa fa-power-off"></i> ' + 'Power'.t(),
 
     padding: 10,
     margin: '20 0',
@@ -15,9 +15,8 @@ Ext.define('Ung.cmp.AppState', {
     viewModel: {
         formulas: {
             appState: function (get) {
-                var me = this;
-                var targetState = get('instance.targetState');
-                var runState = get('instance.runState');
+                var targetState = get('instance.targetState'),
+                    runState = get('instance.runState');
 
                 if ( ( targetState === 'RUNNING' ) &&
                      ( runState == 'RUNNING' ) ) {
@@ -88,9 +87,14 @@ Ext.define('Ung.cmp.AppState', {
                             vm.set('instance.targetState', this.runStateWantState );
                             this.runStateButton.setDisabled(false);
                             // force reload Apps after start/stop within App Settings
-                            rpc.appsViews= rpc.appManager.getAppsViews();
+                            rpc.appsViews = rpc.appManager.getAppsViews();
                             Ext.getStore('policies').loadData(rpc.appsViews);
                             Ung.app.getGlobalController().getAppsView().getController().getApps();
+
+                            if (appManager.getAppProperties().name === 'reports') {
+                                Ung.app.reportscheck();
+                            }
+
                         }
                     }, this) );
                 }, me) );

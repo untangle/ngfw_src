@@ -7,58 +7,19 @@ Ext.define('Ung.view.Main', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
+        ui: 'navigation',
         border: false,
         style: {
             background: '#1b1e26'
         },
         items: [{
             xtype: 'button',
+            padding: '6 7 2 7',
+            border: false,
             html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
             hrefTarget: '_self',
-            href: ''
+            href: '#'
         }]
-    }, {
-        xtype: 'toolbar',
-        dock: 'top',
-        ui: 'footer',
-        style: { background: '#D8D8D8' },
-        items: [{
-            xtype: 'globalconditions'
-        }, '-', {
-            xtype: 'timeconditions',
-            reference: 'time'
-        }]
-    }, {
-        xtype: 'toolbar',
-        dock: 'top',
-        style: {
-            zIndex: 9997
-        },
-
-        padding: 5,
-        plugins: 'responsive',
-        items: [{
-            xtype: 'breadcrumb',
-            reference: 'breadcrumb',
-            store: 'reportstree',
-            useSplitButtons: false,
-            listeners: {
-                selectionchange: function (el, node) {
-                    if (!node.get('slug')) { return; }
-                    if (node) {
-                        if (node.get('url')) {
-                            Ung.app.redirectTo('#' + node.get('url'));
-                        } else {
-                            Ung.app.redirectTo('#');
-                        }
-                    }
-                }
-            }
-        }],
-        responsiveConfig: {
-            wide: { hidden: true },
-            tall: { hidden: false }
-        }
     }]
 });
 
@@ -139,7 +100,9 @@ Ext.define('Ung.Application', {
     defaultToken : '',
     mainView: 'Ung.view.Main',
     context: 'REPORTS',
+    initialLoad: false,
     launch: function () {
+        var me = this;
         try {
             rpc.reportsManager = rpc.ReportsContext.reportsManager();
         } catch (ex) {
@@ -153,7 +116,17 @@ Ext.define('Ung.Application', {
             Ext.getStore('reports').loadData(result[0].list); // reports store is defined in Reports module
             Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list));
             Ext.getStore('reportstree').build(); // build the reports tree
-            Ext.fireEvent('init');
+
+            me.getMainView().getViewModel().set('reportsAppStatus', {
+                installed: true,
+                enabled: true
+            });
+
+            if (!Ung.app.initialLoad) {
+                Ung.app.initialLoad = true;
+                Ext.fireEvent('initialload');
+            }
+
         });
     }
 });

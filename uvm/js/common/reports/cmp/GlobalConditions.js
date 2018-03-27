@@ -14,10 +14,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         align: 'middle'
     },
 
-    // height: 36,
-    // style: {
-    //     background: '#e4e4e4'
-    // },
     items: [{
         xtype: 'component',
         margin: '0 5',
@@ -33,6 +29,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         text: 'Add'.t(),
         iconCls: 'fa fa-plus-circle',
         hidden: true,
+        focusable: false,
         bind: {
             hidden: '{query.conditions.length >= 3}'
         },
@@ -127,7 +124,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
 
         listen: {
             global: {
-                init: 'onInit',
+                initialload: 'onInitialLoad',
                 addglobalcondition: 'onAddGlobalCondition'
             }
         },
@@ -135,7 +132,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         /**
          * When all the app data is ready (e.g. reports store is populated)
          */
-        onInit: function () {
+        onInitialLoad: function () {
             var me = this, view = me.getView(), vm = me.getViewModel(),
                 conditionsHolder = view.down('container'), // container in which conditions are rendered
                 conditionsButtons = [], // array of conditions components

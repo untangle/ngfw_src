@@ -46,8 +46,7 @@ Ext.define('Ung.widget.WidgetController', {
                 }else{
                     Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
                         .then(function () {
-                        // console.log('saved');
-                    });
+                        });
                 }
             }, me) );
 

@@ -17,7 +17,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     },
 
     isVisible: function (widget) {
-        if (!widget) { return; }
+        if (!widget || !widget.getEl()) { return; }
         var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
         widget.visible = (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
         if (widget.visible) {

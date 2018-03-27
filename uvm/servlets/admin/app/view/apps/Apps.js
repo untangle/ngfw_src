@@ -31,13 +31,14 @@ Ext.define('Ung.view.apps.Apps', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        // ui: 'navigation',
+        ui: 'footer',
         dock: 'top',
+        style: { background: '#D8D8D8' },
         items: [{
             xtype: 'button',
-            html: 'Back to Apps',
+            text: 'Back to Apps',
             iconCls: 'fa fa-arrow-circle-left',
-            hrefTarget: '_self',
+            focusable: false,
             hidden: true,
             bind: {
                 hidden: '{onInstalledApps}'
@@ -47,33 +48,29 @@ Ext.define('Ung.view.apps.Apps', {
             xtype: 'button',
             reference: 'policyBtn',
             hidden: true,
-            cls: 'policy-menu',
             iconCls: 'fa fa-file-text-o',
-            arrowVisible: false,
+            focusable: false,
             bind: {
-                text: '{policyName} &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
+                text: '{policyName}',
                 hidden: '{!onInstalledApps || !policyManagerInstalled}'
             }
         }, {
             xtype: 'button',
-            html: 'Install Apps'.t(),
+            text: 'Install Apps'.t(),
             iconCls: 'fa fa-download',
-            hrefTarget: '_self',
-            // hidden: true,
+            focusable: false,
             handler: 'showInstall',
+            hidden: true,
             bind: {
-            //     href: '#apps/{policyId}/install',
                 hidden: '{!onInstalledApps}'
             }
         }, {
             xtype: 'component',
-            margin: '0 10',
-            cls: 'install-header',
             reference: 'installHeader',
             html: '',
             hidden: true,
             bind: {
-                html: '<i class="fa fa-angle-right fa-lg"></i> &nbsp;&nbsp;&nbsp;&nbsp; Install Apps in &nbsp;<i class="fa fa-file-text-o"></i> <strong>{policyName}</strong> policy',
+                html: 'Available Apps for &nbsp;<i class="fa fa-file-text-o"></i> <strong>{policyName}</strong>',
                 hidden: '{onInstalledApps || !policyManagerInstalled}'
             }
         }]

@@ -118,9 +118,7 @@ Ext.define('Ung.controller.Global', {
             'users': { before: 'detectChanges', action: 'onUsers' },
             'expert': 'setExpertMode',
             'noexpert': 'setNoExpertMode'
-        },
-
-        reportsEnabled: true
+        }
     },
 
     detectChanges: function () {
