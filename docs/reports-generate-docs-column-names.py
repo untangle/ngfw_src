@@ -7,7 +7,7 @@ import copy
 class I18N:
     def _(self, str):
         if not str[0].isupper():
-            print "Invalid string: " + str
+            print("Invalid string: " + str)
             sys.exit(1)
         return '\'' + str + '\'.t()'
 
@@ -221,21 +221,21 @@ for line in iter(p.stdout.readline, ''):
         try:
             description = dict[column]
         except:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
         if description == None:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         
 
-print "{"
+print("{")
 for key, value in sorted(dict.iteritems()):
     if value == None:
-        print "\nBad Value for key: " + key
+        print("\nBad Value for key: " + key)
         sys.exit(1)
 
-    print key + ": " + value + ","
+    print(key + ": " + value + ",")
 
-print "}"
+print("}")
     
