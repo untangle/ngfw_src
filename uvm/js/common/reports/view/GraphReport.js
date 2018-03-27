@@ -397,6 +397,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     me.setSeries();
                     if (cb) { cb(me.data); }
                 }, function () {
+                    if (cb) { cb(); }
                     vm.set('eError', true);
                 })
                 .always(function () {

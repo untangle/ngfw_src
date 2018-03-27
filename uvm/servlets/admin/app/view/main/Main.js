@@ -30,9 +30,6 @@ Ext.define('Ung.view.main.Main', {
     }],
 
     items: [{
-        xtype: 'container',
-        html: 'Loading ....'
-    }, {
         xtype: 'ung-dashboard'
     }, {
         xtype: 'ung.apps'

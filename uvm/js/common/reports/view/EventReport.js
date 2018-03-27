@@ -210,11 +210,10 @@ Ext.define('Ung.view.reports.EventReport', {
                     me.getView().setLoading(false);
                     if (reps) { reps.getViewModel().set('fetching', false); }
                     me.loadResultSet(result);
-
-                    if (cb) { cb(); }
                 })
                 .always(function () { // NGFW-11467
                     if (!me.getView()) { return; }
+                    if (cb) { cb(); }
                     me.getView().setLoading(false);
                     if (reps) { reps.getViewModel().set('fetching', false); }
                 });
