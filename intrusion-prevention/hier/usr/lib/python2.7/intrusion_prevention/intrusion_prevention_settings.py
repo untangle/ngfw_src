@@ -51,7 +51,7 @@ class IntrusionPreventionSettings:
             # Internally we only use a ruleset structure and would otherwise
             # keep the json structure in memory, unused.  This is a 
             # huge waste of memory!  By intercepting we can create the
-            # ruleset immediately and incur a much smaller memory footprint by
+            # ruleset immediately and incur a much smaller memory footprint(by)
             # creating the ruleset and returning None.
             # It's not 100% wonderful since we're retaining an in-memory 
             # list of thousands of None references but there doesn't seem to be
@@ -70,7 +70,7 @@ class IntrusionPreventionSettings:
                 rule.set_sid(obj["sid"])
                 self.rules.add_rule(rule)
             else:
-                print "error with rule:" + obj["rule"]
+                print("error with rule:" + obj["rule"])
             return None
         else:
             return obj
