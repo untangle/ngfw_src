@@ -42,7 +42,7 @@ class WebBrowser:
         self.temp_directory = temp_directory
 
         self.xvfb_command = "Xvfb" + " :" + self.sequence + " -screen " + self.screen + " " + resolution + "x8"
-        # print self.xvfb_command
+        # print(self.xvfb_command)
 
         os.system("/usr/bin/pkill -f \"" + self.xvfb_command + "\"")
         os.system("nohup " + self.xvfb_command + " >/dev/null 2>&1 &")
@@ -111,14 +111,14 @@ class WebBrowser:
                 lambda x: self.auth_cookie_exists()
             )
         except TimeoutException:
-            print "Unable to obtain authentication cookie"
+            print("Unable to obtain authentication cookie")
 
     def go(self, url):
         """
         Open the specified URL
         """
         if Debug:
-            print "go: url=" + url
+            print("go: url=" + url)
         self.driver.get(url)
 
     def wait_for_load(self):
@@ -131,7 +131,7 @@ class WebBrowser:
         max_sleep = 20
         while max_sleep > 0:
             if self.errors_detected() is True:
-                print "Found error!"
+                print("Found error!")
                 return False
 
             try:
@@ -160,7 +160,7 @@ class WebBrowser:
                         all_none_displayed = False
                 except Exception:
                     if Debug:
-                        print "Problem getting progressbar attribute"
+                        print("Problem getting progressbar attribute")
                     all_none_displayed = False
                     pass
 
@@ -170,17 +170,17 @@ class WebBrowser:
                 try:
                     if image.get_attribute("complete") is None:
                         if Debug:
-                            print "Waiting for image " + image_get_attribute("name")
+                            print("Waiting for image " + image_get_attribute("name"))
                         all_images_complete = False
                 except Exception:
                     if Debug:
-                        print "Problem getting image attribute"
+                        print("Problem getting image attribute")
                     all_images_complete = False
                     pass
 
             if Debug:
-                print
-                print "all_none_displayed=" + str(all_none_displayed) + ", all_images_complete=" + str(all_images_complete)
+                print("")
+                print("all_none_displayed=" + str(all_none_displayed) + ", all_images_complete=" + str(all_images_complete))
 
             if all_none_displayed is True and all_images_complete:
                 return True
@@ -281,15 +281,15 @@ class WebBrowser:
 
                         if match is True:
                             if Debug:
-                                print "matched element="
+                                print("matched element=")
                                 for key in value.keys():
                                     if key[0] == "!":
-                                        print key[1:] + "=" + str(element.get_attribute(key[1:]))
+                                        print(key[1:] + "=" + str(element.get_attribute(key[1:])))
                                     else:
-                                        print key + "=" + str(element.get_attribute(key))
+                                        print(key + "=" + str(element.get_attribute(key)))
                             x = int( element.location['x'] )
                             y = int( element.location['y'] )
-                            # print ( x, y, x + width, y + height )
+                            # print(( x, y, x + width, y + height ))
                             images[index] = img.crop( ( x, y, x + width, y + height ) )
                             # save piece for debugging....
                             # images[index].save(self.temp_directory + "/cropped" + str(index) + ".png")
@@ -306,29 +306,29 @@ class WebBrowser:
         all_cropped_exists = True
         for id in images:
             if images[id] is None:
-                print "Cannot create - missing for " + matches[id]["id"].pattern
+                print("Cannot create - missing for " + matches[id]["id"].pattern)
                 all_cropped_exists = False
                 continue
         if all_cropped_exists is False:
             return False
 
         if Debug:
-            print "images="
-            print images
-        # print max_width
-        # print max_height
+            print("images=")
+            print(images)
+        # print(max_width)
+        # print(max_height)
 
         self.cropped_image = Image.new("RGB", (max_width, max_height), "white" )
         x = 0
         y = 0;
         for id in images:
             if images[id] is None:
-                print "Cannot create - missing for " + str(id)
+                print("Cannot create - missing for " + str(id))
                 continue
-            # print id
-            # print images[id].size
-            # print ( x, y, x + images[id].size[0], y + images[id].size[1])
-            # print "pasting " + str(id)
+            # print(id)
+            # print(images[id].size)
+            # print(( x, y, x + images[id].size[0], y + images[id].size[1]))
+            # print("pasting " + str(id))
             self.cropped_image.paste(images[id], ( x, y, x + images[id].size[0], y + images[id].size[1]) )
             y = y + images[id].size[1]
 
@@ -356,7 +356,7 @@ def usage():
     """
     Show usage
     """
-    print "usage"
+    print("usage")
 
 def main(argv):
     global Debug
@@ -396,15 +396,15 @@ def main(argv):
     for resolution in settings["resolutions"]:
         if ( want_resolution is not None ) and ( resolution != want_resolution ):
             if Debug is True:
-                print "Skipping resolution: "+resolution
+                print("Skipping resolution: "+resolution)
             continue
-        print "Using resolution: "+resolution
+        print("Using resolution: "+resolution)
 
         web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
 
         base_url = settings["authentication"]["url"]
         if Debug:
-            print "base_url=" + base_url
+            print("base_url=" + base_url)
 
         if "user" in settings["authentication"]:
             web_browser.authenticate(url=base_url, username=settings["authentication"]["user"], password=settings["authentication"]["password"])
@@ -418,21 +418,21 @@ def main(argv):
             total_screens += 1
             if want_screen_name is not None and want_screen_name not in screen["url"]:
                 # if Debug is True:
-                #     print "Skipping screen: " + screen["name"] 
+                #     print("Skipping screen: " + screen["name"] )
                 continue
 
             fname = web_browser.build_file_name_path(screen['name'])
             if os.path.exists(fname):
-                print "File exists: " + fname + " Skipping ..."
+                print("File exists: " + fname + " Skipping ...")
                 continue
 
             start = timer()
-            print "Capturing: " + screen['url'] + " -> " + screen["name"] + ".png ...",
+            print("Capturing: " + screen['url'] + " -> " + screen["name"] + ".png ...",)
             sys.stdout.flush()
 
             web_browser.go(base_url + screen["url"])
             if web_browser.wait_for_load() is False:
-                print "Could not load"
+                print("Could not load")
                 total_screens_failed += 1
                 del web_browser
                 web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
@@ -441,7 +441,7 @@ def main(argv):
                 continue
 
             if web_browser.errors_detected() is True:
-                print "Errors on url"
+                print("Errors on url")
                 total_screens_failed += 1
                 del web_browser
                 web_browser = WebBrowser(resolution=resolution, temp_directory=tmp_dir)
@@ -483,15 +483,15 @@ def main(argv):
                 total_screens_created += 1
             else:
                 total_screens_failed += 1
-                print "Cannot capture screen",
+                print("Cannot capture screen",)
 
             last_screen_url= screen["url"]
             total_time += timer() - start
-            print str(round(timer() - start,2)) + " (" + str(round(total_time,2)) + ")"
+            print(str(round(timer() - start,2)) + " (" + str(round(total_time,2)) + ")")
 
         del web_browser
 
-    print "Total screens available: %d, failed: %d, created: %d, %ds" % ( total_screens, total_screens_failed, total_screens_created, total_time)
+    print("Total screens available: %d, failed: %d, created: %d, %ds" % ( total_screens, total_screens_failed, total_screens_created, total_time))
 
 if __name__ == "__main__":
     main( sys.argv[1:] )

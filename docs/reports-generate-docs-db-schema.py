@@ -597,7 +597,7 @@ dict['interface_stat_events'].update({
 
 
 
-print "= Database Tables ="
+print("= Database Tables =")
 
 p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE)
 for line in iter(p.stdout.readline, ''):
@@ -615,22 +615,22 @@ for line in iter(p.stdout.readline, ''):
         continue
     table_dict = dict.get(table_name)
     if table_dict == None:
-        print "\nMissing documentation for table \"%s\"" % ( table_name  )
+        print("\nMissing documentation for table \"%s\"" % ( table_name  ))
         sys.exit(1)
     if table_dict.get('table_description') == None:
-        print "\nMissing description for table \"%s\"" % ( table_name  )
+        print("\nMissing description for table \"%s\"" % ( table_name  ))
         sys.exit(1)
 
-    print
-    print "== %s == " % table_name
-    print "<section begin='%s' />" % table_name
-    print
-    print "{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\""
-    print "!Column Name"
-    print "!Human Name"
-    print "!Type"
-    print "!Description"
-    print "|-"
+    print("")
+    print("== %s == " % table_name)
+    print("<section begin='%s' />" % table_name)
+    print("")
+    print("{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\"")
+    print("!Column Name")
+    print("!Human Name")
+    print("!Type")
+    print("!Description")
+    print("|-")
 
     p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE)
     for line2 in iter(p2.stdout.readline, ''):
@@ -641,25 +641,25 @@ for line in iter(p.stdout.readline, ''):
         try:
             human_name = human_names[column]
         except:
-            print "\nMissing human_name for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing human_name for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         try:
             description = dict[table_name][column]
         except:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         if description == None:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
-        print "|%s" % column
-        print "|%s" % human_name
-        print "|%s" % type
-        print "|%s" % description
-        print "|-"
+        print("|%s" % column)
+        print("|%s" % human_name)
+        print("|%s" % type)
+        print("|%s" % description)
+        print("|-")
 
-    print "|}"
-    print "<section end='%s' />" % table_name
-    print
+    print("|}")
+    print("<section end='%s' />" % table_name)
+    print()
