@@ -309,7 +309,8 @@ Ext.define('Ung.controller.Global', {
         });
 
         if (!appInstance || !appProps) {
-            Util.handleException('Unable to find app: ' + app);
+            // Util.handleException('Unable to find app: ' + app);
+            Ext.fireEvent('invalidquery');
             return;
         }
 
@@ -358,6 +359,13 @@ Ext.define('Ung.controller.Global', {
 
     onConfig: function (config, view, subView) {
         var subViews = [];
+
+        // config must be one of those defined in array, otherwise route is invalid
+        if (config && !Ext.Array.contains(['network', 'administration', 'events', 'email', 'local-directory', 'upgrade', 'system', 'about'], config)) {
+            Ext.fireEvent('invalidquery');
+            return;
+        }
+
         for( var i = 2; i < arguments.length; i++){
             if(typeof(arguments[i]) != 'string'){
                 break;

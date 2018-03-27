@@ -312,7 +312,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
-        var me = this, vm = me.getViewModel(), dashboard = me.lookup('dashboard');
+        var me = this, dashboard = me.lookup('dashboard');
 
         // drom record selected for removal
         Ext.getStore('widgets').each(function (record) {
@@ -575,8 +575,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         } else {
             dashboard.moveAfter(widgetMoved, widgetDropped);
         }
-
-
     },
 
     resetDashboard: function () {
