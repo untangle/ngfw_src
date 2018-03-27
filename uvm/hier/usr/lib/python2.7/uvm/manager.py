@@ -14,7 +14,7 @@ class Manager(object):
         return "" + shortName
 
     def doAptTailLog(self, key ):
-        print "Operation started, please apt.log for more information"
+        print("Operation started, please apt.log for more information")
 
     def buildAppId(self, appIdStr ):
         appId = int( appIdStr )

@@ -36,7 +36,7 @@ class CurlRequestHandler(object):
         try:
             self.__curl.perform()
         except Exception, e:
-            print "Problem while asking for " + url
+            print("Problem while asking for " + url)
             raise e
 
         http_code = self.__curl.getinfo( pycurl.HTTP_CODE ) 
@@ -64,7 +64,7 @@ class Uvm:
             if ( username != None and password != None ):
                 handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))
         except JSONRPCException,e:
-            print "Login error: "
+            print("Login error: ")
             traceback.print_exc(e)
             return None
         

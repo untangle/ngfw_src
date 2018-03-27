@@ -5,7 +5,7 @@ class UvmManager(Manager):
         self.__uvmContext = uvmContext
 
     def api_version( self ):
-        print self.__uvmContext.version()
+        print(self.__uvmContext.version())
 
     def api_gc( self ):
         self.__uvmContext.gc()
