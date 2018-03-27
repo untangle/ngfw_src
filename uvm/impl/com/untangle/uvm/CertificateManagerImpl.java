@@ -635,7 +635,8 @@ public class CertificateManagerImpl implements CertificateManager
         argList[2] = altNames;
         argList[3] = baseName;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+        if (result.getResult() != 0) return (false);
         return (true);
     }
 
