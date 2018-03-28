@@ -66,15 +66,7 @@ Ext.define('Ung.cmp.AppRemove', {
                             Ung.app.getMainView().remove('appCard');
                         }
 
-                        // Rpc.asyncData('rpc.appManager.getAppsViews')
-                        //     .then(function (policies) {
-                        //         Ext.getStore('policies').loadData(policies);
-                        //         Ung.app.redirectTo('#apps/');
-                        //     });
-
-                        // todo: fire global event
                         Ext.fireEvent('appremove');
-                        // Ext.GlobalEvents.fireEvent('appinstall', 'remove', appItem.app);
                     }, function (ex) {
                         Util.handleException(ex);
                     });
