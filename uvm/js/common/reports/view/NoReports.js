@@ -67,11 +67,16 @@ Ext.define('Ung.view.reports.NoReports', {
                         Ext.Msg.alert('Error', ex.message);
                         return;
                     }
-                    wait.setHtml('<i class="fa fa-check fa-lg"></i> <br/><br/> Loading reports ...');
-                    Ext.defer(function () {
-                        Ung.app.reportscheck();
-                        wait.setHidden(true);
-                    }, 250);
+
+                    Ung.app.reportscheck();
+
+                    // refresh apps
+                    rpc.appsViews = rpc.appManager.getAppsViews();
+                    Ext.getStore('policies').loadData(rpc.appsViews);
+                    Ung.app.getGlobalController().getAppsView().getController().getApps();
+
+                    wait.setHidden(true);
+
                 });
         },
 
@@ -93,7 +98,7 @@ Ext.define('Ung.view.reports.NoReports', {
                         return false;
                     }
                     runStateWait = runStateWait - runStateDelay;
-                    if (result != runStateWantState){
+                    if (result !== runStateWantState){
                         runStateTask.delay(runStateDelay);
                     } else {
                         Ung.app.reportscheck();
