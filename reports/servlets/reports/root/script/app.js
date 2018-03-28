@@ -18,6 +18,7 @@ Ext.define('Ung.view.Main', {
         style: {
             background: '#1b1e26'
         },
+        layout: 'hbox',
         items: [{
             xtype: 'button',
             padding: '6 7 2 7',
@@ -39,27 +40,31 @@ Ext.define('Ung.view.Main', {
         }
     }, {
         xtype: 'container',
+        itemId: 'invalidRoute',
+        cls: 'invalid-route',
         layout: {
             type: 'vbox',
             align: 'center'
         },
         padding: 50,
-        itemId: 'invalidRoute',
+
         items: [{
             xtype: 'component',
             style: {
-                textAlign: 'center'
+                textAlign: 'center',
+                fontSize: '14px'
             },
-            html: '<i class="fa fa-warning fa-5x fa-gray"></i> <h1>Invalid route!</h1>'
+            html: '<i class="fa fa-warning fa-3x" style="color: #999;"></i>' +
+                '<div><h1>Ooops... Error</h1><p>Sorry, the page you are looking for was not found!</p></div>'
         }, {
             xtype: 'button',
-            iconCls: 'fa fa-arrow-left',
+            iconCls: 'fa fa-home fa-lg',
             scale: 'medium',
+            margin: '20 0 0 0',
             focusable: false,
-            text: 'Click to go go back'.t(),
-            handler: function() {
-                Ext.util.History.back();
-            }
+            text: 'Go to Reports Home'.t(),
+            href: '#',
+            hrefTarget: '_self'
         }]
     }]
 });

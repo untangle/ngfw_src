@@ -10,7 +10,7 @@ Ext.define('Ung.cmp.AppPanel', {
         style: { background: '#D8D8D8' },
         items: [{
             xtype: 'button',
-            iconCls: 'fa fa-arrow-circle-left fa-lg',
+            iconCls: 'fa fa-arrow-circle-left',
             hrefTarget: '_self',
             bind: {
                 text: 'Back to Apps',
@@ -89,18 +89,6 @@ Ext.define('Ung.cmp.AppPanel', {
                     }
                 });
             });
-
-            // var vm = appPanel.getViewModel();
-            // add policy name in the tabbar, needs a small delay for policiestree to be available
-            // Ext.defer(function () {
-            //     try {
-            //         var p = Ext.getStore('policiestree').findRecord('policyId', vm.get('policyId'));
-            //         vm.set('policyName', p.get('name'));
-            //     } catch (ex) {
-            //         vm.set('policyName', '');
-            //     }
-
-            // }, 500);
 
             // remove View Reports tab button if App does not have reports (e.g. Reports App)
             if (!appPanel.down('appreports')) {
