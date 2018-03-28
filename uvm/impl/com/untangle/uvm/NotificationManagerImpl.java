@@ -191,7 +191,7 @@ public class NotificationManagerImpl implements NotificationManager
             if ( ! UvmContextFactory.context().systemManager().getSettings().getCloudEnabled() )
                 return;
 
-            File pidFile = new File("/var/run/ut-pyconnector.pid");
+            File pidFile = new File("/var/run/pyconnector.pid");
             if ( !pidFile.exists() ) {
                 notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
                 return;
