@@ -1779,11 +1779,11 @@ public class FixedReports
             Thread.sleep(1000);
             webbrowser.takeScreenshot(filename);
         } catch (org.openqa.selenium.TimeoutException e) {
-            webbrowser.waitForElement(WebBrowser.FIND_KEYS.ID, "label-1016", 60);
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-no-data", 120);
             webbrowser.takeScreenshot(filename);
         } catch (Exception e) {
             logger.warn("Exception",e);
-            return "";
+            webbrowser.takeScreenshot(filename);
         }
 
         return filename;
