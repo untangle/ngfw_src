@@ -43,6 +43,7 @@ Ext.define('Ung.view.main.Main', {
             type: 'vbox',
             align: 'center'
         },
+        padding: 50,
         itemId: 'invalidRoute',
         items: [{
             xtype: 'component',

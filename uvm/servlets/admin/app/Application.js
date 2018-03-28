@@ -54,6 +54,12 @@ Ext.define('Ung.Application', {
             rpc.reportsManager = null;
             Ext.getStore('reports').loadData([]);
             Ext.getStore('reportstree').build();
+
+            if (!Ung.app.initialLoad) {
+                Ung.app.initialLoad = true;
+                Ext.fireEvent('initialload');
+            }
+
             mainView.getViewModel().set('reportsAppStatus', {
                 installed: false,
                 enabled: false
@@ -76,15 +82,6 @@ Ext.define('Ung.Application', {
             Ext.getStore('reportstree').build();
 
             /**
-             * Set the reportsAppStatus viewmodel prop.
-             * This is watched in different places when changes, and the view updates based on the status
-             */
-            mainView.getViewModel().set('reportsAppStatus', {
-                installed: true,
-                enabled: reportsApp.getRunState() === 'RUNNING'
-            });
-
-            /**
              * this is needed to initialize global conditions
              * because the query binding fires before reports have been loaded
              */
@@ -92,6 +89,15 @@ Ext.define('Ung.Application', {
                 Ung.app.initialLoad = true;
                 Ext.fireEvent('initialload');
             }
+
+            /**
+             * Set the reportsAppStatus viewmodel prop.
+             * This is watched in different places when changes, and the view updates based on the status
+             */
+            mainView.getViewModel().set('reportsAppStatus', {
+                installed: true,
+                enabled: reportsApp.getRunState() === 'RUNNING'
+            });
 
         }, function (ex) {
             console.log(ex);

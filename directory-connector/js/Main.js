@@ -7,23 +7,6 @@ Ext.define('Ung.apps.directoryconnector.Main', {
         type: 'app-directory-connector',
     },
 
-    tabBar: {
-        items: [{
-            xtype: 'component',
-            margin: '0 0 0 10',
-            cls: 'view-reports',
-            autoEl: {
-                tag: 'a',
-                href: '#reports/directory-connector',
-                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
-            },
-            hidden: true,
-            bind: {
-                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
-            }
-        }]
-    },
-
     items: [
         { xtype: 'app-directory-connector-status' },
         { xtype: 'app-directory-connector-usernotificationapi' },
