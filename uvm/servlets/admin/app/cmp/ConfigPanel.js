@@ -5,15 +5,15 @@ Ext.define('Ung.cmp.ConfigPanel', {
 
     dockedItems: [{
         xtype: 'toolbar',
-        // ui: 'navigation',
+        ui: 'footer',
         dock: 'top',
-        border: false,
+        style: { background: '#D8D8D8' },
         items: [{
             text: 'Back to Config',
-            iconCls: 'fa fa-arrow-circle-left fa-lg',
+            iconCls: 'fa fa-arrow-circle-left',
             hrefTarget: '_self',
             href: '#config'
-        }, '-', {
+        }, {
             xtype: 'component',
             padding: '0 5',
             bind: { html: '<img src="/icons/config/{iconName}.svg" style="vertical-align: middle;" width="17" height="17"/> <strong>{title}</strong>' }
