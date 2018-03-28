@@ -402,7 +402,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                 })
                 .always(function () {
                     if (reps) { reps.getViewModel().set('fetching', false); }
-                    me.chart.zoomOut();
+                    if( me.chart.noDataLabel === undefined){
+                        me.chart.zoomOut();
+                    }
                     me.chart.hideLoading();
                 });
         },
