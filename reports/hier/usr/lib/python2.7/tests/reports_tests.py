@@ -251,7 +251,7 @@ class ReportsTests(unittest2.TestCase):
         num_string_find = len(strings_to_find)
         while (tries > 0 and found_count < num_string_find):
             # get syslog results on server
-            rsyslogResult = remote_control.run_command("sudo tail -n 100 /var/log/syslog | grep 'FirewallEvent'", host=syslog_server_host, stdout=True)
+            rsyslogResult = remote_control.run_command("sudo tail -n 200 /var/log/syslog | grep 'FirewallEvent'", host=syslog_server_host, stdout=True)
             tries -= 1
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
