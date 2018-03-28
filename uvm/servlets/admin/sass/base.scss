@@ -963,3 +963,13 @@ a.view-reports {
         background-color: #FFF;
     }
 }
+
+
+.invalid-route {
+    h1 {
+        font-family: $custom-font-condensed;
+        font-weight: 400;
+        line-height: 1;
+        color: #999;
+    }
+}

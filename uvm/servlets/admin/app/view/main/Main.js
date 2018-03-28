@@ -38,28 +38,6 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.reports'
     }, {
-        xtype: 'container',
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-        padding: 50,
-        itemId: 'invalidRoute',
-        items: [{
-            xtype: 'component',
-            style: {
-                textAlign: 'center'
-            },
-            html: '<i class="fa fa-warning fa-5x fa-gray"></i> <h1>Invalid route!</h1>'
-        }, {
-            xtype: 'button',
-            iconCls: 'fa fa-arrow-left',
-            scale: 'medium',
-            focusable: false,
-            text: 'Click to go go back'.t(),
-            handler: function() {
-                Ext.util.History.back();
-            }
-        }]
+        xtype: 'invalidroute',
     }]
 });
