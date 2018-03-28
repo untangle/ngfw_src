@@ -6,7 +6,7 @@ Ext.define('Ung.cmp.AppReports', {
     viewModel: {
         stores: {
             appReports: {
-                source: '{reports}',
+                source: 'reports',
                 filters: [{
                     property: 'category',
                     value: '{props.displayName}',
@@ -34,7 +34,7 @@ Ext.define('Ung.cmp.AppReports', {
         bind: '{appReports}',
         cls: 'app-reports',
         tpl: '<tpl for=".">' +
-                '<a href="#reports/{url}"><i class="fa {icon}"></i> {localizedTitle}</a>' +
+                '<a href="#reports?{url}"><i class="fa {icon}"></i> {localizedTitle}</a>' +
             '</tpl>',
         itemSelector: 'a'
     }]

@@ -61,23 +61,6 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         }
     },
 
-    tabBar: {
-        items: [{
-            xtype: 'component',
-            margin: '0 0 0 10',
-            cls: 'view-reports',
-            autoEl: {
-                tag: 'a',
-                href: '#reports/intrusion-prevention',
-                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
-            },
-            hidden: true,
-            bind: {
-                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
-            }
-        }]
-    },
-
     items: [
         { xtype: 'app-intrusion-prevention-status' },
         { xtype: 'app-intrusion-prevention-rules' },
