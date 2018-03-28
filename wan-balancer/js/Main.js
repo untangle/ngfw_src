@@ -25,23 +25,6 @@ Ext.define('Ung.apps.wan-balancer.Main', {
         }
     },
 
-    tabBar: {
-        items: [{
-            xtype: 'component',
-            margin: '0 0 0 10',
-            cls: 'view-reports',
-            autoEl: {
-                tag: 'a',
-                href: '#reports/wan-balancer',
-                html: '<i class="fa fa-line-chart"></i> ' + 'View Reports'.t()
-            },
-            hidden: true,
-            bind: {
-                hidden: '{!reportsEnabled || instance.runState !== "RUNNING"}'
-            }
-        }]
-    },
-
     items: [
         { xtype: 'app-wan-balancer-status' },
         { xtype: 'app-wan-balancer-trafficallocation' },
