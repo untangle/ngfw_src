@@ -1,16 +1,20 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
 
 /**
- * A VPN group of address and clients.
+ * A group for OpenVPN clients
+ * 
+ * @author mahotz
+ * 
  */
 @SuppressWarnings("serial")
-public class OpenVpnGroup implements java.io.Serializable
+public class OpenVpnGroup implements java.io.Serializable, org.json.JSONString
 {
     private int groupId;
     private String name;
@@ -21,36 +25,25 @@ public class OpenVpnGroup implements java.io.Serializable
     private InetAddress pushDns2;
     private String pushDnsDomain;
     private LinkedList<OpenVpnConfigItem> groupConfigItems = new LinkedList<OpenVpnConfigItem>();
-    
-    public OpenVpnGroup() { }
 
-    /**
-     * Unique ID of the group
-     */
+    public OpenVpnGroup()
+    {
+    }
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
     public int getGroupId() { return groupId; }
     public void setGroupId( int newValue ) { this.groupId = newValue; }
 
-    /**
-     * Name of the group
-     */
     public String getName() { return name; }
     public void setName( String newValue ) { this.name = newValue; }
 
-    /**
-     * Should this group be "full tunnel" (all traffic goes through VPN)
-     */
     public boolean getFullTunnel() { return fullTunnel; }
     public void setFullTunnel( boolean fullTunnel ) { this.fullTunnel = fullTunnel; }
 
-    /**
-     * Should the server push DNS config to the clients
-     */
     public boolean getPushDns() { return pushDns; }
     public void setPushDns( boolean newValue ) { this.pushDns = newValue; }
 
-    /**
-     * Should clients use DNS from the server itself
-     */
     public boolean getPushDnsSelf() { return pushDnsSelf; }
     public void setPushDnsSelf( boolean newValue ) { this.pushDnsSelf = newValue; }
     
@@ -65,4 +58,12 @@ public class OpenVpnGroup implements java.io.Serializable
 
     public LinkedList<OpenVpnConfigItem> getGroupConfigItems() { return groupConfigItems; }
     public void setClientConfigItems( LinkedList<OpenVpnConfigItem> argList ) { this.groupConfigItems = argList; }
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

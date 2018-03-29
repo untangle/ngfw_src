@@ -1,9 +1,21 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
-public class OpenVpnConfigItem
+import java.io.Serializable;
+
+/**
+ * Class to store option/value pairs used create client and server configuration
+ * files.
+ * 
+ * @author mahotz
+ * 
+ */
+
+@SuppressWarnings("serial")
+public class OpenVpnConfigItem implements Serializable, org.json.JSONString
 {
     private String optionName;
     private String optionValue;
@@ -46,16 +58,27 @@ public class OpenVpnConfigItem
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * Generates a string to be used in an OpenVPN configuration file
+     * 
+     * @return The configuration string
+     */
     public String generateConfigString()
     {
         if (excludeFlag == true) return (null);
 
-        if (optionName == null) return(null);
-        if (optionName.length() == 0) return(null);
-        
+        if (optionName == null) return (null);
+        if (optionName.length() == 0) return (null);
+
         if (optionValue == null) return (optionName);
-        if (optionValue.length() == 0) return(optionName);
+        if (optionValue.length() == 0) return (optionName);
 
         return (optionName + " " + optionValue);
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }
