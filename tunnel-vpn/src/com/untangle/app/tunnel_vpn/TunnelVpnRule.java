@@ -64,4 +64,3 @@ public class TunnelVpnRule implements JSONString, Serializable
         return jO.toString();
     }
 }
-

@@ -21,6 +21,13 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
+/**
+ * Monitors the OpenVPN daemon for active tunnels, capturing statistics and
+ * automatically restarting any that terminate unexpectedly.
+ * 
+ * @author mahotz
+ * 
+ */
 class TunnelVpnMonitor implements Runnable
 {
     private static final long TRAFFIC_CHECK_INTERVAL = (60 * 1000);
@@ -49,12 +56,23 @@ class TunnelVpnMonitor implements Runnable
     private volatile long lastTrafficCheck = 0;
     private volatile long cycleCount = 0;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The Tunnel VPN application
+     * @param manager
+     *        The Tunnel VPN manager
+     */
     protected TunnelVpnMonitor(TunnelVpnApp app, TunnelVpnManager manager)
     {
         this.app = app;
         this.manager = manager;
     }
 
+    /**
+     * The main run function
+     */
     public void run()
     {
         if (!isAlive) {
@@ -83,6 +101,9 @@ class TunnelVpnMonitor implements Runnable
         logger.debug("Finished");
     }
 
+    /**
+     * Called to start monitoring
+     */
     public synchronized void start()
     {
         isAlive = true;
@@ -102,6 +123,9 @@ class TunnelVpnMonitor implements Runnable
         thread.start();
     }
 
+    /**
+     * Called to stop monitoring
+     */
     public synchronized void stop()
     {
         isAlive = false;
@@ -252,6 +276,16 @@ class TunnelVpnMonitor implements Runnable
         }
     }
 
+    /**
+     * Updates the tunnel status for a specific tunnel
+     * 
+     * @param tunnel
+     *        The tunnel to update
+     * @param status
+     *        The tunnel status object
+     * @return The updated tunnel status object
+     * @throws Exception
+     */
     private TunnelVpnTunnelStatus updateTunnelStatus(TunnelVpnTunnelSettings tunnel, TunnelVpnTunnelStatus status) throws Exception
     {
         Socket socket = null;
@@ -364,6 +398,16 @@ class TunnelVpnMonitor implements Runnable
         return (status);
     }
 
+    /**
+     * Restarts a dead tunnel
+     * 
+     * @param reason
+     *        The reson for the restart
+     * @param tunnel
+     *        The tunnel to be restarted
+     * @param status
+     *        The tunnel status object
+     */
     private void restartDeadTunnel(String reason, TunnelVpnTunnelSettings tunnel, TunnelVpnTunnelStatus status)
     {
         long currentTime = System.currentTimeMillis();
@@ -395,6 +439,11 @@ class TunnelVpnMonitor implements Runnable
         manager.launchProcess(tunnel);
     }
 
+    /**
+     * Gets a list of the status for each active tunnel
+     * 
+     * @return The tunnel status list
+     */
     public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
     {
         LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
@@ -416,6 +465,12 @@ class TunnelVpnMonitor implements Runnable
         return (statusList);
     }
 
+    /**
+     * Restart a tunnel
+     * 
+     * @param tunnelId
+     *        The tunnel ID to be restarted
+     */
     public void recycleTunnel(int tunnelId)
     {
         TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnelId);
