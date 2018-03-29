@@ -1,25 +1,29 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
+/**
+ * Class to represent an OpenVPN remote server
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class OpenVpnRemoteServer implements java.io.Serializable
+public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONString
 {
-    /**
-     * Is this remote server enabled?
-     */
     private boolean enabled = true;
-
-    /**
-     * Name of the remote server
-     */
     private String name;
     private boolean authUserPass = false;
     private String authUsername;
     private String authPassword;
 
-    public OpenVpnRemoteServer() {}
+    public OpenVpnRemoteServer()
+    {
+    }
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public boolean getEnabled() { return this.enabled; }
     public void setEnabled( boolean newValue ) { this.enabled = newValue; }
@@ -35,4 +39,12 @@ public class OpenVpnRemoteServer implements java.io.Serializable
 
     public String getAuthPassword() { return this.authPassword; }
     public void setAuthPassword( String newValue ) { this.authPassword = newValue; }
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }
