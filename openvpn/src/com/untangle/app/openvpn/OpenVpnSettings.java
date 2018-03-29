@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
 import java.util.LinkedList;
