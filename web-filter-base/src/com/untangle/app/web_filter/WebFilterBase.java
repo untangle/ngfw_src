@@ -176,7 +176,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             logger.debug("no BlockDetails for nonce");
             return false;
         } else if (global) {
-            String site = bd.getWhitelistHost();
+            String site = bd.getUnblockHost();
             if (null == site) {
                 logger.warn("cannot unblock null host");
                 return false;
@@ -189,7 +189,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 return true;
             }
         } else {
-            String site = bd.getWhitelistHost();
+            String site = bd.getUnblockHost();
             if (null == site) {
                 logger.warn("cannot unblock null host");
                 return false;

@@ -19,8 +19,45 @@ public class HeaderToken implements Token
 {
     private Map<String, Field> header = new LinkedHashMap<String, Field>();
 
+    /**
+     * An individual field of a HTTP header
+     */
+    private static class Field
+    {
+        String key;
+
+        private List<String> values = new LinkedList<String>();
+
+        /**
+         * create a Field
+         * @param key - the key
+         */
+        Field(String key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * Add a value to a field
+         * @param value - the value to add
+         */
+        void addValue(String value)
+        {
+            values.add(value);
+        }
+    }
+    
+    /**
+     * Create an empty HeaderToken
+     */
     public HeaderToken() { }
 
+    /**
+     * Add a field to the header
+     * This is used during construction of the HeaderToken
+     * @param key - the key
+     * @param value - the value for the key
+     */
     public void addField(String key, String value)
     {
         Field f = header.get(key.toUpperCase());
@@ -33,6 +70,11 @@ public class HeaderToken implements Token
         f.addValue(value);
     }
 
+    /**
+     * Remove a field from the header
+     * Has no effect if the key is not found
+     * @param key - the key
+     */
     public void removeField(String key)
     {
         Field f = header.remove(key.toUpperCase());
@@ -41,6 +83,8 @@ public class HeaderToken implements Token
     /**
      * Replace a field value.  If any values exists, they are all
      * removed and the new value is added.
+     * @param key - the key
+     * @param value - the value for the key
      */
     public void replaceField(String key, String value)
     {
@@ -58,28 +102,52 @@ public class HeaderToken implements Token
         f.addValue( value );
     }
 
+    /**
+     * Get the value for the specified key or null if not found
+     * Returns the first value if a key has multiple values
+     * @param key - the key
+     * @return the value
+     */
     public String getValue(String key)
     {
         Field f = header.get(key.toUpperCase());
         return (null == f || f.values.size() == 0) ? null : f.values.get(0);
     }
 
+    /**
+     * Get the values for the specified key or null if not found
+     * @param key - the key
+     * @return the values
+     */
     public List<String> getValues(String key)
     {
         Field f = header.get(key.toUpperCase());
         return ( null == f ) ? null : f.values;
     }
 
+    /**
+     * Get a iterator for the keySet
+     * @return an iterator
+     */
     public Iterator<String> keyIterator()
     {
         return new Iterator<String>()
             {
                 private Iterator<String> i = header.keySet().iterator();
 
-                public boolean hasNext() {
+                /**
+                 * True if has a next, false otherwise
+                 * @return boolean
+                 */
+                public boolean hasNext()
+                {
                     return i.hasNext();
                 }
 
+                /**
+                 * get the next key
+                 * @return next key
+                 */
                 public String next()
                 {
                     Object k = i.next();
@@ -87,6 +155,9 @@ public class HeaderToken implements Token
                     return f.key;
                 }
 
+                /**
+                 * remove this key
+                 */
                 public void remove()
                 {
                     i.remove();
@@ -94,23 +165,10 @@ public class HeaderToken implements Token
             };
     }
 
-    private static class Field
-    {
-        String key;
-
-        private List<String> values = new LinkedList<String>();
-
-        Field(String key)
-        {
-            this.key = key;
-        }
-
-        void addValue(String value)
-        {
-            values.add(value);
-        }
-    }
-
+    /**
+     * Get the ByteBuffer equivalent of the HeaderToken
+     * @return the ByteBuffer
+     */
     public ByteBuffer getBytes()
     {
         StringBuilder sb = new StringBuilder();

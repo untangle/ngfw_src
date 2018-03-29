@@ -21,6 +21,8 @@ import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * An HTTP <code>Unparser</code>.
+ *
+ * The HTTP unparser takes HTTP tokens and unparses them to byte buffers to be sent as data
  */
 public class HttpUnparserEventHandler extends AbstractEventHandler
 {
@@ -38,7 +40,9 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     private final HttpImpl app;
     private final boolean clientSide;
     
-    // used to keep request with header
+    /**
+     * Stores the unparser state of the session
+     */
     private class HttpUnparserSessionState
     {
         protected Queue<ByteBuffer> outputQueue = new LinkedList<ByteBuffer>();
@@ -46,12 +50,22 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         protected int transferEncoding;
     }
 
+    /**
+     * Create an HttpUnparserEventHandler.
+     * @param clientSide - true if this in an unparser for the client side
+     * @param app - the http app
+     */
     public HttpUnparserEventHandler( boolean clientSide, HttpImpl app )
     {
         this.clientSide = clientSide;
         this.app = app;
     }
 
+    /**
+     * handleTCPNewSession
+     * attaches the HttpUnparserSessionState to the session
+     * @param session
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
@@ -61,6 +75,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         session.attach( STATE_KEY, state );
     }
 
+    /**
+     * handleTCPClientChunk - should never be called
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -68,6 +87,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * handleTCPServerChunk - should never be called
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -75,6 +99,12 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * Handle a token from the client
+     * Since this is the unparser - this should only ever be called for the server side unparser
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -82,16 +112,22 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
             logger.warn("Received object but expected data.");
             throw new RuntimeException("Received object but expected data.");
         } else {
-            unparse( session, obj, false );
+            unparse( session, obj );
             return;
         }
     }
     
+    /**
+     * Handle a token from the server
+     * Since this is the unparser - this should only ever be called for the client side unparser
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         if (clientSide) {
-            unparse( session, obj, true );
+            unparse( session, obj );
             return;
         } else {
             logger.warn("Received object but expected data.");
@@ -99,6 +135,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle handleTCPClientDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -108,6 +149,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle handleTCPServerDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -117,6 +163,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Handle handleTCPClientFIN.
+     * @param session
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
@@ -128,6 +178,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle handleTCPServerFIN.
+     * @param session
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -139,9 +193,13 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    // private methods --------------------------------------------------------
-
-    private void unparse( AppTCPSession session, Object obj, boolean s2c )
+    /**
+     * Handle the actual unparsing process
+     * This will take the token (obj) and send the byte equivalent down the pipeline
+     * @param session
+     * @param obj - the token
+     */
+    private void unparse( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
 
@@ -166,6 +224,12 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle the actual unparsing process
+     * This will take the token and send the byte equivalent down the pipeline
+     * @param session
+     * @param token - the token
+     */
     private void unparse( AppTCPSession session, Token token )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -210,11 +274,20 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * dequeue all output for the session
+     * @param session
+     */
     public void releaseFlush( AppTCPSession session )
     {
         dequeueOutput( session );
     }
 
+    /**
+     * queue the status line data in the session
+     * @param session
+     * @param statusLine
+     */
     private void statusLine( AppTCPSession session, StatusLine statusLine )
     {
         if (logger.isDebugEnabled()) {
@@ -224,6 +297,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         queueOutput( session, statusLine.getBytes() );
     }
 
+    /**
+     * queue the request line data in the session
+     * @param session
+     * @param rl - requestLine
+     */
     private void requestLine( AppTCPSession session, RequestLineToken rl )
     {
         HttpMethod method = rl.getMethod();
@@ -237,6 +315,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         queueOutput( session, rl.getBytes() );
     }
 
+    /**
+     * queue the header data in the session
+     * @param session
+     * @param header
+     */
     private void header( AppTCPSession session, HeaderToken header )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -258,6 +341,12 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         } 
     }
 
+    /**
+     * queue the generic ChunkToken in the session
+     * This is handled slightly differently depending on the encoding method
+     * @param session
+     * @param c
+     */
     private void chunk( AppTCPSession session, ChunkToken c )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -303,6 +392,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * queue the endMarkerToken in the session
+     * @param session
+     */
     private void endMarker( AppTCPSession session )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -334,6 +427,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * queue the provided bytebuffer in the session
+     * @param session
+     * @param buf
+     */
     private void queueOutput( AppTCPSession session, ByteBuffer buf )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -341,6 +439,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         state.outputQueue.add(buf);
     }
 
+    /**
+     * flush all data
+     * @param session
+     */
     private void dequeueOutput( AppTCPSession session )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
@@ -367,6 +469,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * queue the request Line token
+     * @param session
+     * @param request
+     */
     @SuppressWarnings("unchecked")
     void queueRequest( AppTCPSession session, RequestLineToken request )
     {
@@ -379,5 +486,4 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
 
         requests.add(request);
     }
-    
 }
