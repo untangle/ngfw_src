@@ -32,9 +32,15 @@ public class RequestLine implements Serializable
 
     private static long nextId = 0;
 
-    public RequestLine(SessionEvent pe, HttpMethod method, byte[] requestUriBytes)
+    /**
+     * Create a RequestLine
+     * @param sessionEvent
+     * @param method
+     * @param requestUriBytes
+     */
+    public RequestLine(SessionEvent sessionEvent, HttpMethod method, byte[] requestUriBytes)
     {
-        this.sessionEvent = pe;
+        this.sessionEvent = sessionEvent;
         this.method = method;
         this.requestUriBytes = new byte[requestUriBytes.length];
         System.arraycopy(requestUriBytes, 0, this.requestUriBytes, 0, requestUriBytes.length);
@@ -48,6 +54,10 @@ public class RequestLine implements Serializable
         }
     }
 
+    /**
+     * Get the URL for the RequestLine
+     * @return URL
+     */
     public URL getUrl()
     {
         String host = ( httpRequestEvent == null ? "" : httpRequestEvent.getHost() );
@@ -62,6 +72,10 @@ public class RequestLine implements Serializable
         return url;
     }
 
+    /**
+     * Get the URI as a byte array
+     * @return URI
+     */
     public byte[] getUriBytes()
     {
         byte[] b = null;
@@ -75,7 +89,6 @@ public class RequestLine implements Serializable
 
     /**
      * Request URI.
-     *
      * @return the request URI.
      */
     public URI getRequestUri()
@@ -83,6 +96,10 @@ public class RequestLine implements Serializable
         return requestUri;
     }
 
+    /**
+     * Set the URI
+     * @param requestUri
+     */
     public void setRequestUri(URI requestUri)
     {
         this.requestUri = requestUri;
@@ -92,50 +109,79 @@ public class RequestLine implements Serializable
     }
 
     /**
-     * Get the sessionId
-     *
-     * @return the SessionEvent.
+     * Get the requestId
+     * @return the requestId.
      */
     public long getRequestId() { return this.requestId; }
+
+    /**
+     * Set the requestId
+     * @param newValue
+     */
     public void setRequestId( long newValue ) { this.requestId = requestId; }
 
     /**
      * Request method.
-     *
      * @return the request method.
      */
     public HttpMethod getMethod() { return method; }
+
+    /**
+     * Set the HTTP Method
+     * @param newValue
+     */
     public void setMethod(HttpMethod newValue) { this.method = newValue; }
 
     /**
      * Time the event was logged, as filled in by logger.
-     *
      * @return time logged.
      */
     public Timestamp getTimeStamp() { return timeStamp; }
+
+    /**
+     * Set the timestamp
+     * @param newValue
+     */
     public void setTimeStamp(Timestamp newValue) { this.timeStamp = newValue; }
 
     /**
      * The HttpRequestEvent that logged this item.
-     *
      * @return the HttpRequestEvent.
      */
     public HttpRequestEvent getHttpRequestEvent() { return httpRequestEvent; }
+
+    /**
+     * Set the HttpRequestEvent
+     * @param newValue
+     */
     public void setHttpRequestEvent(HttpRequestEvent newValue) { this.httpRequestEvent = newValue; }
 
     /**
      * The SessionEvent that logged this item.
-     *
      * @return the SessionEvent.
      */
     public SessionEvent getSessionEvent() { return sessionEvent; }
+
+    /**
+     * Set the SessionEvent
+     * @param newValue
+     */
     public void setSessionEvent(SessionEvent newValue) { this.sessionEvent = newValue; }
 
+    /**
+     * Get the String version of this request line
+     * @return string representation
+     */
     public String toString()
     {
         return getMethod() + " " + getUrl().toString();
     }
 
+    /**
+     * Return the URI as a byte array as a URI object
+     * @param b - the byte array of the URI
+     * @return the URI
+     */
     private URI getUri(byte[] b)
     {
         String uriStr;
