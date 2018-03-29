@@ -9,6 +9,12 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * Class for managing the status of a VPN tunnel
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class TunnelVpnTunnelStatus implements JSONString, Serializable
 {

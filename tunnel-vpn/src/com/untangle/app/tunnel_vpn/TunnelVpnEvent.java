@@ -14,7 +14,7 @@ import com.untangle.uvm.util.I18nUtil;
  * TunnelVPN tunnel connection event
  */
 @SuppressWarnings("serial")
-public class TunnelVpnEvent extends LogEvent implements Serializable
+public class TunnelVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType
     {
@@ -26,6 +26,8 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
     private String tunnelName;
     private EventType type;
 
+// THIS IS FOR ECLIPSE - @formatter:off
+
     public TunnelVpnEvent() {}
 
     public TunnelVpnEvent( InetAddress serverAddress, InetAddress localAddress, String tunnelName, EventType type )
@@ -36,27 +38,15 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
         this.type          = type;
     }
     
-    /**
-     * Address of the remote server
-     */
     public InetAddress getServerAddress() { return this.serverAddress; }
     public void setServerAddress( InetAddress newValue ) { this.serverAddress = newValue; }
 
-    /**
-     * Address assigned to the client
-     */
     public InetAddress getLocalAddress() { return this.localAddress; }
     public void setLocallAddress( InetAddress newValue ) { this.localAddress = newValue; }
     
-    /**
-     * Name of the tunnel for which the event was recorded
-     */
     public String getTunnelName() { return this.tunnelName; }
     public void setTunnelName( String newValue ) { this.tunnelName = newValue; }
 
-    /**
-     * Type of event
-     */
     public EventType getEventType() { return this.type; }
     public void setEventType( EventType newValue ) { this.type = newValue; }
     
@@ -84,6 +74,8 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
         return;
     }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     @Override
     public String toSummaryString()
     {
@@ -91,4 +83,9 @@ public class TunnelVpnEvent extends LogEvent implements Serializable
         return summary;
     }
 
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

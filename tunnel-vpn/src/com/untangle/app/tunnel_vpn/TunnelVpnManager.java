@@ -33,11 +33,20 @@ public class TunnelVpnManager
 
     private HashMap<Integer, Process> processMap = new HashMap<Integer, Process>();
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The tunnel vpn application
+     */
     protected TunnelVpnManager(TunnelVpnApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Launches the openvpn process for each configured tunnel
+     */
     protected synchronized void launchProcesses()
     {
         logger.info("Launching OpenVPN processes...");
@@ -56,6 +65,9 @@ public class TunnelVpnManager
         }
     }
 
+    /**
+     * Kills the openvpn process for each active tunnel
+     */
     protected synchronized void killProcesses()
     {
         logger.info("Killing OpenVPN processes...");
@@ -63,6 +75,15 @@ public class TunnelVpnManager
             File dir = new File("/run/tunnelvpn/");
             File[] matchingFiles = dir.listFiles(new FilenameFilter()
             {
+                /**
+                 * accept method for FilenameFilter
+                 * 
+                 * @param dir
+                 *        The directory where the file is located
+                 * @param name
+                 *        The name of the file
+                 * @return True to accept, otherwise false
+                 */
                 public boolean accept(File dir, String name)
                 {
                     return name.startsWith("tunnel-") && name.endsWith("pid");
@@ -83,12 +104,21 @@ public class TunnelVpnManager
         }
     }
 
+    /**
+     * Kills and restarts the process for each enabled tunnel
+     */
     protected synchronized void restartProcesses()
     {
         killProcesses();
         launchProcesses();
     }
 
+    /**
+     * Starts an openvpn instance for a tunnel
+     * 
+     * @param tunnelSettings
+     *        The tunnel to be started
+     */
     protected synchronized void launchProcess(TunnelVpnTunnelSettings tunnelSettings)
     {
         if (!tunnelSettings.getEnabled()) {
@@ -115,6 +145,16 @@ public class TunnelVpnManager
         processMap.put(tunnelId, proc);
     }
 
+    /**
+     * Imports an uploaded tunnel configuration
+     * 
+     * @param filename
+     *        The filename to import
+     * @param provider
+     *        The name of the tunnel provider
+     * @param tunnelId
+     *        The tunnel ID
+     */
     protected synchronized void importTunnelConfig(String filename, String provider, int tunnelId)
     {
         if (filename == null || provider == null) {
@@ -148,6 +188,14 @@ public class TunnelVpnManager
         return;
     }
 
+    /**
+     * Validates a tunnel configuration
+     * 
+     * @param filename
+     *        The filename to validate
+     * @param provider
+     *        The tunnel provider
+     */
     protected synchronized void validateTunnelConfig(String filename, String provider)
     {
         if (filename == null || provider == null) {
@@ -182,11 +230,22 @@ public class TunnelVpnManager
         return;
     }
 
+    /**
+     * Gets a nwe tunnel ID value
+     * 
+     * @return The tunnel ID value
+     */
     protected int getNewTunnelId()
     {
         return this.newTunnelId;
     }
 
+    /**
+     * Stops and restarts a tunnel
+     * 
+     * @param tunnelId
+     *        The tunnel to restart
+     */
     public void recycleTunnel(int tunnelId)
     {
         for (TunnelVpnTunnelSettings tunnelSettings : app.getSettings().getTunnels()) {
@@ -219,27 +278,6 @@ public class TunnelVpnManager
         }
     }
 
-    private void writeFile(String fileName, StringBuilder sb)
-    {
-        logger.info("Writing File: " + fileName);
-        BufferedWriter out = null;
-
-        try {
-            String data = sb.toString();
-            out = new BufferedWriter(new FileWriter(fileName));
-            out.write(data, 0, data.length());
-        } catch (Exception ex) {
-            logger.error("Error writing file " + fileName + ":", ex);
-        }
-
-        try {
-            if (out != null) out.close();
-        } catch (Exception ex) {
-            logger.error("Unable to close file", ex);
-        }
-
-    }
-
     /**
      * Inserts iptables rules
      */
@@ -263,6 +301,13 @@ public class TunnelVpnManager
         }
     }
 
+    /**
+     * Finds the lowest unused tunnel ID value
+     * 
+     * @param settings
+     *        The application settings
+     * @return The lowest unused tunnel ID value
+     */
     private int findLowestAvailableTunnelId(TunnelVpnSettings settings)
     {
         if (settings.getTunnels() == null) return 1;
