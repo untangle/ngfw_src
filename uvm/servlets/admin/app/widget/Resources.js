@@ -4,14 +4,9 @@ Ext.define('Ung.widget.Resources', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
     cls: 'small',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
 
     layout: {
         type: 'vbox',

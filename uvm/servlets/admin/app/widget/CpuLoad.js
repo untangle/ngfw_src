@@ -1,23 +1,12 @@
 Ext.define('Ung.widget.CpuLoad', {
     extend: 'Ext.container.Container',
     alias: 'widget.cpuloadwidget',
-
-    /* requires-start */
-    requires: [
-        'Ung.widget.CpuLoadController'
-    ],
-    /* requires-end */
     controller: 'cpuload',
     viewModel: true,
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
     cls: 'small',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
 
     layout: {
         type: 'vbox',

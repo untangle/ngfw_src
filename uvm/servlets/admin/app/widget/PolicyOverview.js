@@ -4,19 +4,13 @@ Ext.define('Ung.widget.PolicyOverview', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
-
     height: 300,
 
     layout: {
         type: 'vbox',
         align: 'stretch'
-    },
-
-    bind: {
-        hidden: '{!widget.enabled}'
     },
 
     viewModel: true,

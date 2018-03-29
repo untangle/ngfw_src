@@ -8,16 +8,9 @@ Ext.define('Ung.widget.Notifications', {
             count: '?'
         }
     },
-
-    hidden: true,
     border: false,
     baseCls: 'widget small info-widget',
-
     height: 300,
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
 
     layout: {
         type: 'vbox',

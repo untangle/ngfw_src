@@ -132,17 +132,25 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             widget = widgets[i];
 
             if (widget.get('type') !== 'ReportEntry') {
-                widgetsCmp.push({
-                    xtype: widget.get('type').toLowerCase() + 'widget',
-                    itemId: widget.get('type'),
-                    lastFetchTime: null,
-                    visible: true,
-                    viewModel: {
-                        data: {
-                            widget: widget
+                if (widget.get('enabled')) {
+                    widgetsCmp.push({
+                        xtype: widget.get('type').toLowerCase() + 'widget',
+                        itemId: widget.get('type'),
+                        lastFetchTime: null,
+                        visible: true,
+                        viewModel: {
+                            data: {
+                                widget: widget
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    widgetsCmp.push({
+                        xtype: 'component',
+                        itemId: widget.get('type'),
+                        hidden: true
+                    });
+                }
             }
             else {
                 if (vm.get('reportsAppStatus.installed') && vm.get('reportsAppStatus.enabled')) {
@@ -351,7 +359,37 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             // toggle visibility or show alerts
 
             if (record.get('type') !== 'ReportEntry') {
-                record.set('enabled', !record.get('enabled'));
+                console.log(record);
+                widgetCmp = dashboard.down('#' + record.get('type'));
+                if (widgetCmp) {
+                    widgetCmp.destroy();
+
+                    if (!record.get('enabled')) {
+                        widgetCmp = dashboard.insert(rowIndex, {
+                            xtype: record.get('type').toLowerCase() + 'widget',
+                            itemId: record.get('type'),
+                            visible: true,
+                            lastFetchTime: null,
+                            viewModel: {
+                                data: {
+                                    widget: record
+                                }
+                            }
+                        });
+                        setTimeout(function () {
+                            dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
+                        }, 100);
+                    } else {
+                        dashboard.insert(rowIndex, {
+                            xtype: 'component',
+                            itemId: record.get('type'),
+                            hidden: true
+                        });
+                    }
+                    record.set('enabled', !record.get('enabled'));
+
+                }
+
             } else {
                 if (!vm.get('reportsAppStatus.installed')) {
                     Ext.Msg.alert('Info'.t(), 'To enable App Widgets please install Reports first!'.t());
