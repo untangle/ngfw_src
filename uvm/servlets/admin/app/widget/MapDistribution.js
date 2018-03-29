@@ -4,16 +4,10 @@ Ext.define('Ung.widget.MapDistribution', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
     visible: false,
-
     layout: 'fit',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
 
     refreshIntervalSec: 10,
     geographyManager: rpc.UvmContext.geographyManager(),

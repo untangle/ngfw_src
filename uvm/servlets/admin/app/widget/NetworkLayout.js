@@ -2,27 +2,12 @@ Ext.define('Ung.widget.NetworkLayout', {
     extend: 'Ext.container.Container',
     alias: 'widget.networklayoutwidget',
 
-    /* requires-start */
-    requires: [
-        'Ung.widget.InterfaceItem'
-    ],
-    /* requires-end */
-
     controller: 'widget',
-
-    hidden: true,
     border: false,
     baseCls: 'widget',
-
-    visible: false,
-
     layout: {
         type: 'vbox',
         align: 'stretch'
-    },
-
-    bind: {
-        hidden: '{!widget.enabled}'
     },
 
     refreshIntervalSec: 0,

@@ -168,6 +168,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             xtype: 'toolbar',
             dock: 'top',
             ui: 'footer',
+            height: 30,
             style: { background: '#D8D8D8' },
             items: [{
                 text: 'Settings'.t(),
@@ -224,6 +225,22 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                         }
                     }
                 }],
+            }, {
+                xtype: 'component',
+                style: { fontSize: '12px' },
+                html: '<i class="fa fa-info-circle"></i> <strong>Reports App not installed!</strong> Report based widgets are not available.',
+                hidden: true,
+                bind: {
+                    hidden: '{reportsAppStatus.installed}'
+                }
+            }, {
+                xtype: 'component',
+                style: { fontSize: '12px' },
+                html: '<i class="fa fa-info-circle"></i> <strong>Reports App is disabled!</strong> Report based widgets are not available.',
+                hidden: true,
+                bind: {
+                    hidden: '{reportsAppStatus.installed && reportsAppStatus.enabled}'
+                }
             }]
         }]
     }],
