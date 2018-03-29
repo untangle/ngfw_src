@@ -22,12 +22,9 @@ Ext.define('Ung.widget.Report', {
 
     lastFetchTime: null,
 
-    hidden: true,
 
     bind: {
-        hidden: '{!widget.enabled}',
-        width: '{f_size}',
-        userCls: 'theme-{entry.theme}'
+        width: '{f_size}'
     },
 
     border: false,

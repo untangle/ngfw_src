@@ -4,13 +4,8 @@ Ext.define('Ung.widget.Information', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget small info-widget',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
 
     layout: {
         type: 'vbox',

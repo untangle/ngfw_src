@@ -4,17 +4,11 @@ Ext.define('Ung.widget.NetworkInformation', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget small',
-
     layout: {
         type: 'vbox',
         align: 'stretch'
-    },
-
-    bind: {
-        hidden: '{!widget.enabled}'
     },
 
     viewModel: true,
