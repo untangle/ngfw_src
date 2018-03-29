@@ -9,12 +9,20 @@ import java.io.Serializable;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * Class to manage a tunnel status event
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class TunnelVpnStatusEvent extends LogEvent implements Serializable
 {
     private String tunnelName;
     private long inBytes;
     private long outBytes;
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public TunnelVpnStatusEvent()
     {
@@ -58,14 +66,16 @@ public class TunnelVpnStatusEvent extends LogEvent implements Serializable
         return;
     }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     public String toString()
     {
         String detail = new String();
-        detail+=("TunnelVpnStatusEvent(");
-        detail+=(" tunnelName:" + tunnelName);
-        detail+=(" inBytes:" + inBytes);
-        detail+=(" outBytes:" + outBytes);
-        detail+=(" )");
+        detail += ("TunnelVpnStatusEvent(");
+        detail += (" tunnelName:" + tunnelName);
+        detail += (" inBytes:" + inBytes);
+        detail += (" outBytes:" + outBytes);
+        detail += (" )");
         return detail;
     }
 
