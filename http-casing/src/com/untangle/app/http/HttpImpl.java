@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.http;
@@ -30,16 +30,38 @@ public class HttpImpl extends AppBase
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private HttpSettings settings;
 
+    /**
+     * Create an HttpImpl (http app) instancen
+     * @param appSettings
+     * @param appProperties
+     */
     public HttpImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
     }
 
+    /**
+     * Get the current HttpSettings.
+     * @return HttpSettings
+     */
     public HttpSettings getHttpSettings()
     {
         return settings;
     }
 
+    /**
+     * Get the current HttpSettings.
+     * @return HttpSettings (as an Object)
+     */
+    public Object getSettings()
+    {
+        return getHttpSettings();
+    }
+
+    /**
+     * Set the current HttpSettinngs
+     * @param newSettings
+     */
     public void setHttpSettings(final HttpSettings newSettings)
     {
         String appID = this.getAppSettings().getId().toString();
@@ -57,6 +79,18 @@ public class HttpImpl extends AppBase
         reconfigure();
     }
 
+    /**
+     * Set the current HttpSettinngs
+     * @param settings (HttpSettings as an Object)
+     */
+    public void setSettings(Object settings)
+    {
+        setHttpSettings((HttpSettings)settings);
+    }
+    
+    /**
+     * Called after changing the settings to effect the new settings
+     */
     private void reconfigure()
     {
         if ( settings != null ) {
@@ -65,6 +99,10 @@ public class HttpImpl extends AppBase
         }
     }
 
+    /**
+     * postInit
+     * Reads the settings or creates the default settings if not found.
+     */
     protected void postInit()
     {
         String appID = this.getAppSettings().getId().toString();
@@ -101,19 +139,13 @@ public class HttpImpl extends AppBase
 
     }
 
+    /**
+     * getConnectors.
+     * @return the PipelineConnector[]
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
-    }
-
-    public Object getSettings()
-    {
-        return getHttpSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setHttpSettings((HttpSettings)settings);
     }
 }
