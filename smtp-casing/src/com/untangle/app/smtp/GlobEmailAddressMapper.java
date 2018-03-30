@@ -58,6 +58,11 @@ public class GlobEmailAddressMapper
         }
     }
 
+    /**
+     * Convert list to a string.
+     *
+     * @return List of addresses separated by newlines.
+     */
     @Override
     public String toString()
     {
@@ -71,6 +76,7 @@ public class GlobEmailAddressMapper
 
     /**
      * Warning - shared reference.
+     * @return list of mapping.
      */
     public List<Pair<String, String>> getRawMappings()
     {
@@ -78,8 +84,9 @@ public class GlobEmailAddressMapper
     }
 
     /**
-     * Remove a mapping. For thread-safety reasons, this returns a new mapper (i.e. the mapper is immutable). Returns
-     * null if the mapping was not found
+     * Remove a mapping. For thread-safety reasons, this returns a new mapper (i.e. the mapper is immutable). 
+     * @param mapping Pair to remove.
+     * @return null if the mapping was not found
      */
     public GlobEmailAddressMapper removeMapping(Pair<String, String> mapping)
     {
@@ -113,6 +120,9 @@ public class GlobEmailAddressMapper
 
     /**
      * List all addresses which will route to the given address.
+     *
+     * @param rightSide String of right side email addresses.
+     * @return String array of left side addresses.
      */
     public String[] getReverseMapping(String rightSide)
     {
@@ -180,11 +190,24 @@ public class GlobEmailAddressMapper
         return str;
     }
 
+    /**
+     * Email Address matcher
+     */
     abstract class EmailAddressMatcher
     {
 
+        /**
+         * Return right hand side matching address.
+         * @param  strLowerCase String of email address to match.
+         * @return              String of match.
+         */
         abstract String matchAddress(String strLowerCase);
 
+        /**
+         * Store left hand mtch match in specified Set.
+         * @param rightSideLowerCase Address to find.
+         * @param addInto            Set of strings to add match into.
+         */
         abstract void reverseMatch(String rightSideLowerCase, Set<String> addInto);
 
     }
@@ -197,6 +220,11 @@ public class GlobEmailAddressMapper
 
         private final HashMap<String, String> m_map;
 
+        /**
+         * Initialize SimpleEmailAddressMatcher instance.
+         * @param pairings List of String Pairs for email addresses.
+         * @return SimpleEmailAddressMatcher instance.
+         */
         SimpleEmailAddressMatcher(List<Pair<String, String>> pairings) {
 
             m_map = new HashMap<String, String>();
@@ -207,11 +235,21 @@ public class GlobEmailAddressMapper
 
         }
 
+        /**
+         * Look for email address and return matching string.
+         * @param  strLowerCase Address to find.
+         * @return              matchAddress object.
+         */
         String matchAddress(String strLowerCase)
         {
             return m_map.get(strLowerCase);
         }
 
+        /**
+         * Look for right hand side and put matches into Set.
+         * @param rightLower Right hand email address to lookup.
+         * @param writeInto  Destination to write left hand side match.
+         */
         void reverseMatch(String rightLower, Set<String> writeInto)
         {
             for (Map.Entry<String, String> entry : m_map.entrySet()) {
@@ -222,24 +260,42 @@ public class GlobEmailAddressMapper
         }
     }
 
+    /**
+     * Performs regex match on a set of from/to pairings.
+     */
     class RegexEmailAddressMatcher extends EmailAddressMatcher
     {
 
         private Pattern m_pattern;
         private String m_mapTo;
 
+        /**
+         * Initialize RegexEmailAddressMatcher instance.
+         * @param pairing List of String Pairs for email addresses.
+         * @return RegexEmailAddressMatcher instance.
+         */
         RegexEmailAddressMatcher(Pair<String, String> pairing) {
 
             m_pattern = Pattern.compile(fixupWildcardAddress(pairing.a));
             m_mapTo = pairing.b;
         }
 
+        /**
+         * Look for email address and return matching string.
+         * @param  strLowerCase Regex of address to find.
+         * @return              matchAddress object.
+         */
         String matchAddress(String strLowerCase)
         {
             Matcher m = m_pattern.matcher(strLowerCase);
             return m.matches() ? m_mapTo : null;
         }
 
+        /**
+         * Look for right hand side and put matches into Set.
+         * @param rightLower Right hand email regex match address to lookup.
+         * @param writeInto  Destination to write left hand side match.
+         */
         void reverseMatch(String rightLower, Set<String> writeInto)
         {
             if (rightLower.equalsIgnoreCase(rightLower)) {
@@ -250,6 +306,12 @@ public class GlobEmailAddressMapper
 
     /************** Tests ******************/
 
+    /**
+     * Run tests.
+     * 
+     * @param  args Unused
+     * @return      String of result.
+     */
     public static String runTest(String[] args)
     {
         String result = "";

@@ -21,6 +21,14 @@ public class Command implements Token
     private final String cmdStr;
     private String argStr;
 
+    /**
+     * Initialize command.
+     * 
+     * @param  type   CommandType of command.
+     * @param  cmdStr String of command.
+     * @param  argStr Argument string for command.
+     * @return        Instance of Command.
+     */
     public Command(CommandType type, String cmdStr, String argStr)
     {
         this.type = type;
@@ -28,6 +36,12 @@ public class Command implements Token
         this.argStr = argStr;
     }
 
+    /**
+     * Initialize command using type string and argments to null.
+     * 
+     * @param  type   CommandType of command.
+     * @return        Instance of Command.
+     */
     public Command(CommandType type)
     {
         this.type = type;
@@ -37,12 +51,19 @@ public class Command implements Token
 
     /**
      * Get the string of the command (i.e. "HELO", "RCPT").
+     *
+     * @return String of command.
      */
     public String getCmdString()
     {
         return this.cmdStr;
     }
 
+    /**
+     * Set command argument.
+     *
+     * @param argStr String of argument to command.
+     */
     protected void setArgStr(String argStr)
     {
         this.argStr = argStr;
@@ -50,6 +71,8 @@ public class Command implements Token
 
     /**
      * Get the argument to a command. For example, in "MAIL FROM:<>" "FROM:<>" is the argument. This may be null.
+     
+     * @return String of argument.
      */
     public String getArgString()
     {
@@ -58,6 +81,8 @@ public class Command implements Token
 
     /**
      * Get the type of the command. Be warned - the type may be "UNKNOWN"
+     *
+     * @return CommandType of type.
      */
     public CommandType getType()
     {
@@ -67,6 +92,8 @@ public class Command implements Token
     /**
      * Convert the command back to a valid line (with terminator). This is done by appending the type with the results
      * of {@link #getArgString getArgString()}.
+     *
+     * @return ByteBuffer of bytes.
      */
     public ByteBuffer getBytes()
     {
@@ -107,6 +134,8 @@ public class Command implements Token
 
     /**
      * For debug logging
+     *
+     * @return String of buffer.
      */
     public String toDebugString()
     {
@@ -115,6 +144,11 @@ public class Command implements Token
         return bbToString(buf);
     }
 
+    /**
+     * Buffer as a String.
+     *
+     * @return String of buffer.
+     */
     public String toString()
     {
         return toDebugString();

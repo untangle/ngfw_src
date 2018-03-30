@@ -82,12 +82,18 @@ public class ByteBufferByteStuffer
 
     private DynBB m_leftover;
 
+    /**
+     * Initalize bute buffer stuffer object.
+     * @return Instance of ByteBufferByteStuffer.
+     */
     public ByteBufferByteStuffer() {
         m_leftover = new DynBB();
     }
 
     /**
-     * Returns true if this Object has remaining bytes.
+     * Determine if buffer has leftover data.
+     *
+     * @return true if this Object has remaining bytes.
      */
     public boolean hasLeftover()
     {
@@ -95,7 +101,8 @@ public class ByteBufferByteStuffer
     }
 
     /**
-     * Number of bytes left over
+     * Retrive number of bytes remaining.
+     * @return Number of bytes left over
      */
     public int getLeftoverCount()
     {
@@ -105,6 +112,9 @@ public class ByteBufferByteStuffer
     /**
      * Get any queued bytes. Optionaly, include the CRLF.CRLF in the returned buffer. <br>
      * Returned buffer is ready for reading
+     *
+     * @param includeBodyTerm If true, add the trailing CRLF.CRLF
+     * @return ByteBuffer.
      */
     public ByteBuffer getLast(boolean includeBodyTerm)
     {
@@ -131,7 +141,9 @@ public class ByteBufferByteStuffer
      * Object with {@link #getLast getLast()} which transfers the remaining bytes. <br>
      * <br>
      * The returned buffer is ready for reading (already flipped).
-     * 
+     *
+     * @param source ByteBuffer source.
+     * @param sink ByteBuffer destination.
      * @return the number of bytes queued
      */
     public int transfer(ByteBuffer source, ByteBuffer sink)
@@ -217,26 +229,47 @@ public class ByteBufferByteStuffer
         return m_leftover.available();
     }
 
+    /**
+     * Dynamic byte buffer.
+     */
     private class DynBB
     {
         private byte[] m_buf;
         private int m_pos;
 
+        /**
+         * Initialize DynBB.
+         * 
+         * @return DynBB instance.
+         */
         DynBB() {
             m_buf = new byte[1024];
             m_pos = 0;
         }
 
+        /**
+         * Determines if buffer is empty.
+         *
+         * @return true if empty, false otherwise.
+         */
         boolean isEmpty()
         {
             return m_pos == 0;
         }
 
+        /**
+         * Determines if more is available in buffer.
+         * @return If 0, no more available, available otherwise.
+         */
         int available()
         {
             return m_pos;
         }
 
+        /**
+         * Transfer buffer into passed buffer.
+         * @param buf ByteBuffer to transfer into.
+         */
         void transferTo(ByteBuffer buf)
         {
             int toTransfer = available() > buf.remaining() ? buf.remaining() : available();
@@ -255,6 +288,11 @@ public class ByteBufferByteStuffer
 
         }
 
+        /**
+         * Add byte to the buffer.
+         *
+         * @param b byte to add into buffer.
+         */
         void put(byte b)
         {
             if (m_pos >= m_buf.length) {
@@ -265,8 +303,14 @@ public class ByteBufferByteStuffer
             m_buf[m_pos++] = b;
         }
 
+        /**
+         * Added for tests 
+         *
+         * @param bytes Array of bytes to add.
+         * @param start Starting position to add.
+         * @param len Length to add.
+         */
         @SuppressWarnings("unused")
-        /* Added for my tests */
         void put(byte[] bytes, int start, int len)
         {
             for (int i = 0; i < len; i++) {

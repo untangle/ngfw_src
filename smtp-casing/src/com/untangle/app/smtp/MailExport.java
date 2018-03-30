@@ -8,6 +8,10 @@ import com.untangle.app.smtp.safelist.SafelistAppView;
 
 public interface MailExport
 {
+    /**
+     * Return export settings.
+     * @return SmtpSettins object.
+     */
     SmtpSettings getExportSettings();
 
     /**
