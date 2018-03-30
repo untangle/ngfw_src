@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.app.smtp;
 
 /**
@@ -20,15 +23,30 @@ public enum CommandType
 
     private String code;
 
+    /**
+     * Initialize CommandType.
+     * 
+     * @param  code Code to initialie.
+     * @return      Instance of CommandType
+     */
     private CommandType(String code) {
         this.code = code;
     }
 
+    /**
+     * Get command type code.
+     * @return String of code name.
+     */
     public String getCode()
     {
         return code;
     }
 
+    /**
+     * Lookup code from string.
+     * @param  code String of code to find.
+     * @return      Matching type or UNKNOWN if not found.
+     */
     public static CommandType fromCode(String code)
     {
         for (CommandType ct : CommandType.class.getEnumConstants()) {

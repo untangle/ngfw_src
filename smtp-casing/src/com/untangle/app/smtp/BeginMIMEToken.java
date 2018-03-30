@@ -22,6 +22,13 @@ public class BeginMIMEToken extends MetadataToken
     private MIMEAccumulator m_accumulator;
     private SmtpMessageEvent m_messageInfo;
 
+    /**
+     * Intialize object of BeginMIMEToken.
+     * 
+     * @param  accumulator MIMEAccumulator accuumulator.
+     * @param  messageInfo SmtpMessageEvent message informaiton.
+     * @return             Instance of BeginMIMEToken.
+     */
     public BeginMIMEToken(MIMEAccumulator accumulator, SmtpMessageEvent messageInfo)
     {
         m_accumulator = accumulator;
@@ -30,6 +37,8 @@ public class BeginMIMEToken extends MetadataToken
 
     /**
      * Accessor for the SmtpMessageEvent of the email being transmitted.
+     *
+     * @return SmtpMessageEvent of accessor.
      */
     public SmtpMessageEvent getSmtpMessageEvent()
     {
@@ -38,6 +47,8 @@ public class BeginMIMEToken extends MetadataToken
 
     /**
      * Object which is gathering the MIME bytes for this email
+     *
+     * @return MIMEAccumulator of gathering object.
      */
     public MIMEAccumulator getMIMEAccumulator()
     {
@@ -60,24 +71,42 @@ public class BeginMIMEToken extends MetadataToken
 
     // ----------------- Inner Class -----------------------
 
+    /**
+     * Handle TCP stream.
+     */
     private class ByteBtuffingTCPStreamer implements TCPStreamer
     {
 
         private final TCPStreamer wrappedStreamer;
         private final ByteBufferByteStuffer bbbs;
 
+        /**
+         * Initialize TCP stream handler.
+         *
+         * @param wrapped TCPStreamer.
+         * @param bbbs ByteBufferStuffer.
+         */
         ByteBtuffingTCPStreamer(TCPStreamer wrapped, ByteBufferByteStuffer bbbs)
         {
             this.wrappedStreamer = wrapped;
             this.bbbs = bbbs;
         }
 
+        /**
+         * Close the wrapped streamer.
+         *
+         * @return result of closing TCPStreamer object.
+         */
         @Override
         public boolean closeWhenDone()
         {
             return wrappedStreamer.closeWhenDone();
         }
 
+        /**
+         * Get the next chunk from the TCP streamer.
+         * @return ByteBuffer of the next chunk.
+         */
         @Override
         public ByteBuffer nextChunk()
         {

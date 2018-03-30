@@ -22,6 +22,14 @@ public class CommandWithEmailAddress extends Command
 
     private static InternetAddress NULL_ADDRESS = new InternetAddress();
 
+    /**
+     * Initialize CommandWithEmailAddress
+     * 
+     * @param  type   CommandType of command.
+     * @param  cmdStr String of command string.
+     * @param  argStr String of arguments.
+     * @return        Instance of CommandWithEmailAddress
+     */
     protected CommandWithEmailAddress(CommandType type, String cmdStr, String argStr)
     {
         super(type, cmdStr, argStr);
@@ -47,11 +55,20 @@ public class CommandWithEmailAddress extends Command
         }
     }
 
+    /**
+     * Specify the email address.
+     * 
+     * @param address InternetAddress Email address to set.
+     */
     public final void setAddress(InternetAddress address)
     {
         m_address = address;
     }
 
+    /**
+     * Specify esmtp extras.
+     * @param esmtpExtra String of esmtp extras.
+     */
     public final void setEsmtpExtra(String esmtpExtra)
     {
         m_esmtpExtra = esmtpExtra;
@@ -60,6 +77,7 @@ public class CommandWithEmailAddress extends Command
     /**
      * Get any ESMTP directives which followed the address. These are "unparsed" in that any internal format of the
      * directive is not understood (i.e. something like "SIZE=100")
+     * @return String of esmtp directives.
      */
     public final String getEsmtpExtra()
     {
@@ -68,12 +86,17 @@ public class CommandWithEmailAddress extends Command
 
     /**
      * Get the EmailAddress parsed from this Command.
+     * @return InternetAddress email address.
      */
     public final InternetAddress getAddress()
     {
         return m_address;
     }
 
+    /**
+     * Retreive prefix of args.
+     * @return If this is a MAIL prefix, retur FROM otherwise TO.
+     */
     protected String getArgStrPrefix()
     {
         if (getType() == CommandType.MAIL)
@@ -81,6 +104,10 @@ public class CommandWithEmailAddress extends Command
         return PREFIX_TO;
     }
 
+    /**
+     * Retrieve argument string.
+     * @return String of arguments.
+     */
     @Override
     public String getArgString()
     {
@@ -98,6 +125,7 @@ public class CommandWithEmailAddress extends Command
 
     /**
      * Helper for subclasses, which have already stripped-off the "TO" or "FROM"
+     * @param str String of email address and extras.
      */
     protected void assignFromWire(String str)
     {
@@ -108,6 +136,8 @@ public class CommandWithEmailAddress extends Command
 
     /**
      * Parses an email address (which is assumed to begin at str index 0) and any extra ESMTP junk at the end
+     * @param str String of email address and extras.
+     * @return EmailAddressAndExtra of email address and extras.
      */
     protected static EmailAddressAndExtra parseAddressAndExtra(String str)
     {
@@ -127,11 +157,19 @@ public class CommandWithEmailAddress extends Command
         return new EmailAddressAndExtra(parseAddress(addrString), esmtpString);
     }
 
+    /**
+     * Contain email address and extra data.
+     */
     private static class EmailAddressAndExtra
     {
         final InternetAddress addr;
         final String extra;
 
+        /**
+         * Initialize EmailAddressAndExtra.
+         * @param addr InternetAddress email address.
+         * @param extra String of extras.
+         */
         EmailAddressAndExtra(InternetAddress addr, String extra) {
             this.addr = addr;
             this.extra = extra;
@@ -145,6 +183,8 @@ public class CommandWithEmailAddress extends Command
      * only one address. <br>
      * Leading spaces are trimmed. <br>
      * Will never return null.
+     * @param str String of email address.
+     * @return InternetAddress of email address.
      */
     protected static InternetAddress parseAddress( String str )
     {
@@ -177,6 +217,8 @@ public class CommandWithEmailAddress extends Command
     /**
      * Returns the index of the last valid character in the <code>addr</code> string from the email address (i.e.
      * inclusive).
+     * @param addr Email address to parse.
+     * @return integer length of address.
      */
     private static int getAddressEnd(String addr)
     {
@@ -203,6 +245,11 @@ public class CommandWithEmailAddress extends Command
         return bytes.length - 1;
     }
 
+    /**
+     * Retrieve email address from string.
+     * @param  str String containing email address.
+     * @return     String of email address.
+     */
     protected static String extractAddress(String str)
     {
         return str.substring(0, getAddressEnd(str) + 1);
@@ -210,6 +257,12 @@ public class CommandWithEmailAddress extends Command
 
     /************** Tests ******************/
 
+    /**
+     * Run tests for CommandWithEmailAddress.
+     * @param  args      Unused.
+     * @return           String result.
+     * @throws Exception Any issues.
+     */
     public static String runTest(String[] args) throws Exception
     {
 
