@@ -197,7 +197,7 @@ public class NotificationManagerImpl implements NotificationManager
                 return;
             }
 
-            int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
+            int result = this.execManager.execResult("/usr/bin/pyconnector-status");
             if (result != 0)
                 notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
         } catch (Exception e) {
