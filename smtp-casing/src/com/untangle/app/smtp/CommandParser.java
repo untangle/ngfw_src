@@ -20,6 +20,9 @@ public class CommandParser
     /**
      * Parse the buffer (which must have a complete line!) into a Command. May return a subclass of Command for Commands
      * with interesting arguments we wish parsed.
+     *
+     * @param buf ByteBuffer to initialize command parser.
+     * @return Instance of Command.
      */
     public static Command parse(ByteBuffer buf)
     {
@@ -66,7 +69,6 @@ public class CommandParser
      *
      * @param buf buffer with position
      * @return a <code>String</code> value
-     * @exception ParseException if a CRLF was not found in the buffer's remaining data
      */
     public static String consumeLine( ByteBuffer buf )
     {
@@ -113,11 +115,23 @@ public class CommandParser
         return SP == c || HTAB == c;
     }
 
+    /**
+     * Determines if byte is whitespace character.
+     *
+     * @param  b Byte to check.
+     * @return   true if whitespace, false otherwise.
+     */
     public static boolean isWhitespace(byte b)
     {
         return isWhitespace((char)b);
     }
 
+    /**
+     * Determines if character is a spacial character.
+     *
+     * @param  c Character to check.
+     * @return   true if special, false otherwise.
+     */
     public static boolean isTspecial(char c)
     {
         switch (c) {
@@ -132,6 +146,13 @@ public class CommandParser
     
     /************** Tests ******************/
 
+    /**
+     * Run tests for class.
+     * 
+     * @param  args      Unused.
+     * @return           String of result.
+     * @throws Exception If any problems encountered.
+     */
     public static String runTest(String[] args) throws Exception
     {
         String crlf = "\r\n";
@@ -205,6 +226,12 @@ public class CommandParser
         return result;
     }
 
+    /**
+     * Test parsing of a string.
+     * @param  str       String to parse.
+     * @return           String of result.
+     * @throws Exception If any problems
+     */
     private static String testParse(String str) throws Exception
     {
         String result = "\n\n===================\n";

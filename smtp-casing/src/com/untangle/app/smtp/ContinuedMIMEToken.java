@@ -20,6 +20,11 @@ public final class ContinuedMIMEToken implements Token
 
     private final MIMEAccumulator.MIMEChunkToken m_chunk;
 
+    /**
+     * Initialize ContinuedMIMEToken instance.
+     * @param  chunk  MIMEChunkToken chunk.
+     * @return       Instance of ContinuedMIMEToken.
+     */
     public ContinuedMIMEToken(MIMEAccumulator.MIMEChunkToken chunk) {
         m_chunk = chunk;
     }
@@ -70,6 +75,7 @@ public final class ContinuedMIMEToken implements Token
 
     /**
      * Returns the number of bytes in this chunk of MIME. May return zero if the internal chunk is null.
+     * @return Integer length of chunk.
      */
     public int length()
     {
