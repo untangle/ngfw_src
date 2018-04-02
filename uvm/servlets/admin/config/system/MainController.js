@@ -56,13 +56,16 @@ Ext.define('Ung.config.system.MainController', {
                     timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
                 });
             }
+            vm.set('timeZonesList', timeZones);
 
             // Massage language to include the appropriate source.
             var languageSettings = result[0];
             languageSettings['language'] = languageSettings['source'] + '-' + languageSettings['language'];
 
-            dataNames.forEach(function(name, index){
-                vm.set(name, result[index]);
+            dataNames.forEach(function(name, index) {
+                if (name !== 'timeZonesList') {
+                    vm.set(name, result[index]);
+                }
             });
 
             vm.set('panel.saveDisabled', false);
@@ -70,12 +73,12 @@ Ext.define('Ung.config.system.MainController', {
             // Load language list.
             if(!vm.get('languagesList')){
                 Rpc.asyncData('rpc.languageManager.getLanguagesList')
-                .then( function(result){
-                    if(!Util.isDestroyed(v,vm)){
-                        v.setLoading(false);
-                        vm.set('languagesList', result);
-                    }
-                });
+                    .then( function(result){
+                        if(!Util.isDestroyed(v,vm)){
+                            v.setLoading(false);
+                            vm.set('languagesList', result);
+                        }
+                    });
             }else{
                 v.setLoading(false);
             }
