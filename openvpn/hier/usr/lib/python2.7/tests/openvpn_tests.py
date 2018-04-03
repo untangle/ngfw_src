@@ -249,6 +249,7 @@ class OpenVpnTests(unittest2.TestCase):
 
         #remove server from remoteServers so it doesn't interfere with later tests
         appData = app.getSettings()
+        appData['authUserPass']=False
         appData["remoteServers"]["list"][:] = []
         app.setSettings(appData)
 
