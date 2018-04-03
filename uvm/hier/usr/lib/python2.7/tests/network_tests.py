@@ -900,7 +900,6 @@ class NetworkTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result2)
         outsideIP2 = match.group()
 
-
         loopCounter = 60
         dynIpFound = False
         while loopCounter > 0 and not dynIpFound:
