@@ -57,6 +57,10 @@ sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
 # We no longer use upstream
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 
+# Remove extra lines created by the stretch installer
+# FIXME: do we want to "echo > /etc/apt/sources.list" instead ?
+sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
+
 # If upgrading from 13.2 - do the conversion
 if echo $oldVersion | grep -q "13\.2" ; then
     # kill the automatic uvm-restart
