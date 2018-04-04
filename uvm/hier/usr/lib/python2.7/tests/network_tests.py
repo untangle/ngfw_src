@@ -889,16 +889,8 @@ class NetworkTests(unittest2.TestCase):
         setDynDNS(dynDNSUserName, dynDNSPassword, dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        for i in range(0,10):
-            try:
-                result2 = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" http://test.untangle.com/cgi-bin/myipaddress.py", shell=True)
-            except subprocess.CalledProcessError, e:
-                print(e.output)
-                time.sleep(1)
-                continue
-            break
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result2)
-        outsideIP2 = match.group()
+        outsideIP2 = global_functions.get_public_ip_address(base_URL=global_functions.testServerHost,localcall=True)
+        outsideIP2 = outsideIP2.rstrip()  # strip return character
 
         loopCounter = 60
         dynIpFound = False
