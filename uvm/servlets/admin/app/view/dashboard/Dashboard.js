@@ -9,16 +9,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     controller: 'dashboard',
     viewModel: {
         data: {
-            managerVisible: false,
-            timeframe: 1
-        },
-        formulas: {
-            timeframeText: function (get) {
-                if (!get('timeframe')) {
-                    return 1 + ' ' + 'hour'.t() + ' (' + 'default'.t() + ')';
-                }
-                return get('timeframe') + ' ' + (get('timeframe') === 1 ? 'hour'.t() + ' (' + 'default'.t() + ')' : 'hours'.t());
-            }
+            managerVisible: false
         }
     },
 
@@ -207,7 +198,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 }, {
                     xtype: 'button',
                     iconCls: 'fa fa-clock-o',
-                    text: 'Today'.t(),
                     focusable: false,
                     menu: {
                         plain: true,
