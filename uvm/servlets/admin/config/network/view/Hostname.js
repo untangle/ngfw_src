@@ -46,7 +46,8 @@ Ext.define('Ung.config.network.view.Hostname', {
                 allowBlank: false,
                 blankText: 'Domain Name must be specified.'.t(),
                 name: 'DomainName',
-                bind: '{settings.domainName}'
+                bind: '{settings.domainName}',
+                vtype: 'domainName'
             }, {
                 xtype: 'displayfield',
                 value: '(eg: example.com)'.t(),
