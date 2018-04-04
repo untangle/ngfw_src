@@ -140,7 +140,7 @@ public class NetworkManagerImpl implements NetworkManager
                 this.networkSettings.setDynamicRoutingSettings( defaultDynamicRoutingSettings() );
                 this.networkSettings.setAccessRules( addDynamicRoutingAccessRules( this.networkSettings.getAccessRules() ) );
                 this.networkSettings.setVersion( 7 );
-                this.setNetworkSettings( this.networkSettings);
+                this.setNetworkSettings( this.networkSettings, false );
             }
 
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
@@ -804,7 +804,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 7 ); // Currently on v6 (as of v13.1)
+            newSettings.setVersion( 7 ); // Currently on v7 (as of v13.2.1)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
