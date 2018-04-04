@@ -361,7 +361,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             // toggle visibility or show alerts
 
             if (record.get('type') !== 'ReportEntry') {
-                console.log(record);
                 widgetCmp = dashboard.down('#' + record.get('type'));
                 if (widgetCmp) {
                     widgetCmp.destroy();
