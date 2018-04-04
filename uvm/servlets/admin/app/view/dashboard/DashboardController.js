@@ -42,6 +42,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
          */
         Rpc.asyncData('rpc.dashboardManager.getSettings')
             .then(function (result) {
+                // initially the timeframe could be null
+                if (!result.timeframe) {
+                    result.timeframe = 1;
+                }
                 Ung.dashboardSettings = result;
                 Ext.getStore('widgets').loadData(result.widgets.list);
 
@@ -122,8 +126,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         // refresh the dashboard manager grid if the widgets were affected
         me.lookup('dashboardManager').getView().refresh();
-        vm.set('timeframe', Ung.dashboardSettings.timeframe || 1);
-        // vm.set('theme', Ung.dashboardSettings.theme);
 
         dashboard.removeAll(true);
         var widgetsCmp = [];
