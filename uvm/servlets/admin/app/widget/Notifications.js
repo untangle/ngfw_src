@@ -5,7 +5,7 @@ Ext.define('Ung.widget.Notifications', {
     controller: 'widget',
     viewModel: {
         data: {
-            count: '?'
+            count: null
         }
     },
     border: false,
@@ -25,7 +25,7 @@ Ext.define('Ung.widget.Notifications', {
         cls: 'header',
         itemId: 'header',
         bind: {
-            html: '<h1>' + 'Notifications'.t() + ' ({count})</h1>' +
+            html: '<h1>' + 'Notifications'.t() + ' {count}</h1>' +
                 '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
         }
     }, {
@@ -33,6 +33,14 @@ Ext.define('Ung.widget.Notifications', {
         itemId: 'notif',
         scrollable: 'y',
         flex: 1
+    }, {
+        xtype: 'button',
+        margin: '10 20',
+        text: 'Help'.t(),
+        iconCls: 'fa fa-question-circle',
+        href: rpc.helpUrl + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout(),
+        hidden: true,
+        bind: { hidden: '{!count || count === "(0)"}' }
     }],
 
     fetchData: function (cb) {
@@ -47,10 +55,10 @@ Ext.define('Ung.widget.Notifications', {
                     }
                     notificationArr += '</ul>';
                     notifCmp.setHtml(notificationArr);
-                    vm.set('count', result.list.length);
+                    vm.set('count', '(' + result.list.length + ')');
                 } else {
                     notifCmp.setHtml('<p style="text-align: center; font-size: 14px;">' + 'No notifications'.t() + '!</p>');
-                    vm.set('count', 0);
+                    vm.set('count', '(0)');
                 }
             }, function (ex) {
                 Util.handleException(ex);
