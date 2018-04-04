@@ -14,7 +14,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         cidrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
         ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
         openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
-        positiveInteger: /^[0-9]+$/
+        positiveInteger: /^[0-9]+$/,
+        domainNameRe: /^[a-zA-Z0-9\-_.]+$/
     },
 
     isSinglePortValid: function(val) {
@@ -154,6 +155,12 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     },
     openvpnNameText: 'A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.'.t(),
+
+
+    domainName: function(value){
+        return this.mask.domainNameRe.test(value);
+    },
+    domainNameText: 'A domain can only contain numbers, letters, dashes and periods.'.t(),
 
     cidrBlock:  function (v) {
         return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
