@@ -4,6 +4,15 @@ Ext.define('Ung.apps.livesupport.Main', {
 
     items: [
         { xtype: 'app-live-support-status' }
-    ]
+    ],
 
+    controller: 'app-live-support',
+
+    viewModel: {
+        data: {
+            companyName: '',
+            serverUID: '',
+            fullVersionAndRevision: '',
+        }
+    }
 });
