@@ -9,12 +9,31 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
     },
 
     getSettings: function () {
-        var me = this, vm = this.getViewModel();
-        this.getView().appManager.getSettings(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            vm.set('settings', result);
-            me.afterGetSettings();
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.setLoading(true);
+
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings')
+        ])
+        .then( function(result){
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
+
+            vm.set('settings', result[0]);
+            me.calculateNetwork(result[1]);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
+
     },
 
     setSettings: function () {
@@ -41,16 +60,27 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
         me.setWeights();
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
-    afterGetSettings: function() {
+    calculateNetwork: function( networkSettings ) {
         var interfaceWeightData = [];
         var destinationWanData = [];
         var trafficAllocation = "";
@@ -58,7 +88,6 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
 
         var vm = this.getViewModel();
         var weightArray = vm.get('settings.weights');
-        var networkSettings = rpc.networkManager.getNetworkSettings();
 
         for (i = 0 ; i < networkSettings.interfaces.list.length ; i++) {
             intf = networkSettings.interfaces.list[i];
