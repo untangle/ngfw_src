@@ -34,7 +34,10 @@ Ext.define('Ung.apps.livesupport.view.Status', {
             cls: 'app-section',
             items: [{
                 xtype: 'component',
-                html: Ext.String.format('This {0} Server is entitled to Live Support.'.t(), Rpc.directData('rpc.companyName')),
+                bind: {
+                    html: Ext.String.format('This {0} Server is entitled to Live Support.'.t(), Rpc.directData('rpc.companyName'))
+                },
+                html: Ext.String.format('This {0} Server is entitled to Live Support.'.t(), '{companyName}'),
                 margin: '0 0 10 0'
             }, {
                 xtype: 'button',
@@ -57,10 +60,10 @@ Ext.define('Ung.apps.livesupport.view.Status', {
             },
             items: [{
                 fieldLabel: '<strong>' + 'UID'.t() + '</strong>',
-                value: Rpc.directData('rpc.serverUID')
+                bind: '{serverUID}'
             }, {
                 fieldLabel: '<strong>' + 'Build'.t() + '</strong>',
-                value: Rpc.directData('rpc.fullVersionAndRevision')
+                bind: '{fullVersionAndRevision}'
             }]
         }, {
             xtype: 'appremove'
