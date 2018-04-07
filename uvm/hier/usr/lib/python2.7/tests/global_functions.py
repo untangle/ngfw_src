@@ -23,8 +23,15 @@ iperfServers = [('10.111.0.0/16','10.111.56.23'), # Office network
                 #('10.112.0.0/16','10.112.56.44')
                 ] # ATS VM
 iperfServer = ""
-radiusServer = "10.111.56.28"
-adServer = "10.111.56.46"
+radius_server = "10.111.56.28"
+radius_server_password = "chakas"
+radius_user = "normal"
+radius_password = "passwd"
+ad_server = "10.111.56.46"
+ad_admin = "ATSadmin"
+ad_password = "passwd"
+ad_domain = "adtest.adtesting.int"
+ad_user = "user_28004"
 
 # special Untangle box configured as a OpenVPN server
 vpnServerVpnIP = "10.111.56.96"
