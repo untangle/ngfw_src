@@ -50,7 +50,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         print("Waiting for server to start...")
         for i in xrange(1200):
             time.sleep(1)
-            result = subprocess.call("cat /var/log/bdamserver.log | grep -q 'Server is started' >/dev/null 2>&1", shell=True)
+            result = subprocess.call("netcat -n -z 127.0.0.1 1344 >/dev/null 2>&1", shell=True)
             if result == 0:
                 break
         print("Number of sleep cycles waiting for bdamserver %d" % i)
