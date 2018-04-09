@@ -410,5 +410,12 @@ class UvmTests(unittest2.TestCase):
 
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
+        
+    def test_130_check_cmd_connected(self):
+        """Check if cmd is connected using alert rule"""
+        
+        # run cmd status
+        result = subprocess.check_output('/usr/bin/pyconnector-status')
+        assert("Connected" in result)
 
 test_registry.registerApp("uvm", UvmTests)
