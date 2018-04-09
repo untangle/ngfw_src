@@ -415,7 +415,7 @@ class UvmTests(unittest2.TestCase):
         """Check if cmd is connected using alert rule"""
         
         # run cmd status
-        result = subprocess.check_output('/usr/bin/pyconnector-status')
+        result = subprocess.check_output(global_functions.get_prefix() + "/usr/bin/pyconnector-status")
         assert("Connected" in result)
 
 test_registry.registerApp("uvm", UvmTests)
