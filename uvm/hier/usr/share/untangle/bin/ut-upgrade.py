@@ -120,6 +120,7 @@ if "2.6.32" in platform.platform():
     log("Upgrade(s) are not allowed on the 2.6.32 kernel. Please reboot and select a newer kernel.")
     sys.exit(1)
 
+log_date("")
 log("")
 
 r = check_upgrade();
@@ -128,9 +129,13 @@ if r != 0:
     sys.exit(1)
 
 upgrade()
+
+log_date("")
 log("")
 
 autoremove()
+
+log_date("")
 log("")
 
 log_date( os.path.basename( sys.argv[0]) + " done." )
