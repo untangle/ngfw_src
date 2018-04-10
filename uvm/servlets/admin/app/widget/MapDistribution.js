@@ -30,7 +30,7 @@ Ext.define('Ung.widget.MapDistribution', {
     }],
 
     fetchData: function (cb) {
-        var me = this, data = [];
+        var me = this, data = [], i;
 
         if (me.chart && me.geographyManager) {
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');

@@ -10,6 +10,8 @@ Ext.define('Ung.view.dashboard.NewWidget', {
     height: 500,
     layout: 'border',
 
+    renderTo: Ext.getBody(),
+
     viewModel: {
         data: {
             widget: null,
@@ -53,39 +55,24 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                         this.set('widget.displayColumns', this.get('entry.defaultColumns'));
                     }
                 }
-            },
-            // _columns: {
-            //     get: function (get) {
-            //         console.log(get('entry.displayColumns'));
-            //         return get('widget.displayColumns') || get('entry.displayColumns');
-            //     },
-            //     set: function (val) {
-            //         console.log(val);
-            //     }
-            // }
+            }
         }
     },
 
     items: [{
         xtype: 'treepanel',
         reference: 'tree',
-        // title: 'Reports'.t(),
-        // collapsible: true,
-        // titleCollapse: true,
         region: 'west',
         weight: 20,
         width: 250,
         minWidth: 250,
         split: true,
-        // border: false,
-        // singleExpand: true,
         useArrows: true,
         rootVisible: false,
 
         viewConfig: {
             selectionModel: {
                 type: 'treemodel'
-                // pruneRemoved: false
             }
         },
         store: 'reportstree',
@@ -93,20 +80,17 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             xtype: 'treecolumn',
             flex: 1,
             dataIndex: 'text',
-            // scope: 'controller',
             renderer: 'treeNavNodeRenderer'
         }],
 
         tbar: [{
             xtype: 'textfield',
             emptyText: 'Filter reports ...',
-            // enableKeyEvents: true,
             flex: 1,
             triggers: {
                 clear: {
                     cls: 'x-form-clear-trigger',
                     hidden: true,
-                    // handler: 'onTreeFilterClear'
                 }
             },
             listeners: {
@@ -160,7 +144,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             hidden: true,
             bind: {
                 hidden: '{!(entry && onDashboard)}',
-                html: '<i class="fa fa-info-circle fa-lg"></i> ' + 'This report widget exists in Dashboard and is <strong>{widget.enabled ? "enabled" : "disabled"}</strong>!',
+                html: '<i class="fa fa-info-circle fa-lg"></i> ' + 'This report widget already exists in Dashboard</strong>!',
             }
         }],
 
@@ -230,12 +214,6 @@ Ext.define('Ung.view.dashboard.NewWidget', {
         }],
 
         buttons: [{
-            text: 'Remove'.t(),
-            iconCls: 'fa fa-trash-o fa-red',
-            hidden: true,
-            bind: { hidden: '{!(entry && onDashboard)}' },
-            handler: 'onRemoveWidget'
-        }, '->', {
             text: 'Cancel'.t(),
             iconCls: 'fa fa-ban',
             handler: function (btn) {
@@ -245,23 +223,8 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             text: 'Add'.t(),
             iconCls: 'fa fa-plus-circle',
             hidden: true,
-            bind: { hidden: '{!(entry && !onDashboard)}' },
+            bind: { hidden: '{!entry}' },
             handler: 'onAdd'
-        }, {
-            text: 'Save'.t(),
-            iconCls: 'fa fa-floppy-o',
-            hidden: true,
-            bind: { hidden: '{!(entry && onDashboard)}' },
-            handler: 'onSave'
         }]
-    }],
-
-    // dockedItems: [{
-    //     xtype: 'toolbar',
-    //     dock: 'bottom',
-    //     weight: 0,
-
-
-
-    // }]
+    }]
 });
