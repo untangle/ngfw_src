@@ -302,12 +302,9 @@ Ext.define('Ung.view.reports.EntryController', {
 
     // // DASHBOARD ACTION
     dashboardAddRemove: function () {
-        var me = this, vm = me.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry'), action;
-
-        me.getView().setLoading(true);
+        var me = this, vm = me.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry');
 
         if (!widget) {
-            action = 'add';
             widget = Ext.create('Ung.model.Widget', {
                 displayColumns: entry.get('defaultColumns'),
                 enabled: true,
@@ -317,66 +314,15 @@ Ext.define('Ung.view.reports.EntryController', {
                 timeframe: '',
                 type: 'ReportEntry'
             });
+
+            Ext.getStore('widgets').add(widget);
+            vm.set('widget', widget);
         } else {
-            action = 'remove';
+            var records = Ext.getStore('widgets').queryRecords('entryId', entry.get('uniqueId'));
+            Ext.getStore('widgets').remove(records);
+            vm.set('widget', null);
         }
-
-        Ext.fireEvent('widgetaction', action, widget, entry, function (wg) {
-            vm.set('widget', wg);
-            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (action === 'add' ? 'added to' : 'removed from') + ' Dashboard!');
-            me.getView().setLoading(false);
-        });
     },
-
-    // titleChange: function( control, newValue) {
-    //     var me = this, vm = me.getViewModel();
-
-    //     var currentRecord = vm.get('entry');
-
-    //     var titleConflictSave = false;
-    //     var titleConflictSaveNew = false;
-    //     var sameCustomizableReport = false;
-    //     var sameReport = false;
-    //     Rpc.asyncData('rpc.reportsManager.getReportEntries')
-    //         .then(function(result) {
-    //             result.list.forEach( function(reportEntry) {
-    //                 if( ( reportEntry.category + '/' + reportEntry.title.trim() )  == ( currentRecord.get('category') + '/' + newValue.trim() ) ){
-    //                     titleConflictSave = true;
-    //                     titleConflictSaveNew = true;
-
-    //                     if( reportEntry.uniqueId == currentRecord.get('uniqueId') ){
-    //                         sameReport = true;
-    //                     }
-    //                     if( sameReport &&
-    //                         currentRecord.get('readOnly') == false){
-    //                         sameCustomizableReport = true;
-    //                         titleConflictSave = false;
-    //                     }
-    //                 }
-    //             });
-
-    //             if (control){
-    //                 if( titleConflictSave && !sameReport ){
-    //                     control.setValidation('Another report within this category has this title'.t());
-    //                 }else{
-    //                     control.setValidation(true);
-    //                 }
-    //             }
-
-    //             var messages = [];
-    //             if(currentRecord.get('readOnly')){
-    //                 messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;' + 'This default report is read-only. Delete and Save are disabled.'.t());
-    //             }
-    //             if( ( titleConflictSaveNew && !sameCustomizableReport ) || titleConflictSaveNew){
-    //                 messages.push( '<i class="fa fa-info-circle fa-lg"></i>&nbsp;'+ 'Change Title to Save as New Report.'.t());
-    //             }
-    //             vm.set('reportMessages',  messages.join('<br>'));
-
-    //             if(!titleConflictSave){
-    //                 vm.set('entry.title', newValue);
-    //             }
-    //         });
-    // },
 
 
     validateTitle: function (entry, action) {
@@ -509,19 +455,19 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.MessageBox.confirm('Warning'.t(),
             'Deleting this report will also remove Dashboard widgets containing this report!'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
-        function (btn) {
-            if (btn === 'yes') {
-                if (vm.get('widget')) {
-                    // remove it from dashboard first
-                    Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
-                        vm.set('widget', wg);
+            function (btn) {
+                if (btn === 'yes') {
+                    if (vm.get('widget')) {
+                        // remove it from dashboard first
+                        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
+                            vm.set('widget', wg);
+                            me.removeReportAction(entry.getData());
+                        });
+                    } else {
                         me.removeReportAction(entry.getData());
-                    });
-                } else {
-                    me.removeReportAction(entry.getData());
+                    }
                 }
-            }
-        });
+            });
 
     },
 
