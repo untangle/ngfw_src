@@ -131,8 +131,8 @@ def createRadiusSettings():
             "authenticationMethod": "MSCHAPV2",
             "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radiusServer,
-            "sharedSecret": "chakas"
+            "server": global_functions.radius_server,
+            "sharedSecret": global_functions.radius_server_password
         },
         "version": 1
     }
@@ -178,7 +178,7 @@ class IPsecTests(unittest2.TestCase):
         appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",global_functions.radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.radius_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     def setUp(self):
         pass
