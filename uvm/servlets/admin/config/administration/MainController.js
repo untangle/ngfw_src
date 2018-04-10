@@ -232,6 +232,11 @@ Ext.define('Ung.config.administration.MainController', {
                 me.loadAdmin();
                 me.loadCertificates();
                 Util.successToast('Administration'.t() + ' settings saved!');
+
+                if(vm.get('skinChanged') == true){
+                    window.location.reload();
+                }
+
                 Ext.fireEvent('resetfields', v);
                 v.setLoading(false);
             }, 3000);
@@ -535,7 +540,18 @@ Ext.define('Ung.config.administration.MainController', {
                     });
                 }
             });
-    }
+    },
+
+    skinChange: function(combo, newValue, oldValue){
+        var me = this,
+            vm = me.getViewModel();
+
+        if( ( oldValue != null ) &&
+            ( newValue != oldValue ) ){
+            vm.set('skinChanged', true);
+        }
+    },
+
 });
 
 Ext.define('Ung.cmp.AdminGridController', {
