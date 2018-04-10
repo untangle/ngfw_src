@@ -172,34 +172,34 @@
         "url": "/admin/index.do#config/network/advanced/netflow",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/dynamicRoutingStatus",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/status",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/bgp",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp/neighbors",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/bgp/neighbors",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/bgp/networks",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/bgp/networks",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/ospf",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/networks",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/ospf/networks",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/areas",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/ospf/areas",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/ospfInterfaces",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/ospf/interfaces",
         "type": "remove_nav"
     },{
-        "url": "/admin/index.do#config/network/advanced/dynamicRouting/ospf/advancedOptions",
+        "url": "/admin/index.do#config/network/advanced/dynamic_routing/ospf/advanced_options",
         "type": "remove_nav"
     },{
         "url": "/admin/index.do#config/network/troubleshooting",
