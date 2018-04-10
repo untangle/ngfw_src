@@ -252,14 +252,14 @@ class BandwidthControlTests(unittest2.TestCase):
         pass
 
     # verify client is online
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
 
-    def test_012_qosLimit(self):
+    def test_012_qos_limit(self):
         global pre_down_speed_kbit, wan_limit_kbit
 
         print("\nSetting WAN limit: %i Kbps" % (wan_limit_kbit))
@@ -269,7 +269,7 @@ class BandwidthControlTests(unittest2.TestCase):
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (pre_down_speed_kbit >  post_down_speed_kbit)
 
-    def test_013_qosBypassCustomRules(self):
+    def test_013_qos_bypass_custom_rules_tcp(self):
         global app
         nukeRules()
         priority_level = 7
@@ -293,7 +293,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_pre) and (wget_speed_post))
         assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
 
-    def test_014_qosBypassCustomRulesUDP(self):
+    def test_014_qos_bypass_custom_rules_udp(self):
         global wan_limit_mbit
         targetSpeedMbit = str(wan_limit_mbit)+"M"
         if remote_control.quickTestsOnly:
@@ -324,7 +324,7 @@ class BandwidthControlTests(unittest2.TestCase):
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
-    def test_015_qosNoBypassCustomRules(self):
+    def test_015_qos_nobpass_custom_rules_tcp(self):
         global app
         nukeRules()
         priority_level = 7
@@ -349,7 +349,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_pre) and (wget_speed_post))
         assert (not (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post))
 
-    def test_024_srcAddrRule(self):
+    def test_020_severely_limited_tcp(self):
         global app
         nukeRules()
         priority_level = 7
@@ -374,62 +374,8 @@ class BandwidthControlTests(unittest2.TestCase):
                                             "c_client_addr", remote_control.clientIP)
         assert( found )
 
-    def test_035_dstAddrRule(self):
-        global app
-        nukeRules()
-        priority_level = 7
 
-        # Get the IP address of test.untangle.com.  We could hardcoded this IP.
-        test_untangle_IP = socket.gethostbyname("test.untangle.com")
-        
-        # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
-        
-        # Create DST_ADDR based rule to limit bandwidth
-        append_rule(create_single_condition_rule("DST_ADDR",test_untangle_IP,"SET_PRIORITY",priority_level))
-
-        # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
-
-        print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
-
-        assert ((wget_speed_post) and (wget_speed_post))
-        assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
-
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "bandwidth_control_priority", priority_level,
-                                            "c_client_addr", remote_control.clientIP)
-        assert( found )
-
-    def test_045_dstPortRule(self):
-        global app
-        nukeRules()
-        priority_level = 7
-
-        # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
-        
-        # Create DST_PORT based rule to limit bandwidth
-        append_rule(create_single_condition_rule("DST_PORT","80","SET_PRIORITY",priority_level))
-
-        # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
-        
-        print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
-
-        assert ((wget_speed_post) and (wget_speed_post))
-        assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
-
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "bandwidth_control_priority", priority_level,
-                                            "c_client_addr", remote_control.clientIP)
-        assert( found )
-
-    def test_046_dstPortRuleUDP(self):
+    def test_021_severely_limited_udp(self):
         global app, app_web_filter, wan_limit_mbit
         # only use 30% because QoS will limit to 10% and we want to make sure it takes effect
         # really high levels will actually be limited by the untangle-vm throughput instead of QoS
@@ -459,59 +405,7 @@ class BandwidthControlTests(unittest2.TestCase):
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
-    def test_047_hostnameRule(self):
-        global app
-        nukeRules()
-        priority_level = 7
-        # This test might need web filter for http to start
-        # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
-        
-        # Create HTTP_HOST based rule to limit bandwidth
-        append_rule(create_single_condition_rule("HTTP_HOST","test.untangle.com","SET_PRIORITY",priority_level))
-
-        # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
-        
-        print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
-
-        assert ((wget_speed_post) and (wget_speed_post))
-        assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
-
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "bandwidth_control_priority", priority_level,
-                                            "c_client_addr", remote_control.clientIP)
-        assert( found )
-
-    def test_048_contentLengthAddrRule(self):
-        global app
-        nukeRules()
-        priority_level = 7
-
-        # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
-        
-        # Create DST_ADDR based rule to limit bandwidth
-        append_rule(create_single_condition_rule("HTTP_CONTENT_LENGTH",">3000000","SET_PRIORITY",priority_level))
-
-        # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
-
-        print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
-
-        assert ((wget_speed_post) and (wget_speed_post))
-        assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
-
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "bandwidth_control_priority", priority_level,
-                                            "c_client_addr", remote_control.clientIP)
-        assert( found )
-
-    def test_050_webFilterFlaggedRule(self):
+    def test_050_severely_limited_web_filter_flagged(self):
         global app, app_web_filter
         nukeRules()
         pre_count = global_functions.get_app_metric_value(app,"prioritize")
@@ -553,7 +447,7 @@ class BandwidthControlTests(unittest2.TestCase):
         post_count = global_functions.get_app_metric_value(app,"prioritize")
         assert(pre_count < post_count)
  
-    def test_060_hostquota(self):
+    def test_060_host_quota(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         global app
@@ -573,7 +467,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed()
+        global_functions.get_download_speed(1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
@@ -608,7 +502,7 @@ class BandwidthControlTests(unittest2.TestCase):
                                                "c_client_addr", remote_control.clientIP)
         assert( found )
 
-    def test_061_userquota(self):
+    def test_061_user_quota(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         global app
@@ -635,7 +529,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed()
+        global_functions.get_download_speed(1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
@@ -674,7 +568,7 @@ class BandwidthControlTests(unittest2.TestCase):
                                                "c_client_addr", remote_control.clientIP)
         assert( found )
         
-    def test_070_penaltyRule(self):
+    def test_070_penalty_rule(self):
         global app
         nukeRules()
         tag_time = 2000000
