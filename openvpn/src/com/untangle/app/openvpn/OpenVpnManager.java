@@ -279,7 +279,7 @@ public class OpenVpnManager
         }
 
         if (settings.getAuthUserPass()) {
-            sb.append("script-security 3 execve" + "\n");
+            sb.append("script-security 3" + "\n");
             sb.append("auth-user-pass-verify " + "\"/usr/bin/sudo -E " + AUTH_USER_PASS_SCRIPT + "\" via-env" + "\n");
         }
 
