@@ -22,7 +22,10 @@ Ext.define('Ung.config.administration.view.Skins', {
         valueField: 'name',
         forceSelection: true,
         editable: false,
-        queryMode: 'local'
+        queryMode: 'local',
+        listeners: {
+            change: 'skinChange'
+        }
     }, {
         xtype: 'filefield',
         margin: '10 0 0 0',
