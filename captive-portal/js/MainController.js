@@ -13,11 +13,24 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
+
         v.setLoading(true);
-        v.appManager.getSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'getSettings')
+        .then( function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
             vm.set('settings', result);
+
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -41,23 +54,44 @@ Ext.define('Ung.apps.captive-portal.MainController', {
         });
 
         v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
+
             me.getSettings();
             Ext.fireEvent('resetfields', v);
-        }, vm.get('settings'));
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 
     getActiveUsers: function (cmp) {
-        var vm = this.getViewModel(),
-            grid = (cmp.getXType() === 'grid') ? cmp : cmp.up('grid');
-        if ( grid != null ) grid.setLoading(true);
-        this.getView().appManager.getActiveUsers(function (result, ex) {
-            if ( grid != null ) grid.setLoading(false);
-            if (ex) { Util.handleException(ex); return; }
+        var vm = this.getViewModel();
+        var grid = this.getView().down('#activeUsers');
+
+        grid.setLoading(true);
+        Rpc.asyncData(this.getView().appManager, 'getActiveUsers')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
             vm.set('activeUsers', result.list);
+
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
         });
     },
 
@@ -82,29 +116,42 @@ Ext.define('Ung.apps.captive-portal.MainController', {
     },
 
     configureAuthenticationMethod: function (btn) {
-        var vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
         var policyId = vm.get('policyId');
         var authType = this.getViewModel().get('settings.authenticationType');
-        var dircon = rpc.appManager.app('directory-connector');
 
-        switch (authType) {
-            case 'LOCAL_DIRECTORY':
-                Ung.app.redirectTo('#config/local-directory');
-                break;
-            case 'RADIUS':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
-                break;
-            case 'ACTIVE_DIRECTORY':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/active-directory');
-                break;
-            case 'ANY_DIRCON':
-                if (dircon == null) this.showMissingServiceWarning();
-                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector');
-                break;
-            default: return;
-        }
+        Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+        .then( function(directoryConnectorApp){
+            if(Util.isDestroyed(me, policyId, authType)){
+                return;
+            }
+
+            // Default to local directory
+            var checkDirectoryConnector = false;
+            url = '#config/local-directory';
+            switch (authType) {
+                case 'RADIUS':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector/radius';
+                    break;
+                case 'ACTIVE_DIRECTORY':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector/active-directory';
+                    break;
+                case 'ANY_DIRCON':
+                    checkDirectoryConnector = true;
+                    url = '#apps/' + policyId + '/directory-connector';
+                    break;
+            }
+            if( checkDirectoryConnector && directoryConnectorApp == null){
+                me.showMissingServiceWarning();
+            }else{
+                Ung.app.redirectTo(url);
+            }
+
+        },function(ex){
+            Util.handleException(ex);
+        });
     },
 
     showMissingServiceWarning: function() {
@@ -151,16 +198,31 @@ Ext.define('Ung.apps.captive-portal.MainController', {
     },
 
     logoutUser: function(view, row, col, item, e, record) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this;
+        var vm = this.getViewModel();
         var netaddr = record.get("userAddress");
-        v.setLoading('Logging Out User...'.t());
-        v.appManager.userAdminLogout(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            // this gives the app a little time to process the disconnect before we refresh the list
+        var grid = this.getView().down('#activeUsers');
+
+        grid.setLoading('Logging Out User...'.t());
+        Rpc.asyncData(this.getView().appManager, 'userAdminLogout', netaddr)
+        .then( function(result){
+            if(Util.isDestroyed(grid, me, view, vm)){
+                return;
+            }
+            vm.set('activeUsers', result.list);
+
+            grid.setLoading(false);
             var timer = setTimeout(function() {
+                if(Util.isDestroyed(me, view)){
+                    return;
+                }
                 me.getActiveUsers(view);
-                v.setLoading(false);
             },500);
-        }, this), netaddr);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
     },
 });
