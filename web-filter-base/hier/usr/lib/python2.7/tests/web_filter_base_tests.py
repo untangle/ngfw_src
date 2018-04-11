@@ -107,9 +107,9 @@ class WebFilterBaseTests(unittest2.TestCase):
             event_list = "Flagged Web Events"
         else:
             event_list = "All Web Events"
-        events = global_functions.get_events(app_display_name, event_list, None, 5)
+        events = global_functions.get_events(app_display_name, event_list, None, 10)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 10,
                                             "host", host,
                                             "uri", uri,
                                             'web_filter_blocked', blocked,
@@ -332,12 +332,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.pass_url_list_add("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
         result1 = self.get_web_request_results(url="http://playboy.com/")
+        found1 = self.check_events("playboy.com", "/", False)
         result2 = self.get_web_request_results(url="http://www.playboy.com/")
+        found2 = self.check_events("www.playboy.com", "/", False)
         self.block_url_list_clear()
         assert (result1 == 0)
         assert (result2 == 0)
-        found1 = self.check_events("playboy.com", "/", False)
-        found2 = self.check_events("www.playboy.com", "/", False)
         assert( found1 )
         assert( found2 )
 

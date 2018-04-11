@@ -169,7 +169,7 @@ def append_rule(newRule):
     rules["list"].append(newRule)
     app.setRules(rules)
 
-def nukeRules():
+def nuke_rules():
     rules = app.getRules()
     rules["list"] = []
     app.setRules(rules)
@@ -271,7 +271,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     def test_013_qos_bypass_custom_rules_tcp(self):
         global app
-        nukeRules()
+        nuke_rules()
         priority_level = 7
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
@@ -326,7 +326,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     def test_015_qos_nobpass_custom_rules_tcp(self):
         global app
-        nukeRules()
+        nuke_rules()
         priority_level = 7
 
         # Record average speed without bandwidth control configured
@@ -351,7 +351,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     def test_020_severely_limited_tcp(self):
         global app
-        nukeRules()
+        nuke_rules()
         priority_level = 7
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
@@ -390,14 +390,14 @@ class BandwidthControlTests(unittest2.TestCase):
             raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Enabled QoS
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        nukeRules()
+        nuke_rules()
 
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",1))
             
         pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
-        nukeRules()
+        nuke_rules()
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",7))
 
         post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
@@ -407,7 +407,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     def test_050_severely_limited_web_filter_flagged(self):
         global app, app_web_filter
-        nukeRules()
+        nuke_rules()
         pre_count = global_functions.get_app_metric_value(app,"prioritize")
 
         priority_level = 7
@@ -451,7 +451,7 @@ class BandwidthControlTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         global app
-        nukeRules()
+        nuke_rules()
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
 
@@ -506,7 +506,7 @@ class BandwidthControlTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         global app
-        nukeRules()
+        nuke_rules()
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
 
@@ -570,7 +570,7 @@ class BandwidthControlTests(unittest2.TestCase):
         
     def test_070_penalty_rule(self):
         global app
-        nukeRules()
+        nuke_rules()
         tag_time = 2000000
 
         # remove tags
