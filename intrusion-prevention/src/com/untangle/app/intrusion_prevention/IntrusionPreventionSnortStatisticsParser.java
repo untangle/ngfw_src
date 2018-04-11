@@ -186,7 +186,7 @@ public class IntrusionPreventionSnortStatisticsParser
         long lastLength = file.length();
 
         long currentLength = file.length();
-        long sleepInterval = 10;
+        long sleepInterval = 100;
         long maxTime = 1000 / sleepInterval;
 
         /**
@@ -204,6 +204,7 @@ public class IntrusionPreventionSnortStatisticsParser
         ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
 
         do {
+            lastLength = currentLength;
             try {
                 Thread.sleep(sleepInterval);
             } catch( InterruptedException e) {
@@ -213,7 +214,7 @@ public class IntrusionPreventionSnortStatisticsParser
             maxTime--;
             currentLength = file.length();
         } while( ( currentLength == lastLength ) && ( maxTime > 0 ) );
-        
+
         try {
             long breakdownTotal = 0;
             long breakdownTcp = 0;
