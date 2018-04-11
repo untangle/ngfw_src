@@ -407,8 +407,8 @@ Ext.define('Ung.view.apps.AppsController', {
                     try {
                         var memTotal = Util.bytesToMBs(Ext.getStore('stats').first().get('MemTotal'));
                         if (memTotal && memTotal > 1400) {
-                            apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
-                            apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
+                            //apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
+                            //apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
                             apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
                             apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
                         } else if (rpc.architecture == 'arm') {
