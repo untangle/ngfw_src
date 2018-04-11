@@ -148,7 +148,7 @@ def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None
             break
     return udp_speed
 
-def get_download_speed(meg=5):
+def get_download_speed(meg=10):
     try:
         # Download file and record the average speed in which the file was download
         result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
@@ -238,9 +238,9 @@ def find_event( events, num_events, *args, **kwargs):
                     alternateValue = 1
                 else:
                     alternateValue = 0
-            #print("key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
+            print("key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
             if str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue):
-                #print("mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
+                print("mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) ))
                 allMatched = False
                 break
 
