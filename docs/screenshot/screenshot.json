@@ -1645,7 +1645,7 @@
         "url": "/admin/index.do#reports/web-cache/web-cache-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-cache/cache-hitmiss-statistics",
+        "url": "/admin/index.do#reports/web-cache/cache-hit/miss-statistics",
         "type": "remove_report_nav"
       },{
         "url": "/admin/index.do#reports/web-cache/cache-size-statistics",
