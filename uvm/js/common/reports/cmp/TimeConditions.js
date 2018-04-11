@@ -20,15 +20,15 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
     },
 
     ranges: [
-        { text: '1 Hour ago'.t(), value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 1), until: null } },
-        { text: '6 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 6), until: null } },
+        { text: '1 Hour ago'.t(), value: { since: Ext.Date.subtract(Util.serverToClientDate(new Date()), Ext.Date.HOUR, 1), until: null } },
+        { text: '6 Hours ago', value: { since: Ext.Date.subtract(Util.serverToClientDate(new Date()), Ext.Date.HOUR, 6), until: null } },
         // { text: '12 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 12), until: null } },
-        { text: 'Today', value: { since: Ext.Date.clearTime(new Date()), until: null } },
+        { text: 'Today', value: { since: Ext.Date.clearTime(Util.serverToClientDate(new Date())), until: null } },
         // { text: '24 Hours ago', value: { since: Ext.Date.subtract(new Date(), Ext.Date.HOUR, 24), until: null } },
-        { text: 'Yesterday', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, 1), until: null } },
-        { text: 'This Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, (new Date()).getDay()), until: null } },
-        { text: 'Last Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(new Date()), Ext.Date.DAY, (new Date()).getDay() + 7), until: null } },
-        { text: 'This Month', value: { since: Ext.Date.getFirstDateOfMonth(new Date()), until: null } }
+        { text: 'Yesterday', value: { since: Ext.Date.subtract(Ext.Date.clearTime(Util.serverToClientDate(new Date())), Ext.Date.DAY, 1), until: null } },
+        { text: 'This Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(Util.serverToClientDate(new Date())), Ext.Date.DAY, (Util.serverToClientDate(new Date())).getDay()), until: null } },
+        { text: 'Last Week', value: { since: Ext.Date.subtract(Ext.Date.clearTime(Util.serverToClientDate(new Date())), Ext.Date.DAY, (Util.serverToClientDate(new Date())).getDay() + 7), until: null } },
+        { text: 'This Month', value: { since: Ext.Date.getFirstDateOfMonth(Util.serverToClientDate(new Date())), until: null } }
     ],
 
     rangeHistory: [],
@@ -43,8 +43,8 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
         onTimeRangeChange: function (range) {
             if (!range) { return; }
             var me = this,
-                start = new Date(range.min),
-                end = new Date(range.max);
+                start = Util.serverToClientDate(new Date(range.min)),
+                end = Util.serverToClientDate(new Date(range.max));
 
             // round dates to 10 minutes itervals
             start.setMinutes(Math.floor(start.getMinutes()/10) * 10, 0, 0);
@@ -164,7 +164,7 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
         var menu = this.down('button').getMenu();
         this.callParent(arguments);
         this.setRange({
-            since: Ext.Date.clearTime(new Date()),
+            since: Ext.Date.clearTime(Util.serverToClientDate(new Date())),
             until: null
         }); // initially loads today data
 
@@ -182,7 +182,7 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
      * shows a dialog to setup some specific date/time range
      */
     setCustomRange: function () {
-        var me = this, range = this.getRange(), d = new Date(),
+        var me = this, range = this.getRange(), d = Util.serverToClientDate(new Date()),
             since, until;
 
         d.setMinutes(Math.floor(d.getMinutes()/10) * 10, 0, 0); // round new date to 10 mminutes interval
