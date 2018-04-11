@@ -73,8 +73,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
 
         // try to download spamassassin sigs if they do not exist
         try {
-            if ( ! (new java.io.File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
-                UvmContextFactory.context().execManager().exec("nohup sleep 120 && /etc/cron.daily/spamassassin >/dev/null 2>&1 &");
+            if ( ! (new java.io.File("/var/lib/spamassassin/3.004001/updates_spamassassin_org.cf")).exists() ) {
+                UvmContextFactory.context().execManager().execEvilProcess("/etc/cron.daily/spamassassin");
+                // Do not wait on process to finish. It can take a long time. Just continue
             }
         } catch (Exception e) {
             logger.warn("Exception",e);
