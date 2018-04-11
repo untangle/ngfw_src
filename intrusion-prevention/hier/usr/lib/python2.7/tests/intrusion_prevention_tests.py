@@ -100,7 +100,7 @@ class IntrusionPreventionInterface:
         """
         Create a patch
         """
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
 
         patch_action = ""
         if action == "add":
@@ -241,7 +241,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.setup()
 
         # create blank ruleset to start
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
+        ## !!!! ARGH!
         patch["activeGroups"] = {
             "classtypes": "custom",
             "classtypesSelected": [],
@@ -278,7 +279,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["activeGroups"] = {
             "classtypes": "custom",
             "classtypesSelected": [
@@ -300,7 +301,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["activeGroups"] = {
             "classtypes": "recommended",
             "categories": "custom",
@@ -322,7 +323,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["activeGroups"] = {
             "classtypes": "custom",
             "classtypesSelected": [
@@ -347,7 +348,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["activeGroups"] = {
             "classtypes": "recommended",
             "categories": "recommended"
@@ -369,7 +370,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["rules"] = {
             "-1": {
                 "op":"added",
@@ -402,7 +403,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["rules"] = {
             "1":{
                 "op":"modified",
@@ -435,7 +436,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["rules"] = {
             "4194":{
                 "op":"deleted",
@@ -471,7 +472,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_variables(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["variables"] = {
             "-1":{
                 "op":"added",
@@ -501,7 +502,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_variables(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["variables"] = {
             "1":{
                 "op":"modified",
@@ -531,7 +532,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
         pre_count = self.intrusion_prevention_interface.count_variables(settings)
 
-        patch = IntrusionPreventionInterface.config_request_patch_template
+        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
         patch["variables"] = {
             "8":{
                 "op":"deleted",
@@ -713,8 +714,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
-
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+
         app.reconfigure()
         app.forceUpdateStats()
 
