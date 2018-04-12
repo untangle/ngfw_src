@@ -98,9 +98,10 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
         if (existingRange && !this.range.until) {
             btnText = existingRange.text;
         } else {
-            btnText = Ext.Date.format(this.range.since, rpc.translations.timestamp_fmt);
+            var timestampFormat = Rpc.directData('rpc.translations.timestamp_fmt');
+            btnText = Ext.Date.format(this.range.since, timestampFormat);
             if (this.range.until) {
-                btnText += ' \u0020\u2794\u0020 ' + Ext.Date.format(this.range.until, rpc.translations.timestamp_fmt);
+                btnText += ' \u0020\u2794\u0020 ' + Ext.Date.format(this.range.until, timestampFormat);
             }
             if (addToHistory) {
                 if (me.rangeHistory.length >= 5) {

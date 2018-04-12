@@ -192,69 +192,79 @@ Ext.define('Ung.reports.cmp.ImportDialog', {
         },
 
         doImport: function (btn) {
-            var me = this, vm = me.getViewModel(),
-                reportsApp = rpc.appManager.app('reports');
-
-            if (!reportsApp) { return; }
-
-            var reportsSettings = reportsApp.getSettings(),
-                selection = this.lookup('reportsGrid').getSelection(), reports = [], titleConflict = false;
-
-
-            Ext.Array.each(selection, function (record) {
-                if (Ext.Array.contains(me.titles, record.get('title')) && !me.lookup('replaceAllCk').getValue() && !titleConflict) {
-                    titleConflict = true;
+            var me = this, vm = me.getViewModel();
+            Rpc.asyncData( 'rpc.appManager.app("reports").getSettings')
+            .then(function(result){
+                if(Util.isDestroyed(me, vm)){
+                    return;
                 }
-            });
 
-            if (titleConflict) {
-                Ext.MessageBox.alert('Warning'.t(), 'There are some report titles conflicts. Make sure selected reports have unique name!'.t());
-                return;
-            }
+                var reportsSettings = result,
+                    selection = me.lookup('reportsGrid').getSelection(),
+                    reports = [],
+                    titleConflict = false;
 
-
-            Ext.Array.each(selection, function (record) {
-                var rep = record.getData();
-                delete rep._id;
-                delete rep.localizedTitle;
-                delete rep.localizedDescription;
-                delete rep.slug;
-                delete rep.categorySlug;
-                delete rep.url;
-                delete rep.icon;
-
-                // if appending check uniqueId conflit and generate another
-                if (!rep.uniqueId || (!me.lookup('replaceAllCk').getValue() && Ext.getStore('reports').find('uniqueId', rep.uniqueId) > 0)) {
-                    rep.uniqueId = 'report-' + Math.random().toString(36).substr(2);
-                }
-                reports.push(rep);
-            });
-
-            // if replace all
-            if (me.lookup('replaceAllCk').getValue()) {
-                reportsSettings.reportEntries.list = reports;
-            } else {
-                // append
-                Ext.Array.push(reportsSettings.reportEntries.list, reports);
-            }
-
-            reportsApp.setSettings(function(result, ex) {
-                if (ex) { return; }
-                reportsApp.getSettings(function (settings) {
-                    Ext.getStore('reports').loadData(settings.reportEntries.list);
-                    Ext.getStore('reportstree').build();
-                    btn.up('window').close();
-                    Ung.app.redirectTo('#reports');
-                    Ext.MessageBox.alert('Import done!'.t(), reports.length + ' ' + 'Report(s) imported!'.t());
+                Ext.Array.each(selection, function (record) {
+                    if (Ext.Array.contains(me.titles, record.get('title')) && !me.lookup('replaceAllCk').getValue() && !titleConflict) {
+                        titleConflict = true;
+                    }
                 });
-            }, reportsSettings);
 
-            // Rpc.asyncData('rpc.reportsManager.setReportEntries', {
-            //     javaClass: 'java.util.LinkedList',
-            //     list: reports
-            // }).then(function(result) {
-            //     console.log(result);
-            // });
+                if (titleConflict) {
+                    Ext.MessageBox.alert('Warning'.t(), 'There are some report titles conflicts. Make sure selected reports have unique name!'.t());
+                    return;
+                }
+
+                Ext.Array.each(selection, function (record) {
+                    var rep = record.getData();
+                    delete rep._id;
+                    delete rep.localizedTitle;
+                    delete rep.localizedDescription;
+                    delete rep.slug;
+                    delete rep.categorySlug;
+                    delete rep.url;
+                    delete rep.icon;
+
+                    // if appending check uniqueId conflit and generate another
+                    if (!rep.uniqueId || (!me.lookup('replaceAllCk').getValue() && Ext.getStore('reports').find('uniqueId', rep.uniqueId) > 0)) {
+                        rep.uniqueId = 'report-' + Math.random().toString(36).substr(2);
+                    }
+                    reports.push(rep);
+                });
+
+                // if replace all
+                if (me.lookup('replaceAllCk').getValue()) {
+                    reportsSettings.reportEntries.list = reports;
+                } else {
+                    // append
+                    Ext.Array.push(reportsSettings.reportEntries.list, reports);
+                }
+
+                Rpc.asyncData( 'rpc.appManager.app("reports").setSettings', reportsSettings)
+                .then(function(result){
+                    Rpc.asyncData( 'rpc.appManager.app("reports").getSettings' )
+                    .then(function(settings){
+                        Ext.getStore('reports').loadData(settings.reportEntries.list);
+                        Ext.getStore('reportstree').build();
+                        btn.up('window').close();
+                        Ung.app.redirectTo('#reports');
+                        Ext.MessageBox.alert('Import done!'.t(), reports.length + ' ' + 'Report(s) imported!'.t());
+                        if(reports && reports.length){
+                            var url = '#reports?cat=' + reports[0].category.replace(/ /g, '-').toLowerCase();
+                            if(reports.length == 1){
+                                url += '&rep=' + reports[0].title.replace(/ /g, '-').toLowerCase();
+                            }
+                            Ung.app.redirectTo(url);
+                        }
+                    },function(ex){
+                        Util.handleException(ex);
+                    });
+                }, function(ex) {
+                    Util.handleException(ex);
+                });
+            }, function(ex) {
+                Util.handleException(ex);
+            });
         }
     }
 
