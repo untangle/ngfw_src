@@ -31,7 +31,6 @@ Ext.define('Ung.controller.Global', {
         'Conditions',
         'Countries',
         'Categories',
-        'UnavailableApps',
         'Rule',
 
         'ReportsTree',
@@ -45,7 +44,8 @@ Ext.define('Ung.controller.Global', {
             }
         },
         global: {
-            appinstall: 'onAppInstall',
+            appinstall: 'onAppAction',
+            appremove: 'onAppAction',
             resetfields: 'onResetFields', // used to reset the fields after saving the settings
             invalidquery: 'onUnmatchedRoute'
         }
@@ -257,7 +257,7 @@ Ext.define('Ung.controller.Global', {
         }
     },
 
-    onAppInstall: function () {
+    onAppAction: function () {
         // refetch current applications and rebuild reports tree
         if (rpc.reportsManager) {
             Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {

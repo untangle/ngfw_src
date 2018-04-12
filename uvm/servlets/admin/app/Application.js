@@ -71,12 +71,10 @@ Ext.define('Ung.Application', {
 
         Ext.Deferred.parallel([
             Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap'),
             Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
         ]).then(function (result) {
             if (result[0]) { Ext.getStore('reports').loadData(result[0].list); }
-            if (result[1]) { Ext.getStore('unavailableApps').loadRawData(result[1].map); }
-            if (result[2]) { Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[2].list)); }
+            if (result[1]) { Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list)); }
 
             // build reports tree
             Ext.getStore('reportstree').build();
