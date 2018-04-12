@@ -920,7 +920,7 @@ public class CaptivePortalApp extends AppBase
         logEvent(event);
         logger.info("Force logout success: " + user.toString());
 
-        if (captureSettings.getSessionCookiesEnabled()) {
+        if (captureSettings.getSessionCookiesEnabled() && ((reason == CaptivePortalUserEvent.EventType.USER_LOGOUT) || (reason == CaptivePortalUserEvent.EventType.ADMIN_LOGOUT))) {
             captureUserCookieTable.insertInactiveUser(user);
         }
 
