@@ -884,13 +884,18 @@ public class CaptivePortalApp extends AppBase
      */
     public int userAdminLogout(String userkey)
     {
+        return(userForceLogout(userkey, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
+    }
+
+    public int userForceLogout(String userkey, CaptivePortalUserEvent.EventType reason)
+    {
         HostTableEntry entry = null;
         InetAddress netaddr = null;
 
         CaptivePortalUserEntry user = captureUserTable.searchByAddress(userkey);
 
         if (user == null) {
-            logger.info("Admin logout failure: " + userkey);
+            logger.info("Force logout failure: " + userkey);
             return (1);
         }
 
@@ -905,18 +910,15 @@ public class CaptivePortalApp extends AppBase
             entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserAddress());
         }
 
-        // call the session cleanup function passing the address from the
-        // host table entry to cleanup any outstanding sessions
-        if (entry == null) {
-            logger.warn("Missing host table entry for: " + user.toString());
-        } else {
-
+        // if we found a host table entry call the session cleanup function
+        // passing the current IP address to cleanup outstanding sessions
+        if (entry != null) {
             validateAllSessions(entry.getAddress());
         }
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.ADMIN_LOGOUT);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
         logEvent(event);
-        logger.info("Admin logout success: " + user.toString());
+        logger.info("Force logout success: " + user.toString());
 
         if (captureSettings.getSessionCookiesEnabled()) {
             captureUserCookieTable.insertInactiveUser(user);
@@ -959,7 +961,7 @@ public class CaptivePortalApp extends AppBase
 
         // should never happen but we check just in case
         if (entry == null) {
-            logger.warn("Missing host table entry for: " + user.toString());
+            logger.warn("Failed to create host table entry for: " + user.toString());
             return;
         }
 
