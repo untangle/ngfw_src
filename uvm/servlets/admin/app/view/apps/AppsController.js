@@ -15,7 +15,7 @@ Ext.define('Ung.view.apps.AppsController', {
         },
         global: {
             // init: 'onInit',
-            appremove: 'onRemoveApp',
+            appremove: 'onAppRemove',
             postregistration: 'onPostRegistration',
         }
     },
@@ -303,13 +303,12 @@ Ext.define('Ung.view.apps.AppsController', {
                 Rpc.asyncData('rpc.appManager.getAppsViews')
                     .then(function (policies) {
                         Ext.getStore('policies').loadData(policies);
+                        Ext.fireEvent('appinstall', record.get('displayName'));
                     });
-
-                Ext.fireEvent('appinstall');
             });
     },
 
-    onRemoveApp: function () {
+    onAppRemove: function () {
         // just refresh apps to avoid any possible issues with rendering apps from parent policies
         Ung.app.getMainView().getController().setLiveSupport();
         this.getApps();
