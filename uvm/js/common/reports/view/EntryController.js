@@ -475,7 +475,7 @@ Ext.define('Ung.view.reports.EntryController', {
         var vm = this.getViewModel();
         Rpc.asyncData('rpc.reportsManager.removeReportEntry', entry)
             .then(function () {
-                Ung.app.redirectTo('#reports/' + entry.category.replace(/ /g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports?cat=' + entry.category.replace(/ /g, '-').toLowerCase());
                 Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
                 vm.set('eEntry', null);
                 var removableRec = Ext.getStore('reports').findRecord('uniqueId', entry.uniqueId);
