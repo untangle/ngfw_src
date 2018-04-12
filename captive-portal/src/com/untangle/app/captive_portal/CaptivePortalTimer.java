@@ -38,7 +38,7 @@ public class CaptivePortalTimer extends TimerTask
             int counter = 0;
 
             for (CaptivePortalUserTable.StaleUser item : staleUsers) {
-                app.userLogout(item.netaddr, item.reason);
+                app.userForceLogout(item.useraddr, item.reason);
                 counter++;
             }
 
