@@ -245,6 +245,9 @@ public class IpsecVpnScriptWriter
             String netlist[] = network.getRemoteNetworks().split("\\n");
 
             for (y = 0; y < netlist.length; y++) {
+                if(netlist[y].trim().length() == 0){
+                    continue;
+                }
                 script.write("ip route add " + netlist[y] + " dev " + iface + RET);
             }
 
