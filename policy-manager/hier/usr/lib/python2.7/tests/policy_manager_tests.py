@@ -16,7 +16,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 appData = None
 app = None
 secondRackId = None
@@ -139,7 +139,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global appData, app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         appData = app.getSettings()
         remote_control.run_command("rm -f ./authpost\?*")
 
@@ -188,7 +188,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # verify client is online
     def test_023_childShouldNotEffectParent(self):
         # add a child that blocks everything
-        blockRackId = addRack(name="Block Rack", parentId=defaultRackId)
+        blockRackId = addRack(name="Block Rack", parentId=default_policy_id)
         blockRackFirewall = uvmContext.appManager().instantiate("firewall", blockRackId)
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
@@ -278,7 +278,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def test_040_localCaptivePortalToSecondRack(self):
         global defaultRackCaptivePortal
         remote_control.run_command("rm -f /tmp/policy_test_040*")
-        defaultRackCaptivePortal = uvmContext.appManager().instantiate("captive-portal", defaultRackId)
+        defaultRackCaptivePortal = uvmContext.appManager().instantiate("captive-portal", default_policy_id)
         assert (defaultRackCaptivePortal != None)
         defaultRackCaptivePortalData = defaultRackCaptivePortal.getSettings()
         # turn default capture rule on and basic login

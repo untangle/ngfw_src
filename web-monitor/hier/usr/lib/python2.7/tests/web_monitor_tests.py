@@ -14,7 +14,7 @@ import test_registry
 import global_functions
 import pprint
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 
 class WebMonitorTests(WebFilterBaseTests):
@@ -40,7 +40,7 @@ class WebMonitorTests(WebFilterBaseTests):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
         self.app = app
 

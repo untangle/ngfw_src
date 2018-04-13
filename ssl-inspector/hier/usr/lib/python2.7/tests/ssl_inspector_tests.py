@@ -14,7 +14,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 appWeb = None
 pornServerName="www.pornhub.com"
@@ -81,12 +81,12 @@ class SslInspectorTests(unittest2.TestCase):
         global app, appData, appWeb, appWebData
         if uvmContext.appManager().isInstantiated(self.appName()):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start() # must be called since the app doesn't auto-start
         appData = app.getSettings()
         if (uvmContext.appManager().isInstantiated(self.appWeb())):
             raise Exception('app %s already instantiated' % self.appWeb())
-        appWeb = uvmContext.appManager().instantiate(self.appWeb(), defaultRackId)
+        appWeb = uvmContext.appManager().instantiate(self.appWeb(), default_policy_id)
         appWebData = appWeb.getSettings()
 
         appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))

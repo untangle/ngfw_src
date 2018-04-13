@@ -14,7 +14,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname("test.untangle.com")
@@ -100,7 +100,7 @@ class FirewallTests(unittest2.TestCase):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
 
     def setUp(self):
         pass

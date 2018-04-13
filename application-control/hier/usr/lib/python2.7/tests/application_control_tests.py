@@ -14,7 +14,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 appSettings = None
 app = None
 
@@ -88,7 +88,7 @@ class ApplicationControlTests(unittest2.TestCase):
         global appSettings, app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         appSettings = app.getSettings()
         # run a few sessions so that the classd daemon starts classifying
         for i in range(2): remote_control.is_online()
