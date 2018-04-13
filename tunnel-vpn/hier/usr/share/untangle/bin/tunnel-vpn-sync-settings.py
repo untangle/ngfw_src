@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Sync Settings is takes the tunnel-vpn settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
@@ -17,7 +17,7 @@ import traceback
 import json
 import datetime
 
-from   netd import *
+from   sync import *
 
 class ArgumentParser(object):
     def __init__(self):
@@ -56,7 +56,7 @@ class ArgumentParser(object):
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
-        except getopt.GetoptError, exc:
+        except getopt.GetoptError as exc:
             print(exc)
             printUsage()
             exit(1)
@@ -188,9 +188,9 @@ fi
         for rule in rules:
             try:
                 write_iptables_rule( file, rule, parser.verbosity );
-            except Exception,e:
+            except Exception as e:
                 traceback.print_exc(e)
-    except Exception,e:
+    except Exception as e:
         traceback.print_exc(e)
 
 parser = ArgumentParser()
@@ -206,7 +206,7 @@ try:
     settingsData = settingsFile.read()
     settingsFile.close()
     settings = json.loads(settingsData)
-except IOError,e:
+except IOError as e:
     print("Unable to read settings file: ",e)
     exit(1)
 
@@ -215,13 +215,13 @@ try:
     networkSettingsData = networkSettingsFile.read()
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
-except IOError,e:
+except IOError as e:
     print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
     check_settings(settings)
-except Exception,e:
+except Exception as e:
     traceback.print_exc(e)
     exit(1)
 
