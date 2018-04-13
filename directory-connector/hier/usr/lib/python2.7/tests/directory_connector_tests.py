@@ -13,7 +13,7 @@ import global_functions
 import platform
 from global_functions import uvmContext
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 
 AD_RESULT = 1
@@ -234,7 +234,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         global app, AD_RESULT, AD_RESULT, RADIUS_RESULT
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.ad_server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.radius_server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

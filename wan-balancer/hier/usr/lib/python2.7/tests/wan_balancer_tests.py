@@ -26,7 +26,7 @@ orig_netsettings = None
 ip_address_testdestination = None
 indexOfWans = []
 ruleCounter = 0
-defaultRackId = 1
+default_policy_id = 1
 
 def setWeightOfWan(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
@@ -191,13 +191,13 @@ class WanBalancerTests(unittest2.TestCase):
         global indexOfWans, app, appData, appWanFailover, appDataWanFailover, orig_netsettings, ip_address_testdestination
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
         appData = app.getSettings()
 
         if (uvmContext.appManager().isInstantiated(self.appNameWanFailover())):
             raise Exception('app %s already instantiated' % self.appNameWanFailover())
-        appWanFailover = uvmContext.appManager().instantiate(self.appNameWanFailover(), defaultRackId)
+        appWanFailover = uvmContext.appManager().instantiate(self.appNameWanFailover(), default_policy_id)
         appWanFailover.start()
         appWanFailoverData = appWanFailover.getSettings()
 

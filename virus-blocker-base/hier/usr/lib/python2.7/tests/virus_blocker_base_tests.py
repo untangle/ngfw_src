@@ -16,7 +16,7 @@ from uvm import Uvm
 import remote_control
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 appSSL = None
 appSSLData = None
@@ -105,12 +105,12 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         self.app = app
 
         if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
             raise Exception('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), defaultRackId)
+        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         appSSLData = appSSL.getSettings()
 

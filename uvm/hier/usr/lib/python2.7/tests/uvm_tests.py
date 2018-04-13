@@ -29,7 +29,7 @@ import global_functions
 app = None
 appFW = None
 
-defaultRackId = 1
+default_policy_id = 1
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 

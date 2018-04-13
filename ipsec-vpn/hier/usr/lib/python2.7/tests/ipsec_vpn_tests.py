@@ -14,7 +14,7 @@ import test_registry
 import base64
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 appAD = None
 appDataRD = None
@@ -169,12 +169,12 @@ class IPsecTests(unittest2.TestCase):
         tunnelUp = False
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         if (uvmContext.appManager().isInstantiated(self.appNameAD())):
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        appAD = uvmContext.appManager().instantiate(self.appNameAD(), defaultRackId)
+        appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
         appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)

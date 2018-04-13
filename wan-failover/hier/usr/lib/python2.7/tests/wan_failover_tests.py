@@ -20,7 +20,7 @@ import global_functions
 app = None
 orig_netsettings = None
 indexOfWans = []
-defaultRackId = 1
+default_policy_id = 1
 
 def all_wans_online():
     online_count = 0
@@ -107,7 +107,7 @@ class WanFailoverTests(unittest2.TestCase):
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
         appData = app.getSettings()
         indexOfWans = global_functions.get_wan_tuples()

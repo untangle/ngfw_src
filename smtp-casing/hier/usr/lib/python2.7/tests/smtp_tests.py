@@ -10,7 +10,7 @@ from uvm import Uvm
 import remote_control
 import test_registry
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 
 class SmtpTests(unittest2.TestCase):
@@ -25,7 +25,7 @@ class SmtpTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appName())):
             app = uvmContext.appManager().app(self.appName())
         else:
-            app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+            app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
 
     def setUp(self):
         pass
