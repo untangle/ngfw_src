@@ -17,7 +17,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 appData = None
 appSSL = None
@@ -62,13 +62,13 @@ class PhishBlockerTests(unittest2.TestCase):
         global app, appData, appSP, appDataSP, appSSL, canRelay
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         appData = app.getSettings()
         appSP = uvmContext.appManager().app(self.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
         if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
             raise Exception('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), defaultRackId)
+        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)

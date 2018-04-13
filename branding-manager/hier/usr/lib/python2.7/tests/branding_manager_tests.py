@@ -23,7 +23,7 @@ newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
 newContactName = "Skynet"
 newContactEmail = "skynet@untangle.com"
 
-defaultRackId = 1
+default_policy_id = 1
 
 def setDefaultBrandingManagerSettings():
     appData = {
@@ -57,12 +57,12 @@ class BrandingManagerTests(unittest2.TestCase):
         if (uvmContextLongTimeout.appManager().isInstantiated(self.appName())):
             print("ERROR: App %s already installed" % self.appName())
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContextLongTimeout.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContextLongTimeout.appManager().instantiate(self.appName(), default_policy_id)
         appData = app.getSettings()
         if (uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
             print("ERROR: App %s already installed" % self.appNameWeb())
             raise Exception('app %s already instantiated' % self.appNameWeb())
-        appWeb = uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), defaultRackId)
+        appWeb = uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), default_policy_id)
 
     def setUp(self):
         pass

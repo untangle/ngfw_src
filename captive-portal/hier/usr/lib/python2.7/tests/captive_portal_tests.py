@@ -19,7 +19,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 appData = None
 app = None
 appDataAD = None
@@ -246,18 +246,18 @@ class CaptivePortalTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appName())):
             print("ERROR: App %s already installed" % self.appName())
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         appData = app.getSettings()
         if (uvmContext.appManager().isInstantiated(self.appNameAD())):
             print("ERROR: App %s already installed" % self.appNameAD())
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
-        appAD = uvmContext.appManager().instantiate(self.appNameAD(), defaultRackId)
+        appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
         appDataAD = appAD.getSettings().get('activeDirectorySettings')
         appDataRD = appAD.getSettings().get('radiusSettings')
         if (uvmContext.appManager().isInstantiated(self.appNameWeb())):
             print("ERROR: App %s already installed" % self.appNameWeb())
             raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
-        appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), defaultRackId)
+        appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), default_policy_id)
         adResult = subprocess.call(["ping","-c","1",global_functions.ad_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.radius_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'

@@ -24,7 +24,7 @@ ftp_file_name = ""
 dyn_hostname = ""
 dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
 
-defaultRackId = 1
+default_policy_id = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname(global_functions.testServerHost)
 run_ftp_inbound_tests = None
@@ -657,7 +657,7 @@ class NetworkTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appNameFW())):
             print("ERROR: App %s already installed" % self.appNameFW())
             raise Exception('app %s already instantiated' % self.appNameFW())
-        appFW = uvmContext.appManager().instantiate(self.appNameFW(), defaultRackId)
+        appFW = uvmContext.appManager().instantiate(self.appNameFW(), default_policy_id)
         nukeFirstLevelRule('bypassRules')
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
@@ -711,7 +711,7 @@ class NetworkTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appNameFW())):
             print("ERROR: App %s already installed" % self.appNameFW())
             raise Exception('app %s already instantiated' % self.appNameFW())
-        appFW = uvmContext.appManager().instantiate(self.appNameFW(), defaultRackId)
+        appFW = uvmContext.appManager().instantiate(self.appNameFW(), default_policy_id)
 
         nukeFirstLevelRule('bypassRules')
 

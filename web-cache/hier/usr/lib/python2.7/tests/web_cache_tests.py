@@ -12,7 +12,7 @@ import remote_control
 import test_registry
 import global_functions
 
-defaultRackId = 1
+default_policy_id = 1
 app = None
 
 class WebCacheTests(unittest2.TestCase):
@@ -26,7 +26,7 @@ class WebCacheTests(unittest2.TestCase):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start() # must be called since web cache doesn't auto-start
 
     def setUp(self):
