@@ -177,19 +177,16 @@ done
 if [ "$FORCE_REMOVE" = "true" ] ; then
   echo "[`date`] Removing iptables rules ..."
   remove_iptables_rules
-  echo "[`date`] Removing iptables rules ... done"
   return 0
 fi
 
 if [ "`is_uvm_running`x" = "truex" ] ; then
-    echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "
+    echo "[`date`] The untangle-vm is running. Inserting iptables rules ..."
     remove_iptables_rules # just in case
     insert_iptables_rules
-    echo "[`date`] The untangle-vm is running. Inserting iptables rules ... done"
 else
-  echo "[`date`] The untangle-vm is not running. Removing iptables rules ..."
-  remove_iptables_rules
-  echo "[`date`] The untangle-vm is not running. Removing iptables rules ... done"
+    echo "[`date`] The untangle-vm is not running. Removing iptables rules ..."
+    remove_iptables_rules
 fi
 
 return 0
