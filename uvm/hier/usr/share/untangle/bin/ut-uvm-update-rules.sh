@@ -175,17 +175,17 @@ while getopts "r" opt; do
 done
 
 if [ "$FORCE_REMOVE" = "true" ] ; then
-  echo "[`date`] Removing iptables rules ..."
+  echo "[`date`] Removing iptables rules."
   remove_iptables_rules
   return 0
 fi
 
 if [ "`is_uvm_running`x" = "truex" ] ; then
-    echo "[`date`] The untangle-vm is running. Inserting iptables rules ..."
+    echo "[`date`] untangle-vm is running. Inserting iptables rules."
     remove_iptables_rules # just in case
     insert_iptables_rules
 else
-    echo "[`date`] The untangle-vm is not running. Removing iptables rules ..."
+    echo "[`date`] untangle-vm is not running. Removing iptables rules."
     remove_iptables_rules
 fi
 
