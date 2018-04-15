@@ -306,7 +306,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
     /**
      * Renders the condition name in the grid
      */
-    conditionRenderer: function (val) {
+    conditionRenderer: function (val, column) {
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.mainGrid.conditionsMap[val].displayName) + '"';
         return '<strong>' + this.mainGrid.conditionsMap[val].displayName + ':</strong>';
     },
 
@@ -433,20 +434,39 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 },
                 listeners: {
                     afterrender: function (field) {
-                        var app, data = [];
-                        try {
-                            app = rpc.appManager.app('directory-connector');
-                        } catch (e) {
-                            Util.handleException(e);
-                        }
-                        if (app) {
-                            data = app.getRuleConditonalUserEntries().list;
-                        }
-                        data.unshift({ firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'});
-                        data.unshift({ firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'});
-                        data.unshift({ firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'});
+                        var app, 
+                            data = [{
+                            firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'
+                        },{
+                            firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'
+                        },{
+                            firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'
+                        }];
+
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
+
+                        Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                        .then(function(app){
+                            if(Util.isDestroyed(field)){
+                                return;
+                            }
+                            Rpc.asyncData( app, 'getRuleConditonalUserEntries')
+                            .then(function(result){
+                                if(Util.isDestroyed(field)){
+                                    return;
+                                }
+                                Ext.Array.each( data.reverse(), function (record) {
+                                    result.list.unshift(record);
+                                });
+                                field.getStore().loadData(result.list);
+                                field.setValue(record.get('value'));
+                            }, function(ex) {
+                                Util.handleException(ex);
+                            });
+                        }, function(ex) {
+                            Util.handleException(ex);
+                        });
                     },
                     change: function (field, newValue) {
                         if (newValue.length > 0) {
@@ -478,19 +498,35 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 },
                 listeners: {
                     afterrender: function (field) {
-                        var app, data = [];
-                        try {
-                            app = rpc.appManager.app('directory-connector');
-                        } catch (e) {
-                            Util.handleException(e);
-                        }
-                        if (app) {
-                            data = app.getRuleConditionalGroupEntries().list;
-                        }
-                        data.unshift({ SAMAccountName: '*', CN: 'Any Group'});
+                        var app, 
+                            data = [{
+                            SAMAccountName: '*', CN: 'Any Group'
+                        }];
 
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
+
+                        Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                        .then(function(app){
+                            if(Util.isDestroyed(field)){
+                                return;
+                            }
+                            Rpc.asyncData( app, 'getRuleConditionalGroupEntries')
+                            .then(function(result){
+                                if(Util.isDestroyed(field)){
+                                    return;
+                                }
+                                Ext.Array.each( data.reverse(), function (record) {
+                                    result.list.unshift(record);
+                                });
+                                field.getStore().loadData(result.list);
+                                field.setValue(record.get('value'));
+                            }, function(ex) {
+                                Util.handleException(ex);
+                            });
+                        }, function(ex) {
+                            Util.handleException(ex);
+                        });
                     },
                     change: function (field, newValue) {
                         if (newValue.length > 0) {
@@ -522,22 +558,35 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 },
                 listeners: {
                     afterrender: function (field) {
-                        var app, data = [];
-                        try {
-                            app = rpc.appManager.app('directory-connector');
-                        } catch (e) {
-                            Util.handleException(e);
-                        }
-                        if (app) {
-                            var list = app.getRuleConditionalDomainEntries().list;
-                            for(var i = 0; i < list.length; i++){
-                                data.push({value: list[i], description: list[i]});
-                            }
-                        }
-                        data.unshift({ value: '*', description: 'Any Domain'});
+                        var app, 
+                            data = [{
+                            value: '*', description: 'Any Domain'
+                        }];
 
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
+
+                        Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                        .then(function(app){
+                            if(Util.isDestroyed(field)){
+                                return;
+                            }
+                            Rpc.asyncData( app, 'getRuleConditionalDomainEntries')
+                            .then(function(result){
+                                if(Util.isDestroyed(field)){
+                                    return;
+                                }
+                                Ext.Array.each( result.list, function (record) {
+                                    data.push({value: record, description: record});
+                                });
+                                field.getStore().loadData(data);
+                                field.setValue(record.get('value'));
+                            }, function(ex) {
+                                Util.handleException(ex);
+                            });
+                        }, function(ex) {
+                            Util.handleException(ex);
+                        });
                     },
                     change: function (field, newValue) {
                         if (newValue.length > 0) {
