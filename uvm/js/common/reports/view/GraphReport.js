@@ -482,7 +482,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     seriesData = [];
                     Ext.Array.each(me.data, function (row) {
                         seriesData.push([
-                            row.time_trunc.time || row.time_trunc, // for sqlite is time_trunc, for postgres is time_trunc.time
+                            ( row.time_trunc && row.time_trunc.time ) || row.time_trunc, // for sqlite is time_trunc, for postgres is time_trunc.time
                             row[column] || 0
                         ]);
                     });
@@ -580,7 +580,8 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             // NGFW-11448 - apply 12/24 time format on graphs
             var timeLabelFormats;
-            if (rpc.translations.timestamp_fmt && rpc.translations.timestamp_fmt.indexOf('h:i:s a') >= 0 ) {
+            var timestampFormat = Rpc.directData('rpc.translations.timestamp_fmt');
+            if (timestampFormat && timestampFormat.indexOf('h:i:s a') >= 0 ) {
                 // 12 hours format
                 timeLabelFormats = {
                     xAxis: {
