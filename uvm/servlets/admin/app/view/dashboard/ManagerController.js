@@ -249,7 +249,7 @@ Ext.define('Ung.view.dashboard.ManagerController', {
     /**
      * Method which sends modified dashboard settings to backend to be saved
      */
-    applyChanges: function () {
+    applyChanges: function (btn) {
         var me = this, removable = Ext.getStore('widgets').queryRecords('markedForDelete', true);
         Ext.getStore('widgets').remove(removable);
 
@@ -258,7 +258,9 @@ Ext.define('Ung.view.dashboard.ManagerController', {
 
         Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
             .then(function() {
-                // Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+                if (btn) { // show saved toast only when Apply button is used
+                    Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+                }
                 Ext.getStore('widgets').sync();
                 // me.toggleManager();
 

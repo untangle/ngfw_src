@@ -153,23 +153,8 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
 
     onAdd: function () {
         var me = this, vm = this.getViewModel();
-        Ext.fireEvent('widgetaction', 'add', vm.get('widget'), vm.get('entry'), function () {
-            me.getView().close();
-        });
-    },
-
-    onSave: function () {
-        var me = this, vm = this.getViewModel();
-        Ext.fireEvent('widgetaction', 'save', vm.get('widget'), vm.get('entry'), function () {
-            me.getView().close();
-        });
-    },
-
-    onRemoveWidget: function () {
-        var me = this, vm = this.getViewModel();
-        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), null, function () {
-            me.getView().close();
-        });
+        Ext.getStore('widgets').add(vm.get('widget'));
+        me.getView().close();
 
     },
 
