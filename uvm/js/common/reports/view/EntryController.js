@@ -37,7 +37,6 @@ Ext.define('Ung.view.reports.EntryController', {
 
             // check if widget in admin context
             if (Ung.app.context === 'ADMIN') {
-                // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
                 vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
             }
         });
@@ -458,14 +457,10 @@ Ext.define('Ung.view.reports.EntryController', {
             function (btn) {
                 if (btn === 'yes') {
                     if (vm.get('widget')) {
-                        // remove it from dashboard first
-                        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), entry, function (wg) {
-                            vm.set('widget', wg);
-                            me.removeReportAction(entry.getData());
-                        });
-                    } else {
-                        me.removeReportAction(entry.getData());
+                        var records = Ext.getStore('widgets').queryRecords('entryId', entry.get('uniqueId'));
+                        Ext.getStore('widgets').remove(records);
                     }
+                    me.removeReportAction(entry.getData());
                 }
             });
 
