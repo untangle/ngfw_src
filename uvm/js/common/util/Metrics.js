@@ -24,9 +24,11 @@ Ext.define('Ung.util.Metrics', {
 
     run: function () {
         var data = [];
-        rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-
+        Rpc.asyncData('rpc.metricManager.getMetricsAndStats')
+        .then( function(result){
+            if(Util.isDestroyed(data)){
+                return;
+            }
             data = [];
 
             Ext.getStore('stats').loadRawData(result.systemStats);
@@ -41,7 +43,9 @@ Ext.define('Ung.util.Metrics', {
             }
 
             Ext.getStore('metrics').loadData(data);
-        }));
+        },function(ex){
+            Util.handleException(ex);
+        });
     }
 
 });
