@@ -58,7 +58,7 @@ listSyslogServer = '10.111.56.23'
 accountFileServer = "10.111.56.29"
 accountFile = "/tmp/account_login.json"
 
-uvmContext = Uvm().getUvmContext(timeout=120)
+uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
 
