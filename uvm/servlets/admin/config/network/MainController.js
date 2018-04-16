@@ -323,15 +323,15 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     interfaceStatusLinkMap:{
-        2: 'macAddress',
-        7: 'rxbytes',
-        8: 'rxpkts',
-        9: 'rxerr',
-        10: 'rxdrop',
-        13: 'txbytes',
-        14: 'txpkts',
-        15: 'txerr',
-        16: 'txdrop'
+        1: 'macAddress',
+        10: 'rxbytes',
+        11: 'rxpkts',
+        12: 'rxerr',
+        13: 'rxdrop',
+        16: 'txbytes',
+        17: 'txpkts',
+        18: 'txerr',
+        19: 'txdrop'
     },
     getInterfaceStatus: function () {
         var me = this,
@@ -353,6 +353,8 @@ Ext.define('Ung.config.network.MainController', {
                 txdrop: null
             };
 
+
+
         // This kind of simulates a "loading" in the status grid so the emptyText doesn't immediately appear.
         vm.set('siStatus', {device: ''});
 
@@ -369,8 +371,9 @@ Ext.define('Ung.config.network.MainController', {
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-            result[0].split(' ').forEach(function(item, index){
+            result[0].trim().split(' ').forEach(function(item, index){
                 if( index in me.interfaceStatusLinkMap){
+                    console.log(index + ' ' + item);
                     stat[me.interfaceStatusLinkMap[index]] = item;
                 }
             });
