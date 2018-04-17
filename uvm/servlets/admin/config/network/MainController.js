@@ -373,7 +373,6 @@ Ext.define('Ung.config.network.MainController', {
             }
             result[0].trim().split(' ').forEach(function(item, index){
                 if( index in me.interfaceStatusLinkMap){
-                    console.log(index + ' ' + item);
                     stat[me.interfaceStatusLinkMap[index]] = item;
                 }
             });
