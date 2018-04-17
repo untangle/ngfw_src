@@ -112,7 +112,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 html: '<i class="fa fa-info-circle"></i> <strong>Reports App is disabled!</strong> Report based widgets are not available.',
                 hidden: true,
                 bind: {
-                    hidden: '{reportsAppStatus.installed && reportsAppStatus.enabled}'
+                    hidden: '{!reportsAppStatus.installed || reportsAppStatus.enabled}'
                 }
             }]
         }]
