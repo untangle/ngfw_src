@@ -21,6 +21,13 @@ cite {
     max-width: none;
 }
 
+.x-btn-icon-right > .x-btn-inner-default-medium,
+.x-btn-icon-left > .x-btn-inner-default-medium,
+.x-btn-icon-right > .x-btn-inner-default-toolbar-medium,
+.x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
+    max-width: none;
+}
+
 .x-btn-icon-el {
     background-size: contain;
 }
