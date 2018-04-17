@@ -30,17 +30,17 @@ Ext.define('Ung.util.Rpc', {
             result.error = "Null path or rpc object";
             return result;
         }else if(typeof(path) === 'object'){
+            console.log('object');
             args = [].slice.call(arguments).splice(2);
             context = arguments[0];
             path = arguments[1];
+            console.log(path);
         }else{
             args = [].slice.call(arguments).splice(1);
             context = window;
         }
         nodes = path.split('.');
-        if(nodes.length > 1){
-            method = nodes.pop();
-        }
+        method = nodes.pop();
 
         if ( nodes === null || context === null || arguments[0] === null ) {
             result.error = "Invalid RPC path: '" + path + "'";
