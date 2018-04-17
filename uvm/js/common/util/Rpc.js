@@ -18,7 +18,8 @@ Ext.define('Ung.util.Rpc', {
      */
     getCommand: function() {
         var path = arguments[0],
-            args, nodes, method, context,
+            args, nodes,
+            method = null, context,
             result = {
                 context: null,
                 args: null,
@@ -37,7 +38,9 @@ Ext.define('Ung.util.Rpc', {
             context = window;
         }
         nodes = path.split('.');
-        method = nodes.pop();
+        if(nodes.length > 1){
+            method = nodes.pop();
+        }
 
         if ( nodes === null || context === null || arguments[0] === null ) {
             result.error = "Invalid RPC path: '" + path + "'";
@@ -86,14 +89,17 @@ Ext.define('Ung.util.Rpc', {
             }
         }
 
-        if (!context.hasOwnProperty(method) ){
+        if (method && !context.hasOwnProperty(method) ){
             result.error = "No such RPC property or method: '" + path + "'";
             return result;
-        }else if(!Ext.isFunction(context[method]) && args.length > 0){
+        }else if(method && !Ext.isFunction(context[method]) && args.length > 0){
             result.error = "RPC property requsted but arguments : '" + path + "'";
             return result;
-        }else{
+        }else if(method){
             result.context = context[method];
+            result.args = args;
+        }else{
+            result.context = context;
             result.args = args;
         }
 
@@ -124,6 +130,14 @@ Ext.define('Ung.util.Rpc', {
             console.log(ex);
             Util.handleException(ex.toString());
         }
+    },
+
+    exists: function(){
+        var commandResult = this.getCommand.apply(null, arguments);
+        if(commandResult.context == null || commandResult.context.error){
+            return false;
+        }
+        return true;
     },
 
     /**
@@ -159,6 +173,7 @@ Ext.define('Ung.util.Rpc', {
     directData: function() {
         var commandResult = this.getCommand.apply(null, arguments);
         if(commandResult.context == null){
+            Util.handleException(commandResult.error.toString());
             throw(commandResult.error);
         }
 
