@@ -30,7 +30,6 @@ Ext.define('Ung.view.reports.NoReports', {
         scale: 'medium',
         focusable: false,
         iconCls: 'fa fa-download fa-lg',
-        padding: 10,
         text: '<strong>' + 'Install Reports'.t() + '</strong>',
         handler: 'installReports',
         hidden: true,
@@ -40,11 +39,10 @@ Ext.define('Ung.view.reports.NoReports', {
         scale: 'medium',
         focusable: false,
         iconCls: 'fa fa-check fa-lg',
-        padding: 10,
         text: '<strong>' + 'Enable Reports'.t() + '</strong>',
         handler: 'enableReports',
         hidden: true,
-        bind: { hidden: '{!reportsAppStatus.installed && !reportsAppStatus.enabled}' }
+        bind: { hidden: '{!reportsAppStatus.installed || reportsAppStatus.enabled}' }
     }, {
         xtype: 'component',
         itemId: 'wait',
