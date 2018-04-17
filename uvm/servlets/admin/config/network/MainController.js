@@ -1512,7 +1512,7 @@ Ext.define('Ung.config.network.MainController', {
             return record.get('auto') ? '' : value;
         },
 
-        routesNextHopRenderer: function(value, metadata, record, rowIndex, colIndex){
+        routesNextHopRenderer: function(value, metadata){
             var store = this.up('configpanel').getViewModel().getStore('nextHopDevices');
 
             var record = store.findRecord('key', value);
