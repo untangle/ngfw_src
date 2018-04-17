@@ -102,6 +102,12 @@ Ext.define('Ung.view.reports.NoReports', {
                         runStateTask.delay(runStateDelay);
                     } else {
                         Ung.app.reportscheck();
+
+                        // refresh apps
+                        rpc.appsViews = rpc.appManager.getAppsViews();
+                        Ext.getStore('policies').loadData(rpc.appsViews);
+                        Ung.app.getGlobalController().getAppsView().getController().getApps();
+
                         wait.setHidden(true);
                     }
                 });
