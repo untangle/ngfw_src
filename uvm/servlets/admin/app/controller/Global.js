@@ -258,8 +258,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onAppAction: function () {
-        // refetch current applications and rebuild reports tree
-        if (rpc.reportsManager) {
+        if (Rpc.exists('rpc.reportsManager')) {
             Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
                 Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
                 Ext.getStore('reportstree').build();
@@ -413,14 +412,12 @@ Ext.define('Ung.controller.Global', {
         rpc.isExpertMode = true;
         this.getMainView().getViewModel().set('isExpertMode', true);
         Ung.app.redirectTo('#apps');
-        // Ung.app.redirectTo(window.location.hash.replace('|expert', ''));
     },
 
     setNoExpertMode: function () {
         rpc.isExpertMode = false;
         this.getMainView().getViewModel().set('isExpertMode', false);
         Ung.app.redirectTo('#apps');
-        // this.redirectTo(window.location.hash.replace('|noexpert', ''));
     },
 
     onMonitor: function(id, xtype, params){
