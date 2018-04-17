@@ -52,24 +52,24 @@ Ext.define('Ung.util.Util', {
     // adds timezone computation to ensure dates showing in UI are showing actual server date
     serverToClientDate: function (serverDate) {
         if (!serverDate) { return null; }
-        return Ext.Date.add(serverDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000);
+        return Ext.Date.add(serverDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + Rpc.directData('rpc.timeZoneOffset')/60000);
     },
 
     // extracts the timezone computation from UI dates before requesting new data from server
     clientToServerDate: function (clientDate) {
         if (!clientDate) { return null; }
-        return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset/60000);
+        return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + Rpc.directData('rpc.timeZoneOffset')/60000);
     },
 
     // returns milliseconds depending of the servlet ADMIN or REPORTS
     getMilliseconds: function () {
         // UvmContext
-        if (rpc.systemManager) {
-            return rpc.systemManager.getMilliseconds();
+        if(Rpc.exists('rpc.systemManager')){
+            return Rpc.directData('rpc.systemManager.getMilliseconds');
         }
         // ReportsContext
-        if (rpc.ReportsContext) {
-            return rpc.ReportsContext.getMilliseconds();
+        if(Rpc.exists('rpc.ReportsContext')){
+            return Rpc.directData('rpc.ReportsContext.getMilliseconds');
         }
         // otherwise return client millis
         return new Date().getTime();
@@ -250,7 +250,9 @@ Ext.define('Ung.util.Util', {
             return;
         } else {
             console.error(exception);
-            if (rpc.UvmContext) { // other servlets might not have UvmContext
+            if(Rpc.exists('rpc.UvmContext')){
+                // This is the best way to log exceptions.  Sending through the Rpc object
+                // would require a special case to not show the exception again.
                 rpc.UvmContext.logJavascriptException(function (result, ex) {}, exception);
             }
         }
@@ -267,7 +269,7 @@ Ext.define('Ung.util.Util', {
             details += "<b>" + "Exception java stack".t() +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
         if ( exception.stack )
             details += "<b>" + "Exception js stack".t() +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
-        if ( rpc.fullVersionAndRevision != null )
+        if ( Rpc.directData('rpc.fullVersionAndRevision') != null )
             details += "<b>" + "Build".t() +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
         details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
         if ( exception.response )
@@ -383,71 +385,45 @@ Ext.define('Ung.util.Util', {
         });
     },
 
-    getNextHopList: function (getMap) {
-        var networkSettings = rpc.networkSettings;
-        var devList = [];
-        var devMap = {};
-
-        for (var i = 0 ; i < networkSettings.interfaces.list.length ; i++) {
-            var intf = networkSettings.interfaces.list[i];
-            var name = Ext.String.format("Local on {0} ({1})".t(), intf.name, intf.systemDev);
-            var key = ("" + intf.interfaceId);
-            devList.push([ key, name ]);
-            devMap[key] = name;
-        }
-        if (getMap) return(devMap);
-        return(devList);
-    },
-
-
+    // This is called a lot of times when initializing condition sets for rules.
+    // Previously we loaded network settings for each call.  Now we do it once and 
+    // only refresh after 30 seconds since the last build.
+    interfaceList: null,
+    interfaceLastUpdated: null,
+    interfaceMaxAge: 30 * 1000,
     getInterfaceList: function (wanMatchers, anyMatcher) {
-        var networkSettings = rpc.networkSettings,
-            data = [], intf, i;
 
-        // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
+        var currentTime = new Date().getTime();
+        if (this.interfaceList === null ||
+            this.interfaceLastUpdated === null ||
+            ( ( this.interfaceLastUpdated + this.interfaceMaxAge ) < currentTime ) ){
+            this.interfaceLastUpdated = currentTime;
+            var networkSettings = Rpc.directData('rpc.networkSettings'),
+                data = [];
 
-        for (i = 0; i < networkSettings.interfaces.list.length; i += 1) {
-            intf = networkSettings.interfaces.list[i];
-            data.push([intf.interfaceId.toString(), intf.name]);
+            // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
+            networkSettings.interfaces.list.forEach( function(interface){
+                data.push([interface.interfaceId.toString(), interface.name]);
+            });            
+            networkSettings.virtualInterfaces.list.forEach( function(interface){
+                data.push([interface.interfaceId.toString(), interface.name]);
+            });
+            this.interfaceList = data;
         }
-        for (i = 0; i < networkSettings.virtualInterfaces.list.length; i += 1) {
-            intf = networkSettings.virtualInterfaces.list[i];
-            data.push([intf.interfaceId.toString(), intf.name]);
-        }
+        var interfaces = Ext.clone(this.interfaceList);
 
         if (wanMatchers) {
-            data.unshift(['wan', 'Any WAN'.t()]);
-            data.unshift(['non_wan', 'Any Non-WAN'.t()]);
+            interfaces.unshift(['wan', 'Any WAN'.t()]);
+            interfaces.unshift(['non_wan', 'Any Non-WAN'.t()]);
         }
         if (anyMatcher) {
-            data.unshift(['any', 'Any'.t()]);
+            interfaces.unshift(['any', 'Any'.t()]);
         }
-        return data;
+        return interfaces;
     },
 
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
-    },
-
-    // used for render purposes
-    interfacesListNamesMap: function () {
-        var map = {
-            'wan': 'Any WAN'.t(),
-            'non_wan': 'Any Non-WAN'.t(),
-            'any': 'Any'.t(),
-        };
-        var i, intf;
-
-        for (i = 0; i < rpc.networkSettings.interfaces.list.length; i += 1) {
-            intf = rpc.networkSettings.interfaces.list[i];
-            map[intf.systemDev] = intf.name;
-            map[intf.interfaceId] = intf.name;
-        }
-        for (i = 0; i < rpc.networkSettings.virtualInterfaces.list.length; i += 1) {
-            intf = rpc.networkSettings.virtualInterfaces.list[i];
-            map[intf.interfaceId] = intf.name;
-        }
-        return map;
     },
 
     urlValidator: function (val) {
@@ -638,22 +614,22 @@ Ext.define('Ung.util.Util', {
 
     getStoreUrl: function(){
         // non API store URL used for links like: My Account, Forgot Password
-        return rpc.storeUrl.replace('/api/v1', '/store/open.php');
+        return Rpc.directData('rpc.storeUrl').replace('/api/v1', '/store/open.php');
     },
 
+    about: null,
     getAbout: function (forceReload) {
-        if (rpc.about === undefined) {
-            var query = "";
-            query = query + "uid=" + rpc.serverUID;
-            query = query + "&" + "version=" + rpc.fullVersion;
-            query = query + "&" + "webui=true";
-            query = query + "&" + "lang=" + rpc.languageSettings.language;
-            query = query + "&" + "applianceModel=" + rpc.applianceModel;
-            query = query + "&" + "installType=" + rpc.installType;
-
-            rpc.about = query;
+        if (this.about === null) {
+            this.about = [
+                'uid=' + Rpc.directData('rpc.serverUID'),
+                "version=" + Rpc.directData('rpc.fullVersion'),
+                "webui=true",
+                "lang=" + Rpc.directData('rpc.languageSettings.language'),
+                "applianceModel=" + Rpc.directData('rpc.applianceModel'),
+                "installType=" + Rpc.directData('rpc.installType')
+            ].join('&');
         }
-        return rpc.about;
+        return this.about;
     },
 
     weekdaysMap: {
