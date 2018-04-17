@@ -17,15 +17,29 @@ Ext.define('Ung.Application', {
     initialLoad: false,
 
     launch: function () {
-        window.document.title = rpc.companyName + (rpc.hostname ? ' - ' + rpc.hostname : '');
+
+        Ext.Deferred.parallel([
+            Rpc.directPromise('rpc.companyName'),
+            Rpc.directPromise('rpc.hostname'),
+            Rpc.directPromise('rpc.appsViews')
+        ], this)
+        .then(function(result){
+            if(Util.isDestroyed(window)){
+                return;
+            }
+            window.document.title = result[0] + (result[1] ? ' - ' + result[1] : '');
+
+            // Build policies tree
+            Ext.getStore('policies').loadData(result[2]);
+            Ext.getStore('policiestree').build();
+
+        }, function(ex) {
+        });
+
         Ext.get('app-loader').destroy();
 
         // Start metrics
         Metrics.start();
-
-        // Fetch policies and build policies tree
-        Ext.getStore('policies').loadData(rpc.appsViews);
-        Ext.getStore('policiestree').build();
 
         Ext.fireEvent('afterlaunch'); // used in Main view ctrl
 
@@ -47,10 +61,10 @@ Ext.define('Ung.Application', {
      * Reports App is installed/removed or enabled/disabled
      */
     reportscheck: function () {
-        var mainView = Ung.app.getMainView(),
-            reportsApp = rpc.appManager.app('reports');
+        var mainView = Ung.app.getMainView();
 
-        if (!reportsApp) {
+        // if (!reportsApp) {
+        if(Rpc.exists('rpc.appManager.app', 'reports') === false){
             rpc.reportsManager = null;
             Ext.getStore('reports').loadData([]);
             Ext.getStore('reportstree').build();
@@ -64,42 +78,42 @@ Ext.define('Ung.Application', {
                 installed: false,
                 enabled: false
             });
-            return;
-        }
+        }else{
+            rpc.reportsManager = Rpc.directData('rpc.appManager.app("reports").getReportsManager');
 
-        rpc.reportsManager = reportsApp.getReportsManager();
+            Ext.Deferred.parallel([
+                Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
+                Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
+            ]).then(function (result) {
+                if(Util.isDestroyed(mainView)){
+                    return;
+                }
+                if (result[0]) { Ext.getStore('reports').loadData(result[0].list); }
+                if (result[1]) { Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list)); }
 
-        Ext.Deferred.parallel([
-            Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-            Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
-        ]).then(function (result) {
-            if (result[0]) { Ext.getStore('reports').loadData(result[0].list); }
-            if (result[1]) { Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[1].list)); }
+                // build reports tree
+                Ext.getStore('reportstree').build();
 
-            // build reports tree
-            Ext.getStore('reportstree').build();
+                /**
+                 * this is needed to initialize global conditions
+                 * because the query binding fires before reports have been loaded
+                 */
+                if (!Ung.app.initialLoad) {
+                    Ung.app.initialLoad = true;
+                    Ext.fireEvent('initialload');
+                }
 
-            /**
-             * this is needed to initialize global conditions
-             * because the query binding fires before reports have been loaded
-             */
-            if (!Ung.app.initialLoad) {
-                Ung.app.initialLoad = true;
-                Ext.fireEvent('initialload');
-            }
-
-            /**
-             * Set the reportsAppStatus viewmodel prop.
-             * This is watched in different places when changes, and the view updates based on the status
-             */
-            mainView.getViewModel().set('reportsAppStatus', {
-                installed: true,
-                enabled: reportsApp.getRunState() === 'RUNNING'
+                /**
+                 * Set the reportsAppStatus viewmodel prop.
+                 * This is watched in different places when changes, and the view updates based on the status
+                 */
+                mainView.getViewModel().set('reportsAppStatus', {
+                    installed: true,
+                    enabled: Rpc.directData('rpc.appManager.app("reports").getRunState') === 'RUNNING'
+                });
+            }, function (ex) {
             });
 
-        }, function (ex) {
-            console.log(ex);
-        });
+        }
     }
-
 });
