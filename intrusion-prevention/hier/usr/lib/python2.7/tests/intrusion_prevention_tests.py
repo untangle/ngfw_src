@@ -242,7 +242,6 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         # create blank ruleset to start
         patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        ## !!!! ARGH!
         patch["activeGroups"] = {
             "classtypes": "custom",
             "classtypesSelected": [],
@@ -251,7 +250,6 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         self.intrusion_prevention_interface.config_request( "save", patch )
         app.reconfigure()
-        app.start() # must be called since intrusion-prevention doesn't auto-start
 
     def setUp(self):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(app.getAppSettings()["id"])
