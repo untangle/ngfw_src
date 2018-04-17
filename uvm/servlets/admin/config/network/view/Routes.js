@@ -65,8 +65,12 @@ Ext.define('Ung.config.network.view.Routes', {
             Field.netMask, {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
-                bind: '{record.nextHop}',
-                store: Util.getNextHopList(false),
+                bind:{
+                    value: '{record.nextHop}',
+                    store: '{nextHopDevices}'
+                },
+                displayField: 'value',
+                valueField: 'key',
                 queryMode: 'local',
                 allowBlank: false,
                 editable: true

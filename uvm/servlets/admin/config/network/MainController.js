@@ -64,6 +64,7 @@ Ext.define('Ung.config.network.MainController', {
             }
             var intfStatus, devStatus;
 
+            var nextHopDevices = [];
             result[0].interfaces.list.forEach(function (intf) {
                 if (result[1] && result[1].list.length > 0) {
                     intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
@@ -83,7 +84,11 @@ Ext.define('Ung.config.network.MainController', {
                     Ext.apply(intf, devStatus);
                 }
 
+                var name = Ext.String.format("Local on {0} ({1})".t(), intf.name, intf.systemDev);
+                var key = ("" + intf.interfaceId);
+                nextHopDevices.push([ key, name ]);
             });
+            vm.set('nextHopDevicesList', nextHopDevices);
             vm.set('savedSettings', Ext.merge({}, result[0]));
             vm.set('settings', result[0]);
 
@@ -100,6 +105,7 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('companyName', result[3]);
 
             vm.set('panel.saveDisabled', false);
+
             v.setLoading(false);
         }, function(ex) {
             if(!Util.isDestroyed(vm, vm)){
@@ -248,6 +254,8 @@ Ext.define('Ung.config.network.MainController', {
         var v = this.getView();
         var vm = this.getViewModel();
         var me = this;
+
+        // !!! on writes, set interface list.
 
         v.setLoading(true);
         Ext.Deferred.sequence([
@@ -1504,14 +1512,16 @@ Ext.define('Ung.config.network.MainController', {
             return record.get('auto') ? '' : value;
         },
 
-        routesNextHopRenderer: function(value, metadata, record, rowIndex, colIndex, store, view){
-            var devMap = Util.getNextHopList(true);
-            var intRegex = /^\d+$/;
-            if ( intRegex.test( value ) ) {
-                return devMap[value] ? devMap[value] : "Local interface".t();
-            } else {
-                return value;
+        routesNextHopRenderer: function(value, metadata, record, rowIndex, colIndex){
+            var store = this.up('configpanel').getViewModel().getStore('nextHopDevices');
+
+            var record = store.findRecord('key', value);
+            if(record != null){
+                value = record.get('value');
             }
+
+            metadata.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( value ) + '"';
+            return value;
         },
 
         qosBandwidthRenderer: function(value){
