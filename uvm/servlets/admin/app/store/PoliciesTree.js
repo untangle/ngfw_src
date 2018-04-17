@@ -18,7 +18,6 @@ Ext.define('Ung.store.PoliciesTree', {
                     name: 'Default'
                 }
             });
-            return;
         }else{
             Rpc.asyncData('rpc.appManager.app("policy-manager").getSettings')
             .then( function(result){
