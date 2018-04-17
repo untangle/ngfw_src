@@ -71,6 +71,14 @@ Ext.define('Ung.config.network.MainModel', {
                 direction: 'ASC'
             }],
         },
+        nextHopDevices:     { 
+            data: '{nextHopDevicesList}',
+            fields:[{
+                name: 'key'
+            },{
+                name: 'value'
+            }]
+        },
         // Port Forward
         portForwardRules:   { data: '{settings.portForwardRules.list}' },
         // NAT
