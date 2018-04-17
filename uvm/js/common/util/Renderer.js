@@ -97,8 +97,11 @@ Ext.define('Ung.util.Renderer', {
         return Math.ceil(Ext.getBody().getViewSize().width / divisor) - 1;
     },
 
-    timestampOffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
+    timestampOffset: null,
     timestamp: function (value) {
+        if(Renderer.timestampOffset === null){
+            Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + Rpc.directData('rpc.timeZoneOffset');
+        }
         if (!value) { return ''; }
         if ((typeof(value) === 'object') && value.time) { value = value.time; }
         if(value < 2696400000){ value *= 1000; }
@@ -107,15 +110,21 @@ Ext.define('Ung.util.Renderer', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    interfaceMap: null,
+    interfaceLastUpdated: null,
+    interfaceMaxAge: 30 * 1000,
     interface: function (value) {
-        if (!rpc.reportsManager) {
+        if (!Rpc.exists('rpc.reportsManager')) {
             return value.toString();
         }
-        if (!Ung.util.Renderer.interfaceMap) {
-            // this.buildInterfaceMap();
+        var currentTime = new Date().getTime();
+        if (Ung.util.Renderer.interfaceMap === null ||
+            Ung.util.Renderer.interfaceLastUpdated === null ||
+            ( ( Ung.util.Renderer.interfaceLastUpdated + Ung.util.Renderer.interfaceMaxAge ) < currentTime ) ){
             var interfacesList = [], i;
+
             try {
-                interfacesList = rpc.reportsManager.getInterfacesInfo().list;
+                interfacesList = Rpc.directData('rpc.reportsManager.getInterfacesInfo').list;
             } catch (ex) {
                 console.log(ex);
             }
@@ -124,6 +133,7 @@ Ext.define('Ung.util.Renderer', {
             for (i = 0; i < interfacesList.length; i += 1) {
                 Ung.util.Renderer.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name + " [" + interfacesList[i].interfaceId + "]";
             }
+            Ung.util.Renderer.interfaceLastUpdated = currentTime;
         }
         return value ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
     },
