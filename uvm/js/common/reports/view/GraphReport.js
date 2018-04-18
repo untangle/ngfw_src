@@ -32,6 +32,9 @@ Ext.define('Ung.view.reports.GraphReport', {
             view.setWidget(view.up('reportwidget'));
             // if it's a widget, than fetch data after the report entry is binded to it
             vm.bind('{entry}', function (entry) {
+                if(Util.isDestroyed(me, view)){
+                    return;
+                }
                 if (!entry ||
                     ( entry.get('type') !== 'PIE_GRAPH' &&
                       entry.get('type') !== 'TIME_GRAPH' &&
@@ -53,11 +56,17 @@ Ext.define('Ung.view.reports.GraphReport', {
 
             // when editing entry update graph styles on the fly
             vm.bind('{eEntry.pieStyle}', function (pieStyle) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
                 if (!pieStyle) { return; }
                 me.setStyles();
             });
 
             vm.bind('{eEntry.timeStyle}', function (timeStyle) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
                 if (!timeStyle) { return; }
                 me.setStyles();
             });
@@ -393,14 +402,23 @@ Ext.define('Ung.view.reports.GraphReport', {
                 endDate,
                 vm.get('query.conditions'), -1) // sql filters
                 .then(function (result) {
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
                     me.data = result.list;
                     me.setSeries();
                     if (cb) { cb(me.data); }
                 }, function () {
+                    if(Util.isDestroyed(vm)){
+                        return;
+                    }
                     if (cb) { cb(); }
                     vm.set('eError', true);
                 })
                 .always(function () {
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
                     if (reps) { reps.getViewModel().set('fetching', false); }
                     if( me.chart.noDataLabel === undefined){
                         me.chart.zoomOut();
@@ -442,7 +460,7 @@ Ext.define('Ung.view.reports.GraphReport', {
          */
         setSeries: function () {
             var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
-                seriesRenderer = entry.get('seriesRenderer') ? Renderer[entry.get('seriesRenderer')] : null,
+                seriesRenderer = ( entry && entry.get('seriesRenderer') ) ? Renderer[entry.get('seriesRenderer')] : null,
                 seriesData,
                 seriesName;
 
@@ -456,7 +474,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 return;
             }
 
-            if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
+            if ( entry && ( entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') ){
                 var dataColumns = [], units = entry.get('units');
 
                 // get or generate series names based on timeDataColumns for TIME_GRAPH or data form TIME_GRAPH_DYNAMIC
@@ -513,7 +531,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 });
             }
 
-            if (entry.get('type') === 'PIE_GRAPH') {
+            if (entry && ( entry.get('type') === 'PIE_GRAPH') ){
                 var othersValue = 0;
                 seriesData = [];
 

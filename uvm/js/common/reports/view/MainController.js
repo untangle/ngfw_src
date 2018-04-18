@@ -29,6 +29,9 @@ Ext.define('Ung.view.reports.MainController', {
          * show appropriate card
          */
         vm.bind('{reportsAppStatus}', function (status) {
+            if(Util.isDestroyed(me, view)){
+                return;
+            }
             view.remove(view.down('#loader'));
             if (status.installed && status.enabled) {
                 view.getLayout().setActiveItem(1);
@@ -50,6 +53,9 @@ Ext.define('Ung.view.reports.MainController', {
          * When query route changes select report path
          */
         vm.bind('{query.route}', function (route) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
             var path = (route.cat || '') + (route.rep ? ('/' + route.rep) : '');
             if (!path) {
                 tree.collapseAll();
@@ -76,6 +82,9 @@ Ext.define('Ung.view.reports.MainController', {
          * enable/disable reports tree nodes for which conditions do not apply
          */
         vm.bind('{query.conditions}', function (conditions) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
             var root = Ext.getStore('reportstree').getRoot(), conds = [], disabledCategory;
             Ext.Array.each(conditions, function (c) {
                 conds.push(c.column);
