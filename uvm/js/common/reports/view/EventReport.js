@@ -84,7 +84,12 @@ Ext.define('Ung.view.reports.EventReport', {
             }
 
             vm.bind('{entry}', function (entry) {
-                if (!entry || entry.get('type') !== 'EVENT_LIST') { return; }
+                if(Util.isDestroyed(me, view)){
+                    return;
+                }
+                if (!entry || entry.get('type') !== 'EVENT_LIST') { 
+                    return; 
+                }
 
                 // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
@@ -206,16 +211,26 @@ Ext.define('Ung.view.reports.EventReport', {
                 startDate,
                 endDate)
                 .then(function(result) {
-                    if (!me.getView()) { return; }
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
                     me.getView().setLoading(false);
-                    if (reps) { reps.getViewModel().set('fetching', false); }
+                    if (reps) { 
+                        reps.getViewModel().set('fetching', false); 
+                    }
                     me.loadResultSet(result);
                 })
                 .always(function () { // NGFW-11467
-                    if (!me.getView()) { return; }
-                    if (cb) { cb(); }
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
+                    if (cb) { 
+                        cb(); 
+                    }
                     me.getView().setLoading(false);
-                    if (reps) { reps.getViewModel().set('fetching', false); }
+                    if (reps) { 
+                        reps.getViewModel().set('fetching', false); 
+                    }
                 });
         },
 

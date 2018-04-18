@@ -377,6 +377,9 @@ Ext.define('Ung.view.reports.EntryController', {
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', eEntry.getData())
             .then(function() {
+                if(Util.isDestroyed(v, vm, me)){
+                    return;
+                }
                 v.setLoading(false);
 
                 var modFields = entry.copyFrom(eEntry);
@@ -434,10 +437,13 @@ Ext.define('Ung.view.reports.EntryController', {
         v.setLoading(true);
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
             .then(function() {
+                if(Util.isDestroyed(v, me)){
+                    return;
+                }
                 v.setLoading(false);
                 Ext.getStore('reports').add(entry);
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports?cat=' + entry.get('category').replace(/ /g, '-').toLowerCase() + '&rep=' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
                 me.reload();
@@ -455,6 +461,9 @@ Ext.define('Ung.view.reports.EntryController', {
             'Deleting this report will also remove Dashboard widgets containing this report!'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
             function (btn) {
+                if(Util.isDestroyed(vm, me)){
+                    return;
+                }
                 if (btn === 'yes') {
                     if (vm.get('widget')) {
                         var records = Ext.getStore('widgets').queryRecords('entryId', entry.get('uniqueId'));
@@ -470,6 +479,9 @@ Ext.define('Ung.view.reports.EntryController', {
         var vm = this.getViewModel();
         Rpc.asyncData('rpc.reportsManager.removeReportEntry', entry)
             .then(function () {
+                if(Util.isDestroyed(vm)){
+                    return;
+                }
                 Ung.app.redirectTo('#reports?cat=' + entry.category.replace(/ /g, '-').toLowerCase());
                 Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
                 vm.set('eEntry', null);
