@@ -55,6 +55,9 @@ Ext.define('Ung.widget.NetworkLayout', {
 
         Rpc.asyncData('rpc.networkManager.getNetworkSettings')
             .then(function(result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
                 cb();
                 me.down('#externalInterface').removeAll();
                 me.down('#internalInterface').removeAll();
@@ -62,7 +65,7 @@ Ext.define('Ung.widget.NetworkLayout', {
                     if (iface.configType !== 'DISABLED') {
                         iface.vrrpMaster = false;
                         if (iface.vrrpEnabled) {
-                            iface.vrrpMaster = rpc.networkManager.isVrrpMaster(iface.interfaceId);
+                            iface.vrrpMaster = Rpc.directData('rpc.networkManager.isVrrpMaster', iface.interfaceId);
                         }
                         if (iface.isWan) {
                             me.down('#externalInterface').add({
