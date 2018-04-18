@@ -86,6 +86,7 @@ Ext.define('Ung.cmp.AppState', {
                             vm.set('instance.runState', result);
                             vm.set('instance.targetState', this.runStateWantState );
                             this.runStateButton.setDisabled(false);
+
                             // force reload Apps after start/stop within App Settings
                             rpc.appsViews = rpc.appManager.getAppsViews();
                             Ext.getStore('policies').loadData(rpc.appsViews);

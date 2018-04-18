@@ -10,17 +10,18 @@ Ext.define ('Ung.model.Stat', {
         {
             name: 'hostname',
             calculate: function () {
-                return rpc.hostname;
+                return Rpc.directData('rpc.hostname');
             }
         }, {
             name: 'version',
             calculate: function () {
-                return rpc.fullVersion;
+                return Rpc.directData('rpc.fullVersion');
             }
         }, {
             name: 'appliance',
             calculate: function() {
-                return (rpc.applianceModel === undefined || rpc.applianceModel === null || rpc.applianceModel === '' ? 'custom'.t() : rpc.applianceModel);
+                var applianceModel = Rpc.directData('rpc.applianceModel')
+                return (applianceModel === undefined || applianceModel === null || applianceModel === '' ? 'custom'.t() : applianceModel);
             }
         }, {
             name: 'totalMemory',

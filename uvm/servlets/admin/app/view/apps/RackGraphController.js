@@ -21,11 +21,6 @@ Ext.define('Ung.view.apps.RackGraphController', {
     updateMetricsCount: 0,
 
     onAfterRender: function (view) {
-        // update metrics/chart on change
-        // this.getViewModel().bind('{metrics}', function(metrics) {
-        //     me.setMetrics(metrics);
-        // });
-
         // when instance changes reset metrics
         var me = this;
         me.getViewModel().bind('{instanceId}', function() {
@@ -67,8 +62,6 @@ Ext.define('Ung.view.apps.RackGraphController', {
                     },
                     y: 12
                 },
-                // maxPadding: 0,
-                // minPadding: 0,
                 visible: false
             }],
             yAxis: {
@@ -129,26 +122,8 @@ Ext.define('Ung.view.apps.RackGraphController', {
             series: [{
                 name: 'Sessions'.t(),
                 data: []
-                // data: (function () {
-                //     var data = [], time = Date.now(), i;
-                //     try {
-                //         time = rpc.systemManager.getMilliseconds();
-                //     } catch (e) {
-                //         console.log('Unable to get current millis.');
-                //     }
-                //     time = Math.round(time/1000) * 1000;
-                //     for (i = -6; i <= 0; i += 1) {
-                //         data.push({
-                //             x: time + i * 10000,
-                //             y: 0
-                //         });
-                //     }
-                //     return data;
-                // }())
             }]
         });
-
-        // this.onAddPoint();
     },
 
     setMetrics: function () {
@@ -178,12 +153,8 @@ Ext.define('Ung.view.apps.RackGraphController', {
         me.getViewModel().set('stats', stats);
 
 
-        var data = [], time = Date.now();
-        try {
-            time = rpc.systemManager.getMilliseconds();
-        } catch (e) {
-            console.log('Unable to get current millis.');
-        }
+        var data = [], 
+            time = Util.getMilliseconds();
         time = Math.round(time/1000) * 1000;
 
         for (i = -17; i <= -1; i += 1) {
