@@ -38,7 +38,7 @@ Ext.define('Ung.widget.Notifications', {
         margin: '10 20',
         text: 'Help'.t(),
         iconCls: 'fa fa-question-circle',
-        href: rpc.helpUrl + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout(),
+        href: Rpc.directData('rpc.helpUrl') + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout(),
         hidden: true,
         bind: { hidden: '{!count || count === "(0)"}' }
     }],
