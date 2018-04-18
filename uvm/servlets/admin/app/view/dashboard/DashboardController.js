@@ -141,11 +141,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var vm = this.getViewModel();
         vm.set('stats', Ext.getStore('stats').first());
 
-        // get devices
-        // @todo: review this based on oler implementation
-        rpc.deviceTable.getDevices(function (result, ex) {
-            if (ex) { Util.handleException(ex); return false; }
+        Rpc.asyncData('rpc.deviceTable.getDevices')
+        .then( function(result){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
             vm.set('deviceCount', result.list.length);
+        },function(ex){
+            Util.handleException(ex);
         });
     },
 

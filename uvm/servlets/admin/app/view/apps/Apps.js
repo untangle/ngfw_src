@@ -3,9 +3,8 @@ Ext.define('Ung.view.apps.Apps', {
     xtype: 'ung.apps',
     itemId: 'apps',
     layout: 'card',
-    // layout: 'border',
 
-    itemType: rpc.skinInfo.appsViewType === 'rack' ? 'rackitem' : 'simpleitem',
+    itemType: Rpc.directData('rpc.skinInfo.appsViewType') === 'rack' ? 'rackitem' : 'simpleitem',
 
     controller: 'apps',
     viewModel: {
@@ -79,14 +78,9 @@ Ext.define('Ung.view.apps.Apps', {
 
     items: [{
         itemId: 'installedApps',
-        xtype: rpc.skinInfo.appsViewType === 'rack' ? 'apps-rack' : 'apps-simple',
-        // region: 'center',
+        xtype: Rpc.directData('rpc.skinInfo.appsViewType') === 'rack' ? 'apps-rack' : 'apps-simple',
     }, {
         scrollable: true,
-
-        // region: 'east',
-        // width: '55%',
-        // split: true,
 
         itemId: 'installableApps',
         layout: { type: 'vbox', align: 'stretch' },

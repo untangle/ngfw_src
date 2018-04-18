@@ -9,7 +9,7 @@ Ext.define('Ung.overrides.picker.Date', {
         var me = this,
             encode = Ext.String.htmlEncode,
             days = new Array(me.numDays),
-            offset = (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset,
+            offset = (new Date().getTimezoneOffset() * 60000) + Rpc.directData('rpc.timeZoneOffset'),
             todayDate = new Date();
         todayDate.setTime( todayDate.getTime() + offset);
         var today = Ext.Date.format(todayDate, me.format);
