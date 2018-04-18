@@ -61,8 +61,7 @@ Ext.define('Ung.Application', {
     reportscheck: function () {
         var mainView = Ung.app.getMainView();
 
-        // if (!reportsApp) {
-        if(Rpc.exists('rpc.appManager.app', 'reports') === false){
+        if(!Rpc.directData('rpc.appManager.app', 'reports')){
             rpc.reportsManager = null;
             Ext.getStore('reports').loadData([]);
             Ext.getStore('reportstree').build();
