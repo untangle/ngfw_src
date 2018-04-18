@@ -34,7 +34,6 @@ Ext.define('Ung.cmp.TagTime', {
     }, {
         xtype: 'timefield',
         margin: '0 0 0 3',
-        // minValue: new Date(rpc.systemManager.getMilliseconds()),
         value: '11:50 pm',
         width: 110,
         format: 'h:i a',
