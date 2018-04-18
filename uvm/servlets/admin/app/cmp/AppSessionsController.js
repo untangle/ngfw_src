@@ -185,12 +185,9 @@ Ext.define('Ung.cmp.AppSessionsController', {
             series: [{
                 name: 'Sessions'.t(),
                 data: (function () {
-                    var data = [], time = Date.now(), i;
-                    try {
-                        time = rpc.systemManager.getMilliseconds();
-                    } catch (e) {
-                        console.log('Unable to get current millis.');
-                    }
+                    var data = [],
+                        time = Util.getMilliseconds(),
+                        i;
                     time = Math.round(time/1000) * 1000;
                     for (i = -6; i <= 0; i += 1) {
                         data.push({
