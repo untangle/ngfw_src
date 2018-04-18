@@ -10,7 +10,6 @@ Ext.define('Ung.widget.MapDistribution', {
     layout: 'fit',
 
     refreshIntervalSec: 10,
-    geographyManager: rpc.UvmContext.geographyManager(),
 
     items: [{
         xtype: 'component',
@@ -22,22 +21,22 @@ Ext.define('Ung.widget.MapDistribution', {
     }, {
         xtype: 'component',
         height: 260,
-        // style: {
-        //     right: 0,
-        //     bottom: 0
-        // },
         reference: 'mapCmp'
     }],
 
     fetchData: function (cb) {
-        var me = this, data = [], i;
+        var me = this;
 
-        if (me.chart && me.geographyManager) {
+        if (me.chart) {
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
-            me.geographyManager.getGeoSessionStats(function (result, ex) {
+            Rpc.asyncData('rpc.UvmContext.geographyManager.getGeoSessionStats')
+            .then( function(result){
+                if(Util.isDestroyed(me.chart)){
+                    return;
+                }
+                var data = [], i;
                 me.chart.hideLoading();
                 cb();
-                if (ex) { Util.handleException(ex); return; }
                 for (i = 0; i < result.length; i += 1) {
                     var bubbleSize = 0;
                     if (result[i].kbps)
@@ -51,6 +50,8 @@ Ext.define('Ung.widget.MapDistribution', {
                     });
                 }
                 me.chart.series[1].setData(data, true, false);
+            },function(ex){
+                Util.handleException(ex);
             });
         } else {
             cb();
@@ -59,12 +60,13 @@ Ext.define('Ung.widget.MapDistribution', {
 
     listeners: {
         afterrender: function (view) {
-            // view.setLoading(true);
             if (!Highcharts.map['custom/world']) {
                 Ext.Loader.loadScript({
                     url: '/highcharts-6.0.2/world.js',
                     onLoad: function () {
-                        // view.setLoading(false);
+                        if(Util.isDestroyed(view)){
+                            return;
+                        }
                         view.renderMap(view);
                     }
                 });
@@ -86,7 +88,6 @@ Ext.define('Ung.widget.MapDistribution', {
                 renderTo: me.lookup('mapCmp').getEl().dom,
                 margin: [5, 5, 5, 5],
                 spacing: [5, 5, 5, 5],
-                // backgroundColor: 'transparent',
                 map: 'custom/world'
             },
             title: null,
