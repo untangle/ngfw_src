@@ -65,6 +65,9 @@ Ext.define('Ung.view.reports.NoReports', {
                         Ext.Msg.alert('Error', ex.message);
                         return;
                     }
+                    if(Util.isDestroyed(wait)){
+                        return;
+                    }
 
                     Ung.app.reportscheck();
 
@@ -94,6 +97,9 @@ Ext.define('Ung.view.reports.NoReports', {
                     if (ex) {
                         Util.handleException(ex);
                         return false;
+                    }
+                    if(Util.isDestroyed(wait)){
+                        return;
                     }
                     runStateWait = runStateWait - runStateDelay;
                     if (result !== runStateWantState){
