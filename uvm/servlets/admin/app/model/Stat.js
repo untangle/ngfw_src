@@ -20,7 +20,7 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'appliance',
             calculate: function() {
-                var applianceModel = Rpc.directData('rpc.applianceModel')
+                var applianceModel = Rpc.directData('rpc.applianceModel');
                 return (applianceModel === undefined || applianceModel === null || applianceModel === '' ? 'custom'.t() : applianceModel);
             }
         }, {
