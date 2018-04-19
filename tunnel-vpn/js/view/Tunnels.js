@@ -180,6 +180,27 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
             disabled: '{tunnelProviderSelected == false}',
             hidden: '{tunnelPasswordHidden == true}'
         },
+    }, {
+        xtype: 'fieldset',
+        margin: '0 10 0 190',
+        title: 'Advanced'.t(),
+        collapsible: true,
+        collapsed: true,
+        padding: 10,
+        layout: {
+            type: 'vbox'
+        },
+        defaults: {
+            xtype: 'checkbox'
+        },
+        items: [{
+            xtype: 'checkbox',
+            labelWidth: '100%',
+            fieldLabel: 'NAT traffic exiting this tunnel'.t(),
+            bind: {
+                value: '{record.nat}'
+            }
+        }]
     }]
 
 });

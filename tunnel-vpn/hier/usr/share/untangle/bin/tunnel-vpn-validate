@@ -65,7 +65,12 @@ if [ ! -f "${filename}" ]; then
 fi
 
 if [ "$provider" == "Untangle" ] ; then
-    importZip
+    # Untangle provides both zip files and ovpn files
+    if [[ "$filename" == *zip ]] ; then
+        importZip
+    else
+        importOvpn
+    fi
 elif [ "$provider" == "NordVPN" ] ; then
     importOvpn
 elif [ "$provider" == "ExpressVPN" ] ; then
