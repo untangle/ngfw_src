@@ -717,6 +717,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         app.reconfigure()
         app.forceUpdateStats()
 
+        time.sleep(5)
+
         pre_events_scan = global_functions.get_app_metric_value(app,"scan")
         pre_events_detect = global_functions.get_app_metric_value(app,"detect")
         pre_events_block = global_functions.get_app_metric_value(app,"block")
