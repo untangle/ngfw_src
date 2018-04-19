@@ -179,8 +179,7 @@ Ext.define('Ung.config.upgrade.MainController', {
             duration: 180000
         });
 
-        Rpc.asyncData('rpc.systemManager.upgrade')
-        .then(function(result){
+        rpc.systemManager.upgrade(Ext.bind(function (result, exception) {
             // the upgrade will shut down the untangle-vm so often this returns an exception
             // either way show a wait dialog...
             Ext.MessageBox.hide();
@@ -205,8 +204,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                     );
                 }
             });
-
-        });
+        }, this));
     },
 
     onUpgradeTimeChange: function (field, value) {
