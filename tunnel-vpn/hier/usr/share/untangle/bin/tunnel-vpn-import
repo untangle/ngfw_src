@@ -74,7 +74,12 @@ mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/
 mkdir -p @PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-${tunnel_id}/keys/
 
 if [ "$provider" == "Untangle" ] ; then
-    importZip
+    # Untangle provides both zip files and ovpn files
+    if [[ "$filename" == *zip ]] ; then
+        importZip
+    else
+        importOvpn
+    fi
 elif [ "$provider" == "NordVPN" ] ; then
     importOvpn
 elif [ "$provider" == "ExpressVPN" ] ; then
