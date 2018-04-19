@@ -8,7 +8,7 @@ Ext.define('Ung.store.PoliciesTree', {
     build: function () {
         var me = this, policies;
 
-        if(Rpc.exists('rpc.appManager.app', 'policy-manager') === false){
+        if(!Rpc.directData('rpc.appManager.app', 'policy-manager')){
             me.setRoot({
                 name: 'Policies',
                 policyId: 'root', // used for path
