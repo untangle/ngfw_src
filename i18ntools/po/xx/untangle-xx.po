@@ -13786,123 +13786,123 @@ msgstr "XIf new upgrades are available at the specified upgrade time they will b
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:156
 #: Status: UNVERIFIED
 msgid "Delete VLAN Interface"
-msgstr ""
+msgstr "XDelete VLAN InterfaceX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:159
 #: Status: UNVERIFIED
 msgid "Delete missing Interface"
-msgstr ""
+msgstr "XDelete missing InterfaceX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Regional.js:125
 #: Status: UNVERIFIED
 msgid "A reboot is required after changing the timezone!"
-msgstr ""
+msgstr "XA reboot is required after changing the timezone!X"
 
 #: /ngfw/ngfw_src/reports/js/MainController.js:247
 #: Status: UNVERIFIED
 msgid "Another Email Template has this title"
-msgstr ""
+msgstr "XAnother Email Template has this titleX"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:221
 #: Status: UNVERIFIED
 msgid "Invalid Port"
-msgstr ""
+msgstr "XInvalid PortX"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:221
 #: Status: UNVERIFIED
 msgid "The configured port value is reserved. Please enter a different value."
-msgstr ""
+msgstr "XThe configured port value is reserved. Please enter a different value.X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:5
 #: Status: UNVERIFIED
 msgid "{0} [{1}]"
-msgstr ""
+msgstr "X{0} [{1}]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:471
 #: Status: UNVERIFIED
 msgid "Echo Reply"
-msgstr ""
+msgstr "XEcho ReplyX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:472 standard
 #: input:473 input:478 input:513
 #: Status: UNVERIFIED
 msgid "Unassigned"
-msgstr ""
+msgstr "XUnassignedX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:474
 #: Status: UNVERIFIED
 msgid "Destination Unreachable"
-msgstr ""
+msgstr "XDestination UnreachableX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:475
 #: Status: UNVERIFIED
 msgid "Source Quench (Deprecated)"
-msgstr ""
+msgstr "XSource Quench (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:476
 #: Status: UNVERIFIED
 msgid "Redirect"
-msgstr ""
+msgstr "XRedirectX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:477
 #: Status: UNVERIFIED
 msgid "Alternate Host Address (Deprecated)"
-msgstr ""
+msgstr "XAlternate Host Address (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:479
 #: Status: UNVERIFIED
 msgid "Echo"
-msgstr ""
+msgstr "XEchoX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:480
 #: Status: UNVERIFIED
 msgid "Router Advertisement"
-msgstr ""
+msgstr "XRouter AdvertisementX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:481
 #: Status: UNVERIFIED
 msgid "Router Solicitation"
-msgstr ""
+msgstr "XRouter SolicitationX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:482
 #: Status: UNVERIFIED
 msgid "Time Exceeded"
-msgstr ""
+msgstr "XTime ExceededX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:483
 #: Status: UNVERIFIED
 msgid "Parameter Problem"
-msgstr ""
+msgstr "XParameter ProblemX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:485
 #: Status: UNVERIFIED
 msgid "Timestamp Reply"
-msgstr ""
+msgstr "XTimestamp ReplyX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:486
 #: Status: UNVERIFIED
 msgid "Information Request (Deprecated)"
-msgstr ""
+msgstr "XInformation Request (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:487
 #: Status: UNVERIFIED
 msgid "Information Reply (Deprecated)"
-msgstr ""
+msgstr "XInformation Reply (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:488
 #: Status: UNVERIFIED
 msgid "Address Mask Request (Deprecated)"
-msgstr ""
+msgstr "XAddress Mask Request (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:489
 #: Status: UNVERIFIED
 msgid "Address Mask Reply (Deprecated)"
-msgstr ""
+msgstr "XAddress Mask Reply (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:490
 #: Status: UNVERIFIED
 msgid "Reserved (for Security)"
-msgstr ""
+msgstr "XReserved (for Security)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:491 standard
 #: input:492 input:493 input:494
@@ -13911,199 +13911,199 @@ msgstr ""
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:499 input:500
 #: Status: UNVERIFIED
 msgid "Reserved (for Robustness Experiment)"
-msgstr ""
+msgstr "XReserved (for Robustness Experiment)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:501
 #: Status: UNVERIFIED
 msgid "Traceroute (Deprecated)"
-msgstr ""
+msgstr "XTraceroute (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:502
 #: Status: UNVERIFIED
 msgid "Datagram Conversion Error (Deprecated)"
-msgstr ""
+msgstr "XDatagram Conversion Error (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:503
 #: Status: UNVERIFIED
 msgid "Mobile Host Redirect (Deprecated)"
-msgstr ""
+msgstr "XMobile Host Redirect (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:504
 #: Status: UNVERIFIED
 msgid "IPv6 Where-Are-You (Deprecated)"
-msgstr ""
+msgstr "XIPv6 Where-Are-You (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:505
 #: Status: UNVERIFIED
 msgid "IPv6 I-Am-Here (Deprecated)"
-msgstr ""
+msgstr "XIPv6 I-Am-Here (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:506
 #: Status: UNVERIFIED
 msgid "Mobile Registration Request (Deprecated)"
-msgstr ""
+msgstr "XMobile Registration Request (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:507
 #: Status: UNVERIFIED
 msgid "Mobile Registration Reply (Deprecated)"
-msgstr ""
+msgstr "XMobile Registration Reply (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:508
 #: Status: UNVERIFIED
 msgid "Domain Name Request (Deprecated)"
-msgstr ""
+msgstr "XDomain Name Request (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:509
 #: Status: UNVERIFIED
 msgid "Domain Name Reply (Deprecated)"
-msgstr ""
+msgstr "XDomain Name Reply (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:510
 #: Status: UNVERIFIED
 msgid "SKIP (Deprecated)"
-msgstr ""
+msgstr "XSKIP (Deprecated)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:511
 #: Status: UNVERIFIED
 msgid "Photuris"
-msgstr ""
+msgstr "XPhoturisX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:512
 #: Status: UNVERIFIED
 msgid "ICMP messages utilized by experimental mobility protocols"
-msgstr ""
+msgstr "XICMP messages utilized by experimental mobility protocolsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:514
 #: Status: UNVERIFIED
 msgid "RFC3692-style Experiment 1"
-msgstr ""
+msgstr "XRFC3692-style Experiment 1X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:515
 #: Status: UNVERIFIED
 msgid "RFC3692-style Experiment 2"
-msgstr ""
+msgstr "XRFC3692-style Experiment 2X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:516
 #: Status: UNVERIFIED
 msgid "Reserved"
-msgstr ""
+msgstr "XReservedX"
 
 #: /ngfw/ngfw_src/uvm/js/common/ungrid/GridController.js:84
 #: Status: UNVERIFIED
 msgid "(copy)"
-msgstr ""
+msgstr "X(copy)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:947
 #: Status: UNVERIFIED
 msgid "No Conditions"
-msgstr ""
+msgstr "XNo ConditionsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:377
 #: Status: UNVERIFIED
 msgid "First name must be less than 24 characters."
-msgstr ""
+msgstr "XFirst name must be less than 24 characters.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:393
 #: Status: UNVERIFIED
 msgid "Last name must be less than 24 characters."
-msgstr ""
+msgstr "XLast name must be less than 24 characters.X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/store/ReportsTree.js:64
 #: Status: UNVERIFIED
 msgid "All reports"
-msgstr ""
+msgstr "XAll reportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:622 standard input:82
 #: Status: UNVERIFIED
 msgid "Google Account"
-msgstr ""
+msgstr "XGoogle AccountX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:623 standard input:83
 #: Status: UNVERIFIED
 msgid "Facebook Account"
-msgstr ""
+msgstr "XFacebook AccountX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:624 standard input:84
 #: Status: UNVERIFIED
 msgid "Microsoft Account"
-msgstr ""
+msgstr "XMicrosoft AccountX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Util.js:45
 #: Status: UNVERIFIED
 msgid "Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services."
-msgstr ""
+msgstr "XTunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services.X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:244
 #: /ngfw/ngfw_src/reports/src/com/untangle/app/reports/FixedReports.java:735
 #: Status: UNVERIFIED
 msgid "Week to Date"
-msgstr ""
+msgstr "XWeek to DateX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:246
 #: /ngfw/ngfw_src/reports/src/com/untangle/app/reports/FixedReports.java:720
 #: Status: UNVERIFIED
 msgid "Month to Date"
-msgstr ""
+msgstr "XMonth to DateX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:190
 #: Status: UNVERIFIED
 msgid "Invalid subnet."
-msgstr ""
+msgstr "XInvalid subnet.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/view/Admin.js:117
 #: Status: UNVERIFIED
 msgid "Restrict Administration Subnet(s)"
-msgstr ""
+msgstr "XRestrict Administration Subnet(s)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:165
 #: Status: UNVERIFIED
 msgid "The Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation."
-msgstr ""
+msgstr "XThe Block All rule in Access Rules is missing. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:169
 #: Status: UNVERIFIED
 msgid "The Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
-msgstr ""
+msgstr "XThe Block All rule in Access Rules is disabled. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:178
 #: Status: UNVERIFIED
 msgid "Access Rules changed!"
-msgstr ""
+msgstr "XAccess Rules changed!X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:179
 #: Status: UNVERIFIED
 msgid "The Access Rules have been changed!"
-msgstr ""
+msgstr "XThe Access Rules have been changed!X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:180
 #: Status: UNVERIFIED
 msgid "Improperly configuring the Access Rules can be very dangerous."
-msgstr ""
+msgstr "XImproperly configuring the Access Rules can be very dangerous.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:206
 #: Status: UNVERIFIED
 msgid "The 'Allow SSH' rule in Access Rules has been enabled!"
-msgstr ""
+msgstr "XThe 'Allow SSH' rule in Access Rules has been enabled!X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/PortForwardSimple.js:9
 #: Status: UNVERIFIED
 msgid "New Port Forward Rule"
-msgstr ""
+msgstr "XNew Port Forward RuleX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/PortForwardSimple.js:198
 #: Status: UNVERIFIED
 msgid "Edit Port Forward Rule"
-msgstr ""
+msgstr "XEdit Port Forward RuleX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:406
 #: Status: UNVERIFIED
 msgid "Address must be specified."
-msgstr ""
+msgstr "XAddress must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/FilterRules.js:16
 #: Status: UNVERIFIED
 msgid "Filter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order."
-msgstr ""
+msgstr "XFilter Rules control what sessions are passed/blocked. Filter rules process all sessions including bypassed sessions. The rules are evaluated in order.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Shield.js:64
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/NatRules.js:40
@@ -14115,7 +14115,7 @@ msgstr ""
 #: /ngfw/ngfw_src/wan-balancer/js/view/RouteRules.js:36
 #: Status: UNVERIFIED
 msgid "Client Tagged"
-msgstr ""
+msgstr "XClient TaggedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Shield.js:65
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/NatRules.js:41
@@ -14127,135 +14127,135 @@ msgstr ""
 #: /ngfw/ngfw_src/wan-balancer/js/view/RouteRules.js:37
 #: Status: UNVERIFIED
 msgid "Server Tagged"
-msgstr ""
+msgstr "XServer TaggedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/FilterRules.js:103
 #: Status: UNVERIFIED
 msgid "Enable Filter Rule"
-msgstr ""
+msgstr "XEnable Filter RuleX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Hostname.js:27
 #: Status: UNVERIFIED
 msgid "Hostname must be specified."
-msgstr ""
+msgstr "XHostname must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Hostname.js:47
 #: Status: UNVERIFIED
 msgid "Domain Name must be specified."
-msgstr ""
+msgstr "XDomain Name must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:434
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:445
 #: Status: UNVERIFIED
 msgid "Access Rules"
-msgstr ""
+msgstr "XAccess RulesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:535
 #: Status: UNVERIFIED
 msgid "Enable Access Rule"
-msgstr ""
+msgstr "XEnable Access RuleX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/SafeList.js:59
 #: Status: UNVERIFIED
 msgid "<span style=\"color: red;\">[add email address here]"
-msgstr ""
+msgstr "X<span style=\"color: red;\">[add email address here]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/events/view/Syslog.js:41
 #: Status: UNVERIFIED
 msgid "Host must be specified."
-msgstr ""
+msgstr "XHost must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:5
 #: Status: UNVERIFIED
 msgid "Contact Untangle Support"
-msgstr ""
+msgstr "XContact Untangle SupportX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:40
 #: Status: UNVERIFIED
 msgid "No - Do Not Enable Support Access"
-msgstr ""
+msgstr "XNo - Do Not Enable Support AccessX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:45
 #: Status: UNVERIFIED
 msgid "Yes - Enable Support Access"
-msgstr ""
+msgstr "XYes - Enable Support AccessX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:53
 #: Status: UNVERIFIED
 msgid "Remote Support Access is not enabled"
-msgstr ""
+msgstr "XRemote Support Access is not enabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:54
 #: Status: UNVERIFIED
 msgid "Enabling remote support access is recommended for better and fast support."
-msgstr ""
+msgstr "XEnabling remote support access is recommended for better and fast support.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Support.js:55
 #: Status: UNVERIFIED
 msgid "Would you like enable the support team to access your server remotely?"
-msgstr ""
+msgstr "XWould you like enable the support team to access your server remotely?X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:239
 #: Status: UNVERIFIED
 msgid "Invalid x500 attribute found"
-msgstr ""
+msgstr "XInvalid x500 attribute foundX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:442
 #: Status: UNVERIFIED
 msgid "Administrators receive email alerts and report summaries."
-msgstr ""
+msgstr "XAdministrators receive email alerts and report summaries.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:453
 #: Status: UNVERIFIED
 msgid "Install type determines the optimal default settings for this deployment."
-msgstr ""
+msgstr "XInstall type determines the optimal default settings for this deployment.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:688
 #: Status: UNVERIFIED
 msgid "Fetch interfaces..."
-msgstr ""
+msgstr "XFetch interfaces...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1072
 #: Status: UNVERIFIED
 msgid "Renew DHCP"
-msgstr ""
+msgstr "XRenew DHCPX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1158 standard
 #: input:1224
 #: Status: UNVERIFIED
 msgid "Saving settings ..."
-msgstr ""
+msgstr "XSaving settings ...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1436
 #: Status: UNVERIFIED
 msgid "The Internal Address is no longer accessible."
-msgstr ""
+msgstr "XThe Internal Address is no longer accessible.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1437
 #: Status: UNVERIFIED
 msgid "You will be redirected to the new setup address: {0}"
-msgstr ""
+msgstr "XYou will be redirected to the new setup address: {0}X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1438 standard
 #: input:1453
 #: Status: UNVERIFIED
 msgid "If the new location is not loaded after 30 seconds please reinitialize your local device network address and try again."
-msgstr ""
+msgstr "XIf the new location is not loaded after 30 seconds please reinitialize your local device network address and try again.X"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/inbox.js:564
 #: Status: UNVERIFIED
 msgid "Forward Quarantined Messages To:"
-msgstr ""
+msgstr "XForward Quarantined Messages To:X"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/request.js:87
 #: Status: UNVERIFIED
 msgid "Successfully sent digest to {0}"
-msgstr ""
+msgstr "XSuccessfully sent digest to {0}X"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/request.js:90
 #: Status: UNVERIFIED
 msgid "A quarantine does not exist for {0}"
-msgstr ""
+msgstr "XA quarantine does not exist for {0}X"
 
 #: /ngfw/ngfw_src/firewall/js/view/Rules.js:114 standard input:197
 #: /ngfw/ngfw_src/policy-manager/js/view/Rules.js:107 input:91
@@ -14264,673 +14264,673 @@ msgstr ""
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:107
 #: Status: UNVERIFIED
 msgid "Host Entitled"
-msgstr ""
+msgstr "XHost EntitledX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:26
 #: Status: UNVERIFIED
 msgid "Intrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures."
-msgstr ""
+msgstr "XIntrusion Prevention scans, detects, and blocks attacks and suspicious traffic using signatures.X"
 
 #: /ngfw/ngfw_src/reports/src/com/untangle/app/reports/ReportsApp.java:626
 #: Status: UNVERIFIED
 msgid "Data Usage"
-msgstr ""
+msgstr "XData UsageX"
 
 #: /ngfw/ngfw_src/reports/src/com/untangle/app/reports/ReportsApp.java:626
 #: Status: UNVERIFIED
 msgid "Month to date data usage"
-msgstr ""
+msgstr "XMonth to date data usageX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:172
 #: Status: UNVERIFIED
 msgid "Active Directory Organizations"
-msgstr ""
+msgstr "XActive Directory OrganizationsX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:195
 #: Status: UNVERIFIED
 msgid "[enter OU]"
-msgstr ""
+msgstr "X[enter OU]X"
 
 #: /ngfw/ngfw_src/bandwidth-control/js/ConfWizardModel.js:163
 #: Status: UNVERIFIED
 msgid "all web traffic in violation of policy"
-msgstr ""
+msgstr "Xall web traffic in violation of policyX"
 
 #: /ngfw/ngfw_src/policy-manager/js/MainController.js:339
 #: Status: UNVERIFIED
 msgid "This policy name already exists"
-msgstr ""
+msgstr "XThis policy name already existsX"
 
 #: /ngfw/ngfw_src/openvpn/js/view/Server.js:17 standard input:39
 #: Status: UNVERIFIED
 msgid "Configure Directory Connector"
-msgstr ""
+msgstr "XConfigure Directory ConnectorX"
 
 #: /ngfw/ngfw_src/openvpn/js/view/Server.js:122 standard input:81
 #: Status: UNVERIFIED
 msgid "Any Directory Connector"
-msgstr ""
+msgstr "XAny Directory ConnectorX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/UserAuthentication.js:85
 #: Status: UNVERIFIED
 msgid "Any OAuth Provider"
-msgstr ""
+msgstr "XAny OAuth ProviderX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/UserAuthentication.js:85
 #: Status: UNVERIFIED
 msgid "uses OAuth provider selection page"
-msgstr ""
+msgstr "Xuses OAuth provider selection pageX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/CaptivePage.js:223
 #: Status: UNVERIFIED
 msgid "Use hostname instead of IP address for the capture page redirect"
-msgstr ""
+msgstr "XUse hostname instead of IP address for the capture page redirectX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ColorsPicker.js:163
 #: Status: UNVERIFIED
 msgid "Remove All (Use Default)"
-msgstr ""
+msgstr "XRemove All (Use Default)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:335
 #: Status: UNVERIFIED
 msgid "Global Conditions"
-msgstr ""
+msgstr "XGlobal ConditionsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:1026
 #: Status: UNVERIFIED
 msgid "Auto Format"
-msgstr ""
+msgstr "XAuto FormatX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:7
 #: Status: UNVERIFIED
 msgid "Import Reports"
-msgstr ""
+msgstr "XImport ReportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:37
 #: Status: UNVERIFIED
 msgid "Replace ALL existing reports"
-msgstr ""
+msgstr "XReplace ALL existing reportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:51
 #: Status: UNVERIFIED
 msgid "Import Selected"
-msgstr ""
+msgstr "XImport SelectedX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:69
 #: Status: UNVERIFIED
 msgid "Select which Reports to import. Red Titles have to be renamed to avoid conflicts with existing records."
-msgstr ""
+msgstr "XSelect which Reports to import. Red Titles have to be renamed to avoid conflicts with existing records.X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:76
 #: Status: UNVERIFIED
 msgid "Select a file from which to import data!"
-msgstr ""
+msgstr "XSelect a file from which to import data!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:115
 #: Status: UNVERIFIED
 msgid "ReadOnly"
-msgstr ""
+msgstr "XReadOnlyX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:214
 #: Status: UNVERIFIED
 msgid "There are some report titles conflicts. Make sure selected reports have unique name!"
-msgstr ""
+msgstr "XThere are some report titles conflicts. Make sure selected reports have unique name!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:251
 #: Status: UNVERIFIED
 msgid "Import done!"
-msgstr ""
+msgstr "XImport done!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:251
 #: Status: UNVERIFIED
 msgid "Report(s) imported!"
-msgstr ""
+msgstr "XReport(s) imported!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ReportData.js:11
 #: Status: UNVERIFIED
 msgid "Export Data"
-msgstr ""
+msgstr "XExport DataX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/EntryController.js:338
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/EventReport.js:346
 #: Status: UNVERIFIED
 msgid "Choose a unique report title!"
-msgstr ""
+msgstr "XChoose a unique report title!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/EntryController.js:461
 #: Status: UNVERIFIED
 msgid "Deleting this report will also remove Dashboard widgets containing this report!"
-msgstr ""
+msgstr "XDeleting this report will also remove Dashboard widgets containing this report!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/MainController.js:311
 #: Status: UNVERIFIED
 msgid "AllReports"
-msgstr ""
+msgstr "XAllReportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:75
 #: Status: UNVERIFIED
 msgid "Data View"
-msgstr ""
+msgstr "XData ViewX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:99
 #: Status: UNVERIFIED
 msgid "Download (Image)"
-msgstr ""
+msgstr "XDownload (Image)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:144
 #: Status: UNVERIFIED
 msgid "Export Data (csv)"
-msgstr ""
+msgstr "XExport Data (csv)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:119
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ColorsPicker.js:239
 #: Status: UNVERIFIED
 msgid "Since"
-msgstr ""
+msgstr "XSinceX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:257
 #: Status: UNVERIFIED
 msgid "Preview/Refresh"
-msgstr ""
+msgstr "XPreview/RefreshX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:262
 #: Status: UNVERIFIED
 msgid "Export Settings"
-msgstr ""
+msgstr "XExport SettingsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:279
 #: Status: UNVERIFIED
 msgid "Enter Report Title ..."
-msgstr ""
+msgstr "XEnter Report Title ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:293
 #: Status: UNVERIFIED
 msgid "Select a Category ..."
-msgstr ""
+msgstr "XSelect a Category ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:306
 #: Status: UNVERIFIED
 msgid "Add a description ..."
-msgstr ""
+msgstr "XAdd a description ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:314
 #: Status: UNVERIFIED
 msgid "Report Type"
-msgstr ""
+msgstr "XReport TypeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:322
 #: Status: UNVERIFIED
 msgid "Select Report Type ..."
-msgstr ""
+msgstr "XSelect Report Type ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:367
 #: Status: UNVERIFIED
 msgid "Column Id or custom value"
-msgstr ""
+msgstr "XColumn Id or custom valueX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:384
 #: Status: UNVERIFIED
 msgid "Column Id or custom value (e.g. count(*))"
-msgstr ""
+msgstr "XColumn Id or custom value (e.g. count(*))X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:406
 #: Status: UNVERIFIED
 msgid "Asc"
-msgstr ""
+msgstr "XAscX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:407
 #: Status: UNVERIFIED
 msgid "Desc"
-msgstr ""
+msgstr "XDescX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:415 standard
 #: input:554
 #: Status: UNVERIFIED
 msgid "Graph Style"
-msgstr ""
+msgstr "XGraph StyleX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:432 standard
 #: input:571
 #: Status: UNVERIFIED
 msgid "Select Style ..."
-msgstr ""
+msgstr "XSelect Style ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:454 standard
 #: input:461
 #: Status: UNVERIFIED
 msgid "slices"
-msgstr ""
+msgstr "XslicesX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:474
 #: Status: UNVERIFIED
 msgid "Dynamic Column"
-msgstr ""
+msgstr "XDynamic ColumnX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:478
 #: Status: UNVERIFIED
 msgid "Select Column ..."
-msgstr ""
+msgstr "XSelect Column ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:495
 #: Status: UNVERIFIED
 msgid "Dynamic Value"
-msgstr ""
+msgstr "XDynamic ValueX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:512
 #: Status: UNVERIFIED
 msgid "Dynamic Limit"
-msgstr ""
+msgstr "XDynamic LimitX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:534
 #: Status: UNVERIFIED
 msgid "Aggregation Function"
-msgstr ""
+msgstr "XAggregation FunctionX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:537
 #: Status: UNVERIFIED
 msgid "Count"
-msgstr ""
+msgstr "XCountX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:544
 #: Status: UNVERIFIED
 msgid "Select Aggregation Method ..."
-msgstr ""
+msgstr "XSelect Aggregation Method ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:593
 #: Status: UNVERIFIED
 msgid "Select the Time Interval ..."
-msgstr ""
+msgstr "XSelect the Time Interval ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:612
 #: Status: UNVERIFIED
 msgid "Select Approximation ..."
-msgstr ""
+msgstr "XSelect Approximation ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:621
 #: Status: UNVERIFIED
 msgid "Enter Units ... (e.g. sessions, bytes/s)"
-msgstr ""
+msgstr "XEnter Units ... (e.g. sessions, bytes/s)X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:643
 #: Status: UNVERIFIED
 msgid "Using default colors"
-msgstr ""
+msgstr "XUsing default colorsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:662
 #: Status: UNVERIFIED
 msgid "Select default columns to show from the \"Data Source\" panel"
-msgstr ""
+msgstr "XSelect default columns to show from the \"Data Source\" panelX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:720
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:165
 #: Status: UNVERIFIED
 msgid "Create New"
-msgstr ""
+msgstr "XCreate NewX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:746
 #: Status: UNVERIFIED
 msgid "Data Source"
-msgstr ""
+msgstr "XData SourceX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:778
 #: Status: UNVERIFIED
 msgid "Column Name [Column Id]"
-msgstr ""
+msgstr "XColumn Name [Column Id]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:795
 #: Status: UNVERIFIED
 msgid "Data Table"
-msgstr ""
+msgstr "XData TableX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:805
 #: Status: UNVERIFIED
 msgid "Select Table ..."
-msgstr ""
+msgstr "XSelect Table ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:813
 #: Status: UNVERIFIED
 msgid "Select the default columns to show in report"
-msgstr ""
+msgstr "XSelect the default columns to show in reportX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:822
 #: Status: UNVERIFIED
 msgid "Text Data Columns"
-msgstr ""
+msgstr "XText Data ColumnsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:835
 #: Status: UNVERIFIED
 msgid "Text Columns are required for the report!"
-msgstr ""
+msgstr "XText Columns are required for the report!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:894
 #: Status: UNVERIFIED
 msgid "Time Data Columns are required for the graph!"
-msgstr ""
+msgstr "XTime Data Columns are required for the graph!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:937
 #: Status: UNVERIFIED
 msgid "SQL Conditions"
-msgstr ""
+msgstr "XSQL ConditionsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:278
 #: Status: UNVERIFIED
 msgid "Export All Reports"
-msgstr ""
+msgstr "XExport All ReportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:281
 #: Status: UNVERIFIED
 msgid "Export All"
-msgstr ""
+msgstr "XExport AllX"
 
 #: /ngfw/ngfw_src/uvm/js/common/ungrid/GridStatus.js:10
 #: Status: UNVERIFIED
 msgid "Showing {0} of {1}"
-msgstr ""
+msgstr "XShowing {0} of {1}X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Converter.js:607
 #: Status: UNVERIFIED
 msgid "Host Change Logout"
-msgstr ""
+msgstr "XHost Change LogoutX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:1417
 #: Status: UNVERIFIED
 msgid "Content Filename"
-msgstr ""
+msgstr "XContent FilenameX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:2786
 #: Status: UNVERIFIED
 msgid "Tunnel Description"
-msgstr ""
+msgstr "XTunnel DescriptionX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:2896
 #: Status: UNVERIFIED
 msgid "Server Address"
-msgstr ""
+msgstr "XServer AddressX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:213
 #: Status: UNVERIFIED
 msgid "P"
-msgstr ""
+msgstr "XPX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:214
 #: Status: UNVERIFIED
 msgid "T"
-msgstr ""
+msgstr "XTX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:215
 #: Status: UNVERIFIED
 msgid "G"
-msgstr ""
+msgstr "XGX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:216
 #: Status: UNVERIFIED
 msgid "M"
-msgstr ""
+msgstr "XMX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/Renderer.js:217
 #: Status: UNVERIFIED
 msgid "K"
-msgstr ""
+msgstr "XKX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/view/Admin.js:25
 #: Status: UNVERIFIED
 msgid "No Admin Accounts defined"
-msgstr ""
+msgstr "XNo Admin Accounts definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1457
 #: Status: UNVERIFIED
 msgid "Gbit"
-msgstr ""
+msgstr "XGbitX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1459
 #: Status: UNVERIFIED
 msgid "Mbit"
-msgstr ""
+msgstr "XMbitX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1464
 #: Status: UNVERIFIED
 msgid "Full-duplex"
-msgstr ""
+msgstr "XFull-duplexX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1465
 #: Status: UNVERIFIED
 msgid "Half-duplex"
-msgstr ""
+msgstr "XHalf-duplexX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1494
 #: Status: UNVERIFIED
 msgid "Disconnected"
-msgstr ""
+msgstr "XDisconnectedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1502
 #: Status: UNVERIFIED
 msgid "Ethernet"
-msgstr ""
+msgstr "XEthernetX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1544
 #: Status: UNVERIFIED
 msgid "No reservation"
-msgstr ""
+msgstr "XNo reservationX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainController.js:1548
 #: Status: UNVERIFIED
 msgid "No limit"
-msgstr ""
+msgstr "XNo limitX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/PortForwardSimple.js:202
 #: Status: UNVERIFIED
 msgid "Add Port Forward Rule"
-msgstr ""
+msgstr "XAdd Port Forward RuleX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:540
 #: Status: UNVERIFIED
 msgid "No IPv4 Aliases defined"
-msgstr ""
+msgstr "XNo IPv4 Aliases definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:703
 #: Status: UNVERIFIED
 msgid "No IPv6 Aliases defined"
-msgstr ""
+msgstr "XNo IPv6 Aliases definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:929
 #: Status: UNVERIFIED
 msgid "No DHCP options defined"
-msgstr ""
+msgstr "XNo DHCP options definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:1068
 #: Status: UNVERIFIED
 msgid "No VRRP Aliases defined"
-msgstr ""
+msgstr "XNo VRRP Aliases definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/FilterRules.js:27
 #: Status: UNVERIFIED
 msgid "No Filter Rules defined"
-msgstr ""
+msgstr "XNo Filter Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/BypassRules.js:25
 #: Status: UNVERIFIED
 msgid "No Bypass Rules defined"
-msgstr ""
+msgstr "XNo Bypass Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Hostname.js:135
 #: Status: UNVERIFIED
 msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
-msgstr ""
+msgstr "XThis is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:14
 #: Status: UNVERIFIED
 msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
-msgstr ""
+msgstr "XUse this page to configure each interface's configuration and its mapping to a physical network card.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:193
 #: Status: UNVERIFIED
 msgid "IPv6 Address"
-msgstr ""
+msgstr "XIPv6 AddressX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:239
 #: Status: UNVERIFIED
 msgid "ARP Entries"
-msgstr ""
+msgstr "XARP EntriesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:241
 #: Status: UNVERIFIED
 msgid "No ARP Entries defined"
-msgstr ""
+msgstr "XNo ARP Entries definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:123
 #: Status: UNVERIFIED
 msgid "No WAN Bandwidth defined"
-msgstr ""
+msgstr "XNo WAN Bandwidth definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:244
 #: Status: UNVERIFIED
 msgid "No QOS Rules defined"
-msgstr ""
+msgstr "XNo QOS Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:405
 #: Status: UNVERIFIED
 msgid "No QOS Statistics available"
-msgstr ""
+msgstr "XNo QOS Statistics availableX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:450
 #: Status: UNVERIFIED
 msgid "No Access Rules defined"
-msgstr ""
+msgstr "XNo Access Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:549
 #: Status: UNVERIFIED
 msgid "UPnP Enabled"
-msgstr ""
+msgstr "XUPnP EnabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:586
 #: Status: UNVERIFIED
 msgid "No UPnP Status available"
-msgstr ""
+msgstr "XNo UPnP Status availableX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:653
 #: Status: UNVERIFIED
 msgid "No Access Control Rules defined"
-msgstr ""
+msgstr "XNo Access Control Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:802
 #: Status: UNVERIFIED
 msgid "Netflow"
-msgstr ""
+msgstr "XNetflowX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:811
 #: Status: UNVERIFIED
 msgid "Netflow Enabled"
-msgstr ""
+msgstr "XNetflow EnabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:834
 #: Status: UNVERIFIED
 msgid "Version"
-msgstr ""
+msgstr "XVersionX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/PortForwardRules.js:17
 #: Status: UNVERIFIED
 msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
-msgstr ""
+msgstr "XPort Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/PortForwardRules.js:46
 #: Status: UNVERIFIED
 msgid "No Port Forward Rules defined"
-msgstr ""
+msgstr "XNo Port Forward Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/NatRules.js:27
 #: Status: UNVERIFIED
 msgid "No NAT Rules defined"
-msgstr ""
+msgstr "XNo NAT Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/DhcpServer.js:22
 #: Status: UNVERIFIED
 msgid "No Static DHCP Entries defined"
-msgstr ""
+msgstr "XNo Static DHCP Entries definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/DhcpServer.js:80
 #: Status: UNVERIFIED
 msgid "No Current DHCP Leases defined"
-msgstr ""
+msgstr "XNo Current DHCP Leases definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/DnsServer.js:22
 #: Status: UNVERIFIED
 msgid "No Static DNS Entries defined"
-msgstr ""
+msgstr "XNo Static DNS Entries definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/DnsServer.js:70
 #: Status: UNVERIFIED
 msgid "No Domain DNS Servers defined"
-msgstr ""
+msgstr "XNo Domain DNS Servers definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:28
 #: Status: UNVERIFIED
 msgid "No Static Routes defined"
-msgstr ""
+msgstr "XNo Static Routes definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:95
 #: Status: UNVERIFIED
 msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
-msgstr ""
+msgstr "XCurrent Routes shows the current routing system's configuration and how all traffic will be routed.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/MainController.js:262
 #: Status: UNVERIFIED
 msgid "No emails"
-msgstr ""
+msgstr "XNo emailsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/EmailTestController.js:20
 #: Status: UNVERIFIED
 msgid "Email sent. Verify successful delivery with recipient."
-msgstr ""
+msgstr "XEmail sent. Verify successful delivery with recipient.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/SafeList.js:34
 #: Status: UNVERIFIED
 msgid "No Global Safe List email addresses defined"
-msgstr ""
+msgstr "XNo Global Safe List email addresses definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/SafeList.js:74
 #: Status: UNVERIFIED
 msgid "No Per User Safe List email addresses defined"
-msgstr ""
+msgstr "XNo Per User Safe List email addresses definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/Quarantine.js:28
 #: Status: UNVERIFIED
 msgid "Total Disk Space Used: {0}"
-msgstr ""
+msgstr "XTotal Disk Space Used: {0}X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/Quarantine.js:88
 #: Status: UNVERIFIED
 msgid "No User Quarantines defined"
-msgstr ""
+msgstr "XNo User Quarantines definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/Quarantine.js:131
 #: Status: UNVERIFIED
 msgid "Data Size"
-msgstr ""
+msgstr "XData SizeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/Quarantine.js:173
 #: Status: UNVERIFIED
 msgid "No Quarantinable Addresses defined"
-msgstr ""
+msgstr "XNo Quarantinable Addresses definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/email/view/Quarantine.js:220
 #: Status: UNVERIFIED
 msgid "No Quarantine Forwards defined"
-msgstr ""
+msgstr "XNo Quarantine Forwards definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/about/view/Licenses.js:20
 #: Status: UNVERIFIED
 msgid "No Licenses defined"
-msgstr ""
+msgstr "XNo Licenses definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/local-directory/view/Users.js:15
 #: Status: UNVERIFIED
 msgid "No Local Users defined"
-msgstr ""
+msgstr "XNo Local Users definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Shield.js:30
 #: Status: UNVERIFIED
 msgid "No Shield Rules defined"
-msgstr ""
+msgstr "XNo Shield Rules definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/store/Conditions.js:74
 #: /ngfw/ngfw_src/firewall/js/view/Rules.js:116 standard input:220
@@ -14940,70 +14940,70 @@ msgstr ""
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:111
 #: Status: UNVERIFIED
 msgid "Directory Connector: User in Domain"
-msgstr ""
+msgstr "XDirectory Connector: User in DomainX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:125
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Notifications.js:28
 #: Status: UNVERIFIED
 msgid "Notifications"
-msgstr ""
+msgstr "XNotificationsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Notifications.js:60
 #: Status: UNVERIFIED
 msgid "No notifications"
-msgstr ""
+msgstr "XNo notificationsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:124
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:24
 #: Status: UNVERIFIED
 msgid "Policy Overview"
-msgstr ""
+msgstr "XPolicy OverviewX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:41
 #: Status: UNVERIFIED
 msgid "Policy Name (id)"
-msgstr ""
+msgstr "XPolicy Name (id)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:50
 #: Status: UNVERIFIED
 msgid "Apps Installed"
-msgstr ""
+msgstr "XApps InstalledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:50
 #: Status: UNVERIFIED
 msgid "Running"
-msgstr ""
+msgstr "XRunningX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:50
 #: Status: UNVERIFIED
 msgid "Inherited"
-msgstr ""
+msgstr "XInheritedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 #: Status: UNVERIFIED
 msgid "Go to Policy"
-msgstr ""
+msgstr "XGo to PolicyX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
 #: Status: UNVERIFIED
 msgid "Download (image)"
-msgstr ""
+msgstr "XDownload (image)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55
 #: Status: UNVERIFIED
 msgid "Export (CSV)"
-msgstr ""
+msgstr "XExport (CSV)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:56
 #: Status: UNVERIFIED
 msgid "Open in Reports"
-msgstr ""
+msgstr "XOpen in ReportsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/NewWidget.js:176
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:67
 #: Status: UNVERIFIED
 msgid "minute"
-msgstr ""
+msgstr "XminuteX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/NewWidget.js:177
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/DashboardController.js:178
@@ -15011,113 +15011,113 @@ msgstr ""
 #: input:69
 #: Status: UNVERIFIED
 msgid "minutes"
-msgstr ""
+msgstr "XminutesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/AppsPicker.js:103
 #: Status: UNVERIFIED
 msgid "Go to App"
-msgstr ""
+msgstr "XGo to AppX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:272
 #: Status: UNVERIFIED
 msgid "Forgot your password?"
-msgstr ""
+msgstr "XForgot your password?X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:523
 #: Status: UNVERIFIED
 msgid "Exporting Widgets..."
-msgstr ""
+msgstr "XExporting Widgets...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:101
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:525
 #: Status: UNVERIFIED
 msgid "Widgets"
-msgstr ""
+msgstr "XWidgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:417
 #: Status: UNVERIFIED
 msgid "Import Widgets"
-msgstr ""
+msgstr "XImport WidgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:436
 #: Status: UNVERIFIED
 msgid "Replace current widgets"
-msgstr ""
+msgstr "XReplace current widgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:437
 #: Status: UNVERIFIED
 msgid "Prepend to current widgets"
-msgstr ""
+msgstr "XPrepend to current widgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:438
 #: Status: UNVERIFIED
 msgid "Append to current widgets"
-msgstr ""
+msgstr "XAppend to current widgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:443
 #: Status: UNVERIFIED
 msgid "with widgets from"
-msgstr ""
+msgstr "Xwith widgets fromX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:468
 #: Status: UNVERIFIED
 msgid "Please wait while the widgets are imported..."
-msgstr ""
+msgstr "XPlease wait while the widgets are imported...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:85
 #: Status: UNVERIFIED
 msgid "You must provide a valid login name or email address."
-msgstr ""
+msgstr "XYou must provide a valid login name or email address.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:91
 #: Status: UNVERIFIED
 msgid "You must provide an email address or wildcard."
-msgstr ""
+msgstr "XYou must provide an email address or wildcard.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/root/script/setup.js:1228
 #: Status: UNVERIFIED
 msgid "Renewing DHCP Lease..."
-msgstr ""
+msgstr "XRenewing DHCP Lease...X"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/inbox.js:343
 #: Status: UNVERIFIED
 msgid "No Quarantined Messages found"
-msgstr ""
+msgstr "XNo Quarantined Messages foundX"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/inbox.js:498
 #: Status: UNVERIFIED
 msgid "No Safe List addresses defined"
-msgstr ""
+msgstr "XNo Safe List addresses definedX"
 
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/inbox.js:599
 #: Status: UNVERIFIED
 msgid "No Quarantined Messages From found"
-msgstr ""
+msgstr "XNo Quarantined Messages From foundX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/AdFilters.js:54
 #: Status: UNVERIFIED
 msgid "No User Defined Filters defined"
-msgstr ""
+msgstr "XNo User Defined Filters definedX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/PassLists.js:25
 #: Status: UNVERIFIED
 msgid "No Passed Sites Defined"
-msgstr ""
+msgstr "XNo Passed Sites DefinedX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/PassLists.js:87
 #: Status: UNVERIFIED
 msgid "Passed Client IP Addresses"
-msgstr ""
+msgstr "XPassed Client IP AddressesX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/PassLists.js:95
 #: Status: UNVERIFIED
 msgid "No Passed Client IP Addresses Defined"
-msgstr ""
+msgstr "XNo Passed Client IP Addresses DefinedX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/CookieFilters.js:48
 #: Status: UNVERIFIED
 msgid "No User Defined Cookie Filters Defined"
-msgstr ""
+msgstr "XNo User Defined Cookie Filters DefinedX"
 
 #: /ngfw/ngfw_src/firewall/js/view/Rules.js:28 standard input:27
 #: /ngfw/ngfw_src/policy-manager/js/view/Rules.js:24 input:24
@@ -15125,1211 +15125,1211 @@ msgstr ""
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:27
 #: Status: UNVERIFIED
 msgid "No Rules defined"
-msgstr ""
+msgstr "XNo Rules definedX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:71
 #: Status: UNVERIFIED
 msgid "These are designed to catch exploits in the ActiveX framework."
-msgstr ""
+msgstr "XThese are designed to catch exploits in the ActiveX framework.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:72
 #: Status: UNVERIFIED
 msgid "These are designed to catch the results of a successful attack. Things like 'id=root', or error messages that indicate a compromise may have happened. Note: Trojan and virus post-infection activity is included generally in the VIRUS ruleset, not here."
-msgstr ""
+msgstr "XThese are designed to catch the results of a successful attack. Things like 'id=root', or error messages that indicate a compromise may have happened. Note: Trojan and virus post-infection activity is included generally in the VIRUS ruleset, not here.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:81
 #: Status: UNVERIFIED
 msgid "These are designed to catch exploits from various chat applications."
-msgstr ""
+msgstr "XThese are designed to catch exploits from various chat applications.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:82
 #: Status: UNVERIFIED
 msgid "These are designed to catch exploits identified by Collective Intellegence Network Security."
-msgstr ""
+msgstr "XThese are designed to catch exploits identified by Collective Intellegence Network Security.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:83
 #: Status: UNVERIFIED
 msgid "General community shared rules."
-msgstr ""
+msgstr "XGeneral community shared rules.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:84
 #: Status: UNVERIFIED
 msgid "Rules to block known hostile or compromised hosts."
-msgstr ""
+msgstr "XRules to block known hostile or compromised hosts.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:85
 #: Status: UNVERIFIED
 msgid "This category contains any rule that utilizes the replace functionality inside of Snort."
-msgstr ""
+msgstr "XThis category contains any rule that utilizes the replace functionality inside of Snort.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:86
 #: Status: UNVERIFIED
 msgid "Rules identified by various alert agencies."
-msgstr ""
+msgstr "XRules identified by various alert agencies.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:87
 #: Status: UNVERIFIED
 msgid "Sensitive data such as credit cards, social security numbers, etc."
-msgstr ""
+msgstr "XSensitive data such as credit cards, social security numbers, etc.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:88
 #: Status: UNVERIFIED
 msgid "Detect various TCP/UDP/IP level protocol anomolies that typically indicate exploit attempts."
-msgstr ""
+msgstr "XDetect various TCP/UDP/IP level protocol anomolies that typically indicate exploit attempts.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:91
 #: Status: UNVERIFIED
 msgid "Intended to catch inbound DOS activity, and outbound indications."
-msgstr ""
+msgstr "XIntended to catch inbound DOS activity, and outbound indications.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:92
 #: Status: UNVERIFIED
 msgid "This is a daily updated list of the Spamhaus DROP (Don't Route or Peer) list. Primarily known professional spammers."
-msgstr ""
+msgstr "XThis is a daily updated list of the Spamhaus DROP (Don't Route or Peer) list. Primarily known professional spammers.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:93
 #: Status: UNVERIFIED
 msgid "Daily updated list of the DShield top attackers list."
-msgstr ""
+msgstr "XDaily updated list of the DShield top attackers list.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:107
 #: Status: UNVERIFIED
 msgid "Attempts to determine target hardware and software using typical ICMP behavior."
-msgstr ""
+msgstr "XAttempts to determine target hardware and software using typical ICMP behavior.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:109
 #: Status: UNVERIFIED
 msgid "Porn, Kiddy porn, sites you shouldn't visit at work, etc. Warning: These are generally quite Regex heavy and thus high load and frequent false positives. Only run these if you're really interested."
-msgstr ""
+msgstr "XPorn, Kiddy porn, sites you shouldn't visit at work, etc. Warning: These are generally quite Regex heavy and thus high load and frequent false positives. Only run these if you're really interested.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:113
 #: Status: UNVERIFIED
 msgid "Rules that attempt to send informaton to commonly known malware sites."
-msgstr ""
+msgstr "XRules that attempt to send informaton to commonly known malware sites.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:118
 #: Status: UNVERIFIED
 msgid "Various, otherwise uncategorizable exploit attempts."
-msgstr ""
+msgstr "XVarious, otherwise uncategorizable exploit attempts.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:143
 #: Status: UNVERIFIED
 msgid "Remote Proceudre Call exploits."
-msgstr ""
+msgstr "XRemote Proceudre Call exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:144
 #: Status: UNVERIFIED
 msgid "SCADA sourced exploits."
-msgstr ""
+msgstr "XSCADA sourced exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:145
 #: Status: UNVERIFIED
 msgid "Scanning exploits."
-msgstr ""
+msgstr "XScanning exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:154
 #: Status: UNVERIFIED
 msgid "Exploits that attempt to excute shell commands on various operating systems."
-msgstr ""
+msgstr "XExploits that attempt to excute shell commands on various operating systems.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:157
 #: Status: UNVERIFIED
 msgid "SQL exploits."
-msgstr ""
+msgstr "XSQL exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:159
 #: Status: UNVERIFIED
 msgid "TOR exploits."
-msgstr ""
+msgstr "XTOR exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:160
 #: Status: UNVERIFIED
 msgid "Trojan Horse exploits."
-msgstr ""
+msgstr "XTrojan Horse exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:166
 #: Status: UNVERIFIED
 msgid "Worm exploits."
-msgstr ""
+msgstr "XWorm exploits.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:52
 #: Status: UNVERIFIED
 msgid "Profile"
-msgstr ""
+msgstr "XProfileX"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:375
 #: Status: UNVERIFIED
 msgid "Click here to download this client's configuration zip file for remote Untangle OpenVPN clients or other OS's (apple/linux/etc)."
-msgstr ""
+msgstr "XClick here to download this client's configuration zip file for remote Untangle OpenVPN clients or other OS's (apple/linux/etc).X"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:379
 #: Status: UNVERIFIED
 msgid "Click here to download this client's configuration as a single ovpn file with all certificates included inline."
-msgstr ""
+msgstr "XClick here to download this client's configuration as a single ovpn file with all certificates included inline.X"
 
 #: /ngfw/ngfw_src/openvpn/js/view/Status.js:108
 #: Status: UNVERIFIED
 msgid "Connected Remote Servers"
-msgstr ""
+msgstr "XConnected Remote ServersX"
 
 #: /ngfw/ngfw_src/openvpn/js/view/Client.js:66
 #: Status: UNVERIFIED
 msgid "No Remote Servers defined"
-msgstr ""
+msgstr "XNo Remote Servers definedX"
 
 #: /ngfw/ngfw_src/application-control-lite/js/view/Signatures.js:29
 #: Status: UNVERIFIED
 msgid "No Signatures Defined"
-msgstr ""
+msgstr "XNo Signatures DefinedX"
 
 #: /ngfw/ngfw_src/reports/js/view/EmailTemplates.js:33
 #: Status: UNVERIFIED
 msgid "No Email Templates Defined"
-msgstr ""
+msgstr "XNo Email Templates DefinedX"
 
 #: /ngfw/ngfw_src/reports/js/view/Users.js:43 standard input:22
 #: Status: UNVERIFIED
 msgid "No Names Defined"
-msgstr ""
+msgstr "XNo Names DefinedX"
 
 #: /ngfw/ngfw_src/reports/js/view/NameMap.js:59
 #: Status: UNVERIFIED
 msgid "IP address is already defined in Name Map"
-msgstr ""
+msgstr "XIP address is already defined in Name MapX"
 
 #: /ngfw/ngfw_src/directory-connector/js/ActiveDirectoryGroups.js:18
 #: /ngfw/ngfw_src/directory-connector/js/ActiveDirectoryUsers.js:18
 #: Status: UNVERIFIED
 msgid "{0} filtered, {1} total users"
-msgstr ""
+msgstr "X{0} filtered, {1} total usersX"
 
 #: /ngfw/ngfw_src/directory-connector/js/ActiveDirectoryGroups.js:19
 #: /ngfw/ngfw_src/directory-connector/js/ActiveDirectoryUsers.js:19
 #: Status: UNVERIFIED
 msgid "{0} users"
-msgstr ""
+msgstr "X{0} usersX"
 
 #: /ngfw/ngfw_src/directory-connector/js/MainController.js:124
 #: Status: UNVERIFIED
 msgid "All Users"
-msgstr ""
+msgstr "XAll UsersX"
 
 #: /ngfw/ngfw_src/directory-connector/js/MainController.js:153
 #: Status: UNVERIFIED
 msgid "All Groups"
-msgstr ""
+msgstr "XAll GroupsX"
 
 #: /ngfw/ngfw_src/directory-connector/js/MainController.js:174
 #: Status: UNVERIFIED
 msgid "Refreshing Group Cache..."
-msgstr ""
+msgstr "XRefreshing Group Cache...X"
 
 #: /ngfw/ngfw_src/directory-connector/js/MainController.js:174
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:271
 #: Status: UNVERIFIED
 msgid "Refresh Group Cache"
-msgstr ""
+msgstr "XRefresh Group CacheX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:35
 #: Status: UNVERIFIED
 msgid "Active Directory Servers"
-msgstr ""
+msgstr "XActive Directory ServersX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:108
 #: Status: UNVERIFIED
 msgid "OU Filters"
-msgstr ""
+msgstr "XOU FiltersX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:115
 #: Status: UNVERIFIED
 msgid "Test"
-msgstr ""
+msgstr "XTestX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:129
 #: Status: UNVERIFIED
 msgid "Map"
-msgstr ""
+msgstr "XMapX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:149
 #: Status: UNVERIFIED
 msgid "[no host]"
-msgstr ""
+msgstr "X[no host]X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:155
 #: Status: UNVERIFIED
 msgid "[no port]"
-msgstr ""
+msgstr "X[no port]X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:208
 #: Status: UNVERIFIED
 msgid "[no authentication login]"
-msgstr ""
+msgstr "X[no authentication login]X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:232
 #: Status: UNVERIFIED
 msgid "Verify the connection to the Active Directory Server."
-msgstr ""
+msgstr "XVerify the connection to the Active Directory Server.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:257
 #: Status: UNVERIFIED
 msgid "Verify all users from all servers."
-msgstr ""
+msgstr "XVerify all users from all servers.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:257
 #: Status: UNVERIFIED
 msgid "In additional to authentication, some rules allow for user matching conditions."
-msgstr ""
+msgstr "XIn additional to authentication, some rules allow for user matching conditions.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:267
 #: Status: UNVERIFIED
 msgid "Verify all user group mappings from all servers."
-msgstr ""
+msgstr "XVerify all user group mappings from all servers.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:267
 #: Status: UNVERIFIED
 msgid "Some rules allow for group matching conditions."
-msgstr ""
+msgstr "XSome rules allow for group matching conditions.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:277
 #: Status: UNVERIFIED
 msgid "The group cache automatically refreshes every 20 minutes."
-msgstr ""
+msgstr "XThe group cache automatically refreshes every 20 minutes.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:277
 #: Status: UNVERIFIED
 msgid "Force an immediate refresh."
-msgstr ""
+msgstr "XForce an immediate refresh.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/js/ConfWizard.js:75
 #: /ngfw/ngfw_src/wan-balancer/js/view/TrafficAllocation.js:38
 #: Status: UNVERIFIED
 msgid "No WAN Interfaces defined"
-msgstr ""
+msgstr "XNo WAN Interfaces definedX"
 
 #: /ngfw/ngfw_src/wan-failover/js/view/Status.js:75
 #: Status: UNVERIFIED
 msgid "No External Interfaces"
-msgstr ""
+msgstr "XNo External InterfacesX"
 
 #: /ngfw/ngfw_src/wan-failover/js/view/Tests.js:43
 #: Status: UNVERIFIED
 msgid "No Tests Defined"
-msgstr ""
+msgstr "XNo Tests DefinedX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/Status.js:60
 #: Status: UNVERIFIED
 msgid "No Enabled IPsec VPN Tunnels"
-msgstr ""
+msgstr "XNo Enabled IPsec VPN TunnelsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/Status.js:151
 #: Status: UNVERIFIED
 msgid "No Active VPN Sessions"
-msgstr ""
+msgstr "XNo Active VPN SessionsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/GreNetworks.js:58
 #: Status: UNVERIFIED
 msgid "No GRE Networks Defined"
-msgstr ""
+msgstr "XNo GRE Networks DefinedX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/VpnConfig.js:122
 #: Status: UNVERIFIED
 msgid "No Server Listen Addresses Defined"
-msgstr ""
+msgstr "XNo Server Listen Addresses DefinedX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:24
 #: Status: UNVERIFIED
 msgid "No IPSec Tunnels defined"
-msgstr ""
+msgstr "XNo IPSec Tunnels definedX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:130
 #: Status: UNVERIFIED
 msgid "We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>"
-msgstr ""
+msgstr "XWe recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:220
 #: Status: UNVERIFIED
 msgid "The public hostname or IP address of the remote IPsec gateway"
-msgstr ""
+msgstr "XThe public hostname or IP address of the remote IPsec gatewayX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:234
 #: Status: UNVERIFIED
 msgid "The authentication ID of the local IPsec gateway. Default = same as <B>External IP</B>"
-msgstr ""
+msgstr "XThe authentication ID of the local IPsec gateway. Default = same as <B>External IP</B>X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:248
 #: Status: UNVERIFIED
 msgid "The authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>"
-msgstr ""
+msgstr "XThe authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:281
 #: Status: UNVERIFIED
 msgid "The private network attached to the local side of the tunnel"
-msgstr ""
+msgstr "XThe private network attached to the local side of the tunnelX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:286
 #: Status: UNVERIFIED
 msgid "The private networks attached to the local side of the tunnel"
-msgstr ""
+msgstr "XThe private networks attached to the local side of the tunnelX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:320
 #: Status: UNVERIFIED
 msgid "The private network attached to the remote side of the tunnel"
-msgstr ""
+msgstr "XThe private network attached to the remote side of the tunnelX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:325
 #: Status: UNVERIFIED
 msgid "The private networks attached to the remote side of the tunnel"
-msgstr ""
+msgstr "XThe private networks attached to the remote side of the tunnelX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:383
 #: Status: UNVERIFIED
 msgid "Ping Address"
-msgstr ""
+msgstr "XPing AddressX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:389
 #: Status: UNVERIFIED
 msgid "An IP address on the remote network to ping for connectivity verification. Leave blank to disable."
-msgstr ""
+msgstr "XAn IP address on the remote network to ping for connectivity verification. Leave blank to disable.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:398
 #: Status: UNVERIFIED
 msgid "Ping Interval"
-msgstr ""
+msgstr "XPing IntervalX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:407
 #: Status: UNVERIFIED
 msgid "How often to ping the configured ping address address. Enter 0 to disable."
-msgstr ""
+msgstr "XHow often to ping the configured ping address address. Enter 0 to disable.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/IpsecTunnels.js:480 standard
 #: input:575
 #: Status: UNVERIFIED
 msgid "Default = 14 (modp2048)"
-msgstr ""
+msgstr "XDefault = 14 (modp2048)X"
 
 #: /ngfw/ngfw_src/policy-manager/js/view/Policies.js:65
 #: Status: UNVERIFIED
 msgid "Select Policy"
-msgstr ""
+msgstr "XSelect PolicyX"
 
 #: /ngfw/ngfw_src/policy-manager/js/view/Policies.js:117
 #: Status: UNVERIFIED
 msgid "Manage"
-msgstr ""
+msgstr "XManageX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/PassSites.js:24
 #: Status: UNVERIFIED
 msgid "No Pass Sites defined"
-msgstr ""
+msgstr "XNo Pass Sites definedX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/BlockSites.js:24
 #: Status: UNVERIFIED
 msgid "No Block Sites defined"
-msgstr ""
+msgstr "XNo Block Sites definedX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/PassClients.js:25
 #: Status: UNVERIFIED
 msgid "No Pass Clients defined"
-msgstr ""
+msgstr "XNo Pass Clients definedX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/Rules.js:134 standard input:122
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:112
 #: Status: UNVERIFIED
 msgid "SSL Inspector: SNI Host Name"
-msgstr ""
+msgstr "XSSL Inspector: SNI Host NameX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/Rules.js:135 standard input:123
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:113
 #: Status: UNVERIFIED
 msgid "SSL Inspector: Certificate Subject"
-msgstr ""
+msgstr "XSSL Inspector: Certificate SubjectX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/Rules.js:136 standard input:124
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Rules.js:114
 #: Status: UNVERIFIED
 msgid "SSL Inspector: Certificate Issuer"
-msgstr ""
+msgstr "XSSL Inspector: Certificate IssuerX"
 
 #: /ngfw/ngfw_src/web-filter/js/view/Advanced.js:70
 #: Status: UNVERIFIED
 msgid "Pass if referrer matches any Pass Sites"
-msgstr ""
+msgstr "XPass if referrer matches any Pass SitesX"
 
 #: /ngfw/ngfw_src/wan-balancer/js/view/RouteRules.js:53
 #: Status: UNVERIFIED
 msgid "No Route Rules defined"
-msgstr ""
+msgstr "XNo Route Rules definedX"
 
 #: /ngfw/ngfw_src/web-cache/js/view/CacheBypass.js:24
 #: Status: UNVERIFIED
 msgid "No Cache Bypasses defined"
-msgstr ""
+msgstr "XNo Cache Bypasses definedX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/Status.js:61
 #: Status: UNVERIFIED
 msgid "User Address"
-msgstr ""
+msgstr "XUser AddressX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/PassedHosts.js:67
 #: Status: UNVERIFIED
 msgid "No Pass Listed Client Addresses defined"
-msgstr ""
+msgstr "XNo Pass Listed Client Addresses definedX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/PassedHosts.js:82
 #: Status: UNVERIFIED
 msgid "No Pass Listed Server Addresses defined"
-msgstr ""
+msgstr "XNo Pass Listed Server Addresses definedX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/CaptivePage.js:219
 #: Status: UNVERIFIED
 msgid "Block instead of capture and redirect unauthenticated HTTPS connections"
-msgstr ""
+msgstr "XBlock instead of capture and redirect unauthenticated HTTPS connectionsX"
 
 #: /ngfw/ngfw_src/captive-portal/js/view/CaptureRules.js:27
 #: Status: UNVERIFIED
 msgid "No Capture Rules defined"
-msgstr ""
+msgstr "XNo Capture Rules definedX"
 
 #: /ngfw/ngfw_src/ssl-inspector/js/view/Status.js:21
 #: Status: UNVERIFIED
 msgid "SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrypted streams."
-msgstr ""
+msgstr "XSSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrypted streams.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/script/common/bootstrap.js:79
 #: Status: UNVERIFIED
 msgid "Please wait ..."
-msgstr ""
+msgstr "XPlease wait ...X"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:532
 #: Status: UNVERIFIED
 msgid "DNS and DHCP services are not functioning."
-msgstr ""
+msgstr "XDNS and DHCP services are not functioning.X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/GraphReport.js:129
 #: Status: UNVERIFIED
 msgid "Apply this timerange"
-msgstr ""
+msgstr "XApply this timerangeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/NoReports.js:25
 #: Status: UNVERIFIED
 msgid "Reports App is not installed!"
-msgstr ""
+msgstr "XReports App is not installed!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/NoReports.js:25
 #: Status: UNVERIFIED
 msgid "Reports App is disabled!"
-msgstr ""
+msgstr "XReports App is disabled!X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/NoReports.js:25
 #: Status: UNVERIFIED
 msgid "\"}"
-msgstr ""
+msgstr "X\"}X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/NoReports.js:33
 #: Status: UNVERIFIED
 msgid "Install Reports"
-msgstr ""
+msgstr "XInstall ReportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/NoReports.js:42
 #: Status: UNVERIFIED
 msgid "Enable Reports"
-msgstr ""
+msgstr "XEnable ReportsX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:156
 #: Status: UNVERIFIED
 msgid "Add/Import"
-msgstr ""
+msgstr "XAdd/ImportX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:23
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/DashboardController.js:50
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:90
 #: Status: UNVERIFIED
 msgid "1 Hour ago"
-msgstr ""
+msgstr "X1 Hour agoX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:66
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:80
 #: Status: UNVERIFIED
 msgid "Since:"
-msgstr ""
+msgstr "XSince:X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:71
 #: Status: UNVERIFIED
 msgid "Today"
-msgstr ""
+msgstr "XTodayX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:119
 #: Status: UNVERIFIED
 msgid "Time Range"
-msgstr ""
+msgstr "XTime RangeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:136
 #: Status: UNVERIFIED
 msgid "Clear History"
-msgstr ""
+msgstr "XClear HistoryX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:140
 #: Status: UNVERIFIED
 msgid "Time Range History"
-msgstr ""
+msgstr "XTime Range HistoryX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:211
 #: Status: UNVERIFIED
 msgid "Select Date/Time range"
-msgstr ""
+msgstr "XSelect Date/Time rangeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:288
 #: Status: UNVERIFIED
 msgid "Until"
-msgstr ""
+msgstr "XUntilX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/TimeConditions.js:292
 #: Status: UNVERIFIED
 msgid "Now"
-msgstr ""
+msgstr "XNowX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:23
 #: Status: UNVERIFIED
 msgid "Conditions:"
-msgstr ""
+msgstr "XConditions:X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:46
 #: Status: UNVERIFIED
 msgid "Choose Column"
-msgstr ""
+msgstr "XChoose ColumnX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:73
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:188
 #: input:424
 #: Status: UNVERIFIED
 msgid "equals [=]"
-msgstr ""
+msgstr "Xequals [=]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:74
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:189
 #: input:425
 #: Status: UNVERIFIED
 msgid "not equals [!=]"
-msgstr ""
+msgstr "Xnot equals [!=]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:75
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:190
 #: input:426
 #: Status: UNVERIFIED
 msgid "greater than [>]"
-msgstr ""
+msgstr "Xgreater than [>]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:76
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:191
 #: input:427
 #: Status: UNVERIFIED
 msgid "less than [<]"
-msgstr ""
+msgstr "Xless than [<]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:77
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:192
 #: input:428
 #: Status: UNVERIFIED
 msgid "greater or equal [>=]"
-msgstr ""
+msgstr "Xgreater or equal [>=]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:78
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:429
 #: Status: UNVERIFIED
 msgid "less or equal [<=]"
-msgstr ""
+msgstr "Xless or equal [<=]X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:79
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:194
 #: input:430
 #: Status: UNVERIFIED
 msgid "like"
-msgstr ""
+msgstr "XlikeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:80
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:195
 #: input:431
 #: Status: UNVERIFIED
 msgid "not like"
-msgstr ""
+msgstr "Xnot likeX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:82
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:197
 #: input:433
 #: Status: UNVERIFIED
 msgid "is not"
-msgstr ""
+msgstr "Xis notX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:83
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:198
 #: input:434
 #: Status: UNVERIFIED
 msgid "in"
-msgstr ""
+msgstr "XinX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:84
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:199
 #: input:435
 #: Status: UNVERIFIED
 msgid "not in"
-msgstr ""
+msgstr "Xnot inX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:107
 #: Status: UNVERIFIED
 msgid "AutoFormat Value"
-msgstr ""
+msgstr "XAutoFormat ValueX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:114
 #: Status: UNVERIFIED
 msgid "More conditions ..."
-msgstr ""
+msgstr "XMore conditions ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:209
 #: Status: UNVERIFIED
 msgid "Autoformat Value"
-msgstr ""
+msgstr "XAutoformat ValueX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:348
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:352
 #: Status: UNVERIFIED
 msgid "Select Table"
-msgstr ""
+msgstr "XSelect TableX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:368
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/ImportDialog.js:369
 #: Status: UNVERIFIED
 msgid "Select Column"
-msgstr ""
+msgstr "XSelect ColumnX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:378
 #: Status: UNVERIFIED
 msgid "Add Column"
-msgstr ""
+msgstr "XAdd ColumnX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:449
 #: Status: UNVERIFIED
 msgid "AutoFormat"
-msgstr ""
+msgstr "XAutoFormatX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:495
 #: Status: UNVERIFIED
 msgid "</strong> column to the Global Conditions?"
-msgstr ""
+msgstr "X</strong> column to the Global Conditions?X"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:504
 #: Status: UNVERIFIED
 msgid "Replace"
-msgstr ""
+msgstr "XReplaceX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:504
 #: Status: UNVERIFIED
 msgid "Global Condition"
-msgstr ""
+msgstr "XGlobal ConditionX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/DashboardController.js:52
 #: Status: UNVERIFIED
 msgid "Hours ago"
-msgstr ""
+msgstr "XHours agoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:111
 #: Status: UNVERIFIED
 msgid "Add Common Widgets"
-msgstr ""
+msgstr "XAdd Common WidgetsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:137
 #: Status: UNVERIFIED
 msgid "Create New Report Widget"
-msgstr ""
+msgstr "XCreate New Report WidgetX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:139
 #: Status: UNVERIFIED
 msgid "Reorder"
-msgstr ""
+msgstr "XReorderX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Manager.js:141
 #: Status: UNVERIFIED
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "XReset to DefaultsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:91
 #: Status: UNVERIFIED
 msgid "3 Hours ago"
-msgstr ""
+msgstr "X3 Hours agoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:92
 #: Status: UNVERIFIED
 msgid "6 Hours ago"
-msgstr ""
+msgstr "X6 Hours agoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:93
 #: Status: UNVERIFIED
 msgid "12 Hours ago"
-msgstr ""
+msgstr "X12 Hours agoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Dashboard.js:94
 #: Status: UNVERIFIED
 msgid "24 Hours ago"
-msgstr ""
+msgstr "X24 Hours agoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/ManagerController.js:182
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/dashboard/Queue.js:186
 #: Status: UNVERIFIED
 msgid "Info"
-msgstr ""
+msgstr "XInfoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/InvalidRoute.js:26
 #: Status: UNVERIFIED
 msgid "Go to Dashboard"
-msgstr ""
+msgstr "XGo to DashboardX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/MainHeading.js:148
 #: Status: UNVERIFIED
 msgid "Account Settings"
-msgstr ""
+msgstr "XAccount SettingsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:163
 #: Status: UNVERIFIED
 msgid "A domain can only contain numbers, letters, dashes and periods."
-msgstr ""
+msgstr "XA domain can only contain numbers, letters, dashes and periods.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:245
 #: Status: UNVERIFIED
 msgid "Invalid Router ID"
-msgstr ""
+msgstr "XInvalid Router IDX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:251
 #: Status: UNVERIFIED
 msgid "Invalid Area"
-msgstr ""
+msgstr "XInvalid AreaX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:261
 #: Status: UNVERIFIED
 msgid "Invalid Router AS"
-msgstr ""
+msgstr "XInvalid Router ASX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:270
 #: Status: UNVERIFIED
 msgid "Invalid metric number"
-msgstr ""
+msgstr "XInvalid metric numberX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:279
 #: Status: UNVERIFIED
 msgid "Invalid interval"
-msgstr ""
+msgstr "XInvalid intervalX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:288
 #: Status: UNVERIFIED
 msgid "Invalid router priority"
-msgstr ""
+msgstr "XInvalid router priorityX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/overrides/form/field/VTypes.js:297
 #: Status: UNVERIFIED
 msgid "Invalid auto cost reference bandwidth"
-msgstr ""
+msgstr "XInvalid auto cost reference bandwidthX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/MainController.js:101
 #: Status: UNVERIFIED
 msgid "Synchronizing time with the internet..."
-msgstr ""
+msgstr "XSynchronizing time with the internet...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/MainController.js:116
 #: Status: UNVERIFIED
 msgid "Synchronizing languages with the internet..."
-msgstr ""
+msgstr "XSynchronizing languages with the internet...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:439
 #: Status: UNVERIFIED
 msgid "Certificate generation failed. Please confirm the information provided is valid and try again."
-msgstr ""
+msgstr "XCertificate generation failed. Please confirm the information provided is valid and try again.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:777
 #: Status: UNVERIFIED
 msgid "Mode"
-msgstr ""
+msgstr "XModeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/Interface.js:782
 #: Status: UNVERIFIED
 msgid "AP"
-msgstr ""
+msgstr "XAPX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:212
 #: Status: UNVERIFIED
 msgid "Normal"
-msgstr ""
+msgstr "XNormalX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:215
 #: Status: UNVERIFIED
 msgid "Stub"
-msgstr ""
+msgstr "XStubX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:218
 #: Status: UNVERIFIED
 msgid "Stub, no summary"
-msgstr ""
+msgstr "XStub, no summaryX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:221
 #: Status: UNVERIFIED
 msgid "Not so stubby"
-msgstr ""
+msgstr "XNot so stubbyX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:224
 #: Status: UNVERIFIED
 msgid "Not so stubby, no summary"
-msgstr ""
+msgstr "XNot so stubby, no summaryX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:245
 #: Status: UNVERIFIED
 msgid "Cisco"
-msgstr ""
+msgstr "XCiscoX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:248
 #: Status: UNVERIFIED
 msgid "IBM"
-msgstr ""
+msgstr "XIBMX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:251
 #: Status: UNVERIFIED
 msgid "Shortcut"
-msgstr ""
+msgstr "XShortcutX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:254
 #: Status: UNVERIFIED
 msgid "Standard"
-msgstr ""
+msgstr "XStandardX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:279
 #: Status: UNVERIFIED
 msgid "Regular"
-msgstr ""
+msgstr "XRegularX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:282
 #: Status: UNVERIFIED
 msgid "Always"
-msgstr ""
+msgstr "XAlwaysX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:288
 #: Status: UNVERIFIED
 msgid "Type 1"
-msgstr ""
+msgstr "XType 1X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/MainModel.js:291
 #: Status: UNVERIFIED
 msgid "Type 2"
-msgstr ""
+msgstr "XType 2X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:848
 #: Status: UNVERIFIED
 msgid "Dynamic Routing"
-msgstr ""
+msgstr "XDynamic RoutingX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:858
 #: Status: UNVERIFIED
 msgid "Dynamic Routing Enabled"
-msgstr ""
+msgstr "XDynamic Routing EnabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:884
 #: Status: UNVERIFIED
 msgid "Acquired Dynamic Routes"
-msgstr ""
+msgstr "XAcquired Dynamic RoutesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:886
 #: Status: UNVERIFIED
 msgid "No Acquired Dynamic Routes found"
-msgstr ""
+msgstr "XNo Acquired Dynamic Routes foundX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:896
 #: Status: UNVERIFIED
 msgid "Prefix"
-msgstr ""
+msgstr "XPrefixX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:900
 #: Status: UNVERIFIED
 msgid "Via"
-msgstr ""
+msgstr "XViaX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:913
 #: Status: UNVERIFIED
 msgid "Attributes"
-msgstr ""
+msgstr "XAttributesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:923
 #: Status: UNVERIFIED
 msgid "BGP Status"
-msgstr ""
+msgstr "XBGP StatusX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:925
 #: Status: UNVERIFIED
 msgid "No BGP Status available"
-msgstr ""
+msgstr "XNo BGP Status availableX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:932
 #: Status: UNVERIFIED
 msgid "Neighbor"
-msgstr ""
+msgstr "XNeighborX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:936
 #: Status: UNVERIFIED
 msgid "AS"
-msgstr ""
+msgstr "XASX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:940
 #: Status: UNVERIFIED
 msgid "Msgs Recv"
-msgstr ""
+msgstr "XMsgs RecvX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:945
 #: Status: UNVERIFIED
 msgid "Msgs Sent"
-msgstr ""
+msgstr "XMsgs SentX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:950
 #: Status: UNVERIFIED
 msgid "Uptime"
-msgstr ""
+msgstr "XUptimeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:960
 #: Status: UNVERIFIED
 msgid "OSPF Status"
-msgstr ""
+msgstr "XOSPF StatusX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:962
 #: Status: UNVERIFIED
 msgid "No OSPF Status available"
-msgstr ""
+msgstr "XNo OSPF Status availableX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:969
 #: Status: UNVERIFIED
 msgid "Neighbor ID"
-msgstr ""
+msgstr "XNeighbor IDX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:973
 #: Status: UNVERIFIED
 msgid "Neighbor Address"
-msgstr ""
+msgstr "XNeighbor AddressX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:977
 #: Status: UNVERIFIED
 msgid "Time Remaining"
-msgstr ""
+msgstr "XTime RemainingX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1001
 #: Status: UNVERIFIED
 msgid "BGP"
-msgstr ""
+msgstr "XBGPX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1006
 #: Status: UNVERIFIED
 msgid "BGP Enabled"
-msgstr ""
+msgstr "XBGP EnabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1011
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:1621
 #: Status: UNVERIFIED
 msgid "Router ID"
-msgstr ""
+msgstr "XRouter IDX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1016
 #: Status: UNVERIFIED
 msgid "[no router id]"
-msgstr ""
+msgstr "X[no router id]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1017
 #: Status: UNVERIFIED
 msgid "Router ID must be specified."
-msgstr ""
+msgstr "XRouter ID must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1022
 #: Status: UNVERIFIED
 msgid "Router AS"
-msgstr ""
+msgstr "XRouter ASX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1027
 #: Status: UNVERIFIED
 msgid "[no router as]"
-msgstr ""
+msgstr "X[no router as]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1028
 #: Status: UNVERIFIED
 msgid "Router AS must be specified."
-msgstr ""
+msgstr "XRouter AS must be specified.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1040
 #: Status: UNVERIFIED
 msgid "Neighbors"
-msgstr ""
+msgstr "XNeighborsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1045
 #: Status: UNVERIFIED
 msgid "No BGP Neighbors defined"
-msgstr ""
+msgstr "XNo BGP Neighbors definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1097
 #: Status: UNVERIFIED
 msgid "Target IP Address"
-msgstr ""
+msgstr "XTarget IP AddressX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1098
 #: Status: UNVERIFIED
 msgid "[no target ip address]"
-msgstr ""
+msgstr "X[no target ip address]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1104
 #: Status: UNVERIFIED
 msgid "Target AS"
-msgstr ""
+msgstr "XTarget ASX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1105
 #: Status: UNVERIFIED
 msgid "[no target as]"
-msgstr ""
+msgstr "X[no target as]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1112
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:1192
 #: Status: UNVERIFIED
 msgid "Networks"
-msgstr ""
+msgstr "XNetworksX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1117
 #: Status: UNVERIFIED
 msgid "No BGP Networks defined"
-msgstr ""
+msgstr "XNo BGP Networks definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1173
 #: Status: UNVERIFIED
 msgid "OSPF"
-msgstr ""
+msgstr "XOSPFX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1178
 #: Status: UNVERIFIED
 msgid "OSPF Enabled"
-msgstr ""
+msgstr "XOSPF EnabledX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1197
 #: Status: UNVERIFIED
 msgid "No OSPF Networks defined"
-msgstr ""
+msgstr "XNo OSPF Networks definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1263
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:1649
 #: input:1671
 #: Status: UNVERIFIED
 msgid "[enter area]"
-msgstr ""
+msgstr "X[enter area]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1271
 #: Status: UNVERIFIED
 msgid "Areas"
-msgstr ""
+msgstr "XAreasX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1276
 #: Status: UNVERIFIED
 msgid "No OSPF Areas defined"
-msgstr ""
+msgstr "XNo OSPF Areas definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1337
 #: Status: UNVERIFIED
 msgid "[no area]"
-msgstr ""
+msgstr "X[no area]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1365
 #: Status: UNVERIFIED
 msgid "Virtual Links"
-msgstr ""
+msgstr "XVirtual LinksX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1381
 #: Status: UNVERIFIED
 msgid "Virtual Link Address"
-msgstr ""
+msgstr "XVirtual Link AddressX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1388
 #: Status: UNVERIFIED
 msgid "[enter virtual address]"
-msgstr ""
+msgstr "X[enter virtual address]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1413
 #: Status: UNVERIFIED
 msgid "Interface Overrides"
-msgstr ""
+msgstr "XInterface OverridesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1418
 #: Status: UNVERIFIED
 msgid "No OSPF Interfaces defined"
-msgstr ""
+msgstr "XNo OSPF Interfaces definedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1521
 #: Status: UNVERIFIED
 msgid "Hello Interval"
-msgstr ""
+msgstr "XHello IntervalX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1526
 #: Status: UNVERIFIED
 msgid "Dead Interval"
-msgstr ""
+msgstr "XDead IntervalX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1531
 #: Status: UNVERIFIED
 msgid "Retransmit Interval"
-msgstr ""
+msgstr "XRetransmit IntervalX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1536
 #: Status: UNVERIFIED
 msgid "Transmit Delay"
-msgstr ""
+msgstr "XTransmit DelayX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1541
 #: Status: UNVERIFIED
 msgid "Auto Interface Cost"
-msgstr ""
+msgstr "XAuto Interface CostX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1545
 #: Status: UNVERIFIED
 msgid "Interface Cost"
-msgstr ""
+msgstr "XInterface CostX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1579
 #: Status: UNVERIFIED
 msgid "Key ID"
-msgstr ""
+msgstr "XKey IDX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1601
 #: Status: UNVERIFIED
 msgid "Router Priority"
-msgstr ""
+msgstr "XRouter PriorityX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1607
 #: Status: UNVERIFIED
 msgid "Advanced Options"
-msgstr ""
+msgstr "XAdvanced OptionsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1623
 #: Status: UNVERIFIED
 msgid "[auto-generated]"
-msgstr ""
+msgstr "X[auto-generated]X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1627
 #: Status: UNVERIFIED
 msgid "Specify Default Metric"
-msgstr ""
+msgstr "XSpecify Default MetricX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1631
 #: Status: UNVERIFIED
 msgid "Default Metric"
-msgstr ""
+msgstr "XDefault MetricX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1648
 #: Status: UNVERIFIED
 msgid "ABR Type"
-msgstr ""
+msgstr "XABR TypeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1655
 #: Status: UNVERIFIED
 msgid "Auto cost reference bandwidth (MBits/s)"
-msgstr ""
+msgstr "XAuto cost reference bandwidth (MBits/s)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1660
 #: Status: UNVERIFIED
 msgid "Default Information originate"
-msgstr ""
+msgstr "XDefault Information originateX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1677
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:1714
@@ -16337,7 +16337,7 @@ msgstr ""
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1779
 #: Status: UNVERIFIED
 msgid "Metric"
-msgstr ""
+msgstr "XMetricX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1688
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Routes.js:1719
@@ -16345,84 +16345,84 @@ msgstr ""
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1784
 #: Status: UNVERIFIED
 msgid "Metric Type"
-msgstr ""
+msgstr "XMetric TypeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1705
 #: Status: UNVERIFIED
 msgid "Redistribute Connected"
-msgstr ""
+msgstr "XRedistribute ConnectedX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1736
 #: Status: UNVERIFIED
 msgid "Redistribute Static"
-msgstr ""
+msgstr "XRedistribute StaticX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Advanced.js:1767
 #: Status: UNVERIFIED
 msgid "Redistribute BGP"
-msgstr ""
+msgstr "XRedistribute BGPX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:185
 #: Status: UNVERIFIED
 msgid "Status not available"
-msgstr ""
+msgstr "XStatus not availableX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:195
 #: Status: UNVERIFIED
 msgid "Rx Bytes"
-msgstr ""
+msgstr "XRx BytesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/network/view/Interfaces.js:211
 #: Status: UNVERIFIED
 msgid "Tx Bytes"
-msgstr ""
+msgstr "XTx BytesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/events/MainController.js:109
 #: Status: UNVERIFIED
 msgid "settings saved!"
-msgstr ""
+msgstr "Xsettings saved!X"
 
 #: /ngfw/ngfw_src/web-filter-base/src/com/untangle/app/web_filter/WebFilterBase.java:67
 #: Status: UNVERIFIED
 msgid "Pages flagged"
-msgstr ""
+msgstr "XPages flaggedX"
 
 #: /ngfw/ngfw_src/ad-blocker/js/MainController.js:77
 #: Status: UNVERIFIED
 msgid "Updating filters, this may take a few minutes..."
-msgstr ""
+msgstr "XUpdating filters, this may take a few minutes...X"
 
 #: /ngfw/ngfw_src/ad-blocker/js/view/Options.js:43
 #: Status: UNVERIFIED
 msgid "The current filter list was last modified: {0}. You are free to disable filters and add new ones, however it is not required."
-msgstr ""
+msgstr "XThe current filter list was last modified: {0}. You are free to disable filters and add new ones, however it is not required.X"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:386
 #: Status: UNVERIFIED
 msgid "Building OpenVPN Clients..."
-msgstr ""
+msgstr "XBuilding OpenVPN Clients...X"
 
 #: /ngfw/ngfw_src/openvpn/js/view/Client.js:100
 #: Status: UNVERIFIED
 msgid "[User/Pass Auth Disabled]"
-msgstr ""
+msgstr "X[User/Pass Auth Disabled]X"
 
 #: /ngfw/ngfw_src/reports/servlets/reports/root/script/app.js:65
 #: Status: UNVERIFIED
 msgid "Go to Reports Home"
-msgstr ""
+msgstr "XGo to Reports HomeX"
 
 #: /ngfw/ngfw_src/wan-failover/js/MainController.js:154
 #: Status: UNVERIFIED
 msgid "Generating Suggestions..."
-msgstr ""
+msgstr "XGenerating Suggestions...X"
 
 #: /ngfw/ngfw_src/web-filter/js/MainController.js:80
 #: Status: UNVERIFIED
 msgid "Clearing Category URL Cache..."
-msgstr ""
+msgstr "XClearing Category URL Cache...X"
 
 #: /ngfw/ngfw_src/web-filter/js/MainController.js:85
 #: Status: UNVERIFIED
 msgid "The Category URL Cache was cleared succesfully."
-msgstr ""
+msgstr "XThe Category URL Cache was cleared succesfully.X"
