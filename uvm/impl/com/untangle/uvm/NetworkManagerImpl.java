@@ -245,7 +245,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         // notify interested parties that the settings have changed
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
 
         if ( errorOccurred ) {
             throw new RuntimeException(errorStr);
