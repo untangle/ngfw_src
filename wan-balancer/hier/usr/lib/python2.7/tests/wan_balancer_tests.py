@@ -19,30 +19,30 @@ import remote_control
 import global_functions
 
 app = None
-appData = None
-appWanFailover = None
-appDataWanFailover = None
+app_data = None
+app_wan_failover = None
+app_data_wan_failover = None
 orig_netsettings = None
 ip_address_testdestination = None
-indexOfWans = []
-ruleCounter = 0
+index_of_wans = []
+rule_counter = 0
 default_policy_id = 1
 
-def setWeightOfWan(interfaceId, weight):
+def set_wan_weight(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
         print("Invalid interface: " + str(interfaceId))
         return
-    appData = app.getSettings()
+    app_data = app.getSettings()
     if (interfaceId == "all"):
         i = 0
-        for intefaceIndex in appData["weights"]:
-            appData["weights"][i] = weight
+        for intefaceIndex in app_data["weights"]:
+            app_data["weights"][i] = weight
             i += 1
     else:
-        appData["weights"][interfaceId-1] = weight
-    app.setSettings(appData)
+        app_data["weights"][interfaceId-1] = weight
+    app.setSettings(app_data)
 
-def createRouteRule( networkAddr, netmask, gateway):
+def create_route_rule( networkAddr, netmask, gateway):
     return {
         "description": "wan-balancer test route", 
         "javaClass": "com.untangle.uvm.network.StaticRoute", 
@@ -54,11 +54,11 @@ def createRouteRule( networkAddr, netmask, gateway):
         "toDev": False
          };
 
-def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
-    global ruleCounter
+def build_nat_rules(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
+    global rule_counter
     
     name = "test nat " + str(ruleValue) + " Source " + str(newSource)
-    ruleCounter +=1
+    rule_counter +=1
     ruleCondition = {
         "invert": False, 
         "javaClass": "com.untangle.uvm.network.NatRuleCondition",
@@ -76,17 +76,17 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
             ]
         }, 
         "newSource": newSource, 
-        "ruleId": ruleCounter
+        "ruleId": rule_counter
     }
     rule["conditions"]["list"].append(ruleCondition)
     return rule
 
-def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
+def build_single_wan_route_rule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
     print("wanDestination: %s" % wanDestination)
-    global ruleCounter
-    appData = app.getSettings()
+    global rule_counter
+    app_data = app.getSettings()
     name = "test route " + str(ruleValue) + " Wan " + str(wanDestination)
-    ruleCounter +=1
+    rule_counter +=1
     ruleCondition = {
         "invert": False, 
         "javaClass": "com.untangle.app.wan_balancer.RouteRuleCondition", 
@@ -102,23 +102,23 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
             "javaClass": "java.util.LinkedList", 
             "list": []
         }, 
-        "ruleId": ruleCounter
+        "ruleId": rule_counter
     }
     rule["conditions"]["list"].append(ruleCondition)
-    appData["routeRules"]["list"].append(rule)
-    app.setSettings(appData)
+    app_data["routeRules"]["list"].append(rule)
+    app.setSettings(app_data)
 
-def nukeWanBalancerRouteRules():
-    appData = app.getSettings()
-    appData["routeRules"]["list"] = []
-    app.setSettings(appData)
+def nuke_wan_balancer_route_rules():
+    app_data = app.getSettings()
+    app_data["routeRules"]["list"] = []
+    app.setSettings(app_data)
 
-def appendRouteRule(newRule):
+def append_route_rule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
+def build_wan_test_rule(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
     name = "test " + str(testType) + " " + str(matchInterface)
     testInterval *= 1000  # convert from secs to millisecs
     testTimeout *= 1000  # convert from secs to millisecs
@@ -136,31 +136,31 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
                 "type": testType
     }
     
-    appDataWanFailover = appWanFailover.getSettings()
+    app_data_wan_failover = app_wan_failover.getSettings()
     wanRuleIndex = None
     # check to see if rule for the same wan exist, if so overwrite rule
-    for i in range(len(appDataWanFailover['tests']['list'])):
-        if appDataWanFailover['tests']['list'][i]["interfaceId"] == matchInterface:
+    for i in range(len(app_data_wan_failover['tests']['list'])):
+        if app_data_wan_failover['tests']['list'][i]["interfaceId"] == matchInterface:
             wanRuleIndex=i
             break
     if wanRuleIndex == None:
-        appDataWanFailover["tests"]["list"].append(rule)
+        app_data_wan_failover["tests"]["list"].append(rule)
     else:
-        appDataWanFailover["tests"]["list"][wanRuleIndex] = rule
-    appWanFailover.setSettings(appDataWanFailover)
+        app_data_wan_failover["tests"]["list"][wanRuleIndex] = rule
+    app_wan_failover.setSettings(app_data_wan_failover)
     
-def nukeWanBalancerRules():
-    setWeightOfWan("all",50)
-    appData = app.getSettings()
-    appData["routeRules"]["list"] = []
-    app.setSettings(appData)
+def nuke_wan_balancer_rules():
+    set_wan_weight("all",50)
+    app_data = app.getSettings()
+    app_data["routeRules"]["list"] = []
+    app.setSettings(app_data)
 
-def nukeFailoverRules():
-    appDataWanFailover = appWanFailover.getSettings()
-    appDataWanFailover["tests"]["list"] = []
-    appWanFailover.setSettings(appDataWanFailover)
+def nuke_wan_failover_rules():
+    app_data_wan_failover = app_wan_failover.getSettings()
+    app_data_wan_failover["tests"]["list"] = []
+    app_wan_failover.setSettings(app_data_wan_failover)
     
-def sameWanNetwork(indexWANs):
+def same_wan_network(indexWANs):
     previousExtIP = None
     wan_match = False
     for wanIndexTup in indexWANs:
@@ -188,20 +188,21 @@ class WanBalancerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global indexOfWans, app, appData, appWanFailover, appDataWanFailover, orig_netsettings, ip_address_testdestination
+        global index_of_wans, app, app_data, app_wan_failover, app_data_wan_failover, orig_netsettings, ip_address_testdestination
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
+
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
-        appData = app.getSettings()
-
+        app_data = app.getSettings()
+            
         if (uvmContext.appManager().isInstantiated(self.appNameWanFailover())):
             raise Exception('app %s already instantiated' % self.appNameWanFailover())
-        appWanFailover = uvmContext.appManager().instantiate(self.appNameWanFailover(), default_policy_id)
-        appWanFailover.start()
-        appWanFailoverData = appWanFailover.getSettings()
+        app_wan_failover = uvmContext.appManager().instantiate(self.appNameWanFailover(), default_policy_id)
+        app_wan_failover.start()
+        app_wan_failoverData = app_wan_failover.getSettings()
 
-        indexOfWans = global_functions.get_wan_tuples()
+        index_of_wans = global_functions.get_wan_tuples()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
@@ -224,12 +225,12 @@ class WanBalancerTests(unittest2.TestCase):
     
     def test_030_heavyWeightWan(self):
         # Set the one WAN as 100 weight and the other as zero and vice versa.
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_030_heavyWeightWan")
-        setWeightOfWan("all", 0)
-        for wanIndexTup in indexOfWans:
+        set_wan_weight("all", 0)
+        for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
-            setWeightOfWan(wanIndex, 100)
+            set_wan_weight(wanIndex, 100)
             # get the WAN IP address which was weighted to 100
             weightedIP = wanIndexTup[2]
             # Test that only the weighted interface is used 10 times
@@ -238,15 +239,15 @@ class WanBalancerTests(unittest2.TestCase):
                 print("Weighted IP %s and retrieved IP %s" % (weightedIP, result))
                 assert (result == weightedIP)
             # reset weight to zero
-            setWeightOfWan(wanIndex, 0)
+            set_wan_weight(wanIndex, 0)
         # return weight settings to default
-        setWeightOfWan("all", 50)
+        set_wan_weight("all", 50)
         
     def test_040_balanced(self):
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
         # Set weighting to default 
-        setWeightOfWan("all", 50)
+        set_wan_weight("all", 50)
 
         # Test balanced
         # send netcat UDP to random IPs
@@ -254,7 +255,7 @@ class WanBalancerTests(unittest2.TestCase):
 
         events = global_functions.get_events('Network','All Sessions',None,20)
         assert(events != None)
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             found = global_functions.check_events( events.get('list'), 20,
                                                 "server_intf", wanIndexTup[0],
                                                 "c_client_addr", remote_control.clientIP,
@@ -262,39 +263,39 @@ class WanBalancerTests(unittest2.TestCase):
             assert(found)
 
     def test_050_routedByIPWan(self):
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_050_routedByIPWan")
         # Set weighting to default 
-        setWeightOfWan("all", 50)
+        set_wan_weight("all", 50)
 
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
-            nukeWanBalancerRouteRules()
+            nuke_wan_balancer_route_rules()
             # Get the external IP of the interface selected.
             routedIP = wanIndexTup[2]
-            buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,wanIndex)
+            build_single_wan_route_rule("DST_ADDR",ip_address_testdestination,wanIndex)
             # Test that only the routed interface is used 10 times
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
                 print("Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
-        nukeWanBalancerRouteRules()
+        nuke_wan_balancer_route_rules()
 
     def test_060_routedByPortWan(self):        
         # Test that route rules override weighted rules on 2 WANs
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_060_routedByPortWan")
-        nukeWanBalancerRouteRules()
+        nuke_wan_balancer_route_rules()
 
-        setWeightOfWan("all", 50)
+        set_wan_weight("all", 50)
         # Set all port 80 traffic out the first WAN and 443 on the other
-        port80Index = indexOfWans[0][0]
-        port80IP = indexOfWans[0][2]
-        port443Index = indexOfWans[1][0]
-        port443IP = indexOfWans[1][2]
+        port80Index = index_of_wans[0][0]
+        port80IP = index_of_wans[0][2]
+        port443Index = index_of_wans[1][0]
+        port443IP = index_of_wans[1][2]
         print("index443 %s" % port443Index)
-        buildSingleWanRouteRule("DST_PORT",80,(port80Index))
-        buildSingleWanRouteRule("DST_PORT",443,(port443Index))
+        build_single_wan_route_rule("DST_PORT",80,(port80Index))
+        build_single_wan_route_rule("DST_PORT",443,(port443Index))
 
         for x in range(0, 9):
             result80 = global_functions.get_public_ip_address()
@@ -305,25 +306,25 @@ class WanBalancerTests(unittest2.TestCase):
 
     def test_070_weightVsRoutedWan(self):        
         # Test that route rules override weighted rules
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_070_weightVsRoutedWan")
             
         for x in range(0, 2):
-            nukeWanBalancerRouteRules()
-            setWeightOfWan("all", 0)
-            wanIndexTup = indexOfWans[x]
+            nuke_wan_balancer_route_rules()
+            set_wan_weight("all", 0)
+            wanIndexTup = index_of_wans[x]
             wanIndex = wanIndexTup[0]
-            setWeightOfWan(wanIndex, 100)
+            set_wan_weight(wanIndex, 100)
             if (x==0):
                 y=1
             else:
                 y=0
-            weightedIndexTup = indexOfWans[x]
+            weightedIndexTup = index_of_wans[x]
             weightedIP = weightedIndexTup[2]
-            routedIndexTup = indexOfWans[y]
+            routedIndexTup = index_of_wans[y]
             routedIP = routedIndexTup[2]
             # WAN index for route rules is +1 from networking list.  Balance is zero            
-            buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,routedIndexTup[0])
+            build_single_wan_route_rule("DST_ADDR",ip_address_testdestination,routedIndexTup[0])
 
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
@@ -333,23 +334,23 @@ class WanBalancerTests(unittest2.TestCase):
         
     def test_080_routedWanVsNetworkRoute(self):    
         # Test that Networking routes override routed rules in WAN Balancer
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_080_routedWanVsNetworkRoute")
         netsettings = netsettings = uvmContext.networkManager().getNetworkSettings()
-        nukeWanBalancerRouteRules()
+        nuke_wan_balancer_route_rules()
 
-        setWeightOfWan("all", 0)
-        weightedIndexTup = indexOfWans[0]
-        routedIndexTup = indexOfWans[1]
-        setWeightOfWan(weightedIndexTup[0], 100)  # set primary to 100%
+        set_wan_weight("all", 0)
+        weightedIndexTup = index_of_wans[0]
+        routedIndexTup = index_of_wans[1]
+        set_wan_weight(weightedIndexTup[0], 100)  # set primary to 100%
         # configure route in network which uses the second WAN for test.untangle.com
         routedIP = routedIndexTup[2]
         routedIPGateway = routedIndexTup[3]
-        appendRouteRule(createRouteRule(ip_address_testdestination,32,routedIPGateway))
+        append_route_rule(create_route_rule(ip_address_testdestination,32,routedIPGateway))
         result1 = global_functions.get_public_ip_address()
         print("Routed IP %s and retrieved IP %s" % (routedIP, result1))
         # Add WAN route IP to Balancer
-        buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,weightedIndexTup[0])
+        build_single_wan_route_rule("DST_ADDR",ip_address_testdestination,weightedIndexTup[0])
         result2 = global_functions.get_public_ip_address(extra_options="--no-check-certificate --secure-protocol=auto")
         print("Routed IP %s and retrieved IP %s" % (routedIP, result2))
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -360,22 +361,22 @@ class WanBalancerTests(unittest2.TestCase):
     def test_090_heavyWeightWanDown(self):
         # Set the one WAN as 100 weight and the other as zero and down the 100 weight wan
         # if there are more than one WAN
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
         # initialize all the weights to 50
-        nukeWanBalancerRules()
+        nuke_wan_balancer_rules()
         # create valid failover tests
-        for wanIndexTup in indexOfWans:
-            buildWanTestRule(wanIndexTup[0])
+        for wanIndexTup in index_of_wans:
+            build_wan_test_rule(wanIndexTup[0])
         result = remote_control.is_online()
         assert (result == 0)
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
             # set the selected wan to 100 and others to zero
-            setWeightOfWan("all",0)
-            setWeightOfWan(wanIndex, 100)
+            set_wan_weight("all",0)
+            set_wan_weight(wanIndex, 100)
             # Set the weighted interface with invalid rule
-            buildWanTestRule(wanIndex, "ping", "192.168.244.1")
+            build_wan_test_rule(wanIndex, "ping", "192.168.244.1")
             # get the WAN IP address which was weighted to 100
             weightedIP = wanIndexTup[1]
             # Wait for targeted the WAN to be off line before testing that the WAN is off line.
@@ -384,7 +385,7 @@ class WanBalancerTests(unittest2.TestCase):
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = appWanFailover.getWanStatus()
+                wanStatus = app_wan_failover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -395,31 +396,31 @@ class WanBalancerTests(unittest2.TestCase):
                 print("Weighted IP %s and retrieved IP %s" % (weightedIP, result))
                 assert (result != weightedIP)
             # reset weight to zero and interface to valid rule
-            setWeightOfWan(wanIndex, 0)
-            buildWanTestRule(wanIndex)
+            set_wan_weight(wanIndex, 0)
+            build_wan_test_rule(wanIndex)
 
         # return settings to default
-        nukeWanBalancerRules();
-        nukeFailoverRules()
+        nuke_wan_balancer_rules();
+        nuke_wan_failover_rules()
                     
     def test_100_wanBalancerRouteWanDown(self):
         # create a source route and then down the wan which the route is set to
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
-        if sameWanNetwork(indexOfWans):
+        if same_wan_network(index_of_wans):
             raise unittest2.SkipTest("WANS on same network")
 
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
-            nukeWanBalancerRules();
+            nuke_wan_balancer_rules();
             # Get the external IP of the interface selected.
             routedIP = wanIndexTup[2]
             # WAN index for route rules is from networking list.  Balance is zero  
-            buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,wanIndex)
+            build_single_wan_route_rule("DST_ADDR",ip_address_testdestination,wanIndex)
             # Test that only the routed interface is used 5 times2
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
@@ -427,14 +428,14 @@ class WanBalancerTests(unittest2.TestCase):
                 print("WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
-            buildWanTestRule(wanIndex, "ping", "192.168.244.1")
+            build_wan_test_rule(wanIndex, "ping", "192.168.244.1")
             # Wait for targeted the WAN to be off line before testing that the WAN is off line.
             timeout = 50000
             online = True
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = appWanFailover.getWanStatus()
+                wanStatus = app_wan_failover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -445,28 +446,30 @@ class WanBalancerTests(unittest2.TestCase):
                 print("WAN Down WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result != routedIP)
 
-        nukeWanBalancerRules();
-        nukeFailoverRules()
+        nuke_wan_balancer_rules();
+        nuke_wan_failover_rules()
     
     def test_110_networkRouteWanDown(self):
         # create a network route and then down the wan which the route is set to
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
-        netsettings = netsettings = uvmContext.networkManager().getNetworkSettings()
-        nukeWanBalancerRules();
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        nuke_wan_balancer_rules();
 
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             # Add networking route which does not handle re-routing if WAN is down
             # get the WAN IP address which was source routed
             wanIndex = wanIndexTup[0]
+            print("Testing interface: %i" % wanIndex)
+            sys.stdout.flush()
             # Get the external IP of the interface selected.
             routedIP = wanIndexTup[2]
             wanGatewayIP = wanIndexTup[3]
             netsettings['staticRoutes']['list']=[]
-            netsettings['staticRoutes']['list'].append(createRouteRule(ip_address_testdestination,32,wanGatewayIP))
+            netsettings['staticRoutes']['list'].append(create_route_rule(ip_address_testdestination,32,wanGatewayIP))
             uvmContext.networkManager().setNetworkSettings(netsettings)
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
@@ -475,25 +478,29 @@ class WanBalancerTests(unittest2.TestCase):
                 print("Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
-            buildWanTestRule(wanIndex, "ping", "192.168.244.1")
+            build_wan_test_rule(wanIndex, "ping", "192.168.244.1")
             # Wait for targeted the WAN to be off line before testing that the WAN is off line.
-            timeout = 50000
+            timeout = 60
             online = True
             offlineWanIndex = wanIndex
             while online and timeout > 0:
+                time.sleep(1)
                 timeout -= 1
-                wanStatus = appWanFailover.getWanStatus()
+                wanStatus = app_wan_failover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
+                        print("Waiting on WAN %i to go offline... %s " % (wanIndex,str(statusInterface)))
+                        sys.stdout.flush()
                         online =  statusInterface['online']
-            time.sleep(10) # Let WAN balancer see that the interface is down
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
                 print("WAN Down Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
 
-        nukeFailoverRules()
+        # Remove failover rules
+        nuke_wan_failover_rules()
+        # Remove static routes
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_120_natOneToOneWanDown(self):
@@ -501,21 +508,21 @@ class WanBalancerTests(unittest2.TestCase):
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        if (len(indexOfWans) < 2):
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
 
-        pre_count = global_functions.get_app_metric_value(appWanFailover,"changed")
+        pre_count = global_functions.get_app_metric_value(app_wan_failover,"changed")
         
         # raise unittest2.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        nukeWanBalancerRules();
-        nukeFailoverRules()
+        nuke_wan_balancer_rules();
+        nuke_wan_failover_rules()
         # create valid failover tests
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex)
+            build_wan_test_rule(wanIndex)
 
-        for wanIndexTup in indexOfWans:
+        for wanIndexTup in index_of_wans:
             # get the WAN IP address which was source routed
             wanIndex = wanIndexTup[0]
             wanIP = wanIndexTup[1]
@@ -523,7 +530,7 @@ class WanBalancerTests(unittest2.TestCase):
 
             # Add networking route which does not handle re-routing if WAN is down
             netsettings['natRules']['list']=[]
-            netsettings['natRules']['list'].append(buildNatRule("DST_ADDR",ip_address_testdestination,wanIP))
+            netsettings['natRules']['list'].append(build_nat_rules("DST_ADDR",ip_address_testdestination,wanIP))
             uvmContext.networkManager().setNetworkSettings(netsettings)
 
             # Test that only the routed interface is used 5 times
@@ -533,18 +540,18 @@ class WanBalancerTests(unittest2.TestCase):
                 print("NAT 1:1 IP %s External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result))
                 assert (result == wanExternalIP)
             # now down the selected wan and see if traffic flows out the other wan
-            buildWanTestRule(wanIndex, "ping", "192.168.244.1")
+            build_wan_test_rule(wanIndex, "ping", "192.168.244.1")
             # Wait for targeted the WAN to be off line before testing that the WAN is off line.
-            timeout = 50000
+            timeout = 60
             online = True
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = appWanFailover.getWanStatus()
+                time.sleep(1)
+                wanStatus = app_wan_failover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
-            time.sleep(10) # Let WAN balancer see that the interface is down
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
                 result = global_functions.get_public_ip_address()
@@ -552,23 +559,25 @@ class WanBalancerTests(unittest2.TestCase):
                 assert (result == wanExternalIP)
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        nukeFailoverRules()
+        nuke_wan_failover_rules()
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.get_app_metric_value(appWanFailover,"changed")
+        post_count = global_functions.get_app_metric_value(app_wan_failover,"changed")
         assert(pre_count < post_count)
-               
+
     @staticmethod
     def finalTearDown(self):
-        global app, appWanFailover
+        global app, app_wan_failover
         # Restore original settings to return to initial settings
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
             app = None
-        if appWanFailover != None:
-            uvmContext.appManager().destroy( appWanFailover.getAppSettings()["id"] )
-            appWanFailover = None
+        if app_wan_failover != None:
+            uvmContext.appManager().destroy( app_wan_failover.getAppSettings()["id"] )
+            app_wan_failover = None
         if orig_netsettings != None:
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
+
+            
 
 test_registry.registerApp("wan-balancer", WanBalancerTests)
