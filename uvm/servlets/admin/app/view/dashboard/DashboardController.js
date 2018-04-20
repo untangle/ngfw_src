@@ -49,7 +49,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 if (result.timeframe === 1) {
                     text = '1 Hour ago'.t();
                 } else {
-                    text = result.timeframe + ' Hours ago'.t();
+                    text = result.timeframe + ' ' + 'Hours ago'.t();
                 }
 
                 me.getView().down('#since > button').setText(text);
