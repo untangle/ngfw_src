@@ -93,7 +93,7 @@ def main(argv):
 
         po.save()
 
-    print(print "%d/%d chars/words total to translate" % (total_character_count, total_word_count))
+    print("%d/%d chars/words total to translate" % (total_character_count, total_word_count))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
