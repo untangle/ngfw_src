@@ -53,7 +53,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     { boxLabel: 'Hostname'.t(), name: 'col', inputValue: 'hostname', bind: { disabled: '{disabledConds.hostname}' } },
                     { boxLabel: 'Client'.t(), name: 'col', inputValue: 'c_client_addr', bind: { disabled: '{disabledConds.c_client_addr}' } },
                     { boxLabel: 'Server'.t(), name: 'col', inputValue: 's_server_addr', bind: { disabled: '{disabledConds.s_server_addr}' } },
-                    { boxLabel: 'Client Port', name: 'col', inputValue: 'c_client_port', bind: { disabled: '{disabledConds.c_client_port}' } },
+                    //{ boxLabel: 'Client Port'.t(), name: 'col', inputValue: 'c_client_port', bind: { disabled: '{disabledConds.c_client_port}' } },
                     { boxLabel: 'Server Port'.t(), name: 'col', inputValue: 's_server_port', bind: { disabled: '{disabledConds.s_server_port}' } },
                     { boxLabel: 'Policy Id'.t(), name: 'col', inputValue: 'policy_id', bind: { disabled: '{disabledConds.policy_id}' } }
                 ]
