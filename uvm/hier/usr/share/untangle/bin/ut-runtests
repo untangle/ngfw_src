@@ -33,6 +33,7 @@ class ArgumentParser(object):
         self.logfile = '/tmp/unittest.log'
         self.fastfail = False
         self.repeat = False
+        self.repeat_count = None
         self.externalIntfId = 1
         self.internalIntfId = 2
         self.suitesToRun = ['all']
@@ -59,6 +60,10 @@ class ArgumentParser(object):
 
     def set_repeat( self, arg ):
         self.repeat = True
+
+    def set_repeat_count( self, arg ):
+        self.repeat = True
+        self.repeat_count = int(arg)
 
     def set_suitesToRun( self, arg ):
         self.suitesToRun = arg.split(",")
@@ -96,6 +101,7 @@ class ArgumentParser(object):
             '-v' : self.increase_verbosity,
             '-q' : self.set_fastfail,
             '-r' : self.set_repeat,
+            '-c' : self.set_repeat_count,
             '-t' : self.set_suitesToRun,
             '-T' : self.set_testsToRun,
             '-e' : self.set_suitesToExclude,
@@ -107,7 +113,7 @@ class ArgumentParser(object):
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:T:e:E:vqrxz')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:T:e:E:vqrc:xz')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -132,7 +138,8 @@ def printUsage():
     -E <test>  : comma seperated list tests within suites to EXCLUDE (default: "all") (exm: "test_010_clientOnline")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
-    -r         : repeat test indefinitely (or until failure if -q is specified)
+    -r         : repeat test indefinitely or until repeat count if specified (or until failure if -q is specified)
+    -c <count> : repeat test count
     -x         : time testsuite and display elapsed seconds
     -z         : skip lengthly test suites
 """ % sys.argv[0] )
@@ -327,6 +334,10 @@ while True:
         break
     if not parser.repeat:
         break
+    if parser.repeat_count != None:
+        parser.repeat_count = parser.repeat_count-1
+        if parser.repeat_count < 1:
+            break
 
 elapsedTime = time.time() - startTime
     
