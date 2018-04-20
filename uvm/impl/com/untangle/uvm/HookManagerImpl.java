@@ -173,6 +173,40 @@ public class HookManagerImpl implements HookManager
             logger.warn("Exception: ",e);
             return 0;
         }
+    }
+
+    public int callCallbacksSynchronous( String hookName, Object... arguments )
+    {
+        try {
+            if ( hookName == null ) {
+                logger.warn( "Invalid argument: " + hookName);
+                return 0;
+            }
+        
+            if ( registeredCallbacks.get( hookName ) == null ) {
+                logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
+                return 0;
+            }
+            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get( hookName ));
+
+            logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+            for ( HookCallback cb : callbacks ) {
+                try {
+                    logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                    cb.callback( arguments );
+                } catch (Throwable t) {
+                    logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
+                    logger.warn( "Unregistering callback [" + cb.getName() + "]");
+                    unregisterCallback(hookName, cb);
+                }
+            }
+
+            return callbacks.size();
+        } catch (Throwable e) {
+            logger.warn("Exception: ",e);
+            return 0;
+        }
 
     }
+
 }
