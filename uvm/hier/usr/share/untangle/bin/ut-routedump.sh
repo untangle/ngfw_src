@@ -7,10 +7,6 @@ echo " = IPv4 Rules = "
 ip -4 rule ls
 echo
 
-echo " = IPv4 Table main = "
-ip -4 route show table main | grep -v '192.0.2.'
-echo
-
 for i in main balance default local ; do
     echo " = IPv4 Table $i = "
     ip -4 route show table $i
