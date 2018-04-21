@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, getopt, sys, json, subprocess, parse, platform
 
@@ -36,6 +36,7 @@ def statusToJSON(input):
     entry = {}
     skipEntry=False
     for line in input:
+        line = str(line, 'ascii','ignore')
         if count <= 5:
             res=parse.parse(indexMap[count],line)
             if res == None:
