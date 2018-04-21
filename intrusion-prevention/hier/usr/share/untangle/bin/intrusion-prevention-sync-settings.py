@@ -82,12 +82,12 @@ def main(argv):
         sys.exit(1)
 
     # if current_rules_path == None:
-    #     print "Missing rules"
+    #     print("Missing rules")
     #     sys.exit(1)
 
     # if settings_file_name == None:
     #     ## Must never write to actual location.
-    #     print "Missing settings file name"
+    #     print("Missing settings file name")
     #     sys.exit(1)
 
     if _debug == True:

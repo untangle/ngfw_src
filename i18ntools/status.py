@@ -17,7 +17,7 @@ sys.setdefaultencoding('utf8')
 languages = i18n.Languages()
 
 def usage():
-	print "Usage!"
+	print("Usage!")
 
 def main(argv):
     _debug = False
@@ -43,10 +43,10 @@ def main(argv):
         po.load()
 
         language = languages.get_by_id(language_id)
-        print "Status: %s" % (language["name"])
-        print " file=%s," % (po.file_name)
+        print("Status: %s" % (language["name"]))
+        print(" file=%s," % (po.file_name))
 
-        print " total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100))
+        print(" total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100)))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
