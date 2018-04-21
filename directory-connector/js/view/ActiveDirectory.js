@@ -15,13 +15,20 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
             xtype: 'component',
             margin: '10 0 0 0',
             html: Ext.String.format(
-                "This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.".t(),
+                "This allows the server to connect to an {0}Active Directory Server{1} for authentication of username/passwords and building of a user-group map.".t(),
                 '<b>','</b>')
-            }, {
+        }, {
+            xtype: 'component',
+            margin: '10 0 0 20',
+            html: Ext.String.format(
+                "{0}NOTE:{1}  Additional steps are required to associate hosts and sessions with usernames, such as using Captive Portal, the Active Directory Server Login Monitor Agent, or the Login Script.".t() + "</br>" +
+                    "See {0}Help{1} for more details.".t(),
+                '<i>','</i>','<i>','</i>')
+        }, {
                 xtype: "checkbox",
                 bind: '{settings.activeDirectorySettings.enabled}',
                 fieldLabel: 'Enable Active Directory Connector'.t(),
-                labelWidth: 200,
+                labelWidth: '100%',
                 margin: '10 0 10 0',
                 listeners: {
                     disable: function (ck) {
