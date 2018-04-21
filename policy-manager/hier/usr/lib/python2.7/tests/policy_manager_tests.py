@@ -295,7 +295,7 @@ class PolicyManagerTests(unittest2.TestCase):
         userHost['usernameCaptivePortal'] = ""
         uvmContext.hostTable().setHostTableEntry(remote_control.clientIP,userHost)
         # userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
-        # print userHost
+        # print(userHost)
         nukeRules()
         appendRule(createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
@@ -309,9 +309,9 @@ class PolicyManagerTests(unittest2.TestCase):
         ipfind = remote_control.run_command("grep 'Location' /tmp/policy_test_040.log",stdout=True)
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
-        print 'Capture IP address is %s' % captureIP
+        print('Capture IP address is %s' % captureIP)
         appid = str(defaultRackCaptivePortal.getAppSettings()["id"])
-        # print 'appid is %s' % appid  # debug line
+        # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -q -O /dev/null -t 2 --timeout=5   \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=" + captureIP + "&uri=/\'")
         assert (result == 0)
         # verify the username is assigned to the IP

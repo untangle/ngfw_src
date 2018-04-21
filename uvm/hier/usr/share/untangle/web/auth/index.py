@@ -152,7 +152,7 @@ def _valid_token(req, token):
         curl.perform()
 
         body = buffer.getvalue()
-        print (body)
+        print(body)
         return (body == "true")
     except:
         return False
