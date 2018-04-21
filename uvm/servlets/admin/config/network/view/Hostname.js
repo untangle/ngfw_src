@@ -84,7 +84,9 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['dnsomatic','DNS-O-Matic'],
                     ['freedns','FreeDNS'],
                     ['google','Google'],
-                    //['cloudflare','Cloudflare'] // does not work - needs ddclient 3.8.3
+                    ['googledomains','Google Domains'],
+                    ['cloudflare','Cloudflare'],
+                    ['duckdns','DuckDNS']
                    ]
         }, {
             xtype: 'textfield',
