@@ -18,7 +18,7 @@ import json
 
 from uvm import Uvm
 
-officeNetworks = ('10.111.0.0/16','10.112.0.0/16')
+officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.56.23'), # Office network
                 #('10.112.0.0/16','10.112.56.44')
                 ] # ATS VM
@@ -396,7 +396,7 @@ def host_tags_add(str):
 def host_tags_clear():
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
     for t in entry['tags']['list']:
-        t['expirationTime'] = 1 #expire 1970
+        t['expirationTime'] = 1; #expire 1970
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
     uvmContext.hostTable().cleanup()
     
