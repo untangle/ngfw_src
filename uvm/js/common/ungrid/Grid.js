@@ -138,8 +138,6 @@ Ext.define('Ung.cmp.Grid', {
         }
 
         if( column.xtype == 'checkcolumn' && column.checkAll){
-            var columnDataIndex = column.dataIndex;
-
             if( this.tbar ){
                 this.tbar.splice( this.tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
                     xtype: 'checkbox',
@@ -147,7 +145,6 @@ Ext.define('Ung.cmp.Grid', {
                     hideLabel: true,
                     margin: '0 5px 0 5px',
                     boxLabel: Ext.String.format("{0} All".t(), column.header),
-                    // scope: {columnDataIndex: columnDataIndex},
                     handler: function(checkbox, checked) {
                         var records=checkbox.up("grid").getStore().getRange();
                         for(var i=0; i<records.length; i++) {
