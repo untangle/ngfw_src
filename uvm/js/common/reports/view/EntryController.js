@@ -605,20 +605,13 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     removeTextColumn: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
+        var me = this, store = view.getStore(), tdc = [];
         store.remove(record);
         view.refresh();
     },
 
     removeTimeDataColumn: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this, vm = me.getViewModel(), store = view.getStore(), tdc = [];
-        store.remove(record);
-        // vm.set('timeDataColumns', Ext.Array.removeAt(vm.get('timeDataColumns'), rowIndex));
-        // store.commitChanges();
-        // store.reload();
-        // record.drop();
-        // store.each(function (col) { tdc.push(col.get('str')); });
-        // vm.set('eEntry.timeDataColumns', tdc);
+        view.getStore().remove(record);
     },
 
     exportSettings: function () {
