@@ -163,7 +163,6 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     },
 
     calculateNetworks: function(netSettings, intStatus) {
-        var vm = this.getViewModel();
         var leftDefault = '0.0.0.0';
         var leftSubnetDefault = '0.0.0.0/0';
         var wanListData = [];
@@ -308,7 +307,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             }
 
             // this gives the app a couple seconds to process the disconnect before we refresh the list
-            var timer = setTimeout(function() {
+            setTimeout(function() {
                 if(Util.isDestroyed(target, me)){
                     return;
                 }
