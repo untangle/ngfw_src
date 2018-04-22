@@ -9,8 +9,7 @@ Ext.define('Ung.cmp.GridFilterController', {
             value = field.getValue(),
             grid = field.up('panel').down('grid'),
             cols = grid.getVisibleColumns(),
-            routeFilter = field.up('panel').routeFilter,
-            gridStatus = field.up('panel').down('ungridstatus');
+            routeFilter = field.up('panel').routeFilter;
 
         /**
          * remove only the filters added through filer data box
@@ -31,10 +30,6 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         if (!value) {
             field.getTrigger('clear').hide();
-            // the grid status update is done through grid filterchange event
-            // if( gridStatus ){
-            //     gridStatus.fireEvent('update');
-            // }
             return;
         }
 
