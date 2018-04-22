@@ -212,7 +212,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             vm.set('activeUsers', result.list);
 
             grid.setLoading(false);
-            var timer = setTimeout(function() {
+            setTimeout(function() {
                 if(Util.isDestroyed(me, view)){
                     return;
                 }
