@@ -64,7 +64,6 @@ Ext.define('Ung.cmp.GridController', {
     copyRecord: function (view, rowIndex, colIndex, item, e, record) {
         var me = this,
             v = me.getView(),
-            grid = v.down('grid'),
             newRecord = record.copy(null);
 
         var newRecordData_Id = newRecord.data._id;
@@ -391,7 +390,6 @@ Ext.define('Ung.cmp.GridController', {
 
     importHandler: function (importMode, newData) {
         var grid = this.getView(),
-            vm = this.getViewModel(),
             existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data');
 
         Ext.Array.forEach(existingData, function (rec, index) {
