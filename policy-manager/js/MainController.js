@@ -28,7 +28,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     getSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel(), policies, selNode;
+        var v = this.getView(), vm = this.getViewModel(), policies, selNode;
 
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'getSettings')
@@ -112,7 +112,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     onPolicySelect: function (rowModel, selectedNode) {
-        var me = this, policiesStore = [[0, 'None'.t()]];
+        var me = this;
         me.selectedPolicyId = selectedNode.get('policyId');
         me.selectedPolicyName = selectedNode.get('name');
 
