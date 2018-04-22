@@ -89,7 +89,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
     },
 
     getTrustedCerts: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         Rpc.asyncData(v.appManager, 'getTrustCatalog')
         .then(function(result){
@@ -103,8 +103,6 @@ Ext.define('Ung.apps.sslinspector.MainController', {
     },
 
     uploadTrustedCertificate: function(view, row, colIndex, item, e, record) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
-
         this.uploadCertificateWin = Ext.create('Ext.Window', {
             title: "Upload Trusted Certificate".t(),
             layout: 'fit',
@@ -161,7 +159,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
     },
 
     handleFileUpload: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this;
         var form = this.uploadCertificateWin.down('form[name="upload_trusted_cert_form"]');
         var fileText = form.down('filefield[name="filename"]');
         var nameText = form.down('textfield[name="argument"]');
@@ -205,7 +203,7 @@ Ext.define('Ung.apps.sslinspector.SpecialGridController', {
     alias: 'controller.app-sslinspector-special',
 
     deleteTrustedCertificate: function(view, row, colIndex, item, e, record) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, v = this.getView();
 
         v.setLoading('Deleting Certificate...'.t());
         Rpc.asyncData(view.up('apppanel').appManager, 'removeTrustedCertificate', record.get("certAlias"))
@@ -213,7 +211,7 @@ Ext.define('Ung.apps.sslinspector.SpecialGridController', {
             if(Util.isDestroyed(me, v)){
                 return;
             }
-            var timer = setTimeout(function() {
+            setTimeout(function() {
                 if(Util.isDestroyed(me, v)){
                     return;
                 }
