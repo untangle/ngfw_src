@@ -315,7 +315,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
      * Adds specific condition editor based on it's defined type
      */
     onWidgetAttach: function (column, container, record) {
-        var me = this;
         container.removeAll(true);
 
         var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i;
