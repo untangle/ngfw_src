@@ -147,7 +147,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
     },
 
     validateSettings: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView();
 
         var clientStore = v.query('app-openvpn-remote-clients-grid')[0].getStore();
         var groupStore = v.query('app-openvpn-groups-grid')[0].getStore();
@@ -226,7 +226,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
     },
 
     uploadFile: function(cmp) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this;
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
         var file = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
         if ( file == null || file.length === 0 ) {
@@ -237,6 +237,9 @@ Ext.define('Ung.apps.openvpn.MainController', {
         form.submit({
             url: "/openvpn/uploadConfig",
             success: Ext.bind(function( form, action ) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
                 Ext.MessageBox.hide();
                 Ext.MessageBox.alert('Success'.t(), 'The configuration has been imported.'.t());
                 me.getSettings();
@@ -306,8 +309,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
             );
             return;
         }
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        me.getDistributeWindow().populate(record);
+        this.getDistributeWindow().populate(record);
     },
 
     getDistributeWindow: function() {
