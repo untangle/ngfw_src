@@ -140,7 +140,7 @@ Ext.define('Ung.apps.reports.MainController', {
                     }
                 }
             }
-            vm.set('googleDriveConfigured', 'googleDriveConfigured');
+            vm.set('googleDriveConfigured', googleDriveConfigured);
         }, function(ex) {
             Util.handleException(ex);
         });
@@ -493,8 +493,7 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
      * Updates the disabled/enabled status of the conditions in the menu
      */
     setMenuReports: function () {
-        var me = this,
-            v = this.getView(),
+        var v = this.getView(),
             menu = v.down('#addReportBtn').getMenu(),
             store = v.getStore();
 
@@ -510,9 +509,6 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
     },
 
     getTooltip: function(record){
-        var me = this,
-            vm = this.getViewModel();
-
         var description = [];
         description.push( 'Description'.t() + ': ' + record.get('description') );
         description.push( 'Type'.t() + ': ' + this.getView().up('app-reports').getController().reportTypeRenderer( record.get('type') ) );
@@ -646,8 +642,7 @@ Ext.define('Ung.cmp.EmailTemplateSelectController', {
     },
 
     onAfterRender: function(){
-        var me = this,
-            v = this.getView(),
+        var v = this.getView(),
             vm = this.getViewModel();
 
         this.recordBind = vm.bind({
@@ -661,7 +656,6 @@ Ext.define('Ung.cmp.EmailTemplateSelectController', {
             menu.push({
                 text: record.get('title'),
                 value: record.get('templateId'),
-                // tooltip: me.getTooltip( record )
             });
         });
 
@@ -705,8 +699,7 @@ Ext.define('Ung.cmp.EmailTemplateSelectController', {
      * Updates the disabled/enabled status of the conditions in the menu
      */
     setMenuTemplates: function () {
-        var me = this,
-            v = this.getView(),
+        var v = this.getView(),
             vm = this.getViewModel(),
             menu = v.down('#addTemplateBtn').getMenu(),
             store = v.getStore();
@@ -730,8 +723,7 @@ Ext.define('Ung.cmp.EmailTemplateSelectController', {
     },
 
     getTooltip: function(record){
-        var me = this,
-            vm = this.getViewModel(),
+        var vm = this.getViewModel(),
             emailTemplates = vm.get('emailTemplates');
 
         var emailTemplate = emailTemplates.findRecord('templateId', record.get('field1') );
