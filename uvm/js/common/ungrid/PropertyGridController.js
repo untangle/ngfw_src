@@ -33,8 +33,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
 
     onBeforeRender: function(){
         var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
+            v = me.getView();
 
         var sourceConfig = v.initialConfig.sourceConfig ? v.initialConfig.sourceConfig : {};
 
@@ -97,7 +96,6 @@ Ext.define('Ung.cmp.PropertyGridController', {
      */
     masterGridSelect: function (grid, record) {
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel(),
             propertyRecord = record.getData();
 
