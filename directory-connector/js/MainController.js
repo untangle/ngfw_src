@@ -91,7 +91,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     portChanger: function(elem){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var vm = this.getViewModel();
 
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
@@ -112,7 +112,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
 
     activeDirectoryUsers: function(domain){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView();
 
         if(typeof(domain) == "object"){
             domain = null;
@@ -141,7 +141,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     activeDirectoryGroupMap: function(domain){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView();
 
         if(typeof(domain) == "object"){
             domain = null;
@@ -170,9 +170,8 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     activeDirectoryGroupRefreshCache: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
         Ext.MessageBox.wait( "Refreshing Group Cache...".t(), "Refresh Group Cache".t());
-        Rpc.asyncData( v.appManager, 'refreshGroupCache')
+        Rpc.asyncData( this.getView().appManager, 'refreshGroupCache')
         .then(function(result){
             Ext.MessageBox.close();
         }, function(ex){
@@ -182,7 +181,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     radiusTest: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         Ext.MessageBox.wait( "Testing RADIUS...".t(), "RADIUS Test".t());
         var username = v.down('textfield[name=radiusTestUsername]').getValue();
@@ -199,7 +198,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     googleRefreshTaskBuild: function() {
-        var me = this, v = this.getView();
+        var me = this;
 
         if(me.refreshGoogleTask != null){
             return;
@@ -227,7 +226,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
                 this.started = false;
             },
             run: Ext.bind(function () {
-                var me = this, v = this.getView(), vm = this.getViewModel();
+                var me = this, v = this.getView();
                 if(!me || !v.rendered) {
                     return;
                 }
@@ -264,9 +263,8 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     googleDriveConfigure: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        me.refreshGoogleTask.start();
-        window.open(Rpc.directData(v.appManager.getGoogleManager(), 'getAuthorizationUrl', window.location.protocol, window.location.host));
+        this.refreshGoogleTask.start();
+        window.open(Rpc.directData(this.getView().appManager.getGoogleManager(), 'getAuthorizationUrl', window.location.protocol, window.location.host));
     },
 
     googleDriveDisconnect: function(){
@@ -315,7 +313,7 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
     },
 
     serverTest: function( element, rowIndex, columnIndex, column, pos, record){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView();
 
         Ext.MessageBox.wait( record.data.domain + "<br/><br/>" + "Testing...".t(), "Active Directory Test".t());
         Rpc.asyncData( v.up('[itemId=appCard]').appManager.getActiveDirectoryManager(), 'getStatusForSettings', record.data)
@@ -328,13 +326,11 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
     },
 
     serverUsers: function( element, rowIndex, columnIndex, column, pos, record){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        v.up('[itemId=appCard]').getController().activeDirectoryUsers(record.get('domain'));
+        this.getView().up('[itemId=appCard]').getController().activeDirectoryUsers(record.get('domain'));
     },
 
     serverGroupMap: function( element, rowIndex, columnIndex, column, pos, record){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        v.up('[itemId=appCard]').getController().activeDirectoryGroupMap(record.get('domain'));
+        this.getView().up('[itemId=appCard]').getController().activeDirectoryGroupMap(record.get('domain'));
     }
 
 });
@@ -352,7 +348,7 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditorCo
     alias: 'controller.unactivedirectoryserverrecordeditorcontroller',
 
     onApply: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         if (!this.action) {
             for (var fieldName in vm.get('record').modified) {
