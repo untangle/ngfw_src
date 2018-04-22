@@ -235,7 +235,7 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         loadResultSet: function (reader) {
-            var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
+            var me = this, grid = me.getView().down('grid');
 
             // this.getView().setLoading(true);
             grid.getStore().setFields( me.tableConfig.fields );
