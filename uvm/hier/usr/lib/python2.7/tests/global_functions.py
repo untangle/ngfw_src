@@ -255,7 +255,6 @@ def is_in_office_network(wanIP):
     for officeNetworkTest in officeNetworks:
         if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(officeNetworkTest):
             return True
-            break
     return False
 
 def is_bridged(wanIP):
