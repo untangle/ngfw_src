@@ -184,7 +184,7 @@ class WebBrowser:
 
             if all_none_displayed is True and all_images_complete:
                 return True
-                break
+
             time.sleep(.5)
             max_sleep -= 1
         return False
