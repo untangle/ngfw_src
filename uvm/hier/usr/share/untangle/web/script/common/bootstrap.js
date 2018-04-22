@@ -31,7 +31,7 @@ Ext.define('Bootstrap', {
 
     initTranslations: function () {
         // initialize translations
-        var languageManager, languageSettings, lang;
+        var languageManager, languageSettings, lang = 'en';
 
         // QUARANTINE does not seem to have access to translations
         if (this.servletContext === 'QUARANTINE') {
@@ -46,10 +46,11 @@ Ext.define('Bootstrap', {
         if (this.servletContext === 'REPORTS') {
             languageManager = rpc.ReportsContext.languageManager();
         }
-
-        // set languageSettings
-        languageSettings = languageManager.getLanguageSettings();
-        lang = languageSettings.language;
+        if(languageManager != null){
+            // set languageSettings
+            languageSettings = languageManager.getLanguageSettings();
+            lang = languageSettings.language;
+        }
 
         // for REPORTS need to fetch translations as for ADMIN there are already set
         if (this.servletContext === 'REPORTS') {
