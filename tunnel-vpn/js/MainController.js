@@ -34,12 +34,12 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
     },
 
     recycleTunnel: function(view, row, colIndex, item, e, record) {
-        var me = this, v = this.getView(), vm = this.getViewModel(), grid = this.getView().down('#tunnelStatus');
+        var me = this, grid = this.getView().down('#tunnelStatus');
 
         grid.setLoading('Recycling...'.t());
         Rpc.asyncData(this.getView().appManager, 'recycleTunnel', record.get("tunnelId"))
         .then(function(result){
-            var timer = setTimeout(function() {
+            setTimeout(function() {
                 if(Util.isDestroyed(grid, me)){
                     return;
                 }
@@ -351,7 +351,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel();
 
         var rulesInUse = [];
@@ -371,8 +370,7 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelGridController', {
     },
 
     checkauth: function( e, editor){
-        var me = this,
-            vm = this.getViewModel();
+        var vm = this.getViewModel();
 
         var providers = vm.get('providers');
         return providers[editor.record.get('provider')].userAuth;
@@ -394,7 +392,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
 
     uploadFile: function(cmp) {
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel(),
             component = cmp;
 
@@ -426,7 +423,6 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
     },
     providerChange: function(combo, newValue, oldValue){
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel();
 
         vm.set('fileResult', '');
