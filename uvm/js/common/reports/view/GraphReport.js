@@ -591,7 +591,7 @@ Ext.define('Ung.view.reports.GraphReport', {
             var me = this, vm = me.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'), colors,
                 isWidget = me.getView().isWidget, plotLines = [],
 
-                isTimeColumn = false, isColumnStacked = false, isColumnOverlapped = false,
+                isColumnStacked = false, isColumnOverlapped = false,
                 isPieColumn = false, isDonut = false, isPie = false, is3d = false;
 
             if (!entry) { return; }
@@ -651,7 +651,6 @@ Ext.define('Ung.view.reports.GraphReport', {
             var isTimeGraph = entry.get('type').indexOf('TIME_GRAPH') >= 0;
 
             if (isTimeGraph) {
-                isTimeColumn = entry.get('timeStyle').indexOf('BAR') >= 0;
                 isColumnStacked = entry.get('timeStyle').indexOf('STACKED') >= 0;
                 isColumnOverlapped = entry.get('timeStyle').indexOf('OVERLAPPED') >= 0;
             }
@@ -802,7 +801,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         grouping: !isColumnOverlapped,
                         groupPadding: isColumnOverlapped ? 0.1 : 0.15,
                         // shadow: !isColumnOverlapped,
-                        dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnOverlapped ? 50 : 50 } : undefined
+                        dataGrouping: isTimeGraph ? 50 : undefined
                     }
                 },
                 xAxis: {
