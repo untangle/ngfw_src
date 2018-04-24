@@ -652,7 +652,7 @@ class NetworkTests(unittest2.TestCase):
         app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
         nuke_first_level_rule('bypassRules')
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
         # Block port 80 and verify it's closed
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("DST_PORT","80"))
         result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
@@ -1232,7 +1232,7 @@ class NetworkTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1273,7 +1273,7 @@ class NetworkTests(unittest2.TestCase):
     # Test that filter rule's SRC_ADDR condition supports commas
     def test_151_filter_rules_blocked_src_comma(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1293,7 +1293,7 @@ class NetworkTests(unittest2.TestCase):
     # This is because iptables only supports so many entries so the rules must be broken apart
     def test_152_filter_rules_blocked_src_comma_many(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
         str = ""
         for i in range(0,20):
@@ -1333,7 +1333,7 @@ class NetworkTests(unittest2.TestCase):
         
         print(found_host.get('macAddress'))
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1352,7 +1352,7 @@ class NetworkTests(unittest2.TestCase):
     # Test that filter rule's SRC_ADDR condition supports commas
     def test_154_filter_rules_blocked_client_tagged(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
         global_functions.host_tags_add("foobar")
         
