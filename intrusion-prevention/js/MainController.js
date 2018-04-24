@@ -552,52 +552,37 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
 
     actionRegex: /^([#]+|)\s*(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     editorRuleChange: function( me, newValue, oldValue, eOpts ){
+        var rule = new Ung.model.intrusionprevention.rule(newValue);
+
+        if(!rule.get('valid')){
+            return;
+        }
+
         var gridController = this.getView().up('grid').getController();
         var record = this.getViewModel().get('record');
 
-        newValue = newValue.replace( /(\r\n|\n|\r)/gm, "" );
+        record.set('sid', rule.getOption('sid'));
+        record.set('gid', rule.getOption('gid'));
+        record.set('msg', rule.getOption('msg'));
 
-        var recordValue;
-        var updateRuleKeys = gridController.updateRuleKeys;
-        for( var i = 0; i < updateRuleKeys.length; i++ ){
-            key = updateRuleKeys[i]['key'];
-            regex = updateRuleKeys[i]['regex'];
-            quoted = updateRuleKeys[i]['quoted'];
-
-            if( regex.test( newValue ) ){
-                match = regex.exec( newValue );
-                recordValue = match[1];
-                if(quoted){
-                    recordValue = recordValue.substr(1, recordValue.length - 2);
-                }
-                record.set(key, recordValue);
+        var log = false;
+        var block = false;
+        if(rule.get('enabled')){
+            var action = rule.get('action');
+            if(action == 'alert'){
+                log = true;
+                block = false;
+            }else if(action == 'drop'){
+                log = true;
+                block = true;
+            }else if(action == 'sdrop'){
+                log = false;
+                block = true;
             }
         }
-
-        var logValue = null;
-        var blockValue = null;
-        var actionRegexMatch = gridController.actionRegexMatch;
-        if( this.actionRegex.test( newValue ) === true ){
-            match = actionRegexMatch.exec( newValue );
-            if( match[2] == "alert" ){
-                logValue = true;
-                blockValue = false;
-            }else if( ( match[2] == "drop" ) || ( match[2] == "sdrop" ) ){
-                logValue = true;
-                blockValue = true;
-            }
-            if( match[1] == "#" ){
-                logValue = false;
-                blockValue = false;
-            }
-        }
-        if(logValue != null){
-            record.set('log', logValue);
-        }
-        if(blockValue != null){
-            record.set('block', blockValue);
-        }
-    },
+        record.set('log', log);
+        record.set('block', block);
+    }
 
 });
 
@@ -875,96 +860,16 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         me.getController().updateSearchStatusBar();
     },
 
-    updateRuleKeys: [{
-        key: 'classtype',
-        regex: /\s+classtype:([^;]+);/,
-        quoted: false
-    },{
-        key: 'msg',
-        regex: /\s+msg:([^;]+);/,
-        quoted: true
-    },{
-        key: 'sid',
-        regex: /\s+sid:([^;]+);/,
-        quoted: false
-    },{
-        key: 'metadata',
-        regex: /\s+metadata:([^;]+);/,
-        quoted: false
-    }],
-    actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     updateRule: function( record, updatedKey, updatedValue){
         var me = this;
         var gridSourced = record.store ? true : false;
         var i, regex;
         var ruleValue = record.get('rule');
+        var updatedSubkey = null;
 
-        var metadataValue = null;
-        if( ( updatedKey === 'log' || updatedKey === 'block' ) &&
-            gridSourced ||
-            ( record.get(updatedKey) !== updatedValue) ){
-            var metadata = [];
-            regex = null;
-            for(i = 0; i < this.updateRuleKeys.length; i++){
-                if(this.updateRuleKeys[i].key === "metadata"){
-                    regex = this.updateRuleKeys[i].regex;
-                }
-            }
-            if(regex != null){
-                var metadataFound = regex.test( ruleValue );
-                var matches = ruleValue.match(regex);
-                if( metadataFound && matches.length > 1 ){
-                    matches[1].split(',').forEach(function(keypair){
-                        var kv = keypair.trim().split(" ");
-                        if( kv[0] == 'untangle_action' ){
-                            return;
-                        }
-                        metadata.push(kv[0].trim() + ' ' + kv[1].trim());
-                    });
-                }
-                var date = new Date(Date.now() + Renderer.timestampOffset);
-                metadata.push('untangle_action ' + Ext.util.Format.date(date, "Y_m_d"));
-                metadataValue = metadata.join(', ');
-            }
-        }
-
-        // Standard field (key:value;) replacements.
-        var key;
-        var value;
-        var quoted;
-        var newField;
-        for(i = 0; i < this.updateRuleKeys.length; i++ ){
-            key = this.updateRuleKeys[i]['key'];
-            regex = this.updateRuleKeys[i]['regex'];
-            quoted = this.updateRuleKeys[i]['quoted'];
-
-            if(updatedKey == key){
-                value = updatedValue;
-            }else{
-                if(key === "metadata"){
-                    if(metadataValue == null){
-                        continue;
-                    }else{
-                        value = metadataValue;
-                    }
-                }else{
-                    value = record.get(key);
-                }
-            }
-            value = (quoted ? '"' : '' ) + value + (quoted ? '"' : '' );
-
-            newField = " " + key + ":" + value + ";";
-
-            if( regex.test( ruleValue )) {
-                ruleValue = ruleValue.replace( regex, newField );
-            } else {
-                var idx = ruleValue.lastIndexOf(")");
-                if(idx != -1) {
-                    ruleValue = ruleValue.slice(0, idx-1) + newField + ruleValue.slice(idx - 1);
-                } else {
-                    ruleValue += " (" + newField + " )";
-                }
-            }
+        var rule = new Ung.model.intrusionprevention.rule(ruleValue);
+        if(!rule.get('valid')){
+            return;
         }
 
         // Action replacement
@@ -978,22 +883,23 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
                 blockValue = updatedValue;
             }
 
-            var actionField = "alert";
+            rule.set('action', 'alert');
+            rule.set('enabled', true);
             if( logValue === true && blockValue === true ) {
-                actionField = "drop";
+                rule.set('action', 'drop');
             } else if( logValue === false && blockValue === true ) {
-                actionField = "sdrop";
+                rule.set('action', 'sdrop');
             }else if( logValue === false && blockValue === false ) {
-                actionField = "#" + actionField;
+                rule.set('enabled', false);
             }
 
-            if( this.actionRegexMatch.test( ruleValue ) === true ) {
-                ruleValue = ruleValue.replace( this.actionRegexMatch, actionField );
-            } else {
-                ruleValue = actionField + ruleValue;
-            }
+            // Update metadata with indicator that user has changed to preserve on rule updates.
+            var date = new Date(Date.now() + Renderer.timestampOffset);
+            rule.setMetadataOption('untangle_action', Ext.util.Format.date(date, "Y_m_d"));
+        }else{
+            rule.setOption(updatedKey, updatedValue);
         }
-        record.set('rule', ruleValue );
+        record.set('rule', rule.build());
     }
 
 });
@@ -1077,5 +983,180 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
                 record.set('markedForDelete', true);
             }
         }
+    }
+});
+
+Ext.define('Ung.model.intrusionprevention.rule',{
+    extend: 'Ext.data.Model',
+    fields:[{
+        name: 'valid',
+        type: 'boolean'
+    },{
+        name: 'enabled',
+        type: 'boolean'
+    },{
+        name: 'action',
+        type: 'string',
+        defaultValue: 'alert'
+    },{
+        name: 'protocol',
+        type: 'string'
+    },{
+        name: 'lnet',
+        type: 'string'
+    },{
+        name: 'lport',
+        type: 'string'
+    },{
+        name: 'direction',
+        type: 'string'
+    },{
+        name: 'rnet',
+        type: 'string'
+    },{
+        name: 'rport',
+        type: 'string'
+    },{
+        name: 'options'
+    },{
+        name: 'optionsMetadata'
+    }],
+
+    ruleRegexMatch: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
+    constructor: function(rule, session){
+        var data = {
+            valid: true,
+            enabled: false,
+            action: 'alert',
+            protocol: '',
+            lnet: '',
+            lport: '',
+            direction: '',
+            rnet: '',
+            rport: '',
+            options: [],
+            metadataOptions: []
+        };
+
+        if(!this.ruleRegexMatch.test(rule)){
+            data['valid'] = false;
+        }else{
+            var matches = this.ruleRegexMatch.exec(rule);
+
+            data['enabled'] = matches[1] == '#' ? false : true;
+            data['action'] = matches[2].toLowerCase();
+            if(matches[3] != ""){
+                data['protocol'] = matches[4].toLowerCase();
+                data['lnet'] = matches[5];
+                data['lport'] = matches[6];
+                data['direction'] = matches[7];
+                data['rnet'] = matches[8];
+                data['rport'] = matches[9];
+            }
+            data['options'] = matches[10].trim().split(';');
+            data['options'].forEach( function(option, index, options){
+                options[index] = option.trim();
+                var kv = option.trim().split(':');
+                if(kv[0] == 'metadata'){
+                    data['optionsMetadata'] = kv[1].trim().split(',');
+                    data['optionsMetadata'].forEach( function( moption, mindex, moptions){
+                        moptions[mindex] = moption.trim();
+                    });
+                }
+            });
+        }
+
+        this.callParent([data], session);
+    },
+
+    getOption: function(key){
+        value = null;
+
+        var options = this.get('options');
+        var kv;
+        options.forEach( function( option, index, optionsMetadata){
+            kv = option.split(':');
+            if(kv[0].trim() == key){
+                kv[1] = kv[1].trim();
+                if(kv[1][0] == '"' && kv[1][kv[1].length -1] == '"'){
+                    kv[1] = kv[1].substring(1,kv[1].length - 1);
+                }
+                value = kv[1];
+            }
+        });
+        return value;
+    },
+
+    setOption: function( key, value){
+        var options = this.get('options');
+        var found = false;
+        var kv;
+        options.forEach( function( option, index, optionsMetadata){
+            kv = option.split(':');
+            if(kv[0].trim() == key){
+                kv[1] = kv[1].trim();
+                var preserveQuotes = false;
+                if(kv[1][0] == '"' && kv[1][kv[1].length -1] == '"'){
+                    preserveQuotes = true;
+                }
+                kv[1] = (preserveQuotes ? '"' : '' ) + value + (preserveQuotes ? '"' : '' );
+                found = true;
+                options[index] = kv.join(': ');
+            }
+        });
+        if(!found){
+            options.push(key + ': ' + value);
+        }
+        this.set('options', options);
+    },
+
+    setMetadataOption: function( key, value){
+        var optionsMetadata = this.get('optionsMetadata');
+        var found = false;
+        var kv;
+        optionsMetadata.forEach( function( option, index, optionsMetadata){
+            kv = option.split(' ');
+            if(kv[0].trim() == key){
+                kv[1] = value;
+                found = true;
+                optionsMetadata[index] = kv.join(' ');
+            }
+        });
+        if(!found){
+            optionsMetadata.push(key + ' ' + value);
+        }
+        this.set('optionsMetadata', optionsMetadata);
+    },
+
+    build: function(){
+
+        var options = this.get('options');
+        var metadataOptions = this.get('optionsMetadata');
+        if(metadataOptions){
+            metadataOptions = metadataOptions.join(', ');
+            var metadataFound = false;
+            options.forEach( function(option, index, options){
+                var kv = option.split(':');
+                if(kv[0].trim() == 'metadata'){
+                    kv[1] = metadataOptions;
+                    options[index] = kv.join(': ');
+                    metadataFound = true;
+                }
+            });
+            if(!metadataFound){
+                options.push('metadata: ' + metadataOptions);
+            }
+        }
+        options = options.join('; ');
+
+        return (this.get('enabled')  ? '' : '#') +
+            this.get('action') + " " +
+            (this.get('protocol') ? this.get('protocol') + ' ' : '') +
+            (this.get('lnet') ? this.get('lnet') + ' ' : '') +
+            (this.get('lport') ? this.get('lport') + ' ' : '') +
+            (this.get('direction') ? this.get('direction') + ' ' : '') +
+            (this.get('rnet') ? this.get('rnet') + ' ' : '') +
+            (this.get('rport') ? this.get('rport') + ' ' : '') +
+            "( " + options + " )";
     }
 });
