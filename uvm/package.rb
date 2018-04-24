@@ -103,6 +103,11 @@ ungAllDirs = [ 'overrides', 'model', 'store', 'controller',
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
+# ung-setup-all
+ungSetupAllDirs = [ 'view', 'Application.js' ]
+ungSetupAllDirs.map! { |e| "uvm/servlets/setup/app/#{e}" }
+JsBuilder.new(uvm_lib, "ung-setup-all", ungSetupAllDirs, "setup/script")
+
 # sections
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
@@ -121,6 +126,7 @@ JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
 ## SCSS
 ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
 ScssBuilder.new(uvm, "reports-all", "./uvm/js/common/reports/sass", "script/common")
+ScssBuilder.new(uvm, "setup-all", "./uvm/servlets/setup/sass", "setup/styles")
 
 ## i18n
 poFiles = FileList["./i18ntools/po/**/*.po"]

@@ -1,0 +1,52 @@
+$custom-font: 'Source Sans Pro', sans-serif;
+$custom-font-condensed: 'Roboto Condensed', sans-serif;
+
+.intro {
+    opacity: 0;
+    -webkit-transition: opacity 5s cubic-bezier(0.23, 1, 0.32, 1);
+    &.fadein {
+        opacity: 1;
+    }
+}
+.step {
+    .x-panel-header {
+        background: transparent;
+    }
+}
+
+.step-title {
+    font-family: $custom-font-condensed;
+    font-weight: 100;
+    color: #999;
+    font-size: 36px;
+    background: #FFF;
+    // text-align: center;
+}
+
+.sectionheader {
+    font-family: $custom-font-condensed;
+    font-size: 20px;
+    // font-weight: bold;
+    color: #555;
+}
+
+.inline-warning {
+    background: #e2e2e2;
+    border-radius: 5px;
+}
+
+.steps {
+    position: absolute !important;
+    left: 50% !important;
+    margin-left: -100px !important;
+    text-align: center;
+    i {
+        width: 8px;
+        height: 8px;
+        display: inline-block;
+        margin: 12px 3px;
+        // background: #333;
+        border-radius: 50%;
+        border: 1px #333 solid;
+    }
+}

@@ -14,6 +14,7 @@
     "globals": {
         "Ext": true,
         "Highcharts": true,
+        "JSONRpcClient": true,
         "Ung": true,
         "Rpc": true,
         "rpc": true,
