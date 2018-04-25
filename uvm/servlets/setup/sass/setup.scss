@@ -1,6 +1,12 @@
 $custom-font: 'Source Sans Pro', sans-serif;
 $custom-font-condensed: 'Roboto Condensed', sans-serif;
 
+.fa-red { color: red; }
+.fa-green { color: #64D242; }
+.fa-orange { color: orange; }
+.fa-yellow { color: yellow; }
+.fa-gray { color: #999; }
+
 .intro {
     opacity: 0;
     -webkit-transition: opacity 5s cubic-bezier(0.23, 1, 0.32, 1);
@@ -44,9 +50,21 @@ $custom-font-condensed: 'Roboto Condensed', sans-serif;
         width: 8px;
         height: 8px;
         display: inline-block;
-        margin: 12px 3px;
+        margin: 5px 3px;
         // background: #333;
         border-radius: 50%;
-        border: 1px #333 solid;
+        border: 1px #999 solid;
+        background: #999;
+        vertical-align: middle;
+        &.done {
+            border: 1px #333 solid;
+            background: #333;
+        }
+        &.active {
+            width: 10px;
+            height: 10px;
+            background: none;
+            border: 2px #333 solid;
+        }
     }
 }
