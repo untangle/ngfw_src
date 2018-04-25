@@ -107,7 +107,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
         pre_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
 
         appData['smtpConfig']['scanWanMail'] = True
@@ -154,7 +154,7 @@ class PhishBlockerTests(unittest2.TestCase):
         
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 5
         appData['smtpConfig']['msgAction'] = "MARK"
@@ -206,7 +206,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_050_checkTLSBypass(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
         tlsSMTPResult = sendPhishMail(host=smtpServerHost, useTLS=True)
         # print("TLS  : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
@@ -214,7 +214,7 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_060_checkTLSwSSLInspector(self):
         global appSSL
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         appSSL.start()
         tlsSMTPResult = sendPhishMail(mailfrom="test060", host=smtpServerHost, useTLS=True)
