@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.Util', {
     singleton: true,
 
     authenticate: function (password, cb) {
-        Ung.app.loading('Authenticating'.t());
+        // Ung.app.loading('Authenticating...'.t());
         Ext.Ajax.request({
             url: '/auth/login?url=/admin&realm=Administrator',
             params: {
@@ -16,7 +16,7 @@ Ext.define('Ung.Setup.Util', {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             success: function (response) {
-                Ung.app.loading(false);
+                // Ung.app.loading(false);
                 if (response.responseText && response.responseText.indexOf('loginPage') != -1) {
                     Ext.MessageBox.alert('Authentication failed'.t(), 'Invalid password.'.t());
                     return;
@@ -45,7 +45,7 @@ Ext.define('Ung.Setup.Util', {
                 cb();
             },
             failure: function (response) {
-                Ung.app.loading(false);
+                // Ung.app.loading(false);
                 console.log(response);
                 Ext.MessageBox.alert('Authenticatication failed'.t(), 'The authentication request has failed.'.t());
             }

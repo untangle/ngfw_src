@@ -79,16 +79,6 @@
         cite {
             font-style: normal;
         }
-
-        a {
-            color: blue;
-        }
-
-        .fa-red { color: red; }
-        .fa-green { color: #64D242; }
-        .fa-orange { color: orange; }
-        .fa-yellow { color: yellow; }
-        .fa-gray { color: #999; }
     </style>
 
   </head>
