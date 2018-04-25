@@ -66,20 +66,7 @@ Ext.define('Ung.Setup.Main', {
 
             // check if resuming
             if (!rpc.wizardSettings.wizardComplete && rpc.wizardSettings.completedStep != null) {
-                var steps = rpc.wizardSettings.steps;
-
                 vm.set('resuming', true);
-                console.log('here');
-                // vm.set({
-                //     resuming: true,
-                //     completedStep: completedStepCmp.getTitle(),
-                //     nextStep: nextStepCmp.getTitle(),
-                //     nextStepIndex: nextStepIndex
-                // });
-
-                // Ext.defer(function () {
-                //     Ung.app.getMainView().lookup('nextBtn').setText('<strong>' + nextStepCmp.getTitle() + '</strong>&nbsp;&nbsp;<i class="fa fa-arrow-circle-right fa-lg"></i>');
-                // }, 100);
             }
         },
 
