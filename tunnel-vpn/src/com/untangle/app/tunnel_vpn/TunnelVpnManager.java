@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.network.InterfaceStatus;
 
 /**
  * This class has all the logic for "managing" the tunnel configs. This includes
@@ -128,7 +129,9 @@ public class TunnelVpnManager
         int tunnelId = tunnelSettings.getTunnelId();
         String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
         String tunnelName = "tunnel-" + tunnelId;
-
+        Integer interfaceId = tunnelSettings.getBoundInterfaceId();
+        boolean localBound = false;
+        
         String cmd = "/usr/sbin/openvpn ";
         cmd += "--config " + directory + "/tunnel.conf ";
         cmd += "--writepid /run/tunnelvpn/" + tunnelName + ".pid ";
@@ -140,6 +143,17 @@ public class TunnelVpnManager
         cmd += "--up " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-up.sh ";
         cmd += "--down " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-down.sh ";
         cmd += "--management 127.0.0.1 " + (TunnelVpnApp.BASE_MGMT_PORT + tunnelId) + " ";
+        if (interfaceId != null && interfaceId != 0) {
+            // if bound to a specific interface, specify that interface's main IP as the local address
+            InterfaceStatus status = UvmContextFactory.context().networkManager().getInterfaceStatus(interfaceId);
+            if (status != null && status.getV4Address() != null) {
+                cmd += "--bind --local " + status.getV4Address().getHostAddress();
+                localBound = true;
+            }
+        }
+        if (!localBound) {
+            cmd += "--nobind ";
+        }
 
         Process proc = UvmContextFactory.context().execManager().execEvilProcess(cmd);
         processMap.put(tunnelId, proc);

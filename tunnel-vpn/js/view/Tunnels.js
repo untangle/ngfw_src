@@ -82,7 +82,9 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         name: 'tunnel',
         provider: '',
         javaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings',
-        tunnelId: -1
+        tunnelId: -1,
+        nat: true,
+        boundInterfaceId: 0
     },
 
     editorFields: [
@@ -200,6 +202,18 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
             bind: {
                 value: '{record.nat}'
             }
+        }, {
+            xtype: 'combo',
+            fieldLabel: 'Interface'.t(),
+            bind: {
+                value: '{record.boundInterfaceId}',
+                store: '{interfaceList}'
+            },
+            allowBlank: false,
+            editable: false,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'index'
         }]
     }]
 
