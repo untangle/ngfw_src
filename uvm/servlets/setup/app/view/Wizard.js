@@ -116,8 +116,8 @@ Ext.define('Ung.Setup.Wizard', {
             var me = this, vm = me.getViewModel(), cardIndex;
             if (!rpc.wizardSettings.wizardComplete && rpc.wizardSettings.completedStep !== null) {
                 cardIndex = Ext.Array.indexOf(rpc.wizardSettings.steps, rpc.wizardSettings.completedStep);
+
                 // if resuming from a step after Network Cards settings, need to fetch network settings
-                console.log(cardIndex);
                 if (cardIndex > 1) {
                     Ung.app.loading('Loading interfaces...'.t());
                     rpc.networkManager.getNetworkSettings(function (result, ex) {
@@ -130,11 +130,11 @@ Ext.define('Ung.Setup.Wizard', {
                         });
 
                         // update the steps based on interfaces
-                        me.onSyncSteps();
-                        view.setActiveItem(cardIndex);
+                        me.onSyncSteps(cardIndex);
                     });
                 } else {
-                    view.setActiveItem(cardIndex);
+                    view.setActiveItem(cardIndex + 1);
+                    me.updateNav();
                 }
             } else {
                 me.updateNav();
@@ -180,8 +180,6 @@ Ext.define('Ung.Setup.Wizard', {
                 'activeStepDesc': layout.getActiveItem().description
             });
 
-            // console.log(vm.get('activeStep'));
-
             if (prevStep) {
                 prevBtn.show().setText(prevStep.getTitle());
             } else {
@@ -224,7 +222,7 @@ Ext.define('Ung.Setup.Wizard', {
          * called after the netwark settings were fetched,
          * sets the wizard steps
          */
-        onSyncSteps: function () {
+        onSyncSteps: function (activeItemIdx) {
             var me = this, vm = me.getViewModel(),
                 wizard = me.getView(),
 
@@ -267,6 +265,10 @@ Ext.define('Ung.Setup.Wizard', {
                     wizard.add( { xtype: step } );
                 }
             });
+
+            if (Ext.isNumber(activeItemIdx)) {
+                wizard.setActiveItem(activeItemIdx + 1);
+            }
 
             me.updateNav();
         }

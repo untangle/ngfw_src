@@ -162,7 +162,6 @@ Ext.define('Ung.Setup.InternalNetwork', {
 
         setConfigType: function (radio) {
             var me = this, vm = me.getViewModel();
-            console.log('checkchange');
             if (radio.checked) {
                 if (radio.inputValue === 'BRIDGED') {
                     vm.set('internal.configType', 'BRIDGED');
