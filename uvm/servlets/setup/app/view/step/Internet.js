@@ -1,4 +1,4 @@
-Ext.define('Ung.Setup.InternetConnection', {
+Ext.define('Ung.Setup.Internet', {
     extend: 'Ext.form.Panel',
     alias: 'widget.Internet',
 

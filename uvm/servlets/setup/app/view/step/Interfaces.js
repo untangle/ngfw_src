@@ -1,4 +1,4 @@
-Ext.define('Ung.Setup.NetworkCards', {
+Ext.define('Ung.Setup.Interfaces', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.Interfaces',
     title: 'Network Cards'.t(),
@@ -195,7 +195,6 @@ Ext.define('Ung.Setup.NetworkCards', {
             me.intfOrderArr = [];
 
             Ung.app.loading('Loading interfaces...'.t());
-
             rpc.networkManager.getNetworkSettings(function (result, ex) {
                 Ung.app.loading(false);
                 if (ex) { Util.handleException('Unable to load interfaces.'.t()); return; }
@@ -231,6 +230,10 @@ Ext.define('Ung.Setup.NetworkCards', {
                     });
                     vm.set('deviceStore', me.physicalDevsStore);
                 });
+
+                // update the steps based on interfaces
+                me.getView().up('window').fireEvent('syncsteps');
+
             });
         },
 
