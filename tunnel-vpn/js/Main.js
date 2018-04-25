@@ -24,6 +24,10 @@ Ext.define('Ung.apps.tunnel-vpn.Main', {
                 fields: [ 'index', 'name' ],
                 data: '{destinationTunnelData}'
             },
+            interfaceList: {
+                fields: [ 'index', 'name' ],
+                data: '{interfaceData}'
+            },
             tunnelStatusList: {
                 data: '{tunnelStatusData}',
                 fields:[{
