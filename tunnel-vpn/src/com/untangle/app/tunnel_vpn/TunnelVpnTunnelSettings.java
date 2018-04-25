@@ -28,6 +28,8 @@ public class TunnelVpnTunnelSettings implements JSONString, Serializable
     private String username = null;
     private String password = null;
 
+    private Integer boundInterfaceId = null; /* 0 and null mean any interface */
+    
 // THIS IS FOR ECLIPSE - @formatter:off
     
     public TunnelVpnTunnelSettings() {}
@@ -52,6 +54,9 @@ public class TunnelVpnTunnelSettings implements JSONString, Serializable
 
     public boolean getNat() { return nat; }
     public void setNat(boolean newValue) { this.nat = newValue; }
+
+    public Integer getBoundInterfaceId() { return this.boundInterfaceId; }
+    public void setBoundInterfaceId( Integer newValue ) { this.boundInterfaceId = newValue; }
     
 // THIS IS FOR ECLIPSE - @formatter:on
 

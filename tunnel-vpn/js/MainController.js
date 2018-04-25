@@ -148,6 +148,7 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
 
         var providers = vm.get('providers');
         var providerComboListData = [['', 'Select'.t()]];
+
         for( var provider in providers ){
             providerComboListData.push([provider, providers[provider].description]);
         }
@@ -158,24 +159,44 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         }) );
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'getSettings')
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings')
+        ])
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
 
-            vm.set('settings', result);
+            var appSettings = result[0];
+            var networkSettings = result[1];
+            
+            vm.set('settings', appSettings);
             var destinationTunnelData = [];
             destinationTunnelData.push([-1, 'Any Available Tunnel'.t()]);
             destinationTunnelData.push([0, 'Route Normally'.t()]);
-            if ( result.tunnels && result.tunnels.list ) {
-                for (var i = 0 ; i < result.tunnels.list.length ; i++) {
-                    var tunnel = result.tunnels.list[i];
+            if ( appSettings.tunnels && appSettings.tunnels.list ) {
+                for (var i = 0 ; i < appSettings.tunnels.list.length ; i++) {
+                    var tunnel = appSettings.tunnels.list[i];
                     destinationTunnelData.push([tunnel.tunnelId, tunnel.name]);
                 }
             }
             vm.set('destinationTunnelData', destinationTunnelData);
 
+            var interfaceData = [];
+            interfaceData.push([0, 'Any Interface'.t()]);
+            var intf;
+            for (var c = 0 ; c < networkSettings.interfaces.list.length ; c++) {
+                intf = networkSettings.interfaces.list[c];
+                var name = intf.name;
+                var key = intf.interfaceId;
+                // only allow addressed WANs (is there any use case for non-WANs? perhaps)
+                if ( intf.configType == 'ADDRESSED' && intf.isWan) {
+                    interfaceData.push( [ key, name ] );
+                }
+            }
+            vm.set('interfaceData', interfaceData);
+            
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
         },function(ex){
