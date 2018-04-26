@@ -79,7 +79,11 @@ Ext.define('Ung.Setup.Wizard', {
             itemId: 'prevBtn',
             iconCls: 'fa fa-chevron-circle-left fa-lg',
             hidden: true,
-            handler: 'onPrev'
+            handler: 'onPrev',
+            bind: {
+                hidden: '{!prevStep}',
+                text: '{prevStep}'
+            }
         }, {
             xtype: 'component',
             itemId: 'stepIndicator',
@@ -95,6 +99,8 @@ Ext.define('Ung.Setup.Wizard', {
             hidden: true,
             disabled: true,
             bind: {
+                hidden: '{!nextStep}',
+                text: '{nextStep}',
                 disabled: '{activeStep === "Interfaces" && intfListLength < 2 && !forcecontinue.checked}'
             }
         }]
@@ -118,7 +124,7 @@ Ext.define('Ung.Setup.Wizard', {
                 cardIndex = Ext.Array.indexOf(rpc.wizardSettings.steps, rpc.wizardSettings.completedStep);
 
                 // if resuming from a step after Network Cards settings, need to fetch network settings
-                if (cardIndex > 1) {
+                if (cardIndex >= 1) {
                     Ung.app.loading('Loading interfaces...'.t());
                     rpc.networkManager.getNetworkSettings(function (result, ex) {
                         Ung.app.loading(false);
@@ -150,6 +156,7 @@ Ext.define('Ung.Setup.Wizard', {
         onNext: function () {
             var me = this, layout = me.getView().getLayout();
 
+            // save wizard settings
             layout.getActiveItem().fireEvent('save', function () {
                 if (!rpc.wizardSettings.wizardComplete) {
                     rpc.wizardSettings.completedStep = layout.getActiveItem().getXType();
@@ -157,42 +164,29 @@ Ext.define('Ung.Setup.Wizard', {
                         if (ex) { Util.handleException(ex); return; }
                     }, rpc.wizardSettings);
                 }
-                // move to next step
-                layout.next();
-                me.updateNav();
+                layout.next(); // move to next step
+                me.updateNav(); // update navigation
             });
         },
 
         updateNav: function () {
             var me = this, view = me.getView(), vm = me.getViewModel(),
 
-                prevBtn = view.down('#prevBtn'),
-                nextBtn = view.down('#nextBtn'),
                 layout = me.getView().getLayout(),
                 prevStep = layout.getPrev(),
                 nextStep = layout.getNext(),
+
+                activeIndex = Ext.Array.indexOf(view.steps, layout.getActiveItem().getXType()),
 
                 stepInd = view.down('#stepIndicator'),
                 stepIndHtml = '';
 
             vm.set({
-                'activeStep': layout.getActiveItem().getXType(),
-                'activeStepDesc': layout.getActiveItem().description
+                activeStep: layout.getActiveItem().getXType(),
+                activeStepDesc: layout.getActiveItem().description,
+                prevStep: prevStep ? prevStep.getTitle() : null,
+                nextStep: nextStep ? nextStep.getTitle() : null
             });
-
-            if (prevStep) {
-                prevBtn.show().setText(prevStep.getTitle());
-            } else {
-                prevBtn.hide().setText('');
-            }
-
-            if (nextStep) {
-                nextBtn.show().setText(nextStep.getTitle());
-            } else {
-                nextBtn.hide().setText('');
-            }
-
-            var activeIndex = Ext.Array.indexOf(view.steps, layout.getActiveItem().getXType());
 
             Ext.Array.each(view.steps, function (step, idx) {
                 if (idx < activeIndex) {
@@ -220,7 +214,7 @@ Ext.define('Ung.Setup.Wizard', {
 
         /**
          * called after the netwark settings were fetched,
-         * sets the wizard steps
+         * updates the wizard steps
          */
         onSyncSteps: function (activeItemIdx) {
             var me = this, vm = me.getViewModel(),
@@ -259,13 +253,14 @@ Ext.define('Ung.Setup.Wizard', {
                 }
             });
 
-
+            // add steps based on found interfaces
             Ext.Array.each(wizard.steps, function (step) {
                 if (!wizard.down(step)) {
                     wizard.add( { xtype: step } );
                 }
             });
 
+            // used when resuming the setup
             if (Ext.isNumber(activeItemIdx)) {
                 wizard.setActiveItem(activeItemIdx + 1);
             }
