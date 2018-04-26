@@ -232,7 +232,7 @@ Ext.define('Ung.Setup.Interfaces', {
                 });
 
                 // update the steps based on interfaces
-                me.getView().up('window').fireEvent('syncsteps');
+                me.getView().up('setupwizard').fireEvent('syncsteps');
 
             });
         },

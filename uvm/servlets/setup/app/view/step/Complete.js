@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.Complete', {
     alias: 'widget.Complete',
 
     title: 'Finish'.t(),
-    description: 'Complete'.t(),
+    description: '',
 
     layout: 'center',
     items: [{

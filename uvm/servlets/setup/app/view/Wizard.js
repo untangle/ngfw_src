@@ -1,5 +1,5 @@
 Ext.define('Ung.Setup.Wizard', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.setupwizard',
 
     viewModel: {
@@ -10,17 +10,9 @@ Ext.define('Ung.Setup.Wizard', {
         }
     },
 
-    modal: true,
-
     steps: [],
 
-    resizable: false,
-    draggable: false,
-
-    width: 800,
-    height: 600,
-    frame: false,
-    frameHeader: false,
+    frame: true,
     header: false,
     border: false,
     bodyBorder: false,
@@ -37,6 +29,9 @@ Ext.define('Ung.Setup.Wizard', {
         border: false,
         bodyBorder: false,
         bodyPadding: 0,
+        // bodyStyle: {
+        //     background: '#F5F5F5',
+        // },
         padding: 20,
         cls: 'step',
         header: false
@@ -66,10 +61,14 @@ Ext.define('Ung.Setup.Wizard', {
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
-        background: '#FFF',
+        border: false,
         layout: {
             type: 'hbox',
             align: 'stretch'
+        },
+        hidden: true,
+        bind: {
+            hidden: '{!nextStep}'
         },
         defaults: {
             scale: 'medium',
