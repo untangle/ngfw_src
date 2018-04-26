@@ -888,7 +888,10 @@ class NetworkTests(unittest2.TestCase):
         dynIpFound = False
         while loopCounter > 0 and not dynIpFound:
             # run force to get it to run now
-            subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+            try: 
+                subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+            except subprocess.CalledProcessError:
+                print "Unexpected error:", sys.exc_info()
             # time.sleep(10)
             loopCounter -= 1
             result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
