@@ -148,7 +148,7 @@ def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None
             break
     return udp_speed
 
-def get_download_speed(meg=10):
+def get_download_speed(meg=20):
     try:
         # Download file and record the average speed in which the file was download
         result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
