@@ -9,7 +9,7 @@ Ext.define('Ung.Setup', {
     mainView: 'Ung.Setup.Main',
 
     loading: function (msg) {
-        this.getMainView().down('window').setLoading(msg);
+        this.getMainView().down('setupwizard').setLoading(msg);
     },
 
     launch: function () {

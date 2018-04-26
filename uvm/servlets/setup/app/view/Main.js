@@ -8,6 +8,7 @@ Ext.define('Ung.Setup.Main', {
         }
     },
     layout: 'center',
+    padding: 20,
     items: [{
         xtype: 'container',
         baseCls: 'intro',
@@ -103,12 +104,45 @@ Ext.define('Ung.Setup.Main', {
 
         openSetup: function () {
             var me = this;
-            var wizard = me.getView().add({
-                xtype: 'setupwizard',
-                // activeItem: rpc.wizardSettings.completedStep || 1
-                // steps: rpc.wizardSettings.steps
+            me.getView().removeAll();
+            me.getView().setStyle({
+                background: '#F5F5F5'
             });
-            wizard.show();
+            me.getView().add({
+                xtype: 'container',
+                width: '100%',
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    xtype: 'component',
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width >= 840': { flex: 1 },
+                        'width < 840': { flex: 0 }
+                    }
+                }, {
+                    xtype: 'setupwizard',
+                    height: 600,
+                    flex: 1,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width >= 840': { width: 800, flex: 0 },
+                        'width < 840': { flex: 1 }
+                    },
+                    // width: 800,
+                    // height: 600
+                }, {
+                    xtype: 'component',
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width >= 840': { flex: 1 },
+                        'width < 840': { flex: 0 }
+                    }
+                }]
+
+            });
         }
     }
 
