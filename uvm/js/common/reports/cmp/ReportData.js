@@ -131,9 +131,7 @@ Ext.define('Ung.reports.cmp.ReportData', {
                 header: 'Timestamp'.t(),
                 width: 130,
                 flex: 1,
-                renderer: function (val) {
-                    return (!val) ? 0 : Util.timestampFormat(val);
-                }
+                renderer: Renderer.timestamp
             }];
             var seriesRenderer = null, title;
             if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
