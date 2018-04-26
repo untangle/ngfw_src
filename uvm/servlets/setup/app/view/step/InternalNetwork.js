@@ -145,7 +145,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                     icon: Ext.Msg.QUESTION,
                     fn: function (btn) {
                         if (btn === 'yes') {
-                            me.getView().up('window').down('#nextBtn').click();
+                            me.getView().up('setupwizard').down('#nextBtn').click();
                         } else {
                             // if no is pressed
                         }
