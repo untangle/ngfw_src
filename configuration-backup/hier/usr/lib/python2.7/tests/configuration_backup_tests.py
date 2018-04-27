@@ -75,6 +75,7 @@ class ConfigurationBackupTests(unittest2.TestCase):
         boxUID = uvmContext.getServerUID()
         #get authentication url and api key
         authUrl,authKey = global_functions.get_live_account_info("UntangleAuth")
+        boxBackupUrl = global_functions.get_live_account_info("BoxBackup")
         app.sendBackup()
         #remove previous backups/backup directories
         subprocess.call("rm -rf /tmp/localBackup*", shell=True)
@@ -99,19 +100,19 @@ class ConfigurationBackupTests(unittest2.TestCase):
         requests.request("POST", authenticationUrl, data=authPayload, headers=authHeaders)
         
         #get list of backups for the UID above
-        BBUrl = "https://boxbackup.untangle.com/api/index.php"
-        BBQuerystring = {"action":"list","uid":boxUID,"token":"123"}
-        BBHeaders = {'Cache-Control': 'no-cache'}
-        BBResponse = requests.request("GET", BBUrl, headers=BBHeaders, params=BBQuerystring)
+        bbUrl = boxBackupUrl
+        bbQueryString = {"action":"list","uid":boxUID,"token":"123"}
+        bbHeaders = {'Cache-Control': 'no-cache'}
+        bbResponse = requests.request("GET", bbUrl, headers=bbHeaders, params=bbQueryString)
 
         #convert response text to literal list
-        backupList = ast.literal_eval(BBResponse.text)
+        backupList = ast.literal_eval(bbResponse.text)
         #grab the latest cloud backup from the list
         latestBackup = backupList[-1]
         print("latest backup from cloud: %s" % latestBackup)
 
         #download the latest backup and save it to /tmp
-        dlUrl = "https://boxbackup.untangle.com/api/index.php"
+        dlUrl = boxBackupUrl
         dlQueryString = {"action":"get","uid":boxUID,"token":"123","filename":latestBackup}
         dlHeaders = {'Cache-Control': 'no-cache'}
         dlResponse = requests.request("GET", dlUrl, headers=dlHeaders, params=dlQueryString)
