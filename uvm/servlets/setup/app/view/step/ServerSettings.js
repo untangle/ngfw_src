@@ -40,7 +40,6 @@ Ext.define('Ung.Setup.ServerSettings', {
             inputType: 'password',
             fieldLabel: 'Password'.t(),
             name: 'password',
-            value: 'passwd',
             id: 'settings_password',
             allowBlank: false,
             minLength: 3,
@@ -50,17 +49,16 @@ Ext.define('Ung.Setup.ServerSettings', {
             inputType: 'password',
             fieldLabel: 'Confirm Password'.t(),
             name: 'confirmPassword',
-            value: 'passwd',
             allowBlank: false,
             comparePasswordField: 'settings_password',
-            // vtype: 'passwordConfirmCheck'
+            vtype: 'passwordConfirmCheck'
         }, {
             xtype: 'textfield',
             inputType: 'text',
             name: 'adminEmail',
             fieldLabel: 'Admin Email'.t(),
             allowBlank: true,
-            // vtype: 'email',
+            vtype: 'email',
             value: rpc.adminEmail
         }, {
             xtype: 'label',
@@ -120,12 +118,6 @@ Ext.define('Ung.Setup.ServerSettings', {
     },
 
     controller: {
-        // control: {
-        //     '#': {
-        //         save: 'onSave'
-        //     }
-        // },
-
         onSave: function (cb) {
             var me = this, form = me.getView(), values = form.getValues();
 
