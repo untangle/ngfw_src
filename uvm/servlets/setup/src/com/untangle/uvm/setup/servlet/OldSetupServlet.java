@@ -21,7 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
  * A servlet which will display the start page
  */
 @SuppressWarnings("serial")
-public class NewSetupServlet extends HttpServlet
+public class OldSetupServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -33,7 +33,7 @@ public class NewSetupServlet extends HttpServlet
         request.setAttribute( "skinName", context.skinManager().getSettings().getSkinName());
         request.setAttribute( "extjsTheme", context.skinManager().getSkinInfo().getExtjsTheme());
 
-        String url="/WEB-INF/jsp/newsetup.jsp";
+        String url="/WEB-INF/jsp/oldsetup.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
         rd.forward(request, response);
