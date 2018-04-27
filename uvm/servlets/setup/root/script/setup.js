@@ -220,10 +220,10 @@ Ext.define('Ung.Setup.Welcome', {
     viewModel: {
         formulas: {
             completedStepText: function (get) {
-                return Ext.String.format('The setup was started before and the last completed step is {0}{1}{2}.'.t(), '<b>', get('completedStep') , '</b>')
+                return Ext.String.format('The setup was started before and the last completed step is {0}{1}{2}.'.t(), '<b>', get('completedStep') , '</b>');
             },
             nextStepText: function (get) {
-                return Ext.String.format('To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.'.t(), get('nextStep'), '<b>', '</b>')
+                return Ext.String.format('To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.'.t(), get('nextStep'), '<b>', '</b>');
             }
         }
     },
@@ -1624,7 +1624,7 @@ Ext.define('Ung.Setup.WirelessController', {
     },
 
     save: function (cb) {
-        me = this, form = me.getView(), vm = me.getViewModel();
+        var me = this, form = me.getView(), vm = me.getViewModel();
 
         // if invalid form or no changes
         if (!form.isValid() || Ext.Object.equals(me.initialSettings, vm.get('wirelessSettings'))) {
