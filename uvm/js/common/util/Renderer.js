@@ -100,7 +100,7 @@ Ext.define('Ung.util.Renderer', {
     timestampOffset: null,
     timestamp: function (value) {
         if(Renderer.timestampOffset === null){
-            Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + Rpc.directData('rpc.timeZoneOffset');
+            Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset;
         }
         if (!value) { return ''; }
         if ((typeof(value) === 'object') && value.time) { value = value.time; }

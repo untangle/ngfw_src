@@ -52,13 +52,13 @@ Ext.define('Ung.util.Util', {
     // adds timezone computation to ensure dates showing in UI are showing actual server date
     serverToClientDate: function (serverDate) {
         if (!serverDate) { return null; }
-        return Ext.Date.add(serverDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + Rpc.directData('rpc.timeZoneOffset')/60000);
+        return Ext.Date.add(serverDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset / 60000);
     },
 
     // extracts the timezone computation from UI dates before requesting new data from server
     clientToServerDate: function (clientDate) {
         if (!clientDate) { return null; }
-        return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + Rpc.directData('rpc.timeZoneOffset')/60000);
+        return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset / 60000);
     },
 
     // returns milliseconds depending of the servlet ADMIN or REPORTS
@@ -386,7 +386,7 @@ Ext.define('Ung.util.Util', {
     },
 
     // This is called a lot of times when initializing condition sets for rules.
-    // Previously we loaded network settings for each call.  Now we do it once and 
+    // Previously we loaded network settings for each call.  Now we do it once and
     // only refresh after 30 seconds since the last build.
     interfaceList: null,
     interfaceLastUpdated: null,
@@ -404,7 +404,7 @@ Ext.define('Ung.util.Util', {
             // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
             networkSettings.interfaces.list.forEach( function(interface){
                 data.push([interface.interfaceId.toString(), interface.name]);
-            });            
+            });
             networkSettings.virtualInterfaces.list.forEach( function(interface){
                 data.push([interface.interfaceId.toString(), interface.name]);
             });

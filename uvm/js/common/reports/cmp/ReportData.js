@@ -216,7 +216,7 @@ Ext.define('Ung.reports.cmp.ReportData', {
                 var r = [];
                 for (j = 0; j < columns.length; j += 1) {
                     if (columns[j] === 'time_trunc') {
-                        r.push(Util.timestampFormat(row.get('time_trunc')));
+                        r.push(Renderer.timestamp(row.get('time_trunc')));
                     } else {
                         r.push(row.get(columns[j]));
                     }
