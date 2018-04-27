@@ -52,7 +52,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                 labelAlign: 'right',
                 fieldLabel: 'Internal Address'.t(),
                 vText: 'Please enter a valid Network  Address'.t(),
-                // vtype: 'ipAddress',
+                vtype: 'ipAddress',
                 allowBlank: false,
                 msgTarget: 'side',
                 maskRe: /(\d+|\.)/,
