@@ -12,19 +12,13 @@
         @import "/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css?s=${buildStamp}";
     </style>
 
-    <script type="text/javascript" src="/ext6.2/ext-all-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6.2/ext-all.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
 
     <!-- FontAwesome -->
     <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-
-    <!-- Fonts -->
-    <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" type="text/css" />
-    <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" type="text/css" />
-
-    <link href="styles/setup-all.css" rel="stylesheet" />
 
     <script>
       var rpc = {};
@@ -55,7 +49,7 @@
             window.document.title = 'Setup Wizard'.t();
 
             Ext.Loader.loadScript({
-                url: 'script/ung-setup-all.js',
+                url: 'script/setup.js',
                 onLoad: function () {
                     Ext.application({
                         name: 'Ung',
@@ -79,6 +73,16 @@
         cite {
             font-style: normal;
         }
+
+        a {
+            color: blue;
+        }
+
+        .fa-red { color: red; }
+        .fa-green { color: #64D242; }
+        .fa-orange { color: orange; }
+        .fa-yellow { color: yellow; }
+        .fa-gray { color: #999; }
     </style>
 
   </head>
