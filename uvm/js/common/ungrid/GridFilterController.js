@@ -41,7 +41,7 @@ Ext.define('Ung.cmp.GridFilterController', {
             Ext.Array.each(cols, function (col) {
                 var val = item.get(col.dataIndex);
                 if (!val) { return; }
-                str.push(typeof val === 'object' ? Util.timestampFormat(val) : val.toString());
+                str.push(typeof val === 'object' ? Renderer.timestamp(val) : val.toString());
             });
             if (regex.test(str.join('|'))) { filtered = true; }
 
