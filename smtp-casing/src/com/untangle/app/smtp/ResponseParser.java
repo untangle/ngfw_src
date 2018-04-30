@@ -30,6 +30,10 @@ public class ResponseParser
 
     private List<ResponseLine> m_lines;
 
+    /**
+     * Initialize ResponseParser instance.
+     * @return ReponseParser instance.
+     */
     public ResponseParser() {
     }
 
@@ -47,6 +51,7 @@ public class ResponseParser
      * @param buf
      *            a buffer with response candidate bytes
      * @return the response, or null if more bytes are required.
+     * @throws NotAnSMTPResponseLineException if not a valid SMTP reponse.
      */
     public Response parse(ByteBuffer buf) throws NotAnSMTPResponseLineException
     {
@@ -115,6 +120,12 @@ public class ResponseParser
         return null;
     }
 
+    /**
+     * Get line arguments
+     *
+     * @param  lines List of ReponseLine to parse.
+     * @return       Array of parsed strings.
+     */
     private static String[] getLineArgs(List<ResponseLine> lines)
     {
         String[] ret = new String[lines.size()];
@@ -127,9 +138,13 @@ public class ResponseParser
         return ret;
     }
 
-    // PRE: At least 3 bytes for reading.
-    // If not a reply line, buffer is rewound
-    // Copied from Aaron. Thanks! - wrs
+    /**
+     * At least 3 bytes for reading.
+     * If not a reply line, buffer is rewound
+     *
+     * @param  buf ByteBuffer to read.
+     * @return     Return code.
+     */
     private static int readReplyCode(ByteBuffer buf)
     {
         int i = 0;
@@ -160,18 +175,34 @@ public class ResponseParser
         }
     }
 
+    /**
+     * Handle Response line.
+     */
     private class ResponseLine
     {
         final int code;
         final String arg;
         final boolean isLast;
 
+        /**
+         * Initialzie instance of Response Line.
+         *
+         * @param code Integer of code to parse.
+         * @param arg String of argument to parse.
+         * @param isLast true if last reponse line, false otherwise.
+         * @return Instance of ReponseLine.
+         */
         ResponseLine(int code, String arg, boolean isLast) {
             this.code = code;
             this.arg = arg;
             this.isLast = isLast;
         }
 
+        /**
+         * Show current ResponseLine as a String.
+         *
+         * @return String of ResponseLine.
+         */
         public String toString()
         {
             return (code + (isLast ? " " : "-") + (arg == null ? "" : arg));
@@ -180,6 +211,12 @@ public class ResponseParser
 
     /************** Tests ******************/
 
+    /**
+     * Run test.
+     * @param  args      Arguments to run.
+     * @return           String of result.
+     * @throws Exception On error.
+     */
     public static String runTest(String[] args) throws Exception
     {
         String result = "";
@@ -237,6 +274,16 @@ public class ResponseParser
         return result;
     }
 
+    /**
+     * Run test.
+     *
+     * @param  name            Name of test.
+     * @param  input           Input to test.
+     * @param  expectedOut     Expected output
+     * @param  expectException If true, expect exception
+     * @return                 String of test result.
+     * @throws Exception       Exception if error.
+     */
     private static String doTest(String name, byte[] input, byte[] expectedOut, boolean expectException)
             throws Exception
     {
@@ -248,9 +295,19 @@ public class ResponseParser
         return result;
     }
 
-    // Performs test on the given input/output,
-    // by trying all combinations of array sizes
-    // for the given number of buffers.
+    /**
+     * Performs test on the given input/output,
+     * by trying all combinations of array sizes
+     * for the given number of buffers.
+     *
+     * @param  name            Name of test.
+     * @param  input           Input.
+     * @param  expectedOut     Expected output.
+     * @param  numBuffers      Number of buffers.
+     * @param  expectException If true, expect exception
+     * @return                 String of result.
+     * @throws Exception       On error.
+     */
     private static String test(String name, byte[] input, byte[] expectedOut, int numBuffers, boolean expectException)
             throws Exception
     {
@@ -293,8 +350,15 @@ public class ResponseParser
         return result;
     }
 
-    // Performs the test. Returns the output
-    // from the byte stuffer (including terminator)
+    /**
+     * Performs the test. Returns the output
+     * from the byte stuffer (including terminator)
+     *
+     * @param  name      Name of test.
+     * @param  bufs      List of ByteBuffer to test.
+     * @return           Array of byte buffer.
+     * @throws Exception On error.
+     */
     private static byte[] test(String name, List<ByteBuffer> bufs) throws Exception
     {
 
@@ -333,7 +397,11 @@ public class ResponseParser
         return ret;
     }
 
-    // Pretty-prints the size of the array
+    /**
+     * Pretty-prints the size of the array
+     * @param  a Array of integers.
+     * @return   Integers as string.
+     */
     private static String arraySizesToString(int[] a)
     {
         StringBuilder sb = new StringBuilder();
@@ -345,6 +413,13 @@ public class ResponseParser
         return sb.toString();
     }
 
+    /**
+     * Compare two arrays of bytes.
+     *
+     * @param  a First array of bytes.
+     * @param  b Second array of bytes.
+     * @return   true of match, false otherwise.
+     */
     private static boolean arrayCompare(byte[] a, byte[] b)
     {
         if (a.length != b.length) {
@@ -358,18 +433,27 @@ public class ResponseParser
         return true;
     }
 
-    // Stateful class which acts as a factory
-    // for all combinations of array sizes.
-    // Works by ensuring that any given
-    // value in the array is always greater
-    // than zero, and the sum of the array
-    // is constant.
+    /**
+     * Stateful class which acts as a factory
+     * for all combinations of array sizes.
+     * Works by ensuring that any given
+     * value in the array is always greater
+     * than zero, and the sum of the array
+     * is constant.
+     */
     private static class CaseHolder
     {
         private int m_ptr;
         private int[] m_vals;
         private boolean m_hasNext;
 
+        /**
+         * Initialize CaseHolder instance.
+         *
+         * @param len integer length.
+         * @param sum integer sum.
+         * @return instace of CaseHolder
+         */
         CaseHolder(int len, int sum) {
             m_vals = new int[len];
             for (int i = 0; i < len; i++) {
@@ -379,11 +463,20 @@ public class ResponseParser
             m_hasNext = true;
         }
 
+        /**
+         * Determine if has next.
+         *
+         * @return True if has next, false otherwise.
+         */
         boolean hasNext()
         {
             return m_hasNext;
         }
 
+        /**
+         * Increment next.
+         * @return Arry of integers
+         */
         int[] next()
         {
             int[] ret = new int[m_vals.length];
@@ -392,6 +485,11 @@ public class ResponseParser
             return ret;
         }
 
+        /**
+         * Make the specified pointer next.
+         * @param  ptr integer of prointer/
+         * @return     Boolean if it was possible to make next.
+         */
         boolean makeNext(int ptr)
         {
             if (ptr + 1 == m_vals.length) {
