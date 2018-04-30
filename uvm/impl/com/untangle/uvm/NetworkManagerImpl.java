@@ -5,6 +5,8 @@ package com.untangle.uvm;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1399,7 +1401,7 @@ public class NetworkManagerImpl implements NetworkManager
                 pppCount++;
             }
         }
-        
+
         /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */
@@ -1431,6 +1433,27 @@ public class NetworkManagerImpl implements NetworkManager
             sanitizeInterfaceSettings( intf );
         }
 
+        /**
+         * Sort Interfaces
+         * We may have added new VLAN interfaces and set their interfaceId above
+         * We need to position them in the correct place
+         */
+        List<InterfaceSettings> interfaceList = networkSettings.getInterfaces();
+        Collections.sort(interfaceList, new Comparator<InterfaceSettings>() {
+            public int compare(InterfaceSettings i1, InterfaceSettings i2) {
+                int oi1 = i1.getInterfaceId();
+                int oi2 = i2.getInterfaceId();
+                if (oi1 == oi2) {
+                    return 0;
+                } else if (oi1 < oi2) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+        networkSettings.setInterfaces(interfaceList);
+        
         /**
          *  Sanitize dynamic routing settings
          */
