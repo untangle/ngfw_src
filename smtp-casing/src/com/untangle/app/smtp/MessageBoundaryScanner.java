@@ -45,6 +45,10 @@ public class MessageBoundaryScanner
     private boolean m_isEmptyMessage = false;
     private ScanningState m_state = ScanningState.INIT;
 
+    /**
+     * Initialize MessageBoundaryScanner instance.
+     * @return Instance of MessageBoundaryScanner.
+     */
     public MessageBoundaryScanner() {
     }
 
@@ -60,6 +64,8 @@ public class MessageBoundaryScanner
 
     /**
      * Get current state (see the enum on this class).
+     *
+     * @return ScanningState value.
      */
     public ScanningState getState()
     {
@@ -69,6 +75,8 @@ public class MessageBoundaryScanner
     /**
      * Returns true if the headers were blank (the message started with "CRLF"). This method should only be called after
      * the state has progressed beyond INIT
+     *
+     * @return true if header is blank, false otherwise.
      */
     public boolean isHeadersBlank()
     {
@@ -78,6 +86,8 @@ public class MessageBoundaryScanner
     /**
      * Returns true if the entire message was a "CRLF.CRLF". This method should only be called after the state has
      * progressed beyond INIT
+     *
+     * @return true if message is empty, false otherwise.
      */
     public boolean isEmptyMessage()
     {
@@ -330,8 +340,10 @@ public class MessageBoundaryScanner
 
     /**
      * Searches the tail of the buffer to see if it could have been the start of the given pattern.
-     * 
-     * Returns the number of bytes from the tail which could be the start of the pattern.
+     *
+     * @param buf ButeBuffer to search.
+     * @param bytes Array of bytes pattern to match.
+     * @return the number of bytes from the tail which could be the start of the pattern.
      */
     protected static final int searchForStart(ByteBuffer buf, byte[] bytes)
     {
@@ -356,6 +368,12 @@ public class MessageBoundaryScanner
 
     /************** Tests ******************/
 
+    /**
+     * Run test on class.
+     * @param  args      Unused.
+     * @return           String of results.
+     * @throws Exception If any issues.
+     */
     public static String runTest(String[] args) throws Exception
     {
         String result = "";
@@ -488,6 +506,13 @@ public class MessageBoundaryScanner
         return result;
     }
 
+    /**
+     * Run test
+     * @param  desc      description of test.
+     * @param  bufs      Buffers to test with.
+     * @return           String of results.
+     * @throws Exception If issues.
+     */
     private static String test(String desc, ByteBuffer... bufs) throws Exception
     {
         String result = "\n\n\n==============================================\nBEGIN TEST " + desc + "\n";
@@ -567,6 +592,12 @@ public class MessageBoundaryScanner
                 + scanner.isHeadersBlank() + "\n";
     }
 
+    /**
+     * Display the buffer.
+     * @param  pBuf ByteBuffer to display.
+     * @param  txt  Identifier used in result.
+     * @return      String of result.
+     */
     private static String printBuffer(ByteBuffer pBuf, String txt)
     {
         String result = "";
@@ -612,6 +643,11 @@ public class MessageBoundaryScanner
         return result + "\t\t----ENDOF " + txt + "-----\n";
     }
 
+    /**
+     * Determine if bye is printable ASCII.
+     * @param  b Byte to test.
+     * @return   true if printable ASCII, false otherwise.
+     */
     private static boolean isPrintableASCII(byte b)
     {
         return (b > 31 && b < 127) || (b == CR || b == LF || b == HTAB);
