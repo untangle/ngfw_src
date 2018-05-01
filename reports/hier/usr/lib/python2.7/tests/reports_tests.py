@@ -15,6 +15,7 @@ import calendar
 import Image
 from StringIO import StringIO
 from datetime import datetime
+from datetime import timedelta
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -227,8 +228,12 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
-        today = datetime.now()
-        timestamp = today.strftime('%Y-%m-%d %H:%M')
+        exactly_now = datetime.now()
+        exactly_now_minus1 = datetime.now() - timedelta(minutes=1)
+        exactly_now_plus1 = datetime.now() + timedelta(minutes=1)
+        timestamp = exactly_now.strftime('%Y-%m-%d %H:%M')
+        timestamp_minus1 = exactly_now_minus1.strftime('%Y-%m-%d %H:%M')
+        timestamp_now_plus1 = exactly_now_plus1.strftime('%Y-%m-%d %H:%M')
         result = remote_control.is_online(tries=1)
         # flush out events
         app.flushEvents()
@@ -246,6 +251,7 @@ class ReportsTests(unittest2.TestCase):
         # parse the output and look for a rule that matches the expected values
         tries = 5
         found_count = 0
+        timestamp_variations  = [str('\"timeStamp\":\"%s' % timestamp_minus1),str('\"timeStamp\":\"%s' % timestamp_now_plus1)]
         strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId),str('\"timeStamp\":\"%s' % timestamp)]
         num_string_find = len(strings_to_find)
         while (tries > 0 and found_count < num_string_find):
@@ -258,8 +264,16 @@ class ReportsTests(unittest2.TestCase):
                 for string in strings_to_find:
                     if not string in line:
                         print("missing: %s" % string)
-                        # continue
-                        break
+                        if ('timeStamp' in string):
+                            # Allow +/- one minute in timestamp
+                            if (timestamp_variations [0] in line) or (timestamp_variations [1] in line):
+                                print("found: time with varation %s or %s" % (timestamp_variations [0],timestamp_variations [1]))
+                                found_count += 1
+                            else:
+                                break
+                        else:
+                            # continue
+                            break
                     else:
                         found_count += 1
                         print("found: %s" % string)
