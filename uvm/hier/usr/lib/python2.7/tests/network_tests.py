@@ -892,6 +892,8 @@ class NetworkTests(unittest2.TestCase):
                 subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
             except subprocess.CalledProcessError:
                 print "Unexpected error:", sys.exc_info()
+            except OSError:
+                pass # executable environment not ready
             # time.sleep(10)
             loopCounter -= 1
             result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
