@@ -782,7 +782,7 @@ Ext.define('Ung.config.network.MainController', {
             // !!! look for destroyed objects in 14.0
             var networkInterfaces = vm.get('settings.interfaces');
             if(!networkInterfaces){
-                runInterfaceTask.delay( runInterfaceTaskDelay );                
+                runInterfaceTask.delay( runInterfaceTaskDelay );
                 return;
             }
 
@@ -1077,6 +1077,26 @@ Ext.define('Ung.config.network.MainController', {
             }
         });
         me.dialog.show();
+
+        me.dialog.getViewModel().bind('{intf}', function () {
+            // add change event only after binding is set,
+            // so the change fires only when manual click on isWan checkbox
+            me.dialog.down('#isWanCk').addListener('change', function (ck, val) {
+                if (!val) {
+                    // not WAN
+                    me.dialog.down('#ipv4ConfigType').setValue('STATIC');
+                    me.dialog.down('#ipv6ConfigType').setValue('STATIC');
+                } else {
+                    // WAN
+                    // automatically turn on NAT egress if its a WAN
+                    // but only if manually changed, not the first time this is called
+                    // during binding
+                    me.dialog.down('#v4NatEgressTraffic').setValue(true);
+                    me.dialog.down('tabpanel').setActiveItem(0);
+                }
+            });
+        });
+
 
         // wireless channels
         var wirelessChannelsArr = [];
