@@ -165,7 +165,7 @@ task :javadoc do
   cpath = FileList["#{BuildEnv::SRC.devel}/*","#{BuildEnv::downloads}/**/*jar"].join(':')
   css = "./buildtools/javadoc.css"
 
-  Kernel.exec('javadoc',
+  Kernel.exec(JavaCompiler.JavadocCommand,
             '-docletpath', './downloads/wikidoclet.1.0.4.jar',
             '-doclet', 'wikidoclet.WikiDoclet',
             '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', sourcepath, '-classpath', cpath,
