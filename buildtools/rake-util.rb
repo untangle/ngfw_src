@@ -160,6 +160,7 @@ class JavaCompiler
   JarSignerCommand = "#{ENV['JAVA_HOME']}/bin/jarsigner"
   JavaCommand  = "#{ENV['JAVA_HOME']}/bin/java"
   JavahCommand = "#{ENV['JAVA_HOME']}/bin/javah"
+  JavadocCommand = "#{ENV['JAVA_HOME']}/bin/javadoc"
   KeyToolCommand = "#{ENV['JAVA_HOME']}/bin/keytool"
 
   def JavaCompiler.compile(dstdir, classpath, fileList)
