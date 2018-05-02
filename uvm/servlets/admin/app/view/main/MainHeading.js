@@ -11,7 +11,7 @@ Ext.define('Ung.view.main.MainHeading', {
         border: false,
         hrefTarget: '_self',
         plugins: 'responsive',
-        responsiveConfig: { wide: { hidden: false, }, tall: { hidden: true } }
+        responsiveConfig: { 'width >= 1000': { hidden: false, }, 'width < 1000': { hidden: true } }
     },
     items: [{
         html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
@@ -73,15 +73,20 @@ Ext.define('Ung.view.main.MainHeading', {
         iconCls: 'fa fa-question-circle fa-lg',
         handler: 'helpHandler',
         tooltip: 'Help'.t(),
-        width: 52
+        width: 52,
+        responsiveConfig: null
     }, {
         iconCls: 'fa fa-life-ring fa-lg',
         handler: 'supportHandler',
         tooltip: 'Support'.t(),
         width: 52,
-        bind: { hidden: '{!liveSupport}' }
+        hidden: true,
+        bind: {
+            hidden: '{!liveSupport}'
+        },
+        responsiveConfig: null
     }, {
-        responsiveConfig: { wide: { iconCls: 'fa fa-user-circle fa-lg' }, tall: { iconCls: 'fa fa-bars fa-lg' } },
+        responsiveConfig: { 'width >= 1000': { iconCls: 'fa fa-user-circle fa-lg' }, 'width < 1000': { iconCls: 'fa fa-bars fa-lg' } },
         width: 52,
         margin: '0 10 0 0',
         arrowVisible: false,
@@ -97,7 +102,7 @@ Ext.define('Ung.view.main.MainHeading', {
             defaults: {
                 border: false,
                 plugins: 'responsive',
-                responsiveConfig: { wide: { hidden: true }, tall: { hidden: false } }
+                responsiveConfig: { 'width >= 1000': { hidden: true }, 'width < 1000': { hidden: false } }
             },
             items: [{
                 text: 'Dashboard'.t(),
@@ -129,19 +134,6 @@ Ext.define('Ung.view.main.MainHeading', {
             }, {
                 text: 'Users'.t(),
                 href: '#users'
-            }, {
-                xtype: 'menuseparator'
-            }, {
-                text: 'Help'.t(),
-                iconCls: 'fa fa-question-circle',
-                handler: 'helpHandler'
-            }, {
-                text: 'Support'.t(),
-                iconCls: 'fa fa-life-ring',
-                handler: 'supportHandler',
-                bind: {
-                    hidden: '{!liveSupport}'
-                }
             }, {
                 xtype: 'menuseparator'
             }, {
