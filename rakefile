@@ -165,8 +165,6 @@ task :javadoc => [:download] do
   cpath = FileList["#{BuildEnv::SRC.devel}/*","#{BuildEnv::downloads}/**/*jar"].join(':')
   css = "./buildtools/javadoc.css"
 
-  puts JavaCompiler.class_variables
-  puts JavaCompiler.instance_variables
   Kernel.exec(JavaCompiler.JavadocCommand,
             '-docletpath', './downloads/wikidoclet.1.0.4.jar',
             '-doclet', 'wikidoclet.WikiDoclet',
