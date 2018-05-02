@@ -384,6 +384,7 @@ Ext.define('Ung.view.extra.Hosts', {
                 width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Refill Quota'.t(),
+                menuText: 'Refill Quota'.t(),
                 iconCls: 'fa fa-refresh fa-green',
                 handler: 'externalAction',
                 action: 'refillQuota'
@@ -392,6 +393,7 @@ Ext.define('Ung.view.extra.Hosts', {
                 width: Renderer.actionWidth,
                 align: 'center',
                 header: 'Drop Quota'.t(),
+                menuText: 'Drop Quota'.t(),
                 iconCls: 'fa fa-minus-circle',
                 handler: 'externalAction',
                 action: 'dropQuota'
