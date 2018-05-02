@@ -225,6 +225,7 @@ Ext.define('Ung.config.network.PortForwardSimple', {
             } else {
                 // or add a new record
                 vm.set('record.markedForNew', true);
+                vm.set('record.simple', true); // when saving a simple rule (by default simple is set on false)
                 grid.getStore().add(vm.get('record'));
             }
             me.getView().close();
@@ -235,9 +236,14 @@ Ext.define('Ung.config.network.PortForwardSimple', {
         },
 
         onSwitch: function () {
-            var me = this, vm = me.getViewModel(),
+            var me = this,
                 grid = me.getView().up('ungrid'),
                 record = me.getView().record; // pass record attached to the view not viewmodel
+
+            // when editing an existing rule and switch to advanced
+            if (record) {
+                record.set('simple', false);
+            }
 
             grid.getController().editorWin(record, me.getView().action);
             me.getView().close();

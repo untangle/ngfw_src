@@ -48,7 +48,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
-            simple: true,
+            simple: false, // set simple by default on false, and only when saving simple rules will be set true
             enabled: true,
             description: '',
             javaClass: 'com.untangle.uvm.network.PortForwardRule',
