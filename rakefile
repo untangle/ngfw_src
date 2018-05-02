@@ -132,7 +132,7 @@ task :devel => [:build, :hier, :installuvmcore] do
   end
 end
 
-task :i18n => [:builduvmcore, :targets ] do
+task :i18n => [:builduvmcore, :targets] do
   ## Generate and update po files
   #  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
   #  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
@@ -156,7 +156,7 @@ task :javadocanalyzer do
               '--path='+sourcepath)
 end
 
-task :javadoc do
+task :javadoc => [:download] do
   javaDirs = FileList["./**/*.java"].exclude(%r{downloads/})
   sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(':')
   puts sourcepath
@@ -165,6 +165,8 @@ task :javadoc do
   cpath = FileList["#{BuildEnv::SRC.devel}/*","#{BuildEnv::downloads}/**/*jar"].join(':')
   css = "./buildtools/javadoc.css"
 
+  puts JavaCompiler.class_variables
+  puts JavaCompiler.instance_variables
   Kernel.exec(JavaCompiler.JavadocCommand,
             '-docletpath', './downloads/wikidoclet.1.0.4.jar',
             '-doclet', 'wikidoclet.WikiDoclet',
