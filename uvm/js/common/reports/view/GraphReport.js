@@ -806,6 +806,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 },
                 xAxis: {
                     visible: !isPie,
+                    minRange: 10 * 60 * 1000, // minzoom = 10 minutes
                     // tickPixelInterval: 50,
                     type: isTimeGraph ? 'datetime' : 'category',
                     crosshair: isTimeGraph ? {

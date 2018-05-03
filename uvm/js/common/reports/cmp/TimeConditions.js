@@ -48,7 +48,7 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
 
             // round dates to 10 minutes itervals
             start.setMinutes(Math.floor(start.getMinutes()/10) * 10, 0, 0);
-            end.setMinutes(Math.ceil(start.getMinutes()/10) * 10, 0, 0);
+            end.setMinutes(Math.ceil(end.getMinutes()/10) * 10, 0, 0);
 
             me.getView().setRange({
                 since: start,
