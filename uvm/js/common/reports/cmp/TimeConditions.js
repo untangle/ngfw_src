@@ -76,11 +76,14 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
             mouseLeaveDelay: 0,
             listeners: {
                 click: function (menu, item) {
-                    if (item.type !== 'range') {
-                        menu.up('timeconditions').setRange(item.value);
-                    } else {
+                    if (item.type === 'range') {
                         menu.up('timeconditions').setCustomRange();
+                        return;
                     }
+                    if (item.type === 'rangehistory') {
+                        return;
+                    }
+                    menu.up('timeconditions').setRange(item.value);
                 }
             }
         }
@@ -140,6 +143,7 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
                 text: 'Time Range History'.t(),
                 itemId: 'historyItem',
                 iconCls: 'fa fa-history',
+                type: 'rangehistory',
                 menu: {
                     plain: true,
                     showSeparator: false,
