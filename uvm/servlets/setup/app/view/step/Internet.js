@@ -11,19 +11,13 @@ Ext.define('Ung.Setup.Internet', {
         pack: 'center'
     },
 
-    // viewModel: {
-    //     data: {
-    //         wan: null
-    //     }
-    // },
-
     items: [{
         xtype: 'container',
         margin: '50 20 0 0',
         width: 300,
         layout: {
             type: 'vbox',
-            // align: 'stretch'
+            align: 'stretch'
         },
         hidden: true,
         bind: {
