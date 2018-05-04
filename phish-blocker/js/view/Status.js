@@ -37,8 +37,8 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{!state.on}',
+                disabled: '{!state.on}'
             },
 
             items: [{

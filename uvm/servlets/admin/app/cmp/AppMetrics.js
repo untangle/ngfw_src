@@ -16,7 +16,7 @@ Ext.define('Ung.cmp.AppMetrics', {
 
     disabled: true,
     bind: {
-        disabled: '{instance.runState !== "RUNNING"}',
+        disabled: '{!state.on}',
         source: '{metrics}'
     },
 
@@ -26,7 +26,6 @@ Ext.define('Ung.cmp.AppMetrics', {
             '#': {
                 afterrender: function () {
                     var me = this;
-                    // me.updateMetrics();
                     me.getViewModel().bind('{instance.runState}', function () {
                         me.updateMetrics();
                     });
@@ -43,7 +42,7 @@ Ext.define('Ung.cmp.AppMetrics', {
 
         updateMetrics: function () {
             var vm = this.getViewModel();
-            if (vm.get('instance.runState') !== 'RUNNING' && this.updateMetricsCount > 0) {
+            if( !vm.get('state.on') && this.updateMetricsCount > 0) {
                 return;
             }
             this.updateMetricsCount++;
@@ -55,9 +54,6 @@ Ext.define('Ung.cmp.AppMetrics', {
                 });
             }
             vm.set('metrics', gridSource);
-            // if (this.getView().down('appchart')) {
-            //     this.getView().down('appchart').fireEvent('addPoint');
-            // }
         }
     },
 

@@ -85,13 +85,11 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
 
         // trigger active clients/servers fetching when instance run state changes
-        vm.bind('{instance.runState}', function (runstate) {
-            // get clients and servers only when instance is RUNNING
-            if (runstate === 'RUNNING') {
+        vm.bind('{state.on}', function (stateon) {
+            if (stateon) {
                 me.getActiveClients();
                 me.getRemoteServers();
             } else {
-            // if not RUNNING, empty clients/servers grid
                 vm.set({
                     clientStatusData: [],
                     serverStatusData: []

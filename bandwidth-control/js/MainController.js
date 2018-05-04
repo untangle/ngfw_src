@@ -94,8 +94,8 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
                 // when wizard is finished, reload settings and try to start the app
                 finish: function () {
                     me.getSettings(function (configured) {
-                        if (configured && Rpc.directData(me.getView().appManager, 'getRunState') !== 'RUNNING') {
-                            me.getView().down('appstate > button').click();
+                        if (configured && !me.getViewModel().get('state.on')) {
+                            me.getView().down('appstate').down('button').click();
                         }
                     });
                 }

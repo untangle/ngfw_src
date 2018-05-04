@@ -331,7 +331,6 @@ Ext.define('Ung.controller.Global', {
                             subViews: subViews || [],
                             viewModel: {
                                 data: {
-                                    // policyId: policyId,
                                     instance: appInstance,
                                     props: appProps,
                                     license: policy.get('licenseMap')[app],
@@ -347,6 +346,8 @@ Ext.define('Ung.controller.Global', {
                         });
                         mainView.getViewModel().set('activeItem', 'appCard');
                         mainView.getViewModel().notify();
+                        var appViewModel = mainView.down('app-' + app).getViewModel();
+                        appViewModel.set('state', Ext.create('Ung.model.AppState',{vm: appViewModel, app: result}));
                     }, function (ex) {
                         Util.handleException(ex);
                     }).always(function () {
@@ -526,7 +527,5 @@ Ext.define('Ung.controller.Global', {
                 Ung.app.redirectTo(hash.substr(0,hash.indexOf(id) + id.length) + '/' + card.getItemId());
             }
         }
-
     }
-
 });

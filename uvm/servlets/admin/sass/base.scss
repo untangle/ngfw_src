@@ -277,10 +277,13 @@ cite {
     border-width: 0;
 }
 
-.power-btn i {
+.power-btn.inconsistent i {
     color: red;
 }
-.power-btn.RUNNING i {
+.power-btn.powering i {
+    color: orange;
+}
+.power-btn.on i {
     color: green;
 }
 

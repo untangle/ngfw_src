@@ -69,6 +69,10 @@ Ext.define('Ung.apps.applicationcontrol.view.Status', {
             region: 'center',
             title: 'Statistics'.t(),
             xtype: 'tabpanel',
+            disabled: true,
+            bind: {
+                disabled: '{!state.on}'
+            },
             defaults: {
                 xtype: 'propertygrid',
                 border: false,

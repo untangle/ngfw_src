@@ -55,7 +55,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 },
                 hidden: true,
                 bind: {
-                    hidden: '{instance.runState !== "RUNNING"}'
+                    hidden: '{!state.on}'
                 },
                 items: [{
                     xtype: 'displayfield',
@@ -93,8 +93,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{state.on !== true || state.power === true}',
+                disabled: '{state.on !== true || state.power === true}'
             },
 
             items: [{

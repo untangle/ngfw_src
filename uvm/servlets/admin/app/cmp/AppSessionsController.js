@@ -83,7 +83,6 @@ Ext.define('Ung.cmp.AppSessionsController', {
                 tickPixelInterval: 50,
                 tickLength: 5,
                 tickWidth: 1,
-                //tickPosition: 'inside',
                 showFirstLabel: false,
                 showLastLabel: true,
                 maxPadding: 0,
@@ -106,21 +105,6 @@ Ext.define('Ung.cmp.AppSessionsController', {
                     x: 2,
                     y: 5
                 }
-                // title: {
-                //     align: 'high',
-                //     offset: -10,
-                //     y: -5,
-                //     rotation: 0,
-                //     //text: entry.units,
-                //     text: 'sessions',
-                //     textAlign: 'left',
-                //     style: {
-                //         fontFamily: 'Source Sans Pro',
-                //         color: '#555',
-                //         fontSize: '10px',
-                //         fontWeight: 600
-                //     }
-                // }
             },
             legend: {
                 enabled: false
@@ -199,7 +183,6 @@ Ext.define('Ung.cmp.AppSessionsController', {
                 }())
             }]
         });
-        // this.onAddPoint();
     },
 
     onResize: function () {
@@ -211,7 +194,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
             return;
         }
         var vm = this.getViewModel();
-        if (vm.get('instance.runState') !== 'RUNNING' && this.updateMetricsCount > 0) {
+        if (!vm.get('state.on') && this.updateMetricsCount > 0) {
             return;
         }
         this.updateMetricsCount++;

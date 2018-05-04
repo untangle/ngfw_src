@@ -81,8 +81,8 @@ Ext.define('Ung.cmp.AppsPicker', {
                 dataIndex: 'state',
                 align: 'right',
                 width: 24,
-                renderer: function (val) {
-                    return '<i class="fa fa-circle ' + (val === 'RUNNING' ? 'fa-green' : 'fa-gray') + '"></i>';
+                renderer: function (state) {
+                    return '<i class="fa fa-circle ' + (state.get('on') ? 'fa-green' : 'fa-gray') + '"></i>';
                 }
             }, {
                 dataIndex: 'displayName',
@@ -125,7 +125,7 @@ Ext.define('Ung.cmp.AppsPicker', {
         if (!apps) { return; }
         var total = apps.length, running = 0, inherited = 0;
         Ext.Array.each(apps, function (app) {
-            if (app.state === 'RUNNING') {
+            if (app.state.get('on')) {
                 running++;
             }
             if (app.inherited) {
