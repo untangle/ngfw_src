@@ -47,8 +47,10 @@ Ext.define('Ung.apps.webcache.view.Status', {
             padding: 10,
             margin: '20 0',
             disabled: true,
+            collapsed: true,
             bind: {
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{!state.on}',
+                disabled: '{!state.on}'
             },
             items: [{
                 xtype: 'component',
@@ -105,7 +107,7 @@ Ext.define('Ung.apps.webcache.view.Status', {
             hideHeaders: true,
             disabled: true,
             bind: {
-                disabled: '{instance.runState !== "RUNNING"}',
+                disabled: '{!state.on}',
                 store: { data: '{stats}' }
             },
             listeners: {

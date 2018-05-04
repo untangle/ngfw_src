@@ -4,7 +4,6 @@ Ext.define('Ung.view.apps.RackItem', {
 
     baseCls: 'rackitem',
 
-
     width: 785,
     height: 93,
     padding: '8 50',
@@ -22,7 +21,6 @@ Ext.define('Ung.view.apps.RackItem', {
     items: [{
         xtype: 'container',
         width: 290,
-        // flex: 1,
         layout: { type: 'vbox', align: 'stretch' },
         items: [{
             xtype: 'container',
@@ -60,11 +58,6 @@ Ext.define('Ung.view.apps.RackItem', {
                     }
                 }]
             }]
-            // bind: {
-            //     html: '<img src="/icons/apps/{app.name}.svg" width=42 height=42 style="float: left;"/>' +
-            //         '<p>{app.displayName}' +
-            //         '<br/><span style="font-size: 12px;"><i class="fa fa-file-text-o"></i> {app.parentPolicy}</span></p>'
-            // }
         }, {
             xtype: 'container',
             margin: '5 0',
@@ -88,7 +81,6 @@ Ext.define('Ung.view.apps.RackItem', {
                     href: '{helpSource}',
                     hidden: '{parentPolicy || installing}',
                 }
-                // text: 'Help'.t()
             }, {
                 xtype: 'button',
                 margin: '0 0 0 5',
@@ -108,11 +100,6 @@ Ext.define('Ung.view.apps.RackItem', {
         width: 350,
         height: 75,
         margin: '0 10 0 0',
-        // hidden: true,
-        // hideMode: 'visibility',
-        // bind: {
-        //     hidden: '{!metrics || metrics.length === 0}'
-        // },
         items: [{
             xtype: 'component',
             itemId: 'rackgraph',
@@ -120,7 +107,7 @@ Ext.define('Ung.view.apps.RackItem', {
             width: 125,
             height: 75,
             bind: {
-                userCls: '{targetState}',
+                userCls: '{state.on ? "on" : "off"}',
             }
         }, {
             xtype: 'container',
@@ -133,7 +120,7 @@ Ext.define('Ung.view.apps.RackItem', {
                 xtype: 'component'
             },
             bind: {
-                userCls: '{targetState}'
+                userCls: '{state.on ? "on" : "off"}',
             }
         }]
     }, {
@@ -145,7 +132,7 @@ Ext.define('Ung.view.apps.RackItem', {
         disabled: true,
         hidden: true,
         bind: {
-            userCls: '{targetState}',
+            userCls: '{powerCls}',
             disabled: '{parentPolicy}',
             hidden: '{!app.hasPowerButton }'
         },

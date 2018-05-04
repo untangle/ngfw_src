@@ -97,7 +97,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
     previewCaptivePage: function () {
         var vm = this.getViewModel();
-        if (vm.get('instance.runState') !== 'RUNNING') {
+        if (!vm.get('state.on')) {
             Ext.MessageBox.alert('Captive Portal is Disabled'.t(),
                 'You must turn on the Captive Portal to preview the Captive Page.'.t());
             return;

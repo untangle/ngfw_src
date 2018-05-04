@@ -105,26 +105,19 @@ Ext.define('Ung.widget.PolicyOverview', {
                                 var parentPolicy = null;
                                 if (instance) {
                                     // installedAppsNo++;
+                                    var inherited = false;
                                     if (instance.policyId && policy.policyId !== instance.policyId) {
                                         parentPolicy = Ext.getStore('policiestree').findRecord('policyId', instance.policyId).get('name');
-                                        apps.push({
-                                            name: app.name,
-                                            displayName: app.displayName,
-                                            state: instance.targetState,
-                                            policyId: instance.policyId,
-                                            parentPolicy: parentPolicy,
-                                            inherited: true
-                                        });
-                                    } else {
-                                        apps.push({
-                                            name: app.name,
-                                            displayName: app.displayName,
-                                            state: instance.targetState,
-                                            policyId: instance.policyId,
-                                            parentPolicy: parentPolicy,
-                                            inherited: false
-                                        });
+                                        inherited = true;
                                     }
+                                    apps.push({
+                                        name: app.name,
+                                        displayName: app.displayName,
+                                        state: Ext.create('Ung.model.AppState',{instance: instance, app: Rpc.directData('rpc.appManager.app', instance.id)}),
+                                        policyId: instance.policyId,
+                                        parentPolicy: parentPolicy,
+                                        inherited: inherited
+                                    });
                                 }
                             });
                             treePol.set('apps', apps);
