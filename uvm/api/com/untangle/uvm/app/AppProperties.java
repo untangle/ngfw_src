@@ -21,6 +21,7 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
     private String displayName = null;
     private String className = null;
     private String appBase = null;
+    private String daemon = null;
 
     public enum Type {
         FILTER,
@@ -84,6 +85,12 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
      */
     public String getAppBase() { return appBase; }
     public void setAppBase( String newValue ) { this.appBase = newValue; }
+
+    /**
+     * The dawmon is the optional name of an associated daemon.
+     */
+    public String getDaemon() { return daemon; }
+    public void setDaemon( String newValue ) { this.daemon = newValue; }
 
     /**
      * The type is the type of app
