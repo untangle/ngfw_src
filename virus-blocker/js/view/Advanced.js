@@ -20,7 +20,10 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
         }, {
             xtype: 'checkbox',
             boxLabel: 'Enable BitDefender&reg; Scan'.t(),
-            bind: '{settings.enableLocalScan}'
+            bind: {
+                value: '{settings.enableLocalScan}',
+                hidden: rpc.architecture === "arm"
+            }
         }]
     }],
 
