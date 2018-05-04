@@ -183,7 +183,11 @@ Ext.define('Ung.cmp.GridController', {
             case 'SRC_INTF':
             case 'DST_INTF':
                 conds[i].value.toString().split(',').forEach(function (intfff) {
-                    valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
+                    Util.getInterfaceList(true, true).forEach(function(interface){
+                        if(interface[0] == intfff){
+                            valueRenderer.push(interface[1]);
+                        }
+                    });
                 });
                 break;
             case 'DST_LOCAL':
