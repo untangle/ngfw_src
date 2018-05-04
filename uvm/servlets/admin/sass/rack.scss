@@ -1,3 +1,16 @@
+@keyframes powerColor {
+    0% {
+        color: orange;
+    }
+    50% {
+        color: yellow;
+    }
+    100% {
+        color: orange;
+    }
+
+}
+
 .rack .x-panel-body {
     background: transparent url('/skins/modern-rack/images/admin/background_app.png') repeat-y center 0;
 }
@@ -41,7 +54,7 @@
         .highcharts-container {
             visibility: hidden;
         }
-        &.RUNNING {
+        &.on {
             background: #000;
             .highcharts-container {
                 visibility: visible;
@@ -53,7 +66,7 @@
     }
     .metrics {
         background: #444;
-        &.RUNNING {
+        &.on {
             background: #000;
             p {
                 color: #CCC;
@@ -100,7 +113,7 @@
                     inset 0px 1px 1px 0px rgba(250,250,250,0.2),
                     inset 0px -5px 15px 0px rgba(0,0,0,0.3);
 
-        &:active, &.pending {
+        &:active, &.inconsistent {
             box-shadow: 0px 1px 1px rgba(0,0,0,0.5),
                         inset 0px 1px 1px 0px rgba(250,250,250,0.2),
                         inset 0px -5px 15px 0px rgba(0,0,0,0.4);
@@ -109,10 +122,18 @@
             }
         }
 
-        &.RUNNING { i { color: #8EFB6C } }
+        &.on { i { 
+            color: #8EFB6C;
+        } }
 
-        &.pending i {
-            color: orange;
+        &.inconsistent { i { 
+            color: tomato;
+        } }
+
+        &.powering i {
+            animation: powerColor ease;
+            animation-iteration-count: infinite;
+            animation-duration: 4s;
         }
     }
 }

@@ -18,8 +18,8 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     onStatusBeforeRender: function() {
         var me = this,
             vm = this.getViewModel();
-        vm.bind('{instance.runState}', function(state) {
-            if (state === 'RUNNING') {
+        vm.bind('{state}', function(state) {
+            if (state.get('on') ){
                 me.getVirtualUsers();
                 me.getTunnelStatus();
             }

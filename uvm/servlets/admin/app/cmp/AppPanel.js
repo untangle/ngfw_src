@@ -21,7 +21,7 @@ Ext.define('Ung.cmp.AppPanel', {
             padding: '0 5',
             bind: {
                 html: '<img src="/icons/apps/{props.name}.svg" style="vertical-align: middle;" width="16" height="16"/> <strong>{props.displayName}</strong>' +
-                    ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.runState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
+                    ' <i class="fa fa-circle {state.colorCls}"></i>'
             }
         }]
     }, {
@@ -49,7 +49,7 @@ Ext.define('Ung.cmp.AppPanel', {
             hidden: true,
             bind: {
                 href: '#reports?cat={props.name}',
-                hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled || instance.runState !== "RUNNING"}'
+                hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled || !state.on}'
             }
         }]
     },

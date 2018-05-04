@@ -217,7 +217,6 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         v.setLoading(true);
         var sequence = [
             Rpc.asyncPromise(v.appManager, 'setSettings', vm.get('settings') ),
-            Rpc.asyncPromise(v.appManager, 'getRunState')
         ];
 
         var validSave = true;
@@ -275,17 +274,16 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             v.setLoading(false);
 
             result.shift();
-            var state = result.shift();
             result.forEach(function(result, index){
                 Util.successToast('Configuration imported'.t() + ': ' + tunnelNamesToImport[index]);
             });
 
             me.getSettings();
 
-            if(sequence.length > 2){
+            if(sequence.length > 1){
                 // Added one or more tunnels but not powered on.
-                if( state !== 'RUNNING'){
-                    v.down('appstate > button').click();
+                if( !vm.get('state.on')){
+                    v.down('appstate').down('button').click();
                 }
             }
             Ext.fireEvent('resetfields', v);

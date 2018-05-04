@@ -45,8 +45,8 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{!state.on}',
+                disabled: '{!state.on}'
             },
             items: [{
                 xtype: 'ungrid',
@@ -134,8 +134,8 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{!state.on}',
+                disabled: '{!state.on}'
             },
             items: [{
                 xtype: 'ungrid',

@@ -151,9 +151,8 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 }
 
                 Ext.apply(app, {
-                    status: instance.targetState || null,
+                    state: Ext.create('Ung.model.AppState',{instance: instance, app: Rpc.directData('rpc.appManager.app', instance.id)}),
                     instanceId: instance.id || null,
-                    // status: status || null,
                     parentPolicy: parentPolicy || null,
                 });
             }

@@ -35,8 +35,8 @@ Ext.define('Ung.apps.configurationbackup.view.Status', {
             collapsed: true,
             disabled: true,
             bind: {
-                collapsed: '{instance.runState !== "RUNNING"}',
-                disabled: '{instance.runState !== "RUNNING"}'
+                collapsed: '{!state.on}',
+                disabled: '{!state.on}'
             },
             items: [{
                 xtype: 'component',

@@ -208,7 +208,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
 
             var appState = app.down('appstate');
             var appStateVm = appState.getViewModel();
-            if(appStateVm.get('instance.targetState') != 'RUNNING' || appStateVm.get('instance.runState') != 'RUNNING'){
+            if(!appStateVm.get('state.on')){
                 app.down('appstate').down('button[cls=power-btn]').click();
             }
         }

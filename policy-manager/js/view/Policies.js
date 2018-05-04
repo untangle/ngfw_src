@@ -77,7 +77,13 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
         }, {
             header: 'Status',
             width: Renderer.messageWidth,
-            dataIndex: 'status',
+            dataIndex: 'state',
+            renderer: function(state){
+                if(!state){
+                    return '';
+                }
+                return Ext.String.format('<i class="fa fa-circle {0}"></i> {1}', state.get('colorCls'), state.get('status'));
+            }
         }, {
             header: 'Name',
             width: Renderer.messageWidth,
@@ -85,7 +91,6 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
             flex: 1,
             renderer: function (val, meta, rec) {
                 return '<strong>' + val + '</strong>';
-                // return '<img src="/icons/apps/' + rec.get('name') + '.svg" width=16 height=16/>' + '<strong>' + val + '</strong>';
             }
         }, {
             header: 'Inherited from',
@@ -100,19 +105,16 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
                 disabled: true,
                 bind: {
                     disabled: '{record.parentPolicy}',
-                    text: '{record.status === "RUNNING" ? "Stop" : "Run"}',
-                    iconCls: 'fa {record.status === "RUNNING" ? "fa-stop" : "fa-play"}',
-                    handler: '{record.status === "RUNNING" ? "onStop" : "onStart"}',
+                    text: '{record.state.on ? "Stop" : "Run"}',
+                    iconCls: 'fa {record.state.on ? "fa-stop" : "fa-play"}',
+                    handler: '{record.state.on ? "onStop" : "onStart"}',
                 },
             },
             renderer: function (val, meta, record) {
-                if (!record.get('status')) {
+                if (!record.get('state')) {
                     meta.style = 'display: none';
                 }
             }
-            // onWidgetAttach: function (col, widget, rec) {
-            //     widget.setVisible(rec.get('status') ? true : false);
-            // }
         }, {
             header: 'Manage'.t(),
             xtype: 'widgetcolumn',
@@ -120,9 +122,9 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
             widget: {
                 xtype: 'button',
                 bind: {
-                    text: '{(record.status && !record.parentPolicy) ? "Remove" : "Install"}',
-                    iconCls: 'fa {(record.status && !record.parentPolicy) ? "fa-ban" : "fa-download"}',
-                    handler: '{(record.status && !record.parentPolicy) ? "onRemove" : "onInstall"}',
+                    text: '{(record.state && !record.parentPolicy) ? "Remove" : "Install"}',
+                    iconCls: 'fa {(record.state && !record.parentPolicy) ? "fa-ban" : "fa-download"}',
+                    handler: '{(record.state && !record.parentPolicy) ? "onRemove" : "onInstall"}',
                 }
             }
         }]
