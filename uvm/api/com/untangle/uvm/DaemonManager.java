@@ -23,4 +23,6 @@ public interface DaemonManager
     public void setExtraRestartCommand(String daemonName, String extraRestartCommand, long extraRestartDelay);
 
     public boolean disableAllMonitoring(String daemonName);
+
+    public boolean isRunning(String daemonName);
 }

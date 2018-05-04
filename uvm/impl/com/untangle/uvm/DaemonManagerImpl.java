@@ -183,6 +183,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
+    public boolean isRunning(String daemonName){
+        DaemonObject daemonObject = daemonHashMap.get(daemonName);
+        if (daemonObject == null)
+            return (false);
+
+        String daemonSearchString = ( daemonObject.searchString != null ? daemonObject.searchString : daemonName );
+        String result[] = UvmContextFactory.context().execManager().execOutput("pgrep -il " + daemonSearchString + "| grep systemctl | wc -l && pgrep -il " + daemonSearchString + "| grep -v systemctl | wc -l").split("\\r?\\n");
+        if(Integer.parseInt(result[0].trim()) == 0 && Integer.parseInt(result[1].trim()) > 0)
+            return true;
+        else
+            return false;
+
+    }
+
     // these function are private since they should not be access externally
 
     private synchronized DaemonObject getDaemonObject( String daemonName )
