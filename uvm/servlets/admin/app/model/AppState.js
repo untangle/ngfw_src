@@ -15,12 +15,12 @@ Ext.define ('Ung.model.AppState', {
     }, {
         name: 'colorCls',
         type: 'string',
-        convert: function(v, record){
-            if(record.get('inconsistent')){
+        calculate: function(data){
+            if(data.inconsistent){
                 return 'fa-red';
-            }else if(record.get('power')){
+            }else if(data.power){
                 return 'fa-orange';
-            }else if(record.get('on')){                    
+            }else if(data.on){
                 return 'fa-green';
             }else{
                 return 'fa-gray';
@@ -29,19 +29,19 @@ Ext.define ('Ung.model.AppState', {
     }, {
         name: 'status',
         type: 'string',
-        convert: function(v, record){
-            if(record.get('on')){
-                if(record.get('power')){
+        calculate: function(data){
+            if(data.on){
+                if(data.power){
                     return 'Powering on'.t();
-                }else if(record.get('inconsistent')){
+                }else if(data.inconsistent){
                     return 'Enabled but is not active'.t();
                 }else{
                     return 'Enabled'.t();
                 }
             }else{
-                if(record.get('power')){
+                if(data.power){
                     return 'Powering off'.t();
-                }else if(record.get('inconsistent')){
+                }else if(data.inconsistent){
                     return 'Disabled but active'.t();
                 }else{
                     return 'Disabled'.t();
@@ -65,8 +65,6 @@ Ext.define ('Ung.model.AppState', {
         this.set('on', on);
         this.set('inconsistent', inconsistent);
         this.set('power', false);
-        this.set('colorCls', on);
-        this.set('status', on);
     },
     vm: null,
     instance: null,
