@@ -412,6 +412,10 @@ public abstract class AppBase implements App
         this.metrics.remove( metric.getName() );
         this.metricList.remove( metric );
     }
+
+    public String getStatus(){
+        return "";
+    }
     
     public String toString()
     {

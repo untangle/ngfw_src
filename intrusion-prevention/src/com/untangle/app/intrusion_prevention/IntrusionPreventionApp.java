@@ -68,6 +68,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     private static final String SNORT_CONF = "/etc/snort/snort.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+    private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
 
     private boolean updatedSettingsFlag = false;
 
@@ -179,6 +180,7 @@ public class IntrusionPreventionApp extends AppBase
             throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
         }
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "snort", 3600, "snort");
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
     }
@@ -318,6 +320,11 @@ public class IntrusionPreventionApp extends AppBase
     public void setBlockCount( long value )
     {
         this.setMetric(STAT_BLOCK, value);
+    }
+
+    public String getStatus()
+    {
+        return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
     }
 
     /**
