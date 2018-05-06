@@ -390,7 +390,7 @@ class UvmTests(unittest2.TestCase):
         open(certFilePath, "w").write('\n'.join(lines))
 
         #Download backup
-        result = subprocess.call("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 3 --post-data 'type=backup' http://localhost/admin/download", shell=True)
+        result = subprocess.call("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 10 --post-data 'type=backup' http://localhost/admin/download", shell=True)
 
         #replace modified cert with backed-up original before testing.
         subprocess.call("cp "+certFilePath+".backup "+certFilePath, shell=True)
