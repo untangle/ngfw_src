@@ -50,6 +50,10 @@ public class FixedReports
     private static final Logger logger = Logger.getLogger( FixedReports.class );
 
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/reports/templates/reports.html";
+    public static final int DEFAULT_BROWSER_WIDTH = 800;
+    public static final int DEFAULT_BROWSER_HEIGHT = 800;
+    public static final int MOBILE_BROWSER_WIDTH = 250;
+    public static final int MOBILE_BROWSER_HEIGHT = 250;
 
     private StringBuilder messageText = null;
 
@@ -679,6 +683,26 @@ public class FixedReports
 
     private ReportsManager reportsManager;
 
+    public FixedReports(){
+        webbrowser = null;
+        if(WebBrowser.exists()){
+            try{
+                webbrowser = new WebBrowser(1, 5, DEFAULT_BROWSER_WIDTH, DEFAULT_BROWSER_HEIGHT, 8);
+            }catch(Exception e){
+                logger.warn("Unable to start WebBrowser instance",e);
+                webbrowser = null;
+            }
+        }
+
+    }
+
+    public void destroy(){
+        if(webbrowser != null){
+            webbrowser.close();
+        }
+        webbrowser = null;
+    }
+
     /**
      * Create and send fixed reports
      *
@@ -788,20 +812,14 @@ public class FixedReports
 
         logger.warn("Generating report for \"" + title + "\"");
 
-        Integer browserWidth = 800;
-        Integer browserHeight = 400;
-        if(emailTemplate.getMobile() == true){
-            browserWidth = 250;
-            browserHeight = 250;
-        }
-
-        webbrowser = null;
-        if(WebBrowser.exists()){
-            try{
-                webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
-            }catch(Exception e){
-                logger.warn("Unable to start WebBrowser instance: ",e);
+        if(webbrowser != null){
+            Integer browserWidth = DEFAULT_BROWSER_WIDTH;
+            Integer browserHeight = DEFAULT_BROWSER_WIDTH;
+            if(emailTemplate.getMobile() == true){
+                browserWidth = MOBILE_BROWSER_WIDTH;
+                browserHeight = DEFAULT_BROWSER_HEIGHT;
             }
+            webbrowser.resize( browserWidth, browserWidth);
         }
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
@@ -887,10 +905,6 @@ public class FixedReports
             outputLines = new ArrayList<StringBuilder>();
             parseBuffer(inputLines, outputLines, variableKeyValues);
             sendEmail(recipientsWithOnlineAccess, outputLines);
-        }
-
-        if(webbrowser != null){
-            webbrowser.close();
         }
     }
 

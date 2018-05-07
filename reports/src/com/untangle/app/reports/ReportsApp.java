@@ -45,6 +45,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.WebBrowser;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -279,19 +280,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      * @throws Exception
      *  If there an issue generating the report.
      */
-    public void runFixedReport() throws Exception
+    public void runFixedReports() throws Exception
     {
         flushEvents();
 
-        App reportsApp = UvmContextFactory.context().appManager().app("reports");
-        if(reportsApp == null || !AppState.RUNNING.equals(reportsApp.getRunState())){
-            return;
-        }
+        FixedReports fixedReports = new FixedReports();
 
+        String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
         synchronized (this) {
-            String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
-                FixedReports fixedReports = new FixedReports();
                 List<ReportsUser> users = new LinkedList<ReportsUser>();
                 for ( ReportsUser user : settings.getReportsUsers() ) {
                     if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
@@ -304,7 +301,8 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                     logger.warn("Skipping report " + emailTemplate.getTitle() + " because no users (emails) receive it.");
                 }
             }
-        }        
+        }
+        fixedReports.destroy();
     }
 
     /** 

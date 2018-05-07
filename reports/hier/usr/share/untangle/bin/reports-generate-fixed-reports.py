@@ -10,8 +10,13 @@ if reportsApp == None:
     print("Reports not installed")
     sys.exit(1)
 
+if reportsApp.getRunState() != 'RUNNING':
+    print("Reports not running")
+    sys.exit(1)
+
 try:
-    reportsApp.runFixedReport()
-except:
+    reportsApp.runFixedReports()
+except Exception as e:
     # can timeout - just ignore
+    print e
     pass
