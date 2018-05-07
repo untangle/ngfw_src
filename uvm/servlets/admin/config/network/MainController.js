@@ -332,14 +332,14 @@ Ext.define('Ung.config.network.MainController', {
 
     interfaceStatusLinkMap:{
         1: 'macAddress',
-        10: 'rxbytes',
-        11: 'rxpkts',
-        12: 'rxerr',
-        13: 'rxdrop',
-        16: 'txbytes',
-        17: 'txpkts',
-        18: 'txerr',
-        19: 'txdrop'
+        2: 'rxbytes',
+        3: 'rxpkts',
+        4: 'rxerr',
+        5: 'rxdrop',
+        8: 'txbytes',
+        9: 'txpkts',
+        10: 'txerr',
+        11: 'txdrop'
     },
     getInterfaceStatus: function () {
         var me = this,
@@ -373,7 +373,7 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | tr "\\n" " " | tr -s " "'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | tr "\\n" " " | tr -s " "'),
             Rpc.asyncPromise('rpc.execManager.execOutput', 'ip addr show dev ' + symbolicDev + ' | grep inet | grep global | tr "\\n" " " | tr -s " "')
         ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
