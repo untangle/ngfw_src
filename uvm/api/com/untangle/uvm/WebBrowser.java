@@ -21,6 +21,7 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.Dimension;
 
 import com.untangle.uvm.util.IOUtil;
 
@@ -103,6 +104,7 @@ public class WebBrowser
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
             UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
+
             ChromeDriverService service = new ChromeDriverService.Builder()
                 .usingDriverExecutable(new File(chromeDriver))
                 .usingAnyFreePort()
@@ -111,6 +113,7 @@ public class WebBrowser
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
+
             driver = new ChromeDriver(service, options);
         }catch(UnreachableBrowserException e){
             logger.warn("Unable to open driver, ", e);
@@ -233,5 +236,15 @@ public class WebBrowser
 		}
 		return success;
 	}
+
+    /**
+     * Resize the browser window.
+     *
+     * @param width New width.
+     * @param height New height.
+     */
+    public void resize(int width, int height){
+        driver.manage().window().setSize( new Dimension( width, height ) );
+    }
 
 }
