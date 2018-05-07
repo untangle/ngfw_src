@@ -56,9 +56,10 @@ Ext.define ('Ung.model.AppState', {
             ( this.instance && !Util.isDestroyed(this.instance)) ){
             var targetState = this.vm ? this.vm.get('instance.targetState') : this.instance.targetState;
             var runState = this.app.getRunState();
-            var daemonRunning = (this.vm && this.vm.get('props.daemon') != null) ? Rpc.directData('rpc.UvmContext.daemonManager.isRunning', this.vm.get('props.daemon') ) : true;
 
             on = ( runState == 'RUNNING' );
+            var daemonRunning = (on && this.vm && this.vm.get('props.daemon') != null) ? Rpc.directData('rpc.UvmContext.daemonManager.isRunning', this.vm.get('props.daemon') ) : true;
+
             inconsistent = (targetState != runState) || (runState == 'RUNNING' && !daemonRunning);
         }
 
