@@ -161,13 +161,15 @@ Ext.define('Ung.Setup.Wireless', {
         onSave: function (cb) {
             var me = this, form = me.getView(), vm = me.getViewModel();
 
-            if (!vm.get('wirelessSettings')) { cb(); return; }
+            // if invalid form show invalid fields
+            if (!form.isValid()) { return; }
 
-            // if invalid form or no changes
-            if (!form.isValid() || Ext.Object.equals(me.initialSettings, vm.get('wirelessSettings'))) {
-                return;
+            // if valid but no changes made just move to next step
+            if (Ext.Object.equals(me.initialSettings, vm.get('wirelessSettings'))) {
+                cb(); return;
             }
 
+            // otherwise save settings
             Ung.app.loading('Saving Settings'.t());
             rpc.networkManager.setWirelessSettings(function (result, ex) {
                 Ung.app.loading(false);
