@@ -8,7 +8,8 @@
         "url": "https://demo.untangle.com/"
     },
     "resolutions": [
-        "1600x1080"
+        "1600x1080",
+        "1200x800"
     ],
     "default_sleep_seconds": 3,
     "types": {
