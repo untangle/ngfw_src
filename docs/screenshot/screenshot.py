@@ -28,14 +28,14 @@ class WebBrowser:
     driver = None
 
     temp_directory = "/tmp/webbrowser"
-    chrome_driver = "/usr/lib/chromium/chromedriver"
+    chrome_driver = "/usr/bin/chromedriver"
     chrome_browser = "/usr/bin/chromium"
 
     xvfb_command = None
 
     cropped_image = None
 
-    def __init__(self, resolution="1024x768", sequence="1", screen="5", temp_directory="/tmp/webbrowser"):
+    def __init__(self, resolution="1024x768", sequence="1", screen="7", temp_directory="/tmp/webbrowser"):
         self.resolution = resolution
         self.sequence = sequence
         self.screen = screen
@@ -70,7 +70,12 @@ class WebBrowser:
                 ]
             }
         }
-        self.driver = webdriver.Remote( self.service.service_url, self.capabilities)
+        try:
+            self.driver = webdriver.Remote( self.service.service_url, self.capabilities)
+        except Exception as e:
+            print("Unable to initialize webdriver.Remote")
+            print(e)
+
         r = resolution.split("x")
         self.driver.set_window_size( int(r[0]), int(r[1]) )
 
@@ -81,6 +86,7 @@ class WebBrowser:
         self.driver.quit()
         self.service.stop()
         os.system("/usr/bin/pkill -f \"" + self.xvfb_command + "\"")
+        time.sleep(5)
 
     def auth_cookie_exists(self):
         """
@@ -192,7 +198,12 @@ class WebBrowser:
     def errors_detected(self):
         for entry in self.driver.get_log("browser"):
             if entry['level'] == 'SEVERE':
-                return True
+                if entry['source'] == 'network':
+                    continue
+                if entry['source'] == 'console-api':
+                    print entry
+                    return True
+                print entry
         return False
 
     def crop_by_dimension(self, x, y, height, width):
@@ -427,7 +438,7 @@ def main(argv):
                 continue
 
             start = timer()
-            print("Capturing: " + screen['url'] + " -> " + screen["name"] + ".png ...",)
+            print("Capturing: " + base_url + screen['url'] + " -> " + web_browser.build_file_name_path(screen["name"]),)
             sys.stdout.flush()
 
             web_browser.go(base_url + screen["url"])
