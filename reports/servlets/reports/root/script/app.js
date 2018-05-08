@@ -238,8 +238,8 @@ Ext.define('Ung.controller.ChartGlobal', {
             if(result){
                 var entry = new Ung.model.Report(result);
                 vm.set('entry', entry);
-                vm.set('f_startdate', new Date( parseInt( chartReport.startDate, 10 ) ) );
-                vm.set('f_enddate', new Date( parseInt( chartReport.endDate, 10 ) ) );
+                vm.set('time.range.since', new Date( parseInt( chartReport.startDate, 10 ) ) );
+                vm.set('time.range.until', new Date( parseInt( chartReport.endDate, 10 ) ) );
             }
         }, this), chartReport.reportUniqueId);
     }
