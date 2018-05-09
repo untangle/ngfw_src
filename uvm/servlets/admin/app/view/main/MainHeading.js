@@ -42,18 +42,22 @@ Ext.define('Ung.view.main.MainHeading', {
     }, '->', {
         text: 'Sessions'.t(),
         href: '#sessions',
+        iconCls: 'monitor sessions',
         bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' }
     }, {
         text: 'Hosts'.t(),
         href: '#hosts',
+        iconCls: 'monitor hosts',
         bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' }
     }, {
         text: 'Devices'.t(),
         href: '#devices',
+        iconCls: 'monitor devices',
         bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' }
     }, {
         text: 'Users'.t(),
         href: '#users',
+        iconCls: 'monitor users',
         bind: { userCls: '{activeItem === "users" ? "pressed" : ""}' }
     }, {
         xtype: 'component',
@@ -124,15 +128,19 @@ Ext.define('Ung.view.main.MainHeading', {
                 xtype: 'menuseparator'
             }, {
                 text: 'Sessions'.t(),
+                iconCls: 'monitor sessions',
                 href: '#sessions'
             }, {
                 text: 'Hosts'.t(),
+                iconCls: 'monitor hosts',
                 href: '#hosts'
             }, {
                 text: 'Devices'.t(),
+                iconCls: 'monitor devices',
                 href: '#devices'
             }, {
                 text: 'Users'.t(),
+                iconCls: 'monitor users',
                 href: '#users'
             }, {
                 xtype: 'menuseparator'
