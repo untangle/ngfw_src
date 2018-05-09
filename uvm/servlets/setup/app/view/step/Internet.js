@@ -121,7 +121,8 @@ Ext.define('Ung.Setup.Internet', {
             },
             defaults: {
                 xtype: 'textfield',
-                labelAlign: 'top'
+                labelAlign: 'top',
+                allowBlank: false
             },
             items: [{
                 fieldLabel: 'Username'.t(),
@@ -157,19 +158,19 @@ Ext.define('Ung.Setup.Internet', {
             html: 'Status'.t()
         }, {
             fieldLabel: 'IP Address'.t(),
-            bind: { value: '{wan.v4Address}' }
+            bind: { value: '{wanStatus.v4Address}' }
         }, {
             fieldLabel: 'Netmask'.t(),
-            bind: { value: '/{wan.v4PrefixLength} - {wan.v4Netmask}' }
+            bind: { value: '/{wanStatus.v4PrefixLength} - {wanStatus.v4Netmask}' }
         }, {
             fieldLabel: 'Gateway'.t(),
-            bind: { value: '{wan.v4Gateway}' }
+            bind: { value: '{wanStatus.v4Gateway}' }
         }, {
             fieldLabel: 'Primary DNS'.t(),
-            bind: { value: '{wan.v4Dns1}' }
+            bind: { value: '{wanStatus.v4Dns1}' }
         }, {
             fieldLabel: 'Secondary DNS'.t(),
-            bind: { value: '{wan.v4Dns2}' }
+            bind: { value: '{wanStatus.v4Dns2}' }
         }, {
             xtype: 'button',
             text: 'Test Connectivity'.t(),
@@ -204,13 +205,18 @@ Ext.define('Ung.Setup.Internet', {
                 });
                 vm.set('wan', firstWan);
                 if (!firstWan) { return; }
-
-                rpc.networkManager.getInterfaceStatus(function (status, e) {
-                    if (e) { Util.handleException('Unable to get WAN status.'.t()); return; }
-                    Ext.applyIf(firstWan, status);
-                    vm.set('wan', firstWan);
-                }, firstWan.interfaceId);
+                me.getInterfaceStatus();
             });
+        },
+
+        getInterfaceStatus: function () {
+            var me = this, vm = me.getViewModel(),
+                wan = vm.get('wan');
+
+            rpc.networkManager.getInterfaceStatus(function (status, ex) {
+                if (ex) { Util.handleException('Unable to get WAN status.'.t()); return; }
+                vm.set('wanStatus', status);
+            }, wan.interfaceId);
         },
 
         renewDhcp: function () {
@@ -232,6 +238,7 @@ Ext.define('Ung.Setup.Internet', {
         },
 
         testConnectivity: function (testType, cb) {
+            var me = this;
             Ung.app.loading('Testing Connectivity...'.t());
             rpc.connectivityTester.getStatus(function (result, ex) {
                 Ung.app.loading(false);
@@ -273,11 +280,13 @@ Ext.define('Ung.Setup.Internet', {
 
                     // otherwise show a warning message
                     var warningText = message + '<br/><br/>' + 'It is recommended to configure valid internet settings before continuing. Try again?'.t();
-                    Ext.Msg.confirm('Warning:'.t(), warningText, function (btn, text) {
+                    Ext.Msg.confirm('Warning:'.t(), warningText, function (btn) {
                         if (btn === 'yes') { return; }
                         cb();
                     });
                 }
+
+                me.getInterfaceStatus();
             });
 
         },
