@@ -11,6 +11,24 @@ cite {
     transform: none !important;
 }
 
+// monitor icons
+.monitor {
+    background-size: contain;
+    opacity: 0.7;
+    &.sessions {
+        background: url('/icons/monitor/sessions-monitor-icon.svg') no-repeat 50% 50%;
+    }
+    &.hosts {
+        background: url('/icons/monitor/hosts-monitor-icon.svg') no-repeat 50% 50%;
+    }
+    &.devices {
+        background: url('/icons/monitor/devices-monitor-icon.svg') no-repeat 50% 50%;
+    }
+    &.users {
+        background: url('/icons/monitor/users-monitor-icon.svg') no-repeat 50% 50%;
+    }
+}
+
 
 // fix for Mac Safari buttons issue
 .x-btn-icon-right > .x-btn-inner-default-small,
@@ -536,6 +554,9 @@ cite {
         }
         .x-btn-icon-el {
             color: #FFF;
+            &.monitor {
+                opacity: 1;
+            }
         }
     }
 
@@ -547,7 +568,7 @@ cite {
         color: #999;
         // font-size: 14px;
         margin-bottom: 0 !important;
-        transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     &.x-btn-focus {
@@ -564,6 +585,9 @@ cite {
         .x-btn-icon-el {
             // color: #6abc50;
             color: #FFF;
+            &.monitor {
+                opacity: 1;
+            }
         }
     }
 }
