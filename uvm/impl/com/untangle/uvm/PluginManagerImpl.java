@@ -67,6 +67,7 @@ public class PluginManagerImpl implements PluginManager
             Files.walk(Paths.get(pathStr))
                 .filter(Files::isRegularFile)
                 .filter(path -> !path.toString().contains("$"))
+                .filter(path -> path.toString().contains("Plugin"))
                 .forEach(path -> {
                         String name = path.toString();
                         name = name.substring(0, name.lastIndexOf('.')); // remove file extension
