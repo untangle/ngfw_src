@@ -155,7 +155,7 @@ ${IPTABLES} -t filter -F shield-process
 ${IPTABLES} -t filter -N shield-block >/dev/null 2>&1
 ${IPTABLES} -t filter -F shield-block
 
-modprobe -r xt_recent
+# modprobe -r xt_recent
 modprobe xt_recent ip_list_tot=${TABLE_SIZE} ip_pkt_list_tot=${LIST_SIZE}
 
 """)
