@@ -15,16 +15,30 @@ import com.untangle.uvm.app.RuleCondition;
 @SuppressWarnings("serial")
 public class FirewallRuleCondition extends RuleCondition
 {
+    /**
+     * Create a firewall rule condition
+     */
     public FirewallRuleCondition( )
     {
         super();
     }
 
+    /**
+     * Create a firewall rule condition
+     * @param matcherType
+     * @param value
+     */
     public FirewallRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
+    /**
+     * Create a firewall rule condition
+     * @param matcherType
+     * @param value
+     * @param invert
+     */
     public FirewallRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
