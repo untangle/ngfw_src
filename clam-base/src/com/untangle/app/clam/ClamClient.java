@@ -18,6 +18,9 @@ import com.untangle.app.virus_blocker.VirusClientContext;
 import com.untangle.app.virus_blocker.VirusClientSocket;
 import org.apache.log4j.Logger;
 
+/**
+ * ClamClient is a client scanner implementation for clamd
+ */
 public class ClamClient extends VirusClient
 {
     protected final Logger clogger = Logger.getLogger(getClass());
@@ -43,11 +46,18 @@ public class ClamClient extends VirusClient
     private final static Pattern REPLY_PORTP = Pattern.compile(REPLY_PORT, Pattern.CASE_INSENSITIVE);
     private final static Pattern REP_RESULTP = Pattern.compile(REP_RESULT, Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Create a ClamClient
+     * @param cContext - a VirusClientContext
+     */
     public ClamClient( VirusClientContext cContext )
     {
         super(cContext);
     }
 
+    /**
+     * Run a scan
+     */
     public void run()
     {
         VirusClientSocket clamcSocket = null;
@@ -199,6 +209,12 @@ public class ClamClient extends VirusClient
         return;
     }
 
+    /**
+     * Cleanup tho ClamClient
+     * @param cSocket
+     * @param host
+     * @param port
+     */
     private void cleanup( VirusClientSocket cSocket, String host, int port )
     {
         try {
@@ -214,6 +230,12 @@ public class ClamClient extends VirusClient
         return;
     }
 
+    /**
+     * Exit and cleanup the ClamClient
+     * @param cSocket
+     * @param host
+     * @param port
+     */
     private void cleanExit( VirusClientSocket cSocket, String host, int port )
     {
         cleanup(cSocket, host, port);
@@ -221,6 +243,12 @@ public class ClamClient extends VirusClient
         return;
     }
 
+    /**
+     * Parse the ClamD Response
+     * @param response
+     * @return - the port from the response
+     * @throws Exception
+     */
     private int parseClamdResponse( String response ) throws Exception
     {
         StringTokenizer sTokenizer = new StringTokenizer(response);
@@ -253,6 +281,12 @@ public class ClamClient extends VirusClient
         return msgStreamPort;
     }
 
+    /**
+     * Parse a clamdresult
+     * Sets the result in the context
+     * @param result
+     * @throws Exception
+     */
     private void parseClamdResult( String result ) throws Exception
     {
         StringTokenizer sTokenizer = new StringTokenizer(result);
