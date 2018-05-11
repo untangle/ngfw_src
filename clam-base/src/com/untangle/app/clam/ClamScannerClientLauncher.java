@@ -11,6 +11,9 @@ import com.untangle.app.virus_blocker.VirusScannerClientLauncher;
 import com.untangle.app.virus_blocker.VirusScannerResult;
 import org.apache.log4j.Logger;
 
+/**
+ * A clam scanner launcher utility
+ */
 public class ClamScannerClientLauncher extends VirusScannerClientLauncher
 {
     protected final Logger clogger = Logger.getLogger(getClass());
@@ -44,12 +47,18 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
 
     /**
      * Create a ClientLauncher for the given file
+     * @param file - the file to scan
      */
-    public ClamScannerClientLauncher(File msgFile)
+    public ClamScannerClientLauncher(File file)
     {
-        super(msgFile);
+        super(file);
     }
 
+    /**
+     * Launch a scan
+     * @param timeout
+     * @return the result
+     */
     public VirusScannerResult doScan(long timeout)
     {
         ClamClient clientTmp = createClient(); // create scanner
@@ -72,6 +81,10 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
         return result;
     }
 
+    /**
+     * Create a ClamClient
+     * @return ClamClie
+     */
     private ClamClient createClient()
     {
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
@@ -81,6 +94,10 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
         return client;
     }
 
+    /**
+     * Get the result for the launched client
+     * @return VirusScannerResult
+     */
     private VirusScannerResult getResult()
     {
         VirusScannerResult result = cContext.getResult();
