@@ -1,5 +1,5 @@
-/*
- * $Id$
+/**
+ * $Id: EventHandler.java,v 1.00 2018/05/10 20:44:51 dmorris Exp $
  */
 package com.untangle.app.firewall;
 
@@ -15,6 +15,9 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
+/**
+ * The firewall event handler
+ */
 public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
@@ -26,6 +29,11 @@ public class EventHandler extends AbstractEventHandler
     /* Firewall App */
     private final FirewallApp app;
 
+
+    /**
+     * Create a new EventHandler.
+     * @param app - the containing firewall app
+     */
     public EventHandler( FirewallApp app )
     {
         super(app);
@@ -33,16 +41,29 @@ public class EventHandler extends AbstractEventHandler
         this.app = app;
     }
 
+    /**
+     * Handle a new TCP session
+     * @param sessionRequest
+     */
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
         handleNewSessionRequest( sessionRequest, Protocol.TCP );
     }
 
+    /**
+     * Handle a new UDP session
+     * @param sessionRequest
+     */
     public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
         handleNewSessionRequest( sessionRequest, Protocol.UDP );
     }
 
+    /**
+     * Handle a new session
+     * @param request
+     * @param protocol
+     */
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         boolean block = false;
@@ -119,6 +140,10 @@ public class EventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Configure this event handler with the provided settings
+     * @param settings
+     */
     public void configure(FirewallSettings settings)
     {
         this.firewallRuleList = settings.getRules();
