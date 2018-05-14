@@ -13,7 +13,7 @@ Ext.define('Ung.view.reports.Main', {
             fetching: false,
             selection: null,
             editing: false,
-            query: {},
+            query: {}
         },
         formulas: {
             conditionsText: function (get) {
@@ -83,7 +83,7 @@ Ext.define('Ung.view.reports.Main', {
                         if (!node.get('url')) { return; }
                         if (node) {
                             if (node.get('url')) {
-                                Ung.app.redirectTo('#reports/' + node.get('url'));
+                                Ung.app.redirectTo('#reports?' + node.get('url'));
                             } else {
                                 Ung.app.redirectTo('#reports');
                             }
