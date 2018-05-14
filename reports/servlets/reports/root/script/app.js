@@ -123,7 +123,7 @@ Ext.define('Ung.controller.Global', {
                 }
 
                 if (key === 'cat' || key === 'rep') {
-                    route[key] = val;
+                    route[key] = Util.urlEncode(val);
                 } else {
                     if (!key || !sep || !val) {
                         validQuery = false;
