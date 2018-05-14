@@ -41,6 +41,9 @@ Ext.define('Ung.store.ReportsTree', {
             };
             // add reports to each category
             Ext.Array.each(group.items, function (entry) {
+                if(entry.removedFrom){
+                    return;
+                }
                 category.children.push({
                     text: entry.get('localizedTitle'),
                     cat: storeCat.get('slug'),
