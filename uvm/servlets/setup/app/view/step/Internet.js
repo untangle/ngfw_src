@@ -298,7 +298,10 @@ Ext.define('Ung.Setup.Internet', {
             if (!wan) { cb(); return; }
 
             // validate any current form first
-            if (!me.getView().isValid()) { return; }
+            if (!me.getView().isValid()) {
+                Ext.MessageBox.alert('Invalid settings'.t(), 'Some fields have invalid values.'.t());
+                return;
+            }
 
             if (wan.v4ConfigType === 'AUTO' || wan.v4ConfigType === 'PPPOE') {
                 wan.v4StaticAddress = null;
