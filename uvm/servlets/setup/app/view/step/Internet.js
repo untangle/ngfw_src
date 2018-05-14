@@ -122,7 +122,11 @@ Ext.define('Ung.Setup.Internet', {
             defaults: {
                 xtype: 'textfield',
                 labelAlign: 'top',
-                allowBlank: false
+                allowBlank: false,
+                disabled: true,
+                bind: {
+                    disabled: '{wan.v4ConfigType !== "PPPOE"}'
+                }
             },
             items: [{
                 fieldLabel: 'Username'.t(),
