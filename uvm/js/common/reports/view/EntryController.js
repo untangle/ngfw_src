@@ -393,8 +393,13 @@ Ext.define('Ung.view.reports.EntryController', {
 
                 // if title or category changed, update route
                 if (Ext.Array.contains(modFields, 'category') || Ext.Array.contains(modFields, 'title')) {
+                    if (Ext.Array.contains(modFields, 'category') ){
+                        var oldIndex = Ext.getStore('reports').find('uniqueId', entry.get('uniqueId'));
+                        Ext.getStore('reports').removeAt(oldIndex);
+                        Ext.getStore('reports').add(eEntry);
+                    }
                     Ext.getStore('reportstree').build();
-                    Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
+                    Ung.app.redirectTo('#reports?cat=' + Util.urlEncode(entry.get('category')) + '&rep=' + Util.urlEncode(entry.get('title')));
                 }
 
                 vm.set('eEntry', null);
@@ -443,7 +448,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 v.setLoading(false);
                 Ext.getStore('reports').add(entry);
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
-                Ung.app.redirectTo('#reports?cat=' + entry.get('category').replace(/ /g, '-').toLowerCase() + '&rep=' + entry.get('title').replace(/\s+/g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports?cat=' + Util.urlEncode(entry.get('category')) + '&rep=' + Util.urlEncode(entry.get('title')));
 
                 Ext.getStore('reportstree').build(); // rebuild tree after save new
                 me.reload();
@@ -482,7 +487,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 if(Util.isDestroyed(vm)){
                     return;
                 }
-                Ung.app.redirectTo('#reports?cat=' + entry.category.replace(/ /g, '-').toLowerCase());
+                Ung.app.redirectTo('#reports?cat=' + Util.urlEncode(entry.category));
                 Util.successToast(entry.title + ' ' + 'deleted successfully'.t());
                 vm.set('eEntry', null);
                 var removableRec = Ext.getStore('reports').findRecord('uniqueId', entry.uniqueId);

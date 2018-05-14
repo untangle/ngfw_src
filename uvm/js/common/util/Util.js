@@ -612,6 +612,20 @@ Ext.define('Ung.util.Util', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    // formats a timestamp as a date
+    dateFormat: function(v) {
+        if (!v || typeof v === 'string') {
+            return 0;
+        }
+        var date = new Date();
+        if (typeof v === 'object' && v.time) {
+            date.setTime(v.time);
+        } else {
+            date.setTime(v);
+        }
+        return Ext.util.Format.date(date, 'date_fmt'.t());
+    },
+
     getStoreUrl: function(){
         // non API store URL used for links like: My Account, Forgot Password
         return Rpc.directData('rpc.storeUrl').replace('/api/v1', '/store/open.php');
@@ -755,6 +769,24 @@ Ext.define('Ung.util.Util', {
             }
         }
         return false;
+    },
+
+    /**
+     * We'd like to have url components encoded so that as much of the original value remains in ASCII
+     * format with the following exceptions:
+     * 
+     * *    spaces replaced with dashes.  Yes, we know this means collisions with legit dashes.
+     * *    All other non-ASCII characters url encoded.
+     *
+     * These are typically specialized cases like report category and titles.
+     * 
+     * @param  url Url component to ncode.
+     * @return url returned as described above.
+     */
+    urlEncode: function(url){
+        var encodedUrl = url.replace(/\s+/g, '-').toLowerCase();
+        encodedUrl = Ext.Object.toQueryString({'':encodedUrl}).substr(1);
+        return encodedUrl;
     }
 
 });

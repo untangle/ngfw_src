@@ -50,16 +50,17 @@ Ext.define ('Ung.model.Report', {
         {
             name: 'slug',
             calculate: function (entry) {
+                var slug = '';
                 if (entry.title) {
-                    return entry.title.replace(/\s+/g, '-').toLowerCase();
+                    slug = Util.urlEncode(entry.title);
                 }
-                return '';
+                return slug;
             }
         },
         {
             name: 'categorySlug',
             calculate: function (entry) {
-                return entry.category.replace(/ /g, '-').toLowerCase();
+                return Util.urlEncode(entry.category);
             }
         },
         {
