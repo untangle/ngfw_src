@@ -1,4 +1,4 @@
-Ext.define('Ung.apps.livesupport.Main.about.MainController', {
+Ext.define('Ung.apps.livesupport.MainController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.app-live-support',
@@ -33,6 +33,10 @@ Ext.define('Ung.apps.livesupport.Main.about.MainController', {
 
             v.setLoading(false);
         });
+    },
+
+    supportHandler: function(btn){
+        this.getView().up('[itemId=main]').getController().supportHandler(btn);
     }
 
 });

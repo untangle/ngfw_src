@@ -42,10 +42,7 @@ Ext.define('Ung.apps.livesupport.view.Status', {
             }, {
                 xtype: 'button',
                 text: 'Get Support!'.t(),
-                handler: Ext.bind(function() {
-                    window.open( Util.getStoreUrl() + '?action=support&' + Util.getAbout() );
-                    Ung.LicenseLoader.check();
-                }, this)
+                handler: 'supportHandler'
             }]
         }, {
             xtype: 'fieldset',
