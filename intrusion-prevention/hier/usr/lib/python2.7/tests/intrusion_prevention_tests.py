@@ -726,6 +726,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         app.forceUpdateStats()
+        time.sleep(2)
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5, 'msg', rule['msg'], 'blocked', True)
         assert( found )
