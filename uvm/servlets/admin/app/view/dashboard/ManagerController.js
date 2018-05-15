@@ -332,7 +332,7 @@ Ext.define('Ung.view.dashboard.ManagerController', {
             if (widgetCmp && !widgetCmp.isHidden()) {
                 me.dashboard.addBodyCls('highlight');
                 widgetCmp.addCls('highlight-item');
-                me.dashboard.scrollTo(0, me.dashboard.body.getScrollTop() + widgetCmp.getEl().getY() - 107, {duration: 100});
+                me.dashboard.scrollTo(0, me.dashboard.body.getScrollTop() + widgetCmp.getEl().getY() - 101, {duration: 100});
             }
         }
     },
