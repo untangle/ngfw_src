@@ -128,7 +128,8 @@ Ext.define('Ung.view.main.MainController', {
     supportHandler: function (btn) {
         var me = this;
         // check here if support is enabled and show modal only if not, otherwise open support window
-        if (Rpc.directData('rpc.systemManager.getSettings').supportEnabled) {
+        var systemSettings = Rpc.directData('rpc.systemManager.getSettings');
+        if (systemSettings.cloudEnabled && systemSettings.supportEnabled) {
             me.supportLaunch();
         } else {
             me.getView().add({ xtype: 'support' }).show();

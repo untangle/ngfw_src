@@ -18,6 +18,7 @@ Ext.define('Ung.view.main.SupportController', {
         Rpc.asyncData('rpc.systemManager.getSettings')
             .then(function (result) {
                 result.supportEnabled = true;
+                result.cloudEnabled = true;
                 Rpc.asyncData('rpc.systemManager.setSettings', result)
                 .then(function() {
                     Util.successToast('Remote Support Access enabled!');
