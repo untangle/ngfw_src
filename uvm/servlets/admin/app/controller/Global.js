@@ -488,6 +488,9 @@ Ext.define('Ung.controller.Global', {
             var runActivateTaskDelay = 250;
             parentPanel.subViews.forEach(function(subView){
                 var targetPanel = panel.down('[itemId='+subView+']');
+                if(!targetPanel){
+                    return;
+                }
                 var parentPanel = targetPanel.up('tabpanel');
                 parentPanel.setActiveItem(subView);
                 panel = targetPanel;
