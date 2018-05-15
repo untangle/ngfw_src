@@ -309,7 +309,7 @@ public class AdminManagerImpl implements AdminManager
         String passwordHashShadow = admin.getPasswordHashShadow();
         if ( pass != null ) {
             logger.info("Setting root password.");
-            String cmd = "echo 'root:" + pass + "' | sudo chpasswd";
+            String cmd = "echo 'root:" + pass + "' | chpasswd";
                     
             // turn down logging so we dont log password
             UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
@@ -321,7 +321,7 @@ public class AdminManagerImpl implements AdminManager
                 logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
             }
 
-            String shadowHash = UvmContextImpl.context().execManager().execOutput("sudo awk -F: '/root/ {print $2}' /etc/shadow");
+            String shadowHash = UvmContextImpl.context().execManager().execOutput("awk -F: '/root/ {print $2}' /etc/shadow");
 
             /**
              * If the shadowHash is different than the value in settings
