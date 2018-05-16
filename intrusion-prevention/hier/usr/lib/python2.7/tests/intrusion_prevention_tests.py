@@ -724,6 +724,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         pre_events_block = global_functions.get_app_metric_value(app,"block")
         
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        time.sleep(5)
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)

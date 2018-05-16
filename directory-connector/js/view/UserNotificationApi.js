@@ -14,10 +14,8 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
         items: [{
             xtype: 'component',
             margin: '10 0 10 0',
-            html: Ext.String.format(
-                "The User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.".t(),
-                '<b>','</b>')
-        }, {
+            html: "The User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.".t()
+       }, {
             xtype: "checkbox",
             bind: '{settings.apiEnabled}',
             fieldLabel: 'Enable User Notification API'.t(),
@@ -46,13 +44,12 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
                     fieldLabel: 'Secret Key'.t(),
                     labelWidth: 190,
                     bind: '{settings.apiSecretKey}',
-                },{
-                    xtype: 'label',
-                    html: '(blank means no secret key is required)'.t(),
-                    margin: '5 0 0 10',
-                    cls: 'boxlabel'
                 }]
-            }, {
+        },{
+            xtype: 'component',
+            margin: '10 0 10 0',
+            html: "If you use an Active Directory server, you should install the Active Directory Login Monitor on the server as described by the help documentation.  Otherwise, you will need to download and install the following script on all clients.".t()
+        }, {
                 xtype: 'button',
                 text: 'Download User Notification Login Script'.t(),
                 iconCls: 'fa fa-download',

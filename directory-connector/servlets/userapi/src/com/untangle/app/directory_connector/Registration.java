@@ -33,6 +33,7 @@ public class Registration extends HttpServlet
     private static final String AD_DOWNLOAD_NAME = System.getProperty( "uvm.home" ) + "/web/userapi/untangle_user.vbs";
     private static final String AD_DOWNLOAD_TYPE = "application/download";
     private static final String AD_REPLACE_ADDRESS = "%UNTANGLE_REPLACE_WITH_ADDRESS%";
+    private static final String AD_REPLACE_SECRET = "%UNTANGLE_REPLACE_WITH_SECRET%";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -190,12 +191,15 @@ public class Registration extends HttpServlet
             response.setHeader( "Content-Disposition", "attachment; filename=\""+AD_FILE_NAME+"\"" );
             //Since we substitute and other things the length of file != equal length outputted
             //response.setHeader( "Content-Length", "" + length );
+            DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
 
             PrintWriter out = response.getWriter();
             String line = null;
             while( (line = br.readLine()) != null ) {
                 StringBuffer chunk = new StringBuffer( line );
+
                 int replaceLocation = chunk.indexOf(AD_REPLACE_ADDRESS);
+                int replaceSecret = chunk.indexOf(AD_REPLACE_SECRET);
                 if (replaceLocation != -1) {
                     // int port = request.getServerPort(); // this won't work because admin is often done via http
                     int port = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -209,6 +213,9 @@ public class Registration extends HttpServlet
                     // replace %UNTANGLE_REPLACE_WITH_ADDRESS% with a best guess URL
                     chunk.replace( replaceLocation, replaceLocation+AD_REPLACE_ADDRESS.length(), url);
 
+                    out.print( chunk.toString() );
+                } else if ( replaceSecret != -1 ) {
+                    chunk.replace( replaceSecret, replaceSecret+AD_REPLACE_SECRET.length(), directoryConnector.getSettings().getApiSecretKey());
                     out.print( chunk.toString() );
                 } else {
                     out.print( line );
