@@ -26,8 +26,6 @@ l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","
 l2tpClientHost = "10.111.56.83"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
-l2tpRadiusUser = "normal"
-l2tpRadiusPassword = "passwd"
 ipsecHost = "10.111.56.96"
 ipsecHostLANIP = "192.168.235.96"
 ipsecPcLANIP = "192.168.235.83"
@@ -131,8 +129,8 @@ def createRadiusSettings():
             "authenticationMethod": "MSCHAPV2",
             "enabled": True,
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
-            "sharedSecret": global_functions.radius_server_password
+            "server": global_functions.RADIUS_SERVER,
+            "sharedSecret": global_functions.RADIUS_SERVER_PASSWORD
         },
         "version": 1
     }
@@ -178,7 +176,7 @@ class IPsecTests(unittest2.TestCase):
         appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",global_functions.radius_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     def setUp(self):
         pass
@@ -278,13 +276,13 @@ class IPsecTests(unittest2.TestCase):
         createL2TPconfig("RADIUS_SERVER")
         timeout = 480
         found = False
-        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpRadiusUser,l2tpRadiusPassword), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,global_functions.RADIUS_USER,global_functions.RADIUS_PASSWORD), host=l2tpClientHost)
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
             virtUsers = app.getVirtualUsers()
             for user in virtUsers['list']:
-                if user['clientUsername'] == l2tpRadiusUser:
+                if user['clientUsername'] == global_functions.RADIUS_USER:
                     found = True
         # Send command for Windows VPN disconnect.
         vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
