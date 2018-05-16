@@ -18,49 +18,47 @@ import json
 
 from uvm import Uvm
 
-officeNetworks = ('10.111.0.0/16','10.112.0.0/16')
-iperfServers = [('10.111.0.0/16','10.111.56.23'), # Office network
-                #('10.112.0.0/16','10.112.56.44')
-                ] # ATS VM
-iperfServer = ""
-radius_server = "10.111.56.28"
-radius_server_password = "chakas"
-radius_user = "normal"
-radius_password = "passwd"
-ad_server = "10.111.56.46"
-ad_admin = "ATSadmin"
-ad_password = "passwd"
-ad_domain = "adtest.adtesting.int"
-ad_user = "user_28004"
+# ATS Global Constants
+OFFICE_NETWORKS = ('10.111.0.0/16','10.112.0.0/16','10.113.0.0/16')
+IPERF_SERVERS = [('10.111.0.0/16','10.111.56.23'),] # SJ Office network
+RADIUS_SERVER = "10.111.56.28"
+RADIUS_SERVER_PASSWORD = "chakas"
+RADIUS_USER = "normal"
+RADIUS_PASSWORD = "passwd"
+AD_SERVER = "10.111.56.46"
+AD_ADMIN = "ATSadmin"
+AD_PASSWORD = "passwd"
+AD_DOMAIN = "adtest.adtesting.int"
+AD_USER = "user_28004"
+TEST_SERVER_HOST = 'test.untangle.com'
+ACCOUNT_FILE_SERVER = "10.111.56.29"
+ACCOUNT_FILE = "/tmp/account_login.json"
 
 # special Untangle box configured as a OpenVPN server
-vpnServerVpnIP = "10.111.56.96"
+VPN_SERVER_IP = "10.111.56.96"
 
-# special box within vpnServerVpnIP's network
-vpnServerVpnLanIP = "192.168.235.96"
+# special box within VPN_SERVER_IP's network
+VPN_SERVER_LAN_IP = "192.168.235.96"
 
 # special Untangle box configured as a OpenVPN server with User/Pass authentication enabled
-vpnServerUserPassVpnIP = "10.111.56.91"
+VPN_SERVER_USER_PASS_IP = "10.111.56.91"
 
-# special box within vpnServerUserPassVpnIP's network
-vpnServerUserPassVpnLanIP = "192.168.235.91"
+# special box within VPN_SERVER_USER_PASS_IP's network
+VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.91"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
-vpnClientVpnIP = "10.111.56.23"  
-
-testServerHost = 'test.untangle.com'
-testServerIp = socket.gethostbyname(testServerHost)
-ftpServer = socket.gethostbyname(testServerHost)
+VPN_CLIENT_IP = "10.111.56.23"  
 
 # Servers running remote syslog
-listSyslogServer = '10.111.56.23'
-
-accountFileServer = "10.111.56.29"
-accountFile = "/tmp/account_login.json"
+LIST_SYSLOG_SERVER = '10.111.56.23'
 
 uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
+
+test_server_ip = socket.gethostbyname(TEST_SERVER_HOST)
+ftp_server = test_server_ip
+iperf_server = ""
 
 test_start_time = None
 
@@ -70,29 +68,29 @@ def get_public_ip_address(base_URL="test.untangle.com",extra_options="",localcal
     while result == "" and timeout > 0:
         timeout -= 1
         if localcall:
-            result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py", shell=True)
+            result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
         else:
             result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
     return result
     
-def verify_iperf_configuration(wanIP):
+def verify_iperf_configuration(wan_ip):
     # https://iperf.fr/
-    global iperfServer
+    global iperf_server
     # check if there is an iperf server on the same network
-    for iperfServerSet in iperfServers:
-        if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(iperfServerSet[0]):
-            iperfServer = iperfServerSet[1]
+    for iperf_server_pair in IPERF_SERVERS:
+        if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(iperf_server_pair[0]):
+            iperf_server = iperf_server_pair[1]
             break
-    if iperfServer == "":
+    if iperf_server == "":
         print("No iperf server in the same network")
         return False
     # Check to see if iperf endpoint is reachable
-    iperfServerReachable = subprocess.call(["ping -c 1 " + iperfServer + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
-    if iperfServerReachable != 0:
+    iperf_serverReachable = subprocess.call(["ping -c 1 " + iperf_server + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
+    if iperf_serverReachable != 0:
         print("iperf Server is unreachable.")
         return False
     # Check to see if some other test is using iperf for UDP testing
-    iperfRunning = remote_control.run_command("pidof iperf", host=iperfServer)
+    iperfRunning = remote_control.run_command("pidof iperf", host=iperf_server)
     if iperfRunning == 0:
         print("iperf is already running on server.")
         return False
@@ -103,25 +101,25 @@ def verify_iperf_configuration(wanIP):
         return False
     return True
 
-def find_syslog_server(wan_IP):
-    syslog_IP = ""
-    if is_in_office_network(wan_IP):
-        syslog_IP = listSyslogServer
-    return syslog_IP
+def find_syslog_server(wan_ip):
+    syslog_ip = ""
+    if is_in_office_network(wan_ip):
+        syslog_ip = LIST_SYSLOG_SERVER
+    return syslog_ip
 
-def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None ):
-    if targetIP == None:
-        targetIP = receiverIP
+def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None ):
+    if targetip == None:
+        targetip = receiverip
     if targetRate == None:
         targetRate = "50M"
 
     # Use iperf to get UDP speed.  Returns number the udp speed
     # start iperf receivier on server
-    remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
+    remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverip)
     # start the UDP generator on the client behind the Untangle.
     iperf_tries = 5
     while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
-        report=remote_control.run_command("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
+        report=remote_control.run_command("iperf -c " + targetip + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderip, stdout=True)
         if '%' in report:
             break
         else:
@@ -132,9 +130,9 @@ def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None
     timeout = 60
     while iperfRunning == 0 and timeout > 0:
         timeout -= 1
-        remote_control.run_command("pkill iperf", host=receiverIP)
+        remote_control.run_command("pkill iperf", host=receiverip)
         time.sleep(1)
-        iperfRunning = remote_control.run_command("pidof iperf", host=receiverIP)
+        iperfRunning = remote_control.run_command("pidof iperf", host=receiverip)
 
     lines = report.split("\n")
     udp_speed = None
@@ -148,18 +146,10 @@ def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None
             break
     return udp_speed
 
-def get_download_speed(download_server="",meg=20):
+def get_download_speed(meg=20):
     try:
         # Download file and record the average speed in which the file was download
-        # As a default use the office web server if available
-        if download_server == "":
-            accountFileServerPing = subprocess.call(["ping","-c","1",accountFileServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            if accountFileServerPing != 0:
-                download_server = testServerHost
-            else:
-                # Use QA web server in the office for more reliable results
-                download_server = accountFileServer
-        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://" + download_server + "/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
+        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
@@ -259,21 +249,21 @@ def find_event( events, num_events, *args, **kwargs):
 def check_events( events, num_events, *args, **kwargs):
     return (find_event( events, num_events, *args, **kwargs) != None)
 
-def is_in_office_network(wanIP):
-    for officeNetworkTest in officeNetworks:
-        if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(officeNetworkTest):
+def is_in_office_network(wan_ip):
+    for office_network_test in OFFICE_NETWORKS:
+        if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(office_network_test):
             return True
     return False
 
-def is_bridged(wanIP):
+def is_bridged(wan_ip):
     result = remote_control.run_command("ip -o -f inet addr show",stdout=True)
     match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
     hostname_cidr = (match.group()).replace(' brd','')
-    if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(hostname_cidr):
+    if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(hostname_cidr):
         return True
     return False
     
-def send_test_email(mailhost=testServerHost):
+def send_test_email(mailhost=TEST_SERVER_HOST):
     sender = 'atstest@test.untangle.com'
     receivers = ['atstest@test.untangle.com']
 
@@ -305,18 +295,18 @@ def get_app_metric_value(app, label):
 
 def get_live_account_info(accounttype):
     # Tries to file account password file and returns account and password if available
-    accountFileServerPing = subprocess.call(["ping","-c","1",accountFileServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    if accountFileServerPing != 0:
-        return ("message",accountFileServer + " not available")
-    # result_ping = subprocess.check_output("ping -c 1 " + accountFileServer, shell=True)
+    ACCOUNT_FILE_SERVERPing = subprocess.call(["ping","-c","1",ACCOUNT_FILE_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    if ACCOUNT_FILE_SERVERPing != 0:
+        return ("message",ACCOUNT_FILE_SERVER + " not available")
+    # result_ping = subprocess.check_output("ping -c 1 " + ACCOUNT_FILE_SERVER, shell=True)
     # remove old file if it exist
-    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + accountFileServer + "/account_login.json -O " + accountFile, shell=True)
-    if not os.path.isfile(accountFile):
-        return ("message",accountFile + " file not available")
-    with open(accountFile) as data_file:    
+    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + ACCOUNT_FILE_SERVER + "/account_login.json -O " + ACCOUNT_FILE, shell=True)
+    if not os.path.isfile(ACCOUNT_FILE):
+        return ("message",ACCOUNT_FILE + " file not available")
+    with open(ACCOUNT_FILE) as data_file:    
         accounts = json.load(data_file)    
-    if os.path.isfile(accountFile):
-        os.remove(accountFile)
+    if os.path.isfile(ACCOUNT_FILE):
+        os.remove(ACCOUNT_FILE)
     for account in accounts: #i is each student's name, class, and number
         if account[0] == accounttype:
             return (account[1], account[2])
@@ -326,22 +316,22 @@ def get_wan_tuples():
     myWANs = []
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
-        wanIP = ""
+        wan_ip = ""
         wanGateway = ""
         if interface['isWan']:
             if interface['v4ConfigType'] == "STATIC":
                 wanIndex =  interface['interfaceId']
-                wanIP =  interface['v4StaticAddress']
+                wan_ip =  interface['v4StaticAddress']
                 wanGateway =  interface['v4StaticGateway']
             elif interface['v4ConfigType'] == "AUTO":
                 nicDevice = str(interface['symbolicDev'])
                 wanIndex = interface['interfaceId']
-                wanIP = __get_ip_address(nicDevice)
+                wan_ip = __get_ip_address(nicDevice)
                 wanGateway = __get_gateway(nicDevice)
-            if wanIP:
-                wanExtIP = get_public_ip_address(extra_options="--bind-address=" + wanIP,localcall=True)
-                wanExtIP = wanExtIP.rstrip()
-                wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
+            if wan_ip:
+                wanExtip = get_public_ip_address(extra_options="--bind-address=" + wan_ip,localcall=True)
+                wanExtip = wanExtip.rstrip()
+                wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
                 myWANs.append(wanTup)
     return myWANs
 
@@ -444,7 +434,7 @@ def user_quota_give(username, bytes_size, seconds):
     uvmContext.userTable().giveUserQuota( username, bytes_size, seconds, "test" )
     
 def random_email(length=10):
-   return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + testServerHost
+   return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + TEST_SERVER_HOST
     
 def __get_ip_address(ifname):
     print("ifname <%s>" % ifname)
@@ -455,7 +445,7 @@ def __get_ip_address(ifname):
             0x8915,  # SIOCGIFADDR
             struct.pack('256s', ifname[:15])
         )[20:24])
-    except IOError: # interface is present in routing tables but does not have any assigned IP
+    except IOError: # interface is present in routing tables but does not have any assigned ip
         ifaddr ="0.0.0.0"
     return ifaddr
 
