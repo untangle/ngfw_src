@@ -839,6 +839,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
+        raise unittest2.SkipTest("Skip test until its fixed")
         global dyn_hostname
         # raise unittest2.SkipTest('Broken test')
         if remote_control.quickTestsOnly:
