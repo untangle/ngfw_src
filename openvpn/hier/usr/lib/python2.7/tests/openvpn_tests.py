@@ -94,13 +94,13 @@ def configureVPNClientForConnection(clientLink):
     #download config
     subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost" + clientLink + " -O /tmp/clientconfig.zip", shell=True)
     #copy config to remote host
-    subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1", shell=True)
+    subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.VPN_CLIENT_IP + ":/tmp/>/dev/null 2>&1", shell=True)
     #unzip files
-    unzipFiles = remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
+    unzipFiles = remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.VPN_CLIENT_IP)
     #remove any existing openvpn config files
-    removeOld = remote_control.run_command("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=global_functions.vpnClientVpnIP)
+    removeOld = remote_control.run_command("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=global_functions.VPN_CLIENT_IP)
     #move new config to directory
-    moveNew = remote_control.run_command("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.vpnClientVpnIP)
+    moveNew = remote_control.run_command("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.VPN_CLIENT_IP)
     if(unzipFiles == 0) and (removeOld == 0) and (moveNew == 0):
         result = 0
     return result
@@ -140,18 +140,18 @@ def createDirectoryConnectorSettings(ad_enable=False, radius_enable=False, ldap_
                 "javaClass": "java.util.LinkedList",
                 "list": [
                     {
-                        "LDAPHost": global_functions.ad_server,
+                        "LDAPHost": global_functions.AD_SERVER,
                         "LDAPPort": ldap_port,
                         "LDAPSecure": ldap_secure,
                         "OUFilters": {
                             "javaClass": "java.util.LinkedList",
                             "list": []
                         },
-                        "domain": global_functions.ad_domain,
+                        "domain": global_functions.AD_DOMAIN,
                         "enabled": ad_enable,
                         "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                        "superuser": global_functions.ad_admin,
-                        "superuserPass": global_functions.ad_password
+                        "superuser": global_functions.AD_DOMAIN,
+                        "superuserPass": global_functions.AD_PASSWORD
                     }
                 ]
             }
@@ -169,8 +169,8 @@ def createDirectoryConnectorSettings(ad_enable=False, radius_enable=False, ldap_
             "authenticationMethod": "PAP",
             "enabled": radius_enable,
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
-            "sharedSecret": global_functions.radius_server_password
+            "server": global_functions.RADIUS_SERVER,
+            "sharedSecret": global_functions.RADIUS_SERVER_PASSWORD
         }
     }
 
@@ -200,16 +200,16 @@ class OpenVpnTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appWebName())):
             raise Exception('app %s already instantiated' % self.appWebName())
         appWeb = uvmContext.appManager().instantiate(self.appWebName(), default_policy_id)
-        vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        vpnUserPassHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerUserPassVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnUserPassHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_USER_PASS_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_CLIENT_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
         if vpnClientResult == 0:
-            vpnServerResult = remote_control.run_command("ping -W 5 -c 1 " + wanIP, host=global_functions.vpnClientVpnIP)
+            vpnServerResult = remote_control.run_command("ping -W 5 -c 1 " + wanIP, host=global_functions.VPN_CLIENT_IP)
         else:
             vpnServerResult = 1
-        adResult = subprocess.call(["ping","-c","1",global_functions.ad_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",global_functions.radius_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     def setUp(self):
         pass
@@ -236,7 +236,7 @@ class OpenVpnTests(unittest2.TestCase):
         # If VPN tunnel has failed to connect, fail the test,
         assert(timeout > 0)
 
-        remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,0)
+        remoteHostResult = waitForPing(global_functions.VPN_SERVER_LAN_IP,0)
         assert (remoteHostResult)
         listOfServers = app.getRemoteServersStatus()
         # print(listOfServers)
@@ -259,7 +259,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert (found) # test profile not found in remoteServers list
         appData['remoteServers']['list'][i]['enabled'] = False
         app.setSettings(appData)
-        remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,1)
+        remoteHostResult = waitForPing(global_functions.VPN_SERVER_LAN_IP,1)
         assert (remoteHostResult)
         tunnelUp = False
 
@@ -295,7 +295,7 @@ class OpenVpnTests(unittest2.TestCase):
         # If VPN tunnel has failed to connect, fail the test,
         assert(timeout > 0)
 
-        remoteHostResultUserPass = waitForPing(global_functions.vpnServerUserPassVpnLanIP,0)
+        remoteHostResultUserPass = waitForPing(global_functions.VPN_SERVER_USER_PASS_LAN_IP,0)
         assert(remoteHostResultUserPass)
         listOfServers = app.getRemoteServersStatus()
         #print(listOfServers)
@@ -314,18 +314,18 @@ class OpenVpnTests(unittest2.TestCase):
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
         while ((running == 0) and (loopLimit > 0)):
             # OpenVPN is running, wait 5 sec to see if openvpm is done
             loopLimit -= 1
             time.sleep(5)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # try killing the openvpn session as it is probably stuck
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
             
@@ -344,13 +344,13 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result == 0)
 
         #start openvpn tunnel
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect()
         # If VPN tunnel has failed to connect so fail the test,
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
         
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -362,16 +362,16 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         # stop the vpn tunnel on remote box
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         time.sleep(3) # openvpn takes time to shut down
 
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
@@ -385,7 +385,7 @@ class OpenVpnTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
         appData = app.getSettings()
@@ -403,7 +403,7 @@ class OpenVpnTests(unittest2.TestCase):
         configureVPNClientForConnection(clientLink)
 
         #connect openvpn tunnel
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         result1 = 1
         tries = 40
@@ -434,12 +434,12 @@ class OpenVpnTests(unittest2.TestCase):
         app.setSettings(appData)
         time.sleep(5) # wait for vpn tunnel to go down 
         # kill the client side
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         time.sleep(3) # openvpn takes time to shut down
         # print(("result " + str(result) + " webresult " + str(webresult)))
         assert(result1==0)
         assert(result2==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
         assert(webresult==0)
 
     def test_060_createDeleteClientVPNTunnel(self):
@@ -449,18 +449,18 @@ class OpenVpnTests(unittest2.TestCase):
         
         pre_events_connect = global_functions.get_app_metric_value(app, "connect")
 
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         loopLimit = 5
         while((running == 0) and (loopLimit > 0)):
             # OpenVPN is running, wait 5 sec to see if openvpn is done
             loopLimit -= 1
             time.sleep(5)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # openvpn is probably stuck, kill it and re-run
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
 
@@ -480,12 +480,12 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result == 0)
 
         #start openvpn tunnel
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect()
         # fail test if vpn tunnel does not connect
         assert(timeout > 0) 
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
 
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -497,16 +497,16 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         #stop the vpn tunnel
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         time.sleep(3) # wait for openvpn to stop
         
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
@@ -519,7 +519,7 @@ class OpenVpnTests(unittest2.TestCase):
         app.setSettings(appData)
 
         #attempt to connect with now deleted user
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
         timeout = waitForClientVPNtoConnect()
         #fail the test if it does connect
         assert(timeout <= 0)
@@ -540,22 +540,22 @@ class OpenVpnTests(unittest2.TestCase):
         #check the key files to make sure they aren't O length
         for x in range(0, 3):
             if x == 0:
-                crtSize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + ".crt",host=global_functions.vpnClientVpnIP,stdout=True)
+                crtSize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + ".crt",host=global_functions.VPN_CLIENT_IP,stdout=True)
                 fileSize = int(crtSize[0])
             elif x == 1:
-                cacrtSize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + "-ca.crt",host=global_functions.vpnClientVpnIP,stdout=True)
+                cacrtSize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + "-ca.crt",host=global_functions.VPN_CLIENT_IP,stdout=True)
                 fileSize = int(cacrtSize[0])
             elif x == 2:
-                keySize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + ".key",host=global_functions.vpnClientVpnIP,stdout=True)
+                keySize = remote_control.run_command("du /etc/openvpn/keys/" + siteName + "-" + vpnClientName + ".key",host=global_functions.VPN_CLIENT_IP,stdout=True)
                 fileSize = int(keySize[0])
             assert(fileSize > 0)
 
         #start openvpn
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
         timeout = waitForClientVPNtoConnect()
         # fail test if vpn tunnel does not connect
         assert(timeout > 0) 
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
 
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -567,16 +567,16 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         #stop the vpn tunnel
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         time.sleep(3) # wait for openvpn to stop
         
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
@@ -591,18 +591,18 @@ class OpenVpnTests(unittest2.TestCase):
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
         while ((running == 0) and (loopLimit > 0)):
             # OpenVPN is running, wait 5 sec to see if openvpn is done
             loopLimit -= 1
             time.sleep(5)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # try killing the openvpn session as it is probably stuck
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
             
@@ -626,15 +626,15 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result == 0)
         
         #create credentials file containing username/password
-        remote_control.run_command("echo " + ovpnlocaluser + " > /tmp/authUserPassFile; echo " + ovpnPasswd + " >> /tmp/authUserPassFile", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("echo " + ovpnlocaluser + " > /tmp/authUserPassFile; echo " + ovpnPasswd + " >> /tmp/authUserPassFile", host=global_functions.VPN_CLIENT_IP)
         #connect to openvpn using the file
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect()
         # fail if tunnel doesn't connect
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
         
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -645,17 +645,17 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         # stop the vpn tunnel on remote box
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         # openvpn takes time to shut down
         time.sleep(3) 
 
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
@@ -683,18 +683,18 @@ class OpenVpnTests(unittest2.TestCase):
             appDC = uvmContext.appManager().instantiate(appNameDC, default_policy_id)
         appDC.setSettings(createDirectoryConnectorSettings(radius_enable=True))
         
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
         while ((running == 0) and (loopLimit > 0)):
             # OpenVPN is running, wait 5 sec to see if openvpn is done
             loopLimit -= 1
             time.sleep(5)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # try killing the openvpn session as it is probably stuck
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
             
@@ -715,15 +715,15 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result == 0)
         
         #create credentials file containing username/password
-        remote_control.run_command("echo " + global_functions.radius_user + " > /tmp/authUserPassFile; echo " + global_functions.radius_password + " >> /tmp/authUserPassFile", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("echo " + global_functions.RADIUS_USER + " > /tmp/authUserPassFile; echo " + global_functions.RADIUS_PASSWORD + " >> /tmp/authUserPassFile", host=global_functions.VPN_CLIENT_IP)
         #connect to openvpn using the file
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect()
         # fail if tunnel doesn't connect
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
         
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -734,17 +734,17 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         # stop the vpn tunnel on remote box
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         # openvpn takes time to shut down
         time.sleep(3) 
 
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
@@ -770,18 +770,18 @@ class OpenVpnTests(unittest2.TestCase):
             appDC = uvmContext.appManager().instantiate(appNameDC, default_policy_id)
         appDC.setSettings(createDirectoryConnectorSettings(ad_enable=True))
         
-        running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
         while ((running == 0) and (loopLimit > 0)):
             # OpenVPN is running, wait 5 sec to see if openvpn is done
             loopLimit -= 1
             time.sleep(5)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # try killing the openvpn session as it is probably stuck
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
-            running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
             
@@ -802,15 +802,15 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result == 0)
         
         #create credentials file containing username/password
-        remote_control.run_command("echo " + global_functions.ad_user + " > /tmp/authUserPassFile; echo passwd >> /tmp/authUserPassFile", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("echo " + global_functions.AD_USER + " > /tmp/authUserPassFile; echo passwd >> /tmp/authUserPassFile", host=global_functions.VPN_CLIENT_IP)
         #connect to openvpn using the file
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect()
         # fail if tunnel doesn't connect
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
+        result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.VPN_CLIENT_IP)
         
         listOfClients = app.getActiveClients()
         print("address " + listOfClients['list'][0]['address'])
@@ -821,17 +821,17 @@ class OpenVpnTests(unittest2.TestCase):
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         # stop the vpn tunnel on remote box
-        remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
+        remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         # openvpn takes time to shut down
         time.sleep(3) 
 
         assert(result==0)
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
+        assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
         events = global_functions.get_events('OpenVPN','Connection Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'remote_address', global_functions.vpnClientVpnIP,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
                                             'client_name', vpnClientName )
         assert( found )
 
