@@ -413,7 +413,7 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
         # This test might need web filter for http to start
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
+        wget_speed_pre = global_functions.get_download_speed(download_server="test.untangle.com")
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
         append_rule(create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
@@ -429,7 +429,7 @@ class BandwidthControlTests(unittest2.TestCase):
         app_web_filter.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server="test.untangle.com")
         
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
@@ -467,7 +467,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(1)
+        global_functions.get_download_speed(meg=1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
@@ -529,7 +529,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(1)
+        global_functions.get_download_speed(meg=1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
