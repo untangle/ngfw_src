@@ -309,13 +309,13 @@ class BandwidthControlTests(unittest2.TestCase):
         netsettings['qosSettings']['qosRules']["list"].append( create_qos_custom_rule("DST_PORT","5000", 1) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         netsettings['qosSettings']['qosRules']['list'] = []
         netsettings['qosSettings']['qosRules']["list"].append( create_qos_custom_rule("DST_PORT","5000", 7) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
         
         # Restore original network settings
 
@@ -394,13 +394,13 @@ class BandwidthControlTests(unittest2.TestCase):
 
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",1))
             
-        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
         nuke_rules()
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",7))
 
-        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
         assert (post_UDP_speed < pre_UDP_speed*.9)
@@ -413,7 +413,7 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
         # This test might need web filter for http to start
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed(download_server="test.untangle.com")
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
         append_rule(create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
@@ -429,7 +429,7 @@ class BandwidthControlTests(unittest2.TestCase):
         app_web_filter.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed(download_server="test.untangle.com")
+        wget_speed_post = global_functions.get_download_speed()
         
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
@@ -467,7 +467,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(meg=1)
+        global_functions.get_download_speed(1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
@@ -529,7 +529,7 @@ class BandwidthControlTests(unittest2.TestCase):
         append_rule(create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(meg=1)
+        global_functions.get_download_speed(1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
