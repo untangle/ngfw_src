@@ -226,7 +226,7 @@ class UvmTests(unittest2.TestCase):
         origMailsettings = uvmContext.mailSender().getSettings()
         # print(appDataSP)
         newMailsettings = copy.deepcopy(origMailsettings)
-        newMailsettings['smtpHost'] = global_functions.testServerHost
+        newMailsettings['smtpHost'] = global_functions.TEST_SERVER_HOST
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['sendMethod'] = 'CUSTOM'
 
