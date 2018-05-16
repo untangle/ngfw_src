@@ -146,10 +146,18 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
             break
     return udp_speed
 
-def get_download_speed(meg=20):
+def get_download_speed(download_server="",meg=20):
     try:
         # Download file and record the average speed in which the file was download
-        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
+        # As a default use the office web server if available
+        if download_server == "":
+            accountFileServerPing = subprocess.call(["ping","-c","1",ACCOUNT_FILE_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            if accountFileServerPing != 0:
+                download_server = TEST_SERVER_HOST
+            else:
+                # Use QA web server in the office for more reliable results
+                download_server = ACCOUNT_FILE_SERVER
+        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://" + download_server + "/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
