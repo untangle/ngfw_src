@@ -7,6 +7,9 @@
 ' Replace this string with the appropriate IP/hostname for server
 serverLocation = "%UNTANGLE_REPLACE_WITH_ADDRESS%"
 
+' Replace this string with the appropriate secret for server
+secret = "%UNTANGLE_REPLACE_WITH_SECRET%"
+
 ' Set this to True if you wish the script to run continuously
 keepLooping = True
 
@@ -15,7 +18,6 @@ sleepPeriodMs = 300000
 
 ' Protocol to be used
 urlProtocol = "http"
-
 
 
 
@@ -51,9 +53,18 @@ Do While True
     	strUser = wshNetwork.UserName 
 	End If
 
-	command = urlProtocol + "://" + serverLocation + "/userapi/registration?username=" _
-				+ strUser + "&domain=" + strDomain + "&hostname=" + strHostname _
-				+ "&action=login"
+    command = _
+        urlProtocol + "://" + serverLocation _
+        + "/userapi/registration" _
+        + "?username=" + strUser _
+        + "&domain=" + strDomain _
+        + "&hostname=" + strHostname _
+        + "&action=login"
+
+    If secret <> "" Then
+        command = command + "&secretKey=" + secret
+    End If
+
 	'WScript.Echo "Hitting Url: " & command
 	AJAX.Open "GET", command
 	AJAX.Send ""
