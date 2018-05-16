@@ -70,7 +70,7 @@ function doRestore()
         pushd > /dev/null 2>&1
         cd $temp
         find . -regextype sed -regex "$MAINTAIN_REGEX" -exec echo Keeping original @PREFIX@/usr/share/untangle/settings/{} \;
-        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec cp -f --parents {} @PREFIX@/usr/share/untangle/settings/ \;
+        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec cp -f --parents --remove-destination {} @PREFIX@/usr/share/untangle/settings/ \;
         popd > /dev/null 2>&1
 
         echo "Maintaining files... done"
