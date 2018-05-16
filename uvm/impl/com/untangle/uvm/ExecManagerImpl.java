@@ -74,7 +74,8 @@ public class ExecManagerImpl implements ExecManager
             initDaemon();
         }
 
-        cmd.replace('\n',' ');
+        cmd = cmd.replace("\n","");
+        cmd = cmd.replace("\r","");
         
         try {
             logger.log( this.level, "ExecManager.exec(" + cmd + ")" );
