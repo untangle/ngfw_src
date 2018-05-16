@@ -7,7 +7,7 @@ then
 fi
 
 # create the target directory
-mkdir $1
+mkdir -p $1
 
 # give www-data full access so the mod_python handler
 # can manage custom files in the target directory
