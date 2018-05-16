@@ -21,7 +21,7 @@ app = None
 appSSL = None
 appSSLData = None
 canRelay = True
-testsite = global_functions.testServerHost
+testsite = global_functions.TEST_SERVER_HOST
 testsiteIP = socket.gethostbyname(testsite)
 
 def addPassSite(site, enabled=True, description="description"):
@@ -87,11 +87,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def initialSetUp(self):
         global app,md5StdNum, appSSL, appSSLData, canRelay
         # download eicar and trojan files before installing virus blocker
-        self.ftpUserName, self.ftpPassword = global_functions.get_live_account_info("ftp")
+        self.ftp_user_name, self.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
         assert (result == 0)
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
         md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         self.md5StdNum = md5StdNum
@@ -183,29 +183,29 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can ftp download zip
     def test_021_ftpNonVirusNotBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /dev/null ftp://" + global_functions.ftpServer + "/test.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
 
     # test that client can ftp download PDF
     def test_023_ftpNonVirusPDFNotBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /dev/null ftp://" + global_functions.ftpServer + "/test/test.pdf")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test/test.pdf")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
     def test_025_ftpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest("local scanner not available on ARM")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
@@ -214,7 +214,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "s_server_addr", global_functions.ftpServer,
+                                            "s_server_addr", global_functions.ftp_server,
                                             "c_client_addr", remote_control.clientIP,
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
@@ -222,12 +222,12 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_027_ftpVirusPassSite(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
-        addPassSite(global_functions.ftpServer)
+        addPassSite(global_functions.ftp_server)
         remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         nukePassSites()
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
@@ -265,11 +265,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_102_eventlog_ftpVirus(self):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest("local scanner not available on ARM")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
@@ -280,11 +280,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /dev/null ftp://" + global_functions.ftpServer + "/test.zip")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Clean Ftp Events',None,1)
@@ -415,12 +415,12 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_120_ftpLargeClean(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
         remote_control.run_command("rm -f /tmp/temp_120_ftpVirusClean_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftpServer + "/debian-live-8.6.0-amd64-standard.iso")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
         print("md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum))
