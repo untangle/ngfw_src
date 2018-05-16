@@ -33,7 +33,7 @@ def create_ad_settings(ldap_secure=False):
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-            "LDAPHost": global_functions.ad_server,
+            "LDAPHost": global_functions.AD_SERVER,
             "LDAPSecure": ldap_secure,
             "LDAPPort": ldap_port,
             "OUFilter": "",
@@ -41,15 +41,15 @@ def create_ad_settings(ldap_secure=False):
                 "javaClass": "java.util.LinkedList",
                 "list": []
             },
-            "domain": global_functions.ad_domain,
+            "domain": global_functions.AD_DOMAIN,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "superuser": global_functions.ad_admin,
-            "superuserPass": global_functions.ad_password,
+            "superuser": global_functions.AD_ADMIN,
+            "superuserPass": global_functions.AD_PASSWORD,
             "enabled": True,
             "servers": {
                 "javaClass": "java.util.LinkedList",
                 "list": [{
-                    "LDAPHost": global_functions.ad_server,
+                    "LDAPHost": global_functions.AD_SERVER,
                     "LDAPSecure": ldap_secure,
                     "LDAPPort": ldap_port,
                     "OUFilter": "",
@@ -57,11 +57,11 @@ def create_ad_settings(ldap_secure=False):
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.ad_domain,
+                    "domain": global_functions.AD_DOMAIN,
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                    "superuser": global_functions.ad_admin,
-                    "superuserPass": global_functions.ad_password
+                    "superuser": global_functions.AD_ADMIN,
+                    "superuserPass": global_functions.AD_PASSWORD
                 }]
             }
         },
@@ -70,7 +70,7 @@ def create_ad_settings(ldap_secure=False):
             "enabled": False,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
+            "server": global_functions.RADIUS_SERVER,
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
@@ -87,7 +87,7 @@ def create_radius_settings():
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-                    "LDAPHost": global_functions.ad_server,
+                    "LDAPHost": global_functions.AD_SERVER,
                     "LDAPSecure": True,
                     "LDAPPort": "636",
                     "OUFilter": "",
@@ -95,15 +95,15 @@ def create_radius_settings():
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.ad_domain,
+                    "domain": global_functions.AD_DOMAIN,
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-                    "superuser": global_functions.ad_admin,
-                    "superuserPass": global_functions.ad_password,
+                    "superuser": global_functions.AD_ADMIN,
+                    "superuserPass": global_functions.AD_PASSWORD,
             "servers": {
                 "javaClass": "java.util.LinkedList",
                 "list": [{
-                    "LDAPHost": global_functions.ad_server,
+                    "LDAPHost": global_functions.AD_SERVER,
                     "LDAPSecure": True,
                     "LDAPPort": "636",
                     "OUFilter": "",
@@ -111,11 +111,11 @@ def create_radius_settings():
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.ad_domain,
+                    "domain": global_functions.AD_DOMAIN,
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                    "superuser": global_functions.ad_admin,
-                    "superuserPass": global_functions.ad_password
+                    "superuser": global_functions.AD_ADMIN,
+                    "superuserPass": global_functions.AD_PASSWORD
                 }]
             }
         },
@@ -124,7 +124,7 @@ def create_radius_settings():
             "enabled": True,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
+            "server": global_functions.RADIUS_SERVER,
             "sharedSecret": "chakas"
         },
         "googleSettings": {
@@ -235,8 +235,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
-        AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.ad_server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.radius_server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.AD_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.RADIUS_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable the API for testing
         appSettings = app.getSettings()
@@ -401,7 +401,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
             userName = appADData[i]['uid']
-            if (global_functions.ad_user in userName):
+            if (global_functions.AD_USER in userName):
                 result = 0
             # print('userName %s' % userName)
         assert (result == 0)
@@ -425,7 +425,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
             userName = appADData[i]['uid']
-            if (global_functions.ad_user in userName):
+            if (global_functions.AD_USER in userName):
                 result = 0
             # print('userName %s' % userName)
         assert (result == 0)
