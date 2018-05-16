@@ -52,7 +52,7 @@ Ext.define('Ung.Setup.Interfaces', {
             header: 'Name'.t(),
             dataIndex: 'name',
             sortable: false,
-            width: 90,
+            width: 110,
             renderer: function (value) {
                 return value.t();
             }
@@ -65,11 +65,12 @@ Ext.define('Ung.Setup.Interfaces', {
             tdCls: 'action-cell',
             renderer: function() {
                 return '<i class="fa fa-arrows" style="cursor: move;"></i>';
-            },
+            }
         }, {
             header: 'Device'.t(),
             tooltip: 'Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced.'.t(),
             tooltipType: 'title',
+            width: 80,
             dataIndex: 'deviceName',
             editor: {
                 xtype: 'combo',
