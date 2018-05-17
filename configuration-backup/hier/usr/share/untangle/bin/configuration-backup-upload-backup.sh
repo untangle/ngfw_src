@@ -73,8 +73,10 @@ function getHTTPStatus() {
 # returns the return of CURL
 function callCurl() {
   debug "Calling CURL.  Dumping headers to $2"
-  echo curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT
-  curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
+  md5=($(md5sum $1))
+  debug "Backup file MD5: $md5"
+  echo curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" --dump-header $2 --max-time $TIMEOUT
+  curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
   return $?
 }
 
