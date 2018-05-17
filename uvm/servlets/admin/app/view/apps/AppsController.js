@@ -139,13 +139,14 @@ Ext.define('Ung.view.apps.AppsController', {
                 appVm.set({
                     instance: instance,
                     instanceId: instance.id,
+                    runState: policy.runStates.map[instance.id],
                     props: appProperties,
                     parentPolicy: parentPolicy,
                     metrics: metrics,
                     route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + policy.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name'),
                     helpSource: Rpc.directData('rpc.helpUrl') + '?fragment=apps/' + policy.policyId + '/' + appVm.get('app.name').replace(/ /g, '-') + '&' + Util.getAbout()
                 });
-                appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm, app: Rpc.directData('rpc.appManager.app', instance.id)}));
+                appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm}));
             } else {
                 appVm.set({
                     instance: null,
@@ -318,11 +319,12 @@ Ext.define('Ung.view.apps.AppsController', {
                 installing: false,
                 instance: instance,
                 instanceId: instance.id,
+                runState: result[1][0].runStates.map[instance.id],
                 parentPolicy: null,
                 metrics: result[0].getMetrics().list,
                 route: (record.get('type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + record.get('name') : '#service/' + record.get('name')
             });
-            appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm, app: Rpc.directData('rpc.appManager.app', instance.id)}));
+            appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm}));
 
             record.set('extraCls', 'finish');
 
@@ -456,7 +458,8 @@ Ext.define('Ung.view.apps.AppsController', {
                         { displayName: 'Tunnel VPN', name: 'tunnel-vpn'},
                         { displayName: 'Configuration Backup', name: 'configuration-backup'},
                         { displayName: 'Branding Manager', name: 'branding-manager'},
-                        { displayName: 'Live Support', name: 'live-support'}];
+                        { displayName: 'Live Support', name: 'live-support'}
+                    ];
 
                     // only install WAN failover/balancer apps if more than 2 interfaces
                     try {
@@ -521,12 +524,13 @@ Ext.define('Ung.view.apps.AppsController', {
             appVm.set({
                 instance: instance,
                 instanceId: instance.id,
+                runState: result.getRunState(),
                 installing: false,
                 parentPolicy: null,
                 metrics: result.getMetrics().list,
                 route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
             });
-            appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm, app: Rpc.directData('rpc.appManager.app', instance.id)}));
+            appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm}));
             cb();
         });
     },
