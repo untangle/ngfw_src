@@ -113,6 +113,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         appSSLData = appSSL.getSettings()
+        # Enable cloud connection
+        system_settings = uvmContext.systemManager().getSettings()
+        system_settings['cloudEnabled'] = True
+        uvmContext.systemManager().setSettings(system_settings)
 
     def setUp(self):
         pass
