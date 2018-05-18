@@ -100,11 +100,11 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special small test virus
     def test_250_ftpCloudSmallBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_250_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleVirus.exe")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum))
@@ -112,11 +112,11 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special large test virus
     def test_260_ftpCloudLargeBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_260_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleLargeVirus.exe")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum))
