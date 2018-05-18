@@ -226,7 +226,7 @@ class UvmTests(unittest2.TestCase):
         origMailsettings = uvmContext.mailSender().getSettings()
         # print(appDataSP)
         newMailsettings = copy.deepcopy(origMailsettings)
-        newMailsettings['smtpHost'] = global_functions.testServerHost
+        newMailsettings['smtpHost'] = global_functions.TEST_SERVER_HOST
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['sendMethod'] = 'CUSTOM'
 
@@ -413,6 +413,10 @@ class UvmTests(unittest2.TestCase):
         
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
+        # Enable cloud connection  
+        system_settings = uvmContext.systemManager().getSettings()
+        system_settings['cloudEnabled'] = True
+        uvmContext.systemManager().setSettings(system_settings)
         
         # run cmd status
         result = subprocess.check_output("/usr/bin/pyconnector-status")
