@@ -22,7 +22,7 @@ app = None
 appData = None
 appSSL = None
 canRelay = True
-smtpServerHost = global_functions.testServerHost
+smtpServerHost = global_functions.TEST_SERVER_HOST
 
 def getLatestMailSender():
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
