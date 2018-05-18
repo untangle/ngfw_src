@@ -115,7 +115,7 @@ def createDirectoryConnectorSettings(ldap_secure=False):
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-            "LDAPHost": global_functions.ad_server,
+            "LDAPHost": global_functions.AD_SERVER,
             "LDAPSecure": ldap_secure,
             "LDAPPort": ldap_port,
             "OUFilter": "",
@@ -123,15 +123,15 @@ def createDirectoryConnectorSettings(ldap_secure=False):
                 "javaClass": "java.util.LinkedList",
                 "list": []
             },
-            "domain": global_functions.ad_domain,
+            "domain": global_functions.AD_DOMAIN,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "superuser": global_functions.ad_admin,
-            "superuserPass": global_functions.ad_password,
+            "superuser": global_functions.AD_ADMIN,
+            "superuserPass": global_functions.AD_PASSWORD,
             "enabled": True,
             "servers": {
                 "javaClass": "java.util.LinkedList",
                 "list": [{
-                    "LDAPHost": global_functions.ad_server,
+                    "LDAPHost": global_functions.AD_SERVER,
                     "LDAPSecure": ldap_secure,
                     "LDAPPort": ldap_port,
                     "OUFilter": "",
@@ -139,11 +139,11 @@ def createDirectoryConnectorSettings(ldap_secure=False):
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.ad_domain,
+                    "domain": global_functions.AD_DOMAIN,
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                    "superuser": global_functions.ad_admin,
-                    "superuserPass": global_functions.ad_password
+                    "superuser": global_functions.AD_ADMIN,
+                    "superuserPass": global_functions.AD_PASSWORD
                 }]
             }
         },
@@ -152,7 +152,7 @@ def createDirectoryConnectorSettings(ldap_secure=False):
             "enabled": False,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
+            "server": global_functions.RADIUS_SERVER,
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
@@ -174,16 +174,16 @@ def createRadiusSettings():
             },
             "domain": "adtest.metaloft.com",
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "LDAPHost": global_functions.ad_server,
-            "superuser": global_functions.ad_admin
+            "LDAPHost": global_functions.AD_SERVER,
+            "superuser": global_functions.AD_ADMIN
         },
         "radiusSettings": {
             "port": 1812,
             "enabled": True,
             "authenticationMethod": "PAP",
             "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
-            "server": global_functions.radius_server,
-            "sharedSecret": global_functions.radius_server_password
+            "server": global_functions.RADIUS_SERVER,
+            "sharedSecret": global_functions.RADIUS_SERVER_PASSWORD
         },
         "googleSettings": {
             "javaClass": "com.untangle.app.directory_connector.GoogleSettings"
@@ -258,8 +258,8 @@ class CaptivePortalTests(unittest2.TestCase):
             print("ERROR: App %s already installed" % self.appNameWeb())
             raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), default_policy_id)
-        adResult = subprocess.call(["ping","-c","1",global_functions.ad_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        radiusResult = subprocess.call(["ping","-c","1",global_functions.radius_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # Get the IP address of test.untangle.com
