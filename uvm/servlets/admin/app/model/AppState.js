@@ -55,7 +55,8 @@ Ext.define ('Ung.model.AppState', {
         if( ( this.vm && !Util.isDestroyed(this.vm) ) || 
             ( this.instance && !Util.isDestroyed(this.instance)) ){
             var targetState = this.vm ? this.vm.get('instance.targetState') : this.instance.targetState;
-            var runState = this.app.getRunState();
+
+            var runState = this.app ? this.app.getRunState() : ( this.vm ? this.vm.get('runState') : this.instance.runState );
 
             on = ( runState == 'RUNNING' );
             var daemonRunning = (on && this.vm && this.vm.get('props.daemon') != null) ? Rpc.directData('rpc.UvmContext.daemonManager.isRunning', this.vm.get('props.daemon') ) : true;
@@ -69,13 +70,16 @@ Ext.define ('Ung.model.AppState', {
     },
     vm: null,
     instance: null,
+    app: null,
     constructor: function( args, session){
         if(args['vm']){
             this.vm = args['vm'];            
         }else if( args['instance'] ){
             this.instance = args['instance'];
         }
-        this.app = args['app'];
+        if(args.app){
+            this.app = args['app'];
+        }
         this.callParent([{}], session);
         this.detect();
     },

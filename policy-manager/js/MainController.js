@@ -150,8 +150,10 @@ Ext.define('Ung.apps.policymanager.MainController', {
                     parentPolicy = me.lookup('tree').getStore().findNode('policyId', instance.policyId).get('name');
                 }
 
+                instance.runState = policy.runStates.map[instance.id];
+
                 Ext.apply(app, {
-                    state: Ext.create('Ung.model.AppState',{instance: instance, app: Rpc.directData('rpc.appManager.app', instance.id)}),
+                    state: Ext.create('Ung.model.AppState',{instance: instance}),
                     instanceId: instance.id || null,
                     parentPolicy: parentPolicy || null,
                 });
