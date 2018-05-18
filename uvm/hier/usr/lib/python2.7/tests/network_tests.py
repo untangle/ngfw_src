@@ -22,11 +22,11 @@ import global_functions
 
 ftp_file_name = ""
 dyn_hostname = ""
-dyn_names = ['atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
+dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
 
 default_policy_id = 1
 orig_netsettings = None
-test_untangle_com_ip = socket.gethostbyname(global_functions.testServerHost)
+test_untangle_com_ip = socket.gethostbyname(global_functions.TEST_SERVER_HOST)
 run_ftp_inbound_tests = None
 wan_ip = None
 device_in_office = False
@@ -452,7 +452,7 @@ class NetworkTests(unittest2.TestCase):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect( ( remote_control.clientIP, 21 ))
                 s.close()
-                pingResult = subprocess.call(["ping","-c","1",global_functions.ftpServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 if pingResult == 0:
                     run_ftp_inbound_tests = True
                 else:
@@ -565,7 +565,7 @@ class NetworkTests(unittest2.TestCase):
 
     # test a port forward from outside if possible
     def test_030_port_forward_inbound(self):
-        # We will use iperfServer for this test. Test to see if we can reach it.
+        # We will use iperf_server for this test. Test to see if we can reach it.
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         if (not iperf_avail):
             raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
@@ -580,7 +580,7 @@ class NetworkTests(unittest2.TestCase):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"),'portForwardRules')
 
         # try connecting to netcat on client from "outside" box
-        result = remote_control.run_command("echo test | netcat -q0 " + wan_ip + " 11245", host=global_functions.iperfServer)
+        result = remote_control.run_command("echo test | netcat -q0 " + wan_ip + " 11245", host=global_functions.iperf_server)
         assert (result == 0)
 
     # test a port forward from outside if possible
@@ -591,7 +591,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on office network, skipping")
         iperfAvail = global_functions.verify_iperf_configuration(wan_ip)
         if (not iperfAvail):
-            raise unittest2.SkipTest("iperfServer " + global_functions.iperfServer + " is unreachable, skipping")
+            raise unittest2.SkipTest("iperf_server " + global_functions.iperf_server + " is unreachable, skipping")
         # Only if iperf is used
         # if not iperfResult:
         #     raise unittest2.SkipTest("Iperf server not reachable")
@@ -603,12 +603,12 @@ class NetworkTests(unittest2.TestCase):
         remote_control.run_command("rm -f /tmp/netcat.udp.recv.txt")
         remote_control.run_command("nohup netcat -l -u -p 5000 >/tmp/netcat.udp.recv.txt",stdout=False,nowait=True)
 
-        remote_control.run_command("echo test| netcat -q0 -w1 -u " + wan_ip + " 5000",host=global_functions.iperfServer)
+        remote_control.run_command("echo test| netcat -q0 -w1 -u " + wan_ip + " 5000",host=global_functions.iperf_server)
 
         result = remote_control.run_command("grep test /tmp/netcat.udp.recv.txt")
 
         # send UDP packets through the port forward
-        # UDP_speed = global_functions.get_udp_download_speed( receiverIP=remote_control.clientIP, senderIP=global_functions.iperfServer, targetIP=wan_ip )
+        # UDP_speed = global_functions.get_udp_download_speed( receiverIP=remote_control.clientIP, senderIP=global_functions.iperf_server, targetIP=wan_ip )
         # assert (UDP_speed >  0.0)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -687,10 +687,10 @@ class NetworkTests(unittest2.TestCase):
     def test_070_ftp_modes(self):
         nuke_first_level_rule('bypassRules')
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
         print("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result))
         assert (pasv_result == 0)
         assert (port_result == 0)
@@ -710,10 +710,10 @@ class NetworkTests(unittest2.TestCase):
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("DST_PORT","21", blocked=False))
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("PROTOCOL","TCP", blocked=True))
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
 
         uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -728,10 +728,10 @@ class NetworkTests(unittest2.TestCase):
     def test_072_ftp_modes_bypassed(self):
         set_first_level_rule(create_bypass_condition_rule("DST_PORT","21"),'bypassRules')
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -748,10 +748,10 @@ class NetworkTests(unittest2.TestCase):
         netsettings['filterRules']['list'] = [ create_filter_rules("DST_PORT","21","PROTOCOL","TCP",False), create_filter_rules("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -826,7 +826,7 @@ class NetworkTests(unittest2.TestCase):
     def test_090_static_dns_entry(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nuke_dns_rules()
-        add_dns_rule(create_dns_rule(global_functions.ftpServer,"www.foobar.com"))
+        add_dns_rule(create_dns_rule(global_functions.ftp_server,"www.foobar.com"))
         result_mod = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_ip, stdout=True)
         # print("Results of www.foobar.com <%s>" % result)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -834,14 +834,13 @@ class NetworkTests(unittest2.TestCase):
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result_mod)
         ip_address_foobar = (match.group()).replace('address ','')
         # print("IP address of www.foobar.com <%s>" % ip_address_foobar)
-        print("Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftpServer),str(ip_address_foobar)))
-        assert(global_functions.ftpServer == ip_address_foobar)
+        print("Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftp_server),str(ip_address_foobar)))
+        assert(global_functions.ftp_server == ip_address_foobar)
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
-        raise unittest2.SkipTest("Skip test until its fixed")
         global dyn_hostname
-        # raise unittest2.SkipTest('Broken test')
+        raise unittest2.SkipTest('Broken test')
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         wan_count = 0
@@ -855,29 +854,39 @@ class NetworkTests(unittest2.TestCase):
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
-        outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.testServerHost,localcall=True)
-        outside_IP = outside_IP.rstrip()  # strip return character
-
-        dyn_hostname = get_usable_name(outside_IP)
+        for i in range(0,10):
+            try:
+                result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" http://test.untangle.com/cgi-bin/myipaddress.py", shell=True)
+            except subprocess.CalledProcessError, e:
+                print(e.output)
+                time.sleep(1)
+                continue
+            break
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        outsideIP = match.group()
+        dyn_hostname = get_usable_name(outsideIP)
         if dyn_hostname == "":
             raise unittest2.SkipTest('Skipping since all dyndns names already used')
         else:
             print("Using name: %s" % dyn_hostname)
-        dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
+        dynDNSUserName, dynDNSPassword = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
-        if dyn_DNS_user_name == "message":
+        if dynDNSUserName == "message":
             raise unittest2.SkipTest('no dyn user')
 
         # Clear the ddclient cache and set DynDNS info
-        ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
-        if os.path.isfile(ddclient_cache_file):
-            os.remove(ddclient_cache_file)        
-        set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
+        ddclientCacheFile = "/var/cache/ddclient/ddclient.cache"
+        if os.path.isfile(ddclientCacheFile):
+            os.remove(ddclientCacheFile)        
+        set_dyn_dns(dynDNSUserName, dynDNSPassword, dyn_hostname)
         
+        # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
+        outsideIP2 = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
+        outsideIP2 = outsideIP2.rstrip()  # strip return character
 
-        loop_counter = 80
-        dyn_IP_found = False
-        while loop_counter > 0 and not dyn_IP_found:
+        loopCounter = 60
+        dynIpFound = False
+        while loopCounter > 0 and not dynIpFound:
             # run force to get it to run now
             try: 
                 subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
@@ -886,19 +895,19 @@ class NetworkTests(unittest2.TestCase):
             except OSError:
                 pass # executable environment not ready
             # time.sleep(10)
-            loop_counter -= 1
+            loopCounter -= 1
             result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
             match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
             dynIP = (match.group()).replace('address ','')
-            print("IP address of outside_IP <%s> dynIP <%s> " % (outside_IP,dynIP))
-            dyn_IP_found = False
-            if outside_IP == dynIP:
-                dyn_IP_found = True
+            print("IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP))
+            dynIpFound = False
+            if outsideIP == dynIP or outsideIP2 == dynIP:
+                dynIpFound = True
             else:
                 time.sleep(10)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert(dyn_IP_found)
+        assert(dynIpFound)
 
     # Test VRRP is active
     def test_110_vrrp(self):
@@ -934,10 +943,10 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest('LAN not connected')
 
         ipStep = 1
-        loop_counter = 10
+        loopCounter = 10
         vrrpIP = None
         ip = ipaddr.IPAddress(interfaceIP)
-        while vrrpIP == None and loop_counter:
+        while vrrpIP == None and loopCounter:
             # get next IP and test that it is unused
             newip = ip + ipStep
             # check to see if the IP is in network range
@@ -949,7 +958,7 @@ class NetworkTests(unittest2.TestCase):
             else:
                 # The IP is beyond the range of the network, go backward through the IPs
                 ipStep = -1
-            loop_counter -= 1
+            loopCounter -= 1
             ip = newip
         if (vrrpIP == None):
             raise unittest2.SkipTest("No IP found for VRRP")
