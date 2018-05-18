@@ -110,10 +110,11 @@ Ext.define('Ung.widget.PolicyOverview', {
                                         parentPolicy = Ext.getStore('policiestree').findRecord('policyId', instance.policyId).get('name');
                                         inherited = true;
                                     }
+                                    instance.runState = policy.runStates.map[instance.id];
                                     apps.push({
                                         name: app.name,
                                         displayName: app.displayName,
-                                        state: Ext.create('Ung.model.AppState',{instance: instance, app: Rpc.directData('rpc.appManager.app', instance.id)}),
+                                        state: Ext.create('Ung.model.AppState',{instance: instance}),
                                         policyId: instance.policyId,
                                         parentPolicy: parentPolicy,
                                         inherited: inherited
