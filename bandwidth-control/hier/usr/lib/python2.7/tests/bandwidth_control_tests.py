@@ -309,13 +309,13 @@ class BandwidthControlTests(unittest2.TestCase):
         netsettings['qosSettings']['qosRules']["list"].append( create_qos_custom_rule("DST_PORT","5000", 1) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         netsettings['qosSettings']['qosRules']['list'] = []
         netsettings['qosSettings']['qosRules']["list"].append( create_qos_custom_rule("DST_PORT","5000", 7) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
         
         # Restore original network settings
 
@@ -394,13 +394,13 @@ class BandwidthControlTests(unittest2.TestCase):
 
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",1))
             
-        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
         nuke_rules()
         append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",7))
 
-        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
         assert (post_UDP_speed < pre_UDP_speed*.9)
