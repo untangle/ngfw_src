@@ -20,7 +20,7 @@ appData = None
 appSSL = None
 appSSLData = None
 canRelay = True
-smtpServerHost = global_functions.testServerHost
+smtpServerHost = global_functions.TEST_SERVER_HOST
 
 def getLatestMailSender():
     remote_control.run_command("rm -f mailpkg.tar") # remove all previous mail packages
@@ -277,7 +277,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         assert(tlsSMTPResult != 0)
         appData['smtpConfig']['allowTls'] = True
         app.setSettings(appData)
-        tlsSMTPResult, to_address = sendSpamMail(host=global_functions.testServerHost, useTLS=True)
+        tlsSMTPResult, to_address = sendSpamMail(host=global_functions.TEST_SERVER_HOST, useTLS=True)
         # print("TLS 2 : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
         
