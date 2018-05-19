@@ -150,7 +150,7 @@ def createDirectoryConnectorSettings(ad_enable=False, radius_enable=False, ldap_
                         "domain": global_functions.AD_DOMAIN,
                         "enabled": ad_enable,
                         "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                        "superuser": global_functions.AD_DOMAIN,
+                        "superuser": global_functions.AD_ADMIN,
                         "superuserPass": global_functions.AD_PASSWORD
                     }
                 ]
@@ -768,7 +768,7 @@ class OpenVpnTests(unittest2.TestCase):
             appDC = uvmContext.appManager().app(appNameDC)
         else:
             appDC = uvmContext.appManager().instantiate(appNameDC, default_policy_id)
-        appDC.setSettings(createDirectoryConnectorSettings(ad_enable=True))
+        appDC.setSettings(createDirectoryConnectorSettings(ad_enable=True,ldap_secure=True))
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
