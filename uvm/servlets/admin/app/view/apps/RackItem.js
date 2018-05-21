@@ -136,7 +136,10 @@ Ext.define('Ung.view.apps.RackItem', {
             disabled: '{parentPolicy}',
             hidden: '{!app.hasPowerButton }'
         },
-        renderTpl: '<i class="fa fa-power-off"></i>',
+        renderTpl: '<span id="{id}-btnWrap" data-ref="btnWrap" role="presentation" unselectable="on" style="{btnWrapStyle}" ' + 'class="{btnWrapCls} {btnWrapCls}-{ui} {splitCls}{childElCls}">' +
+            '<span id="{id}-btnEl" data-ref="btnEl" role="presentation" unselectable="on" style="{btnElStyle}" ' + 'class="{btnCls} {btnCls}-{ui} {textCls} {noTextCls} {hasIconCls} ' + '{iconAlignCls} {textAlignCls} {btnElAutoHeightCls}{childElCls}">' +
+            '<i class="fa fa-power-off"></i>' +
+            '</span>' + '</span>',
         handler: 'powerHandler'
     }, {
         xtype: 'component',
