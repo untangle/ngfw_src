@@ -18,7 +18,7 @@ Ext.define('Ung.apps.phishblocker.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/phish-blocker.svg" width="80" height="80"/>' +
                 '<h3>Phish Blocker</h3>' +
-                '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
+                '<p>' + 'Phish Blocker detects and blocks phishing emails using signatures.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,
