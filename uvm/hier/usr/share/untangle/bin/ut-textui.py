@@ -1627,7 +1627,7 @@ def handle_exceptions(tb):
         print("\n   Line: {0}\n Method: {1}\nCommand: {2}".format(traceback_args[1], traceback_args[2], traceback_args[3]))
         count += 1
     print("\n")
-    raw_input("Press any key to continue...")
+    raw_input("Press [Enter] key to continue...")
 
 def main(argv):
     global Debug
