@@ -419,7 +419,16 @@ class UvmTests(unittest2.TestCase):
         uvmContext.systemManager().setSettings(system_settings)
         
         # run cmd status
-        result = subprocess.check_output("/usr/bin/pyconnector-status")
+        result = ""
+        for i in range(0,20):
+            try:
+                result = subprocess.check_output("/usr/bin/pyconnector-status")
+            except subprocess.CalledProcessError, e:
+                print(e.output)
+                time.sleep(10)
+                continue
+            else:
+                break
         assert("Connected" in result)
 
 test_registry.registerApp("uvm", UvmTests)
