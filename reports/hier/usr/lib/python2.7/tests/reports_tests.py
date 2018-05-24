@@ -586,7 +586,6 @@ class ReportsTests(unittest2.TestCase):
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
             if (uvmContext.appManager().isInstantiated(name)):
-                print("App %s was leftover" % name)
                 remove_app = uvmContext.appManager().app(name)
                 uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
         if app != None:
