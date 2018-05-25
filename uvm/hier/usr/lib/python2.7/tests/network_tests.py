@@ -854,7 +854,6 @@ class NetworkTests(unittest2.TestCase):
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
-
         outsideIP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
         outsideIP = outsideIP.rstrip()  # strip return character
         dyn_hostname = get_usable_name(outsideIP)
@@ -874,30 +873,6 @@ class NetworkTests(unittest2.TestCase):
         set_dyn_dns(dynDNSUserName, dynDNSPassword, dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        outsideIP2 = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
-        outsideIP2 = outsideIP2.rstrip()  # strip return character
-
-        loopCounter = 60
-        dynIpFound = False
-        while loopCounter > 0 and not dynIpFound:
-            # run force to get it to run now
-            try: 
-                subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
-            except subprocess.CalledProcessError:
-                print "Unexpected error:", sys.exc_info()
-            except OSError:
-                pass # executable environment not ready
-            # time.sleep(10)
-            loopCounter -= 1
-            result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
-            match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-            dynIP = (match.group()).replace('address ','')
-            print("IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP))
-            dynIpFound = False
-            if outsideIP == dynIP or outsideIP2 == dynIP:
-                dynIpFound = True
-            else:
-=======
 
         loopCounter = 60
         dyn_ip_found = False
@@ -920,15 +895,10 @@ class NetworkTests(unittest2.TestCase):
                     dyn_ip_found = True
                     break
             if not dyn_ip_found:
->>>>>>> origin/release-14.0
                 time.sleep(10)
                 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-<<<<<<< HEAD
-        assert(dynIpFound)
-=======
         assert(dyn_ip_found)
->>>>>>> origin/release-14.0
 
     # Test VRRP is active
     def test_110_vrrp(self):
