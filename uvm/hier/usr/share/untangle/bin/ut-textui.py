@@ -7,10 +7,12 @@ import base64
 import getopt
 import json
 import md5
+import os
 import re
 import signal
 import sys
 import subprocess
+import traceback
 
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
@@ -1612,6 +1614,21 @@ def usage():
 def signal_handler( signla, frame):
     return
 
+def handle_exceptions(tb):
+    os.system('clear')
+    traceback_list = traceback.extract_tb(tb)
+    traceback_length = len(traceback_list)
+    print("Configuration Console experienced the following problem:")
+
+    max_count = 2
+    count = 1
+    while count <= max_count:
+        traceback_args = traceback_list[traceback_length-count]
+        print("\n   Line: {0}\n Method: {1}\nCommand: {2}".format(traceback_args[1], traceback_args[2], traceback_args[3]))
+        count += 1
+    print("\n")
+    raw_input("Press [Enter] key to continue...")
+
 def main(argv):
     global Debug
     global Require_Auth
@@ -1646,4 +1663,9 @@ def main(argv):
     curses.wrapper(UiApp)
 
 if __name__ == "__main__":
-    main( sys.argv[1:] )
+    while True:
+        try:
+            main( sys.argv[1:] )
+        except:
+            handle_exceptions(sys.exc_info()[2])
+            pass
