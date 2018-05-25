@@ -806,7 +806,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                 },
                 xAxis: {
                     visible: !isPie,
-                    minRange: 10 * 60 * 1000, // minzoom = 10 minutes
+                    minRange: !isPieColumn ? 10 * 60 * 1000 : undefined, // minzoom = 10 minutes
                     // tickPixelInterval: 50,
                     type: isTimeGraph ? 'datetime' : 'category',
                     crosshair: isTimeGraph ? {
@@ -860,6 +860,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                     dateTimeLabelFormats: timeLabelFormats.tooltip
                 }
             };
+
+            console.log(settings);
 
             Highcharts.merge(true, settings, isWidget ? Theme[Ung.dashboardSettings.theme] : Theme.DEFAULT);
             me.chart.update(settings, true);

@@ -29,6 +29,8 @@ from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 
 default_policy_id = 1
+apps_list = ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]
+apps_name_list = ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']
 app = None
 web_app = None
 can_relay = None
@@ -529,7 +531,7 @@ class ReportsTests(unittest2.TestCase):
         
         # install all the apps that aren't already installed
         apps = []
-        for name in ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]:
+        for name in apps_list:
             if (uvmContext.appManager().isInstantiated(name)):
                 print("App %s already installed" % name)
             else:
@@ -550,7 +552,7 @@ class ReportsTests(unittest2.TestCase):
         # look for all the appropriate sections in the report email
         results = []
         if email_found:
-            for str in ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']:
+            for str in apps_name_list:
                 results.append(remote_control.run_command("grep -q -i '%s' /tmp/test_103_email_report_admin_file 2>&1"%str))
 
         # restore
@@ -581,13 +583,16 @@ class ReportsTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         global app, web_app
+        # remove all the apps in case test 103 does not remove them.
+        for name in apps_list:
+            if (uvmContext.appManager().isInstantiated(name)):
+                remove_app = uvmContext.appManager().app(name)
+                uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
         if app != None:
             app.setSettings(orig_settings)
-        if web_app != None:
-            uvmContext.appManager().destroy( web_app.getAppSettings()["id"] )
-            web_app = None
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
         app = None
-
+        web_app = None
+        
 test_registry.registerApp("reports", ReportsTests)
