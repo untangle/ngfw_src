@@ -839,9 +839,8 @@ class NetworkTests(unittest2.TestCase):
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
-        raise unittest2.SkipTest("Skip test until its fixed")
         global dyn_hostname
-        # raise unittest2.SkipTest('Broken test')
+
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         wan_count = 0
@@ -855,16 +854,9 @@ class NetworkTests(unittest2.TestCase):
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
-        for i in range(0,10):
-            try:
-                result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" http://test.untangle.com/cgi-bin/myipaddress.py", shell=True)
-            except subprocess.CalledProcessError, e:
-                print(e.output)
-                time.sleep(1)
-                continue
-            break
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        outsideIP = match.group()
+
+        outsideIP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
+        outsideIP = outsideIP.rstrip()  # strip return character
         dyn_hostname = get_usable_name(outsideIP)
         if dyn_hostname == "":
             raise unittest2.SkipTest('Skipping since all dyndns names already used')
@@ -905,10 +897,38 @@ class NetworkTests(unittest2.TestCase):
             if outsideIP == dynIP or outsideIP2 == dynIP:
                 dynIpFound = True
             else:
-                time.sleep(10)
+=======
 
+        loopCounter = 60
+        dyn_ip_found = False
+        # run force to get it to run now
+        try: 
+            subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+        except subprocess.CalledProcessError:
+            print "Unexpected error:", sys.exc_info()
+        except OSError:
+            pass # executable environment not ready
+        while loopCounter > 0 and not dyn_ip_found:
+            # time.sleep(10)
+            loopCounter -= 1
+            # result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
+            ip_results = subprocess.check_output("ddclient -query", shell=True)
+            matches = re.findall(r'use\=web. web\=[a-zA-z\.\/]{1,20} address is (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})', ip_results)
+            for dynIP in matches:
+                print("Checking IP <%s> vs outsideIP <%s>" % (dynIP,outsideIP))
+                if outsideIP == dynIP:
+                    dyn_ip_found = True
+                    break
+            if not dyn_ip_found:
+>>>>>>> origin/release-14.0
+                time.sleep(10)
+                
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+<<<<<<< HEAD
         assert(dynIpFound)
+=======
+        assert(dyn_ip_found)
+>>>>>>> origin/release-14.0
 
     # Test VRRP is active
     def test_110_vrrp(self):
