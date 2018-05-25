@@ -73,7 +73,7 @@ Ext.define('Ung.apps.adblocker.MainController', {
     },
 
     updateFilters: function() {
-        var me = this;
+        var me = this, v = this.getView(), vm = this.getViewModel();
         Ext.MessageBox.wait("Updating filters, this may take a few minutes...".t(), "Please wait".t());
 
         Rpc.asyncData(v.appManager, 'updateList')
