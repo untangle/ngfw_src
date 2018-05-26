@@ -75,7 +75,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     protected static String dbDriver = "postgresql";
     
     private ReportsSettings settings;
-    
+
+    private final FixedReportsQueue fixedReportsQueue;
+
     /**
      * Initialize reports application.
      *
@@ -99,6 +101,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
+        this.fixedReportsQueue = new FixedReportsQueue( this );
     }
 
     /**
@@ -275,6 +278,24 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     }
 
     /**
+     * Generate and email single report.
+     *
+     * @param templateId report identifier to run.
+     * @param startTimestamp Beginning timestamp in milliseconds.
+     * @param stopTimestamp Ending timestamp in milliseconds.
+     *
+     * @throws Exception
+     *  If there an issue generating the report.
+     */
+    public void runFixedReport(Integer templateId, long startTimestamp, long stopTimestamp) throws Exception
+    {
+        flushEvents();
+
+        fixedReportsQueue.add( templateId, startTimestamp, stopTimestamp);
+
+    }
+
+    /**
      * Generate and email fixed reports.
      *
      * @throws Exception
@@ -284,25 +305,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     {
         flushEvents();
 
-        FixedReports fixedReports = new FixedReports();
-
-        String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
-        synchronized (this) {
-            for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
-                List<ReportsUser> users = new LinkedList<ReportsUser>();
-                for ( ReportsUser user : settings.getReportsUsers() ) {
-                    if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
-                        users.add(user);
-                    }
-                }
-                if( users.size() > 0){
-                    fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
-                } else {
-                    logger.warn("Skipping report " + emailTemplate.getTitle() + " because no users (emails) receive it.");
-                }
-            }
+        for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
+            fixedReportsQueue.add( emailTemplate.getTemplateId(), 0, 0);
         }
-        fixedReports.destroy();
+    }
+
+    /**
+     * Get the number of reports queued.
+     *
+     * @return integer value of queue size.
+     */
+    public int getFixedReportQueueSize(){
+        return fixedReportsQueue.size();
     }
 
     /** 
@@ -570,6 +584,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         /* Enable to run event writing performance tests */
         // new Thread(new PerformanceTest()).start();
+        this.fixedReportsQueue.start();
     }
 
     /**
@@ -580,6 +595,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
+        try{
+            this.fixedReportsQueue.stop();
+        }catch( Exception e ){
+            logger.warn( "Error disabling Intrusion Prevention Event Monitor", e );
+        }
+
         ReportsApp.eventWriter.stop();
 
         UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
@@ -992,7 +1013,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
         
     }
-    
+
     /**
      * Export log events
      */

@@ -6,7 +6,13 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
 
     controller: 'unreportsemailtemplatesgrid',
 
-    tbar: ['@add', '->', '@import', '@export'],
+    tbar: ['@add', '->', { 
+        xtype: 'tbtext',
+        itemId: 'reportQueueSize',
+        listeners: {
+            afterrender: 'updateReportQueueSize'
+        }
+    },'@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
     copyId: 'templateId',
     copyAppendField: 'title',
@@ -65,9 +71,9 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         },
     }, {
         header: 'Interval'.t(),
-        width: Renderer.intervalWidth,
+        width: Renderer.intervalWidth + 55,
         dataIndex: 'interval',
-        renderer: Renderer.timeInterval,
+        renderer: Ung.apps.reports.cmp.EmailTemplatesGridController.intervalRender,
         editor: {
             xtype: 'combo',
             editable: false,
@@ -97,6 +103,14 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
         flex: 1,
         dataIndex: 'enabledAppIds',
         renderer: 'reportRenderer'
+    }, {
+        xtype: 'actioncolumn',
+        header: 'Send'.t(),
+        width: Renderer.actionWidth,
+        iconCls: 'fa fa-envelope',
+        align: 'center',
+        handler: 'sendReport',
+        isDisabled: 'sendDisabled'
     }],
 
     editorXtype: 'ung.cmp.unemailtemplatesrecordeditor',
