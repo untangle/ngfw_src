@@ -272,7 +272,7 @@ Ext.define('Ung.util.Renderer', {
         6: 'Saturday'.t()
     },
     dayOfWeek: function( value ){
-        if( value in Ung.util.Renderer.dayOfWeeklMap ){
+        if( value in Ung.util.Renderer.dayOfWeekMap ){
             return Ung.util.Renderer.dayOfWeekMap[value];
         }
         return value;
