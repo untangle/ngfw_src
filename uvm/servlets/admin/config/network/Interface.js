@@ -864,7 +864,7 @@ Ext.define('Ung.config.network.Interface', {
                         xtype: 'numberfield',
                         fieldLabel: 'Lease Duration'.t(),
                         labelWidth: 190,
-                        width: 260,
+                        width: 350,
                         labelAlign: 'right',
                         bind: {
                             value: '{intf.dhcpLeaseDuration}'

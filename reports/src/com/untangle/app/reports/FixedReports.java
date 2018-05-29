@@ -683,6 +683,10 @@ public class FixedReports
 
     private ReportsManager reportsManager;
 
+    /**
+     * Initialize fixed reports instance with a web browser instance if supported.
+     * @return instance of fixed reports/
+     */
     public FixedReports(){
         webbrowser = null;
         if(WebBrowser.exists()){
@@ -696,6 +700,9 @@ public class FixedReports
 
     }
 
+    /**
+     * When destroying the instance, shut down the web browser.
+     */
     public void destroy(){
         if(webbrowser != null){
             webbrowser.close();
@@ -704,7 +711,7 @@ public class FixedReports
     }
 
     /**
-     * Create and send fixed reports
+     * Create and send fixed reports based on current day.
      *
      * @param emailTemplate
      *  EmailTemplate to process.
@@ -717,6 +724,27 @@ public class FixedReports
      */
     public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager)
     {
+        generate(emailTemplate, users, reportsUrl, reportsManager, 0, 0);
+    }
+
+    /**
+     * Create and send fixed reports based on explicit start and stop timestamps.
+     *
+     * @param emailTemplate
+     *  EmailTemplate to process.
+     * @param users
+     *  Email addresses that will receive generatewd report.
+     * @param reportsUrl
+     *  URL to include in the message.
+     * @param reportsManager
+     *  ReportsManager object.
+     * @param startTimestamp
+     *  Beginning timestamp.
+     * @param stopTimestamp
+     *  Ending timestamp
+     */
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager, long startTimestamp, long stopTimestamp)
+    {
         this.reportsManager = reportsManager;
 
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
@@ -725,49 +753,92 @@ public class FixedReports
         String interval = "";
         String intervalDescription = "";
         Calendar c = Calendar.getInstance();
+
+        if(startTimestamp != 0){
+            c.setTimeInMillis(startTimestamp);
+        }
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         Date currentDate = c.getTime();
+
         if (emailTemplate.getInterval() == 2419200) {
             // Monthly
             interval = i18nUtil.tr("Monthly");
-            c.set(Calendar.DAY_OF_MONTH, 1);
-            endDate = c.getTime();
-            c.add(Calendar.DATE, -1);
-            c.set(Calendar.DAY_OF_MONTH, 1);
-            startDate = c.getTime();
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.add(Calendar.MONTH, 1);
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+            }else{
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+                c.add(Calendar.DATE, -1);
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                startDate = c.getTime();
+            }
+
             intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
         } else if (emailTemplate.getInterval() == 2) {
             // Month to Date
             interval = i18nUtil.tr("Month to Date");
-            endDate = c.getTime();
-            c.set(Calendar.DAY_OF_MONTH, 1);
-            startDate = c.getTime();
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(stopTimestamp);
+                endDate = c.getTime();
+            }else{
+                endDate = c.getTime();
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                startDate = c.getTime();
+            }
+
             intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
         } else if(emailTemplate.getInterval() == 604800) {
             // Weekly, Sunday through Sunday
             interval = i18nUtil.tr("Weekly");
-            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
-            endDate = c.getTime();
-            c.add(Calendar.DATE, -7);
-            startDate = c.getTime();
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(startTimestamp + ( 86400000 * 7) );
+                endDate = c.getTime();
+            }else{
+                c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart() + 1);
+                endDate = c.getTime();
+                c.add(Calendar.DATE, -7);
+                startDate = c.getTime();
+            }
             intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
         } else if(emailTemplate.getInterval() == 1) {
             // Week to Date
             interval = i18nUtil.tr("Week to Date");
-            endDate = c.getTime();
-            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
-            startDate = c.getTime();
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(stopTimestamp);
+                endDate = c.getTime();
+            }else{
+                endDate = c.getTime();
+                c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart() + 1);
+                startDate = c.getTime();
+            }
             intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
         } else if(emailTemplate.getInterval() == 86400) {
             // Daily
             interval = i18nUtil.tr("Daily");
-            c.add(Calendar.DATE, - 1);
-            startDate = c.getTime();
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            endDate = c.getTime();
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.add(Calendar.DATE, 1);
+                endDate = c.getTime();
+            }else{
+                c.add(Calendar.DATE, - 1);
+                startDate = c.getTime();
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+            }
             intervalDescription = dateFormatter.format(startDate);
         } else {
             // Daily
@@ -779,7 +850,7 @@ public class FixedReports
             intervalDescription = dateFormatter.format(startDate);
         }
 
-        if (currentDate.compareTo(endDate) != 0) {
+        if ( (startTimestamp == 0 ) && (currentDate.compareTo(endDate) != 0) ){
             logger.warn("Skipping report " + emailTemplate.getTitle() + " because its not its end date: " + endDate);
             return;
         }
