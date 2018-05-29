@@ -2,7 +2,7 @@
     "uniqueId": "report-pzcjuyiqpdg",
     "category": "Network",
     "description": "The data usage of each interface by day",
-    "displayOrder": 315,
+    "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "approximation": "high",

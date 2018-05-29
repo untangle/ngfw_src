@@ -2,7 +2,7 @@
     "uniqueId": "network-kEOxIl3D",
     "category": "Network",
     "description": "The total received data usage by interface.",
-    "displayOrder": 12,
+    "displayOrder": 13,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
