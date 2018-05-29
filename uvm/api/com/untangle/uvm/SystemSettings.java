@@ -20,7 +20,7 @@ public class SystemSettings implements Serializable, JSONString
     private int httpsPort;
 
     private boolean supportEnabled = false;
-    private boolean cloudEnabled = false;
+    private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
     private String administrationSubnets = null;
 

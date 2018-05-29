@@ -18,13 +18,15 @@ Ext.define('Ung.apps.reports.MainController', {
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.asyncPromise(v.appManager, 'getSettings')
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise(v.appManager, 'getFixedReportQueueSize')
         ]).then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             vm.set('isExpertMode', result[0]);
             vm.set('settings', result[1]);
+            vm.set('reportQueueSize', result[2]);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -250,6 +252,58 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
         control.setValidation(true);
     },
 
+    sendReport: function(unk1, unk2, unk3, event, unk5, record){
+        var v = this.getView(), vm = this.getViewModel();
+        var dialog = v.add({
+            xtype: 'app-reports-sendfixedreport',
+            title: 'Send Email Report'.t(),
+            record: record
+        });
+        dialog.setPosition(event.getXY());
+        dialog.show();
+
+    },
+
+    sendDisabled: function(view, rowIndex, colIndex, item, record){
+        return record.dirty;
+    },
+
+    runInterfaceTask: null,
+    updateReportQueueSize: function(el){
+        var me = this, vm = me.getViewModel();
+        var queueSize = vm.get('reportQueueSize');
+        if(queueSize > 0){
+            var runInterfaceTaskDelay = 5000;
+            if(me.runInterfaceTask == null){
+                me.runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                    if(Util.isDestroyed(me, vm, el)){
+                    return;
+                    }
+                    var queueSize = Rpc.directData(el.up('[itemId=appCard]').appManager, 'getFixedReportQueueSize');
+                    vm.set('reportQueueSize', queueSize);
+                    if(queueSize){
+                        el.setHtml('Reports processing'.t() + ': ' + queueSize);
+                        me.runInterfaceTask.delay( runInterfaceTaskDelay );
+                        return;
+                    }else{
+                        el.setHtml('');
+                        me.runInterfaceTask = null;
+                    }
+                }, me) );
+                me.runInterfaceTask.delay( 100 );
+            }
+        }
+    },
+
+    statics: {
+        intervalRender: function(value, cell, record){
+            var renderedValue = Renderer.timeInterval(value);
+            if(value == 604800 || value == 1 ){
+                renderedValue += ' (' + Renderer.dayOfWeek(record.get('intervalWeekStart')) + ')';
+            }
+            return renderedValue;
+        }
+    }
 });
 
 Ext.define('Ung.apps.reports.cmp.UsersGridController', {

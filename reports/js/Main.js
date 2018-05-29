@@ -7,6 +7,7 @@ Ext.define('Ung.apps.reports.Main', {
     viewModel: {
         data: {
             googleDriveConfigured: false,
+            reportQueueSize: 0
         },
         formulas: {
             driveConfiguredText: function (get) {
