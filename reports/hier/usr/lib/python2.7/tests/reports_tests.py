@@ -140,7 +140,7 @@ def fetch_email( filename, email_address, tries=10 ):
         tries -= 1
         # Check to see if the delivered email file is present
         result = remote_control.run_command("wget -q --timeout=20 --tries=1 -O %s http://test.untangle.com/cgi-bin/getEmail.py?toaddress=%s 2>&1" % (filename, email_address))
-        time.sleep(10)
+        time.sleep(30)
         if (result == 0):
             return True
     return False
