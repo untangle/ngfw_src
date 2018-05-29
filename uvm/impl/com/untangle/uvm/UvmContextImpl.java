@@ -479,6 +479,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         wizardSettings.setWizardComplete( true );
         wizardSettings.setCompletedStep(null);
         setWizardSettings( wizardSettings );
+
+        // start pyconnector if needed
+        systemManager().pyconnectorSync();
     }
     
     public WizardSettings getWizardSettings()

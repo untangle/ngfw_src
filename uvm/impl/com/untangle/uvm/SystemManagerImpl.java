@@ -157,11 +157,12 @@ public class SystemManagerImpl implements SystemManager
          * If pyconnector state does not match the settings, re-sync them
          */
         Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled untangle-pyconnector");
-        if ( (0 == exitValue) && !settings.getCloudEnabled() )
-            syncPyconnectorStart();
-        if ( (0 != exitValue) && settings.getCloudEnabled() )
-            syncPyconnectorStart();
-        
+        // if running and should not be, stop it
+        if ((0 == exitValue) && !settings.getCloudEnabled())
+            pyconnectorSync();
+        // if not running and should be, start it
+        if ((0 != exitValue) && settings.getCloudEnabled() && UvmContextImpl.context().isWizardComplete())
+            pyconnectorSync();
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
 
@@ -214,7 +215,7 @@ public class SystemManagerImpl implements SystemManager
                 UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         }
 
-        syncPyconnectorStart();
+        pyconnectorSync();
     }
 
     @Override
@@ -493,6 +494,21 @@ public class SystemManagerImpl implements SystemManager
         return upgradesAvailable( true );
     }
     
+    protected void pyconnectorSync()
+    {
+        /**
+         * If support access in enabled, start pyconnector and enable on startup.
+         * If not, stop it and disable on startup
+         */
+        if ( settings.getCloudEnabled() && UvmContextImpl.context().isWizardComplete() ) {
+            UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
+        } else {
+            UvmContextFactory.context().execManager().exec( "systemctl disable untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
+        }
+    }
+
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
@@ -845,21 +861,6 @@ public class SystemManagerImpl implements SystemManager
         }
     }
 
-    private void syncPyconnectorStart()
-    {
-        /**
-         * If support access in enabled, start pyconnector and enable on startup.
-         * If not, stop it and disable on startup
-         */
-        if ( settings.getCloudEnabled() ) {
-            UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
-        } else {
-            UvmContextFactory.context().execManager().exec( "systemctl disable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
-        }
-    }
-    
     private class SystemSupportLogDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
