@@ -28,6 +28,8 @@ public class IpsecVpnNetwork implements JSONString, Serializable
     private String localAddress;
     private String remoteAddress;
     private String remoteNetworks;
+    private int ttl = 64;
+    private int mtu = 1476;
 
     public IpsecVpnNetwork()
     {
@@ -52,6 +54,12 @@ public class IpsecVpnNetwork implements JSONString, Serializable
 
     public String getRemoteNetworks() { return (remoteNetworks); }
     public void setRemoteNetworks(String remoteNetworks) { this.remoteNetworks = remoteNetworks; }
+
+    public int getTtl() { return (ttl); }
+    public void setTtl(int value) { this.ttl = value; }
+
+    public int getMtu() { return (mtu); }
+    public void setMtu(int value) { this.mtu = value; }
 
     // THIS IS FOR ECLIPSE - @formatter:on
 
