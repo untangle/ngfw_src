@@ -2,7 +2,7 @@
     "uniqueId": "network-oyzBpGMc",
     "category": "Network",
     "description": "The total received data usage by interface.",
-    "displayOrder": 11,
+    "displayOrder": 12,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
