@@ -84,7 +84,7 @@ Ext.define('Ung.apps.reports.view.SendFixedReport', {
                     border: false,
                     items: [{
                         xtype: 'component',
-                        html: '<strong>' + 'Util'.t() + '</strong>'
+                        html: '<strong>' + 'Until'.t() + '</strong>'
                     }]
                 },{     
                     xtype: 'datepicker',
@@ -92,10 +92,7 @@ Ext.define('Ung.apps.reports.view.SendFixedReport', {
                     showToday: false,
                     bind:{
                         minDate: '{minDate}',
-                        maxDate: '{maxDate}',
-                        // disabledDates: '{stopDisabledDates}'
-                        // value: '{stopDate}'
-                    }
+                        maxDate: '{maxDate}'                    }
                 }]
             }]
         }]
