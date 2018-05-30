@@ -34,7 +34,7 @@ public class WebBrowser
 
     public enum FIND_KEYS {
         CLASS,
-        CSS,
+        CSS_SELECTOR,
         ID,
         LINKTEXT,
         PARTIALLINKTEXT,
@@ -44,8 +44,11 @@ public class WebBrowser
     private WebDriver driver = null;
 
     private String tempDirectory = "/tmp/webbrowser";
-    private static String chromeDriver = "/usr/bin/chromedriver";
-    private static String chromeBrowser = "/usr/bin/chromium";
+    private final static String chromeDriver = "/usr/bin/chromedriver";
+    private final static String chromeBrowser = "/usr/bin/chromium";
+
+    private final static String CLEAR_BROWSER_URL = "chrome://settings/clearBrowserData";
+    private final static String CLEAR_BROWSER_CONFIRM_BUTTON = "* /deep/ #clearBrowsingDataConfirm";
 
     private Integer displaySequence = 1;
     private Integer displayScreen = 5;
@@ -113,6 +116,7 @@ public class WebBrowser
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
+            options.addArguments("--disable-default-apps");
 
             driver = new ChromeDriver(service, options);
         }catch(UnreachableBrowserException e){
@@ -204,6 +208,9 @@ public class WebBrowser
                     case CLASS:
                         by = By.className(value);
                         break;
+                    case CSS_SELECTOR:
+                        by = By.cssSelector(value);
+                        break;
                     case ID:
                     default:
                         by = By.id(value);
@@ -245,6 +252,19 @@ public class WebBrowser
      */
     public void resize(int width, int height){
         driver.manage().window().setSize( new Dimension( width, height ) );
+    }
+
+    /**
+     * Clear the web browser's cache.
+     */
+    public void clearCache(){
+        try{
+            driver.get(CLEAR_BROWSER_URL);
+            waitForElement(WebBrowser.FIND_KEYS.CSS_SELECTOR, CLEAR_BROWSER_CONFIRM_BUTTON, 10);
+            driver.findElement(By.cssSelector(CLEAR_BROWSER_CONFIRM_BUTTON)).click();
+        }catch(Exception e){
+            logger.error("Unable to clear cache " + e);
+        }
     }
 
 }

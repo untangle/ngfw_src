@@ -2122,6 +2122,8 @@ public class FixedReports
             webbrowser.takeScreenshot(filename);
         }
 
+        webbrowser.clearCache();
+
         return filename;
     }
 }
