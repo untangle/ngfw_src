@@ -187,7 +187,7 @@ Ext.define('Ung.util.Renderer', {
             value = 0;
         }
         value = parseInt( value, 10 );
-        var size;
+        var size = Ung.util.Renderer.datasizeMap[Ung.util.Renderer.datasizeMap.length-1];
         for( var i = 0; i < Ung.util.Renderer.datasizeMap.length; i++){
             size = Ung.util.Renderer.datasizeMap[i];
             if( value >= size[0] || value <= (0-size[0])){
@@ -223,7 +223,7 @@ Ext.define('Ung.util.Renderer', {
             value = 0;
         }
         value = parseInt( value, 10 );
-        var size;
+        var size = Ung.util.Renderer.countMap[Ung.util.Renderer.countMap.length - 1];
         for( var i = 0; i < Ung.util.Renderer.countMap.length; i++){
             size = Ung.util.Renderer.countMap[i];
             if( value >= size[0] || value <= (0-size[0])){
