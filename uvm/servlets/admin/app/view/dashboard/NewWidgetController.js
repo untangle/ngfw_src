@@ -80,7 +80,6 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             });
             me.lookup('report').remove('entry');
         } else {
-            // console.log(node.get('type'));
             var xtype, onDashboard = true, newWidget;
             var entry = Ext.getStore('reports').findRecord('uniqueId', node.get('uniqueId'));
             me.widget = Ext.getStore('widgets').findRecord('entryId', node.get('uniqueId'));
@@ -96,6 +95,10 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
                     });
                     me.getView().down('tagfield').getStore().setData(str);
                 }
+                vm.set({
+                    widget: me.widget.copy(null),
+                    onDashboard: onDashboard
+                });
             } else {
                 newWidget = Ext.create('Ung.model.Widget', {
                     displayColumns: entry.get('defaultColumns'),
@@ -107,13 +110,11 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
                     type: 'ReportEntry'
                 });
                 onDashboard = false;
-
+                vm.set({
+                    widget: newWidget.copy(null),
+                    onDashboard: onDashboard
+                });
             }
-
-            vm.set({
-                widget: me.widget ? me.widget.copy(null) : newWidget.copy(null),
-                onDashboard: onDashboard
-            });
 
             switch (node.get('type')) {
             case 'EVENT_LIST':
@@ -160,7 +161,6 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
 
     updateColumns: function(cmp, val) {
         var vm = this.getViewModel(), columns = this.getView().down('grid').getColumns();
-        // console.log(vm.get('widget.displayColumns'));
         Ext.Array.each(columns, function (col) {
             col.setHidden(Ext.Array.indexOf(vm.get('widget.displayColumns'), col.dataIndex) < 0);
         });
