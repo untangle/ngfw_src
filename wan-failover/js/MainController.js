@@ -12,7 +12,7 @@ Ext.define('Ung.apps.wan-failover.MainController', {
     },
 
     getSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'getSettings')
