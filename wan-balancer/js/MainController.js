@@ -135,7 +135,7 @@ Ext.define('Ung.apps.wan-balancer.MainController', {
     },
 
     setWeights: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var vm = this.getViewModel();
 
         // JSON serializes out empty elements
         var weights = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
