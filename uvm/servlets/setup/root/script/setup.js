@@ -313,7 +313,7 @@ Ext.define('Ung.Setup.WelcomeController', {
     },
 
     checkResuming: function () {
-        var me = this, vm = this.getViewModel();
+        var vm = this.getViewModel();
         // check if resuming
         if (!rpc.wizardSettings.wizardComplete && rpc.wizardSettings.completedStep != null) {
             var steps = rpc.wizardSettings.steps;
@@ -337,7 +337,7 @@ Ext.define('Ung.Setup.WelcomeController', {
 
     // updates the Next button
     setContinue: function (ck) {
-        var me = this, vm = this.getViewModel();
+        var vm = this.getViewModel();
         if (ck.getValue()) {
             if (ck.inputValue === 'no') {
                 Ung.app.getMainView().lookup('nextBtn').setText('<strong>' + 'Settings'.t() + '</strong>&nbsp;&nbsp;<i class="fa fa-arrow-circle-right fa-lg"></i>');
@@ -1165,7 +1165,7 @@ Ext.define('Ung.Setup.InternetController', {
     },
 
     testConnectivity: function (testType, cb) {
-        var me = this, vm = me.getViewModel();
+        var me = this;
 
         Ung.app.loading('Testing Connectivity...'.t());
         rpc.connectivityTester.getStatus(function (result, ex) {
@@ -1442,7 +1442,7 @@ Ext.define('Ung.Setup.InternalNetworkController', {
     },
 
     warnAboutChangingAddress: function() {
-        var me = this, form = me.getView(), vm = me.getViewModel();
+        var me = this, vm = me.getViewModel();
         var newSetupLocation;
 
         newSetupLocation = window.location.href.replace(me.initialv4Address, vm.get('nonWan.v4StaticAddress'));
@@ -1861,7 +1861,7 @@ Ext.define('Ung.Setup.MainController', {
     },
 
     onNext: function () {
-        var me = this, layout = this.getView().down('#wizard').getLayout();
+        var layout = this.getView().down('#wizard').getLayout();
 
         layout.getActiveItem().getController().save(function () {
             // update completed step
