@@ -15,6 +15,7 @@ package com.untangle.app.directory_connector;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
@@ -672,11 +673,15 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          * which authentication method (PAP, CHAP, MS-CHAP v1, MS-CHAP v2) to require.
          */
 
+        FileWriter server = null;
+        FileWriter client = null;
+        FileWriter xauth = null;
+        FileWriter peers = null;
         try {
-            FileWriter server = new FileWriter("/etc/radiusclient/servers", false);
-            FileWriter client = new FileWriter("/etc/radiusclient/radiusclient.conf", false);
-            FileWriter xauth = new FileWriter("/etc/strongswan.radius", false);
-            FileWriter peers = new FileWriter("/etc/ppp/peers/radius-auth-proto", false);
+            server = new FileWriter("/etc/radiusclient/servers", false);
+            client = new FileWriter("/etc/radiusclient/radiusclient.conf", false);
+            xauth = new FileWriter("/etc/strongswan.radius", false);
+            peers = new FileWriter("/etc/ppp/peers/radius-auth-proto", false);
 
             server.write(FILE_DISCLAIMER);
             client.write(FILE_DISCLAIMER);
@@ -735,14 +740,25 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 }
             }
 
-            server.close();
-            client.close();
-            xauth.close();
-            peers.close();
-        }
-
-        catch (Exception exn) {
+        }catch (Exception exn) {
             logger.warn("Exception writing /etc/radiusclient configuration files" + exn);
+        }finally{
+            try{
+                if(server != null){
+                    server.close();
+                }
+                if(client != null){
+                    client.close();
+                }
+                if(xauth != null){
+                    xauth.close();
+                }
+                if(peers != null){
+                    peers.close();
+                }
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }
         }
     }
 }
