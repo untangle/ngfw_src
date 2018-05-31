@@ -216,11 +216,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
     },
 
     onNext: function () {
-        var v = this.getView(),
-            vm = this.getViewModel(),
-            activeItem = v.getLayout().getActiveItem();
-
-        v.getLayout().next();
+        this.getView().getLayout().next();
     },
 
     onPrev: function () {
