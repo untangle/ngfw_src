@@ -552,7 +552,6 @@ Ext.define('Ung.config.network.MainController', {
 
     refreshUpnpStatus: function (cmp) {
         var v = cmp.isXType('button') ? cmp.up('grid') : cmp;
-        var vm = this.getViewModel();
 
         v.setLoading(true);
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
@@ -923,9 +922,7 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     clearOutput: function (btn) {
-        var me = this,
-            vm = btn.up('networktest').getViewModel();
-
+        var vm = btn.up('networktest').getViewModel();
         var v = btn.up('networktest');
         v.down('textarea').setValue('');
         vm.set('exportRunFilename', '');
@@ -1651,7 +1648,7 @@ Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
     alias: 'controller.unospfarearecordeditorcontroller',
 
     onApply: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         if (!this.action) {
             for (var fieldName in vm.get('record').modified) {
