@@ -594,12 +594,12 @@ abstract class LdapAdapter
             try{
                 sslCtx = javax.net.ssl.SSLContext.getInstance("SSL");
                 sslCtx.init(null, trustAllCerts, null);
+                ldapEnv.put( "java.naming.ldap.factory.socket", LdapAdapterSocketFactory.class.getName() );
+                LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
+                ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
             }catch( Exception e ){
                  e.printStackTrace();
             }
-            ldapEnv.put( "java.naming.ldap.factory.socket", LdapAdapterSocketFactory.class.getName() );
-            LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
-            ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
         }
 
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
