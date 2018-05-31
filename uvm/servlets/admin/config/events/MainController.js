@@ -690,8 +690,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     },
 
     getClassFieldType: function(className, fieldName){
-        var me = this,
-            vm = this.getViewModel(),
+        var vm = this.getViewModel(),
             type = null,
             classes = vm.get('classFields');
 
@@ -717,8 +716,6 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var storeName = this.getRecordFieldType(type);
 
         if( !(storeName in this.comparatorFieldStores) ){
-            var vm = this.getViewModel();
-
             var fields = [];
             switch(storeName){
               case 'numeric':
@@ -878,9 +875,8 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
         },
 
     conditionFieldsRenderer: function (value) {
-        var view = this.getView(),
-        conditions = value.list,
-        fieldSummary = [], valueRenderer = [];
+        var conditions = value.list,
+            fieldSummary = [], valueRenderer = [];
 
         if(conditions.length){
             var condition;
