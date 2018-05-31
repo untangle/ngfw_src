@@ -484,7 +484,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             int[] values = { 1, 8, 32, 64, 65536 };
 
             Set<String> valueSet  = new HashSet<>();
-            for ( int c = 0 ; c < Math.pow( 2, values.length + 1 ) - 1 ; c++ ) {
+            for ( int c = 0 ; c < Math.pow( 2, (double) values.length + 1 ) - 1 ; c++ ) {
                 int v = 512;
                 for ( int d = 0, bit = 1 ; d <values.length; d++, bit <<= 1 ) {
                     if (( c & bit ) == bit ) { 
