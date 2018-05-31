@@ -173,7 +173,7 @@ Ext.define('Ung.controller.Global', {
      * Common method used for routing Dashboard and Reports based on conditions query
      */
     onRoute: function (query) {
-        var hash = window.location.hash, view, viewModel, validQuery = true,
+        var hash = window.location.hash, view, viewModel = null, validQuery = true,
             route = {}, conditions = [], condsQuery = '',
             decoded, parts, key, sep, val, fmt;
 
@@ -225,11 +225,13 @@ Ext.define('Ung.controller.Global', {
             return;
         }
 
-        viewModel.set('query', {
-            route: route,
-            conditions: conditions,
+        if(viewModel != null){
+            viewModel.set('query', {
+                route: route,
+                conditions: conditions,
             string: condsQuery
-        });
+            });
+        }
 
         this.getMainView().getViewModel().set('activeItem', view);
     },
@@ -485,7 +487,6 @@ Ext.define('Ung.controller.Global', {
             // the loop wer'e doing here.
             Ung.controller.Global.ignoreActivate = true;
 
-            var runActivateTaskDelay = 250;
             parentPanel.subViews.forEach(function(subView){
                 var targetPanel = panel.down('[itemId='+subView+']');
                 if(!targetPanel){
