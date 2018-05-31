@@ -389,7 +389,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
         values.policyId = parseInt(values.policyId, 10);
         values.parentId = parseInt(values.parentId, 10);
 
-        console.log(vm.get('settings.policies.list'));
         if (btn.action === 'save') {
             var editPolicy = Ext.Array.findBy(vm.get('settings.policies.list'), function (policy) {
                 return policy.policyId === values.policyId;
@@ -413,6 +412,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 me.selectedPolicyId = values.policyId;
             }
             Ext.getStore('policiestree').build();
+            me.getSettings();
         }, function(ex) {
             win.setLoading(true);
             Util.handleException(ex);
