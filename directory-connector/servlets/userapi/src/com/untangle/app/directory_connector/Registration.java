@@ -182,9 +182,12 @@ public class Registration extends HttpServlet
     private void generateInstaller( HttpServletRequest request, HttpServletResponse response ) throws ServletException
     {
         logger.info( "Generating installer" );
+        BufferedReader br = null;
+        FileReader fr = null;
         try {
             File file = new File( AD_DOWNLOAD_NAME );
-            BufferedReader br = new BufferedReader( new FileReader( file ) );
+            fr = new FileReader( file );
+            br = new BufferedReader( fr );
 
             //long length = file.length();
             response.setContentType( AD_DOWNLOAD_TYPE );
@@ -227,6 +230,17 @@ public class Registration extends HttpServlet
             logger.info( "The file " + AD_DOWNLOAD_NAME +  " does not exist" );
         } catch ( IOException e ) {
             logger.info( "IOError while reading from file " + AD_DOWNLOAD_NAME);
+        }finally{
+            try{
+                if( fr != null ){
+                    fr.close();
+                }
+                if( br != null ){
+                    br.close();
+                }
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }
         }
     }
 
