@@ -111,9 +111,7 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     onBeforeRender: function(view) {
-        var me = this,
-            vm = view.getViewModel();
-        me.setLiveSupport();
+        this.setLiveSupport();
     },
 
     setLiveSupport: function() {
