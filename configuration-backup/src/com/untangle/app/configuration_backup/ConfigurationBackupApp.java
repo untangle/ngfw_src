@@ -334,20 +334,26 @@ public class ConfigurationBackupApp extends AppBase
     {
         // write the cron file for nightly runs
         String conf = settings.getMinuteInHour() + " " + settings.getHourInDay() + " " + CRON_STRING;
-        BufferedWriter out = null;
-        try {
-            out = new BufferedWriter(new FileWriter(CRON_FILE));
-            out.write(conf, 0, conf.length());
-            out.write("\n");
+        BufferedWriter cronBufferedWriter = null;
+        FileWriter cronFileWriter = null;
+        try{
+            cronFileWriter = new FileWriter(CRON_FILE);
+            cronBufferedWriter = new BufferedWriter(cronFileWriter);
+            cronBufferedWriter.write(conf, 0, conf.length());
+            cronBufferedWriter.write("\n");
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
-            return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
+        }finally{
+            try{
+                if(cronBufferedWriter != null){
+                    cronBufferedWriter.close();
+                }
+                if(cronFileWriter != null){
+                    cronFileWriter.close();
+                }
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }
         }
     }
 }
