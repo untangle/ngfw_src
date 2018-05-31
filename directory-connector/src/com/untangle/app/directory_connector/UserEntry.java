@@ -256,7 +256,7 @@ public final class UserEntry implements Serializable, Comparable<UserEntry>
     public boolean equals(Object obj)
     {
         UserEntry other = (UserEntry) obj;
-        return makeNotNull(other.getUid()).equals(makeNotNull(this.uid));
+        return makeNotNull(other != null ? other.getUid() : other).equals(makeNotNull(this.uid)) ? true : false;
     }
     
     /**
