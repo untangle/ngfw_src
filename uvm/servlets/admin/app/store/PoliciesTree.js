@@ -53,7 +53,7 @@ Ext.define('Ung.store.PoliciesTree', {
 
     recursiveTree: function (array, parent, tree) {
         var me = this;
-        tree = typeof tree !== undefined ? tree : [];
+        tree = typeof tree != undefined ? tree : [];
         parent = parent || { policyId: 0 };
 
 
