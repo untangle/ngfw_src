@@ -90,7 +90,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
     },
 
     initSiteLookup: function() {
-        var v = this.getView(), vm = this.getViewModel();
+        var vm = this.getViewModel();
         vm.set('siteLookupInput', '');
         vm.set('siteLookupAddress', '');
         vm.set('siteLookupCategory', '');
@@ -99,7 +99,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
     },
 
     handleSiteLookup: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         var inputField = v.down("[fieldIndex='siteLookupInput']");
 
@@ -148,7 +148,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
     },
 
     handleCategorySuggest: function() {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
         var showAddress = v.down("[fieldIndex='siteLookupAddress']");
         var suggestBox = v.down("[fieldIndex='siteLookupSuggest']");
