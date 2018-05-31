@@ -610,7 +610,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     removeTextColumn: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this, store = view.getStore(), tdc = [];
+        var store = view.getStore(), tdc = [];
         store.remove(record);
         view.refresh();
     },
