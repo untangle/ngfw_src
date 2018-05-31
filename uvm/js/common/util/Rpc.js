@@ -40,7 +40,7 @@ Ext.define('Ung.util.Rpc', {
         nodes = path.split('.');
         method = nodes.pop();
 
-        if ( nodes.length == 0 || context == null || arguments[0] == null ) {
+        if ( context == null || arguments[0] == null ) {
             result.error = "Invalid RPC path: '" + path + "'";
             return result;
         }
