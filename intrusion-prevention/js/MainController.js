@@ -167,7 +167,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             ]
         }));
 
-        var id = Rpc.directData('rpc.appManager.app("intrusion-prevention").getAppSettings.id');
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getLastUpdateCheck'),
             Rpc.asyncPromise(v.appManager, 'getLastUpdate'),
@@ -218,7 +217,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     getChangedDataRecords: function(target){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView();
         var changed = {};
         v.query('app-intrusion-prevention-' + target).forEach(function(grid){
             var store = grid.getStore();
@@ -241,7 +240,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     getChangedData: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
 
         var settings = vm.get('settings');
         var changedDataSet = {};
@@ -336,7 +335,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
     regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
     isVariableUsed: function(variable) {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
 
         if(Ext.isEmpty(variable)) {
             return false;
@@ -558,7 +557,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
             return;
         }
 
-        var gridController = this.getView().up('grid').getController();
         var record = this.getViewModel().get('record');
 
         record.set('sid', rule.getOption('sid'));
@@ -611,7 +609,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     },
 
     classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var vm = this.getViewModel();
         var description = value;
         var classtypeRecord = vm.get('classtypes').findRecord('name', value);
         if( classtypeRecord != null ){
@@ -622,7 +620,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     },
 
     categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var me = this, vm = this.getViewModel();
+        var vm = this.getViewModel();
         var description = value;
         var categoryRecord = vm.get('categories').findRecord('name', value);
         if( categoryRecord != null ){
@@ -861,8 +859,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     },
 
     updateRule: function( record, updatedKey, updatedValue){
-        var me = this;
-        var gridSourced = record.store ? true : false;
         var i, regex;
         var ruleValue = record.get('rule');
         var updatedSubkey = null;
@@ -918,9 +914,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
     editorVariableChange: function( me, newValue, oldValue, eOpts ){
         var v = this.getView();
         var vm = this.getViewModel();
-
-        var record = vm.get('record');
-        var originalRecord = v.record;
 
         var match = false;
         vm.get('variables').each( function( storeRecord ) {
