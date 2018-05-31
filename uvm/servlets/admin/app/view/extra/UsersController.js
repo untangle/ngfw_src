@@ -44,7 +44,6 @@ Ext.define('Ung.view.extra.UsersController', {
 
     saveUsers: function () {
         var me = this,
-            store = me.getView().down('ungrid').getStore(),
             list = [];
 
         me.getView().query('ungrid').forEach(function (grid) {
