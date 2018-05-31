@@ -25,7 +25,7 @@ import com.untangle.uvm.util.Pulse.PulseState;
 public class GroupManager
 {
     /* Default amount of time between updating the Group Cache */
-    private static long DEFAULT_GROUP_RENEW_MS = 30 * 60 * 1000; /* every 30 minutes */
+    private static long DEFAULT_GROUP_RENEW_MS = (long) 30 * 60 * 1000; /* every 30 minutes */
 
     private static final int CACHE_COUNT_MAX = 4000;
 
