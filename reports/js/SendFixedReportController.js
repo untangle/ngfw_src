@@ -5,15 +5,11 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
     control: {
         '#': {
             afterrender: 'afterrender'
-        },
-    //     '#email-templates': {
-    //         afterrender: 'emailTemplatesAfterRender'
-    //     }
+        }
     },
 
     afterrender: function(view){
-        var me = this,
-            vm = this.getViewModel();
+        var vm = this.getViewModel();
 
         var record = view.record;
         var dbRetention = view.up('[itemId=appCard]').getViewModel().get('settings.dbRetention');
@@ -29,14 +25,12 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
         var maxYear = maxDate.getFullYear();
         var maxMonth = maxDate.getMonth();
         var maxDateOfWeek = maxDate.getDay();
-        var maxDateOfMonth = maxDate.getDate();
 
         var minDate = new Date(Util.getMilliseconds() - (86400000 * dbRetention) );
         minDate.setHours(0,0,0,0);
         var minYear = minDate.getFullYear();
         var minMonth = minDate.getMonth();
         var minDateOfWeek = minDate.getDay();
-        var minDateOfMonth = minDate.getDate();
 
         var startDateValue = Util.serverToClientDate(maxDate);
         var stopDateValue = Util.serverToClientDate(maxDate);
@@ -148,7 +142,6 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
 
         var disabledDates = [];
         var disabledDate = new Date(minDate.getTime());
-        var disabledMonth = disabledDate.getMonth();
         disabledDate = new Date(minDate.getTime());
         var i;
         var day;
@@ -178,7 +171,6 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
         var intervalWeekStart = record.get('intervalWeekStart');
         var stopDate = el.up('window').down('[itemId=stopDate]');
         var startDateValue = el.up('window').down('[itemId=startDate]').getValue();
-        var minDate = vm.get('minDate');
         var maxDate = vm.get('maxDate');
 
         var stopDateValue = startDateValue;
@@ -212,20 +204,6 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
 
         var dialog = button.up('window');
         dialog.setLoading(true);
-        // Rpc.asyncData(button.up('window').up('[itemId=appCard]').appManager, 'runFixedReport', templateId, startDate, stopDate)
-        // .then(function(result){
-        //     if(Util.isDestroyed(button, dialog)){
-        //         return;
-        //     }
-        //     button.up('window').close();
-        // }, function(ex){
-        //     Ext.MessageBox.close();
-        //     Util.handleException(ex);
-        //     if(Util.isDestroyed(button)){
-        //         return;
-        //     }
-        //     button.up('window').close();
-        // });
         var app = button.up('window').up('[itemId=appCard]');
         Ext.Deferred.sequence([
             Rpc.asyncPromise(app.appManager, 'runFixedReport', templateId, startDate, stopDate),
