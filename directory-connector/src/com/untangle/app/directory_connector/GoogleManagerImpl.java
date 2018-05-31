@@ -83,13 +83,27 @@ public class GoogleManagerImpl
             credentialsJson += settings.getDriveRefreshToken();
             credentialsJson += "\"}";
 
+            BufferedWriter bw = null;
+            FileWriter fw = null;
             try {
                 UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
-                BufferedWriter bw = new BufferedWriter(new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json")));            
+                fw = new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json"));
+                bw = new BufferedWriter(fw);
                 bw.write(credentialsJson);
                 bw.close();
             } catch (Exception ex) {
                 logger.warn("Error writing credentials.json.", ex);
+            }finally{
+                try{
+                    if(fw != null){
+                        fw.close();
+                    }
+                    if(bw != null){
+                        bw.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         } else {
             try {
