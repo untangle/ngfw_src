@@ -36,8 +36,7 @@ Ext.define('Ung.cmp.AppState', {
         reload: function(){
             var me = this,
                 appManager = me.getView().up('#appCard').appManager,
-                appView = me.getView().up('#appCard'),
-                vm = me.getViewModel();
+                appView = me.getView().up('#appCard');
 
             appView.getViewModel().get('state').detect();
 
@@ -54,8 +53,7 @@ Ext.define('Ung.cmp.AppState', {
         onPower: function (btn) {
             var me = this,
                 appManager = me.getView().up('#appCard').appManager,
-                appView = me.getView().up('#appCard'),
-                vm = me.getViewModel();
+                appView = me.getView().up('#appCard');
 
             btn.setDisabled(true);
 
