@@ -256,7 +256,7 @@ public final class GroupEntry implements Serializable, Comparable<GroupEntry>
     public boolean equals(Object obj)
     {
         GroupEntry other = (GroupEntry) obj;
-        return makeNotNull(other.getCN()).equals(makeNotNull(this.cn));
+        return makeNotNull(other != null ? other.getCN() : other).equals(makeNotNull(this.cn)) ? true : false;
     }
     
     /**
