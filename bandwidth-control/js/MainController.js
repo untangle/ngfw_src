@@ -122,7 +122,8 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
                         case 7: priostr = 'Limited Severely'.t(); break;
                         default: priostr = 'Unknown Priority'.t() + ': ' + value.priority; break;
                     }
-                    return 'Set Priority'.t() + ' [' + priostr + ']';
+                    var result = 'Set Priority'.t() + ' [' + priostr + ']';
+                    return result;
                 case 'TAG_HOST': return 'Tag Host'.t();
                 case 'APPLY_PENALTY_PRIORITY': return 'Apply Penalty Priority'.t(); // DEPRECATED
                 case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
