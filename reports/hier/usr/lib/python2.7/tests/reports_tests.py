@@ -134,7 +134,7 @@ def create_email_template(mobile=False):
         "title": "Custom Report"
     }
 
-def fetch_email( filename, email_address, tries=20 ):
+def fetch_email( filename, email_address, tries=40 ):
     remote_control.run_command("rm -f %s" % filename)
     while tries > 0:
         tries -= 1
