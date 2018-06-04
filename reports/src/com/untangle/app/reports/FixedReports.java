@@ -52,8 +52,10 @@ public class FixedReports
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/reports/templates/reports.html";
     public static final int DEFAULT_BROWSER_WIDTH = 800;
     public static final int DEFAULT_BROWSER_HEIGHT = 800;
-    public static final int MOBILE_BROWSER_WIDTH = 250;
-    public static final int MOBILE_BROWSER_HEIGHT = 250;
+    // public static final int MOBILE_BROWSER_WIDTH = 250;
+    // public static final int MOBILE_BROWSER_HEIGHT = 250;
+    public static final int MOBILE_BROWSER_WIDTH = 350;
+    public static final int MOBILE_BROWSER_HEIGHT = 350;
 
     private StringBuilder messageText = null;
 
@@ -888,9 +890,9 @@ public class FixedReports
             Integer browserHeight = DEFAULT_BROWSER_WIDTH;
             if(emailTemplate.getMobile() == true){
                 browserWidth = MOBILE_BROWSER_WIDTH;
-                browserHeight = DEFAULT_BROWSER_HEIGHT;
+                browserHeight = MOBILE_BROWSER_HEIGHT;
             }
-            webbrowser.resize( browserWidth, browserWidth);
+            webbrowser.resize( browserWidth, browserHeight);
         }
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
