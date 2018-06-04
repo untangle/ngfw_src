@@ -142,7 +142,8 @@ def fetch_email( filename, email_address, tries=40 ):
         result = remote_control.run_command("wget -q --timeout=20 --tries=1 -O %s http://test.untangle.com/cgi-bin/getEmail.py?toaddress=%s 2>&1" % (filename, email_address))
         time.sleep(30)
         if (result == 0):
-            return True
+            if (remote_control.run_command("grep -q -i 'Subject: .*Report.*' %s 2>&1" % filename) == 0):
+                return True
     return False
 
 class ReportsTests(unittest2.TestCase):
@@ -480,7 +481,7 @@ class ReportsTests(unittest2.TestCase):
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
 
-        # Verify that all images are less than 350x350.
+        # Verify that all images are less than 2502350.
         # copy mail from remote client
         subprocess.call("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.hostKeyFile, remote_control.clientIP), shell=True)
         fp = open("/tmp/test_102_email_admin_override_custom_report_mobile_file")
@@ -496,11 +497,11 @@ class ReportsTests(unittest2.TestCase):
             if part.get_content_maintype() == "image":
                 # print("Image found")
                 for index, key in enumerate(part.keys()):
-                    if key == "Content-ID":
+                    if key == "Content-ID" and "untangle.int" in part.values()[index]:
                         email_image = part.get_payload(decode=True)
                         im = Image.open(StringIO(email_image))
                         (image_width,image_height) = im.size
-                        print("Image width: %d height: %d" % (image_width, image_height))
+                        print("Image %s width: %d height: %d" % (part.values()[index], image_width, image_height))
                         assert(image_width < 350 and image_height < 350)
 
     def test_103_email_report_verify_apps(self):
