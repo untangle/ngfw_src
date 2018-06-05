@@ -20,6 +20,20 @@
           transform: translateY(-50%);
           display: block;
         }
+
+        .x-btn-icon-right > .x-btn-inner-default-small,
+        .x-btn-icon-left > .x-btn-inner-default-small,
+        .x-btn-icon-right > .x-btn-inner-default-toolbar-small,
+        .x-btn-icon-left > .x-btn-inner-default-toolbar-small {
+            max-width: none;
+        }
+
+        .x-btn-icon-right > .x-btn-inner-default-medium,
+        .x-btn-icon-left > .x-btn-inner-default-medium,
+        .x-btn-icon-right > .x-btn-inner-default-toolbar-medium,
+        .x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
+            max-width: none;
+        }        
     </style>
 
     <script type="text/javascript" src="/ext6.2/ext-all-debug.js?s=${buildStamp}"></script>
