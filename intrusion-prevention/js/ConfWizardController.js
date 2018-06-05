@@ -200,17 +200,12 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
             vm.set('settings', settings);
 
             var app = this.getView().up('#appCard');
+            app.getViewModel().set('instance.targetState', 'RUNNING');
             app.getController().setSettings({
                 activeGroups: activeGroups,
                 profileId: settings.profileId,
                 configured: true
             });
-
-            var appState = app.down('appstate');
-            var appStateVm = appState.getViewModel();
-            if(!appStateVm.get('state.on')){
-                app.down('appstate').down('button[cls=power-btn]').click();
-            }
         }
 
     },

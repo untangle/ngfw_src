@@ -311,6 +311,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     }
                     v.setLoading(false);
                     Util.successToast('Settings saved...');
+                    v.down('appstate').getController().reload();
                     me.getSettings();
                     Ext.fireEvent('resetfields', v);
                 }, function(result){
