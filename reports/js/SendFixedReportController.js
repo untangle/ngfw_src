@@ -87,6 +87,9 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
                     stopDateDisabledDates = this.getWeekDisabledDates(startDateValue);
                 }
                 break;
+            default:
+                vm.set('minDate', minDate);
+                vm.set('maxDate', maxDate);
         }
         var startDate = view.down('[itemId=startDate]');
         var stopDate = view.down('[itemId=stopDate]');

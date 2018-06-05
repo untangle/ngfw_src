@@ -238,7 +238,8 @@ public class IpsecVpnScriptWriter
             iaddr = calculator.getOffsetIP(x + 1);
 
             script.write("# IpsecVpnNetwork - " + network.getDescription() + RET);
-            script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
+            script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl " + Integer.toString(network.getTtl()) + RET);
+            script.write("ip link set " + iface + " mtu " + Integer.toString(network.getMtu()) + RET);
             script.write("ip link set " + iface + " up" + RET);
             script.write("ip addr add " + iaddr + "/30 dev " + iface + RET);
 

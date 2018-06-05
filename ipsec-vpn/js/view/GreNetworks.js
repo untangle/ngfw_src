@@ -65,7 +65,9 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         'localAddress': '0.0.0.0',
         'remoteAddress': '0.0.0.0',
         'remoteNetworks': '0.0.0.0/24',
-        'description': ''
+        'description': '',
+        'ttl': 64,
+        'mtu': 1476
         },
 
     bind: '{networkList}',
@@ -94,6 +96,14 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'remoteNetworks'
+    }, {
+        header: 'TTL'.t(),
+        width: Renderer.portWidth,
+        dataIndex: 'ttl'
+    }, {
+        header: 'MTU'.t(),
+        width: Renderer.portWidth,
+        dataIndex: 'mtu'
     }],
 
     editorFields: [{
@@ -146,6 +156,14 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         vtype: 'cidrBlockArea',
         width: 250,
         height: 200
+    }, {
+        fieldLabel: 'TTL'.t(),
+        bind: '{record.ttl}',
+        xtype: 'numberfield',
+    }, {
+        fieldLabel: 'MTU'.t(),
+        bind: '{record.mtu}',
+        xtype: 'numberfield'
     }]
 
 });
