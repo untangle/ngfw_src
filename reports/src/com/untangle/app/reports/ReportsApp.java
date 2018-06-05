@@ -583,7 +583,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         ReportsApp.eventWriter.start( this );
 
         /* Enable to run event writing performance tests */
-        // new Thread(new PerformanceTest()).start();
         this.fixedReportsQueue.start();
     }
 
@@ -598,7 +597,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try{
             this.fixedReportsQueue.stop();
         }catch( Exception e ){
-            logger.warn( "Error disabling Intrusion Prevention Event Monitor", e );
+            logger.warn( "Error disabling Fixed Reports queue", e );
         }
 
         ReportsApp.eventWriter.stop();
