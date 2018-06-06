@@ -50,7 +50,7 @@ fi
 # compile python files
 # FIXME: the list should be dynamic
 for d in reports tests uvm uvm_login.py intrusion_prevention ; do
-  pycompile $d
+  pycompile /usr/lib/python2.7/dist-packages/$d
 done
 
 #
