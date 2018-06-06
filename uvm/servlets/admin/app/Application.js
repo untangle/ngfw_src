@@ -8,7 +8,8 @@ Ext.define('Ung.Application', {
     controllers: ['Global'],
     defaultToken : '',
     mainView: 'Ung.view.main.Main',
-    context: 'ADMIN', // set the context
+    context: 'ADMIN', // set the app context ADMIN or REPORTS
+    conditionsContext: 'REPORTS', // can be REPORTS or DASHBOARD because they don't share conditions
 
     /**
      * used to know when data is loaded for the first time
