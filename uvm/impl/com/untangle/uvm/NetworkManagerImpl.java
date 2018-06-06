@@ -2337,32 +2337,41 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Invalid arguments: " + ssid + " " + password + " " + encryption );
             return;
         }
+
+        // Bridge to Internal if it exists, otherwise external
+        int intfToBridge = 1;
+        if ( findInterfaceId(2) != null )
+            intfToBridge = 2;
         
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
             if (!intf.getIsWirelessInterface())
                 continue;
 
-            if (! ssid.equals( intf.getWirelessSsid() ) ) {
-                changed = true;
-                // if its a 5Mhz channel just add a 5 on the end
-                if ( intf.getWirelessChannel() != null && intf.getWirelessChannel() == -2 ) {
-                    intf.setWirelessSsid( ssid + "5" );
-                } else {
-                    intf.setWirelessSsid( ssid );
-                }
+            List<Integer> channels = getWirelessChannels( intf.getSystemDev() );
+            if ( channels == null ) {
+                logger.warn("Unabled to determine supported channels for " + intf.getSystemDev());
+                continue;
             }
-            if (! password.equals( intf.getWirelessPassword() ) ) {
-                changed = true;
-                intf.setWirelessPassword( password );
+            int maxChannel = 0;
+            for ( Integer i : channels ) { if ( i > maxChannel ) maxChannel = i; }
+
+            intf.setIsWan( false );
+            intf.setConfigType( InterfaceSettings.ConfigType.BRIDGED );
+            intf.setBridgedTo( intfToBridge );
+
+            intf.setWirelessChannel(channels.get(0));
+            intf.setWirelessMode( InterfaceSettings.WirelessMode.AP );
+            // if its a 5Mhz channel just add a 5 on the end
+            if ( maxChannel > 11 ) {
+                intf.setWirelessSsid( ssid + "5" );
+            } else {
+                intf.setWirelessSsid( ssid );
             }
-            if (! encryption.equals( intf.getWirelessEncryption() ) ) {
-                changed = true;
-                intf.setWirelessEncryption( encryption );
-            }
+            intf.setWirelessPassword( password );
+            intf.setWirelessEncryption( encryption );
         }
 
-        if (changed)
-            setNetworkSettings( this.networkSettings, false );
+        setNetworkSettings( this.networkSettings, false );
     }
 
     /**
