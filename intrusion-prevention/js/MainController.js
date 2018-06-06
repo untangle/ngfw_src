@@ -193,20 +193,30 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(Util.isDestroyed(me, vm)){
                 return;
             }
+            var settings = null;
+            try{
+                settings = Ext.decode( result[3].responseText);
+            }catch(error){
+                v.setLoading(false);
+                Util.handleException({
+                    message: 'Intrusion Prevention settings file is corrupt.'.t()
+                });
+                return;
+            }
             vm.set({
                 lastUpdateCheck: (result[0] !== null && result[0].time !== 0 ) ? Renderer.timestamp(result[0]) : "Never".t(),
                 lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
                 companyName: result[2],
-                settings: Ext.decode( result[3].responseText ),
+                settings: settings,
                 wizardDefaults: Ext.decode( result[4].responseText ),
                 profileStoreLoad: true,
                 rulesStoreLoad: true,
                 variablesStoreLoad: true
             });
-
             v.getController().updateStatus();
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+
         }, function (ex) {
             if(!Util.isDestroyed(me, v )){
                 vm.set('panel.saveDisabled', true);
@@ -310,6 +320,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     }
                     v.setLoading(false);
                     Util.successToast('Settings saved...');
+                    v.down('appstate').getController().reload();
                     me.getSettings();
                     Ext.fireEvent('resetfields', v);
                 }, function(result){
