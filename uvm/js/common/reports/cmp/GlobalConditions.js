@@ -5,7 +5,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
     extend: 'Ext.container.Container',
     alias: 'widget.globalconditions',
 
-    context: 'REPORTS', // can be 'REPORTS' or 'DASHBOARD'
+    // context: 'REPORTS', // can be 'REPORTS' or 'DASHBOARD'
 
     viewModel: true,
 
@@ -84,23 +84,43 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     ['not in', 'not in'.t()]
                 ]
             }, '-', {
-                xtype: 'textfield',
-                itemId: 'add_value',
+                xtype: 'container',
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
+                },
                 fieldLabel: '<strong>' + 'Value'.t() + '</strong>',
                 labelAlign: 'top',
                 margin: '5 5',
-                enableKeyEvents: true,
-                disabled: true,
-                bind: {
-                    disabled: '{!rg.value}'
+                defaults: {
+                    disabled: true,
+                    bind: {
+                        disabled: '{!rg.value}'
+                    },
                 },
-                listeners: {
-                    keyup: function (el, e) {
-                        if (e.keyCode === 13) {
+                items: [{
+                    xtype: 'textfield',
+                    itemId: 'add_value',
+                    enableKeyEvents: true,
+                    flex: 1,
+                    listeners: {
+                        keyup: function (el, e) {
+                            if (e.keyCode === 13) {
+                                el.up('menu').hide();
+                            }
+                        }
+                    }
+                }, {
+                    xtype: 'button',
+                    text: 'OK'.t(),
+                    iconCls: 'fa fa-check',
+                    margin: '0 0 0 5',
+                    listeners: {
+                        click: function (el) {
                             el.up('menu').hide();
                         }
                     }
-                }
+                }]
             }, {
                 xtype: 'checkbox',
                 itemId: 'add_fmt',
@@ -276,13 +296,13 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
          * Create new route based on new global conditions, and redirect to the new location
          */
         redirect: function () {
-            var me = this, view = me.getView(), vm = me.getViewModel(),
+            var me = this, vm = me.getViewModel(),
                 newQuery = '', route,
                 conditions = vm.get('query.conditions');
 
             // view.context refers to dashboard or reports in admin servlet
             // app.context refers to admin or reports servlet
-            if (view.context === 'REPORTS') {
+            if (Ung.app.conditionsContext === 'REPORTS') {
                 newQuery = (Ung.app.context === 'REPORTS') ? '' : '#reports';
                 route = vm.get('query.route');
                 if (route.cat) {
@@ -299,7 +319,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 });
             }
 
-            if (view.context === 'DASHBOARD') {
+            if (Ung.app.conditionsContext === 'DASHBOARD') {
                 Ext.Array.each(conditions, function (cond) {
                     newQuery += '#dashboard?' + cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
                 });
@@ -495,7 +515,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t(),
                 action = 'add', cond;
 
-            if (vm.get('disabledConds')[col]) {
+            if (vm.get('disabledConds') && vm.get('disabledConds')[col]) {
                 msg = 'The <strong>' + readableColumn + '</strong> column is already in Global Conditions!<br/> Replace its value?';
                 action = 'replace';
             }
