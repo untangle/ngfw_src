@@ -5,8 +5,8 @@ import json
 import os
 import re
 
-from intrusion_prevention.snort_rule import SnortRule
-from intrusion_prevention.snort_rules import SnortRules
+from intrusion_prevention.snort_signature import SnortSignature
+from intrusion_prevention.snort_signatures import SnortSignatures
 
 class IntrusionPreventionSettings:
     """
@@ -19,17 +19,20 @@ class IntrusionPreventionSettings:
             "classtypes": "recommended",
             "categories": "recommended"
         },
-        "rules": {
+        "signatures": {
             "list": []
         },
         "variables": {
+            "list": []
+        },
+        "rules": {
             "list": []
         },
         "interfaces": {
             "list": []
         },
         "updated": {
-            "rules": {
+            "signatures": {
                 "added" : [],
                 "modified": [],
                 "deleted": []
@@ -43,34 +46,34 @@ class IntrusionPreventionSettings:
         self.app_id = app_id
         self.file_name = "@PREFIX@/usr/share/untangle/settings/intrusion-prevention/settings_" + self.app_id + ".js"
             
-        self.rules = SnortRules(app_id)
+        self.signatures = SnortSignatures(app_id)
         self.settings = {}
 
     def json_load_decoder(self,obj):
-        if "rule" in obj:
-            # Internally we only use a ruleset structure and would otherwise
+        if "signature" in obj:
+            # Internally we only use a signatureset structure and would otherwise
             # keep the json structure in memory, unused.  This is a 
             # huge waste of memory!  By intercepting we can create the
-            # ruleset immediately and incur a much smaller memory footprint(by)
-            # creating the ruleset and returning None.
+            # signatureset immediately and incur a much smaller memory footprint(by)
+            # creating the signatureset and returning None.
             # It's not 100% wonderful since we're retaining an in-memory 
             # list of thousands of None references but there doesn't seem to be
             # a way around that with this hook (we could free it but garbage collecting
             # doesn't seem to happen fast enough to make a difference).  
             # This is better than nothing and can save up to 40% of memory.
-            match_rule = re.search(SnortRule.text_regex, obj["rule"])
-            if match_rule:
+            match_signature = re.search(SnortSignature.text_regex, obj["signature"])
+            if match_signature:
                 if "path" in obj:
                     path = obj["path"]
                 else:
-                    path = "rules"
-                rule = SnortRule(match_rule, obj["category"], path)
-                rule.set_action(obj["log"], obj["block"])
-                rule.set_msg(obj["msg"])
-                rule.set_sid(obj["sid"])
-                self.rules.add_rule(rule)
+                    path = "signatures"
+                signature = SnortSignature(match_signature, obj["category"], path)
+                signature.set_action(obj["log"], obj["block"])
+                signature.set_msg(obj["msg"])
+                signature.set_sid(obj["sid"])
+                self.signatures.add_signature(signature)
             else:
-                print("error with rule:" + obj["rule"])
+                print("error with signature:" + obj["signature"])
             return None
         else:
             return obj
@@ -95,7 +98,7 @@ class IntrusionPreventionSettings:
     def create(self):
         """
         Create a new settings file based on the processed
-        rule set and default variables from snort configuration.
+        signature set and default variables from snort configuration.
         """
         if hasattr( self, 'settings') == False:
             self.settings = IntrusionPreventionSettings.default_settings
@@ -112,28 +115,28 @@ class IntrusionPreventionSettings:
         if file_name == None:
             file_name = self.file_name
             
-        self.settings["rules"] = {
+        self.settings["signatures"] = {
             "list": []
         }
-        for rule in self.rules.get_rules().values():
-            msg = rule.options["msg"]
+        for signature in self.signatures.get_signatures().values():
+            msg = signature.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
-            self.settings["rules"]["list"].append( { 
-                "sid": rule.options["sid"],
-                "log": (rule.enabled == True) and ((rule.action == "alert" or rule.action == "drop")),
-                "block" : (rule.enabled == True)  and ( rule.action == "drop" ),
-                "category": rule.category,
-                "classtype": rule.options["classtype"],
+            self.settings["signatures"]["list"].append( { 
+                "sid": signature.options["sid"],
+                "log": (signature.enabled == True) and ((signature.action == "alert" or signature.action == "drop")),
+                "block" : (signature.enabled == True)  and ( signature.action == "drop" ),
+                "category": signature.category,
+                "classtype": signature.options["classtype"],
                 "msg" : msg,
-                "rule": rule.build(),
-                "path": rule.path
+                "signature": signature.build(),
+                "path": signature.path
             } )
 
         if key != None:
             # Only keep settings with the specified key and deferefenced from list.
             # This is only intended for export functions on a functional grid-level
-            # basis (eg.,"rules" or "variables")
+            # basis (eg.,"signatures" or "variables")
             for settings_key in self.settings.keys():
                 if settings_key == key:
                     self.settings = self.settings[settings_key]["list"]
@@ -152,20 +155,20 @@ class IntrusionPreventionSettings:
         """
         # List deletes first
         for key in patch.settings:
-            if key == "rules":
-                for rule_id in patch.settings[key]:
-                    if patch.settings[key][rule_id]["op"] == "deleted":
-                        self.set_patch_rule(patch.settings[key][rule_id])
+            if key == "signatures":
+                for signature_id in patch.settings[key]:
+                    if patch.settings[key][signature_id]["op"] == "deleted":
+                        self.set_patch_signature(patch.settings[key][signature_id])
             elif key == "variables":
                 for var_id in patch.settings[key]:
                     if patch.settings[key][var_id]["op"] == "deleted":
                         self.set_patch_variable(patch.settings[key][var_id])
 
         for key in patch.settings:
-            if key == "rules":
-                for rule_id in patch.settings[key]:
-                    if patch.settings[key][rule_id]["op"] != "deleted":
-                        self.set_patch_rule(patch.settings[key][rule_id])
+            if key == "signatures":
+                for signature_id in patch.settings[key]:
+                    if patch.settings[key][signature_id]["op"] != "deleted":
+                        self.set_patch_signature(patch.settings[key][signature_id])
             elif key == "variables":
                 for var_id in patch.settings[key]:
                     if patch.settings[key][var_id]["op"] != "deleted":
@@ -179,25 +182,25 @@ class IntrusionPreventionSettings:
                 #
                 self.settings[key] = patch.settings[key] 
 
-    def set_patch_rule(self, rule):
+    def set_patch_signature(self, signature):
         """
-        Rule diff to add, modify, remove
+        Signature diff to add, modify, remove
         """
-        snort_rule = None
-        match_rule = re.search( SnortRule.text_regex, rule["recData"]["rule"] )
-        if match_rule:
-            snort_rule = SnortRule( match_rule, rule["recData"]["category"] )
+        snort_signature = None
+        match_signature = re.search( SnortSignature.text_regex, signature["recData"]["signature"] )
+        if match_signature:
+            snort_signature = SnortSignature( match_signature, signature["recData"]["category"] )
 
-        if snort_rule == None:
+        if snort_signature == None:
             return
 
-        operation = rule["op"] 
+        operation = signature["op"] 
         if operation == "added":
-            self.rules.add_rule( snort_rule )
+            self.signatures.add_signature( snort_signature )
         elif operation == "modified":
-            self.rules.modify_rule( snort_rule )
+            self.signatures.modify_signature( snort_signature )
         elif operation == "deleted":
-            self.rules.delete_rule( snort_rule.rule_id )
+            self.signatures.delete_signature( snort_signature.signature_id )
 
     def set_patch_variable(self, variable):
         """
@@ -223,9 +226,9 @@ class IntrusionPreventionSettings:
 
     def set_patch_active_groups(self, active_groups, defaults_profile=None):
         """
-        Process active rules diff.
+        Process active signatures diff.
         """
-        self.rules.filter_group(active_groups, defaults_profile)
+        self.signatures.filter_group(active_groups, defaults_profile)
 
     def convert(self):
         """
@@ -235,26 +238,26 @@ class IntrusionPreventionSettings:
         for key in IntrusionPreventionSettings.default_settings.keys():
             if not key in settings_keys:
                 self.settings[key] = IntrusionPreventionSettings.default_settings[key]
-        if "active_rules" in self.settings:
-            self.settings["activeGroups"]["classtypes"] = self.settings["active_rules"]["classtypes_group"]
-            self.settings["activeGroups"]["categories"] = self.settings["active_rules"]["categories_group"]
-            if "classtypes" in self.settings["active_rules"]:
-                self.settings["activeGroups"]["classtypesSelected"] = self.settings["active_rules"]["classtypes"]
-            if "categories" in self.settings["active_rules"]:
-                self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_rules"]["categories"]
-            del(self.settings["active_rules"])
+        if "active_signatures" in self.settings:
+            self.settings["activeGroups"]["classtypes"] = self.settings["active_signatures"]["classtypes_group"]
+            self.settings["activeGroups"]["categories"] = self.settings["active_signatures"]["categories_group"]
+            if "classtypes" in self.settings["active_signatures"]:
+                self.settings["activeGroups"]["classtypesSelected"] = self.settings["active_signatures"]["classtypes"]
+            if "categories" in self.settings["active_signatures"]:
+                self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_signatures"]["categories"]
+            del(self.settings["active_signatures"])
 
-    def get_rules(self):
+    def get_signatures(self):
         """
-        Return rules
+        Return signatures
         """
-        return self.rules
+        return self.signatures
 
-    def set_rules(self, rules):
+    def set_signatures(self, signatures):
         """
-        Set rules
+        Set signatures
         """
-        self.rules.set_rules(rules)
+        self.signatures.set_signatures(signatures)
 
     def get_variables(self):
         """
@@ -278,13 +281,13 @@ class IntrusionPreventionSettings:
 
     def get_activegroups_categories(self):
         """
-        Get active rules categories
+        Get active signatures categories
         """
         return self.settings["activeGroups"]["categories"]
     
     def get_activegroups_classtypes(self):
         """
-        Get active rules classtypes
+        Get active signatures classtypes
         """
         return self.settings["activeGroups"]["classtypes"]
 
@@ -296,6 +299,6 @@ class IntrusionPreventionSettings:
 
     def set_updated(self, updated):
         """
-        Set rules
+        Set signatures
         """
         self.settings["updated"] = updated

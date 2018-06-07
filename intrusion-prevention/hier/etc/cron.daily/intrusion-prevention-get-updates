@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Get rule updates
+Get signature updates
 """
 import getopt
 import json
@@ -39,11 +39,11 @@ class Update:
         self.debug = DEBUG
         self.base_directory = base_directory
         self.working_directory = self.base_directory + "/update"
-        self.rules_working_directory = self.working_directory + "/new"
+        self.signatures_working_directory = self.working_directory + "/new"
         self.url = url
-        self.rules_file_name = self.url.split( "/" )[-1].split("?")[0]
-        self.url_file_name = self.working_directory + "/" + self.rules_file_name
-        self.live_rules_file_name = self.base_directory + "/" + self.rules_file_name
+        self.signatures_file_name = self.url.split( "/" )[-1].split("?")[0]
+        self.url_file_name = self.working_directory + "/" + self.signatures_file_name
+        self.live_signatures_file_name = self.base_directory + "/" + self.signatures_file_name
         self.app_ids = []
         self.app_manager = None
 
@@ -92,13 +92,13 @@ class Update:
         Download
         """
         if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] ))
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get signature set" ] ))
 
         ## Get file size to determine if we need to download
-        if os.path.isfile( self.live_rules_file_name  ) == True:
-            live_rules_file_size = os.path.getsize( self.live_rules_file_name )
+        if os.path.isfile( self.live_signatures_file_name  ) == True:
+            live_signatures_file_size = os.path.getsize( self.live_signatures_file_name )
         else:
-            live_rules_file_size = 0
+            live_signatures_file_size = 0
 
         try:
             r = urllib2.Request(self.url)
@@ -121,9 +121,9 @@ class Update:
             })
             return False
 
-        if live_rules_file_size == url_file_size:
+        if live_signatures_file_size == url_file_size:
             if self.debug:
-                print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] ))
+                print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_signatures_file_size ) ] ))
             return False
 
         try:
@@ -173,15 +173,15 @@ class Update:
         Validate
         """
         if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] ))
+            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract signatures" ] ))
             
         try:
             tar = tarfile.open( self.url_file_name )
-            tar.extractall( path = self.rules_working_directory )
+            tar.extractall( path = self.signatures_working_directory )
             tar.close()
         except:
             self.errors.append( {
-                'msg': "Unable to extract downloaded file=" + self.url_file_name + " to rules working directory=" + self.rules_working_directory,
+                'msg': "Unable to extract downloaded file=" + self.url_file_name + " to signatures working directory=" + self.signatures_working_directory,
                 'error': "\n".join( str(v) for v in sys.exc_info() )
             })
             return False
@@ -211,10 +211,10 @@ class Update:
                 return False
             
         try:
-            shutil.copytree( self.rules_working_directory, live_new_directory )
+            shutil.copytree( self.signatures_working_directory, live_new_directory )
         except:
             self.errors.append( {
-                'msg': "Unable to copy tree from working directory " + self.rules_working_directory + " to live directory " + live_new_directory,
+                'msg': "Unable to copy tree from working directory " + self.signatures_working_directory + " to live directory " + live_new_directory,
                 'error': "\n".join( str(v) for v in sys.exc_info() )
             })
             return False
@@ -252,21 +252,21 @@ class Update:
             return False
 
         # move tarball to live
-        if os.path.isfile( self.live_rules_file_name ) == True:
+        if os.path.isfile( self.live_signatures_file_name ) == True:
             try:
-                os.remove( self.live_rules_file_name )
+                os.remove( self.live_signatures_file_name )
             except:
                 self.errors.append( {
-			        'msg': "Cannot remove existing live rules file=" + self.live_rules_file_name,
+			        'msg': "Cannot remove existing live signatures file=" + self.live_signatures_file_name,
 			        'error': "\n".join( str(v) for v in sys.exc_info() )
 		        })
                 return False
         
         try:
-            shutil.copyfile( self.url_file_name, self.live_rules_file_name )
+            shutil.copyfile( self.url_file_name, self.live_signatures_file_name )
         except:
             self.errors.append( {
-                'msg': "Cannot copy new rules file " + self.url_file_name + " to live " + self.live_rules_file_name,
+                'msg': "Cannot copy new signatures file " + self.url_file_name + " to live " + self.live_signatures_file_name,
                 'error': "\n".join( str(v) for v in sys.exc_info() )
             })
             return False
@@ -285,8 +285,8 @@ class Update:
             args = [
                 "@PREFIX@/usr/share/untangle/bin/intrusion-prevention-sync-settings.py",
                 "--app_id", str(app_id),
-                "--previous_rules", "/usr/share/untangle-snort-config/previous",
-                "--rules", "/usr/share/untangle-snort-config/current",
+                "--previous_signatures", "/usr/share/untangle-snort-config/previous",
+                "--signatures", "/usr/share/untangle-snort-config/current",
                 "--settings", temp_settings_file_name,
                 "--status", "/usr/share/untangle-snort-config/last-update.js"
             ]
@@ -316,7 +316,7 @@ def usage():
     """
     print("usage")
     print("help\t\tusage")
-    print("rules_template_directory\t\tSnort rule template directory")
+    print("signatures_template_directory\t\tSnort signature template directory")
         
 def main(argv):
     """
@@ -324,13 +324,13 @@ def main(argv):
     """
     global DEBUG
     global FORCE_SYNC
-    rules_template_directory = "/usr/share/untangle-snort-config"
-    url = "https://ids.untangle.com/snortrules.tar.gz"
+    signatures_template_directory = "/usr/share/untangle-snort-config"
+    url = "https://ids.untangle.com/snortsignatures.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
     force_download = False
 	
     try:
-        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "force_sync", "debug", "force_download"] )
+        opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug", "force_download"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -345,16 +345,16 @@ def main(argv):
             FORCE_SYNC = True
         elif opt in ( "-s", "--force_download"):
             force_download = True
-        elif opt in ( "-r", "--rules_template_directory"):
-            rules_template_directory = arg
+        elif opt in ( "-r", "--signatures_template_directory"):
+            signatures_template_directory = arg
         elif opt in ( "-u", "--url"):
             url = arg
 
     if DEBUG == True:
-        print("rules_template_directory = " + rules_template_directory)
+        print("signatures_template_directory = " + signatures_template_directory)
         print("url = " + url)
 
-    update = Update( rules_template_directory, url )
+    update = Update( signatures_template_directory, url )
     update.setup()
     if FORCE_SYNC is True:
         update.synchronize()
@@ -364,7 +364,7 @@ def main(argv):
 
     """
     Always update last updated time even if nothing was downloaded 
-    (snort rules aren't updated every day)
+    (snort signatures aren't updated every day)
     Otherwise customers will call to complain.
     """
     if os.path.exists(update_ran_file_name):

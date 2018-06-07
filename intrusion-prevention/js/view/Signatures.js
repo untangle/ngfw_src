@@ -1,13 +1,13 @@
-Ext.define('Ung.apps.intrusionprevention.view.Rules', {
+Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     extend: 'Ung.cmp.Grid',
-    alias: 'widget.app-intrusion-prevention-rules',
-    itemId: 'rules',
-    title: 'Rules'.t(),
+    alias: 'widget.app-intrusion-prevention-signatures',
+    itemId: 'signatures',
+    title: 'Signatures'.t(),
     scrollable: true,
 
-    controller: 'unintrusionrulesgrid',
+    controller: 'unintrusionsignaturesgrid',
 
-    name: 'rules',
+    name: 'signatures',
 
     region: 'center',
 
@@ -17,14 +17,14 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     ],
     features: [{
         ftype: 'grouping',
-        groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
+        groupHeaderTpl: '{columnName}: {name} ({rows.length} signature{[values.rows.length > 1 ? "s" : ""]})',
         startCollapsed: true
      }],
 
-    bind: '{rules}',
+    bind: '{signatures}',
 
     listeners: {
-        reconfigure: 'rulesReconfigure'
+        reconfigure: 'signaturesReconfigure'
     },
 
     tbar: ['@add', '->', '@import', '@export'],
@@ -65,11 +65,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     emptyRow: {
         "classtype": "unknown",
         "category": "app-detect",
-        "msg" : "new rule",
+        "msg" : "new signature",
         "sid": "1999999",
         "log": true,
         "block": false,
-        "rule": "alert tcp any any -> any any ( msg:\"new rule\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
+        "signature": "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
     },
 
     columns: [{
@@ -94,7 +94,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         flex:3,
     },{
         header: "Reference".t(),
-        dataIndex: 'rule',
+        dataIndex: 'signature',
         width: Renderer.messageWidth,
         renderer: 'referenceRenderer'
     },{
@@ -183,13 +183,13 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
          }
      },{
         xtype:'textareafield',
-        bind: '{record.rule}',
-        fieldLabel: 'Rule'.t(),
-        emptyText: "[enter rule]".t(),
+        bind: '{record.signature}',
+        fieldLabel: 'Signature'.t(),
+        emptyText: "[enter signature]".t(),
         allowBlank: false,
         height: 100,
         listeners:{
-            change: 'editorRuleChange'
+            change: 'editorSignatureChange'
         }
     }]
 });

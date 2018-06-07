@@ -29,10 +29,10 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizard', {
             html: '<h2>' + "Welcome to the Intrusion Prevention Setup Wizard!".t() + '</h2>'
         },{
             xtype: 'component',
-            html: '<p>' + "Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network.".t() + '</p>'
+            html: '<p>' + "Intrusion Prevention operates using signatures to identify possible threats.  An enabled signature performs an action, either logging or blocking traffic.  Not all signatures are necessary for a given network environment and enabling all of them may negatively impact your network.".t() + '</p>'
         },{
             xtype: 'component',
-            html: '<p>' + "This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network.".t() + '</p>'
+            html: '<p>' + "This wizard is designed to help you correctly configure the appropriate amount of signtures for your network by selecting signature identifiers: classtypes and categories.  The more that you select, the more signatures will be enabled.  Again, too many enabled signatures may negatively impact your network.".t() + '</p>'
         },{
             xtype: 'component',
             html: '<p>' + "It is highly suggested that you use Recommended values.".t() + '</p'
@@ -53,8 +53,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizard', {
             html: '<h2>' + "Classtypes".t() + '</h2>'
         },{
             xtype: 'component',
-            // html: '<h2>' + 'Classtypes are a generalized grouping for rules, such as attempts to gain user access.'.t() + '</h2>'
-            html: '<p>' + 'Classtypes are a generalized grouping for rules, such as attempts to gain user access.'.t() + '</p>'
+            html: '<p>' + 'Classtypes are a generalized grouping for signatures, such as attempts to gain user access.'.t() + '</p>'
         }, {
             xtype: 'radiogroup',
             name: 'classtypes',
@@ -107,7 +106,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizard', {
             html: '<h2>' + "Categories".t() + '</h2>'
         },{
             xtype: 'component',
-            html: '<p>' + 'Categories are a different rule grouping that can span multiple classtypes, such as VOIP access.'.t() + '</p>'
+            html: '<p>' + 'Categories are a different signature grouping that can span multiple classtypes, such as VOIP access.'.t() + '</p>'
         }, {
             xtype: 'radiogroup',
             name: 'categories',

@@ -1,7 +1,7 @@
 {
     "uniqueId": "intrusion-prevention-h36QI9YQ",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions detected grouped by rule.",
+    "description": "The number of intrusions detected grouped by signature.",
     "displayOrder": 201,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Rules (logged)",
+    "title": "Top Signatures (logged)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
