@@ -3,8 +3,7 @@ MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
 
 RUN apt-get update
 RUN apt-get install -y gnupg
-RUN rm /etc/apt/sources.list
 RUN echo "deb http://foo:foo@updates.untangle.com/public/stretch 14.0.0 main non-free" > /etc/apt/sources.list.d/14.0.0.list
 RUN echo "deb http://package-server.untangle.int/public/stretch current main non-free" >> /etc/apt/sources.list.d/current.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 735A9E18E8F62EDF413592460B9D6AE3627BF103
-RUN apt-get update
+
