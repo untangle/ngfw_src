@@ -71,7 +71,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
             name: 'activeVariable',
             hidden: true,
             margin: '5 0 0 10',
-            html: 'Variable is used by one or more rules.'.t(),
+            html: 'Variable is used by one or more signatures.'.t(),
             cls: 'boxlabel'
         }]
     },{

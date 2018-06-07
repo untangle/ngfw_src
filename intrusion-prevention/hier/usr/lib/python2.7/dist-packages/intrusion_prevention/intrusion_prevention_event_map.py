@@ -12,37 +12,37 @@ class IntrusionPreventionEventMap:
     #
     file_name = "/etc/snort/intrusion-prevention.event.map.conf"
     
-    def __init__(self, rules):
+    def __init__(self, signatures):
         self.settings = {}
-        self.rules = rules
+        self.signatures = signatures
         self.create()
 
     def create(self):
         """
         Create a new settings file based on the processed
-        rule set and default variables from snort configuration.
+        signature set and default variables from snort configuration.
         """
         self.settings = { 
             "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap",
-            "rules": {
+            "signatures": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
             }
         }
         
-        for rule in self.rules.get_rules().values():
-            if rule.options["sid"] == "":
+        for signature in self.signatures.get_signatures().values():
+            if signature.options["sid"] == "":
                 continue
-            msg = rule.options["msg"]
+            msg = signature.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
-            self.settings["rules"]["list"].append( { 
-                "javaClass" : "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule",
-                "sid": int(rule.options["sid"]),
-                "gid": int(rule.options["gid"]),
-                "category": rule.category,
+            self.settings["signatures"]["list"].append( { 
+                "javaClass" : "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature",
+                "sid": int(signature.options["sid"]),
+                "gid": int(signature.options["gid"]),
+                "category": signature.category,
                 "msg": msg,
-                "classtype": rule.options["classtype"],
+                "classtype": signature.options["classtype"],
             } )
         
     def save(self):

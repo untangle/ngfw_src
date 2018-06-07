@@ -1,22 +1,22 @@
 """
-Snort rule
+Snort signature
 """
 import re
 
-class SnortRule:
+class SnortSignature:
     """
-    Process rule from the snort format.
+    Process signature from the snort format.
     """
     text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
     var_regex = re.compile(r'^\$(.+)')
 
     options_key_regexes = {}
     
-    # For the very rare circumstances where we need to override a rule's enabled value.
+    # For the very rare circumstances where we need to override a signature's enabled value.
     # Currently being used for Snort version 2.9.2.2 compiled for Jessie.
-    # Once we have a newer version and confirm the rule no longer has a problem,
-    # remove this particular rule.
-    rule_enabled_overrides = [{
+    # Once we have a newer version and confirm the signature no longer has a problem,
+    # remove this particular signature.
+    signature_enabled_overrides = [{
         "sid": "403",
         "gid": "116",
         "enabled": False
@@ -62,19 +62,19 @@ class SnortRule:
                         in_quote = True
                     self.options[key] = value.strip()
 
-        self.rule_id = self.options["sid"] + "_" + self.options["gid"] 
+        self.signature_id = self.options["sid"] + "_" + self.options["gid"] 
             
     def dump(self):
         """
-        print(snort rule)
+        print(snort signature)
         """
-        print("rule dump")
+        print("signature dump")
         for prop, value in vars(self).iteritems():
             print(prop, ": ", value)
 
     def set_action(self, log, block):
         """
-        Set rule action based on log, block
+        Set signature action based on log, block
         """
         if log == True and block == True:
             self.action = "drop"
@@ -146,13 +146,13 @@ class SnortRule:
         Get enabled
         """
         enabled = self.enabled
-        if len(SnortRule.rule_enabled_overrides):
-            for override in SnortRule.rule_enabled_overrides:
+        if len(SnortSignature.signature_enabled_overrides):
+            for override in SnortSignature.signature_enabled_overrides:
                 match = True
-                for rule_key in override.keys():
-                    if rule_key == "enabled":
+                for signature_key in override.keys():
+                    if signature_key == "enabled":
                         continue
-                    if override[rule_key] != self.options[rule_key]:
+                    if override[signature_key] != self.options[signature_key]:
                         match = False
                         break
                 if match:
@@ -189,9 +189,9 @@ class SnortRule:
             metadata = ",".join(fields)
         self.set_options("metadata", metadata)
 
-    def match(self, classtypes, categories, rule_ids):
+    def match(self, classtypes, categories, signature_ids):
         """
-        See if the specified filtering match this rule appropriately.
+        See if the specified filtering match this signature appropriately.
         If an item is prefixed by a "+" or just named, then match.
         If an item is prefixed with a "-", then don't match.
         """
@@ -209,14 +209,14 @@ class SnortRule:
         else:
             category_match = False
 
-        if "+" + self.rule_id in rule_ids or self.rule_id in rule_ids:
-            rule_id_match = True
-        elif "+" + self.rule_id in rule_ids:
+        if "+" + self.signature_id in signature_ids or self.signature_id in signature_ids:
+            signature_id_match = True
+        elif "+" + self.signature_id in signature_ids:
             return False
         else:
-            rule_id_match = False
+            signature_id_match = False
 
-        return classtype_match or category_match or rule_id_match
+        return classtype_match or category_match or signature_id_match
     
     def build(self):
         """
@@ -257,7 +257,7 @@ class SnortRule:
         for prop, value in vars(self).iteritems():
             if isinstance( value, str ) == False:
                 continue
-            match_variable = re.search( SnortRule.var_regex, value )
+            match_variable = re.search( SnortSignature.var_regex, value )
             if match_variable:
                 if variables.count( match_variable.group( 1 ) ) == 0:
                     variables.append( match_variable.group( 1 ) )
@@ -272,7 +272,7 @@ class SnortRule:
                 key, value = option.split( ':', 1 )
                 key = key.strip()
                 value = value.strip()
-                match_variable = re.search( SnortRule.var_regex, value )
+                match_variable = re.search( SnortSignature.var_regex, value )
                 if match_variable:
                     if variables.count( match_variable.group( 1 ) ) == 0:
                         variables.append( match_variable.group( 1 ) )

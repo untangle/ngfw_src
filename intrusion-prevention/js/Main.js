@@ -8,8 +8,8 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             settings: {}
         },
         stores: {
-            rules: {
-                storeId: 'rulesStore',
+            signatures: {
+                storeId: 'signaturesStore',
                 fields: [{
                     name: 'sid',
                     sortType: 'asInt'
@@ -20,7 +20,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 },{
                     name: 'msg'
                 },{
-                    name: 'rule'
+                    name: 'signature'
                 },{
                     name: 'path'
                 },{
@@ -30,7 +30,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     name: 'block',
                     type: 'boolean'
                 }],
-                data: '{settings.rules.list}',
+                data: '{settings.signatures.list}',
                 groupField: 'classtype',
                 sorters: [{
                     property: 'sid',
@@ -63,7 +63,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
 
     items: [
         { xtype: 'app-intrusion-prevention-status' },
-        { xtype: 'app-intrusion-prevention-rules' },
+        { xtype: 'app-intrusion-prevention-signatures' },
         { xtype: 'app-intrusion-prevention-variables' }
     ]
 

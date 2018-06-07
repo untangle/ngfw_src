@@ -3,8 +3,8 @@ IntrusionPrevention modules
 """
 from intrusion_prevention.snort_conf import SnortConf
 from intrusion_prevention.snort_debian_conf import SnortDebianConf
-from intrusion_prevention.snort_rule import SnortRule
-from intrusion_prevention.snort_rules import SnortRules
+from intrusion_prevention.snort_signature import SnortSignature
+from intrusion_prevention.snort_signatures import SnortSignatures
 from intrusion_prevention.intrusion_prevention_defaults import IntrusionPreventionDefaults
 from intrusion_prevention.intrusion_prevention_event_map import IntrusionPreventionEventMap
 from intrusion_prevention.intrusion_prevention_settings import IntrusionPreventionSettings
