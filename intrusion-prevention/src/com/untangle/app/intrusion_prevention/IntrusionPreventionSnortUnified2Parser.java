@@ -21,7 +21,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap;
-import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule;
+import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature;
 
 /**
  * Process snort's unified2 log for inclusion in Untangle event log.
@@ -438,11 +438,11 @@ public class IntrusionPreventionSnortUnified2Parser
             pos += IDS_EVENTV2_PADDING_SIZE;
         }
 
-        IntrusionPreventionEventMapRule mapRule = ipsEventMap.getRuleBySignatureAndGeneratorId( ipsEvent.getSignatureId(), ipsEvent.getGeneratorId() );
-        if( mapRule != null ){
-            ipsEvent.setMsg( mapRule.getMsg() );
-            ipsEvent.setClasstype( mapRule.getClasstype() );
-            ipsEvent.setCategory( mapRule.getCategory() );
+        IntrusionPreventionEventMapSignature mapSignature = ipsEventMap.getSignatureBySignatureAndGeneratorId( ipsEvent.getSignatureId(), ipsEvent.getGeneratorId() );
+        if( mapSignature != null ){
+            ipsEvent.setMsg( mapSignature.getMsg() );
+            ipsEvent.setClasstype( mapSignature.getClasstype() );
+            ipsEvent.setCategory( mapSignature.getCategory() );
         }
 
         return ipsEvent;

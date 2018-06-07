@@ -14,7 +14,7 @@ class SnortConf:
     comment_regex = re.compile(r'^#\s*(.*)')
     var_regex = re.compile(r'^(ipvar|portvar|var)\s+([^\s+]+)\s+([^\s+]+)')
     include_regex = re.compile(r'^(\#|)\s*include\s+([^\s]+)')
-    include_rulepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
+    include_signaturepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
     output_regex = re.compile(r'^output\s+([^:]+)')
     preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
     preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
@@ -114,7 +114,7 @@ class SnortConf:
                         saved[match_var.group(2)] = True
                         
         for include in self.includes:
-            # after last rule path
+            # after last signature path
             if saved[include["file_name"]] == False:
                 prefix = "include "
                 if include["enabled"] == False:
@@ -160,7 +160,7 @@ class SnortConf:
         Pull default snort variable names, values, and descriptions.
         Used to build up the default settings variable list.
         
-        Based on analysis of downloaded rules, they only reference variables 
+        Based on analysis of downloaded signatures, they only reference variables 
         defined in the snort.conf template so that's why we are interested in
         them (and not modifying them!)
         """

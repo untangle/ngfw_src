@@ -1,6 +1,6 @@
 #!/bin/dash
 
-if [ "$1" = "rules" ] ; then
+if [ "$1" = "signatures" ] ; then
     @PREFIX@/usr/share/untangle/bin/ut-get-last-update /usr/share/untangle-snort-config/
 else
     @PREFIX@/usr/share/untangle/bin/ut-get-last-update /tmp/intrusion-prevention-update.ran

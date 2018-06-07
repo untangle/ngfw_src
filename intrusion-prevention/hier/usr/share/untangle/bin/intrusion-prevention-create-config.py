@@ -10,7 +10,7 @@ import re
 
 from netaddr import IPNetwork
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 	
@@ -76,11 +76,11 @@ def main(argv):
 
     snort_conf = intrusion_prevention.SnortConf( _debug=_debug )
    
-    rules = settings.get_rules()
-    rules.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
-    rules.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )
+    signatures = settings.get_signatures()
+    signatures.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
+    signatures.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )
     
-    intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap( rules )
+    intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap( signatures )
     intrusion_prevention_event_map.save()
 	
     # Override snort configuration variables with settings variables
@@ -98,11 +98,11 @@ def main(argv):
         interfaces = default_interfaces
 
     for include in snort_conf.get_includes():
-        match_include_rule = re.search( intrusion_prevention.SnortConf.include_rulepath_regex, include["file_name"] )
-        if match_include_rule:
+        match_include_signature = re.search( intrusion_prevention.SnortConf.include_signaturepath_regex, include["file_name"] )
+        if match_include_signature:
             snort_conf.set_include( include["file_name"], False )
-    snort_conf.set_include( "$RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
-    snort_conf.set_include( "$PREPROC_RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
+    snort_conf.set_include( "$RULE_PATH/" + os.path.basename( signatures.get_file_name() ) )
+    snort_conf.set_include( "$PREPROC_RULE_PATH/" + os.path.basename( signatures.get_file_name() ) )
 			
     snort_conf.save()
 	

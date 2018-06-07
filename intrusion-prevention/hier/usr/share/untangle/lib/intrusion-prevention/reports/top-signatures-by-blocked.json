@@ -1,7 +1,7 @@
 {
     "uniqueId": "intrusion-prevention-56KUY1Et",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions blocked by rule.",
+    "description": "The number of intrusions blocked by signature.",
     "displayOrder": 202,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -18,7 +18,7 @@
     }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Rules (blocked)",
+    "title": "Top Signatures (blocked)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

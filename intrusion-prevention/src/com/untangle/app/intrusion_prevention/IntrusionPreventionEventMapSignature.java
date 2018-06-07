@@ -1,15 +1,15 @@
 /**
- * $Id: IpsRule.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id: IpsSignature.java 35079 2013-06-19 22:15:28Z dmorris $
  */
 package com.untangle.app.intrusion_prevention;
 
 import java.io.Serializable;
 
 /**
- * IntrusionPrevention rule information for event logging
+ * IntrusionPrevention signature information for event logging
  */
 @SuppressWarnings("serial")
-public class IntrusionPreventionEventMapRule implements Serializable
+public class IntrusionPreventionEventMapSignature implements Serializable
 {
 
     private Long id;
@@ -22,7 +22,7 @@ public class IntrusionPreventionEventMapRule implements Serializable
     /**
      * Initialize object with empty valus.
      */
-    public IntrusionPreventionEventMapRule() {}
+    public IntrusionPreventionEventMapSignature() {}
 
     /**
      * Initialize object with specified attributes.
@@ -38,7 +38,7 @@ public class IntrusionPreventionEventMapRule implements Serializable
      * @param msg
      *  Signature message.
      */
-    public IntrusionPreventionEventMapRule(Long sid, Long gid, String category, String classtype, String msg )
+    public IntrusionPreventionEventMapSignature(Long sid, Long gid, String category, String classtype, String msg )
     {
         this.sid = sid;
         this.gid = gid;

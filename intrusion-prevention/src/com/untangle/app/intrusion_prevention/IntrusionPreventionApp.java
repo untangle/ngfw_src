@@ -146,7 +146,7 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Post IPS stop.  Shut down snort.  Run IPS rules to remove.
+     * Post IPS stop.  Shut down snort.  Run iptables rules to remove.
      *
      * @param isPermanentTransition
      */
@@ -186,7 +186,7 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Post  IPS start. Start IPS rules.
+     * Post  IPS start. Start iptables rules.
      *
      * @param isPermanentTransition
      */
@@ -251,7 +251,7 @@ public class IntrusionPreventionApp extends AppBase
     public Date getLastUpdate()
     {
         try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " rules");
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );
@@ -349,7 +349,7 @@ public class IntrusionPreventionApp extends AppBase
 
         if ( result.getResult() != 0 ) {
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to manage rules");
+            throw new RuntimeException("Failed to manage iptables rules");
         }
     }
 
@@ -403,7 +403,7 @@ public class IntrusionPreventionApp extends AppBase
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-sync-settings.py" + 
             " --app_id " + appId +
-            " --rules /usr/share/untangle-snort-config/current" +
+            " --signatures /usr/share/untangle-snort-config/current" +
             " --settings " + tempFileName
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -601,7 +601,7 @@ public class IntrusionPreventionApp extends AppBase
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
                         " --app_id " + appId +
-                        " --rules /usr/share/untangle-snort-config/current" +
+                        " --signatures /usr/share/untangle-snort-config/current" +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName
                     );
@@ -666,7 +666,7 @@ public class IntrusionPreventionApp extends AppBase
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
                         " --app_id " + appId +
-                        " --rules /usr/share/untangle-snort-config/current" +
+                        " --signatures /usr/share/untangle-snort-config/current" +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName + 
                         " --export"
