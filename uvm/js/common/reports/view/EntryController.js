@@ -560,24 +560,40 @@ Ext.define('Ung.view.reports.EntryController', {
         Ext.MessageBox.hide();
     },
 
-    editEntry: function () {
-        var me = this, vm = me.getViewModel(),
-            eEntry = vm.get('entry').copy(null),
-            conditions = eEntry.get('conditions'), newConditions = [];
+    editEntry: function (newEntry) {
+        var me = this, vm = me.getViewModel(), eEntry, conditions, newConditions = [];
 
-        // NGFW-11484 - clone conditions objects to avoid issues when creating new reports
-        if (Ext.isArray(conditions)) {
-            Ext.Array.each(conditions, function (cond) {
-                newConditions.push(Ext.clone(cond));
-            });
+        if (newEntry === true) { // important true check
+            // if it's a new report start with a blank entry
+            eEntry = Ext.create('Ung.model.Report');
+            eEntry.set('conditions', null);
+            me.reset(); // reset graph
+        } else {
+            // otherwise edit existing one
+            eEntry = vm.get('entry').copy(null);
+            conditions = eEntry.get('conditions');
+
+            // NGFW-11484 - clone conditions objects to avoid issues when creating new reports
+            if (Ext.isArray(conditions)) {
+                Ext.Array.each(conditions, function (cond) {
+                    newConditions.push(Ext.clone(cond));
+                });
+            }
+            eEntry.set('conditions', newConditions.length > 0 ? newConditions : null);
         }
-        eEntry.set('conditions', newConditions.length > 0 ? newConditions : null);
+
         vm.set('eEntry', eEntry);
         vm.notify();
     },
 
     cancelEdit: function () {
         var me = this, vm = me.getViewModel();
+
+        if (!vm.get('entry')) {
+            // when canceling from creating a brand new report
+            me.getView().up('#cards').setActiveItem('category');
+        }
+
         vm.set('eEntry', null);
         vm.set('validForm', true);
         vm.notify();
