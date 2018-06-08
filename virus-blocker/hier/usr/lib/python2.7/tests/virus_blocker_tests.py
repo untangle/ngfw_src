@@ -85,7 +85,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
-        while (md5SmallVirus != md5TestNum) and (counter > 0):
+        while (md5SmallVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_230_httpVirusBlocked_file")
             result = remote_control.run_command("wget -q -O /tmp/temp_230_httpVirusBlocked_file http://test.untangle.com/test/UntangleVirus.exe")
@@ -99,7 +99,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
-        while (md5SmallVirus != md5TestNum) and (counter > 0):
+        while (md5LargeVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_240_httpVirusBlocked_file")
             result = remote_control.run_command("wget -q -O /tmp/temp_240_httpVirusBlocked_file http://test.untangle.com/test/UntangleLargeVirus.exe")
@@ -116,7 +116,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
-        while (md5SmallVirus != md5TestNum) and (counter > 0):
+        while (md5SmallVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_250_ftpVirusBlocked_file")
             result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleVirus.exe")
@@ -133,7 +133,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
-        while (md5SmallVirus != md5TestNum) and (counter > 0):
+        while (md5LargeVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_260_ftpVirusBlocked_file")
             result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleLargeVirus.exe")
