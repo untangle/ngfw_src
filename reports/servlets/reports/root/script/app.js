@@ -168,6 +168,7 @@ Ext.define('Ung.Application', {
     defaultToken : '',
     mainView: 'Ung.view.Main',
     context: 'REPORTS',
+    conditionsContext: 'REPORTS',
     initialLoad: false,
     launch: function () {
         var me = this;

@@ -1498,7 +1498,7 @@ class Shell(Screen):
         self.window.clear()
         self.window.refresh()
         with suspend_curses():
-            subprocess.call("/bin/bash")
+            sys.exit(0)
         return
 
 class Login(Screen):
@@ -1598,6 +1598,7 @@ class UiApp(object):
                 "text": "Reset To Factory Defaults",
                 "class": FactoryDefaults
             },{
+                "text": "Exit to Shell",
                 "class": Shell,
                 "key": '#'
             }]
@@ -1666,6 +1667,8 @@ if __name__ == "__main__":
     while True:
         try:
             main( sys.argv[1:] )
+        except SystemExit:
+            break
         except:
             handle_exceptions(sys.exc_info()[2])
             pass

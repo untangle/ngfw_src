@@ -739,10 +739,10 @@ Ext.define('Ung.Setup.InterfacesController', {
                 }
             });
 
-            if (interfaces.length !== store.getCount()) {
-                Ext.MessageBox.alert('New interfaces'.t(), 'There are new interfaces, please restart the wizard.', '');
-                return;
-            }
+            // if (interfaces.length !== store.getCount()) {
+            //     Ext.MessageBox.alert('New interfaces'.t(), 'There are new interfaces, please restart the wizard.', '');
+            //     return;
+            // }
 
             rpc.networkManager.getDeviceStatus(function (result2, ex2) {
                 if (ex) { Util.handleException(ex); return; }
