@@ -2345,9 +2345,9 @@ public class NetworkManagerImpl implements NetworkManager
 
         int i = 0;
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            i++;
             if (!intf.getIsWirelessInterface())
                 continue;
+            i++;
 
             List<Integer> channels = getWirelessChannels( intf.getSystemDev() );
             if ( channels == null ) {
