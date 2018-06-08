@@ -2342,10 +2342,12 @@ public class NetworkManagerImpl implements NetworkManager
         int intfToBridge = 1;
         if ( findInterfaceId(2) != null )
             intfToBridge = 2;
-        
+
+        int i = 0;
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
             if (!intf.getIsWirelessInterface())
                 continue;
+            i++;
 
             List<Integer> channels = getWirelessChannels( intf.getSystemDev() );
             if ( channels == null ) {
@@ -2353,17 +2355,16 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             }
             int maxChannel = 0;
-            for ( Integer i : channels ) { if ( i > maxChannel ) maxChannel = i; }
+            for ( Integer ch : channels ) { if ( ch > maxChannel ) maxChannel = ch; }
 
             intf.setIsWan( false );
             intf.setConfigType( InterfaceSettings.ConfigType.BRIDGED );
             intf.setBridgedTo( intfToBridge );
 
-            intf.setWirelessChannel(channels.get(0));
+            intf.setWirelessChannel(maxChannel);
             intf.setWirelessMode( InterfaceSettings.WirelessMode.AP );
-            // if its a 5Mhz channel just add a 5 on the end
-            if ( maxChannel > 11 ) {
-                intf.setWirelessSsid( ssid + "5" );
+            if ( i > 1 ) {
+                intf.setWirelessSsid( ssid + "-" + i );
             } else {
                 intf.setWirelessSsid( ssid );
             }

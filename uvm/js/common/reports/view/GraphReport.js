@@ -256,7 +256,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         lineWidth: 2
                     },
                     pie: {
-                        allowPointSelect: true,
+                        allowPointSelect: false,
                         cursor: 'pointer',
                         center: ['50%', '50%'],
                         showInLegend: true,
@@ -279,6 +279,12 @@ Ext.define('Ung.view.reports.GraphReport', {
                                     return this.point.name.substring(0, 25) + '...';
                                 }
                                 return this.point.name + ' (' + this.point.percentage.toFixed(2) + '%)';
+                            }
+                        },
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
                             }
                         }
                     },
@@ -861,13 +867,19 @@ Ext.define('Ung.view.reports.GraphReport', {
                 }
             };
 
-            console.log(settings);
-
             Highcharts.merge(true, settings, isWidget ? Theme[Ung.dashboardSettings.theme] : Theme.DEFAULT);
             me.chart.update(settings, true);
 
             // force redraw for column charts, NGFW-11349
             if (isPieColumn) { me.chart.redraw(); }
+        },
+
+        onPointClick: function (event) {
+            var me = this, vm = me.getViewModel(),
+                column = vm.get('entry.pieGroupColumn'),
+                value = event.point.name;
+
+            Ext.fireEvent('addglobalcondition', column, value);
         }
     }
 });
