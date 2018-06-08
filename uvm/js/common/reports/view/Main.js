@@ -164,7 +164,7 @@ Ext.define('Ung.view.reports.Main', {
                         items: [{
                             text: 'Create New'.t(),
                             iconCls: 'fa fa-plus fa-lg',
-                            handler: 'newReport', // not working yet
+                            handler: 'newReport'
                         }, {
                             text: 'Import'.t(),
                             iconCls: 'fa fa-download',

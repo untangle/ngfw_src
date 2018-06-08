@@ -267,9 +267,14 @@ Ext.define('Ung.view.reports.MainController', {
         vm.set('stats', stats);
     },
 
-    // on new report just redirect to proper route
+    // get the entry controller and edit a new blank entry
     newReport: function () {
-        Ung.app.redirectTo('#reports/create');
+        var me = this, entryCtrl = me.getView().down('entry').getController();
+        if (entryCtrl) {
+            entryCtrl.editEntry(true); // true = new report entry
+            // activate the report card if not yet activated
+            me.lookup('cards').setActiveItem('report');
+        }
     },
 
     // show import dialog on import
