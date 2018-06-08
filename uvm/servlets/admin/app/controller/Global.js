@@ -180,10 +180,12 @@ Ext.define('Ung.controller.Global', {
         if (hash === '' || Ext.String.startsWith(hash, '#') || Ext.String.startsWith(hash, '#dashboard')) {
             view = 'dashboardMain';
             viewModel = this.getDashboardView().getViewModel();
+            Ung.app.conditionsContext = 'DASHBOARD';
         }
         if (Ext.String.startsWith(hash, '#reports')) {
             view = 'reports';
             viewModel = this.getReportsView().getViewModel();
+            Ung.app.conditionsContext = 'REPORTS';
         }
 
         if (query) {
