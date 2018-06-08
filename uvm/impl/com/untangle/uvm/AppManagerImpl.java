@@ -81,16 +81,34 @@ public class AppManagerImpl implements AppManager
             return;
         }
 
+        AppSettings.AppState originalState = null;
+
         for ( AppSettings appSettings : this.settings.getApps() ) {
             if ( appSettings.getId() == app.getAppSettings().getId() ) {
                 if ( appState != appSettings.getTargetState() ) {
+                    originalState = appSettings.getTargetState();
                     appSettings.setTargetState(appState);
+                    break;
                 } else {
                     logger.info("ignore saveTargetState(): already in state " + appState);
                 }
             }
         }
-        this._setSettings(this.settings);
+
+        try {
+            this._setSettings(this.settings);
+        } catch (Exception e) {
+            //roll back changes
+            if (originalState != null) {
+                for ( AppSettings appSettings : this.settings.getApps() ) {
+                    if ( appSettings.getId() == app.getAppSettings().getId() ) {
+                        appSettings.setTargetState(originalState);
+                        break;
+                    }
+                }
+            }
+            throw e;
+        }
     }
 
     public List<App> appInstances()
