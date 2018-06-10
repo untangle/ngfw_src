@@ -115,8 +115,6 @@ public class InterfaceSettings implements Serializable, JSONString
     private WirelessMode wirelessMode = WirelessMode.AP;
     private String wirelessPassword = null;
     private Integer wirelessChannel = null;
-    public static enum WirelessRadioMode { W80211B, W80211BG, W80211BGN }; 
-    private WirelessRadioMode wirelessRadioMode = null;
     
     public InterfaceSettings() { }
 
@@ -321,9 +319,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer getWirelessChannel( ) { return this.wirelessChannel; }
     public void setWirelessChannel( Integer newValue ) { this.wirelessChannel = newValue; }
 
-    public WirelessRadioMode getWirelessRadioMode( ) { return this.wirelessRadioMode; }
-    public void setWirelessRadioMode( WirelessRadioMode newValue ) { this.wirelessRadioMode = newValue; }
-    
     public static class InterfaceAlias
     {
         private InetAddress staticAddress; /* the address  of this interface if configured static, or dhcp override */ 
