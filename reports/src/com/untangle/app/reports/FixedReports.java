@@ -51,9 +51,7 @@ public class FixedReports
 
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/reports/templates/reports.html";
     public static final int DEFAULT_BROWSER_WIDTH = 800;
-    public static final int DEFAULT_BROWSER_HEIGHT = 800;
-    // public static final int MOBILE_BROWSER_WIDTH = 250;
-    // public static final int MOBILE_BROWSER_HEIGHT = 250;
+    public static final int DEFAULT_BROWSER_HEIGHT = 400;
     public static final int MOBILE_BROWSER_WIDTH = 350;
     public static final int MOBILE_BROWSER_HEIGHT = 350;
 
