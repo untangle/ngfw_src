@@ -512,7 +512,7 @@ class ReportsTests(unittest2.TestCase):
         2) Generate a report
         3) Verify that the emailed report contains a section for each app
         """
-        global app,apps_list
+        global app,apps_list,apps_name_list
         if (not can_relay):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
         if remote_control.quickTestsOnly:
