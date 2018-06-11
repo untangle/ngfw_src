@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.SystemSettings;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
@@ -56,6 +58,7 @@ public class IpsecVpnApp extends AppBase
     private final PipelineConnector[] connectors = new PipelineConnector[0];
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
+    private final IpsecVpnHookCallback ipsecVpnHookCallback;
     protected static ExecManager execManager = null;
 
     private enum MatchMode
@@ -65,6 +68,8 @@ public class IpsecVpnApp extends AppBase
 
     protected IpsecVpnSettings settings;
     protected Timer timer;
+
+    private String activeCertificate = UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate();
 
     /**
      * Initializes the IPsec application by creating blingers and fixing low
@@ -80,6 +85,8 @@ public class IpsecVpnApp extends AppBase
         super(appSettings, appProperties);
 
         logger.debug("IpsecVpnApp()");
+
+        this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
 
         this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
         this.addMetric(new AppMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
@@ -333,6 +340,8 @@ public class IpsecVpnApp extends AppBase
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
+
         UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
 
@@ -366,6 +375,8 @@ public class IpsecVpnApp extends AppBase
         logger.debug("preStop()");
 
         super.preStop(isPermanentTransition);
+
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
 
         timer.cancel();
 
@@ -413,7 +424,7 @@ public class IpsecVpnApp extends AppBase
     private synchronized void reconfigure()
     {
         logger.debug("reconfigure()");
-        manager.generateConfig(this.settings);
+        manager.generateConfig(this.settings,activeCertificate);
         updateBlingers();
 
         ExecManagerResult result;
@@ -823,5 +834,74 @@ public class IpsecVpnApp extends AppBase
         FileWriter fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
         fileWriter.write(buffer.toString());
         fileWriter.close();
+    }
+
+    /**
+     * Callback hook for changes to UVM settings so we know when the
+     * certificate assigned to IPsec has been changed.
+     *
+     * @author mahotz
+     *
+     */
+    private class IpsecVpnHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsecvpn-uvm-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            SystemSettings systemSettings = null;
+
+            Object o = args[0];
+            if (!(o instanceof String)) {
+                logger.warn("Invalid UVM settings filename: " + o);
+                return;
+            }
+
+            String fileName = (String) o;
+
+            // we're only interested in changes to the system settings 
+            if (!fileName.contains("system.js")) return;
+
+            // load the updated system settings from the argumented file
+            try {
+                SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+                systemSettings = settingsManager.load(SystemSettings.class, fileName);
+            } catch (Exception exn) {
+                logger.warn("Unable to read system settings from " + fileName, exn);
+                return;
+            }
+
+            // if we didn't get the settings just return
+            if (systemSettings == null) {
+                logger.warn("Invalid system settings file " + fileName);
+                return;
+            }
+
+            // get the IPsec certificate from the settings
+            String adminCertificate = systemSettings.getIpsecCertificate();
+
+            // if the IPsec certificate hasn't changed just return
+            if (activeCertificate.equals(adminCertificate)) return;
+
+            // certificate has changed so save the new one and reconfigure
+            logger.info("Reconfiguring due to certificate change from " + activeCertificate + " to " + adminCertificate);
+            activeCertificate = adminCertificate;
+            reconfigure();
+        }
     }
 }
