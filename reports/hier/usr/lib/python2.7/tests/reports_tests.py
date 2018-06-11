@@ -29,8 +29,10 @@ from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 
 default_policy_id = 1
-apps_list = ["firewall", "web-filter", "virus-blocker", "spam-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]
-apps_name_list = ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']
+apps_list_short = ["firewall", "web-filter", "spam-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]
+apps_name_list_short = ['Daily','Firewall','Web Filter','Spam Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']
+apps_list = ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn"]
+apps_name_list = ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN']
 app = None
 web_app = None
 can_relay = None
@@ -510,7 +512,7 @@ class ReportsTests(unittest2.TestCase):
         2) Generate a report
         3) Verify that the emailed report contains a section for each app
         """
-        global app
+        global app,apps_list
         if (not can_relay):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
         if remote_control.quickTestsOnly:
@@ -531,6 +533,12 @@ class ReportsTests(unittest2.TestCase):
         app.setSettings(settings)
         
         # install all the apps that aren't already installed
+        system_stats = uvmContext.metricManager().getStats()
+        # print system_stats
+        system_memory = system_stats['systemStats']['MemTotal']
+        if (int(system_memory) < 2200000000):   # don't use high memory apps in devices with 2G or less.
+            apps_list = apps_list_short
+            apps_name_list = apps_name_list_short
         apps = []
         for name in apps_list:
             if (uvmContext.appManager().isInstantiated(name)):
