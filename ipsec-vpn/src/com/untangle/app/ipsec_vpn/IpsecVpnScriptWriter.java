@@ -103,8 +103,8 @@ public class IpsecVpnScriptWriter
             script.write("${IPTABLES} -t nat -I l2tp-forward-rules -p udp -d " + calculator.getFirstIP() + " --destination-port 53 -j REDIRECT --to-ports 53 -m comment --comment \"Send L2TP udp to dnsmasq\"" + RET + RET);
 
             script.write("# This special rule blocks L2TP udp traffic on 1701 without IPsec" + RET);
-            script.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1701 -m policy --dir in --pol none -j DROP -m comment --comment \"drop L2TP without IPsec\" >/dev/null 2>&1" + RET);
-            script.write("${IPTABLES} -t filter -I filter-rules-input -p udp --dport 1701 -m policy --dir in --pol none -j DROP -m comment --comment \"drop L2TP without IPsec\"" + RET);
+            script.write("${IPTABLES} -t filter -D access-rules -p udp --dport 1701 -m policy --dir in --pol none -j DROP -m comment --comment \"drop L2TP without IPsec\" >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t filter -I access-rules -p udp --dport 1701 -m policy --dir in --pol none -j DROP -m comment --comment \"drop L2TP without IPsec\"" + RET);
         }
 
         script.close();
