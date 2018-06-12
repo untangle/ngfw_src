@@ -67,7 +67,8 @@ public class BrandingManagerImpl implements BrandingManager
         /**
          * If there is an Branding name specified - use it instead
          */
-        String brandingUrl = this.getBrandingManager().getCompanyUrl();
+        BrandingManager bm = this.getBrandingManager();
+        String brandingUrl = (bm != null) ? bm.getCompanyUrl() : "";
         if (brandingUrl != null)
             ret = brandingUrl;
             
@@ -77,19 +78,22 @@ public class BrandingManagerImpl implements BrandingManager
     @Override
     public String getContactName()
     {
-        return this.getBrandingManager().getContactName();
+        BrandingManager bm = this.getBrandingManager();
+        return (bm != null) ? bm.getContactName() : "";
     }
 
     @Override
     public String getContactEmail()
     {
-        return this.getBrandingManager().getContactEmail();
+        BrandingManager bm = this.getBrandingManager();
+        return (bm != null) ? bm.getContactEmail() : "";
     }
 
     @Override
     public String getContactHtml()
     {
-        return this.getBrandingManager().getContactHtml();
+        BrandingManager bm = this.getBrandingManager();
+        return (bm != null) ? bm.getContactHtml() : "";
     }
     
     private BrandingManager getBrandingManager()
