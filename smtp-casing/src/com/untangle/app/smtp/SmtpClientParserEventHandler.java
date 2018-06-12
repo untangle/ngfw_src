@@ -41,17 +41,28 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     private enum SmtpClientState { COMMAND, BODY, HEADERS };
 
+    /**
+     * SMTP parser event handler session state.
+     */
     private class SmtpClientParserEventHandlerSessionState
     {
         protected SmtpClientState currentState = SmtpClientState.COMMAND;
         protected ScannerAndAccumulator sac;
     }
 
+    /**
+     * Initialize instance of SmtpClientParserEventHandler.
+     * @return instance of SmtpClientParserEventHandler
+     */
     public SmtpClientParserEventHandler()
     {
         super();
     }
 
+    /**
+     * Process new TCP session.
+     * @param session AppTCPSession to handle.
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
@@ -62,6 +73,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         session.attach( SHARED_STATE_KEY, clientSideSharedState );
     }
 
+    /**
+     * Process chunk of data in TCP session from client.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer to process into.
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -77,6 +93,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         parse( session, data, false, false );
     }
 
+    /**
+     * Process chunk of data in TCP session from server.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer to process into.
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -93,6 +114,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * Process object TCP session from client.
+     * @param session AppTcpSession to handle.
+     * @param obj     Object to initialize from session.
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -108,6 +134,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
     
+    /**
+     * Process object TCP session from server.
+     * @param session AppTcpSession to handle.
+     * @param obj     Object to initialize from session.
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -122,13 +153,23 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
-    
+
+    /**
+     * Process end of TCP session from client.
+     * @param session AppTcpSession to handle.
+     * @param data    Data to process from session.
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, false, true);
     }
 
+    /**
+     * Process end of TCP session from server.
+     * @param session AppTcpSession to handle.
+     * @param data    Data to process from session.
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -138,12 +179,20 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Shutdown TCP client.
+     * @param session AppTcpSession to shut down.
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
         session.shutdownServer();
     }
 
+    /**
+     * Shutdown TCP server.
+     * @param session AppTcpSession to shut down.
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -151,6 +200,10 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received unexpected event.");
     }
 
+    /**
+     * Process TCP sessionin finalized state.
+     * @param session AppTcpSession to shut down.
+     */
     @Override
     public void handleTCPFinalized( AppTCPSession session )
     {
@@ -163,6 +216,13 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Handle AppTcpSession.
+     * @param session AppTCPSession to handle.
+     * @param data    Data to parse.
+     * @param s2c     If true, server to client.  Client to server otherwise.
+     * @param last    If true, last part of session.
+     */
     private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
@@ -192,6 +252,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Perform parsing of session.
+     * @param session AppTCPSession to process.
+     * @param buf     ByteBuffer to process.
+     */
     @SuppressWarnings("fallthrough")
     protected void doParse( AppTCPSession session, ByteBuffer buf )
     {
@@ -464,6 +529,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * Parse session.
+     * @param session AppTCPSession to parse.
+     * @param buf     ByteBuffer to parse.
+     */
     public void parse( AppTCPSession session, ByteBuffer buf )
     {
         try {
@@ -481,6 +551,11 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle end of session.
+     * @param session AppTcpSession to parse.
+     * @param buf     ByteBuffer to parse.
+     */
     public final void parseEnd( AppTCPSession session, ByteBuffer buf )
     {
         if ( buf.hasRemaining() ) {
@@ -492,6 +567,8 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     /**
      * Is the casing currently in passthru mode
+     * @param session AppTCPSession to check.
+     * @return true if passthru, otherwise false.
      */
     protected boolean isPassthru( AppTCPSession session )
     {
@@ -502,7 +579,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     /**
      * Called by the unparser to declare that we are now in passthru mode. This is called either because of a parsing
      * error by the caller, or the reciept of a passthru token.
-     * 
+     * @param session AppTCPSession to set.
      */
     protected void declarePassthru( AppTCPSession session)
     {
@@ -512,6 +589,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     /**
      * Callback if TLS starts
+     * @param session AppTCPSession to set.
      */
     private void tlsStarting( AppTCPSession session )
     {
@@ -521,6 +599,9 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     /**
      * Helper which compacts (and possibly expands) the buffer if anything remains. Otherwise, just returns null.
+     * @param buf ByteBuffer to compact,
+     * @param maxSz Maximum size to compact
+     * @return ByteBuffer of compacted.
      */
     protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf, int maxSz)
     {
@@ -548,12 +629,22 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         private AppTCPSession session;
         private ScannerAndAccumulator targetSAC;
 
+        /**
+         * Initialize DATAResponseCallback from session.
+         * @param  session AppTcpSession to use.
+         * @param  sac     ScannerAndAccumulator to use.
+         * @return         Instance of DATAResponseCallback
+         */
         public DATAResponseCallback( AppTCPSession session, ScannerAndAccumulator sac)
         {
             this.session = session;
             this.targetSAC = sac;
         }
 
+        /**
+         * Handle response.
+         * @param code SMTP code to process.
+         */
         public void response(int code)
         {
             SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
@@ -581,11 +672,20 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     {
         private AppTCPSession session;
 
+        /**
+         * Initialize TLSResponseCallback.
+         * @param  session AppTCPSession to use.
+         * @return         Instance of TLSResponseCallback.
+         */
         protected TLSResponseCallback( AppTCPSession session )
         {
             this.session = session;
         }
 
+        /**
+         * Handle response.
+         * @param code SMTP code to process.
+         */
         public void response( int code )
         {
             if (code < 300) {
@@ -606,12 +706,22 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         private AppTCPSession session;
         private String offendingCommand;
 
+        /**
+         * Initialize CommandParseErrorResponseCallback
+         * @param session AppTCPSession to use.
+         * @param bufWithOffendingLine ByteBuffer with offending line.
+         * @return Instance of CommandParseErrorResponseCallback.
+         */
         CommandParseErrorResponseCallback( AppTCPSession session, ByteBuffer bufWithOffendingLine )
         {
             this.session = session;
             offendingCommand = AsciiUtil.bbToString(bufWithOffendingLine);
         }
 
+        /**
+         * Handle SMTP response.
+         * @param code SMTP code to process.
+         */
         public void response(int code)
         {
             if (code < 300) {
@@ -628,7 +738,8 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     /**
      * Open the MIMEAccumulator and Scanner (ScannerAndAccumulator). If there was an error, the ScannerAndAccumulator is
      * not set as a data member and any files/streams are cleaned-up.
-     * 
+     *
+     * @param session AppTCPSession to process.
      * @return false if there was an error creating the file.
      */
     private boolean openSAC( AppTCPSession session )
@@ -644,6 +755,13 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Add recipients ot header
+     * @param  rcpts         Array of recipient addresses.
+     * @param  ret           SmtpMessageEvent to process.
+     * @param  recipientType AddressKind of recipients.
+     * @return               true of has recipient.
+     */
     private boolean addRecipientsFromHeader(String[] rcpts, SmtpMessageEvent ret, AddressKind recipientType)
     {
         boolean hasRecipient = false;
@@ -666,6 +784,9 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     
     /**
      * Helper method to break-out the creation of a SmtpMessageEvent
+     * @param session AppTCPSession to handle.
+     * @param headers InternetHeaders to handle.
+     * @return SmtpMessageEvent.
      */
     private SmtpMessageEvent createSmtpMessageEvent( AppTCPSession session, InternetHeaders headers )
     {
@@ -731,6 +852,9 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     /**
      * This code was moved-out of the "parse" method as it was repeated a few times.
+     * @param session AppTCPSession to handle.
+     * @param toks List of Token to handle.
+     * @param buf ByteBuffer to handle. 
      */
     private void puntDuringHeaders( AppTCPSession session, List<Token> toks, ByteBuffer buf )
     {
@@ -764,17 +888,28 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         final MIMEAccumulator accumulator;
         private boolean isMasterOfAccumulator = true;
 
+        /**
+         * Initialize ScannerAndAccumulator
+         * @param accumulator MIMEAccumulator to handle.
+         */
         ScannerAndAccumulator(MIMEAccumulator accumulator)
         {
             scanner = new MessageBoundaryScanner();
             this.accumulator = accumulator;
         }
 
+        /**
+         * Determine if this is a master of accumulator.
+         * @return true of master of accumulator.  False of not.
+         */
         boolean isMasterOfAccumulator()
         {
             return isMasterOfAccumulator;
         }
 
+        /**
+         * Disable accumlator master.
+         */
         void noLongerAccumulatorMaster()
         {
             isMasterOfAccumulator = false;
