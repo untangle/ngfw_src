@@ -906,7 +906,7 @@ public abstract class AppSessionImpl implements AppSession
                 logger.error("Illegal State: read(" + sideName + ") in: " + in +
                              " ourout: " + ourout +
                              " writequeue: " + writeQueue[1-side] +
-                             " empty:" + ( ourout == null ? null : ourout.isEmpty() ) );
+                             " empty:" + ourout.isEmpty() );
             }
 
             refreshSocketQueueState();
