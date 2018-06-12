@@ -258,9 +258,10 @@ class SmtpSASLObserver
     }
 
     /**
-     * Return of true means "this line is too damm long".
-     * 
      * This method consumes the buffer
+     * @param buf ByteBuffer to append to.
+     * @param sb StringBulder to add to buffer.
+     * @return true means "this line is too damm long", otherwise ok.
      */
     private boolean append(ByteBuffer buf, StringBuilder sb)
     {
@@ -273,18 +274,31 @@ class SmtpSASLObserver
         return false;
     }
 
+    /**
+     * Determine if this is known to be secured.
+     * @return true if secured, otherwise false.
+     */
     private boolean isKnownSecured()
     {
         return m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.YES
                 || m_observer.exchangeUsingIntegrity() == SASLObserver.FeatureStatus.YES;
     }
 
+    /**
+     * Determine if this is known to be nonsecured.
+     * @return true if nonsecured, otherwise false.
+     */
     private boolean isKnownClear()
     {
         return m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.NO
                 && m_observer.exchangeUsingIntegrity() == SASLObserver.FeatureStatus.NO;
     }
 
+    /**
+     * Decode string to a byte.
+     * @param  s String to decode.
+     * @return   decoded byte.
+     */
     private byte[] base64Decode(String s)
     {
         if (s == null) {

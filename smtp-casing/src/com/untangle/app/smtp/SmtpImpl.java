@@ -29,6 +29,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 
+/**
+ * SMTP app implementation.
+ */
 public class SmtpImpl extends AppBase implements MailExport
 {
     private static final long ONE_GB = (1024L * 1024L * 1024L);
@@ -55,6 +58,12 @@ public class SmtpImpl extends AppBase implements MailExport
 
     // constructors -----------------------------------------------------------
 
+    /**
+     * Initialzie SmtpImpl.
+     * @param  appSettings   Application settings.
+     * @param  appProperties Application properties.
+     * @return               Instance of SmtpImpl.
+     */
     public SmtpImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
@@ -64,6 +73,9 @@ public class SmtpImpl extends AppBase implements MailExport
         MailExportFactory.factory().registerExport(this);
     }
 
+    /**
+     * Create quarantine and SafelistManager instances.
+     */
     private static synchronized void createSingletonsIfRequired()
     {
         if ( quarantine == null) {
@@ -74,6 +86,10 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
 
+    /**
+     * Create quarantine web instance.
+     * @param logger Logger to use.
+     */
     private static synchronized void deployWebAppIfRequired( Logger logger )
     {
         if ( ! deployedWebApp ) {
@@ -86,6 +102,10 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
 
+    /**
+     * Remove quarantine web instance.
+     * @param logger Logger to use.
+     */
     private static synchronized void unDeployWebAppIfRequired( Logger logger )
     {
         if ( deployedWebApp ) {
@@ -98,6 +118,9 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
 
+    /**
+     * Set default SMTP settings.
+     */
     private void initializeSmtpSettings()
     {
         SmtpSettings ns = new SmtpSettings();
@@ -123,11 +146,19 @@ public class SmtpImpl extends AppBase implements MailExport
 
     // SmtpApp methods --------------------------------------------------------
 
+    /**
+     * Return current SMTP settings.
+     * @return SmtpSettings of current SMTP settings.
+     */
     public SmtpSettings getSmtpSettings()
     {
         return settings;
     }
 
+    /**
+     * Set SMTP settings.
+     * @param newSettings New SmtpSettings to use.
+     */
     public void setSmtpSettings(final SmtpSettings newSettings)
     {
         String appID = this.getAppSettings().getId().toString();
@@ -148,6 +179,10 @@ public class SmtpImpl extends AppBase implements MailExport
         SmtpImpl.safelistMangr.setSettings(this, settings);
     }
 
+    /**
+     * Set SMTP settings withou safelists.
+     * @param settings New SmtpSettings to use.
+     */
     public void setSmtpSettingsWithoutSafelists(final SmtpSettings settings)
     {
         // if the settings object being passed does not have a valid secret
@@ -160,32 +195,56 @@ public class SmtpImpl extends AppBase implements MailExport
         setSmtpSettings(settings);
     }
 
+    /**
+     * Return quarantine instance.
+     * @return QuarantineUserView instance.
+     */
     public QuarantineUserView getQuarantineUserView()
     {
         return SmtpImpl.quarantine;
     }
 
+    /**
+     * Return quarantine maintenance instance.
+     * @return QuarantineMaintenenceView instance.
+     */
     public QuarantineMaintenenceView getQuarantineMaintenenceView()
     {
         return SmtpImpl.quarantine;
     }
 
+    /**
+     * Return SafelistManipulation instance.
+     * @return SafelistManipulation instance.
+     */
     public SafelistManipulation getSafelistManipulation()
     {
         return SmtpImpl.safelistMangr;
     }
 
+    /**
+     * Return SafelistAdminView instance.
+     * @return SafelistAdminView instance.
+     */
     public SafelistAdminView getSafelistAdminView()
     {
         return SmtpImpl.safelistMangr;
     }
 
+    /**
+     * Send quarantine digests.
+     */
     public void sendQuarantineDigests()
     {
         if ( SmtpImpl.quarantine != null )
             SmtpImpl.quarantine.sendQuarantineDigests();
     }
 
+    /**
+     * Return minimum allocated store size (1 GB).
+     * @param  inGB if true, compare in GB, otherwise in bytes.
+     * @return      Size in GB.
+     */
     public long getMinAllocatedStoreSize(boolean inGB)
     {
         if (false == inGB) {
@@ -194,7 +253,11 @@ public class SmtpImpl extends AppBase implements MailExport
         return ONE_GB / ONE_GB;
     }
 
-    // max is arbitrarily set to 30 GB
+    /**
+     * Return maximum allocated store size (30 GB).
+     * @param  inGB if true, compare in GB, otherwise in bytes.
+     * @return      Size in GB.
+     */
     public long getMaxAllocatedStoreSize(boolean inGB)
     {
         if (false == inGB) {
@@ -203,6 +266,11 @@ public class SmtpImpl extends AppBase implements MailExport
         return 30 * (ONE_GB / ONE_GB);
     }
 
+    /**
+     * Initialize authentication token for an account.
+     * @param  account Account to create token for.
+     * @return         String of token.
+     */
     public String createAuthToken(String account)
     {
         return SmtpImpl.quarantine.createAuthToken(account);
@@ -210,21 +278,36 @@ public class SmtpImpl extends AppBase implements MailExport
 
     // MailExport methods -----------------------------------------------------
 
+    /**
+     * Return SMTP settings.
+     * @return SmtpSettings.
+     */
     public SmtpSettings getExportSettings()
     {
         return getSmtpSettings();
     }
 
+    /**
+     * Return QuarantineAppView.
+     * @return QuarantineAppView instance.
+     */
     public QuarantineAppView getQuarantineAppView()
     {
         return SmtpImpl.quarantine;
     }
 
+    /**
+     * Return SafelistAppView.
+     * @return SafelistAppView instance.
+     */
     public SafelistAppView getSafelistAppView()
     {
         return SmtpImpl.safelistMangr;
     }
 
+    /**
+     * Reconfigure SMTP.
+     */
     private void reconfigure()
     {
         if ( settings != null ) {
@@ -235,6 +318,12 @@ public class SmtpImpl extends AppBase implements MailExport
 
     // App methods -----------------------------------------------------------
 
+    /**
+     * Handle app predestroy.
+     *
+     * * Remove web app
+     * * Close quarantine.
+     */
     @Override
     protected void preDestroy()
     {
@@ -247,6 +336,9 @@ public class SmtpImpl extends AppBase implements MailExport
         SmtpImpl.quarantine.close();
     }
 
+    /**
+     * Post app initialization routines.
+     */
     protected void postInit()
     {
         String appID = this.getAppSettings().getId().toString();
@@ -294,22 +386,39 @@ public class SmtpImpl extends AppBase implements MailExport
         SmtpImpl.quarantine.open();
     }
 
+    /**
+     * Get the pineliene connector.
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Return smtp settings.
+     * @return Smtp Settings object.
+     */
     public Object getSettings()
     {
         return getSmtpSettings();
     }
 
+    /**
+     * Write smtp settings.
+     * @param settings Object of SMTP settings.
+     */
     public void setSettings(Object settings)
     {
         setSmtpSettings((SmtpSettings) settings);
     }
 
+    /**
+     * Run SMTP app tests.
+     * @return Result of tests.
+     */
     public String runTests()
     {
         try {
@@ -319,6 +428,10 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
     
+    /**
+     * Get tests to run.
+     * @return List of test names.
+     */
     public List<String> getTests()
     {
         try {
@@ -328,6 +441,11 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
     
+    /**
+     * Get tests to run from a path.
+     * @param path String of path to use.
+     * @return List of test names.
+     */
     @SuppressWarnings({"unchecked","rawtypes"})
     public List<String> getTests(String path)
     {
@@ -360,6 +478,11 @@ public class SmtpImpl extends AppBase implements MailExport
         return result;
     }
 
+    /**
+     * Run tests from a path.
+     * @param path String of path to use.
+     * @return Result of tests.
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String runTests(String path)
     {
