@@ -154,21 +154,29 @@ public class BackupManagerImpl implements BackupManager
             resp.setHeader("Content-Disposition", "attachment; filename=" + createBackupFileName());
 
             // Send to client
+            FileInputStream fis = null;
             try {
                 byte[] buffer = new byte[1024];
                 int read;
-                FileInputStream fis = new FileInputStream(backupFile);
+                fis = new FileInputStream(backupFile);
                 OutputStream out = resp.getOutputStream();
                 
                 while ( ( read = fis.read( buffer ) ) > 0 ) {
                     out.write( buffer, 0, read);
                 }
 
-                fis.close();
                 out.flush();
                 out.close();
             } catch (Exception e) {
                 logger.warn("Failed to write backup data",e);
+            }finally{
+                try{
+                    if(fis != null){
+                        fis.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
 
             backupFile.delete();
