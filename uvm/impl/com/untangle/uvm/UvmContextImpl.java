@@ -255,7 +255,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.oemManager;
     }
 
-    public NotificationManager notificationManager()
+    public NotificationManagerImpl notificationManager()
     {
         return this.notificationManager;
     }
