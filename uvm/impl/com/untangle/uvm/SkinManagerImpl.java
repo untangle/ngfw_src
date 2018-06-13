@@ -155,25 +155,40 @@ public class SkinManagerImpl implements SkinManager
                     int bufferSize = 2048;
                     byte data[] = new byte[bufferSize];
                     // write the files to the disk
-                    FileOutputStream fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
-                    dest = new BufferedOutputStream(fos, bufferSize);
-                    while ((count = zis.read(data, 0, bufferSize)) != -1) {
-                        dest.write(data, 0, count);
-                    }
-                    dest.flush();
-                    dest.close();
-                    if (entry.getName().contains("skinInfo.json")) {
-                        String skinInfoFile = SKINS_DIR + File.separator + entry.getName();
-                        SkinInfo skinInfoTmp = null;
-                        try {
-                            skinInfoTmp = UvmContextFactory.context().settingsManager().load( SkinInfo.class, skinInfoFile );
-                        } catch (SettingsManager.SettingsException e) {
-                            logger.warn("Failed to load skin:",e);
+                    FileOutputStream fos = null;
+                    try{
+                        fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
+                        dest = new BufferedOutputStream(fos, bufferSize);
+                        while ((count = zis.read(data, 0, bufferSize)) != -1) {
+                            dest.write(data, 0, count);
                         }
-                        if ( skinInfoTmp == null || skinInfoTmp.isAdminSkinOutOfDate() ) {
-                            logger.error("Upload Skin Failed, Out of Date");
-                            throw new UvmException("Upload Skin Failed, Out of Date");
+                        dest.flush();
+                        if (entry.getName().contains("skinInfo.json")) {
+                            String skinInfoFile = SKINS_DIR + File.separator + entry.getName();
+                            SkinInfo skinInfoTmp = null;
+                            try {
+                                skinInfoTmp = UvmContextFactory.context().settingsManager().load( SkinInfo.class, skinInfoFile );
+                            } catch (SettingsManager.SettingsException e) {
+                                logger.warn("Failed to load skin:",e);
+                            }
+                            if ( skinInfoTmp == null || skinInfoTmp.isAdminSkinOutOfDate() ) {
+                                logger.error("Upload Skin Failed, Out of Date");
+                                throw new UvmException("Upload Skin Failed, Out of Date");
+                            }
                         }
+                    } catch (Exception e) {
+                        logger.warn("Failed to copy skins",e);
+                    }finally{
+                        try{
+                            if(fos != null){
+                                fos.close();
+                            }
+                            if(dest != null){
+                                dest.close();
+                            }
+                        }catch(IOException ex){
+                            logger.error("Unable to close file", ex);
+                        }            
                     }
                 }
             }
