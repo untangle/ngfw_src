@@ -3,6 +3,9 @@
  */
 package com.untangle.app.smtp;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +16,7 @@ import com.untangle.app.smtp.safelist.SafelistSettings;
  * Mail casing settings.
  */
 @SuppressWarnings("serial")
-public class SmtpSettings implements Serializable
+public class SmtpSettings implements Serializable, JSONString
 {
     private boolean smtpEnabled = true;
 
@@ -27,6 +30,10 @@ public class SmtpSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
+    /**
+     * Initialize instance of SmtpSettings.
+     * @return Instance of SmtpSettings.
+     */
     public SmtpSettings() {
     }
 
@@ -64,6 +71,7 @@ public class SmtpSettings implements Serializable
 
     /**
      * Quarantine properties associated with this casing.
+     * @return quarantineSettings
      */
     public QuarantineSettings getQuarantineSettings()
     {
@@ -92,5 +100,17 @@ public class SmtpSettings implements Serializable
         this.safelistSettings = new LinkedList<SafelistSettings>(safelistSettings);
 
         return;
+    }
+
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }
