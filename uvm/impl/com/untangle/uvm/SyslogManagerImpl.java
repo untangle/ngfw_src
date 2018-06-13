@@ -87,12 +87,15 @@ public class SyslogManagerImpl
             } catch (IOException ex) {
                 logger.error("Unable to write file", ex);
                 return;
-            }
-            try {
-                out.close();
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-                return;
+            }finally{
+                try {
+                    if(out != null){
+                        out.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                    return;
+                }
             }
         } else {
             // Remove rsyslog conf
