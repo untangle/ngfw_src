@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Formatter;
+import java.util.FormatterClosedException;
 import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Local Directory stores a local list of users
@@ -263,9 +265,10 @@ public class LocalDirectoryImpl implements LocalDirectory
             return;
         String chapFile = "/etc/ppp/chap-secrets";
 
+        FileWriter chap = null;
         try {
             // append all the username/password pairs to chap-secrets file
-            FileWriter chap = new FileWriter(chapFile, true);
+            chap = new FileWriter(chapFile, true);
 
             for (LocalDirectoryUser user : list) {
                 if (user.getUsername() == null || user.getPasswordBase64Hash() == null)
@@ -280,10 +283,14 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             chap.flush();
             chap.close();
-        }
-
-        catch (Exception exn) {
+        }catch (Exception exn) {
             logger.error("Exception creating L2TP chap-secrets file", exn);
+        }finally{
+            try{
+                chap.close();
+            }catch(IOException ex){
+                logger.error("Exception closing L2TP chap-secrets file", ex);
+            }
         }
     }
 
@@ -297,9 +304,10 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         String authFile = "/etc/xauth.secrets";
 
+        FileWriter auth = null;
         try {
             // put all the username/password pairs into a file for IPsec Xauth and IKEv2
-            FileWriter auth = new FileWriter(authFile, false);
+            auth = new FileWriter(authFile, false);
 
             auth.write(FILE_DISCLAIMER);
 
@@ -317,10 +325,14 @@ public class LocalDirectoryImpl implements LocalDirectory
              * Tell IPsec to reload the secrets
              */
             UvmContextFactory.context().execManager().exec(IPSEC_RELOAD_SECRETS);
-        }
-
-        catch (Exception exn) {
+        }catch (Exception exn) {
             logger.error("Exception creating IPsec xauth.secrets file", exn);
+        }finally{
+            try{
+                auth.close();
+            }catch(IOException ex){
+                logger.error("Exception closing IPsec xauth.secrets file", ex);
+            }
         }
     }
 
@@ -376,14 +388,25 @@ public class LocalDirectoryImpl implements LocalDirectory
         // of the xauth.secrets file. This has the added benefit that the
         // plaintext passwords aren't directly visible in the file.
         StringBuilder secbuff = new StringBuilder();
-        Formatter secform = new Formatter(secbuff);
-        int val = 0;
+        Formatter secform = null;
+        try{
+            secform = new Formatter(secbuff);
+            int val = 0;
 
-        for (int l = 0; l < source.length(); l++) {
-            // get the char as an integer and mask the sign bit
-            // so we get character values between 0 and 255
-            val = (source.charAt(l) & 0xff);
-            secform.format("%02X", val);
+            for (int l = 0; l < source.length(); l++) {
+                // get the char as an integer and mask the sign bit
+                // so we get character values between 0 and 255
+                val = (source.charAt(l) & 0xff);
+                secform.format("%02X", val);
+            }
+        }catch(Exception e){
+            logger.warn("Unable to access formatter", e);
+        }finally{
+            try{
+                secform.close();
+            }catch(FormatterClosedException ex){
+                logger.error("Unable to close formatter", ex);
+            }
         }
 
         return (secbuff.toString());
