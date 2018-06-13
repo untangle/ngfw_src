@@ -24,12 +24,23 @@ public class FtpReply implements Token
     public final static int PASV = 227;
     public final static int EPSV = 229;
 
+    /**
+     * Create an FtpReply Token
+     * @param replyCode
+     * @param message
+     */
     public FtpReply(int replyCode, String message)
     {
         this.replyCode = replyCode;
         this.message = message;
     }
 
+    /**
+     * Make an FtpReply
+     * @param replyCode
+     * @param message
+     * @return the FtpReply
+     */
     public static FtpReply makeReply(int replyCode, String message)
     {
         String[] lines = LINE_SPLITTER.split(message);
@@ -49,6 +60,11 @@ public class FtpReply implements Token
         return new FtpReply(replyCode, sb.toString());
     }
 
+    /**
+     * make a PASV FtpReply for the specified socketAddress
+     * @param socketAddress
+     * @return FtpReply
+     */
     public static FtpReply pasvReply(InetSocketAddress socketAddress)
     {
         String msg = "Entering Passive Mode ("
@@ -57,6 +73,10 @@ public class FtpReply implements Token
         return makeReply(PASV, msg);
     }
 
+    /**
+     * getSocketAddress for this FtpReply (If PASV or EPSV)
+     * @return the socket address for PASV or EPSV or null
+     */
     public InetSocketAddress getSocketAddress()
     {
         switch(replyCode) {
@@ -80,11 +100,19 @@ public class FtpReply implements Token
         }
     }
 
+    /**
+     * getReplyCode for this FtpReply
+     * @return the reply code
+     */
     public int getReplyCode()
     {
         return replyCode;
     }
 
+    /**
+     * getMessage for this FtpReply
+     * @return the message
+     */
     public String getMessage()
     {
         return message;
@@ -92,7 +120,6 @@ public class FtpReply implements Token
 
     /**
      * Includes final CRLF.
-     *
      * @return the ftp reply in a ByteBuffer.
      */
     public ByteBuffer getBytes()
@@ -100,6 +127,10 @@ public class FtpReply implements Token
         return ByteBuffer.wrap(message.getBytes());
     }
 
+    /**
+     * the ascii string equivalent of this FtpReply
+     * @return the ascii string
+     */
     public String toString()
     {
         return AsciiCharBuffer.wrap(getBytes()).toString();
