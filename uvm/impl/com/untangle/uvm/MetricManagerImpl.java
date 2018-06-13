@@ -43,7 +43,7 @@ public class MetricManagerImpl implements MetricManager
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
-    private static final long FREQUENCY = 10*1000; /* 10 seconds */
+    private static final long FREQUENCY = (long) 10*1000; /* 10 seconds */
     
     private final Pulse updatePulse = new Pulse("system-stat-collector", new SystemStatCollector(), FREQUENCY);
 
@@ -292,8 +292,9 @@ public class MetricManagerImpl implements MetricManager
         if (dir.isDirectory()) {
             for (File f : dir.listFiles()) {
                 try {
-                    Integer.parseInt(f.getName());
-                    numProcs++;
+                    if(Integer.parseInt(f.getName()) > -1){
+                        numProcs++;
+                    }
                 } catch (NumberFormatException exn) { }
             }
         }
