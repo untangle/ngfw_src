@@ -60,9 +60,21 @@ public class ExecManagerImpl implements ExecManager
     {
         if (in != null || out != null || proc != null)
             logger.debug("Shutting down ut-exec-launcher...");
-        try { in.close(); } catch (Exception ex) { }
-        try { out.close(); } catch (Exception ex) { }
-        try { proc.destroy(); } catch (Exception ex) { }
+        try {
+            if( in != null ){
+                in.close();
+            }
+        } catch (Exception ex) { }
+        try {
+            if(out != null){
+                out.close();
+            }
+        } catch (Exception ex) { }
+        try {
+            if(proc != null){
+                proc.destroy();
+            }
+        } catch (Exception ex) { }
         in = null;
         out = null;
         proc = null;
@@ -89,12 +101,11 @@ public class ExecManagerImpl implements ExecManager
             ExecManagerResult result = (ExecManagerResult) serializer.fromJSON(line);
             long t1 = System.currentTimeMillis();
 
-            logger.log( this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1-t0) + " ms.");
-
             if (result == null) {
                 logger.warn("Failed to serialize ExecManagerResult");
                 return new ExecManagerResult(-1,"");
             }
+            logger.log( this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1-t0) + " ms.");
             
             return result;
         } catch (IOException exn) {
