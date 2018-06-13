@@ -33,6 +33,10 @@ public class WrappedMessageGenerator
     private String templateLanguage = "";
     private TemplateTranslator templateTranslator;
 
+    /**
+     * Initialize instance of WrappedMessageGenerator.
+     * @return Instance of WrappedMessageGenerator
+     */
     public WrappedMessageGenerator() {
         this(null, null, null);
     }
@@ -44,6 +48,8 @@ public class WrappedMessageGenerator
      *            the subject template
      * @param bodyTemplate
      *            the bodyTemplate
+     * @param templateTranslator Template translator to use.
+     * @return Instance of WrappedMessageGenerator
      */
     public WrappedMessageGenerator(String subjectTemplate, String bodyTemplate, TemplateTranslator templateTranslator) {
         setSubject(subjectTemplate);
@@ -145,6 +151,10 @@ public class WrappedMessageGenerator
         }
     }
 
+    /**
+     * Get subject
+     * @return String of subject.
+     */
     public String getSubject()
     {
         return m_subjectTemplate == null ? null : m_subjectTemplate.getTemplate();
@@ -168,6 +178,10 @@ public class WrappedMessageGenerator
         }
     }
 
+    /**
+     * Get message body.
+     * @return String of message body.
+     */
     public String getBody()
     {
         return m_bodyTemplate == null ? null : m_bodyTemplate.getTemplate();
@@ -193,6 +207,7 @@ public class WrappedMessageGenerator
 
     /**
      * For subclasses to access the internal body Template Object (or null if not set).
+     * @return Template of message body template.
      */
     protected Template getBodyTemplate()
     {
@@ -201,6 +216,7 @@ public class WrappedMessageGenerator
 
     /**
      * For subclasses to access the internal subject Template Object (or null if not set).
+     * @return Template of message subject template.
      */
     protected Template getSubjectTemplate()
     {
