@@ -71,13 +71,13 @@ public class IpsecVpnManager
      * @param settings
      *        The application settings to be used
      */
-    public void generateConfig(IpsecVpnSettings settings)
+    public void generateConfig(IpsecVpnSettings settings,String ipsecCertFile)
     {
         logger.debug("generateConfig()");
 
         // generate all of the network scripts
         try {
-            writeConfigFiles(settings);
+            writeConfigFiles(settings,ipsecCertFile);
             scriptWriter.write_IPSEC_script(settings);
             scriptWriter.write_XAUTH_script(settings);
             scriptWriter.write_GRE_script(settings);
@@ -117,12 +117,12 @@ public class IpsecVpnManager
      *        The application settings to be used
      * @throws Exception
      */
-    private void writeConfigFiles(IpsecVpnSettings settings) throws Exception
+    private void writeConfigFiles(IpsecVpnSettings settings,String ipsecCertFile) throws Exception
     {
         logger.debug("writeConfigFiles()");
 
-        String ipsecCrtFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
-        String ipsecKeyFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.key");
+        String ipsecCrtFile = CertificateManager.CERT_STORE_PATH + ipsecCertFile.replaceAll("\\.pem", "\\.crt");
+        String ipsecKeyFile = CertificateManager.CERT_STORE_PATH + ipsecCertFile.replaceAll("\\.pem", "\\.key");
         String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
 

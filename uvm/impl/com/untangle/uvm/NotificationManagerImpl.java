@@ -49,6 +49,7 @@ public class NotificationManagerImpl implements NotificationManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private I18nUtil i18nUtil;
+    private boolean timezoneChanged = false;
 
     private ExecManager execManager = null;
 
@@ -59,6 +60,15 @@ public class NotificationManagerImpl implements NotificationManager
     {
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         this.i18nUtil = new I18nUtil(i18nMap);
+    }
+
+    /**
+     * Update the timezone Changed flag
+     * @param newValue - the new flag value
+     */
+    protected void setTimezoneChanged(boolean newValue)
+    {
+        this.timezoneChanged = newValue;
     }
 
     /**
@@ -90,6 +100,7 @@ public class NotificationManagerImpl implements NotificationManager
         try { testShieldEnabled(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testRoutesToReachableAddresses(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
         try { testLicenseCompliance(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testTimezoneChanged(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
 
         /**
          * Disabled Tests
@@ -889,6 +900,15 @@ public class NotificationManagerImpl implements NotificationManager
             notificationList.add(notificationText);
         }
      }
-        
 
+    /**
+     * Test that the licenses are correctly sized
+     */
+    private void testTimezoneChanged( List<String> notificationList )
+    {
+        if ( timezoneChanged ) {
+            String notificationText = i18nUtil.tr("The timezone has been changed since boot. A reboot is required.");
+            notificationList.add(notificationText);
+        }
+     }
 }

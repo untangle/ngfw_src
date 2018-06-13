@@ -515,6 +515,10 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t(),
                 action = 'add', cond;
 
+            // because this component is used in both dashboard and reports, event will fire twice
+            // apply following logic to avoid exceptions
+            if (!conditions) { return; }
+
             if (vm.get('disabledConds') && vm.get('disabledConds')[col]) {
                 msg = 'The <strong>' + readableColumn + '</strong> column is already in Global Conditions!<br/> Replace its value?';
                 action = 'replace';
