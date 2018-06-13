@@ -597,7 +597,7 @@ public class SessionMonitorImpl implements SessionMonitor
                             newEntry.setMark( mark );
                             newEntry.setBypassed( ((mark & 0x01000000) != 0) );
                             newEntry.setQosPriority( (mark & 0x000F0000) >> 16 );
-                            newEntry.setClientIntf( (mark & 0x000000FF) >> 0 );
+                            newEntry.setClientIntf( (mark & 0x000000FF) );
                             newEntry.setServerIntf( (mark & 0x0000FF00) >> 8 );
                             break;
                         default:
