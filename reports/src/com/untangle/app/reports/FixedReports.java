@@ -885,7 +885,7 @@ public class FixedReports
 
         if(webbrowser != null){
             Integer browserWidth = DEFAULT_BROWSER_WIDTH;
-            Integer browserHeight = DEFAULT_BROWSER_WIDTH;
+            Integer browserHeight = DEFAULT_BROWSER_HEIGHT;
             if(emailTemplate.getMobile() == true){
                 browserWidth = MOBILE_BROWSER_WIDTH;
                 browserHeight = MOBILE_BROWSER_HEIGHT;
