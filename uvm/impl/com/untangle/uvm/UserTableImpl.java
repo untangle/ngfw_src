@@ -108,7 +108,7 @@ public class UserTableImpl implements UserTable
         userTable.put( username, entry );
     }
 
-    public LinkedList<UserTableEntry> getUsers()
+    public synchronized LinkedList<UserTableEntry> getUsers()
     {
         return new LinkedList<UserTableEntry>(userTable.values());
     }
