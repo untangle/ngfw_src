@@ -43,6 +43,8 @@ public class Template {
     /**
      * Construct a new Template which does
      * <b>not</b> print unassigned keys.
+     * @param template String to initialize template with.
+     * @return instance of Template.
      */
     public Template(String template) {
         this(template, false);
@@ -54,13 +56,17 @@ public class Template {
      * @param template the template
      * @param printUnassigned should unassigned keys
      *        be printed in original form.
+     * @return instance of Template.
      */
     public Template(String template,
                     boolean printUnassigned) {
         m_parsed = parse(template, printUnassigned);
     }
 
-
+    /**
+     * Get template.
+     * @return String of template.
+     */
     public String getTemplate() {
         return m_parsed.orig;
     }
@@ -74,9 +80,17 @@ public class Template {
         set(template, m_parsed.printUnassigned);
     }
 
+    /**
+     * Determine if print is unassigned.
+     * @return true if print is unassigned, false otherwise.
+     */
     public boolean isPrintUnassigned() {
         return m_parsed.printUnassigned;
     }
+    /**
+     * Set print unassigned.
+     * @param printUnassigned if true set unassigned, otherwise set assigned.
+     */
     public void setPrintUnassigned(boolean printUnassigned) {
         if(m_parsed.printUnassigned != printUnassigned) {
             set(m_parsed.orig, printUnassigned);
@@ -147,7 +161,13 @@ public class Template {
       System.out.println("--------ENDOF NOPRINT-----------");
       }
     */
-
+   
+   /**
+    * Parse the template.
+    * @param  template        String of template.
+    * @param  printUnassigned If true, print unassigned, otherwise print assigned.
+    * @return                 ParsedTemplate instance.
+    */
     private ParsedTemplate parse(String template,
                                  boolean printUnassigned) {
 
@@ -227,6 +247,9 @@ public class Template {
 
     //--------- Inner Class Separator -------------------
 
+    /**
+     * Parsed template.
+     */
     private class ParsedTemplate {
         final String orig;
         final Part[] parts;
@@ -234,6 +257,14 @@ public class Template {
         final int numParts;
         final boolean printUnassigned;
 
+        /**
+         * Initialize instance of ParsedTemplate.
+         * @param orig Original template.
+         * @param parts Array of Parts.
+         * @param estSize Estimated size.
+         * @param printUnassigned if true, unassigned, false otherwise.
+         * @return instance of ParsedTemplate
+         */
         ParsedTemplate(String orig,
                        Part[] parts,
                        int estSize,
@@ -246,12 +277,22 @@ public class Template {
             this.printUnassigned = printUnassigned;
         }
 
+        /**
+         * Format template.
+         * @param  tv Template values.
+         * @return    template with replaced vaues.
+         */
         private StringBuilder format(TemplateValues tv) {
             StringBuilder sb = new StringBuilder(estSize);
             formatInto(sb, tv);
             return sb;
         }
 
+        /**
+         * Format template into  stringbuilder.
+         * @param sb StringBuilder to format into.
+         * @param  tv Template values.
+         */
         private void formatInto(StringBuilder sb, TemplateValues tv) {
             for(int i = 0; i<numParts; i++) {
                 parts[i].append(sb, tv);
@@ -262,20 +303,42 @@ public class Template {
 
     //--------- Inner Class Separator -------------------
 
+    /**
+     * Part
+     */
     private abstract class Part {
+      /**
+       * Append to part.
+       * @param sb     StringBuilder to append to.
+       * @param values TemplateValues to use.
+       */
         abstract void append(StringBuilder sb, TemplateValues values);
     }
 
 
     //--------- Inner Class Separator -------------------
 
+    /**
+     * Fixed prt.
+     */
     private class FixedPart extends Part {
 
         private final String m_data;
 
+        /**
+         * Initialize instnace of FixedPart.
+         * @param data Data to go into part.
+         * @return Instance of FixedPart.
+         */
         FixedPart(String data) {
             m_data = data;
         }
+
+        /**
+         * Add to fixed part.
+         * @param sb     StringBuilder to append to.
+         * @param values TemplateValues to use.
+         */
         void append(StringBuilder sb, TemplateValues values) {
             sb.append(m_data);
         }
@@ -284,16 +347,30 @@ public class Template {
 
     //--------- Inner Class Separator -------------------
 
+    /**
+     * Variable part.
+     */
     private class VariablePart extends Part {
 
         private final String m_key;
         private final boolean m_printUnassigned;
 
+        /**
+         * Initialize instance of VariablePart.
+         * @param key String to use.
+         * @param printUnassigned if true, print unasigned, otherwise false.
+         */
         VariablePart(String key,
                      boolean printUnassigned) {
             m_key = key;
             m_printUnassigned = printUnassigned;
         }
+
+        /**
+         * Append to variable.
+         * @param sb     StringBuilder to write to.
+         * @param values TemplateValues to use.
+         */
         void append(StringBuilder sb, TemplateValues values) {
             String val = values.getTemplateValue(m_key);
             if(val == null) {
@@ -305,6 +382,10 @@ public class Template {
                 sb.append(val);
             }
         }
+        /**
+         * Reformat using delimeter.
+         * @param sb     StringBuilder to write to.
+         */
         private void reform(StringBuilder sb) {
             sb.append(DELIM);
             sb.append(m_key);
