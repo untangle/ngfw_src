@@ -244,9 +244,18 @@ public class SystemManagerImpl implements SystemManager
             String message = "Unable to set time zone (" + exitValue + ") to: " + id;
             logger.error(message);
             throw new RuntimeException(message);
-        } else {
-            logger.info("Time zone set to : " + id);
-            TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
+        }
+
+        // if timezone has changed update JVM
+        if (TimeZone.getDefault() != null && !TimeZone.getDefault().getID().equals(id)) {
+            logger.info("Timezone changed from " + TimeZone.getDefault().getID() + " to " + id);
+            logger.warn("Attempting to update JVM timezone");
+            // set a flag so a warning is displayed
+            UvmContextImpl.getInstance().notificationManager().setTimezoneChanged(true);
+            // in testing this does some really weird things
+            // only do this if the timezone has actually changed
+            // Note: Only works for threads who haven't yet cached the zone!
+            TimeZone.setDefault(timezone);
         }
 
         this.currentCalendar = Calendar.getInstance();
