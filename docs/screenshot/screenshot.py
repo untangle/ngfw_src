@@ -424,6 +424,11 @@ def main(argv):
         for screen in settings["screens"]:
             screen['name'] = screen['url'].replace("/admin/index.do#","")
             screen['name'] = screen['name'].replace("/","_")
+            screen['name'] = screen['name'].replace("(","_")
+            screen['name'] = screen['name'].replace(")","_")
+            screen['name'] = screen['name'].replace("=","_")
+            screen['name'] = screen['name'].replace("?","_")
+            screen['name'] = screen['name'].replace("&","_")
             screen['name'] = screen['name'].replace("_1_","_")
 
             total_screens += 1
