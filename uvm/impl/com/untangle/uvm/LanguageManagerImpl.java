@@ -69,7 +69,7 @@ public class LanguageManagerImpl implements LanguageManager
     private static final String LC_MESSAGES = "LC_MESSAGES";
     private static final int BUFFER = 2048;
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
-    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -114,10 +114,12 @@ public class LanguageManagerImpl implements LanguageManager
         public String getResourcePath(){ return this.resourcePath; }
     }
 
-    private static final ArrayList<languageSource> LanguageSources = new ArrayList<languageSource>() {{
-        add(new languageSource("official", I18nUtil.marktr("Official"), "untangleserverofficial"));
-        add(new languageSource("community", I18nUtil.marktr("Community"), "untangleserver"));
-    }};
+    private static final ArrayList<languageSource> LanguageSources;
+    static {
+        LanguageSources = new ArrayList<languageSource>();
+        LanguageSources.add(new languageSource("official", I18nUtil.marktr("Official"), "untangleserverofficial"));
+        LanguageSources.add(new languageSource("community", I18nUtil.marktr("Community"), "untangleserver"));
+    }
 
     public LanguageManagerImpl()
     {
@@ -234,7 +236,7 @@ public class LanguageManagerImpl implements LanguageManager
      */
     public Map<String, String> getTranslations(String module)
     {
-        Map<String, String> map;
+        Map<String, String> map = null;
 
         if (null == module) {
             return new HashMap<String, String>();
@@ -247,6 +249,9 @@ public class LanguageManagerImpl implements LanguageManager
             sourceId = languageSettings.getSource();
         }
         languageSource source = getLanguageSource(sourceId);
+        if(source == null){
+            return map;
+        }
 
         String translationKey = i18nModule + "_" + source.getId() + "_" + locale.getLanguage();
         
@@ -364,16 +369,21 @@ public class LanguageManagerImpl implements LanguageManager
             success = false;
             return success;
         }
-        dest = new BufferedOutputStream(fos, BUFFER);
         try{
+            dest = new BufferedOutputStream(fos, BUFFER);
             while ((count = zipInputStream.read(data, 0, BUFFER)) != -1) {
                 dest.write(data, 0, count);
             }
             dest.flush();
-            dest.close();
         }catch(IOException e){
             logger.warn("copyZipEntryToDisk: Unable to write file", e);
             success = false;
+        }finally{
+            try{
+                dest.close();
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }            
         }
         return success;
     }
@@ -411,8 +421,9 @@ public class LanguageManagerImpl implements LanguageManager
         Map<String, String> languages = new HashMap<String, String>();
 
         // Reading all languages from config file
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
+            in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
             String s = new String();
             while((s = in.readLine())!= null) {
                 s = s.trim();
@@ -425,9 +436,14 @@ public class LanguageManagerImpl implements LanguageManager
                     }
                 }
             }
-            in.close();
         } catch (IOException e) {
             logger.warn("Failed getting all languages!", e);
+        } finally {
+            try{
+                in.close();
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }
         }
 
         return languages;
@@ -438,8 +454,9 @@ public class LanguageManagerImpl implements LanguageManager
         Map<String, String> countries = new HashMap<String, String>();
 
         // Reading all countries from config file
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + COUNTRIES_CFG));
+            in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + COUNTRIES_CFG));
             String s = new String();
             while((s = in.readLine())!= null) {
                 if (s.trim().length() > 0){
@@ -451,9 +468,14 @@ public class LanguageManagerImpl implements LanguageManager
                     }
                 }
             }
-            in.close();
         } catch (IOException e) {
             logger.warn("Failed getting all countries!", e);
+        } finally {
+            try{
+                in.close();
+            }catch(IOException ex){
+                logger.error("Unable to close file", ex);
+            }
         }
 
         return countries;
@@ -602,6 +624,7 @@ public class LanguageManagerImpl implements LanguageManager
             HttpEntity entity = response.getEntity();
             if ( entity == null ) {
                 logger.warn("Invalid Response: " + entity);
+                return result;
             }
             is = entity.getContent();
 
@@ -652,7 +675,7 @@ public class LanguageManagerImpl implements LanguageManager
                                 }
                                 int wordsTotal = langStats.getInt("total");
                                 int wordsTranslated = langStats.getInt("translated");
-                                int percentComplete = wordsTotal > 0 ? Math.round(100 * wordsTranslated / wordsTotal) : 0;
+                                int percentComplete = wordsTotal > 0 ? Math.round(100 * (float) wordsTranslated / wordsTotal) : 0;
                                 statistics.append(I18nUtil.marktr("Percent completed") + ": " + percentComplete + "%");
                                 locales.add(new LocaleInfo(source.getId() + "-" + langCodeLang, langName, null, null, statistics.toString()));
                             }
@@ -696,6 +719,9 @@ public class LanguageManagerImpl implements LanguageManager
         BufferedOutputStream dest = null;
 
         languageSource source = getLanguageSource(sourceId);
+        if(source == null){
+            return;
+        }
 
         String urlString = REMOTE_LANGUAGES_URL + "export/?path=/" + language + "/" + source.getUrl() + "/&zip=true&rename=true&bundle=true";
         try {
@@ -707,48 +733,51 @@ public class LanguageManagerImpl implements LanguageManager
             HttpEntity entity = response.getEntity();
             if ( entity == null ) {
                 logger.warn("Invalid Response: " + entity);
-            }
-            is = entity.getContent();
+            }else{
+                is = entity.getContent();
 
-            ZipEntry entry = null;
-            ZipInputStream zis = new ZipInputStream(is);
-            String extension = null;
-            int extensionIndex = 0;
-            while ((entry = zis.getNextEntry()) != null) {
-                if (!isValid(entry)){
-                    success = false;
-                    msg = "Invalid Entry";
-                    break;
-                }
-                if (entry.isDirectory()) {
-                    File dir = new File(source.getDirectory() + File.separator + entry.getName());
-                    if (!dir.exists()) {
-                        dir.mkdir();
+                ZipEntry entry = null;
+                ZipInputStream zis = new ZipInputStream(is);
+                String extension = null;
+                int extensionIndex = 0;
+                while ((entry = zis.getNextEntry()) != null) {
+                    if (!isValid(entry)){
+                        success = false;
+                        msg = "Invalid Entry";
+                        break;
                     }
-                } else {
-                    // ## look at file extensions
-                    extensionIndex = entry.getName().lastIndexOf(".");
-                    if(extensionIndex > 0){
-                        extension = entry.getName().substring(extensionIndex + 1);
-                    }
+                    if (entry.isDirectory()) {
+                        File dir = new File(source.getDirectory() + File.separator + entry.getName());
+                        if (!dir.exists()) {
+                            dir.mkdir();
+                        }
+                    } else {
+                        // ## look at file extensions
+                        extensionIndex = entry.getName().lastIndexOf(".");
+                        if(extensionIndex > 0){
+                            extension = entry.getName().substring(extensionIndex + 1);
+                        }
 
-                    File file = new File(source.getDirectory() + File.separator + entry.getName());
-                    File parentDir = file.getParentFile();
-                    switch(extension){
-                        case "po":
-                            copyZipEntryToDisk(zis, entry, source.getDirectory());
-                            break;
-                        case "mo":
-                            copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
-                            break;
-                        case "class":
-                            copyZipEntryToDisk(zis, entry, RESOURCES_DIR + File.separator + source.getId());
-                            break;
+                        File file = new File(source.getDirectory() + File.separator + entry.getName());
+                        File parentDir = file.getParentFile();
+                        if(extension != null){
+                            switch(extension){
+                                case "po":
+                                    copyZipEntryToDisk(zis, entry, source.getDirectory());
+                                    break;
+                                case "mo":
+                                    copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
+                                    break;
+                                case "class":
+                                    copyZipEntryToDisk(zis, entry, RESOURCES_DIR + File.separator + source.getId());
+                                    break;
+                            }
+                        }
                     }
                 }
+                zis.close();
+                is.close();
             }
-            zis.close();
-            is.close();
         }catch (java.net.MalformedURLException e) {
             logger.warn("Invalid URL: '" + urlString + "'", e);
         }
