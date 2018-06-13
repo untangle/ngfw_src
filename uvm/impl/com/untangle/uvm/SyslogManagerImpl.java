@@ -94,7 +94,6 @@ public class SyslogManagerImpl
                     }
                 } catch (IOException ex) {
                     logger.error("Unable to close file", ex);
-                    return;
                 }
             }
         } else {

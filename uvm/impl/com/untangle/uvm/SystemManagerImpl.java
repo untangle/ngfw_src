@@ -221,16 +221,24 @@ public class SystemManagerImpl implements SystemManager
     @Override
     public TimeZone getTimeZone()
     {
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            in = new BufferedReader(new FileReader(TIMEZONE_FILE));
             String str = in.readLine();
             str = str.trim();
-            in.close();
             TimeZone current = TimeZone.getTimeZone(str);
             return current;
         } catch (Exception x) {
             logger.warn("Unable to get timezone, using java default:" , x);
             return TimeZone.getDefault();
+        }finally{
+            try {
+                if(in != null){
+                    in.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
         }
     }
 
@@ -649,8 +657,9 @@ public class SystemManagerImpl implements SystemManager
          */
         boolean foundExistingUser = false;
         StringBuilder snmpdLib_config = new StringBuilder();
+        BufferedReader br = null;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(SNMP_CONF_LIB_FILE_NAME));
+            br = new BufferedReader(new FileReader(SNMP_CONF_LIB_FILE_NAME));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
                 Matcher matcher = SNMP_CONF_V3USER_PATTERN.matcher(l);
                 if (matcher.find()) {
@@ -662,11 +671,20 @@ public class SystemManagerImpl implements SystemManager
         } catch (Exception x) {
             logger.warn("Unable to open SNMP library configuration file: " + SNMP_CONF_LIB_FILE_NAME );
             return;
+        }finally{
+            try {
+                if(br != null){
+                    br.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
         }
         
         StringBuilder snmpdShare_config = new StringBuilder();
+        br = null;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(SNMP_CONF_SHARE_FILE_NAME));
+            br = new BufferedReader(new FileReader(SNMP_CONF_SHARE_FILE_NAME));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
                 Matcher matcher = SNMP_CONF_SHARE_USER_PATTERN.matcher(l);
                 if (matcher.find()) {
@@ -675,7 +693,17 @@ public class SystemManagerImpl implements SystemManager
                 }
                 snmpdShare_config.append(l).append(EOL);
             }
-        } catch (Exception x) {}
+        } catch (Exception x) {
+
+        }finally{
+            try {
+                if(br != null){
+                    br.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+        }
         if( ( false == foundExistingUser ) &&
             ( false == settings.isV3Enabled() ) ){
             return;
@@ -739,7 +767,9 @@ public class SystemManagerImpl implements SystemManager
         }
         catch(Exception ex) {
             IOUtil.close(fos);
-            tmp.delete();
+            if(tmp != null){
+                tmp.delete();
+            }
             logger.error("Unable to create SNMP control file \"" + fileName + "\"", ex);
             return false;
         }
@@ -861,12 +891,15 @@ public class SystemManagerImpl implements SystemManager
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
+        }finally{
+            try {
+                if(out != null){
+                    out.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+                return;
+            }
         }
     }
 
@@ -882,6 +915,7 @@ public class SystemManagerImpl implements SystemManager
         
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
+            ZipOutputStream out = null;
             try{
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","application/octet-stream");
@@ -889,7 +923,7 @@ public class SystemManagerImpl implements SystemManager
 
                 byte[] buffer = new byte[1024];
                 int read;
-                ZipOutputStream out = new ZipOutputStream(resp.getOutputStream());
+                out = new ZipOutputStream(resp.getOutputStream());
                 
                 File directory = new File( "/var/log/uvm" );
                 File[] files = directory.listFiles( 
@@ -906,20 +940,37 @@ public class SystemManagerImpl implements SystemManager
                     } 
                 );
 
-                for( File f: files ){                
-                    FileInputStream fis = new FileInputStream(f.getCanonicalFile());
-                    out.putNextEntry(new ZipEntry(f.getName())); 
-                    while ( ( read = fis.read( buffer ) ) > 0 ) {
-                        out.write( buffer, 0, read);
+                FileInputStream fis = null;
+                for( File f: files ){
+                    try{
+                        fis = new FileInputStream(f.getCanonicalFile());
+                        out.putNextEntry(new ZipEntry(f.getName())); 
+                        while ( ( read = fis.read( buffer ) ) > 0 ) {
+                            out.write( buffer, 0, read);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Failed to write log file.",e);
+                    }finally{
+                        try{
+                            if(fis != null){
+                                fis.close();
+                            }
+                        } catch (IOException ex) {
+                            logger.error("Unable to close file", ex);
+                        }
                     }
-
-                    fis.close();
                 }
                 out.flush();
-                out.close();
-
             } catch (Exception e) {
                 logger.warn("Failed to archive files.",e);
+            }finally{
+                try{
+                    if(out != null){
+                        out.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close archive file", ex);
+                }
             }
         }
     }
