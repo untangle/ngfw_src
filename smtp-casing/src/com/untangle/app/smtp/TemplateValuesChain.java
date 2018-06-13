@@ -18,14 +18,28 @@ public class TemplateValuesChain
 
     private List<TemplateValues> m_valueList;
 
+    /**
+     * Initialize instance of TemplateValuesChain.
+     * @return Instance of TemplateValuesChain.
+     */
     public TemplateValuesChain() {
         this(new TemplateValues[] {});
     }
 
+    /**
+     * Initialize instance of TemplateValuesChain with template values.
+     * @param v1 TemplateValues to use.
+     * @return Instance of TemplateValuesChain.
+     */
     public TemplateValuesChain(TemplateValues v1) {
         this(new TemplateValues[] {v1});
     }
 
+    /**
+     * Initialize instance of TemplateValuesChain with template values.
+     * @param tvs Variable list of TemplateValues to use.
+     * @return Instance of TemplateValuesChain.
+     */
     public TemplateValuesChain(TemplateValues... tvs) {
         m_valueList = Arrays.asList(tvs);
     }
@@ -34,7 +48,6 @@ public class TemplateValuesChain
      * Append a TemplateValues to the chain
      *
      * @param tv the new TemplateValues
-     *
      * @return this (useful for method chaining).
      */
     public TemplateValuesChain append(TemplateValues tv) {
@@ -46,6 +59,11 @@ public class TemplateValuesChain
         return this;
     }
 
+    /**
+     * Return string of template value.
+     * @param  key TemplateValue key to find.
+     * @return     String of TemplateValue value.
+     */
     public String getTemplateValue(String key) {
         //Assign method-local reference, for thread
         //safety
