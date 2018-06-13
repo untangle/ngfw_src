@@ -106,7 +106,7 @@
         "remove_report_nav": [{
             "action": "crop_by_dimension",
             "x": 255,
-            "y": 50,
+            "y": 85,
             "height": "auto",
             "width": "auto"
         }]
@@ -669,1193 +669,1193 @@
         "type": "remove_nav"
 
     },{
-        "url": "/admin/index.do#reports/ad-blocker/ad-blocker-summary",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=ad-blocker-summary",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/ad-blocker/ads-blocked",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=ads-blocked",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/ad-blocker/top-blocked-ad-sites",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=top-blocked-ad-sites",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/ad-blocker/all-ad-events",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=all-ad-events",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/ad-blocker/blocked-ad-events",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=blocked-ad-events",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/ad-blocker/blocked-cookie-events",
-        "type": "remove_report_nav"
-
-    },{
-        "url": "/admin/index.do#reports/administration/admin-logins",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/administration/settings-changes",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/administration/admin-login-events",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/administration/all-settings-changes",
+        "url": "/admin/index.do#reports?cat=ad-blocker&rep=blocked-cookie-events",
         "type": "remove_report_nav"
 
     },{
-        "url": "/admin/index.do#reports/application-control/application-control-summary",
+        "url": "/admin/index.do#reports?cat=administration&rep=admin-logins",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control/top-applications-usage",
+        "url": "/admin/index.do#reports?cat=administration&rep=settings-changes",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control/scanned-sessions-(all)",
+        "url": "/admin/index.do#reports?cat=administration&rep=admin-login-events",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control/scanned-sessions-(flagged)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/scanned-sessions-(blocked)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-applications-(by-sessions)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-categories-(by-sessions)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-applications-(by-size)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-flagged-applications",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-blocked-applications",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-flagged-hostnames",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-blocked-hostnames",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-flagged-clients",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-blocked-clients",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-flagged-usernames",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/top-blocked-usernames",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/classified-sessions",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/flagged-sessions",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/blocked-sessions",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/application-control/all-sessions",
+        "url": "/admin/index.do#reports?cat=administration&rep=all-settings-changes",
         "type": "remove_report_nav"
 
     },{
-        "url": "/admin/index.do#reports/application-control-lite/application-control-lite-summary",
+        "url": "/admin/index.do#reports?cat=application-control&rep=application-control-summary",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/detection-statistics",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-applications-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-blocked-protocols",
+        "url": "/admin/index.do#reports?cat=application-control&rep=scanned-sessions-(all)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-logged-protocols",
+        "url": "/admin/index.do#reports?cat=application-control&rep=scanned-sessions-(flagged)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-blocked-hosts",
+        "url": "/admin/index.do#reports?cat=application-control&rep=scanned-sessions-(blocked)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-logged-hosts",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-applications-(by-sessions)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-blocked-users",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-categories-(by-sessions)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/top-logged-users",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-applications-(by-size)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/all-events",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-flagged-applications",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/application-control-lite/blocked-events",
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-blocked-applications",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-flagged-hostnames",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-blocked-hostnames",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-flagged-clients",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-blocked-clients",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-flagged-usernames",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=top-blocked-usernames",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=classified-sessions",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=flagged-sessions",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=blocked-sessions",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=application-control&rep=all-sessions",
         "type": "remove_report_nav"
 
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/bandwidth-control-summary",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=application-control-lite-summary",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/bandwidth-usage",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=detection-statistics",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-hostnames-usage",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-blocked-protocols",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-hostnames-(by-total-bytes)",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-logged-protocols",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-hostnames-(by-received-bytes)",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-blocked-hosts",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-hostnames-(by-sent-bytes)",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-logged-hosts",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-clients-usage",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-blocked-users",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-clients-(by-total-bytes)",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=top-logged-users",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-usernames-usage",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=all-events",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-usernames-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-server-port-usage",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-ports-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-ports-(by-received-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-ports-(by-sent-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-applications-usage",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-application-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-application-(by-received-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-application-(by-sent-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-categories-usage",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-category-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-priorities-usage",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-priorities-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-countries-usage",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/top-countries-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/bypassed-(by-total-bytes)",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/all-sessions",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/quota-events",
-        "type": "remove_report_nav"
-    },{
-        "url": "/admin/index.do#reports/bandwidth-control/prioritized-sessions",
+        "url": "/admin/index.do#reports?cat=application-control-lite&rep=blocked-events",
         "type": "remove_report_nav"
 
     },{
-        "url": "/admin/index.do#reports/captive-portal/captive-portal-summary",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=bandwidth-control-summary",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/activity-summary",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=bandwidth-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/top-active-users",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-hostnames-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/top-blocked-clients",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-hostnames-(by-total-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/all-session-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-hostnames-(by-received-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/passed-session-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-hostnames-(by-sent-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/all-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-clients-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/captured-session-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-clients-(by-total-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/login-success-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-usernames-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/login-failure-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-usernames-(by-total-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/session-timeout-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-server-port-usage",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/idle-timeout-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-ports-(by-total-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/user-logout-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-ports-(by-received-bytes)",
         "type": "remove_report_nav"
     },{
-        "url": "/admin/index.do#reports/captive-portal/admin-logout-user-events",
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-ports-(by-sent-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-applications-usage",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-application-(by-total-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-application-(by-received-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-application-(by-sent-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-categories-usage",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-category-(by-total-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-priorities-usage",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-priorities-(by-total-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-countries-usage",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=top-countries-(by-total-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=bypassed-(by-total-bytes)",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=all-sessions",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=quota-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=bandwidth-control&rep=prioritized-sessions",
+        "type": "remove_report_nav"
+
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=captive-portal-summary",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=activity-summary",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=top-active-users",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=top-blocked-clients",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=all-session-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=passed-session-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=all-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=captured-session-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=login-success-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=login-failure-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=session-timeout-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=idle-timeout-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=user-logout-user-events",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=captive-portal&rep=admin-logout-user-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/configuration-backup/configuration-backup-summary",
+        "url": "/admin/index.do#reports?cat=configuration-backup&rep=configuration-backup-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/configuration-backup/backup-usage-(all)",
+        "url": "/admin/index.do#reports?cat=configuration-backup&rep=backup-usage-(all)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/configuration-backup/backup-usage-(success)",
+        "url": "/admin/index.do#reports?cat=configuration-backup&rep=backup-usage-(success)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/configuration-backup/backup-usage-(failed)",
+        "url": "/admin/index.do#reports?cat=configuration-backup&rep=backup-usage-(failed)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/configuration-backup/backup-events",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/devices/devices-additions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/devices/devices-updates",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/devices/devices-events",
+        "url": "/admin/index.do#reports?cat=configuration-backup&rep=backup-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/directory-connector/directory-connector-summary",
+        "url": "/admin/index.do#reports?cat=devices&rep=devices-additions",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/directory-connector/api-usage",
+        "url": "/admin/index.do#reports?cat=devices&rep=devices-updates",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/directory-connector/api-events",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/events/alerts",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/events/top-alerts",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/events/alert-events",
+        "url": "/admin/index.do#reports?cat=devices&rep=devices-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/firewall/firewall-summary",
+        "url": "/admin/index.do#reports?cat=directory-connector&rep=directory-connector-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/firewall/scanned-sessions",
+        "url": "/admin/index.do#reports?cat=directory-connector&rep=api-usage",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/firewall/top-scanned-hostnames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-flagged-hostnames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-blocked-hostnames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-scanned-clients",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-flagged-clients",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-blocked-clients",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-scanned-usernames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-flagged-usernames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-blocked-usernames",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-scanned-server-ports",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-flagged-server-ports",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/top-blocked-server-ports",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/all-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/flagged-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/firewall/blocked-events",
+        "url": "/admin/index.do#reports?cat=directory-connector&rep=api-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/hosts/hosts-active",
+        "url": "/admin/index.do#reports?cat=events&rep=alerts",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/hosts/hosts-additions",
+        "url": "/admin/index.do#reports?cat=events&rep=top-alerts",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/hosts/hosts-updates",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/hosts/hosts-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/hosts/penalty-box-events",
+        "url": "/admin/index.do#reports?cat=events&rep=alert-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/ipsec-vpn-summary",
+        "url": "/admin/index.do#reports?cat=firewall&rep=firewall-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/hourly-tunnel-traffic",
+        "url": "/admin/index.do#reports?cat=firewall&rep=scanned-sessions",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/top-tunnel-traffic",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-scanned-hostnames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/top-active-users",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-flagged-hostnames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/top-download-users",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-blocked-hostnames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/top-upload-users",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-scanned-clients",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/top-protocols",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-flagged-clients",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/l2tp/xauth-events",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-blocked-clients",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ipsec-vpn/tunnel-traffic-events",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/intrusion-prevention-summary",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-scanned-usernames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/intrusion-detection-(all)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-flagged-usernames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/intrusion-detection-(logged)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-blocked-usernames",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/intrusion-detection-(blocked)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-scanned-server-ports",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-rules-(logged)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-flagged-server-ports",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-rules-(blocked)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=top-blocked-server-ports",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-classtypes-(logged)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=all-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-classtypes-(blocked)",
+        "url": "/admin/index.do#reports?cat=firewall&rep=flagged-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-categories-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-categories-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-source-ip-addresses-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-source-ip-addresses-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-source-ports-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-source-port-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-destination-ip-addresses-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-destination-ip-addresses-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-destination-ports-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-destination-port-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-protocols-(logged)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/top-protocols-(blocked)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/all-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/intrusion-prevention/blocked-events",
+        "url": "/admin/index.do#reports?cat=firewall&rep=blocked-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/network/network-summary",
+        "url": "/admin/index.do#reports?cat=hosts&rep=hosts-active",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/network/data-usage-(by-interface)",
+        "url": "/admin/index.do#reports?cat=hosts&rep=hosts-additions",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/network/data-rx-usage-(by-interface)",
+        "url": "/admin/index.do#reports?cat=hosts&rep=hosts-updates",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/network/data-tx-usage-(by-interface)",
+        "url": "/admin/index.do#reports?cat=hosts&rep=hosts-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/network/sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/sessions-per-minute",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/sessions-per-hour",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/bandwidth-usage",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/top-client-addresses",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/top-server-addresses",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/top-ip-protocols",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/top-server-ports",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/top-server-countries",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/interface-usage",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/all-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/scanned-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/bypassed-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/blocked-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/port-forwarded-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/natd-sessions",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/network/all-session-minutes",
+        "url": "/admin/index.do#reports?cat=hosts&rep=penalty-box-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/openvpn/openvpn-summary",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=ipsec-vpn-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/openvpn-bandwidth-usage",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=hourly-tunnel-traffic",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/openvpn-events",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=top-tunnel-traffic",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/openvpn-sessions",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=top-active-users",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/top-clients-(by-usage)",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=top-download-users",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/connection-events",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=top-upload-users",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/openvpn/statistic-events",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/phish-blocker-summary",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=top-protocols",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/phish-blocker/email-usage-(all)",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=l2tp/xauth-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/phish-blocker/email-usage-(scanned)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/email-usage-(clean)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/email-usage-(phish)",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/phish-ratio",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/top-phish-recipients",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/top-phish-sender-addresses",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/all-email-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/all-phish-events",
-        "type": "remove_report_nav"
-     },{
-        "url": "/admin/index.do#reports/phish-blocker/quarantined-events",
+        "url": "/admin/index.do#reports?cat=ipsec-vpn&rep=tunnel-traffic-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/policy-manager/policy-manager-summary",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=intrusion-prevention-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/policy-manager/top-policy-usage",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=intrusion-detection-(all)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/policy-manager/sessions-by-policy",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=intrusion-detection-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/policy-manager/traffic-by-policy",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=intrusion-detection-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/policy-manager/all-events",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/ssl-inspector/ssl-inspector-summary",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-rules-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/sessions-scanned",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-rules-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/sessions-inspected",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-classtypes-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/top-inspected-sites",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-classtypes-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/top-ignored-sites",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-categories-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/all-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-categories-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/inspected-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-source-ip-addresses-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/ignored-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-source-ip-addresses-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/blocked-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-source-ports-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/untrusted-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-source-port-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/ssl-inspector/abandoned-sessions",
-        "type": "remove_report_nav"
-
-     },{
-        "url": "/admin/index.do#reports/shield/scanned-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-destination-ip-addresses-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/blocked-sessions",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-destination-ip-addresses-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/top-blocked-clients",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-destination-ports-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/top-blocked-hostnames",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-destination-port-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/top-blocked-ports",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-protocols-(logged)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/top-blocked-usernames",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=top-protocols-(blocked)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/scanned-session-events",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=all-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/shield/blocked-session-events",
+        "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=blocked-events",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/spam-blocker/spam-blocker-summary",
+        "url": "/admin/index.do#reports?cat=network&rep=network-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/email-usage-(all)",
+        "url": "/admin/index.do#reports?cat=network&rep=data-usage-(by-interface)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/email-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=network&rep=data-rx-usage-(by-interface)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/email-usage-(clean)",
+        "url": "/admin/index.do#reports?cat=network&rep=data-tx-usage-(by-interface)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/email-usage-(spam)",
+        "url": "/admin/index.do#reports?cat=network&rep=sessions",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/spam-ratio",
+        "url": "/admin/index.do#reports?cat=network&rep=sessions-per-minute",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/top-spam-recipients",
+        "url": "/admin/index.do#reports?cat=network&rep=sessions-per-hour",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/top-spam-sender-addresses",
+        "url": "/admin/index.do#reports?cat=network&rep=bandwidth-usage",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/all-email-events",
+        "url": "/admin/index.do#reports?cat=network&rep=top-client-addresses",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/all-spam-events",
+        "url": "/admin/index.do#reports?cat=network&rep=top-server-addresses",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/quarantined-events",
+        "url": "/admin/index.do#reports?cat=network&rep=top-ip-protocols",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker/tarpit-events",
+        "url": "/admin/index.do#reports?cat=network&rep=top-server-ports",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=top-server-countries",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=interface-usage",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=all-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=scanned-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=bypassed-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=blocked-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=port-forwarded-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=natd-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=network&rep=all-session-minutes",
         "type": "remove_report_nav"
 
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/spam-blocker-lite-summary",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=openvpn-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-(all)",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=openvpn-bandwidth-usage",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=openvpn-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-(clean)",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=openvpn-sessions",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/email-usage-(spam)",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=top-clients-(by-usage)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/spam-ratio",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=connection-events",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/top-spam-recipients",
+        "url": "/admin/index.do#reports?cat=openvpn&rep=statistic-events",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=phish-blocker-summary",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/top-spam-sender-addresses",
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=email-usage-(all)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/all-email-events",
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=email-usage-(scanned)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/all-spam-events",
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=email-usage-(clean)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/quarantined-events",
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=email-usage-(phish)",
         "type": "remove_report_nav"
      },{
-        "url": "/admin/index.do#reports/spam-blocker-lite/tarpit-events",
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=phish-ratio",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=top-phish-recipients",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=top-phish-sender-addresses",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=all-email-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=all-phish-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=phish-blocker&rep=quarantined-events",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=policy-manager&rep=policy-manager-summary",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=policy-manager&rep=top-policy-usage",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=policy-manager&rep=sessions-by-policy",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=policy-manager&rep=traffic-by-policy",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=policy-manager&rep=all-events",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=ssl-inspector-summary",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=sessions-scanned",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=sessions-inspected",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=top-inspected-sites",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=top-ignored-sites",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=all-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=inspected-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=ignored-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=blocked-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=untrusted-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=ssl-inspector&rep=abandoned-sessions",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=scanned-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=blocked-sessions",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=top-blocked-clients",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=top-blocked-hostnames",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=top-blocked-ports",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=top-blocked-usernames",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=scanned-session-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=shield&rep=blocked-session-events",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=spam-blocker-summary",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=email-usage-(all)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=email-usage-(scanned)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=email-usage-(clean)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=email-usage-(spam)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=spam-ratio",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=top-spam-recipients",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=top-spam-sender-addresses",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=all-email-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=all-spam-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=quarantined-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker&rep=tarpit-events",
+        "type": "remove_report_nav"
+
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=spam-blocker-lite-summary",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=email-usage-(all)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=email-usage-(scanned)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=email-usage-(clean)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=email-usage-(spam)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=spam-ratio",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=top-spam-recipients",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=top-spam-sender-addresses",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=all-email-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=all-spam-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=quarantined-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=tarpit-events",
         "type": "remove_report_nav"
 
 	 
       },{
-        "url": "/admin/index.do#reports/system/cpu-load",
+        "url": "/admin/index.do#reports?cat=system&rep=cpu-load",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/disk-usage",
+        "url": "/admin/index.do#reports?cat=system&rep=disk-usage",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/memory-usage",
+        "url": "/admin/index.do#reports?cat=system&rep=memory-usage",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/swap-usage",
+        "url": "/admin/index.do#reports?cat=system&rep=swap-usage",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/swap-usage-bytes",
+        "url": "/admin/index.do#reports?cat=system&rep=swap-usage-bytes",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/highest-active-hosts",
+        "url": "/admin/index.do#reports?cat=system&rep=highest-active-hosts",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/system/server-status-events",
-        "type": "remove_report_nav"
-
-      },{
-        "url": "/admin/index.do#reports/users/users-events",
+        "url": "/admin/index.do#reports?cat=system&rep=server-status-events",
         "type": "remove_report_nav"
 
       },{
-        "url": "/admin/index.do#reports/virus-blocker/virus-blocker-email-summary",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/virus-blocker-ftp-summary",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/virus-blocker-web-summary",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-usage-(all)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-usage-(scanned)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-usage-(blocked)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-top-blocked-viruses",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-top-blocked-clients",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-top-blocked-sites",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/web-top-scanned-sites",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-usage-(all)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-usage-(scanned)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-usage-(blocked)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-top-blocked-viruses",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-top-blocked-clients",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/ftp-top-blocked-sites",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-usage-(all)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-usage-(scanned)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-usage-(blocked)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-top-blocked-viruses",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-top-blocked-clients",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/email-top-blocked-sites",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/scanned-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/infected-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/clean-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/scanned-email-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/infected-email-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/clean-email-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/scanned-ftp-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/infected-ftp-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/virus-blocker/clean-ftp-events",
+        "url": "/admin/index.do#reports?cat=users&rep=users-events",
         "type": "remove_report_nav"
 
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/virus-blocker-lite-email-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=virus-blocker-email-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/virus-blocker-lite-ftp-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=virus-blocker-ftp-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/virus-blocker-lite-web-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=virus-blocker-web-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-usage-(all)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-usage-(blocked)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-top-blocked-viruses",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-top-blocked-clients",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-top-blocked-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/web-top-scanned-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=web-top-scanned-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-usage-(all)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-usage-(blocked)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-top-blocked-viruses",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-top-blocked-clients",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/ftp-top-blocked-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=ftp-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-usage-(all)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-usage-(blocked)",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-top-blocked-viruses",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-top-blocked-clients",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/email-top-blocked-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=email-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/scanned-web-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=scanned-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/infected-web-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=infected-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/clean-web-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=clean-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/scanned-email-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=scanned-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/infected-email-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=infected-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/clean-email-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=clean-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/scanned-ftp-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=scanned-ftp-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/infected-ftp-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=infected-ftp-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/virus-blocker-lite/clean-ftp-events",
-        "type": "remove_report_nav"
-
-      },{
-        "url": "/admin/index.do#reports/wan-balancer/wan-balancer-summary",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/wan-balancer/sessions-by-interface",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/wan-balancer/bytes-by-interface",
+        "url": "/admin/index.do#reports?cat=virus-blocker&rep=clean-ftp-events",
         "type": "remove_report_nav"
 
       },{
-        "url": "/admin/index.do#reports/wan-failover/wan-failover-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=virus-blocker-lite-email-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/wan-failover/wan-disconnect-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=virus-blocker-lite-ftp-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/wan-failover/outage-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=virus-blocker-lite-web-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/wan-failover/test-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/wan-failover/failed-test-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/wan-failover/success-test-events",
-        "type": "remove_report_nav"
-
-      },{
-        "url": "/admin/index.do#reports/web-cache/web-cache-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-cache/cache-hit-miss-statistics",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-cache/cache-size-statistics",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-cache/web-cache-events",
-        "type": "remove_report_nav"
-
-      },{
-        "url": "/admin/index.do#reports/web-filter/web-filter-summary",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/web-usage",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=web-top-scanned-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/web-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/web-usage-(flagged)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/web-usage-(blocked)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-categories-(by-request)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-categories-(by-size)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-categories",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=ftp-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-categories",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-usage-(all)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-sites-(by-request)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-sites-(by-size)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-top-blocked-viruses",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-sites",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-top-blocked-clients",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-domains-(by-request)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=email-top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-domains-(by-size)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=scanned-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-domains",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=infected-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-domains",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=clean-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-domains-usage",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=scanned-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-hostnames-(by-requests)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=infected-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-hostnames-(by-size)",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=clean-email-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-hostnames",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=scanned-ftp-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-hostnames",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=infected-ftp-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-filter/top-clients-(by-requests)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-clients-(by-size)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-clients",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-clients",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-usernames-(by-requests)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-usernames-(by-size)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-flagged-usernames",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-blocked-usernames",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-content-(by-request)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/top-content-(by-size)",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/all-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/flagged-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/blocked-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/all-http-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/all-https-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/unblocked-web-events",
-        "type": "remove_report_nav"
-      },{
-        "url": "/admin/index.do#reports/web-filter/all-query-events",
+        "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=clean-ftp-events",
         "type": "remove_report_nav"
 
       },{
-        "url": "/admin/index.do#reports/web-monitor/web-monitor-summary",
+        "url": "/admin/index.do#reports?cat=wan-balancer&rep=wan-balancer-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/web-usage",
+        "url": "/admin/index.do#reports?cat=wan-balancer&rep=sessions-by-interface",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/web-usage-(scanned)",
+        "url": "/admin/index.do#reports?cat=wan-balancer&rep=bytes-by-interface",
+        "type": "remove_report_nav"
+
+      },{
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=wan-failover-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/web-usage-(flagged)",
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=wan-disconnect-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-categories",
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=outage-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-sites-(by-request)",
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=test-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-sites-(by-size)",
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=failed-test-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-sites",
+        "url": "/admin/index.do#reports?cat=wan-failover&rep=success-test-events",
+        "type": "remove_report_nav"
+
+      },{
+        "url": "/admin/index.do#reports?cat=web-cache&rep=web-cache-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-domains-(by-request)",
+        "url": "/admin/index.do#reports?cat=web-cache&rep=cache-hit-miss-statistics",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-domains-(by-size)",
+        "url": "/admin/index.do#reports?cat=web-cache&rep=cache-size-statistics",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-domains",
+        "url": "/admin/index.do#reports?cat=web-cache&rep=web-cache-events",
+        "type": "remove_report_nav"
+
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=web-filter-summary",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-domains-usage",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=web-usage",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-hostnames-(by-requests)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=web-usage-(scanned)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-hostnames-(by-size)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=web-usage-(flagged)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-hostnames",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=web-usage-(blocked)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-clients-(by-requests)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-categories-(by-request)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-clients-(by-size)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-categories-(by-size)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-clients",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-categories",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-usernames-(by-requests)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-categories",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-usernames-(by-size)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-sites-(by-request)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-flagged-usernames",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-sites-(by-size)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-content-(by-request)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/top-content-(by-size)",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-sites",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/all-web-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-domains-(by-request)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/flagged-web-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-domains-(by-size)",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/all-http-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-domains",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/all-https-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-domains",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports/web-monitor/all-query-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-domains-usage",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-hostnames-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-hostnames-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-hostnames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-hostnames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-clients-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-clients-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-clients",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-clients",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-usernames-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-usernames-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-usernames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-usernames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-content-(by-request)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-content-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=all-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=flagged-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=blocked-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=all-http-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=all-https-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=unblocked-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=all-query-events",
+        "type": "remove_report_nav"
+
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=web-monitor-summary",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=web-usage",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=web-usage-(scanned)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=web-usage-(flagged)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-categories",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-sites-(by-request)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-sites-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-sites",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-domains-(by-request)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-domains-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-domains",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-domains-usage",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-hostnames-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-hostnames-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-hostnames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-clients-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-clients-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-clients",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-usernames-(by-requests)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-usernames-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-flagged-usernames",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-content-(by-request)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-content-(by-size)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=flagged-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-http-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-https-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-query-events",
         "type": "remove_report_nav"
       }
     ]
