@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1266,7 +1267,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( bridgeIntf == null ) {
                 throw new RuntimeException("Interface " +
                                            intf.getInterfaceId() +
-                                           " bridged to missing interface. (" + bridgeIntf.getInterfaceId() + ")");
+                                           " bridged to missing interface.");
             }
             if ( bridgeIntf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ) {
                 throw new RuntimeException("Interface " +
@@ -2540,6 +2541,8 @@ public class NetworkManagerImpl implements NetworkManager
                 return;
             }
 
+            FileInputStream fis = null;
+            OutputStream out = null;
             try{
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","application/vnd.tcpdump.pcap");
@@ -2547,19 +2550,28 @@ public class NetworkManagerImpl implements NetworkManager
 
                 byte[] buffer = new byte[1024];
                 int read;
-                FileInputStream fis = new FileInputStream(name);
-                OutputStream out = resp.getOutputStream();
+                fis = new FileInputStream(name);
+                out = resp.getOutputStream();
                 
                 while ( ( read = fis.read( buffer ) ) > 0 ) {
                     out.write( buffer, 0, read);
                 }
 
-                fis.close();
                 out.flush();
-                out.close();
-
             } catch (Exception e) {
                 logger.warn("Failed to export packet trace.",e);
+            } finally{
+                try{
+                    if(fis != null){
+                        fis.close();
+                    }
+                    if(out != null){
+                        out.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close formatter", ex);
+                }
+
             }
         }
     }
