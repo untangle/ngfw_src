@@ -560,10 +560,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             /*
              * Untangle hardware appliance.
              */
+            BufferedReader reader = null;
             try {
                 File keyFile = new File(APPLIANCE_MODEL_FILE);
                 if (keyFile.exists()) {
-                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                    reader = new BufferedReader(new FileReader(keyFile));
                     UvmContextImpl.applianceModel = reader.readLine();
                 } else {
                     /*
@@ -572,7 +573,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     UvmContextImpl.applianceModel = this.execManager().execOutput(APPLIANCE_VIRTUAL_DETECT_SCRIPT).trim();
                 }
             } catch (IOException x) {
-                logger.error("Unable to get UID", x);
+                logger.error("Unable to get appliance model", x);
+            }finally{
+                try {
+                    if(reader != null){
+                        reader.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close appliance model file", ex);
+                }
             }
         }
         return UvmContextImpl.applianceModel;
@@ -600,22 +609,32 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     public boolean isNetBoot()
     {
+        boolean result = false;
         File installerSyslog = new File("/var/log/installer/syslog");
         if (installerSyslog.exists()) {
+            java.util.Scanner scanner = null;
             try {
-                java.util.Scanner scanner = new java.util.Scanner(installerSyslog);
+                scanner = new java.util.Scanner(installerSyslog);
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
 
                     if (line.contains("BOOTIF") && line.contains("netboot.preseed"))
-                        return true;
+                        result = true;
                 }
             } catch (Exception e) {
                 logger.warn("Exception in isNetBoot()", e);
+            }finally{
+                try {
+                    if(scanner != null){
+                        scanner.close();
+                    }
+                } catch (Exception ex) {
+                    logger.error("Unable to close scanner", ex);
+                }
             }
         }
 
-        return false;
+        return result;
     }
 
     public Map<String, String> getTranslations(String module)
@@ -638,21 +657,33 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public boolean isStoreAvailable()
     {
+        boolean result = false;
+        Socket sock = null;
         for (int tries = 0; tries < 3; tries++) {
             try {
                 URL storeUrl = new URL(getStoreUrl());
                 String host = storeUrl.getHost();
                 InetAddress addr = InetAddress.getByName(host);
                 InetSocketAddress remoteAddress = new InetSocketAddress(addr, 80);
-                Socket sock = new Socket();
+                sock = new Socket();
                 sock.connect(remoteAddress, 5000);
-                sock.close();
-                return true;
+                result = true;
             } catch (Exception e) {
                 logger.warn("Failed to connect to store: " + e);
+            }finally{
+                try {
+                    if(sock != null){
+                        sock.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close socket", ex);
+                }
+            }
+            if(result == true){
+                return result;
             }
         }
-        return false;
+        return result;
     }
 
     public String getHelpUrl()
@@ -705,15 +736,23 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public String getServerUID()
     {
         if (UvmContextImpl.uid == null) {
+            BufferedReader reader = null;
             try {
                 File keyFile = new File(UID_FILE);
                 if (keyFile.exists()) {
-                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                    reader = new BufferedReader(new FileReader(keyFile));
                     UvmContextImpl.uid = reader.readLine();
-                    return UvmContextImpl.uid;
                 }
             } catch (IOException x) {
                 logger.error("Unable to get pop id: ", x);
+            }finally{
+                try {
+                    if(reader != null){
+                        reader.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
         return UvmContextImpl.uid;
@@ -1097,15 +1136,23 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     private void writeStatusFile( String status )
     {
+        java.io.PrintWriter writer = null;
         try {
             File statusFile = new File(UVM_STATUS_FILE);
             if (!statusFile.exists())
                 statusFile.createNewFile();
-            java.io.PrintWriter writer = new java.io.PrintWriter(statusFile, "UTF-8");
+            writer = new java.io.PrintWriter(statusFile, "UTF-8");
             writer.println(status);
-            writer.close();
         } catch (Exception e) {
             logger.warn("Failed to write status file.",e);
+        }finally{
+            try {
+                if(writer != null){
+                    writer.close();
+                }
+            } catch (Exception ex) {
+                logger.error("Unable to close file", ex);
+            }
         }
     }
 
