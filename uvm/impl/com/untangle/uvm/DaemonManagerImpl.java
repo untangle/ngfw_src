@@ -264,7 +264,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             
             if (object.extraRestartCommand != null) {
                 try {
-                    Thread.sleep(object.extraRestartDelay);
+                    object.wait(object.extraRestartDelay);
                 }
                 catch (Exception exn) {
                 }
@@ -312,17 +312,17 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
                 logger.warn("Exception (" + reason + ") while checking " + object.hostString + ":" + object.hostPort);
                 restart = true;
-            }
-
-            // make sure the streams and socket all get closed ignoring exceptions
-            try {
-                if (txstream != null)
-                    txstream.close();
-                if (rxstream != null)
-                    rxstream.close();
-                if (socket != null)
-                    socket.close();
-            } catch ( Exception exn ) {
+            }finally{
+                // make sure the streams and socket all get closed ignoring exceptions
+                try {
+                    if (txstream != null)
+                        txstream.close();
+                    if (rxstream != null)
+                        rxstream.close();
+                    if (socket != null)
+                        socket.close();
+                } catch ( Exception exn ) {
+                }
             }
 
             // if no exceptions then we check the response for the search string
@@ -341,7 +341,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
             if (object.extraRestartCommand != null) {
                 try {
-                    Thread.sleep(object.extraRestartDelay);
+                    object.wait(object.extraRestartDelay);
                 }
                 catch ( Exception exn ) {
                 }
