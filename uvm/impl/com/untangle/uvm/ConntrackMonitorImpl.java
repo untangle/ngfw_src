@@ -23,7 +23,7 @@ public class ConntrackMonitorImpl
     private static final int   CONNTRACK_PULSE_FREQUENCY_MS = 60*1000; /* 1 minute */
     private static final float CONNTRACK_PULSE_FREQUENCY_SEC = 60f; /* 1 minute */
     private static final int   CLEANER_PULSE_FREQUENCY = 560*1000; /* 5 minutes */
-    private static final long  LIFETIME_MS = 1000*60*3; /* 2 minutes */ /* Amount of time to keep complete sessions in table */
+    private static final long  LIFETIME_MS = (long)1000*60*3; /* 2 minutes */ /* Amount of time to keep complete sessions in table */
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
     
     private static ConntrackMonitorImpl INSTANCE = null;
@@ -103,7 +103,7 @@ public class ConntrackMonitorImpl
          * this plus the normal delay (60000) means it will start exactly after the new minute starts.
          * 8:00:40.500 +60000 -44449 = 8:01:00.001
          */
-        long extraInitialDelay = 0-(sec*1000+milli)+1; 
+        long extraInitialDelay = 0-((long)sec*1000+milli)+1; 
         return extraInitialDelay;
     }
     
