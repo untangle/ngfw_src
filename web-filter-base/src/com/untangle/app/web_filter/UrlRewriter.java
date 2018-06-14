@@ -1,6 +1,7 @@
 /**
  * $Id: UrlRewriter.java 41284 2015-09-18 07:03:39Z dmorris $
  */
+
 package com.untangle.app.web_filter;
 
 import java.net.URI;
@@ -13,11 +14,11 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 /**
- * Holds mappings between popular search engines and their safe search
- * HTTP requests.
- *
+ * Holds mappings between popular search engines and their safe search HTTP
+ * requests.
+ * 
  * Created: Tue Sep 22 10:39:28 2009
- *
+ * 
  */
 public class UrlRewriter
 {
@@ -39,56 +40,83 @@ public class UrlRewriter
         youtubeForSchoolsRewrites = new HashMap<Pattern, String>();
         youtubeForSchoolsRewrites.put(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/.+"), "edufilter=");
     };
-    
+
     private static List<Pattern> excludes;
     static {
         excludes = new ArrayList<Pattern>();
         excludes.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/maps/.*"));
     };
-    
+
     //http://support.google.com/youtube/bin/answer.py?hl=en&answer=1686318
     private static Pattern youtubeIgnorePattern = Pattern.compile("\\.(png|gif|js|xml|css)$");
-    
+
+    /**
+     * Get the safe search URI
+     * 
+     * @param host
+     *        The host
+     * @param uri
+     *        The URI
+     * @return The safe search URI
+     */
     public static URI getSafeSearchUri(String host, URI uri)
     {
-        String uriParam = getParam( safeSearchRewrites, host, uri );
+        String uriParam = getParam(safeSearchRewrites, host, uri);
         if (uriParam != null) {
             URI safeUri = URI.create(uri.toString() + "&" + uriParam);
             logger.debug("getUrlRewriterUri: '" + safeUri + "'");
             return safeUri;
-        } else
-            return null;
+        } else return null;
     }
 
+    /**
+     * Get the YouTube for Schools URI
+     * 
+     * @param host
+     *        The host
+     * @param uri
+     *        The URI
+     * @param youtubeIdentifier
+     *        The YouTube identifier
+     * @return The YouTube for Schools URI
+     */
     public static URI getYoutubeForSchoolsUri(String host, URI uri, String youtubeIdentifier)
     {
-        String uriParam = getParam( youtubeForSchoolsRewrites, host, uri );
+        String uriParam = getParam(youtubeForSchoolsRewrites, host, uri);
         if (uriParam != null) {
             if (youtubeIgnorePattern.matcher(uri.toString()).matches()) {
                 return null;
             }
 
             String newUri;
-            
+
             /**
-             * If it already contains arguments, append to them.
-             * Otherwise add them
+             * If it already contains arguments, append to them. Otherwise add
+             * them
              */
-            if (uri.toString().contains("?"))
-                newUri = uri.toString() + "&" + uriParam + youtubeIdentifier;
-            else
-                newUri = uri.toString() + "?" + uriParam + youtubeIdentifier;
-                
+            if (uri.toString().contains("?")) newUri = uri.toString() + "&" + uriParam + youtubeIdentifier;
+            else newUri = uri.toString() + "?" + uriParam + youtubeIdentifier;
+
             logger.debug("Original  URI: \"" + uri + "\"");
             logger.debug("Using new URI: \"" + newUri + "\"");
 
             URI youtubeUri = URI.create(newUri);
             logger.debug("getYoutubeForSchoolsUri: '" + youtubeUri + "'");
             return youtubeUri;
-        } else
-            return null;
+        } else return null;
     }
 
+    /**
+     * Get parameter
+     * 
+     * @param patterns
+     *        The patterns
+     * @param host
+     *        The host
+     * @param uri
+     *        The URI
+     * @return The paramter
+     */
     private static String getParam(Map<Pattern, String> patterns, String host, URI uri)
     {
         String url = host + uri.toString();
@@ -108,5 +136,4 @@ public class UrlRewriter
         }
         return null;
     }
-
 }

@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.web_filter;
 
 /**
@@ -8,6 +9,8 @@ package com.untangle.app.web_filter;
  */
 public enum Reason
 {
+// THIS IS FOR ECLIPSE - @formatter:off
+
     BLOCK_CATEGORY('D', "in Categories Block list"),
     BLOCK_URL('U', "in Site Block list"),
     BLOCK_IP_HOST('H', "hostname is an IP address"),
@@ -18,28 +21,57 @@ public enum Reason
     FILTER_RULE('F', "matched Rule list"),
     DEFAULT('N', "no rule applied");
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     private final char key;
     private final String reason;
 
+    /**
+     * Constructor
+     * 
+     * @param key
+     *        The key
+     * @param reason
+     *        The reason
+     */
     private Reason(char key, String reason)
     {
         this.key = key;
         this.reason = reason;
     }
 
-    public char getKey(){
+    /**
+     * Get the key
+     * 
+     * @return The key
+     */
+    public char getKey()
+    {
         return key;
     }
 
-    public String getReason() {
+    /**
+     * Get the reason
+     * 
+     * @return The reason
+     */
+    public String getReason()
+    {
         return reason;
     }
 
+    /**
+     * Get the reason for an argumented key
+     * 
+     * @param key
+     *        The search key
+     * @return The corresponding reason or null
+     */
     public static Reason getInstance(char key)
     {
         Reason[] values = values();
         for (int i = 0; i < values.length; i++) {
-            if (values[i].getKey() == key){
+            if (values[i].getKey() == key) {
                 return values[i];
             }
         }
