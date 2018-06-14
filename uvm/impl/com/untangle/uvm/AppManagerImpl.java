@@ -322,8 +322,8 @@ public class AppManagerImpl implements AppManager
                 Long requiredMemory = appProperties.getMinimumMemory();
                 Long actualMemory = UvmContextFactory.context().metricManager().getMemTotal();
                 if ( actualMemory < requiredMemory ) {
-                    float requiredGig = ((float)(requiredMemory/(1024*1024))) / (1024.0f);
-                    float actualGig = ((float)(actualMemory/(1024*1024))) / (1024.0f);
+                    float requiredGig = ((float)((double)requiredMemory/(1024*1024))) / (1024.0f);
+                    float actualGig = ((float)((double)actualMemory/(1024*1024))) / (1024.0f);
                     String message = "This app requires more memory (required: " + (Math.round(10.0*requiredGig)/10.0) + "G actual: " + (Math.round(10.0*actualGig)/10.0) + "G)";
                     throw new Exception(message);
                 }
@@ -370,7 +370,7 @@ public class AppManagerImpl implements AppManager
         /**
          * If AutoStart is true, go ahead and start app
          */
-        if ( appProperties != null && appProperties.getAutoStart() ) {
+        if ( app != null && appProperties != null && appProperties.getAutoStart() ) {
             app.start();
         }
 
