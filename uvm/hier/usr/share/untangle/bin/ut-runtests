@@ -6,9 +6,9 @@ import os
 import time
 import traceback
 import time
-sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.7/tests'):
+for f in os.listdir('@PREFIX@/usr/lib/python2.7/dist-packages/tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
         __import__('tests.%s' % m)
