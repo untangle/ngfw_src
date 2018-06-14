@@ -4,7 +4,6 @@
 package com.untangle.app.shield;
 
 import java.util.Set;
-import java.util.Iterator;
 import java.io.File;
 
 import org.apache.log4j.Logger;
