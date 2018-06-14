@@ -1,5 +1,5 @@
 /**
- * $HeadURL$
+ * $Id$
  */
 
 package com.untangle.app.web_filter;
@@ -54,6 +54,12 @@ public abstract class DecisionEngine
      */
     private final Map<InetAddress, HashSet<String>> unblockedDomains = new HashMap<InetAddress, HashSet<String>>();
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The owner application
+     */
     public DecisionEngine(WebFilterBase app)
     {
         this.app = app;
@@ -62,6 +68,14 @@ public abstract class DecisionEngine
     /**
      * This must be overridden by the specific implementation of the Decision
      * Engine It must return a list of categories (strings) for a given URL
+     * 
+     * @param dom
+     *        The dom
+     * @param port
+     *        The port
+     * @param uri
+     *        The uri
+     * @return The list of categories
      */
     protected abstract List<String> categorizeSite(String dom, int port, String uri);
 
@@ -69,30 +83,29 @@ public abstract class DecisionEngine
      * Checks if the request should be blocked, giving an appropriate response
      * if it should.
      * 
+     * @param sess
+     *        The session
      * @param clientIp
-     *            IP That made the request.
+     *        IP That made the request.
      * @param port
-     *            Port that the request was made to.
+     *        Port that the request was made to.
      * @param requestLine
+     *        The request line token
      * @param header
-     * @param event
-     *            This is the new sessions request associated with this request,
-     *            (or null if this is later.)
+     *        The header token
      * @return an HTML response (null means the site is passed and no response
      *         is given).
      */
     public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
-         * this stores whether this visit should be
-         * flagged for any reason
+         * this stores whether this visit should be flagged for any reason
          */
         Boolean isFlagged = false;
         /*
-         * this stores the corresponding reason
-         * for the flag/block
+         * this stores the corresponding reason for the flag/block
          */
-        Reason reason = Reason.DEFAULT; 
+        Reason reason = Reason.DEFAULT;
         GenericRule bestCategory = null;
         String bestCategoryStr = null;
         String requestMethod = null;
@@ -101,8 +114,7 @@ public abstract class DecisionEngine
 
         try {
             /**
-             * XXX what is this: .replaceAll("(?<!:)/+", "/")
-             * -dmorris
+             * XXX what is this: .replaceAll("(?<!:)/+", "/") -dmorris
              */
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
         } catch (URISyntaxException e) {
@@ -229,8 +241,7 @@ public abstract class DecisionEngine
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle());
                 return app.generateNonce(bd);
             } else {
-                if (urlRule.getFlagged())
-                    isFlagged = true;
+                if (urlRule.getFlagged()) isFlagged = true;
 
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.BLOCK_URL, catStr, app.getName());
                 logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
@@ -307,9 +318,20 @@ public abstract class DecisionEngine
     }
 
     /**
+     * 
      * This checks a given response (some items such as mime-type are only known
      * when the response comes) If for any reason the visit is block a nonce is
      * returned. Otherwise null is return and the response is passed
+     * 
+     * @param sess
+     *        The session
+     * @param clientIp
+     *        IP that made the request
+     * @param requestLine
+     *        Request line token
+     * @param header
+     *        Header token
+     * @return Returns a nonce if the visit is blocked, otherwise null
      */
     public String checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
@@ -361,6 +383,11 @@ public abstract class DecisionEngine
 
     /**
      * Add a specify site to the unblocked list for the specified IP
+     * 
+     * @param addr
+     *        The site address
+     * @param site
+     *        The site name
      */
     public void addUnblockedSite(InetAddress addr, String site)
     {
@@ -383,7 +410,7 @@ public abstract class DecisionEngine
      * sites.
      * 
      * @param map
-     *            a Map<InetAddress, List<String>>
+     *        a Map<InetAddress, List<String>>
      */
     public void removeUnblockedSites(Map<InetAddress, List<String>> map)
     {
@@ -423,7 +450,9 @@ public abstract class DecisionEngine
     }
 
     /**
-     *
+     * Get the owner application
+     * 
+     * @return The owner application
      */
     public WebFilterBase getApp()
     {
@@ -435,11 +464,11 @@ public abstract class DecisionEngine
      * clientIp
      * 
      * @param host
-     *            host of the URL
+     *        host of the URL
      * @param uri
-     *            URI of the URL
+     *        URI of the URL
      * @param clientIp
-     *            IP of the host
+     *        IP of the host
      * @return true if the site has been explicitly unblocks for that user,
      *         false otherwise
      */
@@ -456,6 +485,16 @@ public abstract class DecisionEngine
     /**
      * Checks the given URL against sites in the block list Returns the given
      * rule if a rule matches, otherwise null
+     * 
+     * @param sess
+     *        The session
+     * @param host
+     *        The host
+     * @param uri
+     *        The uri
+     * @param requestLine
+     *        The request line token
+     * @return The first matching rule or null
      */
     private GenericRule checkUrlList(AppTCPSession sess, String host, String uri, RequestLineToken requestLine)
     {
@@ -489,6 +528,18 @@ public abstract class DecisionEngine
 
     /**
      * Check the given URL against the categories (and their settings)
+     * 
+     * @param sess
+     *        The session
+     * @param clientIp
+     *        The client address
+     * @param host
+     *        The destination host
+     * @param port
+     *        The destination port
+     * @param requestLine
+     *        The request line token
+     * @return The first matching rule or null
      */
     private GenericRule checkCategory(AppTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine)
     {
@@ -551,6 +602,12 @@ public abstract class DecisionEngine
 
     /**
      * Checks whether a given domain has been unblocked for the given address
+     * 
+     * @param domain
+     *        The domain
+     * @param clientAddr
+     *        The client address
+     * @return True if unblocked, otherwise false
      */
     private boolean isDomainUnblocked(String domain, InetAddress clientAddr)
     {
@@ -587,6 +644,12 @@ public abstract class DecisionEngine
 
     /**
      * Look for any web filter rules that match the session
+     * 
+     * @param sess
+     *        The session
+     * @param checkCaller
+     *        The caller
+     * @return The first matching rule or null
      */
     private WebFilterRule checkFilterRules(AppSession sess, String checkCaller)
     {
