@@ -1,5 +1,5 @@
 FROM untangleinc/ngfw:base
-MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
+LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 RUN apt-get update
 RUN apt-get install --yes untangle-development-build
