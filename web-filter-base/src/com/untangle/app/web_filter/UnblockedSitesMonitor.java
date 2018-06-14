@@ -1,6 +1,7 @@
-/*
- * $HeadURL$
+/**
+ * $Id$
  */
+
 package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
@@ -17,9 +18,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
- * Regularly monitor user-unblocked sites and expire them after a
- * certain delay.
- *
+ * Regularly monitor user-unblocked sites and expire them after a certain delay.
+ * 
  */
 public class UnblockedSitesMonitor
 {
@@ -29,23 +29,43 @@ public class UnblockedSitesMonitor
     private final Logger logger = Logger.getLogger(getClass());
     private final Monitor monitor = new Monitor();
 
+    /**
+     * Constructor
+     * 
+     * @param myWfb
+     *        The base web filter app
+     */
     public UnblockedSitesMonitor(WebFilterBase myWfb)
     {
         logger.info("UnblockedSitesMonitor initializing");
         wfb = myWfb;
     }
 
+    /**
+     * Add an unblocked site
+     * 
+     * @param addr
+     *        The address
+     * @param site
+     *        The site
+     */
     void addUnblockedSite(InetAddress addr, String site)
     {
         monitor.addUnblockedSite(addr, site);
     }
-    
+
+    /**
+     * Start the monitor
+     */
     void start()
     {
         this.monitor.running = true;
         UvmContextFactory.context().newThread(this.monitor).start();
     }
 
+    /**
+     * Stop the monitor
+     */
     void stop()
     {
         this.monitor.running = false;
@@ -58,50 +78,61 @@ public class UnblockedSitesMonitor
     private final class Monitor implements Runnable
     {
         protected boolean running = true;
-        
+
         private SortedSet<UnblockedSite> unblockedSites = new TreeSet<UnblockedSite>();
-    
+
+        /**
+         * Remove all sites
+         */
         public synchronized void flushAll()
         {
             this.unblockedSites = new TreeSet<UnblockedSite>();
         }
 
+        /**
+         * Add an unblocked site
+         * 
+         * @param addr
+         *        The address
+         * @param site
+         *        The site
+         */
         public synchronized void addUnblockedSite(InetAddress addr, String site)
         {
             UnblockedSite bs = new UnblockedSite(addr, site);
-            if (unblockedSites.contains(bs))
-                unblockedSites.remove(bs);  // to make sure creation time is the latest...
+            if (unblockedSites.contains(bs)) unblockedSites.remove(bs); // to make sure creation time is the latest...
             unblockedSites.add(bs);
 
             logger.info("Adding unblock:" + bs);
         }
 
+        /**
+         * Thread run function
+         */
         public void run()
         {
-            while ( true ) {
+            while (true) {
 
                 try {
                     Thread.sleep(MONITOR_SLEEP_DELAY_MS);
-                } catch ( Exception e ) {}
+                } catch (Exception e) {
+                }
 
-                if ( ! running )
-                    return;
-                
-                if (unblockedSites.isEmpty())
-                    continue;
+                if (!running) return;
 
-                long expirationTime = System.currentTimeMillis() - (wfb.getSettings().getUnblockTimeout()*1000);
+                if (unblockedSites.isEmpty()) continue;
+
+                long expirationTime = System.currentTimeMillis() - (wfb.getSettings().getUnblockTimeout() * 1000);
 
                 /**
-                 * If the first site in the list is not yet expired and the list is order
-                 * There is no need to traverse the whole list
+                 * If the first site in the list is not yet expired and the list
+                 * is order There is no need to traverse the whole list
                  */
-                if (unblockedSites.first().creationTimeMillis > expirationTime)
-                    continue;
+                if (unblockedSites.first().creationTimeMillis > expirationTime) continue;
 
                 try {
-                    Map<InetAddress,List<String>> sitesToDelete = new HashMap<InetAddress,List<String>>();
-                    synchronized(this) {
+                    Map<InetAddress, List<String>> sitesToDelete = new HashMap<InetAddress, List<String>>();
+                    synchronized (this) {
                         Iterator<UnblockedSite> iter = unblockedSites.iterator();
                         UnblockedSite bs;
                         List<String> l;
@@ -119,8 +150,7 @@ public class UnblockedSitesMonitor
                             iter.remove();
 
                             // add to sitesToDelete
-                            if (sitesToDelete.containsKey(bs.addr))
-                                sitesToDelete.get(bs.addr).add(bs.site);
+                            if (sitesToDelete.containsKey(bs.addr)) sitesToDelete.get(bs.addr).add(bs.site);
                             else {
                                 l = new ArrayList<String>();
                                 l.add(bs.site);
@@ -137,17 +167,25 @@ public class UnblockedSitesMonitor
     }
 
     /**
-     * A site unblocked by a specific host. Note that this class has a
-     * natural ordering that is inconsistent with equals(): we
-     * consider two UnblockedSites to be equal if the host and the URL
-     * are equals, but we order them by creation time.
+     * A site unblocked by a specific host. Note that this class has a natural
+     * ordering that is inconsistent with equals(): we consider two
+     * UnblockedSites to be equal if the host and the URL are equals, but we
+     * order them by creation time.
      */
-    private final class UnblockedSite implements Comparable<UnblockedSite> 
+    private final class UnblockedSite implements Comparable<UnblockedSite>
     {
         private String site;
         private InetAddress addr;
         private long creationTimeMillis;
-    
+
+        /**
+         * Constructor
+         * 
+         * @param myAddr
+         *        The address
+         * @param mySite
+         *        The site
+         */
         public UnblockedSite(InetAddress myAddr, String mySite)
         {
             site = mySite;
@@ -155,20 +193,36 @@ public class UnblockedSitesMonitor
             creationTimeMillis = System.currentTimeMillis();
         }
 
+        /**
+         * Generate a hash code from the site and address
+         * 
+         * @return The hashcode
+         */
         public int hashCode()
         {
             return (17 + 37 * (site.hashCode() + addr.hashCode()));
         }
-    
+
+        /**
+         * Compare with another UnblockedSite object
+         * 
+         * @param other
+         *        The object for comparision
+         * @return Comparison result
+         */
         public int compareTo(UnblockedSite other)
         {
-            return (int)(creationTimeMillis - other.creationTimeMillis);
+            return (int) (creationTimeMillis - other.creationTimeMillis);
         }
-    
+
+        /**
+         * Create string representation
+         * 
+         * @return The string representation
+         */
         public String toString()
         {
             return "Unblock {" + addr + ", " + site + "}";
         }
-
     }
 }
