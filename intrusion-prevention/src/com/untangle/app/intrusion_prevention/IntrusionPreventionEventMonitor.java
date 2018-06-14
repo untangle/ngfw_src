@@ -25,7 +25,7 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortUnified2Par
  */
 class IntrusionPreventionEventMonitor implements Runnable
 {
-    public static final long SLEEP_TIME_MSEC = 30 * 1000;
+    public static final long SLEEP_TIME_MSEC = (long)30 * 1000;
 
     /* Delay a second while the thread is joining */
     private static final long THREAD_JOIN_TIME_MSEC = 1000;
