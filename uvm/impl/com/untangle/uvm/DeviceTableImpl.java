@@ -61,7 +61,7 @@ public class DeviceTableImpl implements DeviceTable
         return deviceTable;
     }
 
-    public LinkedList<DeviceTableEntry> getDevices()
+    public synchronized LinkedList<DeviceTableEntry> getDevices()
     {
         LinkedList<DeviceTableEntry> list = new LinkedList<DeviceTableEntry>( deviceTable.values() );
         return list;
