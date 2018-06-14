@@ -538,6 +538,7 @@ public class IntrusionPreventionApp extends AppBase
                 }else{
                     settingsName = app.getSettingsFileName();
                 }
+                FileInputStream fis = null;
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
                     resp.setHeader("Content-Type","application/json");
@@ -549,7 +550,7 @@ public class IntrusionPreventionApp extends AppBase
                     }
                     byte[] buffer = new byte[1024];
                     int read;
-                    FileInputStream fis = new FileInputStream(settingsName);
+                    fis = new FileInputStream(settingsName);
                     OutputStream out = resp.getOutputStream();
                 
                     while ( ( read = fis.read( buffer ) ) > 0 ) {
@@ -562,6 +563,14 @@ public class IntrusionPreventionApp extends AppBase
 
                 } catch (Exception e) {
                     logger.warn("Failed to load IPS settings",e);
+                }finally{
+                    try{
+                        if(fis != null){
+                            fis.close();
+                        }
+                    }catch( IOException e){
+                        logger.warn("Failed to close file");
+                    }
                 }
                 app.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
@@ -577,11 +586,12 @@ public class IntrusionPreventionApp extends AppBase
                 String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
                 String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
                 int verifyResult = 1;
+                FileOutputStream fos = null;
                 try{
                     byte[] buffer = new byte[1024];
                     int read;
                     InputStream in = req.getInputStream();
-                    FileOutputStream fos = new FileOutputStream( tempPatchName );
+                    fos = new FileOutputStream( tempPatchName );
 
                     while ( ( read = in.read( buffer ) ) > 0 ) {
                         fos.write( buffer, 0, read);
@@ -589,7 +599,6 @@ public class IntrusionPreventionApp extends AppBase
 
                     in.close();
                     fos.flush();
-                    fos.close();
 
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
@@ -619,16 +628,23 @@ public class IntrusionPreventionApp extends AppBase
 
                     File fp = new File( tempPatchName );
                     fp.delete();
-
                 }catch( IOException e ){
                     logger.warn("Failed to save IPS settings");
+                }finally{
+                    try{
+                        if(fos != null){
+                            fos.close();
+                        }
+                    }catch( IOException e){
+                        logger.warn("Failed to close file");
+                    }
                 }
 
                 String responseText = "{success:true}";
                 if( verifyResult == 0 ){
                     app.saveSettings( tempSettingsName );
                 }else{
-                     responseText = "{success:false}";
+                    responseText = "{success:false}";
                 }
 
                 try{
