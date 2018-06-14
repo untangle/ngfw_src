@@ -883,9 +883,17 @@ public class CaptivePortalApp extends AppBase
      */
     public int userAdminLogout(String userkey)
     {
-        return(userForceLogout(userkey, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
+        return (userForceLogout(userkey, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
     }
 
+    /**
+     *
+     * @param userkey
+     *        The IP or MAC address of the user to be logged out
+     * @param reason
+     *        The reason the user is being logged out
+     * @return Zero for logout success, any other value for failure
+     */
     public int userForceLogout(String userkey, CaptivePortalUserEvent.EventType reason)
     {
         HostTableEntry entry = null;
