@@ -70,14 +70,16 @@ public class IpsecVpnManager
      * 
      * @param settings
      *        The application settings to be used
+     * @param ipsecCertFile
+     *        The certificate assigned for use by the IPsec server
      */
-    public void generateConfig(IpsecVpnSettings settings,String ipsecCertFile)
+    public void generateConfig(IpsecVpnSettings settings, String ipsecCertFile)
     {
         logger.debug("generateConfig()");
 
         // generate all of the network scripts
         try {
-            writeConfigFiles(settings,ipsecCertFile);
+            writeConfigFiles(settings, ipsecCertFile);
             scriptWriter.write_IPSEC_script(settings);
             scriptWriter.write_XAUTH_script(settings);
             scriptWriter.write_GRE_script(settings);
@@ -115,9 +117,11 @@ public class IpsecVpnManager
      * 
      * @param settings
      *        The application settings to be used
+     * @param ipsecCertFile
+     *        The certificate assigned for use by the IPsec server
      * @throws Exception
      */
-    private void writeConfigFiles(IpsecVpnSettings settings,String ipsecCertFile) throws Exception
+    private void writeConfigFiles(IpsecVpnSettings settings, String ipsecCertFile) throws Exception
     {
         logger.debug("writeConfigFiles()");
 
