@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -166,7 +167,7 @@ public class CertificateManagerImpl implements CertificateManager
             String baseName = Long.toString(System.currentTimeMillis() / 1000l);
             String certString = new String(fileItem.get());
 
-            FileOutputStream certStream;
+            FileOutputStream certStream = null;
             int certLen = 0;
             int keyLen = 0;
 
@@ -200,9 +201,22 @@ public class CertificateManagerImpl implements CertificateManager
             // created from a CSR we generated so combine with our private key
             if (keyLen == 0) {
                 // start by writing the uploaded cert to a temporary file
-                certStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
-                certStream.write(certString.getBytes(), certTop, certLen);
-                certStream.close();
+                try{
+                    certStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
+                    certStream.write(certString.getBytes(), certTop, certLen);
+                    certStream.close();
+                }catch (Exception exn) {
+                    logger.warn("Exception during certificate download", exn);
+                }finally{
+                    try{
+                        if(certStream != null){
+                            certStream.close();
+                        }
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
+                    }
+                    certStream = null;
+                }
 
                 // Make sure the cert they uploaded matches our private key 
                 String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
@@ -216,10 +230,22 @@ public class CertificateManagerImpl implements CertificateManager
                 }
 
                 // the cert and key match so save the certificate to a file
-                certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
-                certStream.write(certString.getBytes(), certTop, certLen);
-                certStream.write('\n');
-                certStream.close();
+                try{
+                    certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
+                    certStream.write(certString.getBytes(), certTop, certLen);
+                    certStream.write('\n');
+                    certStream.close();
+                }catch (Exception exn) {
+                    logger.warn("Exception during certificate download", exn);
+                }finally{
+                    try{
+                        if(certStream != null){
+                            certStream.close();
+                        }
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
+                    }
+                }
 
                 // make a copy of the server key file in the certificate key file
                 UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + CERT_STORE_PATH + baseName + ".key");
@@ -237,81 +263,97 @@ public class CertificateManagerImpl implements CertificateManager
 
                 // finally we create .crt and .key files from the contents of the .pem file
                 File certFile = new File(CERT_STORE_PATH + baseName + ".pem");
-                BufferedReader certReader = new BufferedReader(new FileReader(certFile));
-                FileWriter crtStream = new FileWriter(CERT_STORE_PATH + baseName + ".crt");
-                FileWriter keyStream = new FileWriter(CERT_STORE_PATH + baseName + ".key");
-                StringBuilder rawdata = new StringBuilder();
-                String grabstr;
-                boolean crtflag = false;
-                boolean keyflag = false;
+                BufferedReader certReader = null;
+                FileWriter crtStream = null;
+                FileWriter keyStream = null;
+                try{
+                    certReader = new BufferedReader(new FileReader(certFile));
+                    crtStream = new FileWriter(CERT_STORE_PATH + baseName + ".crt");
+                    keyStream = new FileWriter(CERT_STORE_PATH + baseName + ".key");
+                    StringBuilder rawdata = new StringBuilder();
+                    String grabstr;
+                    boolean crtflag = false;
+                    boolean keyflag = false;
 
-                /*
-                 * We read each line of the file looking look for crt and key
-                 * head and tail markers to control some simple state logic that
-                 * lets us stream the certificates into the crt file and the
-                 * private key into it's own key file.
-                 */
-                for (;;) {
-                    grabstr = certReader.readLine();
-                    if (grabstr == null) break;
+                    /*
+                     * We read each line of the file looking look for crt and key
+                     * head and tail markers to control some simple state logic that
+                     * lets us stream the certificates into the crt file and the
+                     * private key into it's own key file.
+                     */
+                    for (;;) {
+                        grabstr = certReader.readLine();
+                        if (grabstr == null) break;
 
-                    // if we're not working on a crt or key we look for the
-                    // beginning of either set the appropriate flag if found
-                    if ((crtflag == false) && (keyflag == false)) {
-                        if (grabstr.indexOf(MARKER_CERT_HEAD) >= 0) crtflag = true;
-                        if (grabstr.indexOf(MARKER_RKEY_HEAD) >= 0) keyflag = true;
-                        if (grabstr.indexOf(MARKER_GKEY_HEAD) >= 0) keyflag = true;
-                        continue;
-                    }
-
-                    // if we find the end of a crt but we're not working on a
-                    // crt clear the flag and buffer since it must be garbage
-                    if (grabstr.indexOf(MARKER_CERT_TAIL) >= 0) {
-                        if (crtflag == false) {
-                            rawdata.setLength(0);
-                            keyflag = false;
+                        // if we're not working on a crt or key we look for the
+                        // beginning of either set the appropriate flag if found
+                        if ((crtflag == false) && (keyflag == false)) {
+                            if (grabstr.indexOf(MARKER_CERT_HEAD) >= 0) crtflag = true;
+                            if (grabstr.indexOf(MARKER_RKEY_HEAD) >= 0) keyflag = true;
+                            if (grabstr.indexOf(MARKER_GKEY_HEAD) >= 0) keyflag = true;
                             continue;
                         }
 
-                        // found the end of a crt and we were working on a crt so
-                        // write the crt to the file and reset buffer and flag
-                        crtStream.write(MARKER_CERT_HEAD + "\n");
-                        crtStream.write(rawdata.toString());
-                        crtStream.write(MARKER_CERT_TAIL + "\n");
-                        rawdata.setLength(0);
-                        crtflag = false;
-                        continue;
-                    }
+                        // if we find the end of a crt but we're not working on a
+                        // crt clear the flag and buffer since it must be garbage
+                        if (grabstr.indexOf(MARKER_CERT_TAIL) >= 0) {
+                            if (crtflag == false) {
+                                rawdata.setLength(0);
+                                keyflag = false;
+                                continue;
+                            }
 
-                    // if we find the end of a key but we're not working on a 
-                    // key clear the flag and buffer since it must be garbage
-                    if ((grabstr.indexOf(MARKER_RKEY_TAIL) >= 0) || (grabstr.indexOf(MARKER_GKEY_TAIL) >= 0)) {
-                        if (keyflag == false) {
+                            // found the end of a crt and we were working on a crt so
+                            // write the crt to the file and reset buffer and flag
+                            crtStream.write(MARKER_CERT_HEAD + "\n");
+                            crtStream.write(rawdata.toString());
+                            crtStream.write(MARKER_CERT_TAIL + "\n");
                             rawdata.setLength(0);
                             crtflag = false;
                             continue;
                         }
 
-                        // found the end of a key and we were working on a key so
-                        // write the key to the file and reset buffer and flag
-                        keyStream.write(MARKER_RKEY_HEAD + "\n");
-                        keyStream.write(rawdata.toString());
-                        keyStream.write(MARKER_RKEY_TAIL + "\n");
-                        rawdata.setLength(0);
-                        keyflag = false;
-                        continue;
+                        // if we find the end of a key but we're not working on a 
+                        // key clear the flag and buffer since it must be garbage
+                        if ((grabstr.indexOf(MARKER_RKEY_TAIL) >= 0) || (grabstr.indexOf(MARKER_GKEY_TAIL) >= 0)) {
+                            if (keyflag == false) {
+                                rawdata.setLength(0);
+                                crtflag = false;
+                                continue;
+                            }
+
+                            // found the end of a key and we were working on a key so
+                            // write the key to the file and reset buffer and flag
+                            keyStream.write(MARKER_RKEY_HEAD + "\n");
+                            keyStream.write(rawdata.toString());
+                            keyStream.write(MARKER_RKEY_TAIL + "\n");
+                            rawdata.setLength(0);
+                            keyflag = false;
+                            continue;
+                        }
+
+                        // we're working on a crt or key so add the line to the buffer
+                        rawdata.append(grabstr);
+                        rawdata.append("\n");
                     }
-
-                    // we're working on a crt or key so add the line to the buffer
-                    rawdata.append(grabstr);
-                    rawdata.append("\n");
+                }catch (Exception exn) {
+                    logger.warn("Exception during certificate download", exn);
+                }finally{
+                    try{
+                        if(certReader != null){
+                            certReader.close();
+                        }
+                        if(crtStream != null){
+                            crtStream.close();
+                        }
+                        if(keyStream != null){
+                            keyStream.close();
+                        }
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
+                    }
                 }
-
-                certReader.close();
-                crtStream.close();
-                keyStream.close();
             }
-
             // last thing we do is convert the certificate PEM file to PFX format
             // for apps that use SSLEngine like web filter and captive portal
             UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
@@ -332,12 +374,12 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
+            FileInputStream certStream = null;
             try {
                 File certFile = new File(ROOT_CERT_FILE);
-                FileInputStream certStream = new FileInputStream(certFile);
+                certStream = new FileInputStream(certFile);
                 byte[] certData = new byte[(int) certFile.length()];
                 certStream.read(certData);
-                certStream.close();
 
                 // set the headers.
                 resp.setContentType("application/x-download");
@@ -345,10 +387,16 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certData);
-            }
-
-            catch (Exception exn) {
+            }catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
+            }finally{
+                try{
+                    if(certStream != null){
+                        certStream.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
     }
@@ -367,11 +415,11 @@ public class CertificateManagerImpl implements CertificateManager
         {
             File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
 
+            FileInputStream certInstallerStream = null;
             try {
-                FileInputStream certInstallerStream = new FileInputStream(rootCertInstallerFile);
+                certInstallerStream = new FileInputStream(rootCertInstallerFile);
                 byte[] certInstallerData = new byte[(int) rootCertInstallerFile.length()];
                 certInstallerStream.read(certInstallerData);
-                certInstallerStream.close();
 
                 // set the headers.
                 resp.setContentType("application/x-download");
@@ -379,10 +427,16 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certInstallerData);
-            }
-
-            catch (Exception exn) {
+            }catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
+            }finally{
+                try{
+                    if(certInstallerStream != null){
+                        certInstallerStream.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
     }
@@ -406,12 +460,12 @@ public class CertificateManagerImpl implements CertificateManager
             String argString = UvmContextFactory.context().execManager().argBuilder(argList);
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
+            FileInputStream certStream = null;
             try {
                 File certFile = new File(EXTERNAL_REQUEST_FILE);
-                FileInputStream certStream = new FileInputStream(certFile);
+                certStream = new FileInputStream(certFile);
                 byte[] certData = new byte[(int) certFile.length()];
                 certStream.read(certData);
-                certStream.close();
 
                 // set the headers.
                 resp.setContentType("application/x-download");
@@ -419,10 +473,16 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certData);
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
+            }finally{
+                try{
+                    if(certStream != null){
+                        certStream.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
     }
