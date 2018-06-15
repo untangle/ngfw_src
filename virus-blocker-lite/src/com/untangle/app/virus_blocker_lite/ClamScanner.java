@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker_lite;
 
 import java.io.File;
@@ -17,6 +18,9 @@ import com.untangle.uvm.vnet.AppSession;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The Clam Virus Scanner
+ */
 public class ClamScanner implements VirusScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -29,35 +33,55 @@ public class ClamScanner implements VirusScanner
 
     private final VirusBlockerLiteApp app;
 
-    public ClamScanner( VirusBlockerLiteApp app )
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The virus blocker lite application
+     */
+    public ClamScanner(VirusBlockerLiteApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Get the vendor name
+     * 
+     * @return The vendor name
+     */
     public String getVendorName()
     {
         return "virus_blocker_lite";
     }
 
+    /**
+     * Scan a file for viruses
+     * 
+     * @param scanfile
+     *        The file to scan
+     * @param session
+     *        The application session
+     * @return The scan result
+     */
     public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
         VirusBlockerState virusState = (VirusBlockerState) session.attachment();
 
         // if we have a good MD5 hash then spin up the cloud checker
         // this is effectively feedback as we never check the response
-        if ( app.getSettings().getEnableCloudScan() && virusState.fileHash != null ) {
+        if (app.getSettings().getEnableCloudScan() && virusState.fileHash != null) {
             VirusCloudScanner cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
         VirusScannerResult result = VirusScannerResult.CLEAN;
-        if ( app.getSettings().getEnableLocalScan() ) {
+        if (app.getSettings().getEnableLocalScan()) {
             ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
             result = scan.doScan(timeout);
         }
 
         // if we found an infection then pass along the feedback
-        if ( app.getSettings().getEnableCloudScan() && !result.isClean() ) {
+        if (app.getSettings().getEnableCloudScan() && !result.isClean()) {
             VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, null);
             feedback.start();
         }
@@ -65,6 +89,11 @@ public class ClamScanner implements VirusScanner
         return (result);
     }
 
+    /**
+     * Get the date of the last virus signature update
+     * 
+     * @return The date of the last virus signature update
+     */
     public Date getLastSignatureUpdate()
     {
         try {
