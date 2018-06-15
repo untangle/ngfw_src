@@ -12,20 +12,40 @@ import com.untangle.uvm.app.RuleCondition;
  * 
  * A WebFilterLogicRule has a set of these to determine what traffic to match
  */
-
 @SuppressWarnings("serial")
 public class WebFilterRuleCondition extends RuleCondition
 {
+    /**
+     * Constructor
+     */
     public WebFilterRuleCondition()
     {
         super();
     }
 
-    public WebFilterRuleCondition( ConditionType conditionType, String value)
+    /**
+     * Constructor
+     * 
+     * @param conditionType
+     *        The condition type
+     * @param value
+     *        The value
+     */
+    public WebFilterRuleCondition(ConditionType conditionType, String value)
     {
         super(conditionType, value);
     }
 
+    /**
+     * Constructor
+     * 
+     * @param conditionType
+     *        The condition type
+     * @param value
+     *        The value
+     * @param invert
+     *        Invert flag
+     */
     public WebFilterRuleCondition(ConditionType conditionType, String value, Boolean invert)
     {
         super(conditionType, value, invert);

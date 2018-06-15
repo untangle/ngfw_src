@@ -21,6 +21,13 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
+/**
+ * Extracts the SNI information from HTTPS ClientHello messages and does block
+ * and pass checking
+ * 
+ * @author mahotz
+ * 
+ */
 public class WebFilterHttpsSniHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -32,6 +39,12 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The web filter base application
+     */
     public WebFilterHttpsSniHandler(WebFilterBase app)
     {
         super(app);
@@ -40,6 +53,12 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         logger.debug("Created WebFilterHttpsSniHandler");
     }
 
+    /**
+     * Handle new session requests
+     * 
+     * @param req
+     *        The session request
+     */
     public void handleTCPNewSessionRequest(TCPNewSessionRequest req)
     {
         if (!app.isHttpsEnabledSni()) {
@@ -53,6 +72,14 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handles session chunks
+     * 
+     * @param session
+     *        The session
+     * @param data
+     *        The data chunk
+     */
     public void handleTCPClientChunk(AppTCPSession session, ByteBuffer data)
     {
         // grab the SSL Inspector status attachment
@@ -82,6 +109,14 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Checks client requests
+     * 
+     * @param sess
+     *        The session
+     * @param data
+     *        The data
+     */
     private void checkClientRequest(AppTCPSession sess, ByteBuffer data)
     {
         java.security.cert.X509Certificate serverCert = null;
@@ -259,13 +294,16 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         return;
     }
 
-    /*
-     * We don't bother checking the buffer position or length on much of the
-     * stuff here since the caller uses the buffer underflow exception to know
-     * when it needs to wait for more data when a full packet has not yet been
-     * received.
+    /**
+     * Extract the SNI hostname from a ClientHello message. We don't bother
+     * checking the buffer position or length on much of the stuff here since
+     * the caller uses the buffer underflow exception to know when it needs to
+     * wait for more data when a full packet has not yet been received.
+     * 
+     * @param data
+     * @return The SNI hostname if found, otherwise null
+     * @throws Exception
      */
-
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
         int counter = 0;
