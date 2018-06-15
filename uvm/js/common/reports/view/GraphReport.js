@@ -538,19 +538,21 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             if (entry && ( entry.get('type') === 'PIE_GRAPH') ){
-                var othersValue = 0;
+                var othersValue = 0, colVal; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
                 seriesData = [];
 
                 Ext.Array.each(me.data, function (row, idx) {
+                    colVal = row[entry.get('pieGroupColumn')];
                     if (!seriesRenderer) {
-                        seriesName = row[entry.get('pieGroupColumn')] !== undefined ? row[entry.get('pieGroupColumn')] : 'None'.t();
+                        seriesName = colVal !== undefined ? colVal : 'None'.t();
                     } else {
-                        seriesName = seriesRenderer(row[entry.get('pieGroupColumn')]);
+                        seriesName = seriesRenderer(colVal);
                     }
 
                     if (idx < entry.get('pieNumSlices')) {
                         seriesData.push({
                             name: seriesName,
+                            value: colVal,
                             y: row.value
                         });
                     } else {
@@ -877,7 +879,7 @@ Ext.define('Ung.view.reports.GraphReport', {
         onPointClick: function (event) {
             var me = this, vm = me.getViewModel(),
                 column = vm.get('entry.pieGroupColumn'),
-                value = event.point.name;
+                value = event.point.value;
 
             Ext.fireEvent('addglobalcondition', column, value);
         }
