@@ -41,9 +41,10 @@ Ext.define('Ung.widget.WidgetController', {
         if (widget.getXType() === 'reportwidget') {
             var conds = [];
             vm.bind('{query.conditions}', function (conditions) {
+                widget.lastFetchTime = null;
                 conds = [];
                 if (conditions.length === 0) {
-                    widget.setUserCls('');
+                    widget.unmask();
                     return;
                 }
 
@@ -52,9 +53,9 @@ Ext.define('Ung.widget.WidgetController', {
                 });
 
                 if (!TableConfig.containsColumns(vm.get('entry.table'), conds)) {
-                    widget.setUserCls('no-conditions');
+                    widget.mask();
                 } else {
-                    widget.setUserCls('');
+                    widget.unmask();
                 }
             });
         }
