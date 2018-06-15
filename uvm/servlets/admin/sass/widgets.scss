@@ -34,14 +34,11 @@
         /*transform: scale(0.98);*/
     }
     .x-mask {
-        // background: rgba(255, 255, 255, 0.5);
+        background: rgba(100, 100, 100, 0.8);
         i {
             font-size: 1em;
             // color: #999;
         }
-    }
-    &.no-conditions {
-        opacity: 0.3;
     }
 }
 

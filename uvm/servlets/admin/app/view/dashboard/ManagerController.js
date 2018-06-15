@@ -101,13 +101,6 @@ Ext.define('Ung.view.dashboard.ManagerController', {
         });
         me.getView().getView().refresh(); // refres the grid view
         me.dashboard.add(widgetsCmps);
-
-        // if (!me.widgetsRendered) {
-        //     me.widgetsRendered = true;
-        //     // add scroll/resize events
-        //     dashboard.body.on('scroll', me.debounce(me.updateWidgetsVisibility, 500));
-        //     dashboard.getEl().on('resize', me.debounce(me.updateWidgetsVisibility, 500));
-        // }
     },
 
     // listens on widgets store add event and adds widget component to dashboard
@@ -216,7 +209,7 @@ Ext.define('Ung.view.dashboard.ManagerController', {
             }
             if (widgetCmp) {
                 setTimeout(function () {
-                    me.dashboard.scrollTo(0, me.dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
+                    me.dashboard.scrollTo(0, me.dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 101, {duration: 300 });
                 }, 100);
             }
         } else {

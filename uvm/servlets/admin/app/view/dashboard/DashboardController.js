@@ -32,7 +32,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     onAfterRender: function () {
-        var me = this, vm = me.getViewModel(), text;
+        var me = this, vm = me.getViewModel(),
+            dashboardCmp = me.getView().down('#dashboard'),
+            text;
+
+
+        // add scroll/resize events which will triger widgets update
+        dashboardCmp.body.on('scroll', me.debounce(me.updateVisibleWidgets, 300));
+        dashboardCmp.getEl().on('resize', me.debounce(me.updateVisibleWidgets, 300));
 
         /**
          * Fetch dashboard settings
@@ -62,12 +69,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
          * Using {query.string} because it fires only when the value changes, unlike {query} only
          */
         vm.bind('{query.string}', function () {
-            Ext.Array.each(me.lookup('dashboard').query('reportwidget'), function (widgetCmp) {
-                if (widgetCmp.lastFetchTime) {
-                    widgetCmp.lastFetchTime = null;
-                    DashboardQueue.add(widgetCmp);
-                }
-            });
+            Ext.defer(function() {
+                me.updateVisibleWidgets();
+            }, 1000);
         });
 
     },
@@ -90,9 +94,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Checks if widget is visible or not in viewport
      * Based on it's visibility it will be added to queue for fetching data
      */
-    updateWidgetsVisibility: function () {
+    updateVisibleWidgets: function () {
         var dashboard = this.lookup('dashboard'),
-            widgets = dashboard.query('reportwidget');
+            widgets = dashboard.query('reportwidget'),
+            graphReport;
         DashboardQueue.isVisible(dashboard.down('networklayoutwidget'));
         DashboardQueue.isVisible(dashboard.down('mapdistributionwidget'));
         DashboardQueue.isVisible(dashboard.down('networkinformationwidget'));
@@ -100,6 +105,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         DashboardQueue.isVisible(dashboard.down('notificationswidget'));
         Ext.Array.each(widgets, function (widget) {
             if (widget) {
+                graphReport = widget.down('graphreport');
+                // important to reflow the chart when widget changes size
+                if (graphReport && graphReport.getController().chart) {
+                    graphReport.getController().chart.reflow();
+                }
                 DashboardQueue.isVisible(widget);
             }
         });
@@ -115,7 +125,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 Ext.Array.each(dashboard.query('reportwidget'), function (widgetCmp) {
                     widgetCmp.lastFetchTime = null;
                 });
-                me.updateWidgetsVisibility();
+                me.updateVisibleWidgets();
             });
 
     },
@@ -142,24 +152,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         vm.set('stats', Ext.getStore('stats').first());
 
         Rpc.asyncData('rpc.deviceTable.getDevices')
-        .then( function(result){
-            if(Util.isDestroyed(vm)){
-                return;
-            }
-            vm.set('deviceCount', result.list.length);
-        },function(ex){
-            Util.handleException(ex);
-        });
+            .then( function(result){
+                if(Util.isDestroyed(vm)){
+                    return;
+                }
+                vm.set('deviceCount', result.list.length);
+            },function(ex){
+                Util.handleException(ex);
+            });
     },
 
     onActivate: function () {
         DashboardQueue.paused = false;
-        this.updateWidgetsVisibility();
-        // var me = this;
-        // if (me.activated) {
-        //     return;
-        // }
-        // me.activated = true;
+        this.updateVisibleWidgets();
     },
 
     onDeactivate: function () {
