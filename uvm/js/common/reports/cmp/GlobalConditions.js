@@ -515,6 +515,8 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t(),
                 action = 'add', cond;
 
+            if (!val) { return; } // val might be undefined in some cases (e.g. pie 'Others' value)
+
             // because this component is used in both dashboard and reports, event will fire twice
             // apply following logic to avoid exceptions
             if (!conditions) { return; }
