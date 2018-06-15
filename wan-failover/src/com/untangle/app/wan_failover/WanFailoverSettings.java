@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.wan_failover;
 
 import java.io.Serializable;
@@ -9,6 +10,9 @@ import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * Stores the settings for the Wan Failover application
+ */
 @SuppressWarnings("serial")
 public class WanFailoverSettings implements Serializable, JSONString
 {
