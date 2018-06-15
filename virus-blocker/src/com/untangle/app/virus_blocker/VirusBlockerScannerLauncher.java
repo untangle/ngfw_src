@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: VirusBlockerScannerLauncher.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -12,6 +12,12 @@ import java.net.Socket;
 
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * Launches a virus scanner
+ * 
+ * @author mahotz
+ * 
+ */
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
     private static final long CLOUD_SCAN_MAX_MILLISECONDS = 2000;
@@ -23,8 +29,17 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
     /**
      * Create a Launcher for the give file
+     * 
+     * @param scanfile
+     *        The file to scan
+     * @param session
+     *        The application session
+     * @param cloudScan
+     *        Cloud scan flag
+     * @param localScan
+     *        Local scan flag
      */
-    public VirusBlockerScannerLauncher( File scanfile, AppSession session, boolean cloudScan, boolean localScan )
+    public VirusBlockerScannerLauncher(File scanfile, AppSession session, boolean cloudScan, boolean localScan)
     {
         super(scanfile, session);
 
@@ -52,7 +67,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         File scanFile = null;
         long scanFileLength = 0;
 
-        if ( localScan ) {
+        if (localScan) {
             scanFile = new File(scanfilePath);
             scanFileLength = scanFile.length();
         } else {
@@ -64,13 +79,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         logger.debug("Scanning FILE: " + scanfilePath + " MD5: " + virusState.fileHash);
 
         // if we have a good MD5 hash then spin up the cloud checker
-        if ( this.cloudScan && virusState.fileHash != null ) {
+        if (this.cloudScan && virusState.fileHash != null) {
             cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
         // if localScan is enabled, run the scan
-        if ( localScan ) {
+        if (localScan) {
             DataOutputStream txstream = null;
             DataInputStream rxstream = null;
             Socket socket = null;
@@ -154,7 +169,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 synchronized (cloudScanner) {
                     cloudResult = cloudScanner.getCloudResult();
                     // if the result is not known, wait up to CLOUD_SCAN_MAX_MILLISECONDS for a result
-                    if ( cloudResult == null )  {
+                    if (cloudResult == null) {
                         cloudScanner.wait(CLOUD_SCAN_MAX_MILLISECONDS);
                         cloudResult = cloudScanner.getCloudResult();
                     }
@@ -164,7 +179,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             }
         }
 
-        if ( this.cloudScan ) {
+        if (this.cloudScan) {
             VirusCloudFeedback feedback = null;
 
             // if BD returned positive result we send the feedback
@@ -188,7 +203,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         // no action on the cloud feedback so we use whatever BD gave us
-        switch (retcode) {
+        switch (retcode)
+        {
         case 227: // clean
             setResult(VirusScannerResult.CLEAN);
             break;
@@ -214,6 +230,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         return;
     }
 
+    /**
+     * Sets the scan result
+     * 
+     * @param value
+     *        The scan result
+     */
     private void setResult(VirusScannerResult value)
     {
         this.result = value;
