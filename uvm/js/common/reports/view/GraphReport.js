@@ -440,7 +440,8 @@ Ext.define('Ung.view.reports.GraphReport', {
             var me = this;
             // explicitly set size of the chart to avoid cutoffs
             if (me.chart) {
-                me.chart.setSize(width, height, false);
+                // me.chart.setSize(width, height, false);
+                me.chart.reflow();
             }
         },
 
