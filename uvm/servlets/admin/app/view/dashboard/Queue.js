@@ -52,7 +52,7 @@ Ext.define('Ung.view.dashboard.Queue', {
              * it hasn't passed the timeout to be refreshed
              * just remove it from queue and skip fetching
              */
-            if (me.paused || !wg.visible || !wg.timeout) {
+            if (me.paused || !wg.visible || !wg.timeout || wg.isMasked()) {
                 Ext.Array.removeAt(me.queue, 0);
                 me.processing = false;
                 if (me.queue.length > 0) { me.process(); }
