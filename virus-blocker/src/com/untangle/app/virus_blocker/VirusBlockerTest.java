@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: VirusBlockerTest.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -8,8 +8,17 @@ import java.io.File;
 
 import com.untangle.app.virus_blocker.VirusScannerResult;
 
+/**
+ * Manual test for Virus Blocker
+ */
 public class VirusBlockerTest
 {
+    /**
+     * The main function
+     * 
+     * @param args
+     *        Program arguments
+     */
     public static void main(String args[])
     {
         if (args.length < 1) {
