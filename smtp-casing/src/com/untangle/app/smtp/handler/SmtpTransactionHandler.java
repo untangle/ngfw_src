@@ -25,6 +25,9 @@ import com.untangle.app.smtp.SmtpTransaction;
 import com.untangle.app.smtp.mime.MIMEAccumulator;
 import com.untangle.uvm.vnet.Token;
 
+/**
+ * SMTP Transaction Handler
+ */
 public class SmtpTransactionHandler
 {
     private enum BufTxState
@@ -64,6 +67,11 @@ public class SmtpTransactionHandler
 
     public static final ResponseCompletion PASSTHRU_RESPONSE_COMPLETION = new ResponseCompletion()
     {
+        /**
+         * Process response.
+         * @param session AppTCPSession to process.
+         * @param resp    Response to process.
+         */
         @Override
         public void handleResponse( AppTCPSession session, Response resp )
         {
@@ -74,6 +82,11 @@ public class SmtpTransactionHandler
 
     public static final ResponseCompletion NOOP_RESPONSE_COMPLETION = new ResponseCompletion()
     {
+        /**
+         * Process response.
+         * @param session AppTCPSession to process.
+         * @param resp    Response to process.
+         */
         @Override
         public void handleResponse( AppTCPSession session, Response resp )
         {
@@ -87,17 +100,31 @@ public class SmtpTransactionHandler
     // to the DATA command and instead send it
     // as a result of the client's <CRLF>.<CRLF>
 
+    /**
+     * Initialize instance of SmtpTransactionHandler.
+     * @param tx SmtpTransaction instance of SmtpTransaction.
+     */
     SmtpTransactionHandler(SmtpTransaction tx) {
         this.tx = tx;
         addToTxLog("---- Initial state " + state + " (" + new Date() + ") -------");
         isMessageMaster = false;
     }
 
+    /**
+     * Return transaction.
+     * @return SmtpTransaction.
+     */
     public final SmtpTransaction getTransaction()
     {
         return tx;
     }
 
+    /**
+     * Process RSET command.
+     * @param session      AppTCPSession to process.
+     * @param command      Command to process.
+     * @param stateMachine SmtpEventHandler to process.
+     */
     public void handleRSETCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine )
     {
 
@@ -122,6 +149,13 @@ public class SmtpTransactionHandler
         }
     }
 
+    /**
+     * Process command.
+     * @param session      AppTCPSession to process.
+     * @param command      Command to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param immediateActions List of Response.
+     */
     public void handleCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(command);
@@ -146,6 +180,13 @@ public class SmtpTransactionHandler
         }
     }
 
+    /**
+     * Process MAIL or RCPT command.
+     * @param session      AppTCPSession to process.
+     * @param command      Command to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param compl         ResponseCompletion to process.
+     */
     private void handleMAILOrRCPTCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine, ResponseCompletion compl )
     {
 
@@ -167,11 +208,22 @@ public class SmtpTransactionHandler
         }
     }
 
+    /**
+     * Process MAIL command.
+     * @param session      AppTCPSession to process.
+     * @param command      CommandWithEmailAddress to process.
+     * @param stateMachine SmtpEventHandler to process.
+     */
     public void handleMAILCommand( AppTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().fromRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
+            /**
+             * Process response.
+             * @param session AppTCPSession to process.
+             * @param resp    Response to process.
+            */
             @Override
             public void handleResponse( AppTCPSession session, Response resp )
             {
@@ -182,11 +234,22 @@ public class SmtpTransactionHandler
         });
     }
 
+    /**
+     * Process RCPT command.
+     * @param session      AppTCPSession to process.
+     * @param command      CommandWithEmailAddress to process.
+     * @param stateMachine SmtpEventHandler to process.
+     */
     public void handleRCPTCommand( AppTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().toRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
+            /**
+             * Process response.
+             * @param session AppTCPSession to process.
+             * @param resp    Response to process.
+             */
             @Override
             public void handleResponse( AppTCPSession session, Response resp )
             {
@@ -197,6 +260,13 @@ public class SmtpTransactionHandler
         });
     }
 
+    /**
+     * Process MIME start.
+     * @param session      AppTCPSession to process.
+     * @param token BeginMIMEToken to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param immediateActions List of Response to process.
+     */
     public void handleBeginMIME( AppTCPSession session, BeginMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
@@ -208,6 +278,13 @@ public class SmtpTransactionHandler
         handleMIMEChunkToken( session, true, false, null, stateMachine, immediateActions );
     }
 
+    /**
+     * Process MIME start.
+     * @param session      AppTCPSession to process.
+     * @param token ContinuedMIMEToken to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param immediateActions List of Response to process.
+     */
     public void handleContinuedMIME( AppTCPSession session, ContinuedMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
@@ -215,6 +292,13 @@ public class SmtpTransactionHandler
         handleMIMEChunkToken( session, false, token.isLast(), token, stateMachine, immediateActions );
     }
 
+    /**
+     * Process MIME start.
+     * @param session      AppTCPSession to process.
+     * @param token CompleteMIMEToken to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param immediateActions List of Response to process.
+     */
     public void handleCompleteMIME( AppTCPSession session, CompleteMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
 
@@ -229,11 +313,18 @@ public class SmtpTransactionHandler
 
     }
 
+    /**
+     * Process finalized.
+     */
     public void handleFinalized()
     {
         closeMessageResources(true);
     }
 
+    /**
+     * Remove temp files.
+     * @param token Token to reference temp file.
+     */
     private void cleanupTempFile(Token token)
     {
         if (accumulator != null) {
@@ -247,6 +338,15 @@ public class SmtpTransactionHandler
         }
     }
 
+    /**
+     * Process MIME chunk token.
+     * @param session      AppTCPSession to process.
+     * @param isFirst if true first chunk, false if not.
+     * @param isLast if true last chunk, false if not.
+     * @param token CompleteMIMEToken to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param immediateActions List of Response to process.
+     */
     private void handleMIMEChunkToken( final AppTCPSession session,
                                   boolean isFirst, boolean isLast,
                                   Token token,
@@ -288,6 +388,11 @@ public class SmtpTransactionHandler
                             addToTxLog("Send synthetic DATA to server, continue when reply arrives");
                             stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                             {
+                                /**
+                                  * Process response.
+                                  * @param session AppTCPSession to process.
+                                  * @param resp    Response to process.
+                                  */
                                 @Override
                                 public void handleResponse( AppTCPSession session, Response resp )
                                 {
@@ -354,6 +459,11 @@ public class SmtpTransactionHandler
                         // continuations are 99% the same, except they differ in their next state upon success
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
+                            /**
+                              * Process response.
+                              * @param session AppTCPSession to process.
+                              * @param resp    Response to process.
+                              */
                             @Override
                             public void handleResponse( AppTCPSession session, Response resp)
                             {
@@ -370,6 +480,11 @@ public class SmtpTransactionHandler
                         addToTxLog("Send synthetic DATA to server, continue when response arrives");
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
+                            /**
+                              * Process response.
+                              * @param session AppTCPSession to process.
+                              * @param resp    Response to process.
+                              */
                             @Override
                             public void handleResponse( AppTCPSession session, Response resp )
                             {
@@ -393,6 +508,11 @@ public class SmtpTransactionHandler
                     // Install the simple callback handler (doesn't do much)
                     stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                     {
+                        /**
+                          * Process response.
+                          * @param session AppTCPSession to process.
+                          * @param resp    Response to process.
+                          */
                         @Override
                         public void handleResponse( AppTCPSession session, Response resp)
                         {
@@ -437,6 +557,11 @@ public class SmtpTransactionHandler
                             addToTxLog("Evaluation passed");
                             stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                             {
+                                /**
+                                 * Process response.
+                                 * @param session AppTCPSession to process.
+                                 * @param resp    Response to process.
+                                 */
                                 @Override
                                 public void handleResponse( AppTCPSession session, Response resp)
                                 {
@@ -492,8 +617,9 @@ public class SmtpTransactionHandler
     /**
      * action taken on the response callback, after evaluating a message as PASS
      * 
-     * @param stateMachine
-     * @param resp
+     * @param session      AppTCPSession to process.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param resp Response to process.
      */
     private void handleResponseAfterPassedMessage( AppTCPSession session, final SmtpEventHandler stateMachine, Response resp )
     {
@@ -517,6 +643,11 @@ public class SmtpTransactionHandler
                 stateMachine.sendFinalMIMEToServer( session, new ContinuedMIMEToken(accumulator.createChunkToken(null, true)),
                         new ResponseCompletion()
                         {
+                            /**
+                              * Process response.
+                              * @param session AppTCPSession to process.
+                              * @param resp    Response to process.
+                              */
                             @Override
                             public void handleResponse( AppTCPSession session, Response resp )
                             {
@@ -533,6 +664,11 @@ public class SmtpTransactionHandler
                 stateMachine.sentWholeMIMEToServer( session, new CompleteMIMEToken(msg, messageInfo),
                         new ResponseCompletion()
                         {
+                            /**
+                              * Process response.
+                              * @param session AppTCPSession to process.
+                              * @param resp    Response to process.
+                              */
                             @Override
                             public void handleResponse( AppTCPSession session, Response resp )
                             {
@@ -558,7 +694,11 @@ public class SmtpTransactionHandler
         }
     }
 
-    // If null, just ignore
+    /**
+     * Append chunk token.
+     * If null, just ignore
+     * @param continuedToken ContinuedMIMEToken to process.
+     */
     private void appendChunkToken(ContinuedMIMEToken continuedToken)
     {
         if (continuedToken == null) {
@@ -574,12 +714,20 @@ public class SmtpTransactionHandler
 
     }
 
+    /**
+     * Change to new State.
+     * @param newState BufTxState to change to.
+     */
     private void changeState(BufTxState newState)
     {
         logRecordStateChange(state, newState);
         state = newState;
     }
 
+    /**
+     * Close message resources.
+     * @param force If true foricbly do it, false otherwise.
+     */
     private void closeMessageResources(boolean force)
     {
         if (isMessageMaster || force) {
@@ -596,6 +744,10 @@ public class SmtpTransactionHandler
     /**
      * Returns PASS if we should pass. If there is a parsing error, this also returns PASS. If the message was changed,
      * it'll just be picked-up implicitly.
+     * @param session      AppTCPSession to process.
+     * @param canModify If true modify allowed, otherwise not.
+     * @param stateMachine SmtpEventHandler to process.
+     * @return BlockOrPassResult result.
      */
     private BlockOrPassResult evaluateMessage( AppTCPSession session, boolean canModify, SmtpEventHandler stateMachine)
     {
@@ -621,6 +773,12 @@ public class SmtpTransactionHandler
         }
     }
 
+    /**
+     * Handle mail transmisison continuation.
+     * @param session      AppTCPSession to process.
+     * @param resp      Response.
+     * @param stateMachine SmtpEventHandler to process.
+     */
     public void handleMailTransmissionContinuation( AppTCPSession session, Response resp, SmtpEventHandler stateMachine )
     {
         logReceivedResponse(resp);
@@ -637,6 +795,13 @@ public class SmtpTransactionHandler
         session.sendObjectToClient( resp );
     }
 
+    /**
+     * Handle incomplete data transmisison continuation.
+     * @param session      AppTCPSession to process.
+     * @param resp      Response.
+     * @param stateMachine SmtpEventHandler to process.
+     * @param nextStateIfPositive BufTxState to process.
+     */
     public void handleMsgIncompleteDataContinuation( AppTCPSession session, Response resp, SmtpEventHandler stateMachine, BufTxState nextStateIfPositive )
     {
 
@@ -664,21 +829,38 @@ public class SmtpTransactionHandler
 
     // ============== Logging ==========================
 
+    /**
+     * Log received token.
+     * @param token Token to log.
+     */
     void logReceivedToken(Token token)
     {
         addToTxLog("----Received Token " + token + "--------");
     }
 
+    /**
+     * Log received response.
+     * @param resp Response to log.
+     */
     void logReceivedResponse(Response resp)
     {
         addToTxLog("----Received Response " + resp.getCode() + "--------");
     }
 
+    /**
+     * Log record state change.
+     * @param old Old BufTxState
+     * @param newState New BufTxState.
+     */
     void logRecordStateChange(BufTxState old, BufTxState newState)
     {
         addToTxLog("----Change State " + old + "->" + newState + "-----------");
     }
 
+    /**
+     * Add message to transmit log.
+     * @param str String to add.
+     */
     void addToTxLog( String str )
     {
         if (logger.isDebugEnabled())
@@ -686,6 +868,10 @@ public class SmtpTransactionHandler
         txLog.add( str );
     }
     
+    /**
+     * Dump to logger.
+     * @param level Level to dump.
+     */
     @SuppressWarnings("unchecked")
     void dumpToLogger(Level level)
     {
