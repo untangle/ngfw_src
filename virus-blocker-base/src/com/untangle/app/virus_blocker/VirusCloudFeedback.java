@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: VirusCloudFeedback.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -14,6 +14,9 @@ import org.json.JSONObject;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * Class to send virus telemetry to the cloud
+ */
 public class VirusCloudFeedback extends Thread
 {
     private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
@@ -29,6 +32,24 @@ public class VirusCloudFeedback extends Thread
     String threatType = null;
     VirusCloudResult cloudResult = null;
 
+    /**
+     * Constructor
+     * 
+     * @param virusState
+     *        The virus state
+     * @param vendorName
+     *        Virus engine vendor name
+     * @param threatName
+     *        Threat name
+     * @param threatType
+     *        Threat type
+     * @param fileLength
+     *        File length
+     * @param session
+     *        The session
+     * @param cloudResult
+     *        The cloud result
+     */
     public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String threatName, String threatType, long fileLength, AppSession session, VirusCloudResult cloudResult)
     {
         this.virusState = virusState;
@@ -40,6 +61,9 @@ public class VirusCloudFeedback extends Thread
         this.cloudResult = cloudResult;
     }
 
+    /**
+     * The main thread function
+     */
     public void run()
     {
         StringBuilder feedback = new StringBuilder(256);
