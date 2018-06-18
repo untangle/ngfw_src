@@ -32,6 +32,7 @@ class AuthTokenManager
 
     /**
      * Set the key to be used
+     * @param key Array of byte.
      */
     void setKey(byte[] key)
     {
@@ -117,6 +118,14 @@ class AuthTokenManager
         }
     }
 
+    /**
+     * Determine if matches.
+     * @param  pattern Array of byte to find.
+     * @param  inspect Array of byte to search.
+     * @param  start   Starting position.
+     * @param  len     Length to search
+     * @return         true of match found, false otherwise.
+     */
     private boolean matches(byte[] pattern, byte[] inspect, int start, int len)
     {
         if (inspect == null || len < pattern.length) {
