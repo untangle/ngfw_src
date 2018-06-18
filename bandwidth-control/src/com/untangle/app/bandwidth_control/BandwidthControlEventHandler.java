@@ -23,7 +23,7 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 public class BandwidthControlEventHandler extends AbstractEventHandler
 {
-    private static final Logger logger = Logger.getLogger( BandwidthControlEventHandler.class );
+    private final Logger logger = Logger.getLogger( BandwidthControlEventHandler.class );
 
     private static final int TCP_HEADER_SIZE_ESTIMATE = 32;
     private static final int IP_HEADER_SIZE = 20;
