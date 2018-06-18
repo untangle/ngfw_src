@@ -33,7 +33,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- *
+ * Quarantine.
  */
 public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView, QuarantineUserView
 {
@@ -54,6 +54,10 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     private SmtpImpl impl;
     private boolean opened = false;
 
+    /**
+     * Initialize instance of Quarantine.
+     * @return instance of quarantine.
+     */
     public Quarantine()
     {
         this.store = new QuarantineStore(new File(new File(System.getProperty("uvm.conf.dir")), "quarantine"));
@@ -65,6 +69,8 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     /**
      * Properties are not maintained explicitly by the Quarantine (i.e. the UI does not talk to the Quarantine).
+     * @param impl SMTP implementation.
+     * @param settings   QuarantineSettings
      */
     public void setSettings(SmtpImpl impl, QuarantineSettings settings)
     {
@@ -90,6 +96,9 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         writeCronFile();
     }
 
+    /**
+     * Write cronjob file to run script that generate reports.
+     */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -140,6 +149,9 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Prune Store Now.
+     */
     public void pruneStoreNow()
     {
         this.store.prune(this.settings.getMaxMailIntern(), this.settings.getMaxIdleInbox());
@@ -182,6 +194,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Create quarantine email.
+     * @param  file       File to create message from.
+     * @param  summary    Summary.
+     * @param  recipients InternetAddress variable arguments of recipients
+     * @return            true of message generated, false if not.
+     */
     @Override
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients)
     {
@@ -266,6 +285,14 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     }
 
+    /**
+     * Purge quarantine.
+     * @param  account                             Quarantine account.
+     * @param  doomedMails                         List of email ids to purge.
+     * @return                                     InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If purge action failed.
+     */
     // --QuarantineManipulation--
     @Override
     public InboxIndex purge(String account, String... doomedMails) throws NoSuchInboxException,
