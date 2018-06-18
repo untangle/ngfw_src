@@ -27,6 +27,8 @@ public class Line
      * 
      * @param buf
      *            the Buffer <b>with</b> any terminating characters within its limit
+     * @param termLen Terimination length.
+     * @return Instance of Line.
      */
     public Line(ByteBuffer buf, int termLen) {
 
@@ -36,6 +38,7 @@ public class Line
 
     /**
      * Returns a new Line (with shared content) which has no terminator
+     * @return Line instance.
      */
     public Line removeTerminator()
     {
@@ -81,6 +84,7 @@ public class Line
 
     /**
      * The length of a buffer returned from {@link #getBuffer getBuffer(false)}.
+     * @return length of buffer as integer.
      */
     public int bufferLen()
     {
@@ -97,16 +101,30 @@ public class Line
         return m_termLen;
     }
 
+    /**
+     * Determine if buffer begins with a string.
+     * @param  aStr String value to check.
+     * @return      true if buffer begins with string, false if not.
+     */
     public boolean bufferStartsWith(String aStr)
     {
         return startsWith(getBuffer(false), aStr);
     }
 
+    /**
+     * Determine if buffer end with a string.
+     * @param  aStr String value to check.
+     * @return      true if buffer ends with string, false if not.
+     */
     public boolean bufferEndsWith(String aStr)
     {
         return endsWith(getBuffer(false), aStr);
     }
 
+    /**
+     * Convert buffer to string.
+     * @return String value of buffer.
+     */
     public String bufferToString()
     {
         return bbToString(getBuffer(false));
@@ -114,6 +132,10 @@ public class Line
 
     /**
      * If <code>unfoldLines</code> is true, then this assumes the lines are RFC822 formatted header lines.
+     * @param lines Array of Line.
+     * @param startingAt Integer to begin ati.
+     * @param unfoldLines If true, unfold the lines.
+     * @return String of lines to a single string.
      */
     public static String linesToString(Line[] lines, int startingAt, boolean unfoldLines)
     {
@@ -142,6 +164,12 @@ public class Line
         private final int m_numBuffers;
         private int m_currentBuffer;
 
+        /**
+         * Intiialize instance of LineIterator
+         * @param lines Array of Line.
+         * @param unfold If true, unfold the lines.
+         * @return Instance of LneIterator.
+         */
         LineIterator(Line[] lines, boolean unfold) {
             m_buffers = new ByteBuffer[lines.length];
             int i = 0;
@@ -153,6 +181,10 @@ public class Line
             m_currentBuffer = 0;
         }
 
+        /**
+         * Skip to position.
+         * @param num Integer of position to skip it.
+         */
         void skip(int num)
         {
             while (num > 0 && m_currentBuffer < m_numBuffers) {
@@ -171,6 +203,10 @@ public class Line
             }
         }
 
+        /**
+         * Advanced to next line.
+         * @return New position.
+         */
         int next()
         {
             while (m_currentBuffer < m_numBuffers) {
@@ -210,6 +246,10 @@ public class Line
             return -1;
         }
 
+        /**
+         * Remove whitespace.
+         * @return trye if found whitespace, false otherwise.
+         */
         private boolean eatWhitespace()
         {
             ByteBuffer buf = getBuffer();
@@ -232,6 +272,7 @@ public class Line
         /**
          * Returns the current buffer. If the current buffer is empty, advances to the next buffer. If there is no
          * "next" buffer, null is returned.
+         * @return Next ByteBuffer.
          */
         private ByteBuffer getBuffer()
         {
@@ -249,6 +290,12 @@ public class Line
 
     /************** Tests ******************/
 
+    /**
+     * Run test.
+     * @param  args      String of arguments to test.
+     * @return           String of result.
+     * @throws Exception On test exception.
+     */
     public static String runTest(String[] args) throws Exception
     {
 
