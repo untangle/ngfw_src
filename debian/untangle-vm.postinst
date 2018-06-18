@@ -53,6 +53,7 @@ fi
 
 # Point to stable-140
 sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/jessie/stretch/g' -i /etc/apt/sources.list.d/untangle.list
 
 # We no longer use upstream
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
