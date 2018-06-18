@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
@@ -18,16 +19,17 @@ import com.untangle.app.smtp.TemplateValues;
 /**
  * Class to encapsulate a SPAM report. <br>
  * <br>
- * This class also implements {@link com.untangle.uvm.util.TemplateValues TemplateValues}. Valid key names which can be
- * derefferenced from a SpamReport begin with the literal <code>SPAMReport:</code> followed by any of the following
- * tokens:
+ * This class also implements {@link com.untangle.uvm.util.TemplateValues
+ * TemplateValues}. Valid key names which can be derefferenced from a SpamReport
+ * begin with the literal <code>SPAMReport:</code> followed by any of the
+ * following tokens:
  * <ul>
  * <li>
- * <code><b>FULL</b></code>Any Report items from the SPAM report, with each report on its own line. Each report item is
- * terminated by a CRLF.</li>
+ * <code><b>FULL</b></code>Any Report items from the SPAM report, with each
+ * report on its own line. Each report item is terminated by a CRLF.</li>
  * <li>
- * <code><b>THRESHOLD</b></code> The numerical value of the threshold above-which a score renders a SPAM judgement (e.g.
- * "5").</li>
+ * <code><b>THRESHOLD</b></code> The numerical value of the threshold
+ * above-which a score renders a SPAM judgement (e.g. "5").</li>
  * <li>
  * <code><b>SCORE</b></code> The numerical value of the score (e.g. "7.2").</li>
  * </ul>
@@ -50,8 +52,16 @@ public class SpamReport implements TemplateValues
 
     private Logger logger = Logger.getLogger(SpamReport.class);
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Constructor
+     * 
+     * @param items
+     *        Report items
+     * @param score
+     *        Spam score
+     * @param threshold
+     *        Spam threshold
+     */
     public SpamReport(List<ReportItem> items, float score, float threshold)
     {
         this.items = new LinkedList<ReportItem>(items);
@@ -59,6 +69,14 @@ public class SpamReport implements TemplateValues
         this.threshold = threshold;
     }
 
+    /**
+     * Constructor
+     * 
+     * @param items
+     *        Report items
+     * @param threshold
+     *        Spam threshold
+     */
     public SpamReport(List<ReportItem> items, float threshold)
     {
         this.items = new LinkedList<ReportItem>(items);
@@ -72,7 +90,12 @@ public class SpamReport implements TemplateValues
     }
 
     /**
-     * For use in Templates (see JavaDoc at the top of this class for explanation of variable format).
+     * For use in Templates (see JavaDoc at the top of this class for
+     * explanation of variable format).
+     * 
+     * @param key
+     *        The template key
+     * @return The template value
      */
     public String getTemplateValue(String key)
     {
@@ -98,16 +121,32 @@ public class SpamReport implements TemplateValues
         return null;
     }
 
+    /**
+     * Check if message is spam
+     * 
+     * @return True if spam, otherwise false
+     */
     public boolean isSpam()
     {
         return threshold <= score;
     }
 
+    /**
+     * Get the spam score
+     * 
+     * @return The spam score
+     */
     public float getScore()
     {
         return score;
     }
 
+    /**
+     * Add headers to the message
+     * 
+     * @param msg
+     *        The message
+     */
     public void addHeaders(MimeMessage msg)
     {
         StringBuilder sb = new StringBuilder();
@@ -145,15 +184,21 @@ public class SpamReport implements TemplateValues
         }
     }
 
-    // accessors --------------------------------------------------------------
-
+    /**
+     * Get the list of report items
+     * 
+     * @return The list of report items
+     */
     public List<ReportItem> getItems()
     {
         return items;
     }
 
-    // Object methods ---------------------------------------------------------
-
+    /**
+     * Get the string representation
+     * 
+     * @return The string representation
+     */
     public String toString()
     {
         StringBuffer sb = new StringBuffer("Spam Score: ");
