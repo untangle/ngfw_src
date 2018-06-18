@@ -30,6 +30,10 @@ public final class MailSummary implements Serializable
     private String quarantineDetail;
     private long quarantineSize;
 
+    /**
+     * Initialize instance of MailSummary.
+     * @return Instance of MailSummary.
+     */
     public MailSummary() {
     }
 
