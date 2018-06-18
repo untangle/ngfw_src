@@ -19,6 +19,11 @@ public class LinkGenerator
     private final Logger logger = Logger.getLogger(LinkGenerator.class);
     private static final String AUTH_TOKEN_RP = "tkn";
     
+    /**
+     * Initialize instance of LinkGenerator.
+     * @param base Base.
+     * @param authTkn String of auth token.
+     */
     LinkGenerator(String base, String authTkn) {
         StringBuilder sb = new StringBuilder();
         sb.append("https://");
@@ -35,11 +40,19 @@ public class LinkGenerator
         m_urlBase = sb.toString();
     }
 
+    /**
+     * Return inbox link.
+     * @return String of inbox link.
+     */
     public String generateInboxLink()
     {
         return m_urlBase;
     }
 
+    /**
+     * Return help link.
+     * @return String of helpbox link.
+     */
     public String generateHelpLink()
     {
         return "help_link";
