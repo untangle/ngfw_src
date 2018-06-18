@@ -4,9 +4,13 @@
 package com.untangle.app.spam_blocker;
 
 import java.io.Serializable;
+import org.json.JSONString;
 
+/**
+ * Spam DNS blacklist implementation
+ */
 @SuppressWarnings("serial")
-public class SpamDnsbl implements Serializable
+public class SpamDnsbl implements Serializable, JSONString
 {
     private Long id;
 
@@ -86,5 +90,11 @@ public class SpamDnsbl implements Serializable
         this.hostname = newRule.hostname;
         this.description = newRule.description;
         this.active = newRule.active;
+    }
+    
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }
