@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: SpamBlockerApp.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -11,18 +11,32 @@ import com.untangle.app.spam_blocker.SpamSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 
+/**
+ * The spam blocker application
+ */
 public class SpamBlockerApp extends SpamBlockerBaseApp
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * @param appProperties
+     *        The application properties
+     */
     public SpamBlockerApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties, new SpamBlockerScanner());
     }
 
-    {
-    }
-
+    /**
+     * Set the application settings
+     * 
+     * @param newSettings
+     *        The settings
+     */
     @Override
     public void setSettings(SpamSettings newSettings)
     {
@@ -31,7 +45,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker/settings_" + appID + ".js";
 
         try {
-            settingsManager.save( settingsFile, newSettings );
+            settingsManager.save(settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("Could not save app settings", exn);
             return;
@@ -40,6 +54,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         super.setSettings(newSettings);
     }
 
+    /**
+     * Called before the application is initialized
+     */
     @Override
     protected void preInit()
     {
@@ -73,26 +90,32 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
 
         // try to download spamassassin sigs if they do not exist
         try {
-            if ( ! (new java.io.File("/var/lib/spamassassin/3.004001/updates_spamassassin_org.cf")).exists() ) {
+            if (!(new java.io.File("/var/lib/spamassassin/3.004001/updates_spamassassin_org.cf")).exists()) {
                 logger.info("Signatures not found! Forcing Asynchronous update...");
                 UvmContextFactory.context().execManager().execEvilProcess("/etc/cron.daily/spamassassin");
                 // Do not wait on process to finish. It can take a long time. Just continue
             }
         } catch (Exception e) {
-            logger.warn("Exception",e);
+            logger.warn("Exception", e);
         }
 
         initSpamDnsblList(getSettings());
     }
 
+    /**
+     * Called before the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
-		String transmit;
-		String search;
+        String transmit;
+        String search;
 
         // for both of these we only need to enable the monitoring since it
-		// will be disabled automatically when the daemon counts reach zero
+        // will be disabled automatically when the daemon counts reach zero
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-spamcatd");
         transmit = "PING SPAMC/1.0\r\n";
@@ -107,26 +130,41 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         // enable CRON job
         UvmContextFactory.context().execManager().exec("grep -q -F 'CRON=1' /etc/default/spamassassin || sed -i -e 's/^CRON=.*/CRON=1/' /etc/default/spamassassin");
 
-        super.preStart( isPermanentTransition );
+        super.preStart(isPermanentTransition);
     }
 
+    /**
+     * Called after the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag.
+     */
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("spamassassin");
 
         // disable CRON job if permanent and no one else using SA
-        if ( isPermanentTransition && UvmContextFactory.context().daemonManager().getUsageCount("spamassassin") == 0 )
-            UvmContextFactory.context().execManager().exec("sed -i -e 's/^CRON=.*/CRON=0/' /etc/default/spamassassin");
+        if (isPermanentTransition && UvmContextFactory.context().daemonManager().getUsageCount("spamassassin") == 0) UvmContextFactory.context().execManager().exec("sed -i -e 's/^CRON=.*/CRON=0/' /etc/default/spamassassin");
     }
 
+    /**
+     * Get the premium flag
+     * 
+     * @return True if premium, otherwise false
+     */
     @Override
     public boolean isPremium()
     {
         return true;
     }
 
+    /**
+     * Get the vendor name
+     * 
+     * @return The vendor name
+     */
     @Override
     public String getVendor()
     {
