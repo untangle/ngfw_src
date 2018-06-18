@@ -12,6 +12,11 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class BadTokenException extends Exception implements Serializable
 {
+    /**
+     * Initialize instnace of BadTokenException.
+     * @param  token String to display.
+     * @return       Instance of BadTokenException.
+     */
     public BadTokenException(String token) {
         super("Bad Token \"" + token + "\"");
     }

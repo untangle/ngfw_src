@@ -46,11 +46,15 @@ public class MIMETCPStreamer implements TCPStreamer
      * 
      * @param msg
      *            the MIMEMessage
+     * @param messageInfo
+     *            SmtpMessageEvent
      * @param readChunkTokenSz
      *            the size of the read buffer for the file
      * @param disposeWhenComplete
      *            if true, the MIMEMessage's {@link com.untangle.app.smtp.mime.MIMEPart#dispose dispose} method will be
      *            called when streaming is complete or an error is encountered.
+     * @param session
+     *            AppTCPSession to process.
      */
     public MIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, int readChunkTokenSz, boolean disposeWhenComplete, AppTCPSession session)
     {
@@ -73,6 +77,10 @@ public class MIMETCPStreamer implements TCPStreamer
         }
     }
 
+    /**
+     * Write stream to a file.
+     * @throws IOException If write failed.
+     */
     private void writeToFile() throws IOException
     {
         FileOutputStream fOut = null;
@@ -112,12 +120,16 @@ public class MIMETCPStreamer implements TCPStreamer
 
     /**
      * Get the length of the file.
+     * @return long length of file.
      */
     public long getFileLength()
     {
         return m_fileLength;
     }
 
+    /**
+     * Close file
+     */
     private void close()
     {
         if (m_closed) {
@@ -142,6 +154,10 @@ public class MIMETCPStreamer implements TCPStreamer
         }
     }
 
+    /**
+     * Close when done.
+     * @return Always return false.
+     */
     public boolean closeWhenDone()
     {
         return false;
@@ -152,12 +168,17 @@ public class MIMETCPStreamer implements TCPStreamer
      * method may be overidden by subclasses, which do not intend to return this buffer to the ultimate caller of
      * {@link #nextChunk nextChunk}. In such a case, a read buffer may be re-used (of the contents of the read are going
      * to be modified anyway.
+     * @return ByteBuffer for the read buffer.
      */
     protected ByteBuffer createReadBuf()
     {
         return ByteBuffer.allocate(m_chunkSz);
     }
 
+    /**
+     * Retrieve the next chunk.
+     * @return ByteBuffer of next chunk.
+     */
     public ByteBuffer nextChunk()
     {
         m_logger.debug("Next ChunkToken called");
