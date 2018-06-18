@@ -450,7 +450,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-tagged"; }
+        public String getName() { return "bandwidth-control-tagged-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -468,7 +468,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-given-hook"; }
+        public String getName() { return "bandwidth-control-quota-given-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -486,7 +486,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+        public String getName() { return "bandwidth-control-quota-exceeded-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -504,7 +504,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-removed-hook"; }
+        public String getName() { return "bandwidth-control-quota-removed-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -522,7 +522,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-given-hook"; }
+        public String getName() { return "bandwidth-control-quota-given-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -540,7 +540,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+        public String getName() { return "bandwidth-control-quota-exceeded-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
@@ -558,7 +558,7 @@ public class BandwidthControlApp extends AppBase
         /**
          * @return the Name of the hook
          */
-        public String getName() { return "bandwidth-control-quota-removed-hook"; }
+        public String getName() { return "bandwidth-control-quota-removed-hook-" + getAppSettings().getId().toString(); }
 
         /**
          * The callback function
