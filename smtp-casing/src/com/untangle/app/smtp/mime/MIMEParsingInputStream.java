@@ -68,6 +68,10 @@ public class MIMEParsingInputStream extends InputStream
          */
         public final long boundaryLen;
 
+        /**
+         * Initialize instance of BoundaryResult.
+         * @return Instance of BoundaryResult.
+         */
         private BoundaryResult() {
             this.boundaryFound = false;
             this.boundaryWasLast = false;
@@ -75,6 +79,13 @@ public class MIMEParsingInputStream extends InputStream
             this.boundaryLen = -1;
         }
 
+        /**
+         * Initialize instance of BoundaryResult.
+         * @param  start   Boundary start.
+         * @param  end     Boundary end.
+         * @param  wasLast If true wasLast, false otherwise.
+         * @return Instance of BoundaryResult.
+         */
         private BoundaryResult(long start, long end, boolean wasLast) {
             this.boundaryFound = true;
             this.boundaryWasLast = wasLast;
@@ -99,6 +110,7 @@ public class MIMEParsingInputStream extends InputStream
     /**
      * Construct a new MIMEParsingInputStream, wrapping the given stream. Note that this class does not do any
      * buffering, so if the underlying stream is to a file it should be buffered.
+     * @param wrap InputStream to use.
      */
     public MIMEParsingInputStream(InputStream wrap) {
         m_wrapped = new DynPushbackInputStream(wrap, LINE_SZ, LINE_SZ);
@@ -133,6 +145,8 @@ public class MIMEParsingInputStream extends InputStream
     /**
      * Unread the byte sequence by placing it back into the stream for the next call to {@link #read read}.
      * 
+     * @param b
+     *            Array of bytes to be placed back-into the stream
      * @exception IOException
      *                from the backing stream
      */
@@ -145,6 +159,10 @@ public class MIMEParsingInputStream extends InputStream
     /**
      * Unread the byte sequence by placing it back into the stream for the next call to {@link #read read}.
      * 
+     * @param b
+     *            Array of bytes to be placed back-into the stream
+     * @param off Offset to write.
+     * @param len Length to write.
      * @exception IOException
      *                from the backing stream
      */
@@ -154,6 +172,11 @@ public class MIMEParsingInputStream extends InputStream
         m_count -= len;
     }
 
+    /**
+     * Move pointer by reading.
+     * @return number read.
+     * @throws IOException   from the backing stream
+     */
     @Override
     public int read() throws IOException
     {
@@ -164,6 +187,12 @@ public class MIMEParsingInputStream extends InputStream
         return ret;
     }
 
+    /**
+     * Move pointer by reading.
+     * @param b Where to read into.
+     * @return number read.
+     * @throws IOException   from the backing stream
+     */
     @Override
     public int read(byte[] b) throws IOException
     {
@@ -174,6 +203,14 @@ public class MIMEParsingInputStream extends InputStream
         return ret;
     }
 
+    /**
+     * Move pointer by reading.
+     * @param b Where to read into.
+     * @param off Offset to read from.
+     * @param len Length to read.
+     * @return number read.
+     * @throws IOException   from the backing stream
+     */
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
@@ -266,6 +303,8 @@ public class MIMEParsingInputStream extends InputStream
      * 
      * @param line
      *            the line to unread
+     * @exception IOException
+     *                from the backing stream
      */
     public void unreadLine(Line line) throws IOException
     {
@@ -293,6 +332,8 @@ public class MIMEParsingInputStream extends InputStream
      *            if true, the boundary (including any leading/trailing EOL) will be left in the stream (unread).
      * 
      * @return the BoundaryResult.
+     * @exception IOException
+     *                from the backing stream
      */
     public BoundaryResult skipToBoundary(String boundaryStr, final boolean leaveBoundary) throws IOException
     {
@@ -460,6 +501,13 @@ public class MIMEParsingInputStream extends InputStream
             ;
     }
 
+    /**
+     * Skip to position by specified length.
+     * @param  n           Amount to skip.
+     * @return             Amount skipped.
+     * @exception IOException
+     *                from the backing stream
+     */
     @Override
     public long skip(long n) throws IOException
     {
@@ -468,12 +516,23 @@ public class MIMEParsingInputStream extends InputStream
         return ret;
     }
 
+    /**
+     * Amount in buffer available.
+     * @return Integer of available.
+     * @exception IOException
+     *                from the backing stream
+     */
     @Override
     public int available() throws IOException
     {
         return m_wrapped.available();
     }
 
+    /**
+     * Close.
+     * @exception IOException
+     *                from the backing stream
+     */
     @Override
     public void close() throws IOException
     {
@@ -482,9 +541,8 @@ public class MIMEParsingInputStream extends InputStream
 
     /**
      * Mark is not supported, so this method does nothing
-     * 
-     * @exception IOException
-     *                from the backing stream
+     *
+     * @param readlimit Unused.
      */
     @Override
     public void mark(int readlimit)
@@ -506,9 +564,8 @@ public class MIMEParsingInputStream extends InputStream
 
     /**
      * Always returns false
-     * 
-     * @exception IOException
-     *                from the backing stream
+     *
+     * @return true if mark is supported, false otherwise.
      */
     @Override
     public boolean markSupported()
@@ -516,6 +573,11 @@ public class MIMEParsingInputStream extends InputStream
         return false;
     }
 
+    /**
+     * Unread EOL.
+     * @param  val         Value to unread.
+     * @throws IOException On error.
+     */
     private void uneatEOL(int val) throws IOException
     {
         switch (val) {
@@ -535,6 +597,7 @@ public class MIMEParsingInputStream extends InputStream
      * Eat the next EOL, if one is found
      * 
      * @return constants defined as "XXX_EOL" on this class.
+     * @throws IOException On error.
      */
     private int eatEOL() throws IOException
     {
@@ -548,8 +611,10 @@ public class MIMEParsingInputStream extends InputStream
 
     /**
      * Eat the EOL, if the character starts an EOL sequence. If it does not, it is <b>not</b> unread implicitly.
-     * 
+     *
+     * @param read Amount to read.
      * @return constants defined as "XXX_EOL" on this class.
+     * @throws IOException On error.
      */
     private int eatEOL(int read) throws IOException
     {
@@ -576,6 +641,12 @@ public class MIMEParsingInputStream extends InputStream
 
     /************** Tests ******************/
 
+    /**
+     * Run tests.
+     * @param  args      Array String of tests to run.
+     * @return           String of test result.
+     * @throws Exception On error.
+     */
     public static String runTest(String[] args) throws Exception
     {
         String crlf = new String(CRLF_BA);
@@ -589,6 +660,12 @@ public class MIMEParsingInputStream extends InputStream
         return result;
     }
 
+    /**
+     * Do test.
+     * @param  str       Test to run.
+     * @return           Result of test.
+     * @throws Exception On error.
+     */
     private static String doTest(String str) throws Exception
     {
         String result = "\n\n----------------\n";
