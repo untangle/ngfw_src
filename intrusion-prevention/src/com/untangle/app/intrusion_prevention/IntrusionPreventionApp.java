@@ -322,6 +322,10 @@ public class IntrusionPreventionApp extends AppBase
         this.setMetric(STAT_BLOCK, value);
     }
 
+    /**
+     * Return result of snort status.
+     * @return String of snort log.
+     */
     public String getStatus()
     {
         return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
