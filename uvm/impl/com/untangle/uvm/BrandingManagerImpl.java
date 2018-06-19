@@ -9,6 +9,9 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppBase;
 
+/**
+ * Branding manager
+ */
 public class BrandingManagerImpl implements BrandingManager
 {
     private DefaultBrandingManager defaultBranding;
@@ -16,11 +19,20 @@ public class BrandingManagerImpl implements BrandingManager
     private final String defaultCompanyName = "Untangle";
     private final String defaultCompanyUrl = "http://untangle.com/";
 
+    /**
+     * Initialize instance of BrandingManagerImpl.
+     * @return instance of BrandingManagerImpl.
+     */
     public BrandingManagerImpl()
     {
         this.defaultBranding = new DefaultBrandingManager();
     }
 
+    /**
+     * Return company name.
+     *
+     * @return String of company name using default name then fallback to OEM and then branding manager name.
+     */
     @Override
     public String getCompanyName()
     {
@@ -49,6 +61,10 @@ public class BrandingManagerImpl implements BrandingManager
         return ret;
     }
 
+    /**
+     * Return the company URL.
+     * @return String of company URL starting with with the default name then fallback to OEM and then branding manager name.
+     */
     @Override
     public String getCompanyUrl()
     {
@@ -75,6 +91,11 @@ public class BrandingManagerImpl implements BrandingManager
         return ret;
     }
 
+    /**
+     * Return contact name
+     * 
+     * @return String of contact name.  Look for value from branding manager.  If it doesn't exist, empty string.
+     */
     @Override
     public String getContactName()
     {
@@ -82,6 +103,10 @@ public class BrandingManagerImpl implements BrandingManager
         return (bm != null) ? bm.getContactName() : "";
     }
 
+    /**
+     * Return contact email.
+     * @return String of contact email.  Look for value from branding manager.  If it doesn't exist, empty string.
+     */
     @Override
     public String getContactEmail()
     {
@@ -89,6 +114,10 @@ public class BrandingManagerImpl implements BrandingManager
         return (bm != null) ? bm.getContactEmail() : "";
     }
 
+    /**
+     * Return contact HTML.
+     * @return String of contact HTML.  Look for value from branding manager.  If it doesn't exist, empty string.
+     */
     @Override
     public String getContactHtml()
     {
@@ -96,6 +125,10 @@ public class BrandingManagerImpl implements BrandingManager
         return (bm != null) ? bm.getContactHtml() : "";
     }
     
+    /**
+     * Return branding manager app.
+     * @return Branding manager app. Look for app.  If cannot be found, return a "dummy" with default values.
+     */
     private BrandingManager getBrandingManager()
     {
         AppManager nm = UvmContextFactory.context().appManager();
@@ -109,14 +142,43 @@ public class BrandingManagerImpl implements BrandingManager
         return this.defaultBranding;
     }
     
+    /**
+     * "dummy" branding manager with default values.
+     */
     @SuppressWarnings("unused")
     private class DefaultBrandingManager implements BrandingManager
     {
+        /**
+         * Determine if this is default logo.
+         * @return Always return true.
+         */
         public boolean isDefaultLogo() {return true;}
+
+        /**
+         * Return contact name.
+         * @return Always return string of contact name.
+         */
         public String getContactHtml() {return this.getContactName();}
+
+        /**
+         * Return contact email.
+         * @return Always return null string.
+         */
         public String getContactEmail() {return null;}
+        /**
+         * Return contact name.
+         * @return Always return fixed string.
+         */
         public String getContactName() {return "your network administrator";} 
+        /**
+         * Return contact url.
+         * @return Always return null string.
+         */
         public String getCompanyUrl() {return null;} 
+        /**
+         * Return company name.
+         * @return Always return null string.
+         */
         public String getCompanyName() {return null;} 
     }
 }
