@@ -7,4 +7,4 @@ before_install:
   - docker pull untangleinc/ngfw:base
 
 script:
-  - docker-compose -f docker-compose.build.yml
+  - docker-compose -f docker-compose.build.yml build
