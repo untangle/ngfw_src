@@ -18,9 +18,17 @@ class AddressLock
     private static Set<String> m_set = new HashSet<String>();
     private static boolean m_waiting = false;
 
+    /**
+     * Initialzie instance of AddressLock.
+     * @return Instance of AddressLock.
+     */
     private AddressLock() {
     }
 
+    /**
+     * Return instance.
+     * @return AddressLock instance.
+     */
     static AddressLock getInstance()
     {
         return INSTANCE;
@@ -118,6 +126,11 @@ class AddressLock
         return;
     }
 
+    /**
+     * Wait on the impl.
+     * @param  time Time to wait.
+     * @return      If true, wait succeeded, otherwise false.
+     */
     private boolean waitImpl(long time)
     {
         try {
@@ -128,6 +141,10 @@ class AddressLock
         }
     }
 
+    /**
+     * Wait on the impl.
+     * @return      If true, wait succeeded, otherwise false.
+     */
     private boolean waitImpl()
     {
         try {
