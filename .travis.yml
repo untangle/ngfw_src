@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - docker pull untangleinc/ngfw:base
+  - docker pull untangleinc/ngfw:build
 
 script:
   - docker-compose -f docker-compose.build.yml up
