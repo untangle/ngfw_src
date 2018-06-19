@@ -26,6 +26,10 @@ public class StoreSummary implements Serializable
     private transient final AtomicLong totalSz;
     private transient final AtomicInteger totalMails;
 
+    /**
+     * Iniitalize instance of StoreSummary.
+     * @return instance of StoreSummary.
+     */
     public StoreSummary() {
         map = new HashMap<String, InboxSummary>();
         totalSz = new AtomicLong(0);
@@ -35,7 +39,8 @@ public class StoreSummary implements Serializable
     /**
      * Create a StoreSummary which shares all contents of <code>copyFrom</code>. Subsequent additions and removals of
      * inboxes from either this Object of <code>copyFrom</code> will not be seen by each other.
-     * 
+     * @param copyFrom StoreSummary to copy from.
+     * @return instance of StoreSummary.
      */
     public StoreSummary(StoreSummary copyFrom) {
         map = new HashMap<String, InboxSummary>(copyFrom.map);
@@ -45,6 +50,7 @@ public class StoreSummary implements Serializable
 
     /**
      * Access the total size of all mails in the system
+     * @return total size.
      */
     long getTotalSz()
     {
@@ -53,6 +59,7 @@ public class StoreSummary implements Serializable
 
     /**
      * Get the total number of mails in the quarantine system
+     * @return total email count.
      */
     int getTotalMails()
     {
@@ -61,17 +68,28 @@ public class StoreSummary implements Serializable
 
     /**
      * Get the total number of inboxes in the system.
+     * @return size of inboxes.
      */
     public int size()
     {
         return map.size();
     }
 
+    /**
+     * Determine if any mailboxes contain address key.
+     * @param  lcAddress Key to search.
+     * @return           true if found, false if not.
+     */
     public boolean containsInbox(String lcAddress)
     {
         return map.containsKey(lcAddress);
     }
 
+    /**
+     * Add inbox.
+     * @param lcAddress Address of inbox.
+     * @param meta      InboxSummary to initialze with.
+     */
     public void addInbox(String lcAddress, InboxSummary meta)
     {
         map.put(lcAddress, meta);
@@ -80,7 +98,8 @@ public class StoreSummary implements Serializable
     }
 
     /**
-     *
+     * Remove inbox.
+     * @param address Address of inbox.
      */
     public void removeInbox(String address)
     {
@@ -91,6 +110,11 @@ public class StoreSummary implements Serializable
         }
     }
 
+    /**
+     * Add mail counter.
+     * @param inbox Inbox to update.
+     * @param sz    Size updated.
+     */
     public void mailAdded(InboxSummary inbox, long sz)
     {
         totalSz.getAndAdd(sz);
@@ -99,6 +123,11 @@ public class StoreSummary implements Serializable
         inbox.incrementTotalMails(1);
     }
 
+    /**
+     * Decrement mail counter.
+     * @param inbox Inbox to update.
+     * @param sz    Size updated.
+     */
     void mailRemoved(InboxSummary inbox, long sz)
     {
         totalSz.getAndAdd(-1 * sz);
@@ -110,6 +139,9 @@ public class StoreSummary implements Serializable
     /**
      * When scanning (possibly for other reasons) an inbox, we also perform a re-check of the size/count of the inbox.
      * This is the call to perform the update.
+     * @param inbox InboxSummary.
+     * @param totalSz Total size to update.
+     * @param totalMails Total emails to update.
      */
     public void updateMailbox(InboxSummary inbox, long totalSz, int totalMails)
     {
@@ -122,6 +154,8 @@ public class StoreSummary implements Serializable
 
     /**
      * Returns null if not found.
+     * @param address Email address of inbox.
+     * @return InboxSuummary.
      */
     public InboxSummary getInbox(String address)
     {
@@ -131,17 +165,26 @@ public class StoreSummary implements Serializable
     /**
      * Do not modify any of the returned entries, as it is a shared reference. The returned set itself is guaranteed
      * never to be modified.
+     * @return Set of String, InboxSummary.
      */
     public Set<Map.Entry<String, InboxSummary>> entries()
     {
         return map.entrySet();
     }
 
+    /**
+     * Get maip.
+     * @return Map of String, InboxSummary.
+     */
     public HashMap<String, InboxSummary> getMap()
     {
         return map;
     }
 
+    /**
+     * Write map.
+     * @param map Map of String, InboxSummary.
+     */
     public void setMap(HashMap<String, InboxSummary> map)
     {
         this.map.putAll(map);
