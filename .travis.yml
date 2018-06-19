@@ -8,3 +8,6 @@ before_install:
 
 script:
   - docker-compose -f docker-compose.build.yml build
+
+notifications:
+  email: false
