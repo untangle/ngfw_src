@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.util.TimerTask;
@@ -21,7 +22,6 @@ import com.untangle.uvm.DaemonManager;
  * automatically stopped when no one requires them. It also provides very basic
  * process or request monitoring and restart logic.
  */
-
 public class DaemonManagerImpl extends TimerTask implements DaemonManager
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -32,8 +32,18 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         DISABLED, DAEMON, REQUEST
     }
 
+    /**
+     * Holds the details of a daemon that is controlled and monitored by the
+     * daemon manager.
+     */
     class DaemonObject
     {
+        /**
+         * Constructor
+         * 
+         * @param daemonName
+         *        The daemon name
+         */
         DaemonObject(String daemonName)
         {
             this.daemonName = daemonName;
@@ -58,22 +68,26 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private ConcurrentHashMap<String, DaemonObject> daemonHashMap = new ConcurrentHashMap<String, DaemonObject>();
 
+    /**
+     * Constructor
+     */
     public DaemonManagerImpl()
     {
         // we'll do the monitoring stuff every 5 seconds 
         timer.scheduleAtFixedRate(this, 5000, 5000);
     }
 
+    /**
+     * The main thread function for the daemon manager
+     */
     public void run()
     {
         for (DaemonObject object : daemonHashMap.values()) {
             // ignore objects not configured for monitoring
-            if (object.monitorType == MonitorType.DISABLED)
-                continue;
+            if (object.monitorType == MonitorType.DISABLED) continue;
 
             // ignore objects that don't need to be checked yet
-            if (System.currentTimeMillis() < (object.lastCheck + object.monitorInterval))
-                continue;
+            if (System.currentTimeMillis() < (object.lastCheck + object.monitorInterval)) continue;
 
             // do the actual check based on monitor configuration
             switch (object.monitorType)
@@ -91,16 +105,29 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
+    /**
+     * Gets the usage count for a particular daemon
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @return The usage count
+     */
     public int getUsageCount(String daemonName)
     {
-        DaemonObject daemonObject = getDaemonObject( daemonName );
+        DaemonObject daemonObject = getDaemonObject(daemonName);
         return daemonObject.usageCount;
     }
 
+    /**
+     * Increments the usage count for a particular daemon
+     * 
+     * @param daemonName
+     *        The daemon name
+     */
     public void incrementUsageCount(String daemonName)
     {
-        DaemonObject daemonObject = getDaemonObject( daemonName );
-        synchronized( daemonObject ) {
+        DaemonObject daemonObject = getDaemonObject(daemonName);
+        synchronized (daemonObject) {
             int newUsageCount = daemonObject.usageCount + 1;
             daemonObject.usageCount = newUsageCount;
 
@@ -110,10 +137,16 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
+    /**
+     * Decrements the usage count for a particular daemon
+     * 
+     * @param daemonName
+     *        The daemon name
+     */
     public void decrementUsageCount(String daemonName)
     {
-        DaemonObject daemonObject = getDaemonObject( daemonName );
-        synchronized( daemonObject ) {
+        DaemonObject daemonObject = getDaemonObject(daemonName);
+        synchronized (daemonObject) {
             int newUsageCount = daemonObject.usageCount - 1;
             daemonObject.usageCount = newUsageCount;
 
@@ -128,21 +161,46 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             }
         }
     }
-    
+
+    /**
+     * Used to set an optional additional command that should be executed after
+     * the normal restart command is executed.
+     * 
+     * @param daemonName
+     *        The daemon command
+     * @param extraRestartCommand
+     *        The command to be executed
+     * @param extraRestartDelay
+     *        The amount of time to wait after executing the standard restart
+     *        before executing the extra command
+     */
     public void setExtraRestartCommand(String daemonName, String extraRestartCommand, long extraRestartDelay)
     {
-        DaemonObject daemonObject = getDaemonObject( daemonName );
-        synchronized( daemonObject ) {
+        DaemonObject daemonObject = getDaemonObject(daemonName);
+        synchronized (daemonObject) {
             daemonObject.extraRestartCommand = extraRestartCommand;
             daemonObject.extraRestartDelay = extraRestartDelay;
-        }        
+        }
     }
 
+    /**
+     * Called to enable simple daemon monitoring where we look to see if the
+     * daemon is running by periodically calling pgrep using the argumented
+     * search string.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @param secondInterval
+     *        The number of seconds between checks
+     * @param searchString
+     *        The search string to use
+     * @return True if the monitor is successfully applied, false if no daemon
+     *         with the argumented name was found
+     */
     public boolean enableDaemonMonitoring(String daemonName, long secondInterval, String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
-        if (daemonObject == null)
-            return (false);
+        if (daemonObject == null) return (false);
 
         daemonObject.monitorType = MonitorType.DAEMON;
         daemonObject.monitorInterval = (secondInterval * 1000);
@@ -151,11 +209,31 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
+    /**
+     * Called to enable more comprehensive monitoring where we connect to the
+     * daemon at a specific host:port combination, transmit a string, recive the
+     * response, and search the response for a particular string to determine if
+     * the daemon is running and responding properly.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @param secondInterval
+     *        The number of seconds between checks
+     * @param hostString
+     *        The target host
+     * @param hostPort
+     *        The target port
+     * @param transmitString
+     *        The string to transmit
+     * @param searchString
+     *        The response search string
+     * @return True if the monitor is successfully applied, false if no daemon
+     *         with the argumented name was found
+     */
     public boolean enableRequestMonitoring(String daemonName, long secondInterval, String hostString, int hostPort, String transmitString, String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
-        if (daemonObject == null)
-            return (false);
+        if (daemonObject == null) return (false);
 
         daemonObject.monitorType = MonitorType.REQUEST;
         daemonObject.monitorInterval = (secondInterval * 1000);
@@ -167,11 +245,18 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
+    /**
+     * Called to disable all monitoring for a daemon.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @return True if all monitoring is successfully disabled, false if no
+     *         daemon with the argumented name was found
+     */
     public boolean disableAllMonitoring(String daemonName)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
-        if (daemonObject == null)
-            return (false);
+        if (daemonObject == null) return (false);
 
         daemonObject.transmitString = null;
         daemonObject.searchString = null;
@@ -183,23 +268,39 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
-    public boolean isRunning(String daemonName){
+    /**
+     * Checks to see if a daemon is running. If monitoring is enabled, we search
+     * for the searchString associated with the DaemonObject, otherwise we just
+     * look for the daemon name. TODO - This function won't properly handle
+     * daemons that have request monitoring enabled, since it will pass the
+     * searchString to pgrep which won't work, since in those cases the the
+     * search string would be found in the server response.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @return True if the daemon is running, otherwise false
+     */
+    public boolean isRunning(String daemonName)
+    {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
-        if (daemonObject == null)
-            return (false);
+        if (daemonObject == null) return (false);
 
-        String daemonSearchString = ( daemonObject.searchString != null ? daemonObject.searchString : daemonName );
+        String daemonSearchString = (daemonObject.searchString != null ? daemonObject.searchString : daemonName);
         String result[] = UvmContextFactory.context().execManager().execOutput("pgrep -il " + daemonSearchString + "| grep systemctl | wc -l && pgrep -il " + daemonSearchString + "| grep -v systemctl | wc -l").split("\\r?\\n");
-        if(Integer.parseInt(result[0].trim()) == 0 && Integer.parseInt(result[1].trim()) > 0)
-            return true;
-        else
-            return false;
+        if (Integer.parseInt(result[0].trim()) == 0 && Integer.parseInt(result[1].trim()) > 0) return true;
+        else return false;
 
     }
 
-    // these function are private since they should not be access externally
-
-    private synchronized DaemonObject getDaemonObject( String daemonName )
+    /**
+     * Gets the DaemonObject with the argumented name from the hash map. If the
+     * daemon object doesn't yet exist, it is created.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @return The corresponding DaemonObject
+     */
+    private synchronized DaemonObject getDaemonObject(String daemonName)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
 
@@ -212,23 +313,38 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
-     * executes daemon control command using execEvil
+     * Executes a daemon control command using execEvil. If the daemon name is
+     * provided, we exec systemctl passing the command and the daemonName. If
+     * daemonName is null, we simply exec the command as provided.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @param command
+     *        The systemctl command to execute, such as start, stop, restart,
+     *        etc. or the raw command to execute if daemonName is null
      */
     private void execDaemonControlEvil(String daemonName, String command)
     {
-        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);        
+        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             reader.waitFor();
-        }
-        catch( Exception exn ) {
+        } catch (Exception exn) {
             logger.warn("Failed to run command: " + command, exn);
         }
     }
 
     /**
-     * executes daemon control command using execOutput()
-     * execOutput() is safer but the execManager can only run one at at time
+     * Executes daemon control command using execOutput() which is safer but the
+     * execManager can only run one at at time. If the daemon name is provided,
+     * we exec systemctl passing the command and the daemonName. If daemonName
+     * is null, we simply exec the command as provided.
+     * 
+     * @param daemonName
+     *        The daemon name
+     * @param command
+     *        The systemctl command to execute, such as start, stop, restart,
+     *        etc. or the raw command to execute if daemonName is null
      */
     private void execDaemonControlSafe(String daemonName, String command)
     {
@@ -238,13 +354,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             String lines[] = output.split("\\r?\\n");
             for (String line : lines)
                 logger.info(cmd + ": " + line);
-        } catch ( Exception exn ) {
+        } catch (Exception exn) {
         }
     }
-    
+
+    /**
+     * Handles checking the status of daemons that have basic process monitoring
+     * enabled, and restarting if the process if found to not be running.
+     * 
+     * @param object
+     *        The DaemonObject to check
+     */
     private void handleDaemonCheck(DaemonObject object)
     {
-        synchronized( object ) {
+        synchronized (object) {
             // run a spiffy command to count the number of process instances
             String result = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString + " | wc -l");
 
@@ -252,30 +375,35 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             // a regex to strip out anything that is not a digit 
             int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
             logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
-        
+
             // if we find the process running just return
-            if (count > 0)
-                return;
+            if (count > 0) return;
 
             // process does not seem to be running so log and restart
             logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
             logger.warn("Restarting failed daemon: " + object.daemonName);
             execDaemonControlSafe(object.daemonName, "restart");
-            
+
             if (object.extraRestartCommand != null) {
                 try {
                     object.wait(object.extraRestartDelay);
+                } catch (Exception exn) {
                 }
-                catch (Exception exn) {
-                }
-                execDaemonControlSafe(null,object.extraRestartCommand);
+                execDaemonControlSafe(null, object.extraRestartCommand);
             }
         }
     }
 
+    /**
+     * Handles checking the status of daemons that have request monitoring
+     * enabled, and restarting if the daemon is not responding as expected.
+     * 
+     * @param object
+     *        The DaemonObject to check
+     */
     private void handleRequestCheck(DaemonObject object)
     {
-        synchronized( object ) {
+        synchronized (object) {
             DataOutputStream txstream = null;
             DataInputStream rxstream = null;
             Socket socket = null;
@@ -301,40 +429,32 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             }
 
             // catch and log any exceptions and set the restart flag
-            catch ( Exception exn ) {
+            catch (Exception exn) {
                 String reason = exn.getMessage();
-                if (reason == null && exn.getCause() != null)
-                    reason = exn.getCause().toString();
-                if (reason == null && exn.getClass() != null)
-                    reason = exn.getClass().toString();
-                if (reason == null)
-                    reason = "unknown";
+                if (reason == null && exn.getCause() != null) reason = exn.getCause().toString();
+                if (reason == null && exn.getClass() != null) reason = exn.getClass().toString();
+                if (reason == null) reason = "unknown";
 
                 logger.warn("Exception (" + reason + ") while checking " + object.hostString + ":" + object.hostPort);
                 restart = true;
-            }finally{
+            } finally {
                 // make sure the streams and socket all get closed ignoring exceptions
                 try {
-                    if (txstream != null)
-                        txstream.close();
-                    if (rxstream != null)
-                        rxstream.close();
-                    if (socket != null)
-                        socket.close();
-                } catch ( Exception exn ) {
+                    if (txstream != null) txstream.close();
+                    if (rxstream != null) rxstream.close();
+                    if (socket != null) socket.close();
+                } catch (Exception exn) {
                 }
             }
 
             // if no exceptions then we check the response for the search string
             if (restart == false) {
                 String haystack = new String(buffer, 0, rxcount);
-                if (haystack.contains(object.searchString) == false)
-                    restart = true;
+                if (haystack.contains(object.searchString) == false) restart = true;
             }
 
             // if restart is we can just return
-            if (restart == false)
-                return;
+            if (restart == false) return;
 
             logger.warn("Restarting failed daemon: " + object.daemonName);
             execDaemonControlSafe(object.daemonName, "restart");
@@ -342,10 +462,9 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             if (object.extraRestartCommand != null) {
                 try {
                     object.wait(object.extraRestartDelay);
+                } catch (Exception exn) {
                 }
-                catch ( Exception exn ) {
-                }
-                execDaemonControlSafe(null,object.extraRestartCommand);
+                execDaemonControlSafe(null, object.extraRestartCommand);
             }
         }
     }
