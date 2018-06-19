@@ -30,5 +30,10 @@ public interface QuarantineAppView
      */
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients);
 
+    /**
+     * Generate token.
+     * @param  account Account to generate token for.
+     * @return         String of token.
+     */
     public String createAuthToken(String account);
 }
