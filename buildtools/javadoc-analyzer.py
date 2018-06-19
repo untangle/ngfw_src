@@ -111,9 +111,16 @@ class JavaParser:
         result = []
         current_class = None
         optional_method = False
+
+        in_interface = False
         for path, node in self.tree:
             node_name = node.__class__.__name__
+
+            if node_name == "InterfaceDeclaration":
+                in_interface = True
+
             if node_name == "ClassDeclaration":
+                in_interface = False
                 current_class = getattr(node,"name")
 
                 class_found = False
@@ -121,9 +128,13 @@ class JavaParser:
                     if c.tree["name"] == current_class and c.tree["_optional"] is True:
                         optional_method = True
 
+            if in_interface is True:
+                continue
+
             # Other method identifiers to look for?
             if node_name != "MethodDeclaration" and node_name != "ConstructorDeclaration":
                 continue
+
             method_result = {}
             for key in node.attrs:
                 value = getattr(node, key)
