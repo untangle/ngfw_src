@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.phish_blocker;
 
 import java.io.File;
@@ -16,6 +17,9 @@ import com.untangle.app.spam_blocker.SpamScanner;
 import com.untangle.app.virus_blocker.VirusScannerResult;
 import org.apache.log4j.Logger;
 
+/**
+ * Implementation of a scanner for phishing emails
+ */
 public class PhishBlockerScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -26,28 +30,52 @@ public class PhishBlockerScanner implements SpamScanner
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/phish-blocker-get-last-update";
-    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/phish-blocker-get-last-update-check";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty("uvm.bin.dir") + "/phish-blocker-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty("uvm.bin.dir") + "/phish-blocker-get-last-update-check";
 
-    public PhishBlockerScanner() { }
+    /**
+     * Constructor
+     */
+    public PhishBlockerScanner()
+    {
+    }
 
+    /**
+     * Get the vendor name
+     * 
+     * @return The vendor name
+     */
     public String getVendorName()
     {
         return "PhishBlocker"; // also referenced in SpamSpamFilter
     }
 
+    /**
+     * Get the active scan count
+     * 
+     * @return The active scan count
+     */
     public int getActiveScanCount()
     {
-        synchronized(activeScanMonitor) {
+        synchronized (activeScanMonitor) {
             return activeScanCount;
         }
     }
 
+    /**
+     * Generate a report on a message file
+     * 
+     * @param msgFile
+     *        The message file
+     * @param threshold
+     *        The detection threshold
+     * @return The report
+     */
     public SpamReport scanFile(File msgFile, float threshold)
     {
         ClamScannerClientLauncher scan = new ClamScannerClientLauncher(msgFile);
         try {
-            synchronized(activeScanMonitor) {
+            synchronized (activeScanMonitor) {
                 activeScanCount++;
             }
             VirusScannerResult vsr = scan.doScan(PhishBlockerScanner.TIMEOUT);
@@ -64,38 +92,53 @@ public class PhishBlockerScanner implements SpamScanner
             logger.debug("phishc: " + result);
             return result;
         } finally {
-            synchronized(activeScanMonitor) {
+            synchronized (activeScanMonitor) {
                 activeScanCount--;
             }
         }
     }
 
+    /**
+     * Get the date of the last signature update
+     * 
+     * @return The date of the last signature update
+     */
     public Date getLastSignatureUpdate()
     {
         try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE );
-            long timeSeconds = Long.parseLong( result.trim());
+            String result = UvmContextFactory.context().execManager().execOutput(GET_LAST_SIGNATURE_UPDATE);
+            long timeSeconds = Long.parseLong(result.trim());
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
+            return new Date(timeSeconds * 1000l);
+        } catch (Exception e) {
+            logger.warn("Unable to get last update.", e);
             return null;
-        } 
+        }
     }
 
+    /**
+     * Get the date of the last signature check
+     * 
+     * @return The date of the last signature check
+     */
     public Date getLastSignatureUpdateCheck()
     {
         try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE_CHECK );
-            long timeSeconds = Long.parseLong( result.trim());
+            String result = UvmContextFactory.context().execManager().execOutput(GET_LAST_SIGNATURE_UPDATE_CHECK);
+            long timeSeconds = Long.parseLong(result.trim());
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update check.", e );
+            return new Date(timeSeconds * 1000l);
+        } catch (Exception e) {
+            logger.warn("Unable to get last update check.", e);
             return null;
-        } 
+        }
     }
-    
+
+    /**
+     * Get the signature version
+     * 
+     * @return The signature version
+     */
     public String getSignatureVersion()
     {
         /* This is currently not displayed in the UI or reports */
