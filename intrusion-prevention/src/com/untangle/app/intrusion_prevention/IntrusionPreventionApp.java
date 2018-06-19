@@ -221,10 +221,10 @@ public class IntrusionPreventionApp extends AppBase
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --app_id " + this.getAppSettings().getId().toString() +
-            " --home_net " + homeNetValue + 
-            " --interfaces " + interfacesValue + 
-            " --iptables_script " + IPTABLES_SCRIPT
+            " --app_id \"" + this.getAppSettings().getId().toString() + "\"" +
+            " --home_net \"" + homeNetValue + "\"" +
+            " --interfaces \"" + interfacesValue + "\"" +
+            " --iptables_script \"" + IPTABLES_SCRIPT + "\""
         );
 
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
