@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 
@@ -38,6 +38,13 @@ import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * The Certificate Manager handles the internal certificate authority that is
+ * used to sign the man-in-the-middle certificates generated when using the SSL
+ * Inspector application. It also manages the server certificates that are used
+ * by the internal web server, IPsec server, and for handling inbound secure
+ * SMTP traffic.
+ */
 public class CertificateManagerImpl implements CertificateManager
 {
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
@@ -78,6 +85,10 @@ public class CertificateManagerImpl implements CertificateManager
         validAlternateList.put(0x08, "RID");
     }
 
+    /**
+     * The main certificate manager implementation where we register our upload
+     * and download handlers, and do other initialization.
+     */
     protected CertificateManagerImpl()
     {
         File rootCertFile = new File(ROOT_CERT_FILE);
@@ -152,15 +163,32 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    // called by the UI to upload server certificates
+    /**
+     * Called by the UI to upload server certificates
+     */
     private class ServerCertificateUploadHandler implements UploadHandler
     {
+        /**
+         * Get the name of our uplolad handler
+         * 
+         * @return The name of our upload handler
+         */
         @Override
         public String getName()
         {
             return "server_cert";
         }
 
+        /**
+         * Called to handle a certificate uploaded from the Admin web page
+         * 
+         * @param fileItem
+         *        The uploaded file
+         * @param argument
+         *        Arguments passed to the upload handler
+         * @return The upload result
+         * @throws Exception
+         */
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
@@ -201,18 +229,18 @@ public class CertificateManagerImpl implements CertificateManager
             // created from a CSR we generated so combine with our private key
             if (keyLen == 0) {
                 // start by writing the uploaded cert to a temporary file
-                try{
+                try {
                     certStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
                     certStream.write(certString.getBytes(), certTop, certLen);
                     certStream.close();
-                }catch (Exception exn) {
+                } catch (Exception exn) {
                     logger.warn("Exception during certificate download", exn);
-                }finally{
-                    try{
-                        if(certStream != null){
+                } finally {
+                    try {
+                        if (certStream != null) {
                             certStream.close();
                         }
-                    }catch(IOException ex){
+                    } catch (IOException ex) {
                         logger.error("Unable to close file", ex);
                     }
                     certStream = null;
@@ -230,19 +258,19 @@ public class CertificateManagerImpl implements CertificateManager
                 }
 
                 // the cert and key match so save the certificate to a file
-                try{
+                try {
                     certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
                     certStream.write(certString.getBytes(), certTop, certLen);
                     certStream.write('\n');
                     certStream.close();
-                }catch (Exception exn) {
+                } catch (Exception exn) {
                     logger.warn("Exception during certificate download", exn);
-                }finally{
-                    try{
-                        if(certStream != null){
+                } finally {
+                    try {
+                        if (certStream != null) {
                             certStream.close();
                         }
-                    }catch(IOException ex){
+                    } catch (IOException ex) {
                         logger.error("Unable to close file", ex);
                     }
                 }
@@ -266,7 +294,7 @@ public class CertificateManagerImpl implements CertificateManager
                 BufferedReader certReader = null;
                 FileWriter crtStream = null;
                 FileWriter keyStream = null;
-                try{
+                try {
                     certReader = new BufferedReader(new FileReader(certFile));
                     crtStream = new FileWriter(CERT_STORE_PATH + baseName + ".crt");
                     keyStream = new FileWriter(CERT_STORE_PATH + baseName + ".key");
@@ -276,10 +304,10 @@ public class CertificateManagerImpl implements CertificateManager
                     boolean keyflag = false;
 
                     /*
-                     * We read each line of the file looking look for crt and key
-                     * head and tail markers to control some simple state logic that
-                     * lets us stream the certificates into the crt file and the
-                     * private key into it's own key file.
+                     * We read each line of the file looking look for crt and
+                     * key head and tail markers to control some simple state
+                     * logic that lets us stream the certificates into the crt
+                     * file and the private key into it's own key file.
                      */
                     for (;;) {
                         grabstr = certReader.readLine();
@@ -336,20 +364,20 @@ public class CertificateManagerImpl implements CertificateManager
                         rawdata.append(grabstr);
                         rawdata.append("\n");
                     }
-                }catch (Exception exn) {
+                } catch (Exception exn) {
                     logger.warn("Exception during certificate download", exn);
-                }finally{
-                    try{
-                        if(certReader != null){
+                } finally {
+                    try {
+                        if (certReader != null) {
                             certReader.close();
                         }
-                        if(crtStream != null){
+                        if (crtStream != null) {
                             crtStream.close();
                         }
-                        if(keyStream != null){
+                        if (keyStream != null) {
                             keyStream.close();
                         }
-                    }catch(IOException ex){
+                    } catch (IOException ex) {
                         logger.error("Unable to close file", ex);
                     }
                 }
@@ -362,15 +390,30 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    // called by the UI to download the root CA certificate file
+    /**
+     * Called by requests to download the root CA certificate file
+     */
     private class RootCertificateDownloadHandler implements DownloadHandler
     {
+        /**
+         * Get the name of our download handler
+         * 
+         * @return The name of our download handler
+         */
         @Override
         public String getName()
         {
             return "root_certificate_download";
         }
 
+        /**
+         * Called to handle download requests
+         * 
+         * @param req
+         *        The web request
+         * @param resp
+         *        The web repsonse
+         */
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
@@ -387,29 +430,44 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certData);
-            }catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
-            }finally{
-                try{
-                    if(certStream != null){
+            } finally {
+                try {
+                    if (certStream != null) {
                         certStream.close();
                     }
-                }catch(IOException ex){
+                } catch (IOException ex) {
                     logger.error("Unable to close file", ex);
                 }
             }
         }
     }
 
-    // called by the UI to download the root CA certificate file
+    /**
+     * Called by request to download the root CA installer package
+     */
     private class RootCertificateInstallerDownloadHandler implements DownloadHandler
     {
+        /**
+         * Get the name of our download handler
+         * 
+         * @return The name of our download handler
+         */
         @Override
         public String getName()
         {
             return "root_certificate_installer_download";
         }
 
+        /**
+         * Called to handle download requests
+         * 
+         * @param req
+         *        The web request
+         * @param resp
+         *        The web response
+         */
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
@@ -427,29 +485,47 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certInstallerData);
-            }catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
-            }finally{
-                try{
-                    if(certInstallerStream != null){
+            } finally {
+                try {
+                    if (certInstallerStream != null) {
                         certInstallerStream.close();
                     }
-                }catch(IOException ex){
+                } catch (IOException ex) {
                     logger.error("Unable to close file", ex);
                 }
             }
         }
     }
 
-    // called by the UI to generate and download a certificate signing request
+    /**
+     * Called in reponse to the creation and download of a certificate signing
+     * request
+     */
     private class CertificateRequestDownloadHandler implements DownloadHandler
     {
+        /**
+         * Get the name of our download handler
+         * 
+         * @return The name of our download handler
+         */
         @Override
         public String getName()
         {
             return "certificate_request_download";
         }
 
+        /**
+         * Called to handle downloads of certificate signing requests. The cert
+         * subject and alt names enterered on the generation page are passed in
+         * the request and passed to the generator script.
+         * 
+         * @param req
+         *        The web request
+         * @param resp
+         *        The web response
+         */
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
@@ -475,19 +551,27 @@ public class CertificateManagerImpl implements CertificateManager
                 webStream.write(certData);
             } catch (Exception exn) {
                 logger.warn("Exception during certificate download", exn);
-            }finally{
-                try{
-                    if(certStream != null){
+            } finally {
+                try {
+                    if (certStream != null) {
                         certStream.close();
                     }
-                }catch(IOException ex){
+                } catch (IOException ex) {
                     logger.error("Unable to close file", ex);
                 }
             }
         }
     }
 
-    // called by the UI to get the list of server certificates
+    /**
+     * Called by the UI to get a list of all available server certificates,
+     * which we generate by searching for .pem files in the certificate store
+     * path. We compare each cert to those assigned for web, mail, and ipsec
+     * services, and set the corresponding flag so the user interface can
+     * properly display the active certificate for each service.
+     * 
+     * @return A list of all known server certificate files
+     */
     public LinkedList<CertificateInformation> getServerCertificateList()
     {
         LinkedList<CertificateInformation> certList = new LinkedList<CertificateInformation>();
@@ -495,6 +579,15 @@ public class CertificateManagerImpl implements CertificateManager
 
         File[] fileList = filePath.listFiles(new FilenameFilter()
         {
+            /**
+             * Matcher for listFiles that looks for .pem files
+             * 
+             * @param dir
+             *        The file directory
+             * @param name
+             *        The file name
+             * @return True to accept the file, false to reject
+             */
             public boolean accept(File dir, String name)
             {
                 return name.endsWith(".pem");
@@ -523,6 +616,13 @@ public class CertificateManagerImpl implements CertificateManager
         return (certList);
     }
 
+    /**
+     * Called to retrieve the details about a certificate
+     * 
+     * @param fileName
+     *        The certificate file
+     * @return The certificate details
+     */
     // called by getCertificateList to retrieve details about a certificate
     public CertificateInformation getServerCertificateInformation(String fileName)
     {
@@ -633,7 +733,11 @@ public class CertificateManagerImpl implements CertificateManager
         return certInfo;
     }
 
-    // called by the UI to get info about the root certificate
+    /**
+     * Called to get the details from our CA root certificate
+     * 
+     * @return The CA root certificate details
+     */
     public CertificateInformation getRootCertificateInformation()
     {
         CertificateInformation certInfo = new CertificateInformation();
@@ -663,8 +767,16 @@ public class CertificateManagerImpl implements CertificateManager
         return certInfo;
     }
 
-    // called by the UI to generate a new root certificate authority
-    // the dummy argument is not used and makes the JavaScript a little simpler
+    /**
+     * Called by the UI to generate a new root certificate authority. The dummy
+     * argument is not used and makes the JavaScript a little simpler.
+     * 
+     * @param certSubject
+     *        The subject for the new CA root certificate
+     * @param dummy
+     *        Not used
+     * @return True
+     */
     public boolean generateCertificateAuthority(String certSubject, String dummy)
     {
         logger.info("Creating new root certificate authority: " + certSubject);
@@ -684,7 +796,16 @@ public class CertificateManagerImpl implements CertificateManager
         return (true);
     }
 
-    // called by the UI to generate a new server certificate
+    /**
+     * Called to generate a new server certificate that is signed by our
+     * internal certificate authority.
+     * 
+     * @param certSubject
+     *        The certificate subject for the new certificate
+     * @param altNames
+     *        The subject alternative names for the new certificate
+     * @return True
+     */
     public boolean generateServerCertificate(String certSubject, String altNames)
     {
         logger.info("Creating new locally signed apache certificate: " + certSubject);
@@ -700,7 +821,15 @@ public class CertificateManagerImpl implements CertificateManager
         return (true);
     }
 
-    // called by the UI to delete a server certificate
+    /**
+     * Called by the UI to delete a server certificate. To make sure we always
+     * have a certificate we can use for the Web server, we protect the
+     * certificate with the base file name "apache" from ever being removed,
+     * since that's the certificate that is generated during installation.
+     * 
+     * @param fileName
+     *        The certificate file to delete
+     */
     public void removeServerCertificate(String fileName)
     {
         String fileBase;
@@ -728,12 +857,14 @@ public class CertificateManagerImpl implements CertificateManager
         killFile.delete();
     }
 
-    /*
+    /**
      * For apps and services that depend on certificates to work properly, the
      * certificates must have all names and addresses that are configured on the
      * server. Here we grab that list and then check all of the certs to make
      * sure everything is good. We return our result as a chunk of HTML that is
      * displayed on the SSL inspector status page in the UI.
+     * 
+     * @return The certificate status
      */
     public String validateActiveInspectorCertificates()
     {
