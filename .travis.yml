@@ -4,7 +4,7 @@ services:
 before_install:
 - docker pull untangleinc/ngfw:build
 script:
-- docker-compose -f docker-compose.build.yml up
+- docker-compose -f docker-compose.build.yml run build
 notifications:
   email: false
   slack:
