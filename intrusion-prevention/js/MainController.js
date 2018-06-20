@@ -1124,7 +1124,7 @@ Ext.define('Ung.model.intrusionprevention.rule',{
     setMetadataOption: function( key, value){
         var optionsMetadata = this.get('optionsMetadata');
         if(optionsMetadata === undefined){
-            return;
+            optionsMetadata = [];
         }
         var found = false;
         var kv;
