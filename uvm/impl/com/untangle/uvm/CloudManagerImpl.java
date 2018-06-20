@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.util.LinkedList;
@@ -19,7 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 /**
- * The cloud manager 
+ * The cloud manager
  */
 public class CloudManagerImpl implements CloudManager
 {
@@ -30,98 +31,155 @@ public class CloudManagerImpl implements CloudManager
      */
     private static final CloudManagerImpl INSTANCE = new CloudManagerImpl();
 
-    private CloudManagerImpl() {}
+    /**
+     * Constructor
+     */
+    private CloudManagerImpl()
+    {
+    }
 
+    /**
+     * Gets our singleton instance
+     * 
+     * @return Our singleton instance
+     */
     public synchronized static CloudManagerImpl getInstance()
     {
         return INSTANCE;
     }
 
-    public JSONObject accountLogin( String email, String password )
-        throws Exception
+    /**
+     * Called to login to a cloud account
+     * 
+     * @param email
+     *        The email address
+     * @param password
+     *        The password
+     * @return The login result
+     * @throws Exception
+     */
+    public JSONObject accountLogin(String email, String password) throws Exception
     {
-        return accountLogin( email, password, UvmContextImpl.getInstance().getServerUID(), "", "", "" );
+        return accountLogin(email, password, UvmContextImpl.getInstance().getServerUID(), "", "", "");
     }
 
-    public JSONObject accountLogin( String email, String password, String uid, String applianceModel, String majorVersion, String installType )
-        throws Exception
+    /**
+     * Called to login to a cloud account
+     * 
+     * @param email
+     *        The email address
+     * @param password
+     *        The password
+     * @param uid
+     *        The system UID
+     * @param applianceModel
+     *        The appliance model
+     * @param majorVersion
+     *        The major version
+     * @param installType
+     *        The installation type
+     * @return The login result
+     * @throws Exception
+     */
+    public JSONObject accountLogin(String email, String password, String uid, String applianceModel, String majorVersion, String installType) throws Exception
     {
         try {
             CloseableHttpClient httpClient = HttpClients.custom().build();
             HttpClientContext context = HttpClientContext.create();
 
             URIBuilder builder = new URIBuilder(UvmContextImpl.getInstance().getStoreUrl() + "/account/login");
-            builder.addParameter( "email" , email );
-            builder.addParameter( "uid" , uid );
-            builder.addParameter( "applianceModel" , applianceModel );
-            builder.addParameter( "majorVersion" , majorVersion );
-            builder.addParameter( "installType" , installType );
+            builder.addParameter("email", email);
+            builder.addParameter("uid", uid);
+            builder.addParameter("applianceModel", applianceModel);
+            builder.addParameter("majorVersion", majorVersion);
+            builder.addParameter("installType", installType);
             String url = builder.build().toString();
 
             LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();
-            bodyParams.add(new BasicNameValuePair("password",password));
+            bodyParams.add(new BasicNameValuePair("password", password));
             UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
-                       
-            HttpPost  post = new HttpPost(url);
+
+            HttpPost post = new HttpPost(url);
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
             post.setEntity(body);
-        
+
             CloseableHttpResponse response = httpClient.execute(post, context);
 
             String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
             responseBody = responseBody.trim();
 
-            logger.info("accountLogin( " + email + " ) = " + responseBody );
+            logger.info("accountLogin( " + email + " ) = " + responseBody);
 
-            JSONObject json = new JSONObject( responseBody );
+            JSONObject json = new JSONObject(responseBody);
             return json;
         } catch (Exception e) {
-            logger.warn("accountLogin Exception: ",e);
+            logger.warn("accountLogin Exception: ", e);
             throw e;
         }
     }
 
-    public JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType )
-        throws Exception
+    /**
+     * Called to create a cloud account
+     * 
+     * @param email
+     *        The email address
+     * @param password
+     *        The password
+     * @param firstName
+     *        First name
+     * @param lastName
+     *        Last name
+     * @param companyName
+     *        Company name
+     * @param uid
+     *        The system UID
+     * @param applianceModel
+     *        The appliance model
+     * @param majorVersion
+     *        The major version
+     * @param installType
+     *        The installation type
+     * @return The create account result
+     * @throws Exception
+     */
+    public JSONObject accountCreate(String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType) throws Exception
     {
         try {
             CloseableHttpClient httpClient = HttpClients.custom().build();
             HttpClientContext context = HttpClientContext.create();
 
             URIBuilder builder = new URIBuilder(UvmContextImpl.getInstance().getStoreUrl() + "/account/create");
-            builder.addParameter( "email" , email );
-            builder.addParameter( "fname" , firstName );
-            builder.addParameter( "lname" , lastName );
-            builder.addParameter( "cname" , companyName );
-            builder.addParameter( "uid" , uid );
-            builder.addParameter( "applianceModel" , applianceModel );
-            builder.addParameter( "majorVersion" , majorVersion );
-            builder.addParameter( "installType" , installType );
-            
+            builder.addParameter("email", email);
+            builder.addParameter("fname", firstName);
+            builder.addParameter("lname", lastName);
+            builder.addParameter("cname", companyName);
+            builder.addParameter("uid", uid);
+            builder.addParameter("applianceModel", applianceModel);
+            builder.addParameter("majorVersion", majorVersion);
+            builder.addParameter("installType", installType);
+
             String url = builder.build().toString();
 
             LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();
-            bodyParams.add(new BasicNameValuePair("password",password));
+            bodyParams.add(new BasicNameValuePair("password", password));
             UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
-                       
-            HttpPost  post = new HttpPost(url);
+
+            HttpPost post = new HttpPost(url);
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
             post.setEntity(body);
-        
+
             CloseableHttpResponse response = httpClient.execute(post, context);
 
             String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
             responseBody = responseBody.trim();
 
-            logger.info("accountCreate( " + email + " ) = " + responseBody );
+            logger.info("accountCreate( " + email + " ) = " + responseBody);
 
-            JSONObject json = new JSONObject( responseBody );
+            JSONObject json = new JSONObject(responseBody);
             return json;
         } catch (Exception e) {
-            logger.warn("accountCreate Exception: ",e);
+            logger.warn("accountCreate Exception: ", e);
             throw e;
         }
     }
-    
-    
 }
