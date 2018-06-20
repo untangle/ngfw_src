@@ -262,9 +262,14 @@ public class WebFilterSSLEngine
         logger.debug("CLIENT REQUEST = " + new String(target.array(), 0, target.position()));
 
         InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
+        String hostStr = host.getHostAddress().toString();
+        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+        if ( httpsPort != 443 ) {
+            hostStr = hostStr + ":" + httpsPort;
+        }
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
+        vector += "Location: http://" + hostStr + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
