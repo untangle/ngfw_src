@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.util.TimerTask;
@@ -16,17 +17,16 @@ import com.untangle.uvm.network.NetworkSettings;
 /**
  * This class uses a Timer and a NetworkSettings HookCallback to watch for
  * changes to any of the interface status files. When changes are detected, we
- * refresh /etc/hosts.untangle which is loaded by dnsmasq. This file contains
- * an IP to our configured hostname entry for every interface on the server.
- * It was originally created to suppor the Captive Portal redirect using
- * hostname instead of IP feature. The dnsmasq daemon is configured to
- * give the best matching IP in response to a client query based on the interface
- * on which the query was received.
+ * refresh /etc/hosts.untangle which is loaded by dnsmasq. This file contains an
+ * IP to our configured hostname entry for every interface on the server. It was
+ * originally created to suppor the Captive Portal redirect using hostname
+ * instead of IP feature. The dnsmasq daemon is configured to give the best
+ * matching IP in response to a client query based on the interface on which the
+ * query was received.
  * 
  * @author mahotz
  * 
  */
-
 public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -38,6 +38,9 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
     private HostsFileManagerHookCallback hostsFileManagerHookCallback;
     private long latestTimestamp = 0;
 
+    /**
+     * Constructor
+     */
     public HostsFileManagerImpl()
     {
         hostsFileManagerHookCallback = new HostsFileManagerHookCallback(this);
@@ -55,7 +58,6 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
      * constructor as well as being called directly from the network settings
      * change callback hook.
      */
-
     public synchronized void run()
     {
         if (logger.isDebugEnabled()) logger.debug("The HostsFileManager timer task is starting");
@@ -74,16 +76,33 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
     {
         private HostsFileManagerImpl owner;
 
+        /**
+         * Constructor
+         * 
+         * @param app
+         *        The main application
+         */
         HostsFileManagerHookCallback(HostsFileManagerImpl app)
         {
             this.owner = app;
         }
 
+        /**
+         * Get the name of our callback hook
+         * 
+         * @return The name of our callback hook
+         */
         public String getName()
         {
             return "hosts-file-manager-network-settings-change-hook";
         }
 
+        /**
+         * Our callback function
+         * 
+         * @param args
+         *        The arguments passed to the callback
+         */
         public void callback(Object... args)
         {
             Object o = args[0];
@@ -142,7 +161,7 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
 
         // changes detected so use the timestamp from the newest
         latestTimestamp = workingTimestamp;
-        
+
         String fullName = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
 
         // call the script to update the hosts file
