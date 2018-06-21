@@ -26,10 +26,19 @@ public class EventRuleCondition
 
     private GlobMatcher stringGlobMatcher = null;
     
-    public EventRuleCondition()
-    {
-    }
+    /**
+     * Initialize empty instance of EventRuleCondition.
+     * @return Empty instance of EventRuleCondition.
+     */
+    public EventRuleCondition(){}
 
+    /**
+     * Initialize instance of EventRuleCondition.
+     * @param  field      String of fild to check.
+     * @param  comparator String of operator
+     * @param  fieldValue String of field value.
+     * @return Instance of EventRuleCondition.
+     */
     public EventRuleCondition( String field, String comparator, String fieldValue )
     {
         this.field = field;
@@ -37,15 +46,44 @@ public class EventRuleCondition
         this.fieldValue = fieldValue;
     }
 
+    /**
+     * Return field value.
+     * @return String of field.
+     */
     public String getField() { return field; }
+    /**
+     * Specify field value.
+     * @param newValue String of field.
+     */
     public void setField( String newValue ) { this.field = newValue; }
 
+    /**
+     * Return comparator value.
+     * @return String of comparator.
+     */
     public String getComparator() { return comparator; }
+    /**
+     * Specify comparator value.
+     * @param newValue String of comparator.
+     */
     public void setComparator( String newValue ) { this.comparator = newValue; }
 
+    /**
+     * Return field value to check.
+     * @return String of field value to check.
+     */
     public String getFieldValue() { return fieldValue; }
+    /**
+     * Specify field value to check.
+     * @param newValue String of field value to check.
+     */
     public void setFieldValue( String newValue ) { this.fieldValue = newValue; }
 
+    /**
+     * From specified object, determine if event matches.
+     * @param  obj JSONObject, its field/value combination using the comperator.
+     * @return     boolean if true, obj matches, otherwise no match.
+     */
     public boolean isMatch( JSONObject obj )
     {
         if ( field == null || comparator == null || fieldValue == null )
@@ -180,6 +218,12 @@ public class EventRuleCondition
         return false;
     }
 
+    /**
+     * Retreive an attribute value using the attribute name from the object.
+     * @param  obj           JSONObject to search.
+     * @param  attributeName String of key to find.
+     * @return               Object of matching value.  Null if not found.
+     */
     private Object getAttribute( JSONObject obj, String attributeName )
     {
         if ( attributeName == null )
