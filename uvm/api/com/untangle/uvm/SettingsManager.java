@@ -1,5 +1,11 @@
+/**
+ * $Id
+ */
 package com.untangle.uvm;
 
+/**
+ * Settings manager.
+ */
 public interface SettingsManager
 {
     /**
@@ -100,17 +106,36 @@ public interface SettingsManager
      */
     public String getDiff(String fileName) throws SettingsException;
 
+    /**
+     * Settings exception
+     */
     @SuppressWarnings("serial")
     public static class SettingsException extends Exception
     {
+        /**
+         * Initialize instance of SettingSException.
+         * @param  message String of message.
+         * @return         Instance of SettingsException.
+         */
         public SettingsException(String message) {
             super(message);
         }
 
+        /**
+         * Initialize instance of SettingSException.
+         * @param  message String of message.
+         * @param  cause Trowable of cause.
+         * @return         Instance of SettingsException.
+         */
         public SettingsException(String message, Throwable cause) {
             super(message, cause);
         }
 
+        /**
+         * Initialize instance of SettingSException.
+         * @param cause Trowable of cause.
+         * @return         Instance of SettingsException.
+         */
         public SettingsException(Throwable cause) {
             super(cause);
         }

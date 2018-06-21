@@ -319,6 +319,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer getWirelessChannel( ) { return this.wirelessChannel; }
     public void setWirelessChannel( Integer newValue ) { this.wirelessChannel = newValue; }
 
+    /**
+     * Interface alias.
+     */
     public static class InterfaceAlias
     {
         private InetAddress staticAddress; /* the address  of this interface if configured static, or dhcp override */ 

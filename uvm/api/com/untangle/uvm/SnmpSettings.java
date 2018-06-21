@@ -5,6 +5,9 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 /**
  * For those not familiar with SNMP, here is a bit of an explanation
  * of the relationship between properties:
@@ -43,7 +46,7 @@ import java.io.Serializable;
  * set.
  */
 @SuppressWarnings("serial")
-public class SnmpSettings implements Serializable
+public class SnmpSettings implements Serializable, JSONString
 {
     /**
      * The standard port for "normal" agent messages, as
@@ -140,5 +143,11 @@ public class SnmpSettings implements Serializable
 
     public void setTrapPort(int tp) { this.trapPort = tp; }
     public int getTrapPort() { return this.trapPort; }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 
 }
