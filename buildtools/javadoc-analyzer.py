@@ -22,7 +22,10 @@ class JavaParser:
         source = file.read()
         file.close()
 
-        self.tree = javalang.parse.parse(source)
+        try:
+            self.tree = javalang.parse.parse(source)
+        except:
+            print file_path
 
     def get_node(self, tree):
         result = {}
@@ -145,16 +148,17 @@ class JavaParser:
                     method_result[key] = self.get_node(value)
 
             method_result['_type'] = 'method'
-            method_validator = JavaDocValidator( node_name, method_result)
+            method_validator = JavaDocValidator( node_name, method_result, optional_method)
             if optional_method is False or method_validator.missing is False:
                 result.append( method_validator )
         return result
 
 class JavaDocValidator:
 
-    def __init__(self, type, tree):
+    def __init__(self, type, tree, optional=False):
         self.type = type
         self.tree = tree
+        self.optional = optional
 
         self.missing = False
         self.parameters_missing = False
@@ -185,7 +189,8 @@ class JavaDocValidator:
 
         if "parameters" in self.tree and len(self.tree["parameters"]) > 0:
             if len(javadoc.params) == 0:
-                self.parameters_missing = True
+                if self.optional is False:
+                    self.parameters_missing = True
             elif len(javadoc.params) != len(self.tree["parameters"]):
                 self.parameter_mismatch = True
             else:
@@ -201,14 +206,17 @@ class JavaDocValidator:
             if return_type == "void":
                 self.return_mismatch = True
             elif javadoc.return_doc is None:
-                self.return_missing = True
+                if self.optional is False:
+                    self.return_missing = True
         else:
             if return_type != "void":
-                self.return_missing = True
+                if self.optional is False:
+                    self.return_missing = True
 
         if "throws" in self.tree and self.tree["throws"] is not None:
             if len(javadoc.throws) == 0:
-                self.throws_missing = True
+                if self.optional is False:
+                    self.throws_missing = True
             elif len(javadoc.throws) != len(self.tree["throws"]):
                 self.throws_mismatch = True
             else:
