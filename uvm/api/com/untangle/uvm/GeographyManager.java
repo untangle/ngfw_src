@@ -1,7 +1,6 @@
-/*
+/**
  * $Id: GeographyManager.java 42115 2016-01-15 17:56:36Z mahotz $
  */
-
 package com.untangle.uvm;
 
 public interface GeographyManager

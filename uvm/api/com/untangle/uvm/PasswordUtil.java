@@ -7,6 +7,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ * Password utility.
+ */
 public class PasswordUtil
 {
     public static final String PASSWORD_HASH_ALGORITHM = "MD5";
