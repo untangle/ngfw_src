@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.io.BufferedWriter;
@@ -31,16 +32,32 @@ public class SyslogManagerImpl
 
     private static boolean enabled;
 
-    private SyslogManagerImpl() { }
+    /**
+     * Constructor
+     */
+    private SyslogManagerImpl()
+    {
+    }
 
+    /**
+     * Get the syslog manager
+     * 
+     * @return The manager
+     */
     static SyslogManagerImpl manager()
     {
         return MANAGER;
     }
 
-    public static void sendSyslog( LogEvent e )
+    /**
+     * Send an event to the system log
+     * 
+     * @param e
+     *        The event
+     */
+    public static void sendSyslog(LogEvent e)
     {
-        if (!enabled){
+        if (!enabled) {
             return;
         }
 
@@ -52,17 +69,30 @@ public class SyslogManagerImpl
 
     }
 
+    /**
+     * Check for changes to the configuration file
+     * 
+     * @param settingsFilename
+     *        The settings file name
+     * @param eventSettings
+     *        The event settings
+     */
     public static void reconfigureCheck(String settingsFilename, EventSettings eventSettings)
     {
         File settingsFile = new File(settingsFilename);
 
-        if (settingsFile.lastModified() > CONF_FILE.lastModified()){
+        if (settingsFile.lastModified() > CONF_FILE.lastModified()) {
             reconfigure(eventSettings);
         }
         setEnabled(eventSettings);
-
     }
 
+    /**
+     * Reconfigure with new settings
+     * 
+     * @param eventSettings
+     *        The new settings
+     */
     public static void reconfigure(EventSettings eventSettings)
     {
         if (eventSettings != null && eventSettings.getSyslogEnabled()) {
@@ -73,8 +103,7 @@ public class SyslogManagerImpl
 
             // set rsylsog conf
             String conf = CONF_LINE;
-            if (protocol.equalsIgnoreCase("TCP"))
-            {
+            if (protocol.equalsIgnoreCase("TCP")) {
                 conf += "@";
             }
             conf += hostname + ":" + port;
@@ -87,9 +116,9 @@ public class SyslogManagerImpl
             } catch (IOException ex) {
                 logger.error("Unable to write file", ex);
                 return;
-            }finally{
+            } finally {
                 try {
-                    if(out != null){
+                    if (out != null) {
                         out.close();
                     }
                 } catch (IOException ex) {
@@ -104,14 +133,17 @@ public class SyslogManagerImpl
 
         // restart syslog
         File pidFile = new File("/var/run/rsyslogd.pid");
-        if (pidFile.exists())
-            UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
+        if (pidFile.exists()) UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
     }
-    
+
+    /**
+     * Set the enabled flag based on the event settings
+     * 
+     * @param eventSettings
+     *        The event settings
+     */
     public static void setEnabled(EventSettings eventSettings)
     {
-        enabled = 
-            ( eventSettings != null && eventSettings.getSyslogEnabled()) 
-            ? true : false;
+        enabled = (eventSettings != null && eventSettings.getSyslogEnabled()) ? true : false;
     }
 }
