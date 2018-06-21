@@ -88,6 +88,9 @@ public class LanguageManagerImpl implements LanguageManager
         RESOURCES_DIR = System.getProperty("uvm.lang.dir") + File.separator + "i18n"; // place for languages resources files
     }
 
+    /**
+     * Source of language (official, unofficial, etc.)
+     */
     private static class languageSource
     {
         private String id;
@@ -97,6 +100,13 @@ public class LanguageManagerImpl implements LanguageManager
         private String prefix;
         private String resourcePath;
 
+        /**
+         * Initialize instance of languageSource.
+         * @param  id    String id.
+         * @param  title String title.
+         * @param  url   String url.
+         * @return       instance of languageSource.
+         */
         public languageSource(String id, String title, String url)
         {
             this.id = id;
@@ -106,11 +116,35 @@ public class LanguageManagerImpl implements LanguageManager
             this.prefix = "i18n." + id;
             this.resourcePath = "i18n." + id + ".untangle";
         }
+        /**
+         * Return source id.
+         * @return String of source id.
+         */
         public String getId(){ return this.id; }
+        /**
+         * Return source title.
+         * @return String of source title.
+         */
         public String getTitle(){ return this.title; }
+        /**
+         * Return source url.
+         * @return String of source url.
+         */
         public String getUrl(){ return this.url; }
+        /**
+         * Return source directory.
+         * @return String of source directory.
+         */
         public String getDirectory(){ return this.directory;  }
+        /**
+         * Return source prefix.
+         * @return String of source prefix.
+         */
         public String getPrefix(){ return this.prefix; }
+        /**
+         * Return source resource path.
+         * @return String of source resource path.
+         */
         public String getResourcePath(){ return this.resourcePath; }
     }
 
@@ -121,6 +155,17 @@ public class LanguageManagerImpl implements LanguageManager
         LanguageSources.add(new languageSource("community", I18nUtil.marktr("Community"), "untangleserver"));
     }
 
+    /**
+     * Initialize instance of lanuage manager:
+     *
+     * * Get settings.
+     * * Load all local languages list.
+     * * Load all valid countries list.
+     * * Initialize translations and translations last accessed maps.
+     * * Start the translations map cleaner.
+     * 
+     * @return Initialize instance of language manager.
+     */
     public LanguageManagerImpl()
     {
         readLanguageSettings();
@@ -133,16 +178,18 @@ public class LanguageManagerImpl implements LanguageManager
 
     // public methods ---------------------------------------------------------
 
-    /*
+    /**
      * Get language settings.
+     * @return LanguageSettings object.
      */
     public LanguageSettings getLanguageSettings()
     {
         return languageSettings;
     }
 
-    /*
+    /**
      * Commit language settings and if language has changed, download from remote.
+     * @param newSettings New LanguageSettings to compare.
      */
     public void setLanguageSettings(LanguageSettings newSettings)
     {
@@ -173,6 +220,9 @@ public class LanguageManagerImpl implements LanguageManager
         }
     }
 
+    /**
+     * Download the currently selected language.
+     */
     public void synchronizeLanguage()
     {
         downloadLanguage(languageSettings.getSource(), languageSettings.getLanguage());
@@ -187,8 +237,9 @@ public class LanguageManagerImpl implements LanguageManager
         setLanguageSettings(settings);
     }
 
-    /*
+    /**
      * Get locale language list
+     * @return List of LocaleInfo.
      */
     public List<LocaleInfo> getLanguagesList()
     {
@@ -231,8 +282,10 @@ public class LanguageManagerImpl implements LanguageManager
         return locales;
     }
 
-    /*
+    /**
      * Get translations
+     * @param module Language to get.
+     * @return Map of String, String from i18n key to translated value.
      */
     public Map<String, String> getTranslations(String module)
     {
@@ -321,8 +374,10 @@ public class LanguageManagerImpl implements LanguageManager
      * Private methods -----------------------------------------------------------
      */
 
-    /*
+    /**
      * Check if a language pack entry conform to the correct naming: <lang_code>/<module_name>.po
+     * @param entry ZipEntry containing naming to check.
+     * @return true if valid, false if not.
      */
     private boolean isValid(ZipEntry entry)
     {
@@ -337,8 +392,12 @@ public class LanguageManagerImpl implements LanguageManager
         return true;
     }
 
-    /*
+    /**
      * Copy file from zip stream to disk.
+     * @param zipInputStream ZipInputStream from Pootle server.
+     * @param entry ZipEntry containing information about the language.
+     * @param destinationDirectory String of location to store downloaded file.
+     * @return true if copy succeeded, false if not.
      */
     private boolean copyZipEntryToDisk(ZipInputStream zipInputStream, ZipEntry entry, String destinationDirectory){
         boolean success = true;
@@ -388,20 +447,10 @@ public class LanguageManagerImpl implements LanguageManager
         return success;
     }
 
-    private void logProcessError(Process p, String errorMsg) throws IOException
-    {
-        InputStream stderr = p.getErrorStream ();
-        BufferedReader br = new BufferedReader(new InputStreamReader(stderr));
-        String line = null;
-        StringBuffer errorBuffer = new StringBuffer(errorMsg);
-        while ((line = br.readLine()) != null) {
-            errorBuffer.append("\n");
-            errorBuffer.append(line);
-        }
-        br.close();
-        logger.error(errorBuffer);
-    }
-
+    /**
+     * Return the locale from current language in settings.
+     * @return Locale containing the current locale.
+     */
     private Locale getLocale()
     {
         Locale locale = new Locale(DEFAULT_LANGUAGE);
@@ -416,6 +465,10 @@ public class LanguageManagerImpl implements LanguageManager
         return locale;
     }
 
+    /**
+     * Get the list of all supported languages.
+     * @return Map of language code to languafe name.
+     */
     private Map<String, String> loadAllLanguages()
     {
         Map<String, String> languages = new HashMap<String, String>();
@@ -449,6 +502,10 @@ public class LanguageManagerImpl implements LanguageManager
         return languages;
     }
 
+    /**
+     * Get list of countries from country config
+     * @return Map of country code to full country name.
+     */
     private Map<String, String> loadAllCountries()
     {
         Map<String, String> countries = new HashMap<String, String>();
@@ -481,6 +538,11 @@ public class LanguageManagerImpl implements LanguageManager
         return countries;
     }
 
+    /**
+     * Determine if this locale code is ok to use.
+     * @param  code String of language code to check.
+     * @return      boolean of true if locale code can be used, false otherwise.
+     */
     private boolean isValidLocaleCode(String code)
     {
         if (code == null) {
@@ -497,16 +559,29 @@ public class LanguageManagerImpl implements LanguageManager
             && (countryCode == null || isValidCountryCode(countryCode));
     }
 
+    /**
+     * Determine if this locale code is within supported languages.
+     * @param  code String of language code to check.
+     * @return      boolean of true if valid language, false if not.
+     */
     private boolean isValidLanguageCode(String code)
     {
         return allLanguages.containsKey(code);
     }
 
+    /**
+     * Determine if this country code is within supported countries.
+     * @param  code String of country code to check.
+     * @return      boolean of true if valid country, false if not.
+     */
     private boolean isValidCountryCode(String code)
     {
         return allCountries.containsKey(code);
     }
 
+    /**
+     * Load language settings into local languageSettings.
+     */
     private void readLanguageSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -537,10 +612,14 @@ public class LanguageManagerImpl implements LanguageManager
 
     /**
      * This thread periodically walks through translations instances and removes
-     * those that have not been used recently.
+     * those maps that have not been used recently.
      */
     private class translationsCleaner implements Runnable
     {
+        /**
+         * Walk though translations and for any that has not ben used in CLEANER_LAST_ACCESS_MAX_TIME,
+         * remove from memory.
+         */
         public void run()
         {
             cleanerThread = Thread.currentThread();
@@ -583,6 +662,11 @@ public class LanguageManagerImpl implements LanguageManager
         }
     }
 
+    /**
+     * Return the languageSource for a source identifer.
+     * @param  sourceId String of sourceID to find.
+     * @return          LanguageSource object.  If not found, null.
+     */
     private languageSource getLanguageSource(String sourceId)
     {
         for(languageSource ls : LanguageSources){
@@ -593,6 +677,13 @@ public class LanguageManagerImpl implements LanguageManager
         return null;        
     }
 
+    /**
+     * Query Pootle server and get the list of supported languages/
+     * @param  available Set of languages we have locally.
+     * @param  locales   Found locales.
+     * @param  source    LanguageSource to use for query.
+     * @return           boolean of true if was able to get remote list, false if failed.
+     */
     private boolean getRemoteLanguagesList(Set<String> available, List<LocaleInfo> locales, languageSource source ){
         boolean result = true;
         boolean headerAdded = false;
@@ -710,6 +801,11 @@ public class LanguageManagerImpl implements LanguageManager
 
     }
 
+    /**
+     * Initiate download of language.
+     * @param sourceId String of sourceId group.
+     * @param language Language to download.
+     */
     private void downloadLanguage(String sourceId, String language){
         InputStream is = null;
         CloseableHttpClient httpClient = HttpClients.custom().build();
