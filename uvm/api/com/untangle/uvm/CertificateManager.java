@@ -1,7 +1,6 @@
-/*
+/**
  * $Id$
  */
-
 package com.untangle.uvm;
 
 import java.util.LinkedList;
