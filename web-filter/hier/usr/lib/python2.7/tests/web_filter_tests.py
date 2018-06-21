@@ -77,6 +77,14 @@ class WebFilterTests(WebFilterBaseTests):
         found = self.check_events("playboy.com", "/", True)
         assert( found )
 
+    def test_029_blocked_url_https_http_alt_ports(self):
+        setHttpHttpsPorts(8081,4443)
+        self.block_url_list_add("test.untangle.com")
+        result = self.get_web_request_results(url="https://test.untangle.com/", expected="blockpage")
+        self.block_url_list_clear()
+        setHttpHttpsPorts(80,443)
+        assert (result == 0)
+
     def test_100_reports_blocked_url(self):
         """check the Blocked Web Events report"""
         fname = sys._getframe().f_code.co_name
