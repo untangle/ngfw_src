@@ -323,9 +323,9 @@ public class WebFilterSSLEngine
 
         InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
         String hostStr = host.getHostAddress().toString();
-        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
-        if ( httpsPort != 443 ) {
-            hostStr = hostStr + ":" + httpsPort;
+        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+        if ( httpPort != 80 ) {
+            hostStr = hostStr + ":" + httpPort;
         }
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
