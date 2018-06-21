@@ -1,7 +1,6 @@
-/*
+/**
  * $Id$
  */
-
 package com.untangle.uvm;
 
 /**
