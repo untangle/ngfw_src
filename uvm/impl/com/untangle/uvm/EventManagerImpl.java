@@ -31,6 +31,9 @@ import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
 
+/**
+ * Event prcessor
+ */
 public class EventManagerImpl implements EventManager
 {
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
@@ -49,6 +52,14 @@ public class EventManagerImpl implements EventManager
      */
     private EventSettings settings;
 
+    /**
+     * Initialize event manager.
+     *
+     * * Load settings.
+     * * Start event writer.
+     * 
+     * @return Instance of event manager.
+     */
     protected EventManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -78,6 +89,10 @@ public class EventManagerImpl implements EventManager
         SyslogManagerImpl.reconfigureCheck(settingsFilename, this.settings);
     }
 
+    /**
+     * Update settings.
+     * @param newSettings EventSettings to replace current settings.
+     */
     public void setSettings( final EventSettings newSettings )
     {
         /**
@@ -125,12 +140,17 @@ public class EventManagerImpl implements EventManager
 
     /**
      * Get the network settings
+     * @return EventSettings of current settings.
      */
     public EventSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Retreive class fields for UI.
+     * @return JSONObject of class fields.
+     */
     public JSONObject getClassFields()
     {
         JSONObject classFields = null;
@@ -147,6 +167,10 @@ public class EventManagerImpl implements EventManager
         return classFields;
     }
 
+    /**
+     * Create default settings.
+     * @return EventSettings consisting of default values.
+     */
     private EventSettings defaultSettings()
     {
         EventSettings settings = new EventSettings();
@@ -158,6 +182,10 @@ public class EventManagerImpl implements EventManager
         return settings;
     }
 
+    /**
+     * Return default alert rules.
+     * @return List of AlertRule consisting of default alert rules.
+     */
     private LinkedList<AlertRule> defaultAlertRules()
     {
         LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
@@ -347,6 +375,10 @@ public class EventManagerImpl implements EventManager
         return rules;
     }
 
+    /**
+     * Return default suslog rules.
+     * @return List of SyslogRule consisting of default syslog rules.
+     */
     private LinkedList<SyslogRule> defaultSyslogRules()
     {
         LinkedList<SyslogRule> rules = new LinkedList<SyslogRule>();
@@ -364,6 +396,10 @@ public class EventManagerImpl implements EventManager
         return rules;
     }
 
+    /**
+     * Return default trigger rules.
+     * @return List of TriggerRule consisting of default trigger rules.
+     */
     private LinkedList<TriggerRule> defaultTriggerRules()
     {
         LinkedList<TriggerRule> rules = new LinkedList<TriggerRule>();
@@ -425,11 +461,19 @@ public class EventManagerImpl implements EventManager
         return rules;
     }
 
+    /**
+     * Add event to writer queue.
+     * @param event LogEvent to add to writer queue.
+     */
     public void logEvent( LogEvent event )
     {
         eventWriter.inputQueue.offer(event);
     }
 
+    /**
+     * Process event through alerts, triggers, and syslog.
+     * @param event LogEvent to process.
+     */
     private void runEvent( LogEvent event )
     {
         try {
@@ -451,6 +495,10 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Process event through alert rules.
+     * @param event LogEvent to process.
+     */
     private void runAlertRules( LogEvent event )
     {
         if ( event == null )
@@ -481,6 +529,10 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Process event through trigger rules.
+     * @param event LogEvent to process.
+     */
     private void runTriggerRules( LogEvent event )
     {
         if ( event == null )
@@ -596,6 +648,10 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Process event through syslog rules.
+     * @param event LogEvent to process.
+     */
     private void runSyslogRules( LogEvent event )
     {
         if ( event == null )
@@ -627,6 +683,12 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Retreive an attribute value using the attribute name from the object.
+     * @param  json         JSONObject to search.
+     * @param  name         String of key to find.
+     * @return              String of matching value.  Null if not found.
+     */
     private static String findAttribute( JSONObject json, String name )
     {
         String s = null;
@@ -641,6 +703,9 @@ public class EventManagerImpl implements EventManager
     /**
      * This looks for a specific JSON attribute
      * foo.bar.baz returns json['foo']['bar']['baz']
+     * @param  json JSONObject to search.
+     * @param  name String of key to find.
+     * @return              String of matching value.  Null if not found.
      */
     private static String findAttributeRecursive( JSONObject json, String name )
     {
@@ -673,6 +738,10 @@ public class EventManagerImpl implements EventManager
     /**
      * This looks through JSONObjects recursively to find any attribute with the specified name
      * It looks up to maxDepth levels to prevent cycles
+     * @param  json JSONObject to search.
+     * @param  name String of key to find.
+     * @param maxDepth integer of maximum depth to search.
+     * @return              String of matching value.  Null if not found.
      */
     private static String findAttributeFlatten( JSONObject json, String name, int maxDepth )
     {
@@ -719,7 +788,13 @@ public class EventManagerImpl implements EventManager
 
         return null;
     }
-    
+
+    /**
+     * Send this event as an email alert notification.
+     * @param  rule  Matching alert rule.
+     * @param  event LogEvent to send.
+     * @return       boolean if true, alert generated and sent, false if not sent.
+     */
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )
     {
         if(rule.frequencyCheck() == false){
@@ -797,6 +872,12 @@ public class EventManagerImpl implements EventManager
         return true;
     }
 
+    /**
+     * Make json formatted event more suitable for users:
+     * * Remove unncessessary fields.
+     * * Recursively clean.
+     * @param jsonObject JSONObject to process.
+     */
     private static void cleanupJsonObject( JSONObject jsonObject )
     {
         if ( jsonObject == null )
@@ -859,7 +940,10 @@ public class EventManagerImpl implements EventManager
     {
         private volatile Thread thread;
         private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
-        
+
+        /**
+         * Run event queue.
+         */
         public void run()
         {
             thread = Thread.currentThread();
@@ -892,11 +976,17 @@ public class EventManagerImpl implements EventManager
             }
         }
 
+        /**
+         * Start the thread.
+         */
         protected void start()
         {
             UvmContextFactory.context().newThread(this).start();
         }
 
+        /**
+         * Stop the thread.
+         */
         protected void stop()
         {
             Thread tmp = thread;
