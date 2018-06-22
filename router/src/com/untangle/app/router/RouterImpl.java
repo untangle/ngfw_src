@@ -14,6 +14,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.HostnameLookup;
 
+/**
+ * RouterImpl is the router app
+ */
 public class RouterImpl extends AppBase implements HostnameLookup
 {
     private final RouterEventHandler handler;
@@ -25,6 +28,11 @@ public class RouterImpl extends AppBase implements HostnameLookup
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
+    /**
+     * RouterImpl
+     * @param appSettings
+     * @param appProperties
+     */
     public RouterImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -40,12 +48,21 @@ public class RouterImpl extends AppBase implements HostnameLookup
         connectors = new PipelineConnector[] { routerConnector };
     }
 
+    /**
+     * getConnectors - get the pipeline connectors
+     * @return PipelineConnector[]
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * lookupHostname - lookup the hostname in DHCP
+     * @param address - the address to lookup
+     * @return the hostname or null
+     */
     public String lookupHostname( InetAddress address )
     {
         if (dhcpMonitor != null)
@@ -53,12 +70,20 @@ public class RouterImpl extends AppBase implements HostnameLookup
         return null;
     }
     
+    /**
+     * preStart
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStart( boolean isPermanentTransition ) 
     {
         dhcpMonitor.start();
     }
 
+    /**
+     * postStop
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition ) 
     {

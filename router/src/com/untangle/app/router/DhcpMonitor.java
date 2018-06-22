@@ -64,11 +64,19 @@ class DhcpMonitor implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl app;
 
+    /**
+     * DhcpMonitor - create a DHCP monitor
+     * @param app
+     */
     public DhcpMonitor( RouterImpl app )
     {
         this.app = app;
     }
 
+    /**
+     * Call this run the DHCP monitor
+     * This does not return until the DHCP monitor is killed
+     */
     public void run()
     {
         logger.debug( "Starting" );
@@ -98,13 +106,21 @@ class DhcpMonitor implements Runnable
     }
     
     /**
+     * lookupLease
      * Retrieve the current lease for an IP address
+     * @param address
+     * @return DhcpLease
      */
     protected DhcpLease lookupLease( InetAddress address )
     {
         return currentLeaseMap.get( address );
     }
 
+    /**
+     * lookupHostname
+     * @param address
+     * @return the hostname
+     */
     protected String lookupHostname( InetAddress address )
     {
         DhcpLease lease = lookupLease( address );
@@ -113,6 +129,9 @@ class DhcpMonitor implements Runnable
         return null;
     }
     
+    /**
+     * start the DHCP monitor
+     */
     protected synchronized void start()
     {
         isAlive = true;
@@ -129,6 +148,9 @@ class DhcpMonitor implements Runnable
         thread.start();
     }
 
+    /**
+     * stop the dhcp monitor
+     */
     protected synchronized void stop()
     {
         if ( thread != null ) {
@@ -149,6 +171,11 @@ class DhcpMonitor implements Runnable
         }
     }
 
+    /**
+     * hasDhcpChanged - returns true if DHCP has changed since the specified time
+     * @param now
+     * @return true if changed, false otherwise
+     */
     private boolean hasDhcpChanged( Date now )
     {
         if ( lastUpdate < dhcpFile.lastModified()) return true;
@@ -156,6 +183,11 @@ class DhcpMonitor implements Runnable
         return false;
     }
 
+    /**
+     * parseDhcpFile
+     * @param now
+     * @throws SecurityException
+     */
     private void parseDhcpFile( Date now ) throws SecurityException
     {
         BufferedReader in = null;
@@ -197,6 +229,12 @@ class DhcpMonitor implements Runnable
         lastUpdate = now.getTime();
     }
 
+    /**
+     * parseLease
+     * @param str
+     * @param now
+     * @param deletedSet
+     */
     private void parseLease( String str, Date now, Set<InetAddress> deletedSet )
     {
         str = str.trim();
@@ -243,6 +281,14 @@ class DhcpMonitor implements Runnable
         deletedSet.remove( ip );
     }
 
+    /**
+     * processDhcpLease
+     * @param eol
+     * @param mac
+     * @param ip
+     * @param host
+     * @param now
+     */
     private void processDhcpLease( Date eol, String mac, InetAddress ip, String host, Date now )
     {
         /* Determine if this lease is already being tracked */
