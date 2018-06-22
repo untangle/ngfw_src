@@ -1173,8 +1173,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
 
-        this.settingsManager.run13Conversion(); // v13.0 conversion
-        
         this.netcapManager = NetcapManagerImpl.getInstance();
         
         createUID();

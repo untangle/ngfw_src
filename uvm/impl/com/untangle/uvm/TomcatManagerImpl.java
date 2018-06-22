@@ -66,6 +66,14 @@ public class TomcatManagerImpl implements TomcatManager
     
     private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","smtp-servlet-quarantine.jar"};
 
+    /**
+     * constructor
+     * @param uvmContext
+     * @param threadRequest
+     * @param catalinaHome
+     * @param webAppRoot
+     * @param logDir
+     */
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
@@ -111,16 +119,34 @@ public class TomcatManagerImpl implements TomcatManager
         ctx = loadServlet("/blockpage", "blockpage");
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase 
+     * @param rootDir
+     * @return ServletContext
+     */
     public ServletContext loadServlet(String urlBase, String rootDir)
     {
         return loadServlet(urlBase, rootDir, null, null);
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase
+     * @param rootDir
+     * @param requireAdminPrivs - true if servlet is an admin-privilege servlet
+     * @return ServletContext
+     */
     public ServletContext loadServlet(String urlBase, String rootDir, boolean requireAdminPrivs)
     {
         return loadServlet(urlBase, rootDir, null, null, new AdministrationValve());
     }
 
+    /**
+     * unloadServlet unloads a servlet
+     * @param contextRoot 
+     * @return true if success, false otherwise
+     */
     public boolean unloadServlet(String contextRoot)
     {
         try {
@@ -166,6 +192,9 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeWelcomeFile writes an apache rewrite conf file to redirect / to the welcome URL
+     */
     protected void writeWelcomeFile()
     {
         FileWriter w = null;
@@ -194,6 +223,9 @@ public class TomcatManagerImpl implements TomcatManager
 
     }
 
+    /**
+     * apacheReload reloads apache
+     */
     protected void apacheReload()
     {
         writeIncludes();
@@ -202,6 +234,9 @@ public class TomcatManagerImpl implements TomcatManager
         UvmContextFactory.context().execManager().exec("systemctl reload apache2");
     }
     
+    /**
+     * startTomcat starts tomcat server
+     */
     protected void startTomcat()
     {
         logger.info("Tomcat starting...");
@@ -237,11 +272,28 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Tomcat started");
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase
+     * @param rootDir
+     * @param realm
+     * @param auth
+     * @return ServletContext
+     */
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
         return loadServlet(urlBase, rootDir, realm, auth, null);
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase 
+     * @param rootDir
+     * @param realm
+     * @param auth
+     * @param valve
+     * @return ServletContext
+     */
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
     {
         return loadServletImpl(urlBase, rootDir, realm, auth, valve);
@@ -255,6 +307,7 @@ public class TomcatManagerImpl implements TomcatManager
      * @param rootDir a <code>String</code> value
      * @param realm a <code>Realm</code> value
      * @param auth an <code>AuthenticatorBase</code> value
+     * @param valve 
      * @return a <code>boolean</code> value
      */
     private synchronized ServletContext loadServletImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
@@ -292,6 +345,13 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeIncludes writes the apache includes conf files
+     * Default is /etc/apache2/uvm.conf
+     * If this is devel its /etc/apache2/uvm-dev.conf
+     * That file will tell it to load all the
+     * PREFIX/usr/share/untangle/apache2/conf.d/*.conf
+     */
     private void writeIncludes()
     {
         String confDir = System.getProperty("uvm.conf.dir");
@@ -319,6 +379,9 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeModPythonConf writes the mod_python apache2 conf file
+     */
     private void writeModPythonConf()
     {
         try {
@@ -339,6 +402,10 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * getSecret gets the AJP secret from /etc/apache2/workers.properties
+     * @return the secret
+     */
     private String getSecret()
     {
         Properties p = new Properties();
@@ -374,6 +441,7 @@ public class TomcatManagerImpl implements TomcatManager
      * 8 characters of that md5 and returns "session-"+md5
      * So the cookie for this machine will be stored in "session-3e9f381d", for
      * example.
+     * @return String
      */
     private static String getCookieSuffix()
     {
@@ -400,12 +468,25 @@ public class TomcatManagerImpl implements TomcatManager
         return cookieName.substring(0,8);
     }
 
+    /**
+     * AdministrationValve is a valve that protects admin-priv servlets
+     */
     private class AdministrationValve extends ValveBase
     {
         private final Logger logger = Logger.getLogger(getClass());
 
+        /**
+         * constructor
+         */
         public AdministrationValve() { }
 
+        /**
+         * invoke invokes the request
+         * @param request
+         * @param response
+         * @throws IOException
+         * @throws ServletException
+         */
         public void invoke( Request request, Response response ) throws IOException, ServletException
         {
             if ( !isAccessAllowed( request )) {
@@ -425,12 +506,22 @@ public class TomcatManagerImpl implements TomcatManager
             if ( nextValve != null ) nextValve.invoke( request, response );
         }
 
+        /**
+         * administrationDenied returns the admin denied message
+         * @return String
+         */
         private String administrationDenied()
         {
             Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
             return I18nUtil.tr("HTTP administration is disabled.", i18n_map);
         }
 
+        /**
+         * isAccessAllowed checks to see if access to this admin servlet should be allowed
+         * via the specified request. This checks If HTTP is allowed and if its coming from an allowed subnet.
+         * @param request
+         * @return true if allowed, false otherwise
+         */
         private boolean isAccessAllowed( ServletRequest request )
         {
             try {
