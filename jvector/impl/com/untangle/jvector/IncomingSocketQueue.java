@@ -58,6 +58,10 @@ public class IncomingSocketQueue extends Sink
     // List of listeners
     private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
 
+    /**
+     * IncomingSocketQueue
+     * @param debugString
+     */
     public IncomingSocketQueue( String debugString )
     {
         /* The pointer is from the sink */
@@ -65,6 +69,10 @@ public class IncomingSocketQueue extends Sink
         this.debugString = debugString;
     }
 
+    /**
+     * read - reads a crumb
+     * @return - the crumb
+     */
     public Crumb read()
     {
         if ( isReset ) {
@@ -94,6 +102,11 @@ public class IncomingSocketQueue extends Sink
         return crumb;
     }
 
+    /**
+     * send_event
+     * @param crumb
+     * @return number sent
+     */
     @SuppressWarnings("fallthrough")
     public int send_event( Crumb crumb )
     {
@@ -144,6 +157,7 @@ public class IncomingSocketQueue extends Sink
 
     /**
      * somewhat deprecated, but still used
+     * @return the number of events
      */
     public int numEvents()
     {
@@ -153,6 +167,7 @@ public class IncomingSocketQueue extends Sink
     /**
      * This is to get a crumb without taking it out of the buffer, you must call read
      * afterwards to remove the crumb.
+     * @return the crumb
      */
     public Crumb peek()
     {
@@ -179,6 +194,7 @@ public class IncomingSocketQueue extends Sink
     /**
      * Check to see if input is closed, an incoming socket queue is
      * considered closed once a shutdown crumb of any type is read.
+     * @return true if closed, false otherwise
      */
     public boolean isClosed()
     {
@@ -187,6 +203,7 @@ public class IncomingSocketQueue extends Sink
 
     /**
      * Check to see if read events are enabled on this incoming socket queue
+     * @return true if enabled, false otherwise
      */
     public boolean isEnabled()
     {
@@ -211,6 +228,10 @@ public class IncomingSocketQueue extends Sink
         mvpollNotifyObservers();
     }
 
+    /**
+     * shutdown
+     * @return
+     */
     protected int shutdown()
     {
         /**
@@ -239,46 +260,83 @@ public class IncomingSocketQueue extends Sink
         mvpollNotifyObservers();
     }
 
-    public boolean isEmpty ()
+    /**
+     * isEmpty
+     * @return
+     */
+    public boolean isEmpty()
     {
         return ( this.currentCrumb == null );
     }
 
-    public boolean isFull ()
+    /**
+     * isFull
+     * @return
+     */
+    public boolean isFull()
     {
         return ( this.currentCrumb != null );
     }
 
+    /**
+     * containsReset
+     * @return
+     */
     public boolean containsReset()
     {
         return this.containsReset;
     }
 
+    /**
+     * containsShutdown
+     * @return
+     */
     public boolean containsShutdown()
     {
         return containsShutdown;
     }
 
+    /**
+     * containsTimeout
+     * @return
+     */
     public boolean containsTimeout()
     {
         return containsTimeout;
     }
 
+    /**
+     * attach
+     * @param o
+     */
     public void attach( Object o )
     {
         this.attachment = o;
     }
 
+    /**
+     * attachment
+     * @return
+     */
     public Object attachment()
     {
         return this.attachment;
     }
 
+    /**
+     * registerListener
+     * @param l
+     * @return
+     */
     public boolean registerListener( SocketQueueListener l )
     {
         return this.listenerList.add( l );
     }
 
+    /**
+     * poll
+     * @return
+     */
     public int poll()
     {
         if ( isShutdown ) return Vector.MVPOLLHUP;
@@ -287,13 +345,26 @@ public class IncomingSocketQueue extends Sink
         return 0;
     }
 
+    /**
+     * mvpollNotifyObservers
+     */
     private void mvpollNotifyObservers()
     {
         if ( this.pointer != 0L )
             mvpollNotifyObservers( this.pointer, poll() );
     }
 
+    /**
+     * create
+     * @return
+     */
     private native long create();
+
+    /**
+     * mvpollNotifyObservers
+     * @param pointer
+     * @param eventMask
+     */
     private native void mvpollNotifyObservers( long pointer, int eventMask );
 }
 

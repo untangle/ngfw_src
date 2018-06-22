@@ -3,18 +3,33 @@
  */
 package com.untangle.jvector;
 
+/**
+ * Source represents a source 
+ */
 public abstract class Source
 {
     protected long pointer;
 
-    /* ??? Should this be package protected */
+    /**
+     * src_ptr
+     * @return the pointer
+     */
     protected long src_ptr()
     {
         return pointer;
     }
 
+    /**
+     * get_event gets an event/crumb from the Source
+     * @param snk
+     * @return the crumb
+     */
     protected abstract Crumb get_event( Sink snk );
 
+    /**
+     * shutdown - shutdown the source
+     * @return 0 if success
+     */
     protected abstract int shutdown();
 
     /**
@@ -33,6 +48,10 @@ public abstract class Source
         pointer = 0;
     }
 
+    /**
+     * isRazed - true if razed, false otherwise
+     * @return bool
+     */
     public boolean isRazed()
     {
         if ( pointer == 0L )
@@ -41,7 +60,7 @@ public abstract class Source
             return false;
     }
 
-    /* 
+    /**
      * This function is called by vectoring once it completes.  The C component is 
      * freed automatically.  Since this is called from C, the C component is freed
      * automatically
@@ -51,6 +70,10 @@ public abstract class Source
         pointer = 0;
     }
     
+    /**
+     * raze
+     * @param pointer
+     */
     protected native void raze( long pointer );
 
     static 
