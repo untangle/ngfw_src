@@ -6,6 +6,9 @@ package com.untangle.jvector;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.UDPPacket;
 
+/**
+ * PacketCrumb is a crumb that embeds a packet
+ */
 public abstract class PacketCrumb extends DataCrumb
 {
     protected byte ttl;
@@ -31,21 +34,45 @@ public abstract class PacketCrumb extends DataCrumb
         this.options = options;
     }
 
+    /**
+     * PacketCrumb
+     * @param packet
+     * @param data
+     * @param offset
+     * @param limit
+     */
     protected PacketCrumb( UDPPacket packet, byte[] data, int offset, int limit )
     {
         this( packet.attributes().ttl(), packet.attributes().tos(), null, data, offset, limit );        
     }
 
+    /**
+     * PacketCrumb
+     * @param packet
+     * @param data
+     * @param limit
+     */
     protected PacketCrumb( UDPPacket packet, byte[] data, int limit )
     {
         this( packet, data, 0, limit );
     }
 
+    /**
+     * PacketCrumb
+     * @param packet
+     * @param data
+     */
     protected PacketCrumb( UDPPacket packet, byte[] data )
     {
         this( packet, data, data.length );
     }
     
+    /**
+     * makeCrumb
+     * @param packet
+     * @throws JVectorException
+     * @return PacketCrumb
+     */
     static PacketCrumb makeCrumb( UDPPacket packet ) throws JVectorException
     {
         int protocol = packet.attributes().getProtocol();
@@ -58,40 +85,71 @@ public abstract class PacketCrumb extends DataCrumb
         }
     }
     
+    /**
+     * type
+     * @return
+     */
     public abstract int type();
 
+    /**
+     * ttl
+     * @return
+     */
     public byte ttl() 
     { 
         return ttl; 
     }
     
+    /**
+     * tos
+     * @return
+     */
     public byte tos() 
     { 
         return tos;
     }
 
+    /**
+     * options
+     * @return
+     */
     public byte[] options()
     {
         return options;
     }
 
+    /**
+     * ttl
+     * @param value
+     */
     public void ttl( byte value )
     {
         ttl = value;
     }
 
+    /**
+     * tos
+     * @param value
+     */
     public void tos( byte value )
     {
         tos = value;
     }
 
+    /**
+     * options
+     * @param value
+     */
     public void options( byte[] value )
     {
         options = value;
     }
 
+    /**
+     * raze
+     */
     public void raze()
     {
-        /* XXX What should go in here, C structure is freed automatically */
+        /* Do nothing, C structure is freed automatically */
     }
 }

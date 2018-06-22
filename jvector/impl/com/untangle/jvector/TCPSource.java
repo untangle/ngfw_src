@@ -3,6 +3,9 @@
  */
 package com.untangle.jvector;
 
+/**
+ * TCPSource is a source for TCP data (backed by a socket)
+ */
 public class TCPSource extends Source
 {
     protected SourceEndpointListener listener = null;
@@ -12,23 +15,41 @@ public class TCPSource extends Source
 
     private boolean spliceEnabled = false;
 
+    /**
+     * TCPSource
+     * @param fd
+     */
     public TCPSource( int fd )
     {
         pointer = create( fd );
         spliceEnabled = (System.getProperty("uvm.tcp.splice") != null);
     }
 
+    /**
+     * TCPSource
+     * @param fd
+     * @param listener
+     */
     public TCPSource( int fd, SourceEndpointListener listener )
     {
         this( fd );
         registerListener( listener );
     }
 
+    /**
+     * registerListener
+     * @param listener
+     */
     public void registerListener( SourceEndpointListener listener )
     {
         this.listener = listener;
     }
     
+    /**
+     * get_event
+     * @param sink
+     * @return
+     */
     protected Crumb get_event( Sink sink )
     {
         int ret;
@@ -89,6 +110,10 @@ public class TCPSource extends Source
         return crumb;
     }
 
+    /**
+     * shutdown
+     * @return
+     */
     protected int shutdown()
     {
         /* Notify the listeners that source is shutting down */
@@ -97,6 +122,11 @@ public class TCPSource extends Source
         return shutdown( pointer );
     }
 
+    /**
+     * create
+     * @param fd
+     * @return
+     */
     protected native long create( int fd );
 
     /**
@@ -109,6 +139,18 @@ public class TCPSource extends Source
      * reading data from the file descriptor
      */
     protected static native int read( long pointer, byte[] data );
+
+    /**
+     * peek
+     * @param pointer
+     * @return
+     */
     protected static native int peek( long pointer );
+
+    /**
+     * shutdown
+     * @param pointer
+     * @return
+     */
     protected static native int shutdown( long pointer );
 }
