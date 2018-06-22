@@ -3,6 +3,9 @@
  */
 package com.untangle.jvector;
 
+/**
+ * An abstract Crumb
+ */
 public abstract class Crumb
 {
     protected static final int DATA_MASK     = 0x1100;
@@ -15,14 +18,30 @@ public abstract class Crumb
     public static final int TYPE_SHUTDOWN    = SHUTDOWN_MASK | 1;  // Shutdown
     public static final int TYPE_RESET       = SHUTDOWN_MASK | 2;  // Reset
 
+    /**
+     * raze
+     */
     public abstract void raze();
+
+    /**
+     * type
+     * @return
+     */
     public abstract int  type();
 
+    /**
+     * isData
+     * @return true if is a data crumb, false otherwise
+     */
     public boolean isData()
     {
         return ( type() & DATA_MASK ) == DATA_MASK;
     }
 
+    /**
+     * isShutdown
+     * @return true if is a shutdown crumb, false otherwise
+     */
     public boolean isShutdown()
     {
         return ( type() & SHUTDOWN_MASK ) == SHUTDOWN_MASK;
