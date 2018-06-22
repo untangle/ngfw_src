@@ -32,10 +32,9 @@ import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
 
-/**
- * This is the root API providing the Untangle VM functionality for applications
- * and the user interface
- */
+/** UvmContextImpl */
+/** UvmContextImpl */
+/** This is the root object "context" providing the Untangle VM functionality for applications and the user interface */
 public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
@@ -119,207 +118,370 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
     
+    /**
+     * UvmContextImpl - private because its a singleton and cannot be instantiated
+     */
     private UvmContextImpl()
     {
         state = UvmState.LOADED;
     }
 
-    static UvmContextImpl getInstance()
+    /**
+     * getInstance gets the singleton UvmContextImpl reference
+     * @return UvmContextImpl
+     */
+    protected static UvmContextImpl getInstance()
     {
         return CONTEXT;
     }
 
+    /**
+     * context gets the singleton UvmContext reference
+     * @return UvmContext
+     */
     public static UvmContext context()
     {
         return CONTEXT;
     }
 
+    /**
+     * Get LocalDirectory
+     * @return LocalDirectory
+     */
     public LocalDirectory localDirectory()
     {
         return this.localDirectory;
     }
 
+    /**
+     * Get BrandingManager
+     * @return BrandingManager
+     */
     public BrandingManager brandingManager()
     {
         return this.brandingManager;
     }
 
+    /**
+     * Get SkinManager
+     * @return SkinManager
+     */
     public SkinManagerImpl skinManager()
     {
         return this.skinManager;
     }
 
+    /**
+     * Get MetricManager
+     * @return MetricManager
+     */
     public MetricManager metricManager()
     {
         return this.metricManager;
     }
 
+    /**
+     * Get LanguageManager
+     * @return LanguageManager
+     */
     public LanguageManagerImpl languageManager()
     {
         return this.languageManager;
     }
 
+    /**
+     * Get CertificateManager
+     * @return CertificateManager
+     */
     public CertificateManager certificateManager()
     {
         return this.certificateManager;
     }
 
+    /**
+     * Get GeographyManager
+     * @return GeographyManager
+     */
     public GeographyManager geographyManager()
     {
         return this.geographyManager;
     }
 
+    /**
+     * Get DaemonManager
+     * @return DaemonManager
+     */
     public DaemonManager daemonManager()
     {
         return this.daemonManager;
     }
 
+    /**
+     * Get HostsFileManager
+     * @return HostsFileManager
+     */
     public HostsFileManager hostsFileManager()
     {
         return this.hostsFileManager;
     }
 
+    /**
+     * Get AppManager
+     * @return AppManager
+     */
     public AppManager appManager()
     {
         return this.appManager;
     }
 
+    /**
+     * Get NodeManager
+     * @return NodeManager
+     */
     public AppManager nodeManager()
     {
         logger.warn("nodeManager() will be deprecated soon.", new Exception());
         return appManager();
     }
 
+    /**
+     * Get LoggingManager
+     * @return LoggingManager
+     */
     public LoggingManagerImpl loggingManager()
     {
         return this.loggingManager;
     }
 
+    /**
+     * Get MailSender
+     * @return MailSender
+     */
     public MailSenderImpl mailSender()
     {
         return this.mailSender;
     }
 
+    /**
+     * Get AdminManager
+     * @return AdminManager
+     */
     public AdminManagerImpl adminManager()
     {
         return this.adminManager;
     }
 
+    /**
+     * Get SystemManager
+     * @return SystemManager
+     */
     public SystemManagerImpl systemManager()
     {
         return this.systemManager;
     }
 
+    /**
+     * Get DashboardManager
+     * @return DashboardManager
+     */
     public DashboardManagerImpl dashboardManager()
     {
         return this.dashboardManager;
     }
     
+    /**
+     * Get NetworkManager
+     * @return NetworkManager
+     */
     public NetworkManager networkManager()
     {
         return this.networkManager;
     }
 
+    /**
+     * Get GetConnectivityTester
+     * @return GetConnectivityTester
+     */
     public ConnectivityTesterImpl getConnectivityTester()
     {
         return this.connectivityTester;
     }
 
+    /**
+     * Get NetcapManager
+     * @return NetcapManager
+     */
     public NetcapManager netcapManager()
     {
         return this.netcapManager;
     }
 
+    /**
+     * Get EventManager
+     * @return EventManager
+     */
     public EventManager eventManager()
     {
         return this.eventManager;
     }
 
+    /**
+     * Get ServletFileManager
+     * @return ServletFileManager
+     */
     public ServletFileManager servletFileManager()
     {
         return this.servletFileManager;
     }
 
+    /**
+     * Get SettingsManager
+     * @return SettingsManager
+     */
     public SettingsManager settingsManager()
     {
         return this.settingsManager;
     }
 
+    /**
+     * Get CertCacheManager
+     * @return CertCacheManager
+     */
     public CertCacheManager certCacheManager()
     {
         return this.certCacheManager;
     }
 
+    /**
+     * Get OemManager
+     * @return OemManager
+     */
     public OemManager oemManager()
     {
         return this.oemManager;
     }
 
+    /**
+     * Get NotificationManager
+     * @return NotificationManager
+     */
     public NotificationManagerImpl notificationManager()
     {
         return this.notificationManager;
     }
 
+    /**
+     * Get BackupManager
+     * @return BackupManager
+     */
     public BackupManager backupManager()
     {
         return this.backupManager;
     }
 
+    /**
+     * Get HookManager
+     * @return HookManager
+     */
     public HookManager hookManager()
     {
         return this.hookManager;
     }
 
+    /**
+     * Get CloudManager
+     * @return CloudManager
+     */
     public CloudManager cloudManager()
     {
         return this.cloudManager;
     }
 
+    /**
+     * Get PluginManager
+     * @return PluginManager
+     */
     public PluginManager pluginManager()
     {
         return this.pluginManager;
     }
     
+    /**
+     * Get PipelineFoundry
+     * @return PipelineFoundry
+     */
     public PipelineFoundryImpl pipelineFoundry()
     {
         return this.pipelineFoundry;
     }
 
+    /**
+     * Get SessionMonitor
+     * @return SessionMonitor
+     */
     public SessionMonitor sessionMonitor()
     {
         return this.sessionMonitor;
     }
 
+    /**
+     * Get ConntrackMonitor
+     * @return ConntrackMonitor
+     */
     public ConntrackMonitorImpl conntrackMonitor()
     {
         return this.conntrackMonitor;
     }
     
+    /**
+     * Get ExecManager
+     * @return ExecManager
+     */
     public ExecManager execManager()
     {
         return this.execManager;
     }
 
+    /**
+     * Get TomcatManager
+     * @return TomcatManager
+     */
     public TomcatManager tomcatManager()
     {
         return tomcatManager;
     }
 
+    /**
+     * Get HostTable
+     * @return HostTable
+     */
     public HostTable hostTable()
     {
         return this.hostTableImpl;
     }
 
+    /**
+     * Get DeviceTable
+     * @return DeviceTable
+     */
     public DeviceTable deviceTable()
     {
         return this.deviceTableImpl;
     }
 
+    /**
+     * Get UserTable
+     * @return UserTable
+     */
     public UserTable userTable()
     {
         return this.userTableImpl;
     }
     
+    /**
+     * Get LicenseManager 
+     * @return LicenseManager 
+     */
     public LicenseManager licenseManager()
     {
         AppManager appManager = this.appManager();
@@ -336,6 +498,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return licenseManager;
     }
     
+    /**
+     * createExecManager creates a new ExecManager instance
+     * @return ExecManager
+     */
     public ExecManager createExecManager()
     {
         ExecManagerImpl execManager = new ExecManagerImpl();
@@ -343,11 +509,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return execManager;
     }
 
+    /**
+     * threadRequest returns the TLS
+     * @return TLS
+     */
     public InheritableThreadLocal<HttpServletRequest> threadRequest()
     {
         return threadRequest;
     }
 
+    /**
+     * waitForStartup blocks until startup is complete
+     */
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
@@ -361,11 +534,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * getSerializer gets the standard JSON serializer
+     * @return JSONSerializer
+     */
     public JSONSerializer getSerializer()
     {
         return this.serializer;
     }
 
+    /**
+     * newThread starts a new thread
+     * @param runnable
+     * @return Thread
+     */
     public Thread newThread(final Runnable runnable)
     {
         int threadNum;
@@ -375,10 +557,17 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return newThread(runnable, "UTThread-" + threadNum);
     }
 
+    /**
+     * newThread starts a new thread
+     * @param runnable
+     * @param name
+     * @return Thread
+     */
     public Thread newThread(final Runnable runnable, final String name)
     {
         Runnable task = new Runnable()
         {
+            /** run */
             public void run()
             {
                 try {
@@ -393,10 +582,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return new Thread(task, name);
     }
 
+    /**
+     * shutdown stops the UVM
+     */
     public void shutdown()
     {
         Thread t = newThread(new Runnable()
         {
+            /** run */
             public void run()
             {
                 try {
@@ -411,6 +604,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         t.start();
     }
 
+    /**
+     * rebootBox reboots the server
+     */
     public void rebootBox()
     {
         Integer exitValue = this.execManager().execResult(REBOOT_SCRIPT);
@@ -421,6 +617,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * shutdownBox shuts down the server
+     */
     public void shutdownBox()
     {
         Integer exitValue = this.execManager().execResult(SHUTDOWN_SCRIPT + " -h now");
@@ -431,6 +630,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * Forces the system to synchronize time with the internet
+     * @return exit code value
+     */
     public int forceTimeSync()
     {
         Integer exitValue = this.execManager().execResult(TIMESYNC_SCRIPT);
@@ -442,37 +645,63 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return exitValue;
     }
 
+    /**
+     * state returns the current UVM run state
+     * @return UvmState
+     */
     public UvmState state()
     {
         return state;
     }
 
+    /**
+     * version returns the version (short version) as a string 
+     * @return version
+     */
     public String version()
     {
         return com.untangle.uvm.Version.getVersion();
     }
 
+    /**
+     * gc initiates the garbage collector
+     */
     public void gc()
     {
         System.gc();
     }
     
+    /**
+     * getFullVersion returns the version (long version) as a string 
+     * @return version
+     */
     public String getFullVersion()
     {
         return com.untangle.uvm.Version.getFullVersion();
     }
 
+    /**
+     * isExpertMode returns true if the system has the expert mode flag, false otherwise
+     * @return bool
+     */
     public boolean isExpertMode()
     {
         File expertModeFlagFile = new File( System.getProperty("uvm.conf.dir") + "/expert-mode-flag" );
         return expertModeFlagFile.exists();
     }
     
+    /**
+     * isWizardComplete returns true if the wizard is complete, false otherwise
+     * @return bool
+     */
     public boolean isWizardComplete()
     {
         return getWizardSettings().getWizardComplete();
     }
 
+    /**
+     * wizardComplete sets the wizardComplete flag to true
+     */
     public void wizardComplete()
     {
         WizardSettings wizardSettings = getWizardSettings();
@@ -484,6 +713,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         systemManager().pyconnectorSync();
     }
     
+    /**
+     * getWizardSettings gets the current wizard settings
+     * @return WizardSettings
+     */
     public WizardSettings getWizardSettings()
     {
         WizardSettings wizardSettings = null;
@@ -510,6 +743,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return wizardSettings;
     }
     
+    /**
+     * setWizardSettings sets the new wizard settings
+     * @param wizardSettings
+     */
     public void setWizardSettings( WizardSettings wizardSettings )
     {
         String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
@@ -520,12 +757,19 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * isRegistered returns true if registration is completed, false otherwise
+     * @return bool
+     */
     public boolean isRegistered()
     {
         File keyFile = new File(IS_REGISTERED_FLAG_FILE);
         return keyFile.exists();
     }
 
+    /**
+     * setRegistered - set the registration completed flag to true
+     */
     public void setRegistered()
     {
         File keyFile = new File(IS_REGISTERED_FLAG_FILE);
@@ -538,6 +782,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * isAppliance returns true if this is an official untangle appliance, false otherwise
+     * @return bool
+     */
     public boolean isAppliance()
     {
         File keyFile = new File(APPLIANCE_FLAG_FILE);
@@ -550,7 +798,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      * First see if this is an Untangle hardware appliance product 
      * and if not, see if we're running under a virtual environment.
      *
-     * @returns 
+     * @return
      *  String containing Untangle appliance name or virtual environment. 
      *  If empty, unknown (likely baremetal)
      */
@@ -587,6 +835,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return UvmContextImpl.applianceModel;
     }
 
+    /**
+     * isDiskless - returns true if this is a diskless system
+     * @return bool
+     */
     public boolean isDiskless()
     {
         File keyFile = new File(DISKLESS_MODE_FLAG_FILE);
@@ -594,7 +846,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
     
     /**
-     * Returns true if this is a developer build in the development environment
+     * Returns true if this is a developer build in the development
+     * environment
+     * @return <doc>
      */
     public boolean isDevel()
     {
@@ -605,7 +859,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * isNetBoot
      * Returns true if this is a netbooted install on Untangle internal network
+     * If this is netbooted on our internal network (using netboot.preseed)
+     * We automatically enable some access rules to make it easier to access
+     * via SSH and HTTPS
+     * @return bool
      */
     public boolean isNetBoot()
     {
@@ -623,7 +882,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             } catch (Exception e) {
                 logger.warn("Exception in isNetBoot()", e);
-            }finally{
+            } finally {
                 try {
                     if(scanner != null){
                         scanner.close();
@@ -637,16 +896,29 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return result;
     }
 
+    /**
+     * getTranslations get the translation map for the specified module
+     * @param module
+     * @return map
+     */
     public Map<String, String> getTranslations(String module)
     {
         return languageManager.getTranslations(module);
     }
 
+    /**
+     * getCompanyName - gets the company name from branding manager
+     * @return String
+     */
     public String getCompanyName()
     {
         return this.brandingManager.getCompanyName();
     }
 
+    /**
+     * getStoreUrl - gets the store (untangle cloud) API url
+     * @return String
+     */
     public String getStoreUrl()
     {
         String url = System.getProperty(PROPERTY_STORE_URL);
@@ -655,6 +927,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return url;
     }
 
+    /**
+     * isStoreAvailable - checks to see if the Untangle cloud API is reachable
+     * @return bool
+     */
     public boolean isStoreAvailable()
     {
         boolean result = false;
@@ -686,6 +962,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return result;
     }
 
+    /**
+     * getHelpUrl - get the help URL for the UI
+     * @return String
+     */
     public String getHelpUrl()
     {
         String url = System.getProperty(PROPERTY_HELP_URL);
@@ -694,6 +974,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return url;
     }
 
+    /**
+     * getLegalUrl - get the URL for legal information in the UI
+     * @return String
+     */
     public String getLegalUrl()
     {
         String url = System.getProperty(PROPERTY_LEGAL_URL);
@@ -702,6 +986,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return url;
     }
 
+    /**
+     * logEvent - sends an event to reports for logging
+     * @param evt
+     */
     public void logEvent(LogEvent evt)
     {
         if (this.reportsApp == null)
@@ -713,6 +1001,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.eventManager.logEvent(evt);
     }
 
+    /**
+     * logJavascriptException logs an exception to the logs
+     * This is used by the UI to append javascript exceptions to the logs
+     * so when debugging we see them in the logs instead of them
+     * going to the admin's browser console only
+     * @param json - the jsonobject
+     */
     public void logJavascriptException(JSONObject json)
     {
         logger.warn("Javascript Exception");
@@ -733,6 +1028,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * getServerUID - returns the server UID (aaaa-xxxx-bbbb-xxxx)
+     * @return the UID
+     */
     public String getServerUID()
     {
         if (UvmContextImpl.uid == null) {
@@ -759,10 +1058,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
-     * This call returns one big JSONObject with references to all the important
-     * information This is used to avoid lots of separate synchornous calls via
-     * the Web UI. Reducing all these seperate calls to initialize the UI
-     * reduces startup time
+     * getWebuiStartupInfo
+     * This call returns one big JSONObject with references to all the
+     * important information This is used to avoid lots of separate
+     * synchornous calls via the Web UI. Reducing all these seperate
+     * calls to initialize the UI reduces startup time
+     * @return JSONObject
      */
     public org.json.JSONObject getWebuiStartupInfo()
     {
@@ -824,61 +1125,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
-     * provide metadata for reports quick add condition logic
-     * XXX This should probably live in reports manager
-     */
-    public org.json.JSONObject getConditionQuickAddHints()
-    {
-        LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();
-
-        PolicyManager policyManager = (PolicyManager)this.appManager().app("policy-manager");
-        
-        LinkedList<String> hostnames = new LinkedList<String>();
-        LinkedList<String> usernames = new LinkedList<String>();
-        LinkedList<String> addresses = new LinkedList<String>();
-
-        for ( HostTableEntry host : hosts ) {
-            String username = host.getUsername();
-            String hostname = host.getHostname();
-            String address  = host.getAddress().getHostAddress();
-            if ( hostname != null && !"".equals(hostname) && !hostnames.contains(hostname) )
-                hostnames.add(hostname);
-            if ( username != null && !"".equals(username) && !usernames.contains(username) )
-                usernames.add(username);
-            if ( address != null && !"".equals(address) && !addresses.contains(address) )
-                addresses.add(address);
-        }
-
-        try {
-            org.json.JSONObject json = new org.json.JSONObject();
-
-            json.put("hostname", hostnames.toArray( new String[0] ));
-            json.put("username", usernames.toArray( new String[0] ));
-            json.put("c_client_addr", addresses.toArray( new String[0] ));
-
-            if ( policyManager != null ) {
-                ArrayList<JSONObject> policiesInfo = policyManager.getPoliciesInfo();
-                LinkedList<Long> ids = new LinkedList<Long>();
-                for(JSONObject policyInfo : policiesInfo)
-                {
-                    ids.push(policyInfo.getLong("policyId"));
-                }
-                json.put("policy_id", ids.toArray( new Long[0]));
-            }
-            
-            return json;
-        } catch (Exception e) {
-            logger.warn("Error generating quick add hints",e);
-        }
-
-        return null;
-    }
-
-    /**
-     * This call returns one big JSONObject with references to all the important
-     * information This is used to avoid lots of separate synchornous calls via
-     * the Setup UI. Reducing all these seperate calls to initialize the UI
-     * reduces startup time
+     * getSetupStartupInfo
+     * This call returns one big JSONObject with references to all the
+     * important information This is used to avoid lots of separate
+     * synchornous calls via the Setup UI. Reducing all these seperate
+     * calls to initialize the UI reduces startup time
+     * @return JSONObject
      */
     public org.json.JSONObject getSetupStartupInfo()
     {
@@ -896,6 +1148,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return json;
     }
     
+    /**
+     * init initializes the untangle VM
+     * init is "phase 1" of the startup
+     */
     @Override
     protected void init()
     {
@@ -1005,6 +1261,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         state = UvmState.INITIALIZED;
     }
 
+    /**
+     * postInit starts UVM services after initialization
+     * postInit is "phase 2" of the startup
+     */
     @Override
     protected void postInit()
     {
@@ -1042,6 +1302,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, 1 );
     }
 
+    /**
+     * destroy will stop all untangle-vm processes and services and exit
+     */
     @Override
     protected void destroy()
     {
@@ -1075,7 +1338,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // stop metric monitor
         try {
-            if ( metricManager != null )
+            if (metricManager != null)
                 metricManager.stop();
         } catch (Exception exn) {
             logger.error("could not stop MetricManager", exn);
@@ -1083,7 +1346,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // stop apps
         try {
-            if ( appManager != null )
+            if (appManager != null)
                 appManager.destroy();
         } catch (Exception exn) {
             logger.error("could not destroy AppManager", exn);
@@ -1092,14 +1355,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // stop netcap
         try {
             NetcapManagerImpl.getInstance().destroy();
-        } catch (Exception exn) {
+        } catch(Exception exn) {
             logger.error("could not destroy Netcap", exn);
         }
 
         // stop tomcat
         try {
-            if ( tomcatManager != null )
-            tomcatManager.stopTomcat();
+            if (tomcatManager != null)
+                tomcatManager.stopTomcat();
         } catch (Exception exn) {
             logger.error("could not stop tomcat", exn);
         }
@@ -1108,15 +1371,25 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (isDevel())
             gc();
 
-        writeStatusFile( "stopped" );
+        writeStatusFile(        "stopped" );
         logger.info("UvmContext destroyed");
     }
 
-    protected void fatalError(String throwingLocation, Throwable x)
+    /**
+     * fatalError - prints an error and exits
+     * @param str
+     * @param x - the exception cause or null
+     */
+    protected void fatalError(String str, Throwable x)
     {
-        main.fatalError(throwingLocation, x);
+        main.fatalError(str, x);
     }
 
+    /**
+     * loadClass loads a class with the global classloader
+     * @param name - name of class
+     * @return Class
+     */
     @SuppressWarnings({"rawtypes","unchecked"})
     protected Class loadClass(String name)
     {
@@ -1132,7 +1405,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      * "booting" - UVM booting (phase 1 of startup)
      * "starting" - apps starting (phase 2 of startup)
      * "running" 
-     * "stopped" 
+     * "stopped"
+     * @param status - the status as a string
      */
     private void writeStatusFile( String status )
     {
@@ -1228,13 +1502,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * getReportsApp finds the reports application sets this.reportsApp to it
+     */
     private void getReportsApp()
     {
         synchronized (this) {
             if (this.reportsApp == null) {
                 try {
                     // appManager not initialized yet
-                    if ( this.appManager == null ) {
+                    if (this.appManager == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
                             logger.warn("Reports app not found, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
