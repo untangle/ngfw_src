@@ -448,11 +448,6 @@ public interface UvmContext
     org.json.JSONObject getWebuiStartupInfo();
 
     /**
-     * Get the quick add hints for conditions in reports/events viewer
-     */
-    org.json.JSONObject getConditionQuickAddHints();
-    
-    /**
      * Convenience method to load all the object the webUI needs in one object to avoid
      * multiple calls
      */

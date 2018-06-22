@@ -41,8 +41,6 @@ public class Main
     private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
 
-    // constructor -------------------------------------------------------------
-
     private Main()
     {
         /**
@@ -72,8 +70,6 @@ public class Main
         return MAIN;
     }
 
-    // public methods ----------------------------------------------------------
-
     /**
      * <code>fatalError</code> can be called to indicate that a fatal
      * error has occured and that the UVM *must* restart (or
@@ -83,17 +79,17 @@ public class Main
      * @param x a <code>Throwable</code> giving the related/causing
      * exception, if any, otherwise null.
      */
-    public void fatalError(String throwingLocation, Throwable x)
+    public void fatalError(String str, Throwable x)
     {
         try {
             if (x != null) {
-                logger.error("FATAL ERROR: " + throwingLocation, x);
-                System.err.println("FATAL ERROR: " + throwingLocation);
+                logger.error("FATAL ERROR: " + str, x);
+                System.err.println("FATAL ERROR: " + str);
                 System.err.println("Throwable: " + x.getMessage());
                 x.printStackTrace(System.err);
             } else {
-                logger.error("FATAL ERROR: " + throwingLocation);
-                System.err.println("FATAL ERROR: " + throwingLocation);
+                logger.error("FATAL ERROR: " + str);
+                System.err.println("FATAL ERROR: " + str);
             }
         } catch (Throwable y) {
             System.out.println("Throwable: " + x.getMessage());
@@ -124,8 +120,6 @@ public class Main
     {
         return uvmContext.getCompanyName();
     }
-
-    // private methods ---------------------------------------------------------
 
     private void init() throws Exception
     {
