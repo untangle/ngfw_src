@@ -16,6 +16,11 @@ import java.nio.ByteBuffer;
  */
 public class BufferUtil
 {
+    /**
+     * Determine if buffer ends with CRLF.
+     * @param  buf ByteBuffer to check.
+     * @return     boolean true of ends with CRLF, false if nto.
+     */
     public static boolean endsWithCrLf(ByteBuffer buf)
     {
         return 2 <= buf.remaining()
@@ -93,6 +98,11 @@ public class BufferUtil
      * Find the start of the given pattern within the buffer.
      * Returns the index of the start of the pattern (i.e.
      * the index of pattern[offset] within buf).
+     * @param buf ByteBuffer to check.
+     * @param pattern Array of byte to find.
+     * @param offset integer offset into pattern.
+     * @param len integer offset into len.
+     * @return
      */
     public static int findPattern(final ByteBuffer buf,
                                   final byte[] pattern,
@@ -105,7 +115,7 @@ public class BufferUtil
 
 
     /**
-     * Find a string in a buffer.
+     * Find first string in a buffer.
      *
      * @param buf buffer to search.
      * @param str string to match.
@@ -126,6 +136,13 @@ public class BufferUtil
         return -1;
     }
 
+    /**
+     * Find last string in a buffer.
+     *
+     * @param buf buffer to search.
+     * @param str string to match.
+     * @return the absolute index, or -1 if not found.
+     */
     public static int findLastString(ByteBuffer buf, String str)
     {
         ByteBuffer dup = buf.duplicate();
@@ -146,6 +163,7 @@ public class BufferUtil
      *
      * @param buf the source buffer
      * @param out the output stream
+     * @throws IOException on error.
      */
     public static void writeBufferToStream(final ByteBuffer buf, final OutputStream out)
         throws IOException {
