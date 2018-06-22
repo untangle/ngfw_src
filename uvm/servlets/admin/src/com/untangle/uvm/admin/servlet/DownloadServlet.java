@@ -25,12 +25,26 @@ public class DownloadServlet extends HttpServlet
 
     private static final String CHARACTER_ENCODING = "utf-8";
     
+    /**
+     * doPost handle a POST
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException
     {
         processExport(req, resp);
     }
 
+    /**
+     * processExport - process an export
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     private void processExport(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException
     {

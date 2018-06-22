@@ -21,6 +21,13 @@ public class Welcome extends HttpServlet
     private static final String ADMIN_URL = "/admin/index.do";
     private static final String SETUP_URL = "/setup/language.do";
         
+    /**
+     * doGet - handle GET requests
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 
     {        

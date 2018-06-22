@@ -10,20 +10,35 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+/**
+ * ScriptTag
+ */
 public class ScriptTag extends SimpleTagSupport
 {
     private String src;
     
+    /**
+     * getSrc
+     * @return
+     */
     public String getSrc()
     {
         return this.src;
     }
 
+    /**
+     * setSrc
+     * @param newValue
+     */
     public void setSrc( String newValue )
     {
         this.src = newValue;
     }
     
+    /**
+     * doTag
+     * @throws JspException
+     */
     public final void doTag() throws JspException
     {
         PageContext pageContext = (PageContext)getJspContext();
@@ -36,6 +51,9 @@ public class ScriptTag extends SimpleTagSupport
         }
     }
 
+    /**
+     * release
+     */
     public void release()
     {
         this.src = null;
