@@ -734,17 +734,6 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
-     * Return condition quick hints.
-     *
-     * @return
-     *  JSONObject containing hints.
-     */
-    public org.json.JSONObject getConditionQuickAddHints()
-    {
-        return UvmContextFactory.context().getConditionQuickAddHints();
-    }
-
-    /**
      * Return system timezone offset.
      *
      * @return

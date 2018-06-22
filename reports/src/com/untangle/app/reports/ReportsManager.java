@@ -240,14 +240,6 @@ public interface ReportsManager
     Map<String, String> getUnavailableApplicationsMap();
     
     /**
-     * Get the metadata hints for the condition quick add function
-     * 
-     * @return
-     *  JSON object of condition quick add hints.
-     */
-    JSONObject getConditionQuickAddHints();
-    
-    /**
      * Tests if reports is enabled.
      * Currently this is the same thing as "is the
      * reports app installed and turned on."
