@@ -8,7 +8,9 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-/* XXX Probably should be an inner class for DhcpMonitor */
+/**
+ * Object that represents a DhcpLease
+ */
 public class DhcpLease
 {
     private static final int EXPIRED = 0;
@@ -22,14 +24,21 @@ public class DhcpLease
     private Date       endOfLease = null;
     private int        state      = EXPIRED;
 
-    // Constructors
     /**
-     * Hibernate constructor
+     * constructor
      */
     public DhcpLease()
     {
     }
 
+    /**
+     * DhcpLease constructor
+     * @param endOfLease
+     * @param mac
+     * @param ip
+     * @param hostname
+     * @param now
+     */
     public DhcpLease( Date endOfLease, String mac, InetAddress ip, String hostname, Date now )
     {
         this.endOfLease = endOfLease;
@@ -40,7 +49,14 @@ public class DhcpLease
     }
 
     /**
-     * @return true if the passed in parameters are different from the current parameters
+     * hasChanged
+     * @param endOfLease
+     * @param mac
+     * @param ip
+     * @param hostname
+     * @param now
+     * @return true if the passed in parameters are different from the
+     *        current parameters
      */
     boolean hasChanged( Date endOfLease, String mac, InetAddress ip, String hostname, Date now )
     {
@@ -64,7 +80,11 @@ public class DhcpLease
     }
 
     /**
+     * isRenewal
      * Returns true if these new values represent a lease renewal
+     * @param mac
+     * @param hostname
+     * @return
      */
     boolean isRenewal( String mac, String hostname )
     {
@@ -73,13 +93,23 @@ public class DhcpLease
     }
 
     /**
-     * @return true if the lease was active when this object was created or last updated.
+     * isActive
+     * @return true if the lease was active when this object was
+     *        created or last updated.
      */
     boolean isActive()
     {
         return ( state == ACTIVE ) ? true : false;
     }
 
+    /**
+     * set
+     * @param endOfLease
+     * @param mac
+     * @param ip
+     * @param hostname
+     * @param now
+     */
     void set( Date endOfLease, String mac, InetAddress ip, String hostname, Date now )
     {
         this.endOfLease = endOfLease;
@@ -89,46 +119,82 @@ public class DhcpLease
         updateState( now );
     }
 
+    /**
+     * updateState
+     * @param now
+     */
     void updateState( Date now )
     {
         this.state = ( now.before( endOfLease )) ? ACTIVE : EXPIRED;
     }
 
+    /**
+     * getMac
+     * @return
+     */
     public String getMac()
     {
         return mac;
     }
 
+    /**
+     * setMac
+     * @param mac
+     */
     public void setMac( String mac )
     {
         this.mac = mac;
     }
 
+    /**
+     * getHostname
+     * @return
+     */
     public String getHostname()
     {
         return hostname;
     }
 
+    /**
+     * setHostname
+     * @param hostname
+     */
     public void setHostname( String hostname )
     {
         this.hostname = hostname;
     }
 
+    /**
+     * getIP
+     * @return
+     */
     public InetAddress getIP()
     {
         return this.ip;
     }
 
+    /**
+     * setIP
+     * @param ip
+     */
     public void setIP( InetAddress ip )
     {
         this.ip = ip;
     }
 
+    /**
+     * getEndOfLease
+     * @return
+     */
     public Date getEndOfLease()
     {
         return endOfLease;
     }
 
+    /**
+     * setEndOfLease
+     * @param endOfLease
+     */
     public void setEndOfLease( Date endOfLease )
     {
         this.endOfLease = endOfLease;
