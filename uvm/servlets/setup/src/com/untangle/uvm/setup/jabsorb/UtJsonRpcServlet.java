@@ -35,6 +35,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     
     // HttpServlet methods ----------------------------------------------------
 
+    /**
+     * init
+     */
     @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
@@ -57,6 +60,12 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         bridge.registerObject("SetupContext", sc, SetupContext.class);
     }
 
+    /**
+     * service
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
     public void service(HttpServletRequest req, HttpServletResponse resp)
         throws IOException
     {

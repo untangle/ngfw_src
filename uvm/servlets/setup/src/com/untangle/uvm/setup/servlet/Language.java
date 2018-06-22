@@ -26,6 +26,13 @@ import com.untangle.uvm.LanguageManager;
 @SuppressWarnings("serial")
 public class Language extends HttpServlet
 {
+    /**
+     * doGet - handle GET requests
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 
     {
