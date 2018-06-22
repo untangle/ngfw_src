@@ -18,6 +18,9 @@ import java.lang.reflect.Method;
 
 import com.untangle.uvm.logging.LogEvent;
 
+/**
+ * ExtensionImpl
+ */
 public class ExtensionImpl implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
@@ -26,6 +29,9 @@ public class ExtensionImpl implements Runnable
     private HashMap<String,String> classDescriptions = new HashMap<String,String>();
     private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<String,HashMap<String,String>>();
 
+    /**
+     * ExtensionImpl
+     */
     private ExtensionImpl()
     {
         classDescriptions.put("AdminLoginEvent","These events are created by the base system and inserted to the [[Database_Schema#admin_logins|admin_logins]] table when the host table is modified.");
@@ -307,12 +313,18 @@ public class ExtensionImpl implements Runnable
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
     }
 
-
+    /**
+     * instance
+     * @return
+     */
     public static ExtensionImpl instance()
     {
         return new ExtensionImpl();
     }
 
+    /**
+     * run
+     */
     public final void run()
     {
         String result = UvmContextFactory.context().execManager().execOutput("find " + System.getProperty("uvm.lib.dir") + " -name '*Event.class' | xargs grep -l 'logging.LogEvent' | sed -e 's|.*com/\\(.*\\)|com/\\1|' -e 's|/|.|g' -e 's/.class//'");
@@ -329,6 +341,10 @@ public class ExtensionImpl implements Runnable
         }
     }
 
+    /**
+     * printClassDescription
+     * @param fullName
+     */
     @SuppressWarnings("rawtypes")
     public void printClassDescription( String fullName )
     {
@@ -367,6 +383,11 @@ public class ExtensionImpl implements Runnable
         // System.out.println("");
     }
 
+    /**
+     * printFields
+     * @param clazz
+     * @param prefix
+     */
     @SuppressWarnings("rawtypes")
     private void printFields( Class clazz, String prefix )
     {
