@@ -65,7 +65,7 @@ public class UDPAttributes
 
         /* Create a new destination with the other parameters set to their defaults */
         pointer = new CPointer ( createUDPAttributes( Inet4AddressConverter.toLong( src ), srcPort,
-                                                Inet4AddressConverter.toLong( dst ), dstPort ));
+                                                      Inet4AddressConverter.toLong( dst ), dstPort ));
     }
 
     /**
