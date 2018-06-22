@@ -22,6 +22,7 @@ import com.untangle.uvm.AdminUserSettings;
 
 import org.json.JSONObject;
 
+/** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -32,11 +33,20 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
 
+    /**
+     * SetupContextImpl create a SetupContextImpl
+     * @param context
+     */
     private SetupContextImpl( UvmContext context )
     {
         this.context = context;
     }
 
+    /**
+     * setLanguage - sets the language (called from setup wizard)
+     * @param language
+     * @param source
+     */
     public void setLanguage( String language, String source )
     {
         LanguageManager lm = this.context.languageManager();
@@ -46,6 +56,13 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         lm.setLanguageSettings( ls );
     }
 
+    /**
+     * setAdminPassword - set the admin password (called from setup wizard)
+     * @param password
+     * @param email
+     * @param installType
+     * @throws TransactionRolledbackException
+     */
     public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
@@ -79,26 +96,40 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         this.context.systemManager().setSettings( systemSettings );
     }
 
+    /**
+     * getWizardSettings - gets the current Wizard Settings
+     * @return WizardSettings
+     */
     public WizardSettings getWizardSettings()
     {
         return this.context.getWizardSettings();
     }
 
+    /**
+     * setTimeZone - sets the timezone (called from setup wizard)
+     * @param timeZone
+     * @throws TransactionRolledbackException
+     */
     public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException
     {
         this.context.systemManager().setTimeZone( timeZone );
     }
 
+    /**
+     * getTranslations - get the translation map
+     * @return the map
+     */
     public Map<String, String> getTranslations()
     {
         return this.context.languageManager().getTranslations("untangle");
     }
 
     /**
-     * This call returns one big JSONObject with references to all the important
-     * information This is used to avoid lots of separate synchornous calls via
-     * the Setup Wizards UI. Reducing all these seperate calls to initialize the UI
-     * reduces startup time
+     * This call returns one big JSONObject with references to all the
+     * important information This is used to avoid lots of separate
+     * synchornous calls via the Setup Wizards UI. Reducing all these
+     * seperate calls to initialize the UI reduces startup time
+     * @return <doc>
      */
     public org.json.JSONObject getSetupWizardStartupInfo()
     {
@@ -120,6 +151,10 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         return json;
     }
 
+    /**
+     * makeSetupContext constructor
+     * @return SetupContext
+     */
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
         UvmContext uvm = UvmContextFactory.context();

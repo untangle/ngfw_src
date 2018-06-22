@@ -21,6 +21,13 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class AdminServlet extends HttpServlet
 {
+    /**
+     * doGet - handle a GET 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
