@@ -25,20 +25,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>OldSetupServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.setup.servlet.OldSetupServlet</servlet-class>
-    <init-param>
-      <param-name>buildStamp</param-name>
-      <param-value>@BUILD_STAMP@</param-value>
-    </init-param>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>OldSetupServlet</servlet-name>
-    <url-pattern>/oldsetup.do</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>LanguageServlet</servlet-name>
     <servlet-class>com.untangle.uvm.setup.servlet.Language</servlet-class>
     <init-param>
