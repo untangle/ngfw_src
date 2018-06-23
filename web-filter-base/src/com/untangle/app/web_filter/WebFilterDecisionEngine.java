@@ -16,6 +16,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -362,7 +363,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                 lastDiaTry = t;
 
-                CloseableHttpClient httpClient = HttpClients.custom().build();
+                int timeout = 60*1000;
+                RequestConfig defaultRequestConfig = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).setConnectionRequestTimeout(timeout).build();
+                CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
                 CloseableHttpResponse response = null;
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
                 credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new UsernamePasswordCredentials("untangle", "wu+glev6"));
@@ -374,7 +377,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     String url = "https://dl.zvelo.com/oem/dia.key";
                     logger.debug("Fetch URL: \"" + url + "\"");
                     HttpGet get = new HttpGet(url);
-
                     response = httpClient.execute(get, context);
 
                     if (response != null && response.getStatusLine().getStatusCode() == 200) {
