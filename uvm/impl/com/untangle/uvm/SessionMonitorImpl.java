@@ -26,9 +26,9 @@ import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
- * SessionMonitor is a utility class that provides some convenient functions
- * to monitor and view current sessions and state existing in the untangle-vm
- *
+ * SessionMonitor is a utility class that provides some convenient
+ * functions to monitor and view current sessions and state existing
+ * in the untangle-vm
  * This is used by the UI to display state
  */
 public class SessionMonitorImpl implements SessionMonitor
@@ -42,53 +42,20 @@ public class SessionMonitorImpl implements SessionMonitor
 
     UvmContext uvmContext;
 
+    /**
+     * SessionMonitorImpl constructor
+     */
     public SessionMonitorImpl ()
     {
         SessionMonitorImpl.execManager = UvmContextFactory.context().createExecManager();
         uvmContext = UvmContextFactory.context();
     }
 
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int appId)
-    {
-        /**
-         * Find the the system interface name that matches this ID
-         */
-        try {
-            int interfaceId = Integer.parseInt(interfaceIdStr);
-            InterfaceSettings intf = uvmContext.networkManager().findInterfaceId( interfaceId );
-
-            if (intf == null) {
-                logger.warn( "Unabled to find interface " + interfaceId );
-                return null;
-            }
-
-            String systemName = intf.getSystemDev();
-            return _getMergedBandwidthSessions(systemName);
-
-        } catch (Exception e) {
-            logger.warn("Unable to retrieve sessions",e);
-            return null;
-        }
-    }
-
     /**
-     * documented in SessionMonitor.java
-     */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr)
-    {
-        return getMergedBandwidthSessions(interfaceIdStr, 0);
-    }
-
-    /**
-     * documented in SessionMonitor.java
-     */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions()
-    {
-        return getMergedBandwidthSessions("0");
-    }
-
-    /**
-     * documented in SessionMonitor.java
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy
+     * @return list
      */
     public List<SessionMonitorEntry> getMergedSessions()
     {
@@ -96,7 +63,12 @@ public class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * documented in SessionMonitor.java
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy. This only lists sessions being processed by the given appId
+     * If appId == 0, then getMergedSessions() is returned
+     * @param appId
+     * @return list
      */
     public List<SessionMonitorEntry> getMergedSessions(long appId)
     {
@@ -273,6 +245,8 @@ public class SessionMonitorImpl implements SessionMonitor
 
     /**
      * Retrieve the session stats (but not the sessions themselves)
+     * This is a JSON object with some keys to store values such as totalSessions, scannedSession, etc.
+     * @return JSONObject
      */
     public org.json.JSONObject getSessionStats()
     {
@@ -314,7 +288,9 @@ public class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * Retrieve the session stats / traffic by policy
+     * Retrieve the session stats by policy id
+     * This is a JSON object which has policy ids as keys and sessions count, total kbps for each policy
+     * @return JSONObject
      */
     public org.json.JSONObject getPoliciesSessionsStats()
     {
@@ -358,86 +334,10 @@ public class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * Returns a fully merged list for the given interface
-     * systemIntfName is the system interface (example: "eth0")
-     * This takes 5 seconds to gather data before it returns
-     */
-    private List<SessionMonitorEntry> _getMergedBandwidthSessions(String systemIntfName)
-    {
-        List<SessionMonitorEntry> jnettopSessions = _getJnettopSessionMonitorEntrys(systemIntfName);
-        List<SessionMonitorEntry> sessions = this.getMergedSessions();
-
-        HashMap<SessionTuple,SessionMonitorEntry> map = new HashMap<SessionTuple,SessionMonitorEntry>();
-        for (SessionMonitorEntry entry : jnettopSessions) {
-            SessionTuple tuple = _makeTuple( entry.getProtocol(),
-                                                 0,
-                                                 0,
-                                                 entry.getPreNatClient(),
-                                                 entry.getPreNatServer(),
-                                                 entry.getPreNatClientPort(),
-                                                 entry.getPreNatServerPort());
-
-            map.put( tuple, entry );
-        }
-
-        for (SessionMonitorEntry session : sessions) {
-
-            session.setClientKBps(Float.valueOf(0.0f));
-            session.setServerKBps(Float.valueOf(0.0f));
-            session.setTotalKBps(Float.valueOf(0.0f));
-
-            SessionTuple a = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPreNatClient(),session.getPreNatServer(),
-                                        session.getPreNatClientPort(),session.getPreNatServerPort());
-            SessionTuple b = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPreNatServer(),session.getPreNatClient(),
-                                        session.getPreNatServerPort(),session.getPreNatClientPort());
-            SessionTuple c = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPostNatClient(),session.getPostNatServer(),
-                                        session.getPostNatClientPort(),session.getPostNatServerPort());
-            SessionTuple d = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPostNatServer(),session.getPostNatClient(),
-                                        session.getPostNatServerPort(),session.getPostNatClientPort());
-
-            SessionMonitorEntry matchingEntry = null;
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(a);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(b);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(c);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(d);
-            }
-
-            if ( matchingEntry == null ) {
-                logger.debug("Session not found in jnettop: " +
-                             session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  |  " +
-                             session.getPostNatClient() + ":" + session.getPostNatClientPort() + " -> " + session.getPostNatServer() + ":" + session.getPostNatServerPort());
-            } else {
-                session.setClientKBps(matchingEntry.getClientKBps());
-                session.setServerKBps(matchingEntry.getServerKBps());
-                session.setTotalKBps(matchingEntry.getTotalKBps());
-            }
-        }
-
-        // check for sessions that jnettop found that but we were unable to locate the corresponding conntrack/uvm session
-        for (SessionMonitorEntry session : map.values()) {
-            logger.warn("Unused jnettop session : " +
-                        session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  | " +
-                        session.getTotalKBps() + "KB/s");
-
-        }
-
-        return sessions;
-    }
-
-    /**
      * This returns a list of sessions and bandwidth usages reported by jnettop over 5 seconds
      * This takes 5 seconds to gather data before it returns
+     * @param systemIntfName
+     * @return list
      */
     @SuppressWarnings("unchecked") //JSON
     private List<SessionMonitorEntry> _getJnettopSessionMonitorEntrys(String systemIntfName)
@@ -457,12 +357,24 @@ public class SessionMonitorImpl implements SessionMonitor
 
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
+     * @return list
      */
     private List<SessionMonitorEntry> _getConntrackSessionMonitorEntrys()
     {
         return parseProcNetIpConntrack();
     }
 
+    /**
+     * Make a SessionTuple
+     * @param protocolStr
+     * @param clientIntf
+     * @param serverIntf
+     * @param preNatClient
+     * @param preNatServer
+     * @param preNatClientPort
+     * @param preNatServerPort
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( String protocolStr, int clientIntf, int serverIntf, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
     {
         short protocol;
@@ -477,6 +389,11 @@ public class SessionMonitorImpl implements SessionMonitor
         return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
     }
 
+    /**
+     * Make a tuple from a SessionMonitorEntry
+     * @param session
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( SessionMonitorEntry session )
     {
         short protocol;
@@ -495,11 +412,21 @@ public class SessionMonitorImpl implements SessionMonitor
                                      session.getPreNatServerPort() );
     }
 
+    /**
+     * makeTuple copies a tuple
+     * @param tuple
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( SessionTuple tuple )
     {
         return new SessionTuple( tuple );
     }
 
+    /**
+     * Parse proc/net/nf_conntrack
+     * and return a list of SessionMonitorEntry
+     * @return the list of sessions with the conntrack information
+     */
     private List<SessionMonitorEntry> parseProcNetIpConntrack()
     {
         BufferedReader br = null;
