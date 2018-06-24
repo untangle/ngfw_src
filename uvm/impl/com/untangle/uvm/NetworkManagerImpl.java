@@ -85,6 +85,9 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[255];
 
+    /**
+     * NetworkManagerImpl constructor
+     */
     protected NetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -131,14 +134,6 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
 
-            /* 13.2 (dynamic routing) conversion */
-            if(this.networkSettings.getVersion() < 7){
-                this.networkSettings.setDynamicRoutingSettings( defaultDynamicRoutingSettings() );
-                this.networkSettings.setAccessRules( addDynamicRoutingAccessRules( this.networkSettings.getAccessRules() ) );
-                this.networkSettings.setVersion( 7 );
-                this.setNetworkSettings( this.networkSettings, false );
-            }
-
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -168,6 +163,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     /**
      * Get the network settings
+     * @return NetworkSettings
      */
     public NetworkSettings getNetworkSettings()
     {
@@ -176,6 +172,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Set the network settings
+     * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
@@ -184,6 +181,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Set the network settings
+     * @param newSettings
+     * @param runSanityChecks - if true sanityCheckNetworkSettings is called
      */
     public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks )
     {
@@ -257,6 +256,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Renew the DHCP lease for the provided interface
+     * @param interfaceId
      */
     public void renewDhcpLease( int interfaceId )
     {
@@ -295,6 +295,10 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
         
+    /**
+     * Get a list of the settings for all enabled interfaces
+     * @return list
+     */
     public List<InterfaceSettings> getEnabledInterfaces()
     {
         LinkedList<InterfaceSettings> newList = new LinkedList<InterfaceSettings>();
@@ -312,6 +316,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Get the IP address of the first WAN interface
+     * @return InetAddress
      */
     public InetAddress getFirstWanAddress()
     {
@@ -330,6 +335,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Get the IP address of the first non-WAN (LAN) interface
+     * @return InetAddress
      */
     public InetAddress getFirstNonWanAddress()
     {
@@ -348,6 +354,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the specified Id
+     * @param interfaceId
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceId( int interfaceId )
     {
@@ -366,6 +374,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the specified systemDev
+     * @param systemDev
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceSystemDev( String systemDev )
     {
@@ -382,6 +392,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the first WAN
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceFirstWan( )
     {
@@ -398,8 +409,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * determines the WAN status of the specified interface
-     *
-     * @param the interface ID
+     * @param interfaceId
      * @return true if the interface is a WAN, false if not found or not a WAN
      */
     public boolean isWanInterface( int interfaceId )
@@ -419,6 +429,10 @@ public class NetworkManagerImpl implements NetworkManager
     /**
      * returns a list of networks already used locally
      * This can be used for verification of settings in app settings
+     * @param includeDynamic
+     * @param includeL2tp
+     * @param includeOpenvpn
+     * @return list
      */
     public List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn )
     {
@@ -492,6 +506,8 @@ public class NetworkManagerImpl implements NetworkManager
      * This method returns an address where the host should be able to access HTTP.
      * If HTTP is not reachable on this interface (like all WANs), it returns null.
      * If any error occurs it returns null.
+     * @param clientIntfId
+     * @return InetAddress
      */
     public InetAddress getInterfaceHttpAddress( int clientIntfId )
     {
@@ -538,6 +554,8 @@ public class NetworkManagerImpl implements NetworkManager
      * Returns the InterfaceStatus of the specified interface.
      * If there is an error or the status is unknown it returns an InterfaceStatus
      * with all null attributes.
+     * @param interfaceId
+     * @return InterfaceStatus
      */
     public InterfaceStatus getInterfaceStatus( int interfaceId )
     {
@@ -560,7 +578,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Determines if the specified interface is currently the VRRP master
-     * @returns true if the given interfaceId is current the VRRP master of its VRRP group, false otherwise
+     * @param interfaceId
+     * @return true if the given interfaceId is current the VRRP master of its VRRP group, false otherwise
      */
     public boolean isVrrpMaster( int interfaceId )
     {
@@ -598,7 +617,7 @@ public class NetworkManagerImpl implements NetworkManager
         
     /**
      * Return the status of all addressed interfaces
-     * @returns a list of InterfaceStatus for all interface
+     * @return a list of InterfaceStatus for all interface
      */
     public List<InterfaceStatus> getInterfaceStatus( )
     {
@@ -613,7 +632,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     /**
      * Returns a list of all the current device status'
-     * @returns a list of DeviceStatus for all current devices
+     * @return a list of DeviceStatus for all current devices
      */
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
@@ -671,6 +690,9 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
 
+    /**
+     * sets values in the interafceSettingsById map for quick lookups
+     */
     private void configureInterfaceSettingsArray()
     {
         /**
@@ -692,6 +714,11 @@ public class NetworkManagerImpl implements NetworkManager
 
     }
 
+    /**
+     * Checks for any new ethernet/wifi devices
+     * IF found it will add new devices settings and interface settings for the device
+     * @param netSettings
+     */
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
@@ -768,6 +795,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
     
+    /**
+     * Create the default NetworkSettings
+     * @return NetworkSettings
+     */
     private NetworkSettings defaultSettings()
     {
         NetworkSettings newSettings = new NetworkSettings();
@@ -952,6 +983,13 @@ public class NetworkManagerImpl implements NetworkManager
         return newSettings;
     }
 
+    /**
+     * sanityCheckNetworkSettings
+     * Sanity checks the network settings.
+     * If something doesn't make sense RuntimeException is thrown with the description
+     * of the issue
+     * @param networkSettings
+     */
     private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
     {
         if ( networkSettings == null ) {
@@ -1200,6 +1238,12 @@ public class NetworkManagerImpl implements NetworkManager
 
     }
 
+    /**
+     * sanityCheckInterfaceSettings
+     * Santicy check the interface settings
+     * If something doesn't make sense RuntimeException with the description is thrown
+     * @param intf
+     */
     private void sanityCheckInterfaceSettings( InterfaceSettings intf )
     {
         if ( intf == null )
@@ -1277,6 +1321,12 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
     
+    /**
+     * sanitizeNetworkSettings This will "sanitize" settings It will
+     * do some sanity checks and change settings as necessary to avoid
+     * any possible confusion on the backend
+     * @param networkSettings
+     */
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
         
@@ -1441,18 +1491,24 @@ public class NetworkManagerImpl implements NetworkManager
          */
         List<InterfaceSettings> interfaceList = networkSettings.getInterfaces();
         Collections.sort(interfaceList, new Comparator<InterfaceSettings>() {
-            public int compare(InterfaceSettings i1, InterfaceSettings i2) {
-                int oi1 = i1.getInterfaceId();
-                int oi2 = i2.getInterfaceId();
-                if (oi1 == oi2) {
-                    return 0;
-                } else if (oi1 < oi2) {
-                    return -1;
-                } else {
-                    return 1;
+                /**
+                 * compare sorts the interfaces by ID
+                 * @param i1
+                 * @param i2
+                 * @return -1,0,1
+                 */
+                public int compare(InterfaceSettings i1, InterfaceSettings i2) {
+                    int oi1 = i1.getInterfaceId();
+                    int oi2 = i2.getInterfaceId();
+                    if (oi1 == oi2) {
+                        return 0;
+                    } else if (oi1 < oi2) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
                 }
-            }
-        });
+            });
         networkSettings.setInterfaces(interfaceList);
         
         /**
@@ -1494,6 +1550,13 @@ public class NetworkManagerImpl implements NetworkManager
         
     }
 
+    /**
+     * sanitizeInterfaceSettings
+     * This will "sanitize" settings
+     * It will do some sanity checks and change settings as necessary to avoid any possible
+     * confusion on the backend
+     * @param interfaceSettings
+     */
     private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings )
     {
         /**
@@ -1518,6 +1581,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * This chooses "reasonable" DHCP defaults if dhcp is enabled on the given interface
+     * @param interfaceSettings
      */
     private void initializeDhcpDefaults( InterfaceSettings interfaceSettings )
     {
@@ -1572,6 +1636,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
+    /**
+     * Create the default QoSSettings
+     * @return QosSettings
+     */
     private QosSettings defaultQosSettings()
     {
         QosSettings qosSettings = new QosSettings();
@@ -1652,6 +1720,10 @@ public class NetworkManagerImpl implements NetworkManager
         return qosSettings;
     }
 
+    /**
+     * Get the default UPnP settings
+     * @return UpnpSettings
+     */
     private UpnpSettings defaultUpnpSettings()
     {
         UpnpSettings upnpSettings = new UpnpSettings();
@@ -1723,6 +1795,10 @@ public class NetworkManagerImpl implements NetworkManager
         return upnpSettings;
     }
 
+    /**
+     * get the default dynamic routing settings
+     * @return DynamicRoutingSettings
+     */
     private DynamicRoutingSettings defaultDynamicRoutingSettings()
     {
         DynamicRoutingSettings drSettings = new DynamicRoutingSettings();
@@ -1755,60 +1831,10 @@ public class NetworkManagerImpl implements NetworkManager
         return drSettings;
     }
 
-    private List<FilterRule> addDynamicRoutingAccessRules(List<FilterRule> accessRules){
-
-        if(accessRules != null){
-            List<FilterRule> dynamicRoutingRules = defaultDynamicRoutingAcessRules();
-            for(FilterRule accessRule: accessRules){
-                if(accessRule.getDescription().startsWith("Allow Dynamic Routing")){
-                    break;
-                }
-                if(accessRule.getDescription().startsWith("Allow AH/ESP")){
-                    int index = accessRules.lastIndexOf(accessRule);
-                    for(FilterRule rule: dynamicRoutingRules){
-                        accessRules.add(index, rule);
-                        index++;
-                    }
-                    break;
-                }
-            }
-        }
-
-        return accessRules;
-    }
-
-    private List<FilterRule> defaultDynamicRoutingAcessRules()
-    {
-        List<FilterRule> rules = new LinkedList<FilterRule>();
-        List<FilterRuleCondition> conditions;
-
-        FilterRule filterRuleBgp = new FilterRule();
-        filterRuleBgp.setReadOnly( true );
-        filterRuleBgp.setEnabled( true );
-        filterRuleBgp.setIpv6Enabled( true );
-        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179)" );
-        filterRuleBgp.setBlocked( false );
-        conditions = new LinkedList<FilterRuleCondition>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "179" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
-        filterRuleBgp.setConditions( conditions );
-
-        FilterRule filterRuleOspf = new FilterRule();
-        filterRuleOspf.setReadOnly( true );
-        filterRuleOspf.setEnabled( true );
-        filterRuleOspf.setIpv6Enabled( true );
-        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF" );
-        filterRuleOspf.setBlocked( false );
-        conditions = new LinkedList<FilterRuleCondition>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "OSPF" ));
-        filterRuleOspf.setConditions( conditions );
-
-        rules.add(filterRuleBgp);
-        rules.add(filterRuleOspf);
-
-        return rules;
-    }
-
+    /**
+     * Get a list of the default access rules
+     * @return list
+     */
     private List<FilterRule> defaultAccessRules()
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
@@ -2018,7 +2044,27 @@ public class NetworkManagerImpl implements NetworkManager
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
         filterRuleUpnpC.setConditions( conditions );
 
-        List<FilterRule> dynamicRoutingRules = defaultDynamicRoutingAcessRules();
+
+        FilterRule filterRuleBgp = new FilterRule();
+        filterRuleBgp.setReadOnly( true );
+        filterRuleBgp.setEnabled( true );
+        filterRuleBgp.setIpv6Enabled( true );
+        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179)" );
+        filterRuleBgp.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "179" ));
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
+        filterRuleBgp.setConditions( conditions );
+
+        FilterRule filterRuleOspf = new FilterRule();
+        filterRuleOspf.setReadOnly( true );
+        filterRuleOspf.setEnabled( true );
+        filterRuleOspf.setIpv6Enabled( true );
+        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF" );
+        filterRuleOspf.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "OSPF" ));
+        filterRuleOspf.setConditions( conditions );
         
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
@@ -2131,11 +2177,8 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleUpnp );
         rules.add( filterRuleUpnpB );
         rules.add( filterRuleUpnpC );
-
-        for(FilterRule rule: dynamicRoutingRules){
-            rules.add(rule);
-        }
-
+        rules.add(filterRuleBgp);
+        rules.add(filterRuleOspf);
         rules.add( filterRuleAhEsp );
         rules.add( filterRuleIke );
         rules.add( filterRuleNatT );
@@ -2146,6 +2189,10 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
+    /**
+     * Get a list of the default bypass rules
+     * @return list
+     */
     private List<BypassRule> defaultBypassRules()
     {
         List<BypassRule> rules = new LinkedList<BypassRule>();
@@ -2206,6 +2253,10 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
+    /**
+     * Get a list of all ethernet devices detected
+     * @return list
+     */
     private LinkedList<String> getEthernetDeviceNames()
     {
         ExecManagerResult result;
@@ -2248,8 +2299,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Query a wireless card for a list of supported channels
-     *
-     * @returns a list of the support wifi channels (never null)
+     * @param systemDev
+     * @return a list of the support wifi channels (never null)
      */
     public List<Integer> getWirelessChannels( String systemDev )
     {
@@ -2321,6 +2372,13 @@ public class NetworkManagerImpl implements NetworkManager
         return channels;
     }
 
+    /**
+     * getUpnpManager
+     * runs the upnp manager script with the specified command and argument and returns the output
+     * @param command
+     * @param arguments
+     * @return output
+     */
     public String getUpnpManager(String command, String arguments)
     {
         return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
@@ -2329,6 +2387,9 @@ public class NetworkManagerImpl implements NetworkManager
     /**
      * Iterate through all wireless interfaces set the settings to the given values
      * Used by the setup wizard
+     * @param ssid
+     * @param encryption
+     * @param password
      */
     public void setWirelessSettings( String ssid, InterfaceSettings.WirelessEncryption encryption, String password )
     {
@@ -2394,6 +2455,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the SSID from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return String
      */
     public String getWirelessSsid()
     {
@@ -2408,6 +2470,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the password from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return String
      */
     public String getWirelessPassword()
     {
@@ -2422,6 +2485,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the encryption from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return WirelessEncryption
      */
     public InterfaceSettings.WirelessEncryption getWirelessEncryption()
     {
@@ -2436,7 +2500,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Return the FQDN according to the settings
      *
      * If domain name is null it just returns the hostname
-     * @returns String of the FQDN name of this server, never null
+     * @return String of the FQDN name of this server, never null
      */
     public String getFullyQualifiedHostname()
     {
@@ -2522,16 +2586,30 @@ public class NetworkManagerImpl implements NetworkManager
         return -1;
     }
 
+    /**
+     * NetworkTestDownloadHandler
+     * This is the download servlet helper to allow the tcpdump test in troubleshooting
+     * to download the pcap file
+     */
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * getName
+         * @return name
+         */
         @Override
         public String getName()
         {
             return "NetworkTestExport";
         }
         
+        /**
+         * serveDownload
+         * @param req
+         * @param resp
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             String name = req.getParameter("arg1");
