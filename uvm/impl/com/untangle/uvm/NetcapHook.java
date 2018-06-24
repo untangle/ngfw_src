@@ -76,6 +76,10 @@ public abstract class NetcapHook implements Runnable
     protected int state      = IPNewSessionRequestImpl.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
+    /**
+     * getVector
+     * @return Vector
+     */
     public Vector getVector()
     {
         return this.vector;
@@ -486,21 +490,37 @@ public abstract class NetcapHook implements Runnable
         }
     }
 
+    /**
+     * getClientSide - get the client side tuple
+     * @return SessionTuple
+     */
     public SessionTuple getClientSide()
     {
         return this.clientSide;
     }
 
+    /**
+     * getServerSide - get the server side tuple
+     * @return SessionTuple
+     */
     public SessionTuple getServerSide()
     {
         return this.serverSide;
     }
 
+    /**
+     * getPolicyId - get the policy ID for this session
+     * @return int
+     */
     public Integer getPolicyId()
     {
         return this.policyId;
     }
 
+    /**
+     * setCleanupSessionOnExit
+     * @param newValue
+     */
     public void setCleanupSessionOnExit( boolean newValue )
     {
         this.cleanupSessionOnExit = newValue;
@@ -509,6 +529,7 @@ public abstract class NetcapHook implements Runnable
     /**
      * Describe <code>connectServer</code> method here.
      *
+     * @param sessionEvent
      * @return a <code>boolean</code> true if the server was completed
      * OR we explicitly rejected
      */
@@ -581,6 +602,9 @@ public abstract class NetcapHook implements Runnable
         return clientActionCompleted;
     }
 
+    /**
+     * buildPipeline - builds the actual pipeline (list of relays)
+     */
     protected void buildPipeline() 
     {
         LinkedList<Relay> relayList = new LinkedList<Relay>();
@@ -653,6 +677,11 @@ public abstract class NetcapHook implements Runnable
         vector = new Vector( relayList );
     }
 
+    /**
+     * processSession
+     * @param request
+     * @param session
+     */
     @SuppressWarnings("fallthrough")
     protected void processSession( IPNewSessionRequestImpl request, AppSessionImpl session )
     {
@@ -801,6 +830,10 @@ public abstract class NetcapHook implements Runnable
         return !isEndpointed;
     }
 
+    /**
+     * logSessionStatsEvent - logs the SessionStatsEvent
+     * @param sessionEvent
+     */
     private void logSessionStatsEvent( SessionEvent sessionEvent )
     {
         try {
@@ -847,6 +880,10 @@ public abstract class NetcapHook implements Runnable
         }
     }
     
+    /**
+     * alive - returns true if session is alive, false otherwise
+     * @return bool
+     */
     protected boolean alive()
     {
         if ( state == IPNewSessionRequestImpl.REQUESTED || state == IPNewSessionRequestImpl.ENDPOINTED ) {
@@ -856,6 +893,10 @@ public abstract class NetcapHook implements Runnable
         return false;
     }
 
+    /**
+     * printRelays - prints relays list/description to debug
+     * @param relayList
+     */
     protected void printRelays( List<Relay> relayList )
     {
         if ( logger.isDebugEnabled()) {
@@ -867,17 +908,34 @@ public abstract class NetcapHook implements Runnable
         }
     }
 
-    /* Get the desired timeout for the vectoring machine */
+    /**
+     * Get the desired timeout for the vectoring machine
+     * @return int
+     */
     protected abstract int  timeout();
 
+    /**
+     * netcapSession
+     * @return NetcapSession
+     */
     protected abstract NetcapSession netcapSession();
 
+    /**
+     * clientSideListener
+     * @return SideListener
+     */
     protected abstract SideListener clientSideListener();
+
+    /**
+     * serverSideListener
+     * @return SideListener
+     */
     protected abstract SideListener serverSideListener();
 
     /**
      * Complete the connection to the server, returning whether or not
      * the connection was succesful.
+     * @param sessionEvent
      * @return - True connection was succesful, false otherwise.
      */
     protected abstract boolean serverComplete( SessionEvent sessionEvent );
@@ -888,15 +946,50 @@ public abstract class NetcapHook implements Runnable
      * @return - True connection was succesful, false otherwise.
      */
     protected abstract boolean clientComplete();
+
+    /**
+     * clientReject
+     */
     protected abstract void clientReject();
+
+    /**
+     * clientRejectSilent
+     */
     protected abstract void clientRejectSilent();
 
+    /**
+     * makeClientSink
+     * @return Sink
+     */
     protected abstract Sink makeClientSink();
+
+    /**
+     * makeServerSink
+     * @return Sink
+     */
     protected abstract Sink makeServerSink();
+
+    /**
+     * makeClientSource
+     * @return Source
+     */
     protected abstract Source makeClientSource();
+
+    /**
+     * makeServerSource
+     * @return Source
+     */
     protected abstract Source makeServerSource();
 
+    /**
+     * initializeAppSessions
+     * @param sessionEvent
+     */
     protected abstract void initializeAppSessions( SessionEvent sessionEvent );
+
+    /**
+     * raze
+     */
     protected abstract void raze();
 
     /**
