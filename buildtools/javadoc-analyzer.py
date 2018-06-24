@@ -96,6 +96,7 @@ class JavaParser:
                             serializable = True
                         elif implement["name"] == "JSONString":
                             jsonstring = True
+                    # ignore classes that include serializable and jsonstring
                     if serializable is True and jsonstring is True:
                         class_result["_optional"] = True
                 if key == "extends":
