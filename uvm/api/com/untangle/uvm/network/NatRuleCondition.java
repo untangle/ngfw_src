@@ -13,7 +13,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A NatRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class NatRuleCondition extends RuleCondition
+public class NatRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public NatRuleCondition( )
     {
@@ -28,5 +28,10 @@ public class NatRuleCondition extends RuleCondition
     public NatRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
+    }
+
+    public String toJSONString()
+    {
+        return (new org.json.JSONObject(this)).toString();
     }
 }
