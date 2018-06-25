@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.util;
 
 import java.io.BufferedReader;
@@ -36,47 +37,77 @@ public class LoadAvg
 
     private LoadVals vals;
 
+    /**
+     * Constructor
+     */
     private LoadAvg()
     {
         lastSampleTime = 0;
         vals = new LoadVals(0, 0, 0, 0, 0);
     }
 
+    /**
+     * Get the load average
+     * @return The load average
+     */
     public static LoadAvg get()
     {
         return instance;
     }
 
+    /**
+     * Get the one minut load average
+     * @return The one minute load average
+     */
     public float getOneMin()
     {
         refresh();
         return vals.onemin;
     }
 
+    /**
+     * Get the five minute load average
+     * @return The five minute load average
+     */
     public float getFiveMin()
     {
         refresh();
         return vals.fivemin;
     }
 
+    /**
+     * Get the 15 minute load average
+     * @return The 15 minute load average
+     */
     public float getFifteenMin()
     {
         refresh();
         return vals.fifteenmin;
     }
 
+    /**
+     * Get the number running
+     * @return The number running
+     */
     public int getNumRunning()
     {
         refresh();
         return vals.numrunning;
     }
 
+    /**
+     * Get the number of threads
+     * @return The number of threads
+     */
     public int getNumThreads()
     {
         refresh();
         return vals.numthreads;
     }
 
+    /**
+     * Refresh the load data
+     */
     private void refresh()
     {
         long curTime = System.currentTimeMillis();
@@ -123,6 +154,10 @@ public class LoadAvg
         }
     }
 
+    /**
+     * Get the string representation
+     * @return The string representation
+     */
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
@@ -138,6 +173,9 @@ public class LoadAvg
         return sb.toString();
     }
 
+    /**
+     * Class to store the load values
+     */
     private class LoadVals
     {
         private float onemin;
@@ -145,7 +183,15 @@ public class LoadAvg
         private float fifteenmin;
         private int numrunning;
         private int numthreads;
-        // lastpid is ignored.
+        
+        /**
+         * Constructor. lastpid is ignored
+         * @param onemin
+         * @param fivemin
+         * @param fifteenmin
+         * @param numrunning
+         * @param numthreads
+         */
         LoadVals(float onemin, float fivemin, float fifteenmin, int numrunning, int numthreads)
         {
             this.onemin = onemin;
@@ -155,7 +201,4 @@ public class LoadAvg
             this.numthreads = numthreads;
         }
     }
-
 }
-
-
