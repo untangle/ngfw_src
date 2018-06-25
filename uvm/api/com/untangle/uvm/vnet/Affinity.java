@@ -16,21 +16,32 @@ public class Affinity
     private String affinity;
     private int numValue;
     
+    /**
+     * Affinity constructor - private use predefined values
+     * @param affinity
+     * @param numValue
+     */
     private Affinity( String affinity, int numValue )
     {
         this.affinity = affinity;
         this.numValue = numValue;
     }
 
+    /**
+     * toString
+     * @return string
+     */
     public String toString()
     {
         return affinity;
     }
 
+    /**
+     * numValue - get the number value
+     * @return int
+     */
     public int numValue()
     {
         return numValue;
     }
-
-        
 }

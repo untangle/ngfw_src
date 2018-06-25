@@ -15,21 +15,30 @@ class ReleaseTokenStreamer implements TokenStreamer
 
     private boolean released = false;
 
+    /**
+     * ReleaseTokenStreamer constructor
+     * @param streamer
+     * @param release
+     */
     ReleaseTokenStreamer(TokenStreamer streamer, ReleaseToken release)
     {
         this.streamer = streamer;
         this.release = release;
     }
 
-    // IPStreamer methods -----------------------------------------------------
-
+    /**
+     * closeWhenDone
+     * @return bool
+     */
     public boolean closeWhenDone()
     {
         return true;
     }
 
-    // TokenStreamer methods --------------------------------------------------
-
+    /**
+     * nextToken - get the next token/chunk
+     * @return Token
+     */
     public Token nextToken()
     {
         if (released) {
