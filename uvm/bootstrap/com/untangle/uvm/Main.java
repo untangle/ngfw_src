@@ -41,6 +41,10 @@ public class Main
     private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
 
+    /**
+     * Private constructor
+     * Use getMain() to get singleton instance
+     */
     private Main()
     {
         /**
@@ -52,6 +56,8 @@ public class Main
 
     /**
      * The fun starts here.
+     * @param args
+     * @throws Exception
      */
     public static final void main(String[] args) throws Exception
     {
@@ -65,6 +71,10 @@ public class Main
         }
     }
 
+    /**
+     * getMain - returns the singleton instance
+     * @return Main
+     */
     public static Main getMain()
     {
         return MAIN;
@@ -76,6 +86,7 @@ public class Main
      * otherwise recover) itself.  One example is an OutOfMemory
      * error.
      *
+     * @param str
      * @param x a <code>Throwable</code> giving the related/causing
      * exception, if any, otherwise null.
      */
@@ -99,6 +110,11 @@ public class Main
         }
     }
 
+    /**
+     * loadClass - load a class in the standard classloader
+     * @param className
+     * @return Class
+     */
     @SuppressWarnings("rawtypes")
     public Class loadClass(String className)
     {
@@ -111,19 +127,33 @@ public class Main
         }
     }
     
+    /**
+     * getTranslations
+     * gets the translation map
+     * @param module
+     * @return map
+     */
     public Map<String, String> getTranslations(String module)
     {
         return uvmContext.getTranslations(module);
     }
 
+    /**
+     * getCompanyName
+     * @return String - CompanyName
+     */
     public String getCompanyName()
     {
         return uvmContext.getCompanyName();
     }
 
+    /**
+     * Initialize the UVM, starting up base services.
+     * @throws Exception
+     */
     private void init() throws Exception
     {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {public void run() { destroy(); }}));
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {/** run */ public void run() { destroy(); }}));
 
         logger.info("Setting up properties...");
         setProperties();
@@ -146,6 +176,10 @@ public class Main
         System.out.println("UVM postInit complete");
     }
 
+    /**
+     * configureClassLoader
+     * @throws Exception
+     */
     private void configureClassLoader() throws Exception
     {
         List<URL> urls = new ArrayList<URL>();
@@ -166,6 +200,9 @@ public class Main
         Thread.currentThread().setContextClassLoader(uvmClassLoader);
     }
     
+    /**
+     * Destroy the UVM, stopping all services.
+     */
     private void destroy()
     {
         logger.info("UVM shutdown initiated...");
@@ -175,6 +212,10 @@ public class Main
         System.out.println("UVM shutdown complete.");
     }
 
+    /**
+     * Setup all java properties
+     * @throws Exception
+     */
     private void setProperties() throws Exception
     {
         String prefix = System.getProperty("prefix");
@@ -229,6 +270,10 @@ public class Main
         
     }
 
+    /**
+     * startUvm - start the UVM
+     * @throws Exception
+     */
     private void startUvm() throws Exception
     {
         uvmContext = (UvmContextBase)uvmClassLoader.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
@@ -236,12 +281,21 @@ public class Main
         uvmContext.init();
     }
 
+    /**
+     * restartApps
+     * @throws Exception
+     */
     private void restartApps() throws Exception
     {
         logger.info("Restarting apps...");
         uvmContext.postInit();
     }
 
+    /**
+     * loadExtensions - loads any classes in the extensions directory
+     * It will also donate a thread
+     * @throws Exception
+     */
     private void loadExtensions() throws Exception
     {
         try {
