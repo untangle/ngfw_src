@@ -11,6 +11,9 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.app.MimeType;
 
+/**
+ * Serializer for MimeType
+ */
 @SuppressWarnings({"serial","unchecked","rawtypes"})
 public class MimeTypeSerializer extends AbstractSerializer
 {
@@ -24,19 +27,29 @@ public class MimeTypeSerializer extends AbstractSerializer
      */
     private static Class[] _JSONClasses = new Class[] { String.class };
 
+    /**
+     * @see org.jabsorb.serializer.Serializer#getJSONClasses()
+     * @return Class[]
+     */
     public Class[] getJSONClasses() {
         return _JSONClasses;
     }
 
+    /**
+     * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
+     * @return Class[]
+     */
     public Class[] getSerializableClasses() {
         return _serializableClasses;
     }
     
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jabsorb.serializer.Serializer#marshall(org.jabsorb.serializer.SerializerState,
-     *      java.lang.Object, java.lang.Object)
+    /**
+     * @see org.jabsorb.serializer.Serializer#marshall(org.jabsorb.serializer.SerializerState, java.lang.Object, java.lang.Object)
+     * @param state
+     * @param p
+     * @param o
+     * @return Object
+     * @throws MarshallException
      */
     public Object marshall(SerializerState state, Object p, Object o)
             throws MarshallException
@@ -51,11 +64,13 @@ public class MimeTypeSerializer extends AbstractSerializer
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState,
-     *      java.lang.Class, java.lang.Object)
+    /**
+     * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
+     * @param state
+     * @param clazz
+     * @param json
+     * @return ObjectMatch
+     * @throws UnmarshallException
      */
     public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
         throws UnmarshallException
@@ -64,11 +79,13 @@ public class MimeTypeSerializer extends AbstractSerializer
         return ObjectMatch.OKAY;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jabsorb.serializer.Serializer#unmarshall(org.jabsorb.serializer.SerializerState,
-     *      java.lang.Class, java.lang.Object)
+    /**
+     * @see org.jabsorb.serializer.Serializer#unmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
+     * @param state
+     * @param clazz
+     * @param json
+     * @return Object
+     * @throws UnmarshallException
      */
     public Object unmarshall(SerializerState state, Class clazz, Object json)
             throws UnmarshallException
