@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
+// THIS IS FOR ECLIPSE - @formatter:off
+
 /**
  * This class manages the "matching" of integers
  *
@@ -20,6 +22,9 @@ import org.apache.log4j.Logger;
  * "any" matches any int
  * "none" matches nothing
  */
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
 @SuppressWarnings("serial")
 public class IntMatcher implements java.io.Serializable
 {
@@ -32,21 +37,24 @@ public class IntMatcher implements java.io.Serializable
     private static final String MARKER_RANGE = "-";
 
     private static IntMatcher ANY_MATCHER = new IntMatcher(MARKER_ANY);
-     
+
     private final Logger logger = Logger.getLogger(getClass());
 
-    
     public String matcher;
 
-    private enum IntMatcherType { ANY, NONE, SINGLE, GREATER_THAN, LESS_THAN, RANGE, LIST };
-    
+    private enum IntMatcherType
+    {
+        ANY, NONE, SINGLE, GREATER_THAN, LESS_THAN, RANGE, LIST
+    };
+
     /**
      * The type of this matcher
      */
     private IntMatcherType type = IntMatcherType.NONE;
 
     /**
-     * if this port matcher is a list of port matchers, this list stores the children
+     * if this port matcher is a list of port matchers, this list stores the
+     * children
      */
     private LinkedList<IntMatcher> children = null;
 
@@ -61,31 +69,49 @@ public class IntMatcher implements java.io.Serializable
      */
     private Number singleNum = null;
 
-
+    /**
+     * Constructor
+     * 
+     * @param matcher
+     *        The init string
+     */
     public IntMatcher(String matcher)
     {
         initialize(matcher);
     }
 
+    /**
+     * Get the matcher string
+     * 
+     * @return The string
+     */
     public String getMatcher()
     {
         return this.matcher;
     }
 
-    public void setMatcher( String matcher )
+    /**
+     * Set the matcher string
+     * 
+     * @param matcher
+     *        The string
+     */
+    public void setMatcher(String matcher)
     {
         initialize(matcher);
     }
-    
+
     /**
      * Return true if <param>num</param> matches this matcher.
-     *
-     * @param num The num to test
+     * 
+     * @param num
+     *        The num to test
      * @return True if the <param>num</param> matches.
      */
-    public boolean isMatch( long num )
+    public boolean isMatch(long num)
     {
-        switch (this.type) {
+        switch (this.type)
+        {
 
         case ANY:
             return true;
@@ -94,29 +120,24 @@ public class IntMatcher implements java.io.Serializable
             return false;
 
         case SINGLE:
-            if (singleNum.longValue() == num)
-                return true;
+            if (singleNum.longValue() == num) return true;
             return false;
 
         case GREATER_THAN:
-            if ( num > singleNum.longValue() )
-                return true;
+            if (num > singleNum.longValue()) return true;
             return false;
 
         case LESS_THAN:
-            if ( num < singleNum.longValue() )
-                return true;
+            if (num < singleNum.longValue()) return true;
             return false;
-            
+
         case RANGE:
-            if (num >= rangeMin.longValue() && num <= rangeMax.longValue())
-                return true;
+            if (num >= rangeMin.longValue() && num <= rangeMax.longValue()) return true;
             return false;
 
         case LIST:
             for (IntMatcher child : this.children) {
-                if (child.isMatch(num))
-                    return true;
+                if (child.isMatch(num)) return true;
             }
             return false;
 
@@ -128,13 +149,15 @@ public class IntMatcher implements java.io.Serializable
 
     /**
      * Return true if <param>port</param> matches this matcher.
-     *
-     * @param num The num to test
+     * 
+     * @param num
+     *        The num to test
      * @return True if the <param>port</param> matches.
      */
-    public boolean isMatch( double num )
+    public boolean isMatch(double num)
     {
-        switch (this.type) {
+        switch (this.type)
+        {
 
         case ANY:
             return true;
@@ -143,29 +166,24 @@ public class IntMatcher implements java.io.Serializable
             return false;
 
         case SINGLE:
-            if (singleNum.doubleValue() == num)
-                return true;
+            if (singleNum.doubleValue() == num) return true;
             return false;
 
         case GREATER_THAN:
-            if ( num > singleNum.doubleValue() )
-                return true;
+            if (num > singleNum.doubleValue()) return true;
             return false;
 
         case LESS_THAN:
-            if ( num < singleNum.doubleValue() )
-                return true;
+            if (num < singleNum.doubleValue()) return true;
             return false;
-            
+
         case RANGE:
-            if (num >= rangeMin.doubleValue() && num <= rangeMax.doubleValue())
-                return true;
+            if (num >= rangeMin.doubleValue() && num <= rangeMax.doubleValue()) return true;
             return false;
 
         case LIST:
             for (IntMatcher child : this.children) {
-                if (child.isMatch(num))
-                    return true;
+                if (child.isMatch(num)) return true;
             }
             return false;
 
@@ -174,31 +192,41 @@ public class IntMatcher implements java.io.Serializable
             return false;
         }
     }
-    
+
     /**
-     * return string representation
+     * Return string representation
+     * 
+     * @return The string
      */
     public String toString()
     {
         return matcher;
     }
 
+    /**
+     * Get a matcher that matches any
+     * 
+     * @return The matcher
+     */
     public static synchronized IntMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
-    
+
     /**
      * Initialize all the private variables
+     * 
+     * @param matcher
+     *        The init string
      */
-    private void initialize( String matcher )
+    private void initialize(String matcher)
     {
-        matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
+        matcher = matcher.toLowerCase().trim().replaceAll("\\s", "");
         this.matcher = matcher;
 
         /**
-         * If it contains a comma it must be a list of num matchers
-         * if so, go ahead and initialize the children
+         * If it contains a comma it must be a list of num matchers if so, go
+         * ahead and initialize the children
          */
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IntMatcherType.LIST;
@@ -206,7 +234,7 @@ public class IntMatcher implements java.io.Serializable
             this.children = new LinkedList<IntMatcher>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
-            
+
             /* check each one */
             for (String childString : results) {
                 IntMatcher child = new IntMatcher(childString);
@@ -219,7 +247,7 @@ public class IntMatcher implements java.io.Serializable
         /**
          * Check the common constants
          */
-        if (MARKER_ANY.equals(matcher))  {
+        if (MARKER_ANY.equals(matcher)) {
             this.type = IntMatcherType.ANY;
             return;
         }
@@ -231,25 +259,24 @@ public class IntMatcher implements java.io.Serializable
             this.type = IntMatcherType.NONE;
             return;
         }
-        
+
         /**
-         * Check for > and < 
+         * Check for > and <
          */
         if (matcher.contains(MARKER_GREATER_THAN)) {
             this.type = IntMatcherType.GREATER_THAN;
 
             int charIdx = matcher.indexOf('>');
-            String numStr = matcher.substring( charIdx + 1 );
-            
+            String numStr = matcher.substring(charIdx + 1);
+
             try {
-                this.singleNum = Integer.parseInt( numStr );
+                this.singleNum = Integer.parseInt(numStr);
                 return;
             } catch (NumberFormatException e) {
                 try {
-                    this.singleNum = Double.parseDouble( numStr );
+                    this.singleNum = Double.parseDouble(numStr);
                     return;
-                }
-                catch (NumberFormatException e2) {
+                } catch (NumberFormatException e2) {
                     logger.warn("Unknown format: \"" + numStr + "\"", e);
                     throw new java.lang.IllegalArgumentException("Unknown format: \"" + matcher + "\"", e);
                 }
@@ -260,29 +287,27 @@ public class IntMatcher implements java.io.Serializable
             this.type = IntMatcherType.LESS_THAN;
 
             int charIdx = matcher.indexOf('<');
-            String numStr = matcher.substring( charIdx + 1 );
+            String numStr = matcher.substring(charIdx + 1);
             try {
-                this.singleNum = Integer.parseInt( numStr );
+                this.singleNum = Integer.parseInt(numStr);
                 return;
             } catch (NumberFormatException e) {
                 try {
-                    this.singleNum = Double.parseDouble( numStr );
+                    this.singleNum = Double.parseDouble(numStr);
                     return;
-                }
-                catch (NumberFormatException e2) {
+                } catch (NumberFormatException e2) {
                     logger.warn("Unknown format: \"" + numStr + "\"", e);
                     throw new java.lang.IllegalArgumentException("Unknown format: \"" + numStr + "\"", e);
                 }
             }
         }
-        
 
         /**
          * If it contains a dash it must be a range
          */
         if (matcher.contains(MARKER_RANGE)) {
             this.type = IntMatcherType.RANGE;
-            
+
             String[] results = matcher.split(MARKER_RANGE);
 
             if (results.length != 2) {
@@ -291,34 +316,31 @@ public class IntMatcher implements java.io.Serializable
             }
 
             try {
-                this.rangeMin = Integer.parseInt( results[0] );
+                this.rangeMin = Integer.parseInt(results[0]);
             } catch (NumberFormatException e) {
                 try {
-                    this.rangeMin = Double.parseDouble( results[0] );
+                    this.rangeMin = Double.parseDouble(results[0]);
                     return;
-                }
-                catch (NumberFormatException e2) {
+                } catch (NumberFormatException e2) {
                     logger.warn("Unknown format: \"" + results[0] + "\"", e);
                     throw new java.lang.IllegalArgumentException("Unknown format: \"" + results[0] + "\"", e);
                 }
             }
             try {
-                this.rangeMax = Integer.parseInt( results[1] );
+                this.rangeMax = Integer.parseInt(results[1]);
             } catch (NumberFormatException e) {
                 try {
-                    this.rangeMax = Double.parseDouble( results[1] );
+                    this.rangeMax = Double.parseDouble(results[1]);
                     return;
-                }
-                catch (NumberFormatException e2) {
+                } catch (NumberFormatException e2) {
                     logger.warn("Unknown format: \"" + results[1] + "\"", e);
                     throw new java.lang.IllegalArgumentException("Unknown format: \"" + results[1] + "\"", e);
                 }
             }
 
-            
             return;
         }
-            
+
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */
@@ -328,14 +350,12 @@ public class IntMatcher implements java.io.Serializable
             return;
         } catch (NumberFormatException e) {
             try {
-                this.singleNum = Double.parseDouble( matcher );
+                this.singleNum = Double.parseDouble(matcher);
                 return;
-            }
-            catch (NumberFormatException e2) {
+            } catch (NumberFormatException e2) {
                 logger.warn("Unknown format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown format: \"" + matcher + "\"", e);
             }
         }
     }
-    
 }
