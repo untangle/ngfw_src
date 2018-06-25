@@ -5,7 +5,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-
 import org.json.JSONString;
 
 /**
@@ -32,7 +31,7 @@ public class ExecManagerResult implements Serializable, JSONString
 
     public String toJSONString()
     {
-        JSONObject jO = new JSONObject(this);
+        org.json.JSONObject jO = new org.json.JSONObject(this);
         return jO.toString();
     }
 }
