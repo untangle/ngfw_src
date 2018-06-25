@@ -66,6 +66,7 @@ public class ProtocolMatcher
     
     /**
      * Create a protocol matcher from the given string
+     * @param matcher The string for initialization
      */
     public ProtocolMatcher( String matcher )
     {
@@ -116,12 +117,20 @@ public class ProtocolMatcher
             return false;
         }
     }
-    
+
+    /**
+     * Return string representation
+     * @return The string representation
+     */
     public String toString()
     {
         return this.matcher;
     }
 
+    /**
+     * Initialize using the argumented string matcher
+     * @param matcher The init matcher
+     */
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");

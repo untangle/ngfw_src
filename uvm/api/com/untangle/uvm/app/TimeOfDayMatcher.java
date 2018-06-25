@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.util.LinkedList;
@@ -65,6 +66,7 @@ public class TimeOfDayMatcher
     
     /**
      * Construct a day of week matcher from the given string
+     * @param matcher The init string
      */
     public TimeOfDayMatcher( String matcher )
     {
@@ -72,13 +74,20 @@ public class TimeOfDayMatcher
     }
 
     /**
-     * returns isMatch(now())
+     * Check if matches current time
+     * 
+     * @return isMatch(now())
      */
     public boolean isMatch()
     {
         return isMatch(new Date());
     }
     
+    /**
+     * Check if matches argumented date
+     * @param when The date
+     * @return True for match, otherwise false
+     */
     public boolean isMatch( Date when )
     {
         Calendar now = Calendar.getInstance();
@@ -164,16 +173,28 @@ public class TimeOfDayMatcher
         }
     }
 
+    /**
+     * Get the string representation
+     * @return The string representation
+     */
     public String toString()
     {
         return this.matcher;
     }
 
+    /**
+     * Get the any matcher
+     * @return The any matcher
+     */
     public static TimeOfDayMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
     
+    /**
+     * Initialize
+     * @param matcher The init string
+     */
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
@@ -247,6 +268,5 @@ public class TimeOfDayMatcher
             this.type = TimeOfDayMatcherType.ANY;
             return;
         }
-        
     }
 }
