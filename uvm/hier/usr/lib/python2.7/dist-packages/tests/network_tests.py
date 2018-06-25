@@ -840,7 +840,6 @@ class NetworkTests(unittest2.TestCase):
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
         global dyn_hostname
-
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         wan_count = 0
@@ -854,52 +853,51 @@ class NetworkTests(unittest2.TestCase):
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
-        outsideIP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
-        outsideIP = outsideIP.rstrip()  # strip return character
-        dyn_hostname = get_usable_name(outsideIP)
+        outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
+        outside_IP = outside_IP.rstrip()  # strip return character
+
+        dyn_hostname = get_usable_name(outside_IP)
         if dyn_hostname == "":
             raise unittest2.SkipTest('Skipping since all dyndns names already used')
         else:
             print("Using name: %s" % dyn_hostname)
-        dynDNSUserName, dynDNSPassword = global_functions.get_live_account_info(dyn_hostname)
+        dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
-        if dynDNSUserName == "message":
+        if dyn_DNS_user_name == "message":
             raise unittest2.SkipTest('no dyn user')
 
         # Clear the ddclient cache and set DynDNS info
-        ddclientCacheFile = "/var/cache/ddclient/ddclient.cache"
-        if os.path.isfile(ddclientCacheFile):
-            os.remove(ddclientCacheFile)        
-        set_dyn_dns(dynDNSUserName, dynDNSPassword, dyn_hostname)
+        ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
+        if os.path.isfile(ddclient_cache_file):
+            os.remove(ddclient_cache_file)        
+        set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
         
-        # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
 
-        loopCounter = 60
-        dyn_ip_found = False
-        # run force to get it to run now
-        try: 
-            subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
-        except subprocess.CalledProcessError:
-            print "Unexpected error:", sys.exc_info()
-        except OSError:
-            pass # executable environment not ready
-        while loopCounter > 0 and not dyn_ip_found:
+        loop_counter = 80
+        dyn_IP_found = False
+        while loop_counter > 0 and not dyn_IP_found:
+            # run force to get it to run now
+            try: 
+                subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+            except subprocess.CalledProcessError:
+                print "Unexpected error:", sys.exc_info()
+            except OSError:
+                pass # executable environment not ready
             # time.sleep(10)
-            loopCounter -= 1
-            # result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
-            ip_results = subprocess.check_output("ddclient -query", shell=True)
-            matches = re.findall(r'use\=web. web\=[a-zA-z\.\/]{1,20} address is (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})', ip_results)
-            for dynIP in matches:
-                print("Checking IP <%s> vs outsideIP <%s>" % (dynIP,outsideIP))
-                if outsideIP == dynIP:
-                    dyn_ip_found = True
-                    break
-            if not dyn_ip_found:
+            loop_counter -= 1
+            result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
+            match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+            dynIP = (match.group()).replace('address ','')
+            print("IP address of outside_IP <%s> dynIP <%s> " % (outside_IP,dynIP))
+            dyn_IP_found = False
+            if outside_IP == dynIP:
+                dyn_IP_found = True
+            else:
                 time.sleep(10)
-                
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert(dyn_ip_found)
 
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert(dyn_IP_found)
+        
     # Test VRRP is active
     def test_110_vrrp(self):
         "Test that a VRRP alias is pingable"
