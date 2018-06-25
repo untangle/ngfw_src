@@ -18,6 +18,7 @@ public class Version
     /**
      * Get the public version number.
      * "A" (10)
+     * @return The major version
      */
     public static String getMajorVersion()
     {
@@ -29,6 +30,7 @@ public class Version
     /**
      * Get the public version number.
      * "A.B" (10.0)
+     * @return The version
      */
     public static String getVersion()
     {
@@ -40,6 +42,7 @@ public class Version
     /**
      * Get the public version number.
      * "A.B.C" (10.0.1)
+     * @return The full version
      */
     public static String getFullVersion()
     {
@@ -48,6 +51,11 @@ public class Version
         return getResource("VERSION");
     }
 
+    /**
+     * Get a resource
+     * @param type The type of resource to get
+     * @return The resource
+     */
     private static String getResource(String type)
     {
         String line = null;
