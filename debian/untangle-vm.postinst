@@ -1,4 +1,4 @@
-#! /bin/bash
+
 
 oldVersion=""
 if [ "$1" = "configure" ] ; then
@@ -52,6 +52,23 @@ fi
 for d in reports tests uvm uvm_login.py intrusion_prevention ; do
   pycompile /usr/lib/python2.7/dist-packages/$d
 done
+
+
+# untangle-vm does not yet have a service file
+# it still uses an init'd script
+# for now we need to raise the global tasks max
+sed -e 's/.*DefaultTasksMax=.*/DefaultTasksMax=infinity/' -i /etc/systemd/system.conf
+sed -e 's/.*DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1000000/' -i /etc/systemd/system.conf
+
+
+# Disable old postgres if they exists
+# systemd service file checks for the existance of the conf file, so just move it
+if [ -f /etc/postgresql/8.4/main/postgresql.conf ] ; then
+    mv /etc/postgresql/8.4/main/postgresql.conf /etc/postgresql/8.4/main/postgresql.conf.old
+fi
+if [ -f /etc/postgresql/9.1/main/postgresql.conf ] ; then
+    mv /etc/postgresql/9.1/main/postgresql.conf /etc/postgresql/9.1/main/postgresql.conf.old
+fi
 
 #
 # 14.0 upgrade
