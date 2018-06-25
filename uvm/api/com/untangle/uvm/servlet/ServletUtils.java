@@ -25,32 +25,59 @@ import com.untangle.uvm.app.UserMatcher;
 import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 
+/**
+ * ServletUtils provides utility methods for servlets
+ */
 @SuppressWarnings("unchecked")
+/** ServletUtils */
 public class ServletUtils 
 {
     public static final ServletUtils INSTANCE = new ServletUtils();
     
+    /**
+     * private constructor use getInstance()
+     */
     private ServletUtils()
     {
         
     }
     
-    public void registerSerializers(JSONRPCBridge bridge ) throws Exception
+    /**
+     * registerSerializers - register standard serializers
+     * @param bridge
+     * @throws Exception
+     */
+    public void registerSerializers(JSONRPCBridge bridge) throws Exception
     {
         registerSerializers(JSON_RPC_BRIDGE_REGISTRATOR, bridge);
     }
     
+    /**
+     * registerSerializers - register default serializers
+     * @param serializer
+     * @throws Exception
+     */
     public void registerSerializers(JSONSerializer serializer) throws Exception
     {
         serializer.registerDefaultSerializers();
         registerSerializers(JSON_SERIALIZER_REGISTRATOR, serializer);
     }
     
+    /**
+     * getInstance
+     * @return ServletUtils
+     */
     public static ServletUtils getInstance()
     {
         return INSTANCE;
     }
     
+    /**
+     * registerSerializers registers common serializers
+     * @param registrator
+     * @param root
+     * @throws Exception
+     */
     private <T> void registerSerializers(Registrator<T> registrator, T root) throws Exception
     {
         // general serializers
