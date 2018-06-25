@@ -60,8 +60,12 @@ sed -e 's/.*DefaultTasksMax=.*/DefaultTasksMax=infinity/' -i /etc/systemd/system
 sed -e 's/.*DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1000000/' -i /etc/systemd/system.conf
 
 # Delete old postgres configs
-rm -rf /etc/postgresql/8.4/
-rm -rf /etc/postgresql/9.1/
+rm -rf /etc/postgresql/8.4
+rm -rf /var/lib/postgresql/8.4
+rm -rf /etc/postgresql/9.1
+rm -rf /var/lib/postgresql/9.1
+rm -rf /etc/postgresql/9.4
+rm -rf /var/lib/postgresql/9.4
 
 # Remove extra lines created by the stretch installer
 sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
