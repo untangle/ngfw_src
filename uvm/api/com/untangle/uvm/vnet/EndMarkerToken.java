@@ -10,5 +10,9 @@ public class EndMarkerToken extends MetadataToken
 {
     public static final EndMarkerToken MARKER = new EndMarkerToken();
 
+    /**
+     * EndMarkerToken - private constructor
+     * Use MARKER singleton
+     */
     private EndMarkerToken() { }
 }
