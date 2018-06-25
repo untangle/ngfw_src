@@ -16,10 +16,10 @@ import org.apache.log4j.Logger;
 
 /**
  * Sends a friendly error page when a problem occurs.
- *
  * The error message is supplied by either setting the system property
- * {@link #UVM_WEB_MESSAGE_ATTR} or by using the {@link
- * HttpServletResponse.sendError(int, String))} method.
+ * {
+ * @link #UVM_WEB_MESSAGE_ATTR} or by using the {
+ * @link HttpServletResponse.sendError(int, String))} method.
  */
 public class UvmErrorReportValve extends ErrorReportValve
 {
@@ -27,6 +27,12 @@ public class UvmErrorReportValve extends ErrorReportValve
 
     private static final Logger logger = Logger.getLogger(UvmErrorReportValve.class);
 
+    /**
+     * report
+     * @param request
+     * @param response
+     * @param throwable
+     */
     protected void report(Request request, Response response, Throwable throwable)
     {
         try {
@@ -36,6 +42,13 @@ public class UvmErrorReportValve extends ErrorReportValve
         }
     }
 
+    /**
+     * doReport
+     * @param request
+     * @param response
+     * @param throwable
+     * @throws IOException
+     */
     protected void doReport(Request request, Response response, Throwable throwable)
         throws IOException
     {
@@ -74,6 +87,13 @@ public class UvmErrorReportValve extends ErrorReportValve
         }
     }
 
+    /**
+     * writeReport
+     * @param w
+     * @param i18nMap
+     * @param errorMessage
+     * @throws IOException
+     */
     private void writeReport(PrintWriter w, Map<String, String> i18nMap, String errorMessage)
         throws IOException
     {
@@ -108,27 +128,57 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("</html>\n");
     }
 
+    /**
+     * Get the translation map
+     * @return map
+     */
     private Map<String, String> getTranslations()
     {
         return Main.getMain().getTranslations("untangle");
     }
 
+    /**
+     * translate a string
+     * @param value - the string
+     * @param i18nMap - the translation map
+     * @return String - the translated String
+     */
     private String tr(String value, Map<String, String> i18nMap)
     {
         String tr = i18nMap.get(value);
         return null == tr ? value : tr;
     }
 
+    /**
+     * translate a string
+     * @param value - the string
+     * @param objects 
+     * @param  i18nMap - the translation map
+     * @return String - the translated String
+     */
     private String tr(String value, Object[] objects, Map<String, String> i18nMap)
     {
         return MessageFormat.format( tr(value,i18nMap), objects);
     }
 
+    /**
+     * translate a string
+     * @param value - the string
+     * @param o1
+     * @param  i18nMap - the translation map
+     * @return String - the translated String
+     */
     private String tr(String value, Object o1, Map<String, String> i18nMap)
     {
         return tr(value, new Object[]{ o1 }, i18nMap);
     }
 
+    /**
+     * getError - get the translate error code message
+     * @param  i18nMap - the translation map
+     * @param errorCode - http error code
+     * @return String - the translated String
+     */
     private String getError(Map<String, String> i18nMap, int errorCode)
     {
         switch (errorCode) {
