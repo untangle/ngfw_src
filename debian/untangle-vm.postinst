@@ -53,50 +53,28 @@ for d in reports tests uvm uvm_login.py intrusion_prevention ; do
   pycompile /usr/lib/python2.7/dist-packages/$d
 done
 
-
 # untangle-vm does not yet have a service file
 # it still uses an init'd script
 # for now we need to raise the global tasks max
 sed -e 's/.*DefaultTasksMax=.*/DefaultTasksMax=infinity/' -i /etc/systemd/system.conf
 sed -e 's/.*DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1000000/' -i /etc/systemd/system.conf
 
+# Delete old postgres configs
+rm -rf /etc/postgresql/8.4/
+rm -rf /etc/postgresql/9.1/
 
-# Disable old postgres if they exists
-# systemd service file checks for the existance of the conf file, so just move it
-if [ -f /etc/postgresql/8.4/main/postgresql.conf ] ; then
-    mv /etc/postgresql/8.4/main/postgresql.conf /etc/postgresql/8.4/main/postgresql.conf.old
-fi
-if [ -f /etc/postgresql/9.1/main/postgresql.conf ] ; then
-    mv /etc/postgresql/9.1/main/postgresql.conf /etc/postgresql/9.1/main/postgresql.conf.old
-fi
+# Remove extra lines created by the stretch installer
+sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
 
 #
-# 14.0 upgrade
+# 14.1 upgrade
 #
 
-# Point to stable-140
-sed -e 's/stable-132\s/stable-140 /g' -i /etc/apt/sources.list.d/untangle.list
+# Point to stable-141
+sed -e 's/stable-140\s/stable-141 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/jessie/stretch/g' -i /etc/apt/sources.list.d/untangle.list
 
 # We no longer use upstream
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
-
-# Remove extra lines created by the stretch installer
-# FIXME: do we want to "echo > /etc/apt/sources.list" instead ?
-sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
-
-# If upgrading from 13.2 - do the conversion
-if echo $oldVersion | grep -q "13\.2" ; then
-    # kill the automatic uvm-restart
-    # We don't want the untangle-vm to launch until after the reboot
-    killall -INT uvm-restart
-    killall uvm-restart
-    killall -9 uvm-restart
-
-    # start the post-upgrade task (will wait on apt to finish)
-    nohup /usr/share/untangle/bin/ut-stretch-post-upgrade.sh >> /var/log/uvm/stretch.log 2>&1 &
-fi
-
-
 
 exit 0
