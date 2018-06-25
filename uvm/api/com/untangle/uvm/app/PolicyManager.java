@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.net.InetAddress;
@@ -8,6 +9,9 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+/**
+ * Policy Manager
+ */
 public interface PolicyManager
 {
     /**
@@ -41,9 +45,17 @@ public interface PolicyManager
      * Return a list of all available policy IDs
      */
     int[] getPolicyIds();
-    
+
+    /**
+     * Class to represent a policy manager result
+     */
     public class PolicyManagerResult
     {
+        /**
+         * Constructor
+         * @param policyId The policy ID
+         * @param policyRuleId The policy rule ID
+         */
         public PolicyManagerResult( Integer policyId, Integer policyRuleId )
         {
             this.policyId = policyId;
