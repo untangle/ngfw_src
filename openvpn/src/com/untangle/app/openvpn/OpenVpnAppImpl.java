@@ -200,7 +200,7 @@ public class OpenVpnAppImpl extends AppBase
         UvmContextFactory.context().execManager().exec("rm -rf " + "/etc/openvpn/untangle-vpn");
         UvmContextFactory.context().execManager().exec("rm -rf " + "/etc/openvpn/data/*");
         UvmContextFactory.context().execManager().exec("rm -rf " + "/etc/openvpn/ccd/*");
-        UvmContextFactory.context().execManager().exec("rm -f " + "/etc/openvpn/server.conf");
+        UvmContextFactory.context().execManager().exec("rm -f " + "/etc/openvpn/*.conf");
         UvmContextFactory.context().execManager().exec("rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-clients/*");
         UvmContextFactory.context().execManager().exec("rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/*.key");
         UvmContextFactory.context().execManager().exec("rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/*.pem");
