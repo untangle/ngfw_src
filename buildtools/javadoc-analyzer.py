@@ -328,7 +328,7 @@ def print_summary_report( file_count, required_count, missing_count, invalid_cou
         print("Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) ))
     print("")
 
-def print_report(total_only=False):
+def print_report(total_only=False, detail_only=False):
     total_file_count = 0
     total_required_count = 0
     total_missing_count = 0
@@ -345,7 +345,7 @@ def print_report(total_only=False):
     for file_path in sorted(Validators):
         directory = file_path[:file_path.find('/')]
         if current_directory is None or current_directory != directory:
-            if total_only is False and current_directory is not None:
+            if total_only is False and current_directory is not None and detail_only is False:
                 print_summary_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
             current_file_count = 0
             current_required_count = 0
@@ -353,7 +353,7 @@ def print_report(total_only=False):
             current_valid_count = 0
             current_invalid_count = 0
             current_directory = directory
-            if total_only is False:
+            if total_only is False and detail_only is False:
                 print("\n" + current_directory + "\n" + '=' * len(current_directory) + "\n")
         total_file_count += 1
         current_file_count += 1
@@ -380,13 +380,14 @@ def print_report(total_only=False):
                 total_invalid_count +=1
                 current_invalid_count += 1
 
-    if total_only is False:
+    if total_only is False and detail_only is False:
         print_summary_report( current_file_count, current_required_count, current_missing_count, current_invalid_count, current_valid_count)
 
-    print("Total Repository")
-    print_summary_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
-    print("")
-    print("Elapsed %4.2f s" % (time() - Start_time))
+    if detail_only is False:
+        print("Total Repository")
+        print_summary_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
+        print("")
+        print("Elapsed %4.2f s" % (time() - Start_time))
 
     return total_valid_count == total_required_count
 
@@ -403,9 +404,10 @@ def main(argv):
     path = "."
     ignore_paths = []
     filename = None
+    show_detail_only = False
 
     try:
-        opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "path=", "ignore_path=", "filename=", "debug", "type_name=", "show_valid"] )
+        opts, args = getopt.getopt(argv, "hs:d", ["help", "screen=", "resolution=", "path=", "ignore_path=", "filename=", "debug", "type_name=", "show_valid", "detail_only"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -426,6 +428,8 @@ def main(argv):
             Type_name = arg
         if opt in ( "--show_valid"):
             Show_valid = True
+        if opt in ( "--detail_only"):
+            show_detail_only = True
 
     if Debug is True:
         print("path=" + path)
@@ -435,7 +439,8 @@ def main(argv):
 
     file_reports = {}
 
-    print("Finding and validating...")
+    if show_detail_only is False:
+        print("Finding and validating...")
     file_paths = get_files(path)
     for file_path in file_paths:
         ignore = False
@@ -466,11 +471,12 @@ def main(argv):
         for md in parser.get_methods(classes):
             Validators[file_path].append( md )
 
-    print("Report")
+    if show_detail_only is False:
+        print("Report")
     # Show total only as a header
-    print_report(True)
+    print_report(True, show_detail_only)
     # Show full report with total as footer
-    if print_report(False) is True:
+    if print_report(False, show_detail_only) is True:
         sys.exit(0)
     else:
         sys.exit(1)
