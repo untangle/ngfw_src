@@ -2,21 +2,17 @@
 
 DNS_TRIES=4
 DNS_TIMEOUT=2
-DNS_TEST_FAIL=255
-DNS_TEST_PASS=0
-
-TEST_HOSTNAME_BASE="updates"
-TEST_DOMAIN="untangle.com"
+TEST_HOST="updates.untangle.com"
 
 if [ $# -lt 1 ] ; then
     echo "Usage: $0 <dns-server-ip>"
-    exit ${DNS_TEST_FAIL}
+    exit 1
 fi
 
 DNS_SERVER=$1
 
 if [ -z "${DNS_SERVER}" ]; then
-    exit ${DNS_TEST_FAIL}
+    exit 1
 fi
 
 lookup() {
@@ -26,15 +22,9 @@ lookup() {
     dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address} 
 }
 
-lookup ${TEST_HOSTNAME_BASE}.${TEST_DOMAIN} ${DNS_SERVER}
+lookup ${TEST_HOST} ${DNS_SERVER}
 if [ $? != "0" ]; then
-    exit ${DNS_TEST_FAIL}
+    exit 1
 fi
 
-lookup ${TEST_HOSTNAME_BASE}-${RANDOM}-${RANDOM}.${TEST_DOMAIN} ${DNS_SERVER}
-if [ $? != "0" ]; then
-    echo "Unable to lookup"
-    exit ${DNS_TEST_FAIL}
-fi
-
-exit ${DNS_TEST_PASS}
+exit 0
