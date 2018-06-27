@@ -27,14 +27,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     private static final String DNS_TEST_SCRIPT = UVM_BASE + "/bin/ut-dns-test";
 
     /* Name of the host to lookup */
-    private static final String TEST_HOSTNAME_BASE = "updates";
-    private static final String TEST_HOSTNAME_DOMAIN = "untangle.com";
-
-    /* Backup IP address to use if DNS fails */
-    private static final String BACKUP_ADDRESS_STRING = "74.123.28.44";
-
-    /* Address to use if the DNS lookup fails */
-    private static final InetAddress BACKUP_ADDRESS;
+    private static final String TEST_HOSTNAME = "updates.untangle.com";
 
     /* Port the TCP test will try to connect to */
     private static final int TCP_TEST_PORT = 80;
@@ -48,6 +41,18 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     /* Address of updates */
     private InetAddress address;
 
+    /**
+     * Private constructor
+     */
+    private ConnectivityTesterImpl()
+    {
+        try {
+            this.address = InetAddress.getByName(TEST_HOSTNAME);
+        } catch (UnknownHostException e) {
+            this.address = null;
+        }
+    }
+    
     /**
      * Retrieve the connectivity tester
      * 
@@ -116,13 +121,23 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     private boolean isTcpWorking()
     {
         InetAddress testAddress;
-        if (this.address == null) {
-            testAddress = BACKUP_ADDRESS;
-        } else {
+        int testPort;
+        
+        if (this.address != null) {
             testAddress = this.address;
+            testPort = TCP_TEST_PORT;
+        } else {
+            logger.warn("TCP test has no DNS, using 8.8.8.8");
+            try {
+                testAddress = InetAddress.getByName("8.8.8.8");
+            } catch (UnknownHostException e) {
+                logger.warn("Unable to resolve 8.8.8.8",e);
+                return false;
+            }
+            testPort = 53;
         }
-
-        TcpTest tcpTest = new TcpTest(testAddress);
+        
+        TcpTest tcpTest = new TcpTest(testAddress,testPort);
 
         Thread test = new Thread(tcpTest);
 
@@ -171,19 +186,6 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         return INSTANCE;
     }
 
-    static {
-        InetAddress address = null;
-
-        try {
-            address = InetAddress.getByName(BACKUP_ADDRESS_STRING);
-        } catch (UnknownHostException e) {
-            System.err.println("!!!! This should never happen" + e);
-            address = null;
-        }
-
-        BACKUP_ADDRESS = address;
-    }
-
     /**
      * This isn't a test, it is just a method used to lookup the address of
      * updates.untangle.com with a timeout. The real test is now executed by the
@@ -210,14 +212,13 @@ public class ConnectivityTesterImpl implements ConnectivityTester
              * anything
              */
             try {
-                String host = TEST_HOSTNAME_BASE + "." + TEST_HOSTNAME_DOMAIN;
                 logger.debug("Starting lookup");
-                this.address = InetAddress.getByName(host);
+                this.address = InetAddress.getByName(TEST_HOSTNAME);
                 logger.debug("Found address: " + address);
                 logger.debug("Completed lookup");
             } catch (UnknownHostException e) {
                 this.address = null;
-                logger.warn("Unable to look up host: " + TEST_HOSTNAME_BASE + "." + TEST_HOSTNAME_DOMAIN);
+                logger.warn("Unable to look up host: " + TEST_HOSTNAME);
             }
         }
     }
@@ -229,6 +230,8 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     class TcpTest implements Runnable
     {
         private final InetAddress address;
+        private final int port;
+        
         boolean isWorking = false;
 
         /**
@@ -236,10 +239,13 @@ public class ConnectivityTesterImpl implements ConnectivityTester
          * 
          * @param address
          *        The target address for testing
+         * @param port
+         *        The port to test
          */
-        public TcpTest(InetAddress address)
+        public TcpTest(InetAddress address, int port)
         {
             this.address = address;
+            this.port = port;
         }
 
         /**
@@ -249,7 +255,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         {
             try {
                 logger.debug("Trying to connect to " + this.address);
-                Socket socket = new Socket(this.address, TCP_TEST_PORT);
+                Socket socket = new Socket(this.address, this.port);
                 socket.close();
                 this.isWorking = true;
                 logger.debug("Completed TCP Connection test");
