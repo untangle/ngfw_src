@@ -23,8 +23,8 @@ public class ConnectivityTesterImpl implements ConnectivityTester
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String UVM_BASE = System.getProperty("uvm.home");
-    private static final String DNS_TEST_SCRIPT = UVM_BASE + "/bin/ut-dns-test";
+    /* Name of the DNS test script */
+    private static final String DNS_TEST_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-dns-test";
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME = "updates.untangle.com";
@@ -32,26 +32,15 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     /* Port the TCP test will try to connect to */
     private static final int TCP_TEST_PORT = 80;
 
-    /* The amount of time before giving up on the DNS attempt in milliseconds */
-    private static final int DNS_TEST_TIMEOUT_MS = 5000;
+    /* The amount of time before giving up on the tests in milliseconds */
     private static final int TCP_TEST_TIMEOUT_MS = 10000;
 
     private static ConnectivityTesterImpl INSTANCE = new ConnectivityTesterImpl();
 
-    /* Address of updates */
-    private InetAddress address;
-
     /**
      * Private constructor
      */
-    private ConnectivityTesterImpl()
-    {
-        try {
-            this.address = InetAddress.getByName(TEST_HOSTNAME);
-        } catch (UnknownHostException e) {
-            this.address = null;
-        }
-    }
+    private ConnectivityTesterImpl() {}
     
     /**
      * Retrieve the connectivity tester
@@ -60,18 +49,21 @@ public class ConnectivityTesterImpl implements ConnectivityTester
      */
     public JSONObject getStatus()
     {
-        InterfaceSettings wan = UvmContextFactory.context().networkManager().findInterfaceFirstWan();
+        boolean isDnsWorking = true;
+        for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
+            if (!intfSettings.getIsWan())
+                continue;
 
-        if (wan == null) {
-            logger.warn("Failed to find WAN interface");
-            return makeJsonObject(false, false);
+            InetAddress dnsPrimary = UvmContextFactory.context().networkManager().getInterfaceStatus(intfSettings.getInterfaceId()).getV4Dns1();
+            InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus(intfSettings.getInterfaceId()).getV4Dns2();
+
+            if (!isDnsWorking(dnsPrimary, dnsSecondary)) {
+                isDnsWorking = false;
+            }
         }
 
-        InetAddress dnsPrimary = UvmContextFactory.context().networkManager().getInterfaceStatus(wan.getInterfaceId()).getV4Dns1();
-        InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus(wan.getInterfaceId()).getV4Dns2();
-
         /* Returns the lookuped address if DNS is working, or null if it is not */
-        return makeJsonObject(isDnsWorking(dnsPrimary, dnsSecondary), isTcpWorking());
+        return makeJsonObject(isDnsWorking, isTcpWorking());
     }
 
     /**
@@ -85,30 +77,15 @@ public class ConnectivityTesterImpl implements ConnectivityTester
      */
     public boolean isDnsWorking(InetAddress dnsPrimaryServer, InetAddress dnsSecondaryServer)
     {
-        boolean isWorking = false;
+        boolean isWorking = true;
         String primaryServer = null;
         String secondaryServer = null;
 
         if (dnsPrimaryServer != null) primaryServer = dnsPrimaryServer.getHostAddress();
         if (dnsSecondaryServer != null) secondaryServer = dnsSecondaryServer.getHostAddress();
 
-        if (primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer) == 0) isWorking = true;
-        if (secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer) == 0) isWorking = true;
-
-        /* Now run the dns test just to get the address of updates */
-        DnsLookup dnsLookup = new DnsLookup();
-        Thread test = new Thread(dnsLookup);
-
-        test.start();
-
-        try {
-            test.join(DNS_TEST_TIMEOUT_MS);
-            if (test.isAlive()) test.interrupt();
-        } catch (InterruptedException e) {
-            logger.error("Interrupted while testing DNS connectivity.", e);
-        }
-
-        this.address = dnsLookup.address;
+        if (primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer) != 0) isWorking = false;
+        if (secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer) != 0) isWorking = false;
 
         return isWorking;
     }
@@ -121,12 +98,15 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     private boolean isTcpWorking()
     {
         InetAddress testAddress;
-        int testPort;
+        int testPort = TCP_TEST_PORT;
         
-        if (this.address != null) {
-            testAddress = this.address;
-            testPort = TCP_TEST_PORT;
-        } else {
+        try {
+            testAddress = InetAddress.getByName(TEST_HOSTNAME);
+        } catch (UnknownHostException e) {
+            testAddress = null;
+        }
+
+        if (testAddress == null) {
             logger.warn("TCP test has no DNS, using 8.8.8.8");
             try {
                 testAddress = InetAddress.getByName("8.8.8.8");
@@ -138,7 +118,6 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         }
         
         TcpTest tcpTest = new TcpTest(testAddress,testPort);
-
         Thread test = new Thread(tcpTest);
 
         test.start();
@@ -184,43 +163,6 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     static ConnectivityTesterImpl getInstance()
     {
         return INSTANCE;
-    }
-
-    /**
-     * This isn't a test, it is just a method used to lookup the address of
-     * updates.untangle.com with a timeout. The real test is now executed by the
-     * script. For the original test, look at subversion R2828
-     */
-    class DnsLookup implements Runnable
-    {
-        InetAddress address = null;
-
-        /**
-         * Constructor
-         */
-        public DnsLookup()
-        {
-        }
-
-        /**
-         * Main runnable function
-         */
-        public void run()
-        {
-            /*
-             * This always works after the first time, so it doesn't actually do
-             * anything
-             */
-            try {
-                logger.debug("Starting lookup");
-                this.address = InetAddress.getByName(TEST_HOSTNAME);
-                logger.debug("Found address: " + address);
-                logger.debug("Completed lookup");
-            } catch (UnknownHostException e) {
-                this.address = null;
-                logger.warn("Unable to look up host: " + TEST_HOSTNAME);
-            }
-        }
     }
 
     /**
