@@ -26,6 +26,7 @@ public interface HookManager
     public static String USER_TABLE_QUOTA_GIVEN = "user-table-quota-given";
     public static String USER_TABLE_QUOTA_EXCEEDED = "user-table-quota-exceeded";
     public static String USER_TABLE_QUOTA_REMOVED = "user-table-quota-removed";
+    public static String CAPTURE_USERNAME_CHECK = "capture-username-check";
     
     public boolean isRegistered( String hookName, HookCallback callback );
 
