@@ -13,4 +13,4 @@ VOLUME ${SRC}
 
 WORKDIR ${SRC}
 
-ENTRYPOINT rake
+ENTRYPOINT [ "rake" ]
