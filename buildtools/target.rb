@@ -611,8 +611,7 @@ class JavaCompilerTarget < Target
       end
     end
 
-#    raise "missing documentation " unless missing_javadoc == 0
-
+    raise "missing documentation " unless missing_javadoc == 0
   end
 
   def jars
