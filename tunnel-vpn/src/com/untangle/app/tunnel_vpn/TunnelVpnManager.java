@@ -134,6 +134,7 @@ public class TunnelVpnManager
         
         String cmd = "/usr/sbin/openvpn ";
         cmd += "--config " + directory + "/tunnel.conf ";
+        cmd += "--nobind "; // tell the openvpn process to use any port locally
         cmd += "--writepid /run/tunnelvpn/" + tunnelName + ".pid ";
         cmd += "--dev tun" + tunnelId + " ";
         cmd += "--cd " + directory + " ";
