@@ -18,6 +18,7 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HookBucket;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
@@ -663,6 +664,23 @@ public class HostTableImpl implements HostTable
                          */
                         updateHostnameDhcp( entry );
                         updateHostnameReports( entry );
+
+                        /**
+                         * If the entry has a captive portal username, create a
+                         * bucket with the name and pass it to all of the
+                         * captive portal hooks. If any have the username active
+                         * the number in the bucket will be incremented. If the
+                         * number is zero, we wipe the name.
+                         */
+                        if (entry.getUsernameCaptivePortal() != null) {
+                            HookBucket bucket = new HookBucket(entry.getUsernameCaptivePortal(), 0);
+                            UvmContextFactory.context().hookManager().callCallbacksSynchronous(HookManager.CAPTURE_USERNAME_CHECK, bucket);
+                            if (bucket.getNumber() == 0) {
+                                logger.info("Removing inactive captive portal username: " + entry.getUsernameCaptivePortal());
+                                entry.setUsernameCaptivePortal(null);
+                                entry.setCaptivePortalAuthenticated(false);
+                            }
+                        }
 
                         /**
                          * Check quota expiration

@@ -26,6 +26,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.HookBucket;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.app.DirectoryConnector;
@@ -91,7 +92,9 @@ public class CaptivePortalApp extends AppBase
     private CaptivePortalSettings captureSettings;
     private CaptivePortalTimer captureTimer;
     private Timer timer;
+
     private HostRemovedHookCallback hostRemovedCallback = new HostRemovedHookCallback();
+    private CaptureUsernameHookCallback usernameCheckCallback = new CaptureUsernameHookCallback();
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -450,8 +453,9 @@ public class CaptivePortalApp extends AppBase
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
 
-        // register our host table callback hook
+        // register our host table and username check callback hooks
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.CAPTURE_USERNAME_CHECK, this.usernameCheckCallback);
     }
 
     /**
@@ -463,8 +467,9 @@ public class CaptivePortalApp extends AppBase
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
-        // unregister our host table callback hook
+        // unregister our host table and username check callback hooks
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.CAPTURE_USERNAME_CHECK, this.usernameCheckCallback);
 
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
@@ -883,7 +888,7 @@ public class CaptivePortalApp extends AppBase
      */
     public int userAdminLogout(String userkey)
     {
-        return(userForceLogout(userkey, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
+        return (userForceLogout(userkey, CaptivePortalUserEvent.EventType.ADMIN_LOGOUT));
     }
 
     public int userForceLogout(String userkey, CaptivePortalUserEvent.EventType reason)
@@ -1412,7 +1417,7 @@ public class CaptivePortalApp extends AppBase
          */
         public String getName()
         {
-            return "captive-portal-host-removed-hook";
+            return "captive-portal-" + getAppSettings().getId().toString() + "-host-removed-hook";
         }
 
         /**
@@ -1430,6 +1435,45 @@ public class CaptivePortalApp extends AppBase
             }
             InetAddress addr = (InetAddress) o;
             if (isClientAuthenticated(addr)) userLogout(addr, CaptivePortalUserEvent.EventType.HOST_CHANGE);
+        }
+    }
+
+    /**
+     * This hook is called by the host table cleanup thread. We receive a
+     * HookBucket object that contains a captive portal username from the host
+     * table. If the user is logged in, we increment the number in the bucket to
+     * signal that the user is currently logged in.
+     */
+    private class CaptureUsernameHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         * 
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "captive-portal-" + getAppSettings().getId().toString() + "-username-check-hook";
+        }
+
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof HookBucket)) {
+                logger.warn("Invalid argument: " + o);
+                return;
+            }
+
+            /**
+             * We search for an active user with a name matching the string in
+             * the bucket. If the user is logged in, we increment the number in
+             * the bucket to prevent the name from being removed from the host
+             * table.
+             */
+            HookBucket bucket = (HookBucket) o;
+            CaptivePortalUserEntry entry = captureUserTable.searchByUsername(bucket.getString(), false);
+            if (entry != null) bucket.incrementNumber();
         }
     }
 }
