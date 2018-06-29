@@ -147,7 +147,7 @@ public class TunnelVpnManager
             // if bound to a specific interface, specify that interface's main IP as the local address
             InterfaceStatus status = UvmContextFactory.context().networkManager().getInterfaceStatus(interfaceId);
             if (status != null && status.getV4Address() != null) {
-                cmd += "--bind --local " + status.getV4Address().getHostAddress() + " --port 0 "
+                cmd += "--bind --local " + status.getV4Address().getHostAddress() + " --port 0 ";
                 localBound = true;
             }
         }
