@@ -238,45 +238,43 @@ public class Pulse implements Runnable
             return false;
         }
 
-        if (logger.isDebugEnabled()) logger.debug("Forcing pulse: " + this);
-
-        long origCount = this.getCount();
+        if ( logger.isDebugEnabled() )
+            logger.debug("Forcing pulse: " + this);
+        
+        long origCount = this.count;
         this.forceRun = true;
 
         /* wake up the pulse thread */
         synchronized (this) {
             this.notifyAll();
         }
-
-        /* if pulse has already fired - return true */
-        if (origCount != this.getCount()) return true;
-
+        
         /**
-         * call wait until the pulse has fired loop because this thread could be
-         * woken up by things other than the pulse calling notifyAll()
-         * 
-         * Give up after maxTries iterations instead of indefinite as a safety
-         * mechanism
+         * call wait until the pulse has fired
+         * loop because this thread could be woken up by things other
+         * than the pulse calling notifyAll()
+         * Give up after maxTries iterations instead of indefinite as a safety mechanism
          */
         long waitUntil = System.currentTimeMillis() + maxWait;
         int i = 0;
         int maxTries = 10;
         for (i = 0; i < maxTries; i++) {
             long waitMs = waitUntil - System.currentTimeMillis();
-
             /* if more than maxwait time has passed - give up */
-            if (waitMs < 0) break;
+            if ( waitMs <= 0 )
+                break;
 
-            synchronized (this) {
+            synchronized ( this ) {
+                /* if pulse has already fired - return true */
+                if ( origCount != this.count)
+                    return true;
+
                 try {
                     this.wait(waitMs);
                 } catch (InterruptedException e) {
                     logger.debug(logPrefix + "interrupted while waiting", e);
                 }
             }
-
-            /* if pulse has run - return true */
-            if (origCount != this.getCount()) return true;
         }
 
         if (i == maxTries) {
@@ -373,11 +371,11 @@ public class Pulse implements Runnable
                 logger.warn(logPrefix + "exception running task", e);
             }
 
-            /* Increment the number of counts */
-            this.count++;
-
             /* Notify anyone waiting */
             synchronized (this) {
+                /* Increment the number of counts */
+                this.count++;
+
                 this.notifyAll();
             }
         }
@@ -385,15 +383,5 @@ public class Pulse implements Runnable
         logger.debug(logPrefix + "stopping ...");
         this.state = PulseState.DEAD;
         this.thread = null;
-    }
-
-    /**
-     * Get the count
-     * 
-     * @return The count
-     */
-    private long getCount()
-    {
-        return this.count;
     }
 }

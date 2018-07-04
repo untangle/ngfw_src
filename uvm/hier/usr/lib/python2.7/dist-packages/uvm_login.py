@@ -80,7 +80,7 @@ def headerparserhandler(req):
     if None == username and realm == 'SetupWizard':
         username = session_user(sess, 'Administrator')
 
-    if None == username and realm == 'SetupWizard' and not is_wizard_complete():
+    if None == username and realm == 'SetupWizard' and not wizard_password_required():
         username = 'setupwizard'
         save_session_user(sess, realm, username)
 
@@ -117,14 +117,21 @@ def session_user(sess, realm):
 
     return None
 
-def is_wizard_complete():
-    if not os.path.exists('/usr/share/untangle/conf/wizard.js'):
+def wizard_password_required():
+    # If the wizard settings are missing, do not required the password
+    if not os.path.exists("@PREFIX@/usr/share/untangle/conf/wizard.js"):
         return False
 
-    wizardComplete = get_settings_item("/usr/share/untangle/conf/wizard.js","wizardComplete")
-    if wizardComplete != None:
-        return wizardComplete
-    return False
+    passwordRequired = get_settings_item("@PREFIX@/usr/share/untangle/conf/wizard.js","passwordRequired")
+    if passwordRequired:
+        return True
+
+    # If the wizard has not been completed, do not require the password
+    wizardComplete = get_settings_item("@PREFIX@/usr/share/untangle/conf/wizard.js","wizardComplete")
+    if wizardComplete == False:
+        return False
+    
+    return True
 
 def is_local_process_uid_authorized(req):
     (remote_ip, remote_port) = req.connection.remote_addr
@@ -148,7 +155,7 @@ def is_local_process_uid_authorized(req):
     uid = None
     for count in range(0,5):
         try:
-            infile = open('/proc/net/tcp', 'r')
+            infile = open("/proc/net/tcp", "r")
             # for l in infile.read(500000).splitlines():
             for l in infile.readlines():
                 a = l.split()
@@ -217,9 +224,9 @@ def login_redirect(req, realm, token=None):
     realm_str = urllib.quote(realm)
 
     if token != None:
-        redirect_url = '/auth/login?url=%s&realm=%s&token=%s' % (url, realm_str, token)
+        redirect_url = "/auth/login?url=%s&realm=%s&token=%s" % (url, realm_str, token)
     else:
-        redirect_url = '/auth/login?url=%s&realm=%s' % (url, realm_str)
+        redirect_url = "/auth/login?url=%s&realm=%s" % (url, realm_str)
     util.redirect(req, redirect_url)
 
 def delete_session_user(sess, realm):
@@ -253,7 +260,7 @@ def setup_gettext():
 def get_company_name():
     company = 'Untangle'
 
-    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    oemName = get_settings_item("@PREFIX@/usr/share/untangle/conf/oem.js","oemName")
     if oemName != None:
         company = oemName
 
