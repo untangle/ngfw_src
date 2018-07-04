@@ -1220,9 +1220,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         File dir = new File(POST_STARTUP_SCRIPT_DIR);
         if (dir.listFiles() != null && dir.listFiles().length > 0) {
             ExecManagerResult result;
-            String cmd = "/bin/run-parts " + POST_STARTUP_SCRIPT_DIR ;
+            String cmd = "/bin/run-parts -v " + POST_STARTUP_SCRIPT_DIR ;
             try {
-                UvmContextFactory.context().execManager().execEvil( cmd );
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+                reader.waitFor();
+                for ( String output = reader.readFromOutput() ; output != null ; output = reader.readFromOutput() ) {
+                    String lines[] = output.split("\\n");
+                    for ( String line : lines ) {
+                        logger.info("run-parts: " + line);
+                    }
+                }
             } catch (IOException e) {
                 logger.warn("Failed to run post-startup hooks",e);
             }
