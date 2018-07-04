@@ -14,7 +14,7 @@ Ext.define('Ung.config.email.EmailTestController', {
             if(Util.isDestroyed(vm, btn)){
                 return;
             }
-            if (result[0] == 'Completed') {
+            if (result == 'Completed') {
                 vm.set({
                     processing: null,
                     processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Email sent. Verify successful delivery with recipient.'.t()

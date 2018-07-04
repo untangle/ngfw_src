@@ -49,6 +49,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
     private static final String APPLIANCE_VIRTUAL_DETECT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-virtual-detect.py";
+    private static final String POST_STARTUP_SCRIPT = "/etc/untangle/post-uvm-hook.d";
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
@@ -1297,7 +1298,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         writeStatusFile( "running" );
 
         // call startup hook
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, 1 );
+        callPostStartupHooks();
     }
 
     /**
@@ -1532,5 +1533,23 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             }
         }
+    }
+
+    /**
+     * callPostStartupHooks calls any registered UVM_START_COMPLETE hooks with the hookManager
+     * and also runs run-parts on /etc/untangle/post-uvm-hook.d
+     */
+    private void callPostStartupHooks()
+    {
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, 1 );
+
+        ExecManagerResult result;
+        String cmd = "/bin/run-parts -v " + POST_STARTUP_SCRIPT ;
+        result = UvmContextFactory.context().execManager().exec( cmd );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            for ( String line : lines )
+                logger.info("run-parts: " + line);
+        } catch (Exception e) {}
     }
 }

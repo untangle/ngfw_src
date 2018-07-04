@@ -134,7 +134,6 @@ public class TunnelVpnManager
         
         String cmd = "/usr/sbin/openvpn ";
         cmd += "--config " + directory + "/tunnel.conf ";
-        cmd += "--nobind "; // tell the openvpn process to use any port locally
         cmd += "--writepid /run/tunnelvpn/" + tunnelName + ".pid ";
         cmd += "--dev tun" + tunnelId + " ";
         cmd += "--cd " + directory + " ";
@@ -148,7 +147,7 @@ public class TunnelVpnManager
             // if bound to a specific interface, specify that interface's main IP as the local address
             InterfaceStatus status = UvmContextFactory.context().networkManager().getInterfaceStatus(interfaceId);
             if (status != null && status.getV4Address() != null) {
-                cmd += "--bind --local " + status.getV4Address().getHostAddress();
+                cmd += "--bind --local " + status.getV4Address().getHostAddress() + " --port 0 ";
                 localBound = true;
             }
         }

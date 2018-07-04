@@ -48,14 +48,14 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 columns: 1,
                 vertical: true,
                 items: [
-                    { boxLabel: 'Username'.t(), name: 'col', inputValue: 'username', bind: { disabled: '{disabledConds.username}' } },
-                    { boxLabel: 'Protocol'.t(), name: 'col', inputValue: 'protocol', bind: { disabled: '{disabledConds.protocol}' } },
-                    { boxLabel: 'Hostname'.t(), name: 'col', inputValue: 'hostname', bind: { disabled: '{disabledConds.hostname}' } },
-                    { boxLabel: 'Client'.t(), name: 'col', inputValue: 'c_client_addr', bind: { disabled: '{disabledConds.c_client_addr}' } },
-                    { boxLabel: 'Server'.t(), name: 'col', inputValue: 's_server_addr', bind: { disabled: '{disabledConds.s_server_addr}' } },
-                    //{ boxLabel: 'Client Port'.t(), name: 'col', inputValue: 'c_client_port', bind: { disabled: '{disabledConds.c_client_port}' } },
-                    { boxLabel: 'Server Port'.t(), name: 'col', inputValue: 's_server_port', bind: { disabled: '{disabledConds.s_server_port}' } },
-                    { boxLabel: 'Policy Id'.t(), name: 'col', inputValue: 'policy_id', bind: { disabled: '{disabledConds.policy_id}' } }
+                    { boxLabel: 'Username'.t(), name: 'col', inputValue: 'username' },
+                    { boxLabel: 'Protocol'.t(), name: 'col', inputValue: 'protocol' },
+                    { boxLabel: 'Hostname'.t(), name: 'col', inputValue: 'hostname' },
+                    { boxLabel: 'Client'.t(), name: 'col', inputValue: 'c_client_addr' },
+                    { boxLabel: 'Server'.t(), name: 'col', inputValue: 's_server_addr' },
+                    //{ boxLabel: 'Client Port'.t(), name: 'col', inputValue: 'c_client_port' },
+                    { boxLabel: 'Server Port'.t(), name: 'col', inputValue: 's_server_port' },
+                    { boxLabel: 'Policy Id'.t(), name: 'col', inputValue: 'policy_id' }
                 ]
             }, '-', {
                 xtype: 'combobox',
@@ -89,8 +89,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     type: 'hbox',
                     align: 'stretch'
                 },
-                fieldLabel: '<strong>' + 'Value'.t() + '</strong>',
-                labelAlign: 'top',
                 margin: '5 5',
                 defaults: {
                     disabled: true,
@@ -155,19 +153,16 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         onInitialLoad: function () {
             var me = this, view = me.getView(), vm = me.getViewModel(),
                 conditionsHolder = view.down('container'), // container in which conditions are rendered
-                conditionsButtons = [], // array of conditions components
-                disabledConds = {}; // used for disabling reports titles in the tree in case they fall outside of conditions
+                conditionsButtons = []; // array of conditions components
 
             /**
              * When query is changed, update the conditions toolbar
              */
             vm.bind('{query}', function (query) {
-                disabledConds = {};
                 conditionsButtons = [];
                 conditionsHolder.removeAll(); // remove all conditions buttons
 
                 Ext.Array.each(query.conditions, function (cond, idx) {
-                    disabledConds[cond.column] = true;
 
                     // condition button
                     conditionsButtons.push({
@@ -182,18 +177,35 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                 mouseLeaveDelay: 0,
                                 condition: cond,
                                 items: [{
-                                    // sets the condition value
-                                    xtype: 'textfield',
-                                    enableKeyEvents: true,
-                                    margin: 5,
-                                    value: cond.value,
-                                    listeners: {
-                                        keyup: function (el, e) {
-                                            if (e.keyCode === 13) {
+                                    xtype: 'container',
+                                    layout: {
+                                        type: 'hbox',
+                                        align: 'stretch'
+                                    },
+                                    margin: '5 5',
+                                    items: [{
+                                        xtype: 'textfield',
+                                        enableKeyEvents: true,
+                                        flex: 1,
+                                        value: cond.value,
+                                        listeners: {
+                                            keyup: function (el, e) {
+                                                if (e.keyCode === 13) {
+                                                    el.up('menu').hide();
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        xtype: 'button',
+                                        text: 'OK'.t(),
+                                        iconCls: 'fa fa-check',
+                                        margin: '0 0 0 5',
+                                        listeners: {
+                                            click: function (el) {
                                                 el.up('menu').hide();
                                             }
                                         }
-                                    }
+                                    }]
                                 }, '-', {
                                     // sets the condition operator
                                     xtype: 'radiogroup',
@@ -257,7 +269,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     });
                 });
 
-                vm.set('disabledConds', disabledConds); // updates disabled conditions
                 conditionsHolder.add(conditionsButtons); // updates the conditions buttons
             });
         },
@@ -320,8 +331,10 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             }
 
             if (Ung.app.conditionsContext === 'DASHBOARD') {
-                Ext.Array.each(conditions, function (cond) {
-                    newQuery += '#dashboard?' + cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
+                newQuery = '#dashboard';
+                Ext.Array.each(conditions, function (cond, idx) {
+                    newQuery += (idx === 0) ? '?' : '&';
+                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
                 });
             }
 
@@ -399,13 +412,13 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                             scale: 'large',
                             handler: function (el) {
                                 var tbar = el.up('toolbar'),
-                                    col = tbar.down('combo').nextNode().getValue(),
-                                    store = el.up('grid').getStore();
+                                    col = tbar.down('combo').nextNode().getValue();
+                                    // store = el.up('grid').getStore();
 
-                                if (store.find('column', col) >= 0) {
-                                    Ext.Msg.alert('Info ...', 'Column <strong>' + col + '</strong> is already added!');
-                                    return;
-                                }
+                                // if (store.find('column', col) >= 0) {
+                                //     Ext.Msg.alert('Info ...', 'Column <strong>' + col + '</strong> is already added!');
+                                //     return;
+                                // }
 
                                 el.up('grid').getStore().add({
                                     column: col,
@@ -512,8 +525,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             var me = this, vm = me.getViewModel(),
                 conditions = vm.get('query.conditions'),
                 readableColumn = TableConfig.getColumnHumanReadableName(col),
-                msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t(),
-                action = 'add', cond;
+                msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t();
 
             if (!val) { return; } // val might be undefined in some cases (e.g. pie 'Others' value)
 
@@ -521,36 +533,21 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             // apply following logic to avoid exceptions
             if (!conditions) { return; }
 
-            if (vm.get('disabledConds') && vm.get('disabledConds')[col]) {
-                msg = 'The <strong>' + readableColumn + '</strong> column is already in Global Conditions!<br/> Replace its value?';
-                action = 'replace';
-            }
-
             Ext.Msg.show({
-                title: (action === 'add' ? 'Add'.t() : 'Replace'.t()) + ' ' + 'Global Condition'.t(),
+                title: 'Add Global Condition'.t(),
                 message: msg + '<br/><br/>' +
                             '<strong>' + readableColumn + ' [' + col + '] = ' + val + '</strong>',
                 buttons: Ext.Msg.YESNO,
                 icon: Ext.Msg.QUESTION,
                 fn: function (btn) {
                     if (btn === 'yes') {
-                        if (action === 'replace') {
-                            cond = Ext.Array.findBy(conditions, function (c) {
-                                return c.column === col;
-                            });
-                            if (cond) {
-                                cond.value = val;
-                                cond.operator = '=';
-                            }
-                        } else {
-                            conditions.push({
-                                column: col,
-                                operator: '=',
-                                value: val,
-                                autoFormatValue: true,
-                                javaClass: 'com.untangle.app.reports.SqlCondition'
-                            });
-                        }
+                        conditions.push({
+                            column: col,
+                            operator: '=',
+                            value: val,
+                            autoFormatValue: true,
+                            javaClass: 'com.untangle.app.reports.SqlCondition'
+                        });
                         me.redirect();
                     }
                 }
