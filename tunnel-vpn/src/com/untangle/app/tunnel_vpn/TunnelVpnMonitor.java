@@ -170,6 +170,10 @@ class TunnelVpnMonitor implements Runnable
             try {
                 File pidFile = new File("/var/run/tunnelvpn/tunnel-" + tunnel.getTunnelId() + ".pid");
                 if (!pidFile.exists()) {
+                    // sleep 10 seconds, sometimes the PID file takes a while to appear
+                    try { Thread.sleep(10000); } catch (InterruptedException e) {}
+                }
+                if (!pidFile.exists()) {
                     restartDeadTunnel("missing", tunnel, status);
                     continue;
                 }
