@@ -45,7 +45,7 @@ class TunnelVpnMonitor implements Runnable
     private static final String RECV_MARKER = "TCP/UDP read bytes";
     private static final String END_MARKER = "end";
 
-    protected static final Logger logger = Logger.getLogger(TunnelVpnMonitor.class);
+    protected final Logger logger = Logger.getLogger(getClass());
 
     private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<Integer, TunnelVpnTunnelStatus>();
     private final TunnelVpnManager manager;
