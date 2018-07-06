@@ -154,6 +154,17 @@ public class TunnelVpnManager
             return;
         }
         int tunnelId = tunnelSettings.getTunnelId();
+        Process proc = processMap.get(tunnelId);
+        if (proc != null && proc.isAlive()) {
+            proc.destroy();
+            proc.destroyForcibly();
+            try {
+                proc.waitFor();
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted",e);
+            }
+        }
+
         String directory = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/tunnel-" + tunnelId;
         String tunnelName = "tunnel-" + tunnelId;
         Integer interfaceId = tunnelSettings.getBoundInterfaceId();
@@ -182,7 +193,7 @@ public class TunnelVpnManager
             cmd += "--nobind ";
         }
 
-        Process proc = UvmContextFactory.context().execManager().execEvilProcess(cmd);
+        proc = UvmContextFactory.context().execManager().execEvilProcess(cmd);
         processMap.put(tunnelId, proc);
     }
 
