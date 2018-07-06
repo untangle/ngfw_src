@@ -98,7 +98,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             eventReader = new EventReaderImpl( this );
         ReportsManagerImpl.getInstance().setReportsApp( this );
         
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
+        try {
+            UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
+        } catch (Throwable e) {
+            // this is ignored because it is removed from demo
+            logger.warn("Error registering event log export helper.",e);
+        }
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
         this.fixedReportsQueue = new FixedReportsQueue( this );
