@@ -521,8 +521,10 @@ public class TunnelVpnApp extends AppBase
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_" + appID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
-        String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
-        if (!enabled) output += " -d";
+        String cmd = scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename;
+        if (!enabled)
+            cmd += " -d";
+        String output = UvmContextFactory.context().execManager().execOutput(cmd);
         String lines[] = output.split("\\r?\\n");
         for (String line : lines)
             logger.info("Sync Settings: " + line);
