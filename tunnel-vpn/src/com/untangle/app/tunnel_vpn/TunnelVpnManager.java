@@ -5,6 +5,7 @@
 package com.untangle.app.tunnel_vpn;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.io.FilenameFilter;
 import java.io.File;
 import java.io.FileWriter;
@@ -72,7 +73,9 @@ public class TunnelVpnManager
     protected synchronized void killProcesses()
     {
         logger.info("Killing OpenVPN processes...");
+
         try {
+            // First call kill on any PIDs
             File dir = new File("/run/tunnelvpn/");
             File[] matchingFiles = dir.listFiles(new FilenameFilter()
             {
@@ -97,9 +100,33 @@ public class TunnelVpnManager
                     UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
                     UvmContextFactory.context().execManager().execOutput("kill -TERM " + pid);
                     UvmContextFactory.context().execManager().execOutput("kill -KILL " + pid);
+                    logger.info("Deleting: " + f);
                     f.delete();
                 }
             }
+
+            // Second call destroy on any process
+            // This is necessary because the pid file may not have been written yet
+            for(Iterator<Integer>it=processMap.keySet().iterator();it.hasNext();){
+                Integer entry = it.next();
+                Process p = processMap.get(entry);
+                if (p.isAlive()) {
+                    logger.warn("Killing OpenVPN process " + entry);
+                    p.destroy();
+                }
+                if (p.isAlive()) {
+                    logger.warn("OpenVPN process still alive");
+                }
+                if (p.isAlive()) {
+                    logger.warn("Forcibly Killing OpenVPN process " + entry);
+                    p.destroyForcibly();
+                }
+                if (p.isAlive()) {
+                    logger.warn("OpenVPN process still alive");
+                }
+                it.remove();
+            }
+
         } catch (Exception e) {
             logger.warn("Failed to kill processes", e);
         }
@@ -271,6 +298,7 @@ public class TunnelVpnManager
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
                 String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
                 logger.info("Recycling tunnel connection: " + tunnelSettings.getName() + "PID:" + pidData);
+                logger.info("Deleting: " + pidFile);
                 pidFile.delete();
 
                 /*
@@ -284,6 +312,8 @@ public class TunnelVpnManager
                 UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
                 UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
                 UvmContextFactory.context().execManager().execOutput("kill -KILL " + pidData);
+
+                processMap.remove(tunnelSettings.getTunnelId());
 
                 launchProcess(tunnelSettings);
             } catch (Exception exn) {
