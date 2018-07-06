@@ -153,8 +153,8 @@ Ext.define('Ung.config.events.view.Syslog', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{record.thresholdEnabled == false}',
-                    disabled: '{record.thresholdEnabled == false}'
+                    hidden: '{!record.thresholdEnabled}',
+                    disabled: '{!record.thresholdEnabled}'
                 },
                 items: [{
                     xtype:'numberfield',
@@ -169,7 +169,11 @@ Ext.define('Ung.config.events.view.Syslog', {
                         xtype: 'numberfield',
                         fieldLabel: 'Over Timeframe'.t(),
                         labelWidth: 160,
-                        bind: '{record.thresholdTimeframeSec}',
+                        disabled: true,
+                        bind: {
+                            value: '{record.thresholdTimeframeSec}',
+                            disabled: '{!record.thresholdEnabled}'
+                        },
                         allowDecimals: false,
                         allowBlank: false,
                         minValue: 60,
