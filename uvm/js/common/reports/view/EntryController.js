@@ -82,26 +82,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         // watch since date switching and reload the report
         vm.bind('{sinceDate.value}', function () {
-            // vm.set({
-            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
-            //     f_enddate: null
-            // });
             me.reload();
-        });
-
-        // watch custom range switch on/off
-        vm.bind('{r_customRangeCk.value}', function (checked) {
-            // vm.set({
-            //     f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/60000) * 60000) - vm.get('sinceDate.value') * 3600 * 1000)),
-            //     f_enddate: null
-            // });
-            if (checked) {
-                // when checked, disable autorefresh because of the fixed range
-                me.lookup('r_autoRefreshBtn').setPressed(false);
-            } else {
-                // when unckecked, reload the current data from Since
-                me.reload();
-            }
         });
 
         // watch auto refresh button switch on/off
@@ -172,13 +153,6 @@ Ext.define('Ung.view.reports.EntryController', {
         if (!entry) { return; }
 
         vm.set('validForm', true); // te remove the valid warning
-
-        if (!vm.get('r_customRangeCk.value')) {
-            vm.set({
-                f_startdate: Util.serverToClientDate(new Date((Math.floor(Util.getMilliseconds()/600000) * 600000) - vm.get('sinceDate.value') * 3600 * 1000)),
-                f_enddate: null
-            });
-        }
 
         me.setReportCard(entry.get('type'));
 
@@ -543,14 +517,14 @@ Ext.define('Ung.view.reports.EntryController', {
         });
 
         // startDate converted from UI to server date
-        startDate = Util.clientToServerDate(vm.get('f_startdate'));
+        startDate = Util.clientToServerDate(vm.get('time.range.since'));
         // endDate converted from UI to server date
-        endDate = Util.clientToServerDate(vm.get('f_enddate'));
+        endDate = Util.clientToServerDate(vm.get('time.range.until'));
 
         Ext.MessageBox.wait('Exporting Events...'.t(), 'Please wait'.t());
         var downloadForm = document.getElementById('downloadForm');
         downloadForm['type'].value = 'eventLogExport';
-        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(vm.get('f_startdate'), 'd.m.Y-H:i') + '-' + Ext.Date.format(vm.get('f_enddate'), 'd.m.Y-H:i')).replace(/ /g, '_');
+        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(startDate, 'd.m.Y-H:i') + '-' + Ext.Date.format(endDate || Util.clientToServerDate(new Date()), 'd.m.Y-H:i')).replace(/ /g, '_');
         downloadForm['arg2'].value = Ext.encode(entry);
         downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
         downloadForm['arg4'].value = columns.join(',');
