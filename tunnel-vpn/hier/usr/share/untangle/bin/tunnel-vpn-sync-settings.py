@@ -16,6 +16,7 @@ import os
 import traceback
 import json
 import datetime
+import stat
 
 from   sync import *
 
@@ -267,6 +268,7 @@ for tunnel in settings.get('tunnels').get('list'):
     file.write("%s\n%s\n" % (username,password));
     file.flush()
     file.close()
+    os.chmod(filename, stat.S_IWRITE | stat.S_IREAD)
     if parser.verbosity > 0: print("Wrote %s" % filename)
 
 
