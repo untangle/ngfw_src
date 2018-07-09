@@ -344,10 +344,19 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     },
 
     onAfterRender: function (view) {
-        var fields = this.mainGrid.editorFields,
+        var fields = this.mainGrid.editorFields, vm = this.getViewModel(),
             form = view.down('form');
-        // add editable column fields into the form
 
+        // when enabling Threshold, set the default value for Over Timeframe to avoid invalid form (disabled Done button)
+        vm.bind('{record.thresholdEnabled}', function (enabled) {
+            if (enabled & !vm.get('record.thresholdTimeframeSec')) {
+                vm.set('record.thresholdTimeframeSec', 60);
+            } else {
+                vm.set('record.thresholdTimeframeSec', null);
+            }
+        });
+
+        // add editable column fields into the form
         for (var i = 0; i < fields.length; i++) {
             if (fields[i].dataIndex !== 'conditions') {
                 form.add(fields[i]);

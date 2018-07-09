@@ -45,7 +45,7 @@ class TunnelVpnMonitor implements Runnable
     private static final String RECV_MARKER = "TCP/UDP read bytes";
     private static final String END_MARKER = "end";
 
-    protected static final Logger logger = Logger.getLogger(TunnelVpnMonitor.class);
+    protected final Logger logger = Logger.getLogger(getClass());
 
     private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<Integer, TunnelVpnTunnelStatus>();
     private final TunnelVpnManager manager;
@@ -169,6 +169,10 @@ class TunnelVpnMonitor implements Runnable
 
             try {
                 File pidFile = new File("/var/run/tunnelvpn/tunnel-" + tunnel.getTunnelId() + ".pid");
+                if (!pidFile.exists()) {
+                    // sleep 10 seconds, sometimes the PID file takes a while to appear
+                    try { Thread.sleep(10000); } catch (InterruptedException e) {}
+                }
                 if (!pidFile.exists()) {
                     restartDeadTunnel("missing", tunnel, status);
                     continue;
