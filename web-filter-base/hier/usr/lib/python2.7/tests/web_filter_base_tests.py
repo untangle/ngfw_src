@@ -86,7 +86,7 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
         app_name = self.app.getAppName()
-        if ("https" in url):
+        if ("https" in url) or ("playboy" in url):
             extra_options += "--no-check-certificate "
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
             result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_options + " " +  url)
