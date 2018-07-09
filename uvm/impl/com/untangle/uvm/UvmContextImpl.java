@@ -49,7 +49,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
     private static final String APPLIANCE_VIRTUAL_DETECT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-virtual-detect.py";
-    private static final String POST_STARTUP_SCRIPT = "/etc/untangle/post-uvm-hook.d";
+    private static final String POST_STARTUP_SCRIPT_DIR = "/etc/untangle/post-uvm-hook.d";
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
@@ -1543,13 +1543,22 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, 1 );
 
-        ExecManagerResult result;
-        String cmd = "/bin/run-parts -v " + POST_STARTUP_SCRIPT ;
-        result = UvmContextFactory.context().execManager().exec( cmd );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            for ( String line : lines )
-                logger.info("run-parts: " + line);
-        } catch (Exception e) {}
+        File dir = new File(POST_STARTUP_SCRIPT_DIR);
+        if (dir.listFiles() != null && dir.listFiles().length > 0) {
+            ExecManagerResult result;
+            String cmd = "/bin/run-parts -v " + POST_STARTUP_SCRIPT_DIR ;
+            try {
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+                reader.waitFor();
+                for ( String output = reader.readFromOutput() ; output != null ; output = reader.readFromOutput() ) {
+                    String lines[] = output.split("\\n");
+                    for ( String line : lines ) {
+                        logger.info("run-parts: " + line);
+                    }
+                }
+            } catch (IOException e) {
+                logger.warn("Failed to run post-startup hooks",e);
+            }
+        }
     }
 }
