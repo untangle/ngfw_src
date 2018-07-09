@@ -190,13 +190,14 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        global app, appWeb, appDC, appData, vpnHostResult, vpnClientResult, vpnServerResult, vpnUserPassHostResult, adResult, radiusResult
+        global app, appWeb, appDC, tunnelApp, appData, vpnHostResult, vpnClientResult, vpnServerResult, vpnUserPassHostResult, adResult, radiusResult
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
         appWeb = None
         appDC = None
+        tunnelApp = None
         if (uvmContext.appManager().isInstantiated(self.appWebName())):
             raise Exception('app %s already instantiated' % self.appWebName())
         appWeb = uvmContext.appManager().instantiate(self.appWebName(), default_policy_id)
@@ -838,10 +839,112 @@ class OpenVpnTests(unittest2.TestCase):
         # Check to see if the faceplate counters have incremented. 
         post_events_connect = global_functions.get_app_metric_value(app, "connect")
         assert(pre_events_connect < post_events_connect)
+
+    def test_80_OpenVPNTunnelVPNConflict(self):
+        """test conflict of OpenVPN and TunnelVPN when 'boundInterfaceId' is set to the first wan IP"""
+        global tunnelApp
+        vpn_tunnel_file = "http://10.111.56.29/openvpn-tunnel-vpn-config.zip"
+        index_of_wans = global_functions.get_wan_tuples()
+        # print(index_of_wans[0])
+
+        def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
+            return {
+                    "conditions": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "description": "Route all traffic over any available Tunnel.",
+                    "enabled": vpn_enabled,
+                    "ipv6Enabled": vpn_ipv6,
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRule",
+                    "ruleId": rule_id,
+                    "tunnelId": vpn_tunnel_id
+            }
+
+        def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel_id=200):
+            return {
+                    "allTraffic": False,
+                    "enabled": vpn_enabled,
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+                    "name": "tunnel-Untangle",
+                    "provider": "Untangle",
+                    "tags": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "tunnelId": vpn_tunnel_id,
+                    "boundInterfaceId": index_of_wans[0][0]
+            }
+
+        #set up OpenVPN server    
+        appData = app.getSettings()
+        appData["serverEnabled"]=True
+        siteName = appData['siteName']
+        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
+        appData['remoteClients']['list'][:] = []  
+        appData['remoteClients']['list'].append(setUpClient())
+        app.setSettings(appData)
         
+        # install TunnelVPN
+        tunnelAppName = "tunnel-vpn"
+        if (uvmContext.appManager().isInstantiated(tunnelAppName)):
+            print('app %s already instantiated' % tunnelAppName)
+            tunnelApp = uvmContext.appManager().app(tunnelAppName)
+        else:
+            tunnelApp = uvmContext.appManager().instantiate(tunnelAppName, default_policy_id)    
+        tunnelApp.start()
+
+        #set up TunnelVPN
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
+        if (result != 0):
+            raise unittest2.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
+        currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        if (currentWanIP == ""):
+            raise unittest2.SkipTest("Unable to get WAN IP")
+        # print("Original WAN IP: " + currentWanIP)
+        tunnelApp.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+
+        tunnelAppData = tunnelApp.getSettings()
+        tunnelAppData['rules']['list'].append(create_tunnel_rule())
+        tunnelAppData['tunnels']['list'].append(create_tunnel_profile())
+        tunnelApp.setSettings(tunnelAppData)
+
+        # wait for vpn tunnel to form
+        timeout = 240
+        connected = False
+        connectStatus = ""
+        newWanIP = currentWanIP
+        while (not connected and timeout > 0):
+            listOfConnections = tunnelApp.getTunnelStatusList()
+            connectStatus = listOfConnections['list'][0]['stateInfo']
+            if (connectStatus == "CONNECTED"):
+                newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                if (currentWanIP != newWanIP):
+                    connected = True
+                else:
+                    time.sleep(1)
+                    timeout-=1
+            else:
+                time.sleep(1)
+                timeout-=1
+
+        # disable the added tunnel
+        tunnelAppData['rules']['list'][:] = []
+        for i in range(len(tunnelAppData['tunnels']['list'])):
+            tunnelAppData['tunnels']['list'][i]['enabled'] = False
+            print tunnelAppData['tunnels']['list'][i]['enabled']
+        tunnelApp.setSettings(tunnelAppData)
+
+        #stop tunnel here
+        time.sleep(3)
+        tunnelApp.stop()
+
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(connected)
+
     @staticmethod
     def finalTearDown(self):
-        global app, appWeb, appDC
+        global app, appWeb, appDC, tunnelApp
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
             app = None
@@ -851,5 +954,9 @@ class OpenVpnTests(unittest2.TestCase):
         if appDC != None:
             uvmContext.appManager().destroy( appDC.getAppSettings()["id"] )
             appDC = None
+        if tunnelApp != None:
+            uvmContext.appManager().destroy( tunnelApp.getAppSettings()["id"] )
+            tunnelApp = None
+#            print(tunnelApp.getAppSettings()["id"])
 
 test_registry.registerApp("openvpn", OpenVpnTests)

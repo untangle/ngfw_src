@@ -89,8 +89,8 @@ Ext.define('Ung.config.events.view.Alerts', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{record.thresholdEnabled != true}',
-                    disabled: '{record.thresholdEnabled != true}'
+                    hidden: '{!record.thresholdEnabled}',
+                    disabled: '{!record.thresholdEnabled}'
                 },
                 items: [{
                     xtype:'numberfield',
@@ -105,9 +105,13 @@ Ext.define('Ung.config.events.view.Alerts', {
                         xtype: 'numberfield',
                         fieldLabel: 'Over Timeframe'.t(),
                         labelWidth: 160,
-                        bind: '{record.thresholdTimeframeSec}',
+                        disabled: true,
+                        bind: {
+                            value: '{record.thresholdTimeframeSec}',
+                            disabled: '{!record.thresholdEnabled}'
+                        },
                         allowDecimals: false,
-                        // allowBlank: false,
+                        allowBlank: false,
                         minValue: 60,
                         maxValue: 60*24*60*7, // 1 week
                     }, {
