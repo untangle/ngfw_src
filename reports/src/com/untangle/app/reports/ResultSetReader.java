@@ -28,6 +28,14 @@ public class ResultSetReader implements Runnable
 {
     private static final Logger logger = Logger.getLogger(ResultSetReader.class);
 
+    /**
+     * MAX_RESULTS defines the maximum # of results that can be serialized in memory at one time
+     * with getAllEvents()
+     * If more than this number of results is required it should be read my chunk
+     * with getNextChunk()
+     */
+    private static final int MAX_RESULTS = 500000;
+
     private ResultSet resultSet;
     private Connection connection;
     private Statement statement;
@@ -169,8 +177,10 @@ public class ResultSetReader implements Runnable
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
 
-            while (resultSet.next()) {
+            int count = 0;
+            while (resultSet.next() && count < MAX_RESULTS) {
                 try {
+                    count++;
                     JSONObject row = new JSONObject();
                     for ( int i = 1 ; i < numColumns+1 ; i++ ) {
                         Object o = resultSet.getObject( i );
@@ -188,6 +198,10 @@ public class ResultSetReader implements Runnable
                     logger.warn("Failed to process row - skipping.",e);
                 }
             }
+            if ( count >= MAX_RESULTS ) {
+                logger.warn("Results truncated due to MAX_RESULTS");
+            }
+
             return newList;
         } catch (SQLException e) {
             logger.warn("Failed to query database", e );
