@@ -7,6 +7,9 @@ package com.untangle.uvm;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 
@@ -33,13 +36,26 @@ public class HookManagerImpl implements HookManager
     /**
      * This map stores all the current active hooks for each group
      */
-    private HashMap<String, LinkedList<HookCallback>> registeredCallbacks = new HashMap<String, LinkedList<HookCallback>>();
+    private HashMap<String,LinkedList<HookCallback>> registeredCallbacks = new HashMap<String,LinkedList<HookCallback>>();
 
+    /**
+     * The thread to run the hooks
+     */
+    private Thread thread;
+    private HookRunner hookRunner = new HookRunner();
+
+    /**
+     * The queue stores the hooks to be called
+     */
+    private ArrayBlockingQueue<Object[]> queue = new ArrayBlockingQueue<Object[]>(1024);
+    
     /**
      * Constructor
      */
     private HookManagerImpl()
     {
+        thread = new Thread(hookRunner);
+        thread.start();
     }
 
     /**
@@ -179,54 +195,44 @@ public class HookManagerImpl implements HookManager
      *        The hook name
      * @param arguments
      *        The arguments passed to the callback functions
-     * @return The number of callback functions called
      */
-    public int callCallbacks(String hookName, Object... arguments)
+    public void callCallbacks( String hookName, Object... arguments )
     {
-        try {
-            if (hookName == null) {
-                logger.warn("Invalid argument: " + hookName);
-                return 0;
-            }
-
-            if (registeredCallbacks.get(hookName) == null) {
-                logger.debug("Calling hook[" + hookName + "] callbacks (0 hooks)");
-                return 0;
-            }
-            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get(hookName));
-
-            /**
-             * Call all callbacks sequentially, but in a new thread. Since
-             * callbacks can be arbitrary we can not assume anything about their
-             * behavior when called We should assume they may block for a very
-             * long time and return the calling thread to the caller
-             */
-            new Thread(new Runnable()
-            {
-                /**
-                 * The runnable function
-                 */
-                public void run()
-                {
-                    logger.debug("Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)");
-                    for (HookCallback cb : callbacks) {
-                        try {
-                            logger.debug("Calling hook[" + hookName + "] callback " + cb.getName());
-                            cb.callback(arguments);
-                        } catch (Throwable t) {
-                            logger.warn("Exception calling HookCallback[" + cb.getName() + "]:", t);
-                            logger.warn("Unregistering callback [" + cb.getName() + "]");
-                            unregisterCallback(hookName, cb);
-                        }
-                    }
-                }
-            }).run();
-
-            return callbacks.size();
-        } catch (Throwable e) {
-            logger.warn("Exception: ", e);
-            return 0;
+        if (hookName == null) {
+            logger.warn("Invalid arguments: " + hookName);
+            return;
         }
+        if (arguments == null) {
+            arguments = new Object[0];
+        }
+
+        // If there are now callbacks for this hook registered
+        // just return
+        LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
+        if ( callbacks == null || callbacks.size() == 0 ) {
+            if (logger.isDebugEnabled())
+                logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+            return;
+        }
+
+        // If there are callbacks, add this hookName to the queue to be processed by the HookRunner
+        try {
+            Object[] items = new Object[1+arguments.length];
+            items[0] = hookName;
+            for (int i = 0; i < arguments.length; i++)
+                items[1+i] = arguments[i];
+
+            boolean result = queue.offer(items);
+
+            if (!result) {
+                logger.warn("Hook queue is full! discarding call: " + items);
+            }
+        } catch (Throwable e) {
+            logger.warn("Exception: ",e);
+            return;
+        }
+
+        return;
     }
 
     /**
@@ -245,18 +251,21 @@ public class HookManagerImpl implements HookManager
                 logger.warn("Invalid argument: " + hookName);
                 return 0;
             }
-
-            if (registeredCallbacks.get(hookName) == null) {
-                logger.debug("Calling hook[" + hookName + "] callbacks (0 hooks)");
+        
+            if ( registeredCallbacks.get( hookName ) == null ) {
+                if (logger.isDebugEnabled())
+                    logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
                 return 0;
             }
             LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get(hookName));
 
-            logger.debug("Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)");
-            for (HookCallback cb : callbacks) {
+            if (logger.isDebugEnabled())
+                logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+            for ( HookCallback cb : callbacks ) {
                 try {
-                    logger.debug("Calling hook[" + hookName + "] callback " + cb.getName());
-                    cb.callback(arguments);
+                    if (logger.isDebugEnabled())
+                        logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                    cb.callback( arguments );
                 } catch (Throwable t) {
                     logger.warn("Exception calling HookCallback[" + cb.getName() + "]:", t);
                     logger.warn("Unregistering callback [" + cb.getName() + "]");
@@ -270,5 +279,59 @@ public class HookManagerImpl implements HookManager
             return 0;
         }
 
+    }
+
+    /**
+     * HookRunner is the thread that actually runs the hooks called with callCallbacks()
+     * We call all hooks with this thread because they need to be run
+     * asynchronously from the calling thread
+     */
+    private class HookRunner implements Runnable
+    {
+        /**
+         * run() listens for hooks to call on queue
+         * Each time someone adds a hook call to the queue it calls it.
+         * A hook call can block this thread which will delay other hooks calls
+         * Beware
+         */
+        public void run()
+        {
+            while (true) {
+                try {
+                    Object[] items = queue.take();
+
+                    if (items.length < 2) {
+                        logger.warn("Invalid hook: " + items);
+                        continue;
+                    }
+
+                    String hookName = (String)items[0];
+                    Object[] arguments = Arrays.copyOfRange(items, 1 , items.length);
+
+                    LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
+                    if ( callbacks == null ) {
+                        logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
+                        continue;
+                    }
+                    callbacks = new LinkedList<HookCallback>(callbacks);
+
+                    if (logger.isDebugEnabled())
+                        logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+                    for ( HookCallback cb : callbacks ) {
+                        try {
+                            if (logger.isDebugEnabled())
+                                logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                            cb.callback( arguments );
+                        } catch (Throwable t) {
+                            logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
+                            logger.warn( "Unregistering callback [" + cb.getName() + "]");
+                            unregisterCallback(hookName, cb);
+                        }
+                    }
+                } catch (Throwable e) {
+                    logger.warn("Exception: ",e);
+                }
+            }
+        }
     }
 }
