@@ -3,9 +3,9 @@ Ext.define('Ung.cmp.GridEditorFields', {
     alternateClassName: 'Field',
 
     conditions: {
-        flex: 1,
-        dataIndex: 'conditions',
-        renderer: 'conditionsRenderer'
+        xtype: 'conditionseditor',
+        // flex: 1,
+        bind: '{record.conditions}',
     },
 
     enableRule: function (label) {
