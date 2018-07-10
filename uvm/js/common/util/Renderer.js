@@ -460,4 +460,57 @@ Ext.define('Ung.util.Renderer', {
         return ( value < 0 || value === undefined ) ? 'new'.t() : value;
     },
 
+    conditions: function (value, meta) {
+        if (!value) { return ''; } // if conditions are null return empty string
+
+        var view = this.getView().up('grid'),
+            conds = value.list,
+            resp = [], i, valueRenderer = [];
+
+        for (i = 0; i < conds.length; i += 1) {
+            valueRenderer = [];
+
+            switch (conds[i].conditionType) {
+            case 'SRC_INTF':
+            case 'DST_INTF':
+                conds[i].value.toString().split(',').forEach(function (intfff) {
+                    Util.getInterfaceList(true, true).forEach(function(interface){
+                        if(interface[0] == intfff){
+                            valueRenderer.push(interface[1]);
+                        }
+                    });
+                });
+                break;
+            case 'DST_LOCAL':
+            case 'WEB_FILTER_FLAGGED':
+                valueRenderer.push('true'.t());
+                break;
+            case 'DAY_OF_WEEK':
+                conds[i].value.toString().split(',').forEach(function (day) {
+                    valueRenderer.push(Util.weekdaysMap[day]);
+                });
+                break;
+            default:
+                // to avoid exceptions, in some situations condition value is null
+                if (conds[i].value !== null) {
+                    valueRenderer = conds[i].value.toString().split(',');
+                } else {
+                    valueRenderer = [];
+                }
+            }
+            // for boolean conditions just add 'True' string as value
+            if (view.conditionsMap[conds[i].conditionType] != undefined && view.conditionsMap[conds[i].conditionType].type === 'boolean') {
+                valueRenderer = ['True'.t()];
+            }
+
+            resp.push(
+                ( view.conditionsMap[conds[i].conditionType] != undefined ? view.conditionsMap[conds[i].conditionType].displayName : conds[i].conditionType ) +
+                '<strong>' +
+                (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' +
+                '</strong>');
+        }
+        meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( resp.join(' &nbsp;&bull;&nbsp; ') ) + '"';
+        return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
+    },
+
 });
