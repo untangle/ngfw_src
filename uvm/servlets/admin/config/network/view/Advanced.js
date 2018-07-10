@@ -258,17 +258,20 @@ Ext.define('Ung.config.network.view.Advanced', {
                             }
                         },
 
-                        conditions: [
-                            {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-                            {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                            {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
-                            {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"]], visible: true},
-                            {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                            {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                            {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: Rpc.directData('rpc.isExpertMode')},
-                            {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
-                            {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
-                        ],
+                        conditions: Ung.cmp.ConditionsEditor.buildConditions(
+                            'DST_LOCAL',
+                            'DST_ADDR',
+                            'DST_PORT',
+                            {
+                                name: 'PROTOCOL',
+                                values: [["TCP","TCP"],["UDP","UDP"]]
+                            },
+                            'SRC_INTF',
+                            'SRC_ADDR',
+                            'SRC_PORT',
+                            'CLIENT_TAGGED',
+                            'SERVER_TAGGED'
+                        ),
 
                         label: 'Perform the following action(s):'.t(),
 
@@ -291,13 +294,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             header: 'Description',
                             width: Renderer.messageWidth,
                             dataIndex: 'description'
-                        }, {
-                            header: 'Conditions'.t(),
-                            width: Renderer.conditionsWidth,
-                            flex: 1,
-                            dataIndex: 'conditions',
-                            renderer: 'conditionsRenderer'
-                        }, {
+                        },
+                        Column.conditions,
+                        {
                             header: 'Priority'.t(),
                             width: Renderer.priorityWidth,
                             dataIndex: 'priority',
@@ -452,23 +451,28 @@ Ext.define('Ung.config.network.view.Advanced', {
                 listProperty: 'settings.accessRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
-                conditions: [
+                conditions: Ung.cmp.ConditionsEditor.buildConditions(
                     //DST_LOCAL makes no sense on Access Rules because definitionally they are destined local
                     //However, we used to allow users to add it so we keep this here so it renders correctly
                     //but visible is false so it will not appear when creating new rules.
-                    {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: false},
-                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
-                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: 'textfield', visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: Rpc.directData('rpc.isExpertMode')},
-                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"],["OSPF","OSPF"]], visible: true},
-                    {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
-                    {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
-
-                ],
+                    {
+                        name:"DST_LOCAL",
+                        visible: false
+                    },
+                    "DST_ADDR",
+                    "DST_PORT",
+                    "DST_INTF",
+                    "SRC_MAC",
+                    "SRC_ADDR",
+                    "SRC_PORT",
+                    "SRC_INTF",
+                    {
+                        name:"PROTOCOL", 
+                        values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"],["OSPF","OSPF"]]
+                    },
+                    "CLIENT_TAGGED",
+                    "SERVER_TAGGED"
+                ),
 
                 emptyRow: {
                     ruleId: -1,
@@ -510,13 +514,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                     width: Renderer.messageWidth,
                     dataIndex: 'description',
                     flex: 1
-                }, {
-                    header: 'Conditions'.t(),
-                    width: Renderer.conditionsWidth,
-                    flex: 3,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
+                },
+                Column.conditions,
+                {
                     xtype: 'checkcolumn',
                     header: 'Block'.t(),
                     dataIndex: 'blocked',
@@ -655,11 +655,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                         listProperty: 'settings.upnpSettings.upnpRules.list',
                         ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
-                        conditions: [
-                            {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield', vtype:"portMatcher", visible: true},
-                            {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', vtype:"ipMatcher", visible: true},
-                            {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield', vtype:"portMatcher", visible: true}
-                        ],
+                        conditions: Ung.cmp.ConditionsEditor.buildConditions(
+                            'DST_PORT',
+                            'SRC_ADDR',
+                            'SRC_PORT'
+                        ),
 
                         emptyRow: {
                             ruleId: -1,
@@ -701,13 +701,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             width: Renderer.messageWidth,
                             flex: 1,
                             dataIndex: 'description'
-                        }, {
-                            header: 'Conditions'.t(),
-                            width: Renderer.conditionsWidth,
-                            flex: 1,
-                            dataIndex: 'conditions',
-                            renderer: 'conditionsRenderer'
-                        }, {
+                        },
+                        Column.conditions,
+                        {
                             header: 'Action'.t(),
                             width: Renderer.idWidth,
                             dataIndex: 'allow',

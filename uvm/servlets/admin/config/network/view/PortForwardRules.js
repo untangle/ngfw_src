@@ -31,17 +31,17 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
-        conditions: [
-            {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-            {name:"DST_ADDR",displayName: "Destination Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: "Destination Port".t(), type: "textfield",vtype:"portMatcher", visible: true},
-            {name:"SRC_ADDR",displayName: "Source Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: "Source Port".t(), type: "textfield",vtype:"portMatcher", visible: Rpc.directData('rpc.isExpertMode')},
-            {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkboxgroup", values: Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"],["OSPF","OSPF"]], visible: true},
-            {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
-            {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true},
-        ],
+        conditions: Ung.cmp.ConditionsEditor.buildConditions(
+            "DST_LOCAL",
+            "DST_ADDR",
+            "DST_PORT",
+            "SRC_ADDR",
+            "SRC_PORT",
+            "SRC_INTF",
+            "PROTOCOL",
+            "CLIENT_TAGGED",
+            "SERVER_TAGGED"
+        ),
 
         emptyText: 'No Port Forward Rules defined'.t(),
 
