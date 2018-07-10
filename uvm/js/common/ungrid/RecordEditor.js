@@ -18,11 +18,9 @@ Ext.define('Ung.cmp.RecordEditor', {
         disabled: '{!record}'
     },
 
+    cancel: false,
     actions: {
         apply: {
-            // bind: {
-            //     text: '{actionTitle}'
-            // },
             text: 'Done'.t(),
             formBind: true,
             iconCls: 'fa fa-check',
@@ -32,11 +30,6 @@ Ext.define('Ung.cmp.RecordEditor', {
             text: 'Cancel',
             iconCls: 'fa fa-ban',
             handler: 'onCancel'
-        },
-        addCondition: {
-            itemId: 'addConditionBtn',
-            text: 'Add Condition'.t(),
-            iconCls: 'fa fa-plus'
         }
     },
 
@@ -54,14 +47,6 @@ Ext.define('Ung.cmp.RecordEditor', {
     //     type: 'vbox',
     //     align: 'stretch'
     // },
-    // tbar: [{
-    //     itemId: 'addConditionBtn',
-    //     text: 'Add Condition'.t(),
-    //     iconCls: 'fa fa-plus',
-    //     // handler: 'onAdd'
-    // }],
-
-
     // scrollable: true,
 
     layout: 'fit',
