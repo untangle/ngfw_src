@@ -95,14 +95,6 @@ Ext.define('Ung.cmp.Grid', {
     emptyRow: null,
 
     /**
-     * @cfg {String} actionText
-     * Used in grids with conditions.
-     * Tells the actions which are taken if condition are met
-     * e.g. 'Forward to the following location:'.t()
-     */
-    actionText: 'Perform the following action(s):'.t(),
-
-    /**
      * @cfg {Boolean} defaultSortable
      *
      * If true, allow all columns to sort.
