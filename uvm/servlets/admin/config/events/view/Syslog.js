@@ -132,8 +132,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         {
             flex: 1,
             dataIndex: 'conditions',
-            allowAllClasses: true,
-            renderer: 'conditionsRenderer'
+            allowAllClasses: true
         },{
             xtype: 'fieldset',
             title: 'As well as the following conditions:'.t(),
