@@ -49,10 +49,10 @@ Ext.define('Ung.cmp.GridColumns', {
 
     conditions: {
         header: 'Conditions'.t(),
-        width: Renderer.messageWidth,
-        flex: 1,
+        width: Renderer.conditionsWidth,
+        flex: 2,
         dataIndex: 'conditions',
-        renderer: 'conditionsRenderer'
+        renderer: Renderer.conditions
     },
 
     reorder: {
