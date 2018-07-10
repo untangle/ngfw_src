@@ -19,14 +19,18 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      * @return {[type]}                [description]
      */
     onAfterRender: function (component) {
+        var me = this;
+        var vm = this.getViewModel();
+
         this.masterGrid = component.up('grid');
         this.recordeditor = component.up('window');
+        if(this.masterGrid.ruleJavaClass){
+            me.ruleJavaClass =this.masterGrid.ruleJavaClass;
+        }
 
         var conditions = component.up('grid').conditions,
             menuConditions = [], i;
 
-        var me = this;
-        var vm = this.getViewModel();
 
         // create and add conditions to the menu
         if( conditions ){
@@ -550,6 +554,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         }
         var record = Ext.create(me.getView().model);
         record.set('conditionType', item.conditionType);
+        record.set('javaClass', me.ruleJavaClass);
         me.getView().down('grid').getStore().add(record);
         me.setMenuConditions();
     },
