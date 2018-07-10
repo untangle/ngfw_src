@@ -27,16 +27,16 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     listProperty: 'settings.rules.list',
     ruleJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition',
 
-    conditions: [
-        {name:"DST_ADDR",displayName: "Destination Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"DST_PORT",displayName: "Destination Port".t(), type: "textfield",vtype:"portMatcher", visible: true},
-        {name:"SRC_ADDR",displayName: "Source Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"SRC_PORT",displayName: "Source Port".t(), type: "textfield",vtype:"portMatcher", visible: Rpc.directData('rpc.isExpertMode')},
-        {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkboxgroup", values: Util.getInterfaceList(true, false), visible: true},
-        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true},
-        {name:"CLIENT_TAGGED",displayName: 'Client Tagged'.t(), type: 'textfield', visible: true},
-        {name:"SERVER_TAGGED",displayName: 'Server Tagged'.t(), type: 'textfield', visible: true}
-    ],
+    conditions: Ung.cmp.ConditionsEditor.buildConditions(
+        "DST_ADDR",
+        "DST_PORT",
+        "SRC_ADDR",
+        "SRC_PORT",
+        "SRC_INTF",
+        "PROTOCOL",
+        "CLIENT_TAGGED",
+        "SERVER_TAGGED"
+    ),
 
     emptyRow: {
         ruleId: 0,
