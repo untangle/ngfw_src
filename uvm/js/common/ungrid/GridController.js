@@ -145,7 +145,6 @@ Ext.define('Ung.cmp.GridController', {
         store.insert(rowIndex + item.direction, record);
     },
 
-
     // onCellClick: function (table, td, cellIndex, record) {
     //     var me = this;
     //     if (td.dataset.columnid === 'conditions') {
@@ -169,77 +168,40 @@ Ext.define('Ung.cmp.GridController', {
     //     }
     // },
 
-    conditionsRenderer: function (value) {
-        if (!value) { return ''; } // if conditions are null return empty string
-
-        var view = this.getView(),
-            conds = value.list,
-            resp = [], i, valueRenderer = [];
-
-        for (i = 0; i < conds.length; i += 1) {
-            valueRenderer = [];
-
-            switch (conds[i].conditionType) {
-            case 'SRC_INTF':
-            case 'DST_INTF':
-                conds[i].value.toString().split(',').forEach(function (intfff) {
-                    Util.getInterfaceList(true, true).forEach(function(interface){
-                        if(interface[0] == intfff){
-                            valueRenderer.push(interface[1]);
-                        }
-                    });
-                });
-                break;
-            case 'DST_LOCAL':
-            case 'WEB_FILTER_FLAGGED':
-                valueRenderer.push('true'.t());
-                break;
-            case 'DAY_OF_WEEK':
-                conds[i].value.toString().split(',').forEach(function (day) {
-                    valueRenderer.push(Util.weekdaysMap[day]);
-                });
-                break;
-            default:
-                // to avoid exceptions, in some situations condition value is null
-                if (conds[i].value !== null) {
-                    valueRenderer = conds[i].value.toString().split(',');
-                } else {
-                    valueRenderer = [];
-                }
+    priorityRenderer: function(value, meta) {
+        var result = '';
+        if (!Ext.isEmpty(value)) {
+            switch (value) {
+                case 0:
+                    result = '';
+                    break;
+                case 1:
+                    result = 'Very High'.t();
+                    break;
+                case 2:
+                    result = 'High'.t();
+                    break;
+                case 3:
+                    result = 'Medium'.t();
+                    break;
+                case 4:
+                    result = 'Low'.t();
+                    break;
+                case 5:
+                    result = 'Limited'.t();
+                    break;
+                case 6:
+                    result = 'Limited More'.t();
+                    break;
+                case 7:
+                    result = 'Limited Severely'.t();
+                    break;
+                default:
+                    result = Ext.String.format('Unknown Priority: {0}'.t(), value);
             }
-            // for boolean conditions just add 'True' string as value
-            if (view.conditionsMap[conds[i].conditionType] != undefined && view.conditionsMap[conds[i].conditionType].type === 'boolean') {
-                valueRenderer = ['True'.t()];
-            }
-
-            resp.push(
-                ( view.conditionsMap[conds[i].conditionType] != undefined ? view.conditionsMap[conds[i].conditionType].displayName : conds[i].conditionType ) +
-                '<strong>' +
-                (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' +
-                '</strong>');
         }
-        return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
-    },
-
-    priorityRenderer: function(value) {
-        if (Ext.isEmpty(value)) {
-            return '';
-        }
-        switch (value) {
-        case 0: return '';
-        case 1: return 'Very High'.t();
-        case 2: return 'High'.t();
-        case 3: return 'Medium'.t();
-        case 4: return 'Low'.t();
-        case 5: return 'Limited'.t();
-        case 6: return 'Limited More'.t();
-        case 7: return 'Limited Severely'.t();
-        default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
-        }
-    },
-
-    conditionRenderer: function (val) {
-        return this.getView().conditionsMap[val].displayName;
+        meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( result ) + '"';
+        return result;
     },
 
     onDropRecord: function (node, data ) {
