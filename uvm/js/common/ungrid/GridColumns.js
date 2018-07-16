@@ -52,7 +52,9 @@ Ext.define('Ung.cmp.GridColumns', {
         width: Renderer.conditionsWidth,
         flex: 2,
         dataIndex: 'conditions',
-        renderer: Renderer.conditions
+        renderer: function(){
+            return Ung.cmp.ConditionsEditor.renderer.apply(this, arguments);
+        }
     },
 
     reorder: {
