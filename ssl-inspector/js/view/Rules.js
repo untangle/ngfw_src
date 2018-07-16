@@ -22,7 +22,6 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.ignoreRules.list',
-    ruleJavaClass: 'com.untangle.app.ssl_inspector.SslInspectorRuleCondition',
 
     emptyText: 'No Rules defined'.t(),
 
@@ -60,7 +59,49 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     editorFields: [
         Field.enableRule(),
         Field.description,
-        Field.conditions, {
+        Field.conditions(
+            'com.untangle.app.ssl_inspector.SslInspectorRuleCondition', [
+            'DST_ADDR',
+            'DST_PORT',
+            'DST_INTF',
+            'SRC_ADDR',
+            'SRC_PORT',
+            'SRC_INTF',
+            'PROTOCOL',
+            'TAGGED',
+            'USERNAME',
+            'HOST_HOSTNAME',
+            'CLIENT_HOSTNAME',
+            'SERVER_HOSTNAME',
+            'SRC_MAC',
+            'DST_MAC',
+            'CLIENT_MAC_VENDOR',
+            'SERVER_MAC_VENDOR',
+            'CLIENT_IN_PENALTY_BOX',
+            'SERVER_IN_PENALTY_BOX',
+            'HOST_HAS_NO_QUOTA',
+            'USER_HAS_NO_QUOTA',
+            'CLIENT_HAS_NO_QUOTA',
+            'SERVER_HAS_NO_QUOTA',
+            'HOST_QUOTA_EXCEEDED',
+            'USER_QUOTA_EXCEEDED',
+            'CLIENT_QUOTA_EXCEEDED',
+            'SERVER_QUOTA_EXCEEDED',
+            'HOST_QUOTA_ATTAINMENT',
+            'USER_QUOTA_ATTAINMENT',
+            'CLIENT_QUOTA_ATTAINMENT',
+            'SERVER_QUOTA_ATTAINMENT',
+            'HOST_ENTITLED',
+            'HTTP_USER_AGENT',
+            'HTTP_USER_AGENT_OS',
+            'DIRECTORY_CONNECTOR_GROUP',
+            'DIRECTORY_CONNECTOR_DOMAIN',
+            'SSL_INSPECTOR_SNI_HOSTNAME',
+            'SSL_INSPECTOR_SUBJECT_DN',
+            'SSL_INSPECTOR_ISSUER_DN',
+            'CLIENT_COUNTRY',
+            'SERVER_COUNTRY'
+        ]), {
             xtype: 'combo',
             name: 'action',
             fieldLabel: 'Action Type'.t(),
@@ -70,50 +111,5 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
             store: [['INSPECT', 'Inspect'.t()], ['IGNORE', 'Ignore'.t()]],
             queryMode: 'local'
         }
-
-    ],
-
-    conditions: Ung.cmp.ConditionsEditor.buildConditions(
-        'DST_ADDR',
-        'DST_PORT',
-        'DST_INTF',
-        'SRC_ADDR',
-        'SRC_PORT',
-        'SRC_INTF',
-        'PROTOCOL',
-        'TAGGED',
-        'USERNAME',
-        'HOST_HOSTNAME',
-        'CLIENT_HOSTNAME',
-        'SERVER_HOSTNAME',
-        'SRC_MAC',
-        'DST_MAC',
-        'CLIENT_MAC_VENDOR',
-        'SERVER_MAC_VENDOR',
-        'CLIENT_IN_PENALTY_BOX',
-        'SERVER_IN_PENALTY_BOX',
-        'HOST_HAS_NO_QUOTA',
-        'USER_HAS_NO_QUOTA',
-        'CLIENT_HAS_NO_QUOTA',
-        'SERVER_HAS_NO_QUOTA',
-        'HOST_QUOTA_EXCEEDED',
-        'USER_QUOTA_EXCEEDED',
-        'CLIENT_QUOTA_EXCEEDED',
-        'SERVER_QUOTA_EXCEEDED',
-        'HOST_QUOTA_ATTAINMENT',
-        'USER_QUOTA_ATTAINMENT',
-        'CLIENT_QUOTA_ATTAINMENT',
-        'SERVER_QUOTA_ATTAINMENT',
-        'HOST_ENTITLED',
-        'HTTP_USER_AGENT',
-        'HTTP_USER_AGENT_OS',
-        'DIRECTORY_CONNECTOR_GROUP',
-        'DIRECTORY_CONNECTOR_DOMAIN',
-        'SSL_INSPECTOR_SNI_HOSTNAME',
-        'SSL_INSPECTOR_SUBJECT_DN',
-        'SSL_INSPECTOR_ISSUER_DN',
-        'CLIENT_COUNTRY',
-        'SERVER_COUNTRY'
-    )
-
+    ]
 });

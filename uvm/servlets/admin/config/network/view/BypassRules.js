@@ -25,18 +25,6 @@ Ext.define('Ung.config.network.view.BypassRules', {
         emptyText: 'No Bypass Rules defined'.t(),
 
         listProperty: 'settings.bypassRules.list',
-        ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
-        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-            "DST_ADDR",
-            "DST_PORT",
-            "DST_INTF",
-            "SRC_ADDR",
-            "SRC_PORT",
-            "SRC_INTF",
-            "PROTOCOL",
-            "CLIENT_TAGGED",
-            "SERVER_TAGGED"
-        ),
 
         emptyRow: {
             ruleId: -1,
@@ -66,8 +54,19 @@ Ext.define('Ung.config.network.view.BypassRules', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
-            Field.bypass
+            Field.conditions(
+                'com.untangle.uvm.network.BypassRuleCondition',[
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
+           Field.bypass
         ]
     }]
 });

@@ -23,7 +23,6 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.rules.list',
-    ruleJavaClass: 'com.untangle.app.firewall.FirewallRuleCondition',
 
     emptyText: 'No Rules defined'.t(),
 
@@ -65,7 +64,46 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     editorFields: [
         Field.enableRule(),
         Field.description,
-        Field.conditions, {
+        Field.conditions(
+            'com.untangle.app.firewall.FirewallRuleCondition', [
+            'DST_ADDR',
+            'DST_PORT',
+            'DST_INTF',
+            'SRC_ADDR',
+            'SRC_PORT',
+            'SRC_INTF',
+            'PROTOCOL',
+            'TAGGED',
+            'USERNAME',
+            'HOST_HOSTNAME',
+            'CLIENT_HOSTNAME',
+            'SERVER_HOSTNAME',
+            'SRC_MAC',
+            'DST_MAC',
+            'CLIENT_MAC_VENDOR',
+            'SERVER_MAC_VENDOR',
+            'CLIENT_IN_PENALTY_BOX',
+            'SERVER_IN_PENALTY_BOX',
+            'HOST_HAS_NO_QUOTA',
+            'USER_HAS_NO_QUOTA',
+            'CLIENT_HAS_NO_QUOTA',
+            'SERVER_HAS_NO_QUOTA',
+            'HOST_QUOTA_EXCEEDED',
+            'USER_QUOTA_EXCEEDED',
+            'CLIENT_QUOTA_EXCEEDED',
+            'SERVER_QUOTA_EXCEEDED',
+            'HOST_QUOTA_ATTAINMENT',
+            'USER_QUOTA_ATTAINMENT',
+            'CLIENT_QUOTA_ATTAINMENT',
+            'SERVER_QUOTA_ATTAINMENT',
+            'HOST_ENTITLED',
+            'DIRECTORY_CONNECTOR_GROUP',
+            'DIRECTORY_CONNECTOR_DOMAIN',
+            'HTTP_USER_AGENT',
+            'HTTP_USER_AGENT_OS',
+            'CLIENT_COUNTRY',
+            'SERVER_COUNTRY'
+        ]), {
             xtype: 'combo',
             allowBlank: false,
             bind: '{record.block}',
@@ -78,45 +116,5 @@ Ext.define('Ung.apps.firewall.view.Rules', {
             bind: '{record.flag}',
             fieldLabel: 'Flag'.t()
         }
-    ],
-
-    conditions: Ung.cmp.ConditionsEditor.buildConditions(
-        'DST_ADDR',
-        'DST_PORT',
-        'DST_INTF',
-        'SRC_ADDR',
-        'SRC_PORT',
-        'SRC_INTF',
-        'PROTOCOL',
-        'TAGGED',
-        'USERNAME',
-        'HOST_HOSTNAME',
-        'CLIENT_HOSTNAME',
-        'SERVER_HOSTNAME',
-        'SRC_MAC',
-        'DST_MAC',
-        'CLIENT_MAC_VENDOR',
-        'SERVER_MAC_VENDOR',
-        'CLIENT_IN_PENALTY_BOX',
-        'SERVER_IN_PENALTY_BOX',
-        'HOST_HAS_NO_QUOTA',
-        'USER_HAS_NO_QUOTA',
-        'CLIENT_HAS_NO_QUOTA',
-        'SERVER_HAS_NO_QUOTA',
-        'HOST_QUOTA_EXCEEDED',
-        'USER_QUOTA_EXCEEDED',
-        'CLIENT_QUOTA_EXCEEDED',
-        'SERVER_QUOTA_EXCEEDED',
-        'HOST_QUOTA_ATTAINMENT',
-        'USER_QUOTA_ATTAINMENT',
-        'CLIENT_QUOTA_ATTAINMENT',
-        'SERVER_QUOTA_ATTAINMENT',
-        'HOST_ENTITLED',
-        'DIRECTORY_CONNECTOR_GROUP',
-        'DIRECTORY_CONNECTOR_DOMAIN',
-        'HTTP_USER_AGENT',
-        'HTTP_USER_AGENT_OS',
-        'CLIENT_COUNTRY',
-        'SERVER_COUNTRY'
-    )
+    ]
 });
