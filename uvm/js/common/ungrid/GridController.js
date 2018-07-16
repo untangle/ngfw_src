@@ -7,18 +7,9 @@ Ext.define('Ung.cmp.GridController', {
 
     control: {
         '#': {
-            afterrender: 'onAfterRender',
             drop: 'onDropRecord'
         }
     },
-
-    onAfterRender: function (view) {
-        // create conditionsMap for later use
-        if (view.conditions) {
-            view.conditionsMap = Ext.Array.toValueMap(view.conditions, 'name');
-        }
-    },
-
 
     addRecord: function () {
         this.editorWin(null);
