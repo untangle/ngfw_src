@@ -20,49 +20,43 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      */
     onAfterRender: function (component) {
         var me = this;
+        var view = this.getView();
         var vm = this.getViewModel();
 
         this.masterGrid = component.up('grid');
         this.recordeditor = component.up('window');
-        if(this.masterGrid.ruleJavaClass){
-            me.ruleJavaClass =this.masterGrid.ruleJavaClass;
-        }
 
-        var conditions = component.up('grid').conditions,
-            menuConditions = [], i;
+        var menuConditions = [];
 
+        this.recordBind = component.up('window').getViewModel().bind({
+            bindTo: '{record}',
+        }, this.setMenuConditions);
 
-        // create and add conditions to the menu
-        if( conditions ){
-            // !!! is this binding to diff record?
-            // when record is modified update conditions menu
-            this.recordBind = component.up('window').getViewModel().bind({
-                bindTo: '{record}',
-            }, this.setMenuConditions);
+        var index = 0;
+        view.conditionsOrder.forEach(function(name){
+            index++;
+            var condition = view.conditions[name];
+            // !!! verify that we use visible: false properly.
+            if( condition.visible == undefined || condition.visible) {
+                menuConditions.push({
+                    text: condition.displayName,
+                    conditionType: condition.name,
+                    index: index,
+                    allowMultiple: false
+                    // allowMultiple: conditions.allowMultiple != undefined ? conditions.allowMultiple : false
+                });
+            }
+        });
 
-            conditions.forEach(function(condition, index){
-                // !!! verify that we use visible: false properly.
-                if( condition.visible == undefined || condition.visible) {
-                    menuConditions.push({
-                        text: condition.displayName,
-                        conditionType: condition.name,
-                        index: index,
-                        allowMultiple: conditions.allowMultiple != undefined ? conditions.allowMultiple : false
-                    });
-                }
-
-            });
-
-            component.down('#addConditionBtn').setMenu({
-                showSeparator: false,
-                plain: true,
-                items: menuConditions,
-                mouseLeaveDelay: 0,
-                listeners: {
-                    click: 'addCondition'
-                }
-            });
-        }
+        component.down('#addConditionBtn').setMenu({
+            showSeparator: false,
+            plain: true,
+            items: menuConditions,
+            mouseLeaveDelay: 0,
+            listeners: {
+                click: 'addCondition'
+            }
+        });
 
         me.getView().down('[name=conditionLabel]').update(me.getView());
         me.getView().down('[name=actionLabel]').update(me.getView());
@@ -155,6 +149,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
 
     addValueWidget: function(){
         var me = this, 
+            view = me.getView(),
             added = false;
 
         if(me.valueWidgetQueue.length){
@@ -163,11 +158,10 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             widget.container.getBind().html.destroy();
             widget.container.setHtml('');
 
-            // ?? Better way to pull?
-            var condition = me.masterGrid.conditionsMap[widget.record.get('conditionType')], i;
+            var condition = view.conditions[widget.record.get(view.fields.type)];
             added = true;
 
-            var valueBind = '{record.' + me.getView().valueField + '}';
+            var valueBind = '{record.' + view.fields.value + '}';
 
             switch (condition.type) {
             case 'boolean':
@@ -203,7 +197,10 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         value: valueBind
                     },
                     vtype: condition.vtype,
-                    allowBlank: false
+                    allowBlank: false,
+                    listeners:{
+                        change: 'forceValidate'
+                    }
                 });
                 break;
             case 'checkboxgroup':
@@ -469,18 +466,19 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     record: widget.record,
                     listeners: {
                         afterrender: function (view) {
+                            var valueField = view.up('conditionseditor').fields.value;
                             view.down('#hours1').setStore(view.hoursStore);
                             view.down('#minutes1').setStore(view.minutesStore);
                             view.down('#hours2').setStore(view.hoursStore);
                             view.down('#minutes2').setStore(view.minutesStore);
-                            if (!view.record.get('value')) {
+                            if (!view.record.get(valueField)) {
                                 view.down('#hours1').setValue('12');
                                 view.down('#minutes1').setValue('00');
                                 view.down('#hours2').setValue('13');
                                 view.down('#minutes2').setValue('30');
                             } else {
-                                var startTime = view.record.get('value').split('-')[0];
-                                var endTime = view.record.get('value').split('-')[1];
+                                var startTime = view.record.get(valueField).split('-')[0];
+                                var endTime = view.record.get(valueField).split('-')[1];
                                 view.down('#hours1').setValue(startTime.split(':')[0]);
                                 view.down('#minutes1').setValue(startTime.split(':')[1]);
                                 view.down('#hours2').setValue(endTime.split(':')[0]);
@@ -490,6 +488,8 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     }
                 });
                 break;
+                default:
+                    Util.handleException('Unknown condition value type: ' + condition.type);
             }
         }
         return added;
@@ -497,6 +497,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
 
     addComparatorWidget: function(){
         var me = this, 
+            view = me.getView(),
             added = false;
 
         if(me.comparatorWidgetQueue.length){
@@ -506,24 +507,45 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             widget.container.getBind().html.destroy();
             widget.container.setHtml('');
 
-            // ?? Better way to pull?
-            var condition = me.masterGrid.conditionsMap[widget.record.get('conditionType')], i;
+            var condition = view.conditions[widget.record.get(view.fields.type)];
             added = true;
 
-            var comparator = condition.comparator != undefined ? condition.comparator : 'invert';
-            switch (comparator) {
-                case 'invert':
-                    widget.container.add({
-                        xtype: 'combo',
-                        // margin: 3,
-                        editable: false,
-                        // !!! better way to map
-                        bind: {
-                            value: '{record.invert}'
-                        },
-                        store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
-                    });
+            var comparatorBind = '{record.' + me.getView().fields.comparator + '}';
+
+            var comparatorType = condition.comparator != undefined ? condition.comparator : 'invert';
+
+            var comparator = null;
+            Ung.cmp.ConditionsEditor.comparators.forEach(function(c){
+                if(c.name == comparatorType){
+                    comparator = c;
+                }
+
+            });
+
+            if(comparator == null){
+                Util.handleException('Unknown comparator value type: ' + comparatorType);
+            }else{
+                widget.container.add({
+                    xtype: 'combo',
+                    editable: false,
+                    matchFieldWidth: false,
+                    bind: {
+                        value: comparatorBind
+                    },
+                    store: comparator.store
+                    // listeners: {
+                    //     change: function(combo, newValue, oldValue){
+                    //         console.log('change');
+                    //         console.log(arguments);
+                    //         // Ext.QuickTips.register({
+                    //         //     target: this.getEl(),
+                    //         //     text: c.getDisplayValue()
+                    //         // });
+                    //     },
+                    // }
+                });
             }
+
         }
         return added;
     },
@@ -532,7 +554,9 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      * Updates the disabled/enabled status of the conditions in the menu
      */
     setMenuConditions: function () {
-        var conditionsGrid = this.getView().down('grid'),
+        var view = this.getView(),
+            conditionsEditorView = view.fields ? view : view.down('conditionseditor'),
+            conditionsGrid = this.getView().down('grid'),
             menu = conditionsGrid.down('#addConditionBtn').getMenu(),
             store = conditionsGrid.getStore();
 
@@ -540,7 +564,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             if(item.allowMultiple){
                 return;
             }
-            item.setDisabled(store.findRecord('conditionType', item.conditionType) ? true : false);
+            item.setDisabled(store.findRecord(conditionsEditorView.fields.type, item.conditionType) ? true : false);
         });
     },
 
@@ -548,13 +572,16 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      * Adds a new condition for the edited rule
      */
     addCondition: function (menu, item) {
-        var me = this;
+        var me = this,
+            view = this.getView();
+
         if( item === undefined){
             return;
         }
         var record = Ext.create(me.getView().model);
-        record.set('conditionType', item.conditionType);
-        record.set('javaClass', me.ruleJavaClass);
+
+        record.set(view.fields.type, item.conditionType);
+        record.set('javaClass', view.javaClassValue);
         me.getView().down('grid').getStore().add(record);
         me.setMenuConditions();
     },
@@ -572,9 +599,10 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      * Renders the condition name in the grid
      */
     conditionRenderer: function (val, column) {
-        // Better way to pull?
-        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.masterGrid.conditionsMap[val].displayName) + '"';
-        return '<strong>' + this.masterGrid.conditionsMap[val].displayName + ':</strong>';
+        var view = this.getView();
+
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(view.conditions[val].displayName) + '"';
+        return '<strong>' + view.conditions[val].displayName + ':</strong>';
     },
 
     /**
@@ -611,17 +639,16 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
 
         var fields = grid.query('tableview')[0].query('field');
 
-        // !!! ok for ips, is it ok for others?
-        // !! check flag for this.
-        // if(!fields.length){
-        //     return false;
-        // }
+        if(!this.getView().allowEmpty && !fields.length){
+            return false;
+        }
 
         var valid = true;
         Ext.Array.each(fields, function (field) {
             if (!field.isValid()) {
                 valid = false;
             }
+            // console.log(field);
             // do a switch here for types.
             // If checkboxes, make sure at least one is checked.
         });
