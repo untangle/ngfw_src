@@ -244,7 +244,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                         emptyText: 'No QOS Rules defined'.t(),
 
                         listProperty: 'settings.qosSettings.qosRules.list',
-                        ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
 
                         emptyRow: {
                             ruleId: -1,
@@ -257,21 +256,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 list: []
                             }
                         },
-
-                        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-                            'DST_LOCAL',
-                            'DST_ADDR',
-                            'DST_PORT',
-                            {
-                                name: 'PROTOCOL',
-                                values: [["TCP","TCP"],["UDP","UDP"]]
-                            },
-                            'SRC_INTF',
-                            'SRC_ADDR',
-                            'SRC_PORT',
-                            'CLIENT_TAGGED',
-                            'SERVER_TAGGED'
-                        ),
 
                         label: 'Perform the following action(s):'.t(),
 
@@ -305,7 +289,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                         editorFields: [
                             Field.enableRule(),
                             Field.description,
-                            Field.conditions,
+                            Field.conditions(
+                                'com.untangle.uvm.network.QosRuleCondition', [
+                                'DST_LOCAL',
+                                'DST_ADDR',
+                                'DST_PORT',
+                                {
+                                    name: 'PROTOCOL',
+                                    values: [["TCP","TCP"],["UDP","UDP"]]
+                                },
+                                'SRC_INTF',
+                                'SRC_ADDR',
+                                'SRC_PORT',
+                                'CLIENT_TAGGED',
+                                'SERVER_TAGGED'
+                            ]),
                             Field.priority
                         ]
                     }]
@@ -449,30 +447,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                 emptyText: 'No Access Rules defined'.t(),
 
                 listProperty: 'settings.accessRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
-                conditions: Ung.cmp.ConditionsEditor.buildConditions(
-                    //DST_LOCAL makes no sense on Access Rules because definitionally they are destined local
-                    //However, we used to allow users to add it so we keep this here so it renders correctly
-                    //but visible is false so it will not appear when creating new rules.
-                    {
-                        name:"DST_LOCAL",
-                        visible: false
-                    },
-                    "DST_ADDR",
-                    "DST_PORT",
-                    "DST_INTF",
-                    "SRC_MAC",
-                    "SRC_ADDR",
-                    "SRC_PORT",
-                    "SRC_INTF",
-                    {
-                        name:"PROTOCOL", 
-                        values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"],["OSPF","OSPF"]]
-                    },
-                    "CLIENT_TAGGED",
-                    "SERVER_TAGGED"
-                ),
 
                 emptyRow: {
                     ruleId: -1,
@@ -535,7 +509,25 @@ Ext.define('Ung.config.network.view.Advanced', {
                     Field.enableRule('Enable Access Rule'.t()),
                     Field.enableIpv6,
                     Field.description,
-                    Field.conditions,
+                    Field.conditions(
+                        'com.untangle.uvm.network.FilterRuleCondition', [{
+                            // DST_LOCAL makes no sense on Access Rules because definitionally they are destined local
+                            // However, we used to allow users to add it so we keep this here so it renders correctly
+                            // but visible is false so it will not appear when creating new rules.
+                            name:"DST_LOCAL",
+                            visible: false
+                        },
+                        "DST_ADDR",
+                        "DST_PORT",
+                        "DST_INTF",
+                        "SRC_MAC",
+                        "SRC_ADDR",
+                        "SRC_PORT",
+                        "SRC_INTF",
+                        "PROTOCOL",
+                        "CLIENT_TAGGED",
+                        "SERVER_TAGGED"
+                    ]),
                     Field.blockedCombo
                 ]
             }]
@@ -653,13 +645,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                         emptyText: 'No Access Control Rules defined'.t(),
 
                         listProperty: 'settings.upnpSettings.upnpRules.list',
-                        ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
-
-                        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-                            'DST_PORT',
-                            'SRC_ADDR',
-                            'SRC_PORT'
-                        ),
 
                         emptyRow: {
                             ruleId: -1,
@@ -712,7 +697,12 @@ Ext.define('Ung.config.network.view.Advanced', {
                         editorFields: [
                             Field.enableRule(),
                             Field.description,
-                            Field.conditions,
+                            Field.conditions(
+                                'com.untangle.uvm.network.UpnpRuleCondition',[
+                                'DST_PORT',
+                                'SRC_ADDR',
+                                'SRC_PORT'
+                            ]),
                             Field.allow
                         ]
                     }]

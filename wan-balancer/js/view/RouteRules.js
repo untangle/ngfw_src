@@ -24,18 +24,6 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.routeRules.list',
-    ruleJavaClass: 'com.untangle.app.wan_balancer.RouteRuleCondition',
-
-    conditions: Ung.cmp.ConditionsEditor.buildConditions(
-        "DST_ADDR",
-        "DST_PORT",
-        "SRC_ADDR",
-        "SRC_PORT",
-        "SRC_INTF",
-        "PROTOCOL",
-        "CLIENT_TAGGED",
-        "SERVER_TAGGED"
-    ),
 
     emptyRow: {
         ruleId: 0,
@@ -67,7 +55,17 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
     editorFields: [
         Field.enableRule(),
         Field.description,
-        Field.conditions, {
+        Field.conditions(
+            'com.untangle.app.wan_balancer.RouteRuleCondition', [
+            "DST_ADDR",
+            "DST_PORT",
+            "SRC_ADDR",
+            "SRC_PORT",
+            "SRC_INTF",
+            "PROTOCOL",
+            "CLIENT_TAGGED",
+            "SERVER_TAGGED"
+        ]), {
             xtype: 'combo',
             fieldLabel: 'Destination WAN'.t(),
             bind: {

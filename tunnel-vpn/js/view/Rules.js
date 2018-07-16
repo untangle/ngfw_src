@@ -25,18 +25,6 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     emptyText: 'No Rules defined'.t(),
 
     listProperty: 'settings.rules.list',
-    ruleJavaClass: 'com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition',
-
-    conditions: Ung.cmp.ConditionsEditor.buildConditions(
-        "DST_ADDR",
-        "DST_PORT",
-        "SRC_ADDR",
-        "SRC_PORT",
-        "SRC_INTF",
-        "PROTOCOL",
-        "CLIENT_TAGGED",
-        "SERVER_TAGGED"
-    ),
 
     emptyRow: {
         ruleId: 0,
@@ -73,7 +61,17 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     editorFields: [
         Field.enableRule(),
         Field.description,
-        Field.conditions, {
+        Field.conditions(
+            'com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition', [
+            "DST_ADDR",
+            "DST_PORT",
+            "SRC_ADDR",
+            "SRC_PORT",
+            "SRC_INTF",
+            "PROTOCOL",
+            "CLIENT_TAGGED",
+            "SERVER_TAGGED"
+        ]), {
             xtype: 'combo',
             fieldLabel: 'Destination Tunnel'.t(),
             bind: {

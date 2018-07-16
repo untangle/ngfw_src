@@ -29,19 +29,6 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
         listProperty: 'settings.portForwardRules.list',
         recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',
-        ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
-
-        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-            "DST_LOCAL",
-            "DST_ADDR",
-            "DST_PORT",
-            "SRC_ADDR",
-            "SRC_PORT",
-            "SRC_INTF",
-            "PROTOCOL",
-            "CLIENT_TAGGED",
-            "SERVER_TAGGED"
-        ),
 
         emptyText: 'No Port Forward Rules defined'.t(),
 
@@ -92,7 +79,18 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         editorFields: [
             Field.enableRule('Enable Port Forward Rule'.t()),
             Field.description,
-            Field.conditions,
+            Field.conditions(
+                'com.untangle.uvm.network.PortForwardRuleCondition',[
+                "DST_LOCAL",
+                "DST_ADDR",
+                "DST_PORT",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
             Field.newDestination,
             Field.newPort
         ]
