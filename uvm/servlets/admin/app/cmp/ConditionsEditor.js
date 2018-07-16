@@ -5,8 +5,15 @@ Ext.define('Ung.cmp.ConditionsEditor', {
     controller: 'conditionseditorcontroller',
 
     model: 'Ung.model.Condition',
-    comparatorField: 'invert',
-    valueField: 'value',
+
+    fields: {
+        type: 'conditionType',
+        comparator: 'invert',
+        value: 'value',
+    },
+    javaClassValue: '',
+
+    allowEmpty: true,
 
     margin: '0 -10 0 -10',
 
@@ -19,20 +26,20 @@ Ext.define('Ung.cmp.ConditionsEditor', {
     },
 
     isFormField: true,
-        
-    conditionText: 'If all of the following conditions are met:'.t(),
-    actionText: 'Perform the following action(s):'.t(),
+
+    text:{
+        condition: 'If all of the following conditions are met:'.t(),
+        action: 'Perform the following action(s):'.t(),
+    },
 
     border: 0,
     items:[{
         xtype: 'component',
         name: 'conditionLabel',
         padding: '10 0 0 0',
-        tpl: '<strong>{conditionText}</strong>'
+        tpl: '<strong>{text.condition}</strong>'
     },{
         xtype: 'grid',
-        // !!! bad name
-        name: 'stuff',
         disableSelection: true,
         sortableColumns: false,
         enableColumnHide: false,
@@ -40,31 +47,27 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         padding: '10 0',
         tbar: ['@addCondition'],
         viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Conditions! Add from the menu...</p>',
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa {emptyIcon} fa-2x"></i> <br/>{emptyText}</p>',
             stripeRows: false,
         },
         columns: [{
             header: 'Type'.t(),
+            widgetType: 'type',
             menuDisabled: true,
-            dataIndex: 'conditionType',
             align: 'right',
             width: Renderer.uriWidth,
             renderer: 'conditionRenderer'
-            // Option to make this comparator
-            // bind: '{record.comparator}',
-            // onWidgetAttach: 'comparatorWidgetAttach'
         }, {
             xtype: 'widgetcolumn',
             widgetType: 'comparator',
+            width: Renderer.comparatorWidth,
             menuDisabled: true,
-            width: Renderer.conditionsWidth,
             resizable: false,
             cellWrap: true,
             sortable: false,
             widget: {
                 xtype: 'container',
-                layout: 'fit',
-                // bind: '{record.invert}',
+                layout: 'fit'
             },
             onWidgetAttach: 'onWidgetAttach',
         }, {
@@ -77,8 +80,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             sortable: false,
             widget: {
                 xtype: 'container',
-                layout: 'fit',
-                // bind: '{record.value}'
+                layout: 'fit'
             },
             onWidgetAttach: 'onWidgetAttach',
         }, {
@@ -95,17 +97,23 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         xtype: 'component',
         name: 'actionLabel',
         padding: '0 0 10 0',
-        tpl: '<strong>{actionText}</strong>'
+        tpl: '<strong>{text.action}</strong>'
     }],
 
     constructor: function(config) {
         var me = this;
-        var bind = config.bind;
-        var model = config.model;
+
+        var bind = config.bind || me.bind;
+        var model = config.model || me.model;
+        var allowEmpty = config.allowEmpty || me.allowEmpty;
+        var fields = config.fields || me.fields;
+
         if(bind){
             me.recordName = bind.substring(1,bind.length - 1);
-            me.items.forEach(function(item){
-                if(item.xtype == 'grid'){
+        }
+        me.items.forEach(function(item){
+            if(item.xtype == 'grid'){
+                if(bind){
                     Ext.apply(item, {
                         bind: {
                             store: {
@@ -114,17 +122,25 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                             }
                         }
                     });
-                    if(item.columns){
-                        item.columns.forEach( function(column){
-                            if(column.widgetType == 'comparator'){
-                                column.widget.bind = '{record.' + me.comparatorField + '}';
-                            }else if(column.widgetType == 'value'){
-                                column.widget.bind = '{record.' + me.valueField + '}';
-                            }
-                        });
-                    }
                 }
-            });
+                if(model && item.columns){
+                    item.columns.forEach( function(column){
+                        if(column.widgetType == 'type'){
+                            column.dataIndex = fields.type;
+                        }else if(column.widgetType == 'comparator'){
+                            column.widget.bind = '{record.' + fields.comparator + '}';
+                        }else if(column.widgetType == 'value'){
+                            column.widget.bind = '{record.' + fields.value + '}';
+                        }
+                    });
+                }
+                item.viewConfig.emptyText = new Ext.Template(item.viewConfig.emptyText).apply({
+                    emptyIcon: allowEmpty ? 'fa-exclamation-triangle' : 'fa-exclamation-circle',
+                    emptyText: 'No Conditions! Add from the menu...'.t()
+                });
+            }
+        });
+        if(bind){
             delete config.bind;
         }
         me.callParent([config]);
@@ -138,6 +154,112 @@ Ext.define('Ung.cmp.ConditionsEditor', {
     },
 
     statics:{
+        rendererConditionTemplate: '{type} <strong>{comparator} <span class="cond-val"> {value}</span></strong>'.t(),
+        renderer: function(value, meta){
+            if (!value) {
+                // No value to process.
+                return '';
+            }
+
+            var view = this.getView().up('grid'),
+                conditions = value.list,
+                resp = [], i, valueRenderer = [];
+
+            // !!! maybe attach to grid to save finding again?
+            var conditionsEditorField = Ext.Array.findBy(view.editorFields, function(item){
+                if(item.xtype == 'conditionseditor'){
+                    return true;
+                }
+            });
+
+            conditions.forEach(function(condition){
+                var type = condition[conditionsEditorField.fields.type];
+                var comparator = condition[conditionsEditorField.fields.comparator];
+                var value = condition[conditionsEditorField.fields.value];
+
+                comparatorRender = '';
+                valueRenderer = [];
+
+                switch (type) {
+                case 'SRC_INTF':
+                case 'DST_INTF':
+                    value.toString().split(',').forEach(function (intfff) {
+                        Util.getInterfaceList(true, true).forEach(function(interface){
+                            if(interface[0] == intfff){
+                                valueRenderer.push(interface[1]);
+                            }
+                        });
+                    });
+                    break;
+                case 'DST_LOCAL':
+                case 'WEB_FILTER_FLAGGED':
+                    valueRenderer.push('true'.t());
+                    break;
+                case 'DAY_OF_WEEK':
+                    value.toString().split(',').forEach(function (day) {
+                        valueRenderer.push(Util.weekdaysMap[day]);
+                    });
+                    break;
+                default:
+                    // to avoid exceptions, in some situations condition value is null
+                    if (value !== null) {
+                        valueRenderer = value.toString().split(',');
+                    } else {
+                        valueRenderer = [];
+                    }
+                }
+
+                // for boolean conditions just add 'True' string as value
+                if (conditionsEditorField.conditions[type] != undefined && conditionsEditorField.conditions[type].type === 'boolean'){
+                    valueRenderer = ['True'.t()];
+                }
+
+                if(conditionsEditorField.fields.comparator == 'invert'){
+                    comparatorRender = (comparator == true ? '&nrArr;' : '&rArr;' );
+                }else{
+                    switch(conditionsEditorField.conditions[type].comparator){
+                        case 'boolean':
+                            comparatorRender = (comparator == false ? '&nrArr;' : '&rArr;' );
+                            break;
+                        case 'numeric':
+                            switch(comparator){
+                                case '<=':
+                                    comparatorRender = '&le;';
+                                    break;
+                                case '>=':
+                                    comparatorRender = '&ge;';
+                                    break;
+                                default:
+                                    comparatorRender = comparator;
+                            }
+                            break;
+                        case 'text':
+                            switch(comparator){
+                                case 'substr':
+                                    comparatorRender = '&sub;';
+                                    break;
+                                case '!substr':
+                                    comparatorRender = '&nsub;';
+                                    break;
+                                default:
+                                    comparatorRender = comparator;
+                            }
+                            break;
+                        default:
+                            comparatorRender = comparator;
+                    }
+                }
+                resp.push(new Ext.Template(
+                    Ung.cmp.ConditionsEditor.rendererConditionTemplate
+                ).apply({
+                    type: ( conditionsEditorField.conditions[type] != undefined ? conditionsEditorField.conditions[type].displayName : type ),
+                    comparator: comparatorRender,
+                    value: valueRenderer.join(', ')
+                }));
+            });
+            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( resp.join(' &nbsp;&bull;&nbsp; ') ) + '"';
+            return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
+        },
         /**
          * Nearly all rule conditions use the same condition.  Most that don't use a subset.
          * Define what you want by the name values such as:
@@ -167,33 +289,92 @@ Ext.define('Ung.cmp.ConditionsEditor', {
          * 
          * @return {[type]} [description]
          */
-        buildConditions: function(){
-            var conditions = [];
+        build: function(config){
 
-            var found = false;
-            for(var i = 0; i < arguments.length; i++){
-                var argument = typeof(arguments[i]) == 'object' ? arguments[i] : {name: arguments[i]};
+            for(var key in config){
+                if(key == 'conditions'){
+                    var conditionsOrder = [];
+                    var conditions = [];
+                    var found = false;
+                    config[key].forEach( function(configCondition){
+                        configCondition = typeof(configCondition) == 'object' ? configCondition : {name: configCondition};
 
-                found = false;
-                Ung.cmp.ConditionsEditor.conditions.forEach( function(condition){
-                    if(condition.name == argument.name){
-                        var newCondition = Ext.clone(condition);
-                        Ext.merge(newCondition, argument);
-                        conditions.push(newCondition);
-                        found = true;
-                    }
-                });
-                if(!found){
-                    if('name' in argument && 'displayName' in argument && 'type' in argument ){
-                        conditions.push(argument);
-                    }else{
-                        console.log("not found");
-                        console.log(argument);
+                        /// !!! fill in values for:
+                        /// comparator, default=invert
+                        /// visible, defailt=true
+                        /// allowMultiple, default=false
+
+                        found = false;
+                        Ung.cmp.ConditionsEditor.conditions.forEach( function(condition){
+                            if(condition.name == configCondition.name){
+                                var newCondition = Ext.clone(condition);
+                                Ext.merge(newCondition, configCondition);
+                                conditions.push(newCondition);
+                                conditionsOrder.push(condition.name);
+                                found = true;
+                            }
+                        });
+                        if(!found){
+                            if('name' in configCondition && 'displayName' in configCondition && 'type' in configCondition ){
+                                conditions.push(configCondition);
+                                conditionsOrder.push(configCondition.name);
+                            }else{
+                                console.log("not found");
+                                console.log(configCondition);
+                            }
+                        }
+                    } );
+                    config[key] = Ext.Array.toValueMap(conditions, 'name');
+                    if( !config['conditionsOrder'] ){
+                        config['conditionsOrder'] = conditionsOrder;
                     }
                 }
             }
-            return conditions;
+            return Ext.apply({}, config);
         },
+
+        comparators: [{
+            name: 'invert',
+            store: [[
+                true, 'is NOT'.t()
+            ],[
+                false, 'is'.t()
+            ]]
+        },{
+            name: 'numeric',
+            store:  [[
+                '<', '<'.t()
+            ],[
+                '<=', '<='.t()
+            ],[
+                '=', '='.t()
+            ],[
+                '!=', '!='.t()
+            ],[
+                '>=', '>='.t()
+            ],[
+                '>', '>'.t(),
+            ]]
+        },{
+            name: 'text',
+            store: [[
+                '=', '='.t()
+            ],[
+                '!=', '!='.t()
+            ],[
+                'substr', 'Contains'.t()
+            ],[
+                '!substr', 'Does not contain'.t()
+            ]]
+        },{
+            // More accurately a "boolean in string" where is:= and is not:!=
+            name: 'boolean',
+            store: [[
+                '=', 'is'.t()
+            ],[
+                '!=', 'is NOT'.t()
+            ]]
+        }],
 
         // If not specified, visible is treated as true.
         conditions: [{
