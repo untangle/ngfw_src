@@ -22,7 +22,6 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.rules.list',
-    ruleJavaClass: 'com.untangle.app.bandwidth_control.BandwidthControlRuleCondition',
 
     emptyText: 'No Rules defined'.t(),
 
@@ -65,7 +64,85 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     editorFields: [
         Field.enableRule(),
         Field.description,
-        Field.conditions, {
+        Field.conditions(
+            'com.untangle.app.bandwidth_control.BandwidthControlRuleCondition', [
+            "DST_ADDR",
+            "DST_PORT",
+            "DST_INTF",
+            "SRC_ADDR",
+            "SRC_PORT",
+            "SRC_INTF",
+            "PROTOCOL",
+            "TAGGED",
+            "USERNAME",
+            "HOST_HOSTNAME",
+            "CLIENT_HOSTNAME",
+            "SERVER_HOSTNAME",
+            {
+                name:"HOST_MAC",
+                displayName: "Host MAC Address".t(),
+                type: "textfield"
+            },
+            "SRC_MAC",
+            "DST_MAC",
+            {
+                name:"HOST_MAC_VENDOR",
+                displayName: "Host MAC Vendor".t(),
+                type: "textfield"
+            },
+            "CLIENT_MAC_VENDOR",
+            "SERVER_MAC_VENDOR",
+            {
+                name:"HOST_IN_PENALTY_BOX",
+                displayName: "Host in Penalty Box".t(),
+                type: "boolean"
+            },
+            "CLIENT_IN_PENALTY_BOX",
+            "SERVER_IN_PENALTY_BOX",
+            "HOST_HAS_NO_QUOTA",
+            "USER_HAS_NO_QUOTA",
+            "CLIENT_HAS_NO_QUOTA",
+            "SERVER_HAS_NO_QUOTA",
+            "HOST_QUOTA_EXCEEDED",
+            "USER_QUOTA_EXCEEDED",
+            "CLIENT_QUOTA_EXCEEDED",
+            "SERVER_QUOTA_EXCEEDED",
+            "HOST_QUOTA_ATTAINMENT",
+            "USER_QUOTA_ATTAINMENT",
+            "CLIENT_QUOTA_ATTAINMENT",
+            "SERVER_QUOTA_ATTAINMENT",
+            'HOST_ENTITLED',
+            "HTTP_HOST",
+            "HTTP_REFERER",
+            "HTTP_URI",
+            "HTTP_URL",
+            "HTTP_CONTENT_TYPE",
+            "HTTP_CONTENT_LENGTH",
+            "HTTP_USER_AGENT",
+            "HTTP_USER_AGENT_OS",
+            "APPLICATION_CONTROL_APPLICATION",
+            "APPLICATION_CONTROL_CATEGORY",
+            "APPLICATION_CONTROL_PROTOCHAIN",
+            "APPLICATION_CONTROL_DETAIL",
+            "APPLICATION_CONTROL_CONFIDENCE",
+            "APPLICATION_CONTROL_PRODUCTIVITY",
+            "APPLICATION_CONTROL_RISK",
+            "PROTOCOL_CONTROL_SIGNATURE",
+            "PROTOCOL_CONTROL_CATEGORY",
+            "PROTOCOL_CONTROL_DESCRIPTION",
+            "WEB_FILTER_CATEGORY",
+            "WEB_FILTER_CATEGORY_DESCRIPTION",
+            "WEB_FILTER_FLAGGED",
+            "DIRECTORY_CONNECTOR_GROUP",
+            'DIRECTORY_CONNECTOR_DOMAIN',
+            {
+                name:"REMOTE_HOST_COUNTRY",
+                displayName: 'Remote Host Country'.t(),
+                type: 'countryfield'
+            },
+            "CLIENT_COUNTRY",
+            "SERVER_COUNTRY"
+        ]), {
             xtype: 'combo',
             reference: 'actionType',
             publishes: 'value',
@@ -158,85 +235,5 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
             allowBlank: false,
             editable: true,
         }
-    ],
-
-    conditions: Ung.cmp.ConditionsEditor.buildConditions(
-        "DST_ADDR",
-        "DST_PORT",
-        "DST_INTF",
-        "SRC_ADDR",
-        "SRC_PORT",
-        "SRC_INTF",
-        "PROTOCOL",
-        "TAGGED",
-        "USERNAME",
-        "HOST_HOSTNAME",
-        "CLIENT_HOSTNAME",
-        "SERVER_HOSTNAME",
-        {
-            name:"HOST_MAC",
-            displayName: "Host MAC Address".t(),
-            type: "textfield"
-        },
-        "SRC_MAC",
-        "DST_MAC",
-        {
-            name:"HOST_MAC_VENDOR",
-            displayName: "Host MAC Vendor".t(),
-            type: "textfield"
-        },
-        "CLIENT_MAC_VENDOR",
-        "SERVER_MAC_VENDOR",
-        {
-            name:"HOST_IN_PENALTY_BOX",
-            displayName: "Host in Penalty Box".t(),
-            type: "boolean"
-        },
-        "CLIENT_IN_PENALTY_BOX",
-        "SERVER_IN_PENALTY_BOX",
-        "HOST_HAS_NO_QUOTA",
-        "USER_HAS_NO_QUOTA",
-        "CLIENT_HAS_NO_QUOTA",
-        "SERVER_HAS_NO_QUOTA",
-        "HOST_QUOTA_EXCEEDED",
-        "USER_QUOTA_EXCEEDED",
-        "CLIENT_QUOTA_EXCEEDED",
-        "SERVER_QUOTA_EXCEEDED",
-        "HOST_QUOTA_ATTAINMENT",
-        "USER_QUOTA_ATTAINMENT",
-        "CLIENT_QUOTA_ATTAINMENT",
-        "SERVER_QUOTA_ATTAINMENT",
-        'HOST_ENTITLED',
-        "HTTP_HOST",
-        "HTTP_REFERER",
-        "HTTP_URI",
-        "HTTP_URL",
-        "HTTP_CONTENT_TYPE",
-        "HTTP_CONTENT_LENGTH",
-        "HTTP_USER_AGENT",
-        "HTTP_USER_AGENT_OS",
-        "APPLICATION_CONTROL_APPLICATION",
-        "APPLICATION_CONTROL_CATEGORY",
-        "APPLICATION_CONTROL_PROTOCHAIN",
-        "APPLICATION_CONTROL_DETAIL",
-        "APPLICATION_CONTROL_CONFIDENCE",
-        "APPLICATION_CONTROL_PRODUCTIVITY",
-        "APPLICATION_CONTROL_RISK",
-        "PROTOCOL_CONTROL_SIGNATURE",
-        "PROTOCOL_CONTROL_CATEGORY",
-        "PROTOCOL_CONTROL_DESCRIPTION",
-        "WEB_FILTER_CATEGORY",
-        "WEB_FILTER_CATEGORY_DESCRIPTION",
-        "WEB_FILTER_FLAGGED",
-        "DIRECTORY_CONNECTOR_GROUP",
-        'DIRECTORY_CONNECTOR_DOMAIN',
-        {
-            name:"REMOTE_HOST_COUNTRY",
-            displayName: 'Remote Host Country'.t(),
-            type: 'countryfield'
-        },
-        "CLIENT_COUNTRY",
-        "SERVER_COUNTRY"
-    )
-
+    ]
 });

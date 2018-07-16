@@ -39,7 +39,6 @@ Ext.define('Ung.config.system.view.Shield', {
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'shieldSettings.rules.list',
-        ruleJavaClass: 'com.untangle.app.shield.ShieldRuleCondition',
 
         emptyRow: {
             ruleId: -1,
@@ -52,18 +51,6 @@ Ext.define('Ung.config.system.view.Shield', {
                 list: []
             }
         },
-
-        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-            "DST_ADDR",
-            "DST_PORT",
-            "DST_INTF",
-            "SRC_ADDR",
-            "SRC_PORT",
-            "SRC_INTF",
-            "PROTOCOL",
-            "CLIENT_TAGGED",
-            "SERVER_TAGGED"
-        ),
 
         columns: [{
             header: 'Rule Id'.t(),
@@ -93,7 +80,18 @@ Ext.define('Ung.config.system.view.Shield', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions, {
+            Field.conditions(
+                'com.untangle.app.shield.ShieldRuleCondition', [
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]), {
                 xtype: 'combo',
                 fieldLabel: 'Action',
                 allowBlank: false,

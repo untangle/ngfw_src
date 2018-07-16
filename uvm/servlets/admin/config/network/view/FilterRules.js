@@ -27,20 +27,6 @@ Ext.define('Ung.config.network.view.FilterRules', {
         emptyText: 'No Filter Rules defined'.t(),
 
         listProperty: 'settings.filterRules.list',
-        ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
-        conditions: Ung.cmp.ConditionsEditor.buildConditions(
-            "DST_ADDR",
-            "DST_PORT",
-            "DST_INTF",
-            "SRC_MAC" ,
-            "SRC_ADDR",
-            "SRC_PORT",
-            "SRC_INTF",
-            "PROTOCOL",
-            "CLIENT_TAGGED",
-            "SERVER_TAGGED"
-        ),
 
         emptyRow: {
             ruleId: -1,
@@ -99,7 +85,19 @@ Ext.define('Ung.config.network.view.FilterRules', {
             Field.enableRule('Enable Filter Rule'.t()),
             Field.enableIpv6,
             Field.description,
-            Field.conditions,
+            Field.conditions(
+                'com.untangle.uvm.network.FilterRuleCondition',[
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_MAC" ,
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
             Field.blockedCombo
         ]
     }]
