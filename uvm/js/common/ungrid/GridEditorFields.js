@@ -2,10 +2,18 @@ Ext.define('Ung.cmp.GridEditorFields', {
     singleton: true,
     alternateClassName: 'Field',
 
-    conditions: {
-        xtype: 'conditionseditor',
-        // flex: 1,
-        bind: '{record.conditions}',
+    conditions: function(javaClassValue, conditions){
+        return Ung.cmp.ConditionsEditor.build({
+            xtype: 'conditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'conditionType',
+                comparator: 'invert',
+                value: 'value',
+            },
+            javaClassValue: javaClassValue,
+            conditions: conditions
+        });
     },
 
     enableRule: function (label) {
