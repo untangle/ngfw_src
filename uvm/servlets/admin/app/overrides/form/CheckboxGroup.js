@@ -16,7 +16,10 @@ Ext.define('Ung.overrides.form.CheckboxGroup', {
                 cbValue = false;
 
                 if (value) {
-                    var arr_val = value.split(',');
+                    var arr_val = value;
+                    if(!Ext.isArray(value)){
+                        arr_val = value.split(',');
+                    }
                     if (Ext.isArray(arr_val)) {
                         cbValue = Ext.Array.contains(arr_val, box.inputValue);
                     } else {
