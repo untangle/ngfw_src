@@ -7,7 +7,12 @@ Ext.define('Ung.cmp.GridController', {
 
     control: {
         '#': {
-            drop: 'onDropRecord'
+            drop: 'onDropRecord',
+            beforeedit: 'onBeforeEdit'
+        },
+        'checkcolumn':{
+            beforecheckchange: 'onBeforeCheckChange'
+
         }
     },
 
@@ -108,6 +113,32 @@ Ext.define('Ung.cmp.GridController', {
         this.dialog.show();
     },
 
+    isRecordRestricted: function(record){
+        var restrict = this.getView().restrictedRecords;
+
+        if( restrict &&
+            restrict.valueMatch.test( record.get(restrict.keyMatch) )){
+            return true;
+        }
+        return false;
+    },
+
+    isRecordRestrictedField: function(record, dataIndex){
+        var restrict = this.getView().restrictedRecords;
+
+        if(!this.getView().getController().isRecordRestricted(record)){
+            return false;
+        }
+
+        var result = true;
+        restrict.editableFields.forEach( function(field){
+            if(field == dataIndex){
+                result = false;
+            }
+        });
+        return result;
+    },
+
     simpleEditorWin: function (record, action) {
         this.simpledialog = this.getView().add({
             xtype: this.getView().simpleEditorAlias,
@@ -200,6 +231,19 @@ Ext.define('Ung.cmp.GridController', {
         data.records.forEach(function(record){
             record.set('markedForMove', true);
         });
+    },
+
+    onBeforeEdit: function(plugin, edit){
+        if(edit.grid.getController().isRecordRestrictedField(edit.record, edit.column.dataIndex)){
+            return false;
+        }
+        return true;
+    },
+    onBeforeCheckChange: function(column, rowIndex, checked, record){
+        if(column.up('grid').getController().isRecordRestrictedField(record, column.dataIndex)){
+            return false;
+        }
+        return true;
     },
 
     // import/export features
