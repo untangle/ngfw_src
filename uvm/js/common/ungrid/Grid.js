@@ -170,7 +170,7 @@ Ext.define('Ung.cmp.Grid', {
                 if (record.get('markedForNew')) {
                     return 'mark-new';
                 }
-                if (record.get('readOnly')) {
+                if (this.up('grid').getController().isRecordRestricted(record) || record.get('readOnly')) {
                     return 'mark-readonly';
                 }
                 if (record.get('markedForMove')) {
@@ -260,7 +260,7 @@ Ext.define('Ung.cmp.Grid', {
                         menuDisabled: true,
                         hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
-                            return record.get('readOnly') || false;
+                            return record.get('readOnly') || table.up('grid').getController().isRecordRestricted(record) || false;
                         }
                     };
                     columns.push(column);
@@ -295,7 +295,7 @@ Ext.define('Ung.cmp.Grid', {
                         menuDisabled: true,
                         hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
-                            return record.get('readOnly') || false;
+                            return record.get('readOnly') || table.up('grid').getController().isRecordRestricted(record) || false;
                         }
                     };
                     columns.push(column);
