@@ -289,6 +289,15 @@ Ext.define('Ung.cmp.ConditionsEditor', {
          * 
          * @return {[type]} [description]
          */
+        defaultCondition: {
+            name: 'name',
+            displayName: 'name',
+            type: 'textfield',
+            comparator: 'invert',
+            visible: true,
+            allowMultiple: false
+
+        },
         build: function(config){
 
             for(var key in config){
@@ -299,25 +308,23 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     config[key].forEach( function(configCondition){
                         configCondition = typeof(configCondition) == 'object' ? configCondition : {name: configCondition};
 
-                        /// !!! fill in values for:
-                        /// comparator, default=invert
-                        /// visible, defailt=true
-                        /// allowMultiple, default=false
+                        var newCondition = Ext.clone(Ung.cmp.ConditionsEditor.defaultCondition);
 
                         found = false;
                         Ung.cmp.ConditionsEditor.conditions.forEach( function(condition){
                             if(condition.name == configCondition.name){
-                                var newCondition = Ext.clone(condition);
+                                Ext.merge(newCondition, condition);
                                 Ext.merge(newCondition, configCondition);
                                 conditions.push(newCondition);
-                                conditionsOrder.push(condition.name);
+                                conditionsOrder.push(newCondition.name);
                                 found = true;
                             }
                         });
                         if(!found){
                             if('name' in configCondition && 'displayName' in configCondition && 'type' in configCondition ){
-                                conditions.push(configCondition);
-                                conditionsOrder.push(configCondition.name);
+                                Ext.merge(newCondition, configCondition);
+                                conditions.push(newCondition);
+                                conditionsOrder.push(newCondition.name);
                             }else{
                                 console.log("not found");
                                 console.log(configCondition);
