@@ -7,6 +7,7 @@ import re
 
 from intrusion_prevention.snort_signature import SnortSignature
 from intrusion_prevention.snort_signatures import SnortSignatures
+from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule
 
 class IntrusionPreventionSettings:
     """
@@ -149,7 +150,8 @@ class IntrusionPreventionSettings:
             )
         settings_file.close()
 
-    def set_patch(self, patch, defaults_profile=None):
+    # def set_patch(self, patch, defaults_profile=None):
+    def set_patch(self, patch):
         """
         Processing settings patch from UI
         """
@@ -163,6 +165,10 @@ class IntrusionPreventionSettings:
                 for var_id in patch.settings[key]:
                     if patch.settings[key][var_id]["op"] == "deleted":
                         self.set_patch_variable(patch.settings[key][var_id])
+            elif key == "rules":
+                for rule_id in patch.settings[key]:
+                    if patch.settings[key][rule_id]["op"] == "deleted":
+                        self.set_patch_rule(patch.settings[key][rule_id])
 
         for key in patch.settings:
             if key == "signatures":
@@ -173,9 +179,13 @@ class IntrusionPreventionSettings:
                 for var_id in patch.settings[key]:
                     if patch.settings[key][var_id]["op"] != "deleted":
                         self.set_patch_variable(patch.settings[key][var_id])
-            elif key == "activeGroups":
-                self.set_patch_active_groups(patch.settings[key], defaults_profile)
-                self.settings[key] = patch.settings[key] 
+            elif key == "rules":
+                for rule_id in patch.settings[key]:
+                    if patch.settings[key][rule_id]["op"] != "deleted":
+                        self.set_patch_rule(patch.settings[key][rule_id])
+            # elif key == "activeGroups":
+            #     self.set_patch_active_groups(patch.settings[key], defaults_profile)
+            #     self.settings[key] = patch.settings[key] 
             else:
                 #
                 # Otherwise, just set as-is
@@ -201,6 +211,40 @@ class IntrusionPreventionSettings:
             self.signatures.modify_signature( snort_signature )
         elif operation == "deleted":
             self.signatures.delete_signature( snort_signature.signature_id )
+
+    def set_patch_rule(self, rulePatch):
+        """
+        Rule diff to add, modify, remove
+        """
+        rule = {
+            "description": rulePatch["recData"]["description"],
+            "enabled": rulePatch["recData"]["enabled"],
+            "id": rulePatch["recData"]["id"],
+            "action": rulePatch["recData"]["action"],
+            "conditions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            }
+        }
+        for condition in rulePatch["recData"]["conditions"]["list"]:
+            rule["conditions"]["list"].append({
+                "type": condition["type"],
+                "comparator": condition["comparator"],
+                "value": condition["value"]
+            })
+
+        operation = rulePatch["op"] 
+        if operation == "added" or operation == "modified":
+            modified = False;
+            for index, settings_rule in enumerate(self.settings["rules"]["list"]):
+                if settings_rule["description"] == rulePatch["recData"]["description"]:
+                    self.settings["rules"]["list"][index] = rule
+                    modified = True
+            if modified is False:
+                self.settings["rules"]["list"].append( rule )
+        elif operation == "deleted":
+            self.settings["rules"]["list"].remove(rule)
+
 
     def set_patch_variable(self, variable):
         """
@@ -230,6 +274,62 @@ class IntrusionPreventionSettings:
         """
         self.signatures.filter_group(active_groups, defaults_profile)
 
+    def update_rules(self, rules):
+        ## build list of currently enabled rules
+        # for rule in rules:
+        #     print(rule)
+        new_rules_list = []
+        enabled_rules = []
+        rule_id = 1
+        for rule in self.settings["rules"]["list"]:
+            if rule["enabled"]:
+                enabled_rules.append(rule["id"])
+            match_reserved_rule = re.search( IntrusionPreventionRule.reserved_id_regex, str(rule["id"]) )
+            if not match_reserved_rule:
+                rule["id"] = rule_id
+                rule_id += 1
+                new_rules_list.append(rule)
+
+        self.settings["rules"]["list"] = new_rules_list
+        for rule in rules:
+            if rule["id"] in enabled_rules:
+                rule["enabled"] = True
+            self.settings["rules"]["list"] = [rule] + self.settings["rules"]["list"]
+
+    def apply_rules(self, signatures):
+        """
+        
+        Using rules, set various actions on signatures.
+
+        Arguments:
+            signatures {[type]} -- [description]
+        """
+        for settingsRule in self.settings["rules"]["list"]:
+            # print settingsRule
+            rule = IntrusionPreventionRule(settingsRule)
+            if not rule.get_enabled():
+                continue
+            print(rule)
+            # 
+            # rule action precidence
+            # default
+            # log
+            # block
+            # disable
+            for signature in signatures.get_signatures().values():
+                # print(signature)
+                # order?
+                # print(rule.matches(signature))
+                if rule.matches(signature):
+                    rule.set_signature_action(signature)
+#                break
+
+    def disable_signatures(self, signatures):
+        for signature in signatures.get_signatures().values():
+            if not signature.get_action_changed():
+                signature.set_action(False, False)
+
+
     def convert(self):
         """
         Convert to current file format
@@ -246,6 +346,10 @@ class IntrusionPreventionSettings:
             if "categories" in self.settings["active_signatures"]:
                 self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_signatures"]["categories"]
             del(self.settings["active_signatures"])
+
+        # !!! convert profiles to rules
+        # 
+        # !!! remove most signatures unless with modified flags
 
     def get_signatures(self):
         """
