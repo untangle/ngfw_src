@@ -7,7 +7,7 @@ class IntrusionPreventionDefaults:
     """
     Profile defaults
     """
-    file_name = "/usr/share/untangle-snort-config/current/templates/defaults.js"
+    file_name = "/usr/share/untangle-snort-config/dev/templates/defaults.js"
 
     def __init__(self):
         self.settings = {}
@@ -40,6 +40,14 @@ class IntrusionPreventionDefaults:
         if ( "categories" in self.settings.keys() ) == False:
             return []
         return self.settings["categories"]
+
+    def get_rules(self):
+        """
+        Pull categories tree
+        """
+        if ( "rules" in self.settings.keys() ) == False:
+            return []
+        return self.settings["rules"]
 
     def get_original_category(self, category):
         """
