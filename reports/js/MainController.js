@@ -253,7 +253,7 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
     },
 
     sendReport: function(unk1, unk2, unk3, event, unk5, record){
-        var v = this.getView();
+        var v = this.getView(), vm = this.getViewModel();
         var dialog = v.add({
             xtype: 'app-reports-sendfixedreport',
             title: 'Send Email Report'.t(),
