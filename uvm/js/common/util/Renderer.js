@@ -200,7 +200,11 @@ Ext.define('Ung.util.Renderer', {
             ( size[0] == 1 ) ){
             return value + ' ' + size[1];
         }else{
-            return ( value / size[0] ).toFixed(2) + ' ' + size[1];
+            dividedValue = ( value / size[0] ).toFixed(2).toString();
+            if(dividedValue.substring(dividedValue.length - 3) == '.00'){
+                dividedValue = dividedValue.substring(0, dividedValue.length - 3);
+            }
+            return dividedValue + ' ' + size[1];
         }
     },
 
