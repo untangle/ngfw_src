@@ -209,9 +209,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     }
                 }
 
-                // for boolean conditions just add 'True' string as value
-                if (conditionsEditorField.conditions[type] != undefined && conditionsEditorField.conditions[type].type === 'boolean'){
-                    valueRenderer = ['True'.t()];
+                switch(conditionsEditorField.conditions[type].type){
+                    case 'sizefield':
+                        valueRenderer = [Renderer.datasize(value)];
+                        break;
+                    case 'boolean':
+                        valueRenderer = ['True'.t()];
+                        break;
                 }
 
                 if(conditionsEditorField.fields.comparator == 'invert'){
