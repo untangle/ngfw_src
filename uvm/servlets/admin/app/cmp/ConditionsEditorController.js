@@ -203,6 +203,22 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     }
                 });
                 break;
+            case 'sizefield':
+                widget.container.add({
+                    xtype: 'numberfield',
+                    fieldLabel: condition.displayName,
+                    hideLabel: true,
+                    style: { margin: 0 },
+                    bind: {
+                        value: valueBind
+                    },
+                    vtype: condition.vtype,
+                    allowBlank: false,
+                    listeners:{
+                        change: 'forceValidate'
+                    }
+                });
+                break;
             case 'checkboxgroup':
                 var ckItems = [];
                 if(condition.store){
