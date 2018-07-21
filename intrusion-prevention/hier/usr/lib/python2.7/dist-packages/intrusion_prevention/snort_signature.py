@@ -22,6 +22,8 @@ class SnortSignature:
         "enabled": False
     }]
 
+    action_changed = False
+
     def __init__(self, match, category, path="rules"):
         self.category = category
         self.path = path
@@ -30,6 +32,7 @@ class SnortSignature:
         else:
             self.enabled = True
         self.action = match.group(2).lower()
+
         if match.group(3) != "":
             [self.protocol, self.lnet, self.lport, self.direction, self.rnet, self.rport,self.options_raw] = match.group(4,5,6,7,8,9,10)
             self.protocol = self.protocol.lower()
@@ -63,6 +66,8 @@ class SnortSignature:
                     self.options[key] = value.strip()
 
         self.signature_id = self.options["sid"] + "_" + self.options["gid"] 
+
+        self.initial_action = self.get_action()
             
     def dump(self):
         """
@@ -87,6 +92,29 @@ class SnortSignature:
             self.enabled = False
         else:
             self.enabled = True
+
+        self.action_changed = True
+
+    def get_action(self):
+        action = {
+            # "enabled": self.enabled,
+            "log": False,
+            "block": False
+        }
+
+        if self.enabled is False:
+            return action
+
+        if self.action == 'drop':
+            action["log"] = True
+            action["block"] = True
+        elif self.action == 'alert':
+            action["log"] = True
+
+        return action
+
+    def get_action_changed(self):
+        return self.action_changed
 
     def set_options(self, key, value):
         """
