@@ -615,6 +615,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         var me = this;
         me.getView().down('grid').getStore().remove(record);
         me.setMenuConditions();
+        me.forceValidate();
     },
 
     /**
