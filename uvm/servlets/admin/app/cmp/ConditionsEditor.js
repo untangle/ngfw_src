@@ -6,12 +6,19 @@ Ext.define('Ung.cmp.ConditionsEditor', {
 
     model: 'Ung.model.Condition',
 
+    /**
+     * The fields object must always be defined so the grid
+     * can access it.
+     */
     fields: {
         type: 'conditionType',
         comparator: 'invert',
         value: 'value',
     },
     javaClassValue: '',
+
+    conditions: [],
+    conditionsOrder: [],
 
     allowEmpty: true,
 
@@ -161,55 +168,63 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                 return '';
             }
 
-            var view = this.getView().up('grid'),
+            var me = this,
+                view = me.getView().up('grid'),
                 conditions = value.list,
                 resp = [], i, valueRenderer = [];
 
-            // !!! maybe attach to grid to save finding again?
             var conditionsEditorField = Ext.Array.findBy(view.editorFields, function(item){
-                if(item.xtype == 'conditionseditor'){
+                if(item.xtype.indexOf('conditionseditor') > -1){
                     return true;
                 }
             });
 
+            var conditionsMap = conditionsEditorField.conditions;
+            if(conditionsMap == null){
+                return '';
+            }
             conditions.forEach(function(condition){
                 var type = condition[conditionsEditorField.fields.type];
                 var comparator = condition[conditionsEditorField.fields.comparator];
                 var value = condition[conditionsEditorField.fields.value];
 
+                if(!conditionsMap[type]){
+                    return;
+                }
+
                 comparatorRender = '';
                 valueRenderer = [];
 
                 switch (type) {
-                case 'SRC_INTF':
-                case 'DST_INTF':
-                    value.toString().split(',').forEach(function (intfff) {
-                        Util.getInterfaceList(true, true).forEach(function(interface){
-                            if(interface[0] == intfff){
-                                valueRenderer.push(interface[1]);
-                            }
+                    case 'SRC_INTF':
+                    case 'DST_INTF':
+                        value.toString().split(',').forEach(function (intfff) {
+                                Util.getInterfaceList(true, true).forEach(function(interface){
+                                if(interface[0] == intfff){
+                                    valueRenderer.push(interface[1]);
+                                }
+                            });
                         });
-                    });
                     break;
-                case 'DST_LOCAL':
-                case 'WEB_FILTER_FLAGGED':
-                    valueRenderer.push('true'.t());
-                    break;
-                case 'DAY_OF_WEEK':
-                    value.toString().split(',').forEach(function (day) {
-                        valueRenderer.push(Util.weekdaysMap[day]);
-                    });
-                    break;
-                default:
-                    // to avoid exceptions, in some situations condition value is null
-                    if (value !== null) {
-                        valueRenderer = value.toString().split(',');
-                    } else {
-                        valueRenderer = [];
-                    }
+                    case 'DST_LOCAL':
+                    case 'WEB_FILTER_FLAGGED':
+                        valueRenderer.push('true'.t());
+                        break;
+                    case 'DAY_OF_WEEK':
+                        value.toString().split(',').forEach(function (day) {
+                            valueRenderer.push(Util.weekdaysMap[day]);
+                        });
+                        break;
+                    default:
+                        // to avoid exceptions, in some situations condition value is null
+                        if (value !== null) {
+                            valueRenderer = value.toString().split(',');
+                        } else {
+                            valueRenderer = [];
+                        }
                 }
 
-                switch(conditionsEditorField.conditions[type].type){
+                switch(conditionsMap[type].type){
                     case 'sizefield':
                         valueRenderer = [Renderer.datasize(value)];
                         break;
@@ -221,7 +236,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                 if(conditionsEditorField.fields.comparator == 'invert'){
                     comparatorRender = (comparator == true ? '&nrArr;' : '&rArr;' );
                 }else{
-                    switch(conditionsEditorField.conditions[type].comparator){
+                    switch(conditionsMap[type].comparator){
                         case 'boolean':
                             comparatorRender = (comparator == false ? '&nrArr;' : '&rArr;' );
                             break;
@@ -256,7 +271,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                 resp.push(new Ext.Template(
                     Ung.cmp.ConditionsEditor.rendererConditionTemplate
                 ).apply({
-                    type: ( conditionsEditorField.conditions[type] != undefined ? conditionsEditorField.conditions[type].displayName : type ),
+                    type: ( conditionsMap[type] != undefined ? conditionsMap[type].displayName : type ),
                     comparator: comparatorRender,
                     value: valueRenderer.join(', ')
                 }));
@@ -315,6 +330,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                         var newCondition = Ext.clone(Ung.cmp.ConditionsEditor.defaultCondition);
 
                         found = false;
+
+                        // Lookup in existing conditions.
                         Ung.cmp.ConditionsEditor.conditions.forEach( function(condition){
                             if(condition.name == configCondition.name){
                                 Ext.merge(newCondition, condition);
@@ -325,6 +342,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                             }
                         });
                         if(!found){
+                            // Add new condition
                             if('name' in configCondition && 'displayName' in configCondition && 'type' in configCondition ){
                                 Ext.merge(newCondition, configCondition);
                                 conditions.push(newCondition);

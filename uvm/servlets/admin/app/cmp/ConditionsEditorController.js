@@ -26,18 +26,27 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         this.masterGrid = component.up('grid');
         this.recordeditor = component.up('window');
 
-        var menuConditions = [];
-
         this.recordBind = component.up('window').getViewModel().bind({
             bindTo: '{record}',
         }, this.setMenuConditions);
+
+        me.buildConditions(component, view.conditionsOrder, view.conditions);
+
+        me.getView().down('[name=conditionLabel]').update(me.getView());
+        me.getView().down('[name=actionLabel]').update(me.getView());
+    },
+
+    buildConditions: function(component){
+        var me = this;
+        var view = me.getView();
+
+        var menuConditions = [];
 
         var index = 0;
         view.conditionsOrder.forEach(function(name){
             index++;
             var condition = view.conditions[name];
-            // !!! verify that we use visible: false properly.
-            if( condition.visible == undefined || condition.visible) {
+            if( condition.visible) {
                 menuConditions.push({
                     text: condition.displayName,
                     conditionType: condition.name,
@@ -58,8 +67,6 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             }
         });
 
-        me.getView().down('[name=conditionLabel]').update(me.getView());
-        me.getView().down('[name=actionLabel]').update(me.getView());
     },
 
     /**
@@ -69,6 +76,8 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      * @return {[type]}           [description]
      */
     onRemoved: function(me, container){
+        me = me.down ? me : me.getView();
+
         var recordEditorView = this.recordeditor;
         var store = me.down('grid').getStore();
 
@@ -91,8 +100,6 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                 });
             }
         }
-        // this.recordBind.destroy();
-        // this.recordBind = null;
     },
 
     /**
@@ -162,7 +169,6 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             added = true;
 
             var valueBind = '{record.' + view.fields.value + '}';
-
             switch (condition.type) {
             case 'boolean':
                 widget.container.add({
@@ -614,11 +620,13 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
     /**
      * Renders the condition name in the grid
      */
-    conditionRenderer: function (val, column) {
+    conditionRenderer: function (value, column) {
         var view = this.getView();
 
-        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(view.conditions[val].displayName) + '"';
-        return '<strong>' + view.conditions[val].displayName + ':</strong>';
+        var displayName = view.conditions[value] ? view.conditions[value].displayName : value;
+        var description = view.conditions[value] && view.conditions[value].description ? view.conditions[value].description : displayName;
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(description) + '"';
+        return '<strong>' + displayName + ':</strong>';
     },
 
     /**
