@@ -150,7 +150,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         if(bind){
             delete config.bind;
         }
-        me.callParent([config]);
+        me.callParent(arguments);
     },
 
     validate: function(){
