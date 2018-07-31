@@ -43,17 +43,59 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         var menuConditions = [];
 
         var index = 0;
+        var subMenus = {};
         view.conditionsOrder.forEach(function(name){
             index++;
             var condition = view.conditions[name];
+            var nameFields = condition.name.split('.');
             if( condition.visible) {
-                menuConditions.push({
+                if( nameFields.length > 1){
+                    var masterField = nameFields[0];
+                    if( !subMenus[masterField] ){
+                        subMenus[masterField] = {
+                            showSeparator: false,
+                            plain: true,
+                            items: [],
+                            mouseLeaveDelay: 0,
+                            listeners: {
+                                click: 'addCondition'
+                            }
+                        };
+                    }
+                    subMenus[masterField].items.push({
+                        text: nameFields[1],
+                        conditionType: condition.name,
+                        index: index,
+                        allowMultiple: false,
+                        tooltip: condition.description ? condition.description : condition.displayName
+                    });
+                }
+            }
+        });
+        view.conditionsOrder.forEach(function(name){
+            index++;
+            var condition = view.conditions[name];
+            var nameFields = condition.name.split('.');
+            if( condition.visible) {
+                var masterField = nameFields.length > 1 ? nameFields[0] : null;
+                if(masterField && !subMenus[masterField]){
+                    return;
+                }
+                console.log(masterField);
+                var menuConfig = {
                     text: condition.displayName,
                     conditionType: condition.name,
                     index: index,
-                    allowMultiple: false
+                    allowMultiple: false,
+                    tooltip: condition.description ? condition.description : condition.displayName
                     // allowMultiple: conditions.allowMultiple != undefined ? conditions.allowMultiple : false
-                });
+                };
+                if(masterField && subMenus[masterField]){
+                    menuConfig.text = masterField;
+                    menuConfig.menu = subMenus[masterField];
+                    delete subMenus[masterField];
+                }
+                menuConditions.push(menuConfig);
             }
         });
 
