@@ -8,11 +8,9 @@ Ext.define('Ung.config.events.view.Alerts', {
     bodyPadding: 10,
 
     items: [{
-        xtype: 'uneventgrid',
+        xtype: 'ungrid',
         title: 'Alert Rules'.t(),
         region: 'center',
-
-        controller: 'uneventsgrid',
 
         listProperty: 'settings.alertRules.list',
         tbar: ['@add', '->', '@import', '@export'],
@@ -20,10 +18,8 @@ Ext.define('Ung.config.events.view.Alerts', {
         copyId: 'ruleId',
         copyAppendField: 'description',
 
-        ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
         bind:{
-            store: '{alertRules}',
-            conditions: '{conditions}'
+            store: '{alertRules}'
         },
 
         emptyRow: {
@@ -51,8 +47,8 @@ Ext.define('Ung.config.events.view.Alerts', {
             Column.ruleId,
             Column.enabled,
             Column.description,
-            EventColumn.conditionClass,
-            EventColumn.conditionFields,
+            Ung.config.events.MainController.conditionsClass,
+            Ung.config.events.MainController.conditions,
         {
             xtype:'checkcolumn',
             header: 'Log'.t(),
@@ -69,8 +65,16 @@ Ext.define('Ung.config.events.view.Alerts', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
+            // Field.conditions,
         {
+            xtype: 'eventconditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'field',
+                comparator: 'comparator',
+                value: 'fieldValue',
+            }
+        },{
             xtype: 'fieldset',
             title: 'As well as the following conditions:'.t(),
             items:[{

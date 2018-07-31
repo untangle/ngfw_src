@@ -9,15 +9,12 @@ Ext.define('Ung.config.events.view.Triggers', {
     layout: { type: 'vbox', align: 'stretch' },
 
     items: [{
-        xtype: 'uneventgrid',
+        xtype: 'ungrid',
         title: 'Trigger Rules'.t(),
         region: 'center',
 
-        controller: 'uneventsgrid',
-
         bind:{
-            store: '{triggerRules}',
-            conditions: '{conditions}'
+            store: '{triggerRules}'
         },
 
         listProperty: 'settings.triggerRules.list',
@@ -25,8 +22,6 @@ Ext.define('Ung.config.events.view.Triggers', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
         copyId: 'ruleId',
         copyAppendField: 'description',
-
-        ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.TriggerRule',
@@ -54,8 +49,8 @@ Ext.define('Ung.config.events.view.Triggers', {
             Column.ruleId,
             Column.enabled,
             Column.description,
-            EventColumn.conditionClass,
-            EventColumn.conditionFields,
+            Ung.config.events.MainController.conditionsClass,
+            Ung.config.events.MainController.conditions,
             {
                 header: 'Action'.t(),
                 dataIndex: 'action',
@@ -79,7 +74,15 @@ Ext.define('Ung.config.events.view.Triggers', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,{
+            {
+            xtype: 'eventconditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'field',
+                comparator: 'comparator',
+                value: 'fieldValue',
+            },
+            },{
                 xtype: 'fieldset',
                 title: 'As well as the following conditions:'.t(),
                 items:[{
@@ -167,7 +170,7 @@ Ext.define('Ung.config.events.view.Triggers', {
                     width: 350,
                     bind:{
                         value: '{record.tagTarget}',
-                        store: '{targetFields}',
+                        store: '{targetFields}'
                     },
                     valueField: 'name',
                     displayField: 'description'
