@@ -81,7 +81,6 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                 if(masterField && !subMenus[masterField]){
                     return;
                 }
-                console.log(masterField);
                 var menuConfig = {
                     text: condition.displayName,
                     conditionType: condition.name,
