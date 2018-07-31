@@ -71,19 +71,16 @@ Ext.define('Ung.config.events.view.Syslog', {
             }]
         }]
     }, {
-        xtype: 'uneventgrid',
+        xtype: 'ungrid',
         title: 'Syslog Rules'.t(),
         region: 'center',
-
-        controller: 'uneventsgrid',
 
         hidden: true,
         disabled: true,
         bind: {
             store: '{syslogRules}',
             hidden: '{settings.syslogEnabled == false}',
-            disabled: '{settings.syslogEnabled == false}',
-            conditions: '{conditions}'
+            disabled: '{settings.syslogEnabled == false}'
         },
 
         listProperty: 'settings.syslogRules.list',
@@ -91,8 +88,6 @@ Ext.define('Ung.config.events.view.Syslog', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
         copyId: 'ruleId',
         copyAppendField: 'description',
-
-        ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.SyslogRule',
@@ -117,8 +112,8 @@ Ext.define('Ung.config.events.view.Syslog', {
             Column.ruleId,
             Column.enabled,
             Column.description,
-            EventColumn.conditionClass,
-            EventColumn.conditionFields,
+            Ung.config.events.MainController.conditionsClass,
+            Ung.config.events.MainController.conditions,
         {
             xtype:'checkcolumn',
             header: 'Remote Syslog'.t(),
@@ -130,8 +125,13 @@ Ext.define('Ung.config.events.view.Syslog', {
             Field.enableRule(),
             Field.description,
         {
-            flex: 1,
-            dataIndex: 'conditions',
+            xtype: 'eventconditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'field',
+                comparator: 'comparator',
+                value: 'fieldValue',
+            },
             allowAllClasses: true
         },{
             xtype: 'fieldset',

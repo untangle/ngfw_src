@@ -21,5 +21,4 @@ Ext.define('Ung.config.events.Main', {
         { xtype: 'config-events-triggers' },
         { xtype: 'config-events-syslog' }
     ]
-
 });
