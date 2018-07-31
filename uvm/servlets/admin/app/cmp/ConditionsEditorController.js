@@ -123,9 +123,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         var store = me.down('grid').getStore();
 
         if(this.recordeditor.cancel){
-            store.getModifiedRecords().forEach(function(record){
-                record.reject(true);
-            });
+            store.rejectChanges();
         }else{
             var recordName = me.recordName.split('.')[1];
             if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
@@ -264,6 +262,17 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     listeners:{
                         change: 'forceValidate'
                     }
+                });
+                break;
+            case 'select':
+                widget.container.add({
+                    xtype: 'combo',
+                    editable: false,
+                    matchFieldWidth: false,
+                    bind: {
+                        value: valueBind
+                    },
+                    store: condition.values
                 });
                 break;
             case 'checkboxgroup':
@@ -627,7 +636,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             if(item.allowMultiple){
                 return;
             }
-            item.setDisabled(store.findRecord(conditionsEditorView.fields.type, item.conditionType) ? true : false);
+            item.setDisabled(store.findRecord(conditionsEditorView.fields.type, item.conditionType, 0, false, true, true) ? true : false);
         });
     },
 
@@ -645,6 +654,35 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
 
         record.set(view.fields.type, item.conditionType);
         record.set('javaClass', view.javaClassValue);
+
+        // If default value not set in model, fill in empty values with first values from
+        // associated comparator and value lists (if any).
+        var conditionName = item.text;
+        Ext.ClassManager.get(me.getView().model).fields.forEach( function(field){
+            if( ( record.get(field.name) == undefined || record.get(field.name) == "" ) && field.defaultValue == undefined){
+                for(var conditionField in view.fields){
+                    if(view.fields[conditionField] == field.name){
+                        switch(conditionField){
+                            case 'comparator':
+                                var comparator = null;
+                                Ung.cmp.ConditionsEditor.comparators.forEach(function(c){
+                                    if(c.name == view.conditions[conditionName].comparator){
+                                        comparator = c;
+                                    }
+                                });
+                                record.set(field.name, comparator.store[0][0]);
+                                break;
+                            case 'value':
+                                if(view.conditions[conditionName].values){
+                                    record.set(field.name, view.conditions[conditionName].values[0]);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+
         me.getView().down('grid').getStore().add(record);
         me.setMenuConditions();
     },
