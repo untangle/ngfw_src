@@ -8,7 +8,7 @@ Standards-Version: 3.9.8
 
 Package: untangle-libuvmcore
 Architecture: any
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, ${misc:Depends}
 Description: Untangle Core Library
  Untangle Core Library files.
 
@@ -17,7 +17,7 @@ Architecture: all
 Conflicts: untangle-casing-ftp
 Replaces: untangle-casing-ftp
 Provides: untangle-casing-ftp
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: The FTP Casing
  The FTP Casing Application
 
@@ -26,7 +26,7 @@ Architecture: all
 Conflicts: untangle-casing-http
 Replaces: untangle-casing-http
 Provides: untangle-casing-http
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: The HTTP Casing
  The HTTP Casing Application
 
@@ -35,7 +35,7 @@ Architecture: all
 Conflicts: untangle-casing-smtp
 Replaces: untangle-casing-smtp
 Provides: untangle-casing-smtp
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: The SMTP Casing
  The SMTP Casing Application.
 
@@ -44,7 +44,7 @@ Architecture: all
 Conflicts: untangle-node-shield
 Replaces: untangle-node-shield
 Provides: untangle-node-shield
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: Shield
  The Shield application.
 
@@ -54,14 +54,14 @@ Conflicts: untangle-node-license
 Replaces: untangle-node-license
 Provides: untangle-node-license
 Section: non-free/net
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: The Untangle License Manager
  Untangle License Manager.
 
 Package: untangle-app-web-cache
 Architecture: all
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, untangle-squid-config
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, untangle-squid-config
 Conflicts: untangle-node-web-cache
 Replaces: untangle-node-web-cache
 Provides: untangle-node-web-cache
@@ -71,7 +71,7 @@ Description: Web Cache
 Package: untangle-app-wan-failover
 Architecture: all
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, traceroute
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, traceroute
 Conflicts: untangle-node-wan-failover
 Replaces: untangle-node-wan-failover
 Provides: untangle-node-wan-failover
@@ -81,7 +81,7 @@ Description: WAN Failover
 Package: untangle-app-wan-balancer
 Architecture: all
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
 Conflicts: untangle-node-wan-balancer
 Replaces: untangle-node-wan-balancer
 Provides: untangle-node-wan-balancer
@@ -94,7 +94,7 @@ Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
 Section: non-free/net
-Depends: untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-stretch-armel | untangle-kernel-modules-stretch-armhf, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-stretch-armel | untangle-kernel-modules-stretch-armhf, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
 
@@ -104,7 +104,7 @@ Conflicts: untangle-casing-ssl-inspector
 Replaces: untangle-casing-ssl-inspector
 Provides: untangle-casing-ssl-inspector
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
 Description: SSL Casing
  The SSL Casing Application
 
@@ -114,7 +114,7 @@ Conflicts: untangle-node-spam-blocker
 Replaces: untangle-node-spam-blocker
 Provides: untangle-node-spam-blocker
 Section: non-free/net
-Depends: untangle-vm, untangle-spamcatd, untangle-app-license, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
+Depends: ${misc:Depends}, untangle-vm, untangle-spamcatd, untangle-app-license, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
 Description: Spam Blocker
  The Spam Blocker application.
 
@@ -124,7 +124,7 @@ Conflicts: untangle-node-policy-manager
 Replaces: untangle-node-policy-manager
 Provides: untangle-node-policy-manager
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
 Description: The Untangle Policy Manager
  Untangle Policy Manager.
 
@@ -134,7 +134,7 @@ Conflicts: untangle-node-live-support
 Replaces: untangle-node-live-support
 Provides: untangle-node-live-support
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
 Description: Live Support
  The Live Support application.
 
@@ -144,7 +144,7 @@ Conflicts: untangle-node-ipsec-vpn
 Replaces: untangle-node-ipsec-vpn
 Provides: untangle-node-ipsec-vpn
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, xl2tpd, python-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-ike, strongswan-ikev1, strongswan-ikev2, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, xl2tpd, python-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-ike, strongswan-ikev1, strongswan-ikev2, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
 Description: IPsec VPN
  The IPsec VPN application
 
@@ -154,7 +154,7 @@ Conflicts: untangle-node-directory-connector, libradius1, radiusclient1
 Replaces: untangle-node-directory-connector
 Provides: untangle-node-directory-connector
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, libfreeradius-dev, freeradius-common, untangle-google-connector, xvfb
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, libfreeradius-dev, freeradius-common, untangle-google-connector, xvfb
 Description: The Untangle Directory Connector
  The Untangle Directory Connector.
 
@@ -164,7 +164,7 @@ Conflicts: untangle-node-configuration-backup
 Replaces: untangle-node-configuration-backup
 Provides: untangle-node-configuration-backup
 Section: non-free/net
-Depends: untangle-vm, curl, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, curl, untangle-app-license
 Description: Configuration Backup
  The Configuration Backup application.
 
@@ -174,7 +174,7 @@ Conflicts: untangle-node-branding-manager
 Replaces: untangle-node-branding-manager
 Provides: untangle-node-branding-manager
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, netpbm
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, netpbm
 Description: The Untangle Branding Manager
  The Untangle Branding Manager application.
 
@@ -184,7 +184,7 @@ Conflicts: untangle-node-bandwidth-control
 Replaces: untangle-node-bandwidth-control
 Provides: untangle-node-bandwidth-control
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
 Description: Bandwidth Control
  The Bandwidth Control application.
 
@@ -194,7 +194,7 @@ Conflicts: untangle-node-application-control
 Replaces: untangle-node-application-control
 Provides: untangle-node-application-control
 Section: non-free/net
-Depends: untangle-vm, untangle-app-license, untangle-classd
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, untangle-classd
 Description: Application Control
  The Application Control application
 
@@ -204,7 +204,7 @@ Conflicts: untangle-node-web-filter
 Replaces: untangle-node-web-filter
 Provides: untangle-node-web-filter
 Section: non-free/net
-Depends: untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license
 Description: Web Filter
  The Web Filter application.
 
@@ -213,7 +213,7 @@ Architecture: all
 Conflicts: untangle-node-web-monitor
 Replaces: untangle-node-web-monitor
 Provides: untangle-node-web-monitor
-Depends: untangle-vm, untangle-app-http, untangle-base-web-filter
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter
 Description: Web Monitor
  The Web Monitor application.
 
@@ -222,7 +222,7 @@ Architecture: all
 Conflicts: untangle-node-virus-blocker-lite
 Replaces: untangle-node-virus-blocker-lite
 Provides: untangle-node-virus-blocker-lite
-Depends: untangle-vm, untangle-base-virus-blocker, untangle-clamav-config, untangle-app-http, untangle-app-ftp, untangle-app-smtp
+Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config, untangle-app-http, untangle-app-ftp, untangle-app-smtp
 Description: Virus Blocker Lite
  The Virus Blocker Lite application.
 
@@ -231,7 +231,7 @@ Architecture: all
 Conflicts: untangle-node-application-control-lite
 Replaces: untangle-node-application-control-lite
 Provides: untangle-node-application-control-lite
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: Application Control Lite
  The Application Control Lite application.
 
@@ -240,7 +240,7 @@ Architecture: all
 Conflicts: untangle-node-router
 Replaces: untangle-node-router
 Provides: untangle-node-router
-Depends: untangle-vm, dnsmasq, untangle-app-ftp
+Depends: ${misc:Depends}, untangle-vm, dnsmasq, untangle-app-ftp
 Description: Router
  The Router application.
 
@@ -249,7 +249,7 @@ Architecture: all
 Conflicts: untangle-node-firewall
 Replaces: untangle-node-firewall
 Provides: untangle-node-firewall
-Depends: untangle-vm
+Depends: ${misc:Depends}, untangle-vm
 Description: Firewall
  The Firewall application.
 
@@ -258,7 +258,7 @@ Architecture: all
 Conflicts: untangle-node-spam-blocker-lite
 Replaces: untangle-node-spam-blocker-lite
 Provides: untangle-node-spam-blocker-lite
-Depends: untangle-vm, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
+Depends: ${misc:Depends}, untangle-vm, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
 Description: Spam Blocker Lite
  The Spam Blocker Lite application.
 
@@ -267,7 +267,7 @@ Architecture: all
 Conflicts: untangle-node-phish-blocker
 Replaces: untangle-node-phish-blocker
 Provides: untangle-node-phish-blocker
-Depends: untangle-vm, untangle-base-spam-blocker, untangle-clamav-config, untangle-app-smtp
+Depends: ${misc:Depends}, untangle-vm, untangle-base-spam-blocker, untangle-clamav-config, untangle-app-smtp
 Description: Phish Blocker
  The Phish Blocker application.
 
@@ -276,13 +276,13 @@ Architecture: all
 Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
-Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
+Depends: ${misc:Depends}, untangle-vm, untangle-nsis-addons, openssl, openvpn
 Description: OpenVPN
  The OpenVPN application.
 
 Package: untangle-app-tunnel-vpn
 Architecture: all
-Depends: untangle-vm, openvpn
+Depends: ${misc:Depends}, untangle-vm, openvpn
 Description: Tunnel VPN
  The Tunnel VPN application.
 
@@ -291,7 +291,7 @@ Architecture: all
 Conflicts: untangle-node-intrusion-prevention
 Replaces: untangle-node-intrusion-prevention
 Provides: untangle-node-intrusion-prevention
-Depends: untangle-vm, untangle-snort-config
+Depends: ${misc:Depends}, untangle-vm, untangle-snort-config
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
@@ -300,7 +300,7 @@ Architecture: all
 Conflicts: untangle-node-reports
 Replaces: untangle-node-reports
 Provides: untangle-node-reports
-Depends: untangle-vm, untangle-database-config
+Depends: ${misc:Depends}, untangle-vm, untangle-database-config
 Description: Reports
  The Reports application.
 
@@ -309,7 +309,7 @@ Architecture: all
 Conflicts: untangle-node-ad-blocker
 Replaces: untangle-node-ad-blocker
 Provides: untangle-node-ad-blocker
-Depends: untangle-vm, untangle-app-http
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http
 Description: Ad Blocker
  The Ad Blocker application.
 
@@ -318,26 +318,26 @@ Architecture: all
 Conflicts: untangle-node-captive-portal
 Replaces: untangle-node-captive-portal
 Provides: untangle-node-captive-portal
-Depends: untangle-vm, untangle-app-http
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http
 Description: Captive Portal
  The Captive Portal application.
 
 Package: untangle-base-virus-blocker
 Architecture: all
-Depends: untangle-vm, untangle-app-http, untangle-app-smtp
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-smtp
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
 Package: untangle-base-spam-blocker
 Architecture: all
-Depends: untangle-vm, untangle-app-smtp
+Depends: ${misc:Depends}, untangle-vm, untangle-app-smtp
 Description: Spam Blocker Base
  The Spam Blocker Base.
 
 Package: untangle-base-web-filter
 Architecture: all
 Conflicts: untangle-node-web-filter (<= 12.2.0~vcs2016~)
-Depends: untangle-vm, untangle-app-http
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http
 Description: Web Filter Base
  The Web Filter Base.
 
@@ -349,7 +349,7 @@ Description: Platform Thirdparty Libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: untangle-libuvm,
+Depends: ${misc:Depends}, untangle-libuvm,
          untangle-libuvmcore,
          untangle-libuvmthirdparty,
          untangle-development-runtime,
