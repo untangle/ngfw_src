@@ -45,7 +45,7 @@ Conflicts: untangle-node-shield
 Replaces: untangle-node-shield
 Provides: untangle-node-shield
 Depends: ${misc:Depends}, untangle-vm
-Description: Shield
+Description: Shield application
  The Shield application.
 
 Package: untangle-app-license
@@ -241,7 +241,7 @@ Conflicts: untangle-node-router
 Replaces: untangle-node-router
 Provides: untangle-node-router
 Depends: ${misc:Depends}, untangle-vm, dnsmasq, untangle-app-ftp
-Description: Router
+Description: Router application
  The Router application.
 
 Package: untangle-app-firewall
@@ -250,7 +250,7 @@ Conflicts: untangle-node-firewall
 Replaces: untangle-node-firewall
 Provides: untangle-node-firewall
 Depends: ${misc:Depends}, untangle-vm
-Description: Firewall
+Description: Firewall application
  The Firewall application.
 
 Package: untangle-app-spam-blocker-lite
@@ -277,7 +277,7 @@ Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
 Depends: ${misc:Depends}, untangle-vm, untangle-nsis-addons, openssl, openvpn
-Description: OpenVPN
+Description: OpenVPN application
  The OpenVPN application.
 
 Package: untangle-app-tunnel-vpn
@@ -301,7 +301,7 @@ Conflicts: untangle-node-reports
 Replaces: untangle-node-reports
 Provides: untangle-node-reports
 Depends: ${misc:Depends}, untangle-vm, untangle-database-config
-Description: Reports
+Description: Reports application
  The Reports application.
 
 Package: untangle-app-ad-blocker
@@ -343,8 +343,8 @@ Description: Web Filter Base
 
 Package: untangle-libuvmthirdparty
 Architecture: all
-Description: Platform Thirdparty Libraries
- The Platform Thirdparty Libraries.
+Description: UVM Platform third-party libraries
+ The UVM Platform third-party libraries.
 
 Package: untangle-vm
 Architecture: all
@@ -357,10 +357,10 @@ Depends: ${misc:Depends}, untangle-libuvm,
 	 untangle-sync-settings,
 	 ipset,
          gzip, zip, unzip
-Description: Platform
- The Platform.
+Description: UVM Platform
+ The UVM Platform itself.
 
 Package: untangle-libuvm
 Architecture: all
-Description: Platform Libraries
- The Platform Libraries.
+Description: UVM Platform libraries
+ The UVM Platform libraries.
