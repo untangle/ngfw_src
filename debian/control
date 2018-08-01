@@ -349,14 +349,16 @@ Description: UVM Platform third-party libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: ${misc:Depends}, untangle-libuvm,
+Depends: ${misc:Depends},
+	 ipset,
+	 systemd-sysv,
+         untangle-development-runtime,
+	 untangle-libuvm,
          untangle-libuvmcore,
          untangle-libuvmthirdparty,
-         untangle-development-runtime,
-	 systemd-sysv,
 	 untangle-sync-settings,
-	 ipset,
-         gzip, zip, unzip
+	 unzip,
+         zip
 Description: UVM Platform
  The UVM Platform itself.
 
