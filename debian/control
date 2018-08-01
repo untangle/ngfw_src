@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <sdelafond@gmail.com>
 Uploaders: Untangle Buildbot <buildbot@untangle.com>
-Build-Depends: untangle-development-build
+Build-Depends: untangle-development-build, debhelper (>= 10)
 Standards-Version: 3.9.8
 
 Package: untangle-libuvmcore
