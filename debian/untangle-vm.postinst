@@ -1,4 +1,4 @@
-
+#! /bin/bash
 
 oldVersion=""
 if [ "$1" = "configure" ] ; then
