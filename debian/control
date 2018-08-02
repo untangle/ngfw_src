@@ -35,7 +35,7 @@ Architecture: all
 Conflicts: untangle-casing-smtp
 Replaces: untangle-casing-smtp
 Provides: untangle-casing-smtp
-Depends: ${misc:Depends}, untangle-vm
+Depends: ${misc:Depends}, untangle-vm, python
 Description: The SMTP Casing
  The SMTP Casing Application.
 
@@ -44,7 +44,7 @@ Architecture: all
 Conflicts: untangle-node-shield
 Replaces: untangle-node-shield
 Provides: untangle-node-shield
-Depends: ${misc:Depends}, untangle-vm
+Depends: ${misc:Depends}, untangle-vm, python3
 Description: Shield application
  The Shield application.
 
@@ -276,13 +276,13 @@ Architecture: all
 Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
-Depends: ${misc:Depends}, untangle-vm, untangle-nsis-addons, openssl, openvpn
+Depends: ${misc:Depends}, untangle-vm, untangle-nsis-addons, openssl, openvpn, python
 Description: OpenVPN application
  The OpenVPN application.
 
 Package: untangle-app-tunnel-vpn
 Architecture: all
-Depends: ${misc:Depends}, untangle-vm, openvpn
+Depends: ${misc:Depends}, untangle-vm, openvpn, python3
 Description: Tunnel VPN
  The Tunnel VPN application.
 
@@ -291,7 +291,7 @@ Architecture: all
 Conflicts: untangle-node-intrusion-prevention
 Replaces: untangle-node-intrusion-prevention
 Provides: untangle-node-intrusion-prevention
-Depends: ${misc:Depends}, untangle-vm, untangle-snort-config
+Depends: ${misc:Depends}, untangle-vm, untangle-snort-config, python
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
@@ -300,7 +300,7 @@ Architecture: all
 Conflicts: untangle-node-reports
 Replaces: untangle-node-reports
 Provides: untangle-node-reports
-Depends: ${misc:Depends}, untangle-vm, untangle-database-config
+Depends: ${misc:Depends}, untangle-vm, untangle-database-config, python
 Description: Reports application
  The Reports application.
 
@@ -351,6 +351,8 @@ Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
 Depends: ${misc:Depends},
 	 ipset,
+	 python,
+	 python3,
 	 systemd-sysv,
          untangle-development-runtime,
 	 untangle-libuvm,
