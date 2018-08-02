@@ -9,7 +9,7 @@ if [ -f /var/run/uvm.pid ] ; then
         /usr/share/untangle/bin/ut-show-upgrade-splash start
 
         echo "Stopping untangle-vm..."
-        systemctl stop untangle-vm
+        deb-systemd-invoke stop untangle-vm
 
         # Keep this here so that on 13.2 -> 14.0 upgrade we correctly stop the untangle-vm
         # This can be removed in 14.1
