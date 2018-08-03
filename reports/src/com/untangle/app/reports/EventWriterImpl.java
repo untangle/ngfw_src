@@ -64,6 +64,11 @@ public class EventWriterImpl implements Runnable
     private int maxEventsPerCycle; 
 
     /**
+     * Time to wait in ms.
+     */
+    private int syncTime;
+
+    /**
      * If true then the eventWriter is considered "overloaded" and can not keep up with demand
      * This is set if the event queue length reaches the high water mark
      * In this case we stop logging events entirely until we are no longer overloaded
@@ -137,6 +142,8 @@ public class EventWriterImpl implements Runnable
         else
             this.maxEventsPerCycle = 20000;
 
+        this.syncTime = SYNC_TIME;
+
         /**
          * Loop indefinitely and continue logging events
          */
@@ -149,12 +156,12 @@ public class EventWriterImpl implements Runnable
              */
             if ( forceFlush ||
                  (inputQueue.size() > maxEventsPerCycle) ||
-                 (writeDelaySec*1000 >  SYNC_TIME*2) ) {
+                 (writeDelaySec*1000 >  syncTime*2) ) {
                 logger.debug("persist(): skipping sleep");
                 // minor sleep to let other threads that my want to synchronize on this run
                 try {Thread.sleep(100);} catch (Exception e) {}
             } else {
-                try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
+                try {Thread.sleep(syncTime);} catch (Exception e) {}
             }
 
             synchronized( this ) {
@@ -242,6 +249,16 @@ public class EventWriterImpl implements Runnable
                 }
             }
         }
+    }
+
+    /**
+     * Modify eventwriter parameters in real-time.
+     * @param maxEventsPerCycle Maximum amount of events to process per interval.  Defaults to 20k for psgql and 500 for sqlite.
+     * @param syncTimeSec Maximum seconds to wait before processing more in queue.
+     */
+    public void tunePerformance(int maxEventsPerCycle, int syncTimeSec){
+        this.maxEventsPerCycle = maxEventsPerCycle;
+        this.syncTime = syncTimeSec * 1000; 
     }
     
     /**
