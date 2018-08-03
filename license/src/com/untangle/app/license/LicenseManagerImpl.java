@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
@@ -407,9 +408,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * We do all these different calls so that the product supports any version of the license server
          */
 
+        String model = UvmContextFactory.context().getApplianceModel();
+        if (model != null)
+            model = URLEncoder.encode(model,"UTF-8");
         String libitemName = "untangle-libitem-" + appName;
-        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + appName + "&appliance=" + UvmContextFactory.context().isAppliance();
-        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + appName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
+        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
 
         String oldName = null;
         String urlStr3 = null;
@@ -449,8 +453,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;
-            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
-            urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
+            urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
