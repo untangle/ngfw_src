@@ -33,7 +33,7 @@ public class EventWriterImpl implements Runnable
      * The amount of time for the event write to sleep
      * if there is not a lot of work to be done
      */
-    private static int SYNC_TIME = 30*1000; /* 30 seconds */
+    private static int SYNC_TIME = 10*1000; /* 10 seconds */
 
     /**
      * If the event queue length reaches the high water mark
@@ -48,6 +48,11 @@ public class EventWriterImpl implements Runnable
      */
     private static int LOW_WATER_MARK = 100000;
 
+    /**
+     * Maximum number of events to write per work cycle
+     */
+    private static int MAX_EVENTS_PER_CYCLE = 100000;
+
     private static boolean forceFlush = false;
 
     private volatile Thread thread;
@@ -57,16 +62,6 @@ public class EventWriterImpl implements Runnable
     private Connection dbConnection;
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
-
-    /**
-     * Maximum number of events to write per work cycle
-     */
-    private int maxEventsPerCycle; 
-
-    /**
-     * Time to wait in ms.
-     */
-    private int syncTime;
 
     /**
      * If true then the eventWriter is considered "overloaded" and can not keep up with demand
@@ -104,14 +99,26 @@ public class EventWriterImpl implements Runnable
 
     static {
         String temp;
-        if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
+        if ((temp = System.getProperty("reports.max_queue_len")) != null) {
             try {
-                HIGH_WATER_MARK = Integer.parseInt( temp );
+                HIGH_WATER_MARK = Integer.parseInt(temp);
             } catch (Exception e) {
-                HIGH_WATER_MARK = 1000000;
+                logger.warn("Invalid value: " + System.getProperty( "reports.max_queue_len" ),e);
             }
-        } else {
-            HIGH_WATER_MARK = 1000000;
+        }
+        if ((temp = System.getProperty("reports.events_per_cycle")) != null) {
+            try {
+                MAX_EVENTS_PER_CYCLE = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.events_per_cycle" ),e);
+            }
+        }
+        if ((temp = System.getProperty("reports.sync_time")) != null) {
+            try {
+                SYNC_TIME = Integer.parseInt( temp );
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.sync_time" ),e);
+            }
         }
     }
 
@@ -137,13 +144,6 @@ public class EventWriterImpl implements Runnable
         LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
 
-        if ( "sqlite".equals( ReportsApp.dbDriver ) )
-            this.maxEventsPerCycle = 500;
-        else
-            this.maxEventsPerCycle = 20000;
-
-        this.syncTime = SYNC_TIME;
-
         /**
          * Loop indefinitely and continue logging events
          */
@@ -155,13 +155,13 @@ public class EventWriterImpl implements Runnable
              * If events are significantly delayed (more than 2x SYNC_TIME), don't sleep
              */
             if ( forceFlush ||
-                 (inputQueue.size() > maxEventsPerCycle) ||
-                 (writeDelaySec*1000 >  syncTime*2) ) {
+                 (inputQueue.size() > MAX_EVENTS_PER_CYCLE) ||
+                 (writeDelaySec*1000 >  SYNC_TIME*2) ) {
                 logger.debug("persist(): skipping sleep");
                 // minor sleep to let other threads that my want to synchronize on this run
                 try {Thread.sleep(100);} catch (Exception e) {}
             } else {
-                try {Thread.sleep(syncTime);} catch (Exception e) {}
+                try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
             }
 
             synchronized( this ) {
@@ -178,7 +178,7 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
+                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
                         logQueue.add(event);
                     }
 
@@ -249,16 +249,6 @@ public class EventWriterImpl implements Runnable
                 }
             }
         }
-    }
-
-    /**
-     * Modify eventwriter parameters in real-time.
-     * @param maxEventsPerCycle Maximum amount of events to process per interval.  Defaults to 20k for psgql and 500 for sqlite.
-     * @param syncTimeSec Maximum seconds to wait before processing more in queue.
-     */
-    public void tunePerformance(int maxEventsPerCycle, int syncTimeSec){
-        this.maxEventsPerCycle = maxEventsPerCycle;
-        this.syncTime = syncTimeSec * 1000; 
     }
     
     /**

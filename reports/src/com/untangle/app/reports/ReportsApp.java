@@ -400,19 +400,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             ReportsApp.eventWriter.forceFlush();
     }
 
-    /**
-     * Modify eventwriter parameters in real-time.
-     * @param maxEventsPerCycle Maximum amount of events to process per interval.  Defaults to 20k for psgql and 500 for sqlite.
-     * @param syncTimeSec Maximum seconds to wait before processing more in queue.
-     */
-    public void tunePerformance(int maxEventsPerCycle, int syncTimeSec)
-    {
-        logger.info("tunePerformance() ...");
-        if (ReportsApp.eventWriter != null)
-            ReportsApp.eventWriter.tunePerformance(maxEventsPerCycle, syncTimeSec);
-    }
-
-
     /** 
      * Return the average event write time.
      *
