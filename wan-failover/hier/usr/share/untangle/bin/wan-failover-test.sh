@@ -23,7 +23,7 @@ fi
 UPLINK_TABLE=`printf "uplink.%d" ${WAN_FAILOVER_NETD_INTERFACE_ID}`
 WAN_FAILOVER_GATEWAY=`ip route show table ${UPLINK_TABLE} | awk '/scope link/ { next } ; { print $3 ; exit }'`
 if [ -n "${WAN_FAILOVER_GATEWAY}" ]; then
-    WAN_FAILOVER_PRIMARY_ADDRESS=`ip route get ${WAN_FAILOVER_GATEWAY} oif ${WAN_FAILOVER_OS_NAME} | awk '/src/ { print $5 ; exit }'`
+    WAN_FAILOVER_PRIMARY_ADDRESS=`ip route get ${WAN_FAILOVER_GATEWAY} oif ${WAN_FAILOVER_OS_NAME} | awk '/src/ { print $6 ; exit }'`
 else
     WAN_FAILOVER_PRIMARY_ADDRESS=`ip addr show ${WAN_FAILOVER_OS_NAME} | awk '/inet/ { print $2; exit }'`
 fi
