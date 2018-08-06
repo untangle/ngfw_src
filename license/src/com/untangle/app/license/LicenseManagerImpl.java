@@ -407,13 +407,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * Then we try with the old app name (if it has an old name), then we try with the old libitem name
          * We do all these different calls so that the product supports any version of the license server
          */
-
-        String model = UvmContextFactory.context().getApplianceModel();
-        if (model != null)
-            model = URLEncoder.encode(model,"UTF-8");
         String libitemName = "untangle-libitem-" + appName;
-        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + appName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
-        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
+        String urlStr  = licenseUrl + "?action=startTrial" + "&node=" + appName + "&" + getServerParams();
+        String urlStr2 = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
 
         String oldName = null;
         String urlStr3 = null;
@@ -453,8 +449,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;
-            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
-            urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance() + "&appliance-model=" + model;
+            urlStr3 = licenseUrl + "?action=startTrial" + "&node=" + oldName + "&" + getServerParams();
+            urlStr4 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
@@ -589,13 +585,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<LicenseRevocation> revocations;
         boolean changed = false;
 
-        int numDevices = _getEstimatedNumDevices();
-        String uvmVersion = UvmContextFactory.context().version();
-        
         logger.info("REFRESH: Checking Revocations...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -670,13 +663,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<License> licenses;
         boolean changed = false;
 
-        int numDevices = _getEstimatedNumDevices();
-        String uvmVersion = UvmContextFactory.context().version();
-        
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -1164,5 +1154,29 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.warn("Exception",x);
             return 0;
         }
+    }
+
+    /**
+     * Get the URL encoded parameters to describe this server
+     * @return string
+     */
+    private String getServerParams()
+    {
+        int numDevices = _getEstimatedNumDevices();
+        String model = UvmContextFactory.context().getApplianceModel();
+        String uvmVersion = UvmContextFactory.context().version();
+        if (model != null) {
+            try {
+                model = URLEncoder.encode(model,"UTF-8");
+            } catch (Exception e) {
+                logger.warn("Failed to encode",e);
+                model = null;
+            }
+        }
+        return "uid=" + UvmContextFactory.context().getServerUID() +
+            "&appliance=" + UvmContextFactory.context().isAppliance() +
+            (model != null ? "&appliance-model=" + model : "") + 
+            "&numDevices=" + numDevices +
+            "&version=" + uvmVersion;
     }
 }
