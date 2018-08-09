@@ -310,16 +310,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
 
         // create string to allocate the session in the daemon
-        // string format = CMD:ID:PROTOCOL:C_ADDR:C_PORT:S_ADDR:S_PORT
-        // string sample = CREATE:123456789:TCP:192.168.1.1:55555:4.3.2.1:80
+        // string format = CMD|ID|PROTOCOL|C_ADDR|C_PORT|S_ADDR|S_PORT
+        // string sample = CREATE|123456789|TCP|192.168.1.1|55555|4.3.2.1|80
         String sessionInfo = getIdString(ipr.id());
-        if (ipr instanceof TCPNewSessionRequest) sessionInfo = (sessionInfo + ":TCP");
-        if (ipr instanceof UDPNewSessionRequest) sessionInfo = (sessionInfo + ":UDP");
-        sessionInfo = (sessionInfo + ":" + ipr.getOrigClientAddr().getHostAddress() + ":" + ipr.getOrigClientPort());
-        sessionInfo = (sessionInfo + ":" + ipr.getNewServerAddr().getHostAddress() + ":" + ipr.getNewServerPort());
+        if (ipr instanceof TCPNewSessionRequest) sessionInfo = (sessionInfo + "|TCP");
+        if (ipr instanceof UDPNewSessionRequest) sessionInfo = (sessionInfo + "|UDP");
+        sessionInfo = (sessionInfo + "|" + ipr.getOrigClientAddr().getHostAddress() + "|" + ipr.getOrigClientPort());
+        sessionInfo = (sessionInfo + "|" + ipr.getNewServerAddr().getHostAddress() + "|" + ipr.getNewServerPort());
 
         // create new status object and attach to session
-        String message = "CREATE:" + sessionInfo + "\r\n";
+        String message = "CREATE|" + sessionInfo + "\r\n";
         ApplicationControlStatus status = new ApplicationControlStatus(sessionInfo, ipr);
         ipr.attach(status);
 
@@ -346,9 +346,9 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     private TrafficAction processTraffic(boolean isClient, ApplicationControlStatus status, AppSession sess, ByteBuffer data)
     {
         // create string to pass session data to the classd daemon
-        // string format = CMD:ID:DATALEN
-        // string sample = CLIENT:123456789:437
-        String message = (isClient ? "CLIENT:" : "SERVER:") + getIdString(status.sessionId) + ":" + Integer.toString(data.limit()) + "\r\n";
+        // string format = CMD|ID|DATALEN
+        // string sample = CLIENT|123456789|437
+        String message = (isClient ? "CLIENT|" : "SERVER|") + getIdString(status.sessionId) + "|" + Integer.toString(data.limit()) + "\r\n";
 
         // add 1 to the chunk count
         // if we've scanned more chunks than allowed, just give up on categorization
@@ -555,9 +555,9 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         sess.release();
 
         // create string to remove the session in the daemon
-        // string format = CMD:ID
-        // string sample = REMOVE:123456789
-        String message = "REMOVE:" + getIdString(sess.id()) + "\r\n";
+        // string format = CMD|ID
+        // string sample = REMOVE|123456789
+        String message = "REMOVE|" + getIdString(sess.id()) + "\r\n";
 
         // pass the session remove string to the daemon
         daemonCommand(message, null);
