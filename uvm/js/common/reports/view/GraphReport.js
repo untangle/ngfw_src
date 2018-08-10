@@ -141,9 +141,14 @@ Ext.define('Ung.view.reports.GraphReport', {
                 scrollbar: { enabled: false },
                 credits: { enabled: false },
                 title: {
-                    text: null
+                    text: null,
+                    useHtml: true,
+                    align: 'left'
                 },
-
+                subtitle: {
+                    align: 'left',
+                    useHtml: true
+                },
                 noData: {
                     position: {
                         y: -20
@@ -755,6 +760,16 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             var settings = {
+                exporting: {
+                    chartOptions: {
+                        title: {
+                            text: '<span style="color: #999;">' + entry.get('category') + '/</span>' + entry.get('title')
+                        },
+                        subtitle: {
+                            text: entry.get('description')
+                        }
+                    }
+                },
                 chart: {
                     type: me.getChartType(entry),
                     zoomType: isTimeGraph ? 'x' : undefined,
