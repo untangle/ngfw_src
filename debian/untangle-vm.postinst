@@ -81,4 +81,10 @@ sed -e 's/jessie/stretch/g' -i /etc/apt/sources.list.d/untangle.list
 # We no longer use upstream
 sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
 
+# Try again if failed
+if grep -q 'sync-settings failed' /var/log/uvm/stretch.log ; then
+    mv -f /var/log/uvm/stretch.log /var/log/uvm/stretch.log.old
+    nohup /usr/share/untangle/bin/ut-stretch-post-upgrade.sh >> /var/log/uvm/stretch.log 2>&1 &
+fi
+
 exit 0
