@@ -2338,10 +2338,12 @@ public class NetworkManagerImpl implements NetworkManager
             return;
         }
 
-        // Bridge to Internal if it exists, otherwise external
+        // Bridge to Internal if it exists and is addressed, otherwise external
         int intfToBridge = 1;
-        if ( findInterfaceId(2) != null )
+        InterfaceSettings bridgedInterfaceSettings = findInterfaceId(2);
+        if ( bridgedInterfaceSettings != null && bridgedInterfaceSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED ) {
             intfToBridge = 2;
+        }
 
         int i = 0;
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
@@ -2372,7 +2374,7 @@ public class NetworkManagerImpl implements NetworkManager
             intf.setWirelessEncryption( encryption );
         }
 
-        setNetworkSettings( this.networkSettings, false );
+        setNetworkSettings( this.networkSettings );
     }
 
     /**
