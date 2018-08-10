@@ -19,7 +19,7 @@ Ext.define('Ung.Setup.Wireless', {
         defaults: {
             labelAlign: 'top',
             msgTarget: 'side',
-            validationEvent: 'blur',
+            validationEvent: 'blur'
         },
         hidden: true,
         bind: {
