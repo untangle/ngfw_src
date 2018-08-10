@@ -232,18 +232,18 @@ public class NetworkManagerImpl implements NetworkManager
         ExecManagerResult result;
         boolean errorOccurred = false;
         String errorStr = null;
-        String cmd = "/usr/bin/sync-settings.py -f " + settingsFilename;
+        String cmd = "/usr/bin/sync-settings -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Syncing settings to O/S: ");
             for ( String line : lines )
-                logger.info("sync-settings.py: " + line);
+                logger.info("sync-settings: " + line);
         } catch (Exception e) {}
 
         if ( result.getResult() != 0 ) {
             errorOccurred = true;
-            errorStr = "sync-settings.py failed: returned " + result.getResult();
+            errorStr = "sync-settings failed: returned " + result.getResult();
         }
         
         // notify interested parties that the settings have changed
