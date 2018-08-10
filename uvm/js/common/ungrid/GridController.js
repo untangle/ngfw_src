@@ -22,7 +22,7 @@ Ext.define('Ung.cmp.GridController', {
 
     addRecordInline: function () {
         var v = this.getView(),
-            newRecord = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(v.emptyRow)), rowIndex;
+            newRecord = Ext.create(v.recordModel, Ung.util.Util.activeClone(v.emptyRow)), rowIndex;
 
         newRecord.set('markedForNew', true);
         if (v.topInsert) {
@@ -83,6 +83,17 @@ Ext.define('Ung.cmp.GridController', {
             delete newRecord.data['readOnly'];
         }
 
+        var restrict = v.restrictedRecords;
+        if(restrict && ( restrict.keyMatch != v.copyId ) ){
+            delete newRecord.data[restrict.keyMatch];
+        }
+
+        if(v.copyModify){
+            v.copyModify.forEach(function(kv){
+                newRecord.set(kv['key'], kv['value']);
+            });
+        }
+
         if (v.topInsert) {
             v.getStore().insert(0, newRecord);
         } else {
@@ -116,9 +127,14 @@ Ext.define('Ung.cmp.GridController', {
     isRecordRestricted: function(record){
         var restrict = this.getView().restrictedRecords;
 
-        if( restrict &&
-            restrict.valueMatch.test( record.get(restrict.keyMatch) )){
-            return true;
+        if( restrict ){
+            var value = record.get(restrict.keyMatch);
+            if(typeof(restrict.valueMatch) == 'object' &&
+                restrict.valueMatch.test( value )){
+                return true;
+            }else if(restrict.valueMatch == value){
+                return true;
+            }
         }
         return false;
     },
