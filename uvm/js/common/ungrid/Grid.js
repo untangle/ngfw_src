@@ -102,6 +102,8 @@ Ext.define('Ung.cmp.Grid', {
      */
     defaultSortable: true,
 
+    recordModel: 'Ung.model.Rule',
+
     stateful: false,
 
     layout: 'fit',
