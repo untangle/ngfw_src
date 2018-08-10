@@ -39,7 +39,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                     value: '{internal.configType !== "BRIDGED"}'
                 },
                 listeners: {
-                    // change: 'setConfigType'
+                    change: 'setConfigType'
                 }
             }, {
                 xtype: 'component',
@@ -108,7 +108,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                     value: '{internal.configType === "BRIDGED"}'
                 },
                 listeners: {
-                    // change: 'setConfigType'
+                    change: 'setConfigType'
                 }
             }, {
                 xtype: 'component',
