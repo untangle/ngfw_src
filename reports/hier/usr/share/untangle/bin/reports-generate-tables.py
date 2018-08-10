@@ -44,7 +44,7 @@ class ArgumentParser(object):
 
 DRIVER = 'postgresql'
 PREFIX = '@PREFIX@'
-PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
+PYTHON_DIR = '%s/usr/lib/python%d.%d/dist-packages' % (PREFIX, sys.version_info[0], sys.version_info[1])
 REPORTS_PYTHON_DIR = '%s/reports' % (PYTHON_DIR)
 
 if (PREFIX != ''):
