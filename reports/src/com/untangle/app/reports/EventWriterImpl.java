@@ -512,7 +512,7 @@ public class EventWriterImpl implements Runnable
                 if (totalTimeMs == null)
                     mapOutput += " " + item.name + "[" + item.count + "]";
                 else
-                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms" + "," + String.format("%.1f",((float)totalTimeMs/((float)(item.count)))) + "avg]";
+                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms" + "," + String.format("%.2f",((float)totalTimeMs/((float)(item.count)))) + "avg]";
             }
 
             long t1 = System.currentTimeMillis();
@@ -524,7 +524,7 @@ public class EventWriterImpl implements Runnable
                         String.format("%5d",statementCount) + " statements " +
                         "[" + String.format("%5d",elapsedTime) + " ms] " +
                         "[" + String.format("%5.0f",ratePerSec) + " event/s] " + 
-                        "[" + String.format("%4.1f",avgTime) + " avg] " +
+                        "[" + String.format("%5.2f",avgTime) + " avg] " +
                         "[" + String.format("%5d",writeDelaySec) + "s delay] " + 
                         "[" + String.format("%5d",inputQueue.size()) + " pending]");
             logger.info("persist(): EventMap   " + mapOutput);
