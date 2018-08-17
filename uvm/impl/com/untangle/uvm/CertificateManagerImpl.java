@@ -839,6 +839,11 @@ public class CertificateManagerImpl implements CertificateManager
         // don't let them delete the original system certificate
         if (fileName.equals("apache.pem")) return;
 
+        // don't let them delete any certificate that is assigned to a service
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getWebCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getMailCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate())) return;
+
         // extract the file name without the extension
         dotLocation = fileName.indexOf('.');
         if (dotLocation < 0) return;

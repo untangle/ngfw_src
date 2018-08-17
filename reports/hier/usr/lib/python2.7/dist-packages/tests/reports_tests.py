@@ -335,7 +335,7 @@ class ReportsTests(unittest2.TestCase):
         - Administrator email account gets
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -400,7 +400,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -445,7 +445,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -514,7 +514,7 @@ class ReportsTests(unittest2.TestCase):
         """
         global app,apps_list,apps_name_list
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 

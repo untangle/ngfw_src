@@ -845,6 +845,8 @@ class OpenVpnTests(unittest2.TestCase):
         global tunnelApp
         vpn_tunnel_file = "http://10.111.56.29/openvpn-tunnel-vpn-config.zip"
         index_of_wans = global_functions.get_wan_tuples()
+        if index_of_wans == []:
+            raise unittest2.SkipTest("No static or auto WAN")
         # print(index_of_wans[0])
 
         def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
