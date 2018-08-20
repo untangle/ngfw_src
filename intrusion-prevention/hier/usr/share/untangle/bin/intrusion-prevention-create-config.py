@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Create snort configuration from settings
+Create IPS configuration filesfrom settings
 """
 import json
 import os
@@ -15,6 +15,9 @@ if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 	
 import intrusion_prevention
+
+from intrusion_prevention.snort_signature import SnortSignature
+from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule
 
 def usage():
     """
@@ -35,9 +38,10 @@ def main(argv):
     iptables_script = ""
     default_home_net = ""
     default_interfaces = ""
+    signatures_path = None
 
     try:
-        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "app_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "home_net=", "interfaces=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "app_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "home_net=", "interfaces=", "debug", "signatures=" ] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -63,6 +67,8 @@ def main(argv):
                 default_home_net = "[" + default_home_net + "]"
         elif opt in ( "-x", "--interfaces"):
             default_interfaces = arg.split(",")
+        elif opt in ( "-r", "--signatures"):
+            signatures_path = arg
 
     if _debug == True:
         print("app_id = " + app_id)
@@ -75,8 +81,51 @@ def main(argv):
     settings.load()
 
     snort_conf = intrusion_prevention.SnortConf( _debug=_debug )
-   
-    signatures = settings.get_signatures()
+
+    ## get current signatures
+    ## apply settings signature mods
+    ## apply rules   
+    #
+    signatures = intrusion_prevention.SnortSignatures( app_id, signatures_path )
+    signatures.load( True )
+    for settings_signature in settings.settings["signatures"]["list"]:
+        if type(settings_signature) == dict:
+            for signature in signatures.get_signatures().values():
+                if signature.get_sid() == settings_signature["sid"] and signature.get_gid() == settings_signature["gid"]:
+                    signature.set_action(settings_signature["log"], settings_signature["block"])
+        else:
+            match_signature = re.search( SnortSignature.text_regex, settings_signature )
+            if match_signature:
+                # signatures.add_signature(SnortSignature( match_signature, category, signature_path))
+                signatures.add_signature(SnortSignature( match_signature, "unknown"))
+
+    ## process rules over signatures
+    rules = []
+    for settings_rule in settings.settings["rules"]["list"]:
+        rules.append(IntrusionPreventionRule(settings_rule))
+        # rule = IntrusionPreventionRule(settings_rule)
+        # print rule.get_action()
+
+    # Process rules in action precedence order.
+    priority = { 'default': 0, 'log' : 1, 'blocklog': 2, 'block': 3, 'disable': 4}
+    for rule in sorted(rules, key=lambda rule: (priority[rule.get_action()] )):
+        if not rule.get_enabled():
+            continue
+        # print rule.get_action()
+        for signature in signatures.get_signatures().values():
+            if rule.matches(signature):
+                # print "matched:" + signature.get_sid()
+                rule.set_signature_action(signature)
+
+    # For any rule that wasn't changed by rulees, disable.
+    for signature in signatures.get_signatures().values():
+        if not signature.get_action_changed():
+            signature.set_action(False, False)
+
+    # get signature report
+
+#    print len(signatures.get_signatures().values())
+
     signatures.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
     signatures.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )
     

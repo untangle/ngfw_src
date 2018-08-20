@@ -74,7 +74,8 @@ class SnortSignatures:
             match_category = re.search( SnortSignatures.category_regex, line )
             if match_category:
                 category = match_category.group(1)
-            else:            
+            else:
+                ## ?? are these regexes compiled on each instance?            
                 match_signature = re.search( SnortSignature.text_regex, line )
                 if match_signature:
                     self.add_signature(SnortSignature( match_signature, category, signature_path))
@@ -183,6 +184,7 @@ class SnortSignatures:
                     signature.set_action(False, False)
             self.signatures[rid] = signature
 
+    ### better name for these?
     def update(self, settings, conf, current_signatures=None, previous_signatures=None, reset_signatures=False):
         """
         Determine differences in previous and current signatures.
@@ -193,6 +195,17 @@ class SnortSignatures:
         is that custom signatures are preserved (unless their signature identifiers
         conflict, of course).
         """
+
+        # build rule from class
+        # for each signature:
+        #   build signature
+        #   if rule.matches with signature
+        #       if rule.add/modify:
+        #           Set action on signature
+        #       if rule.delete:
+        #           Unset action on signature.  Unless untangle modified?  Maybe another field modifier for rules?
+        #       
+
 
         #
         # Signature management
@@ -284,19 +297,21 @@ class SnortSignatures:
             })
 
 
-    def update_categories(self, defaults, sync_enabled = False):
+    # def update_categories(self, defaults, sync_enabled = False):
+    def update_categories(self, categories):
         """
         Update category for each signature
         """
-        categories = defaults.get_categories()
+        # categories = defaults.get_categories()
 
+        # Why if we're working with latest and applying?
         #
         # Reset all to original
         #
-        for signature_id in self.signatures.keys():
-            signature = self.get_signatures()[signature_id]
-            signature.set_category(defaults.get_original_category(signature.get_category()))
-            self.modify_signature(signature)
+        # for signature_id in self.signatures.keys():
+        #     signature = self.get_signatures()[signature_id]
+        #     signature.set_category(defaults.get_original_category(signature.get_category()))
+        #     self.modify_signature(signature)
         #
         # Modify to new
         #
@@ -305,8 +320,8 @@ class SnortSignatures:
                 if signature_id in self.signatures.keys():
                     signature = self.get_signatures()[signature_id]
                     signature.set_category(category["category"])
-                    if sync_enabled == True:
-                        signature.set_action(True,False)
+                    # if sync_enabled == True:
+                    #     signature.set_action(True,False)
                     self.modify_signature(signature)
 
     def format_category(self, category):

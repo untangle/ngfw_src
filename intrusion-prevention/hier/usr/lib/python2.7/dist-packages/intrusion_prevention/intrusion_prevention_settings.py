@@ -42,6 +42,8 @@ class IntrusionPreventionSettings:
         "configured": False,
         "max_scan_size": 1024
     }
+
+    current_version = 2
     
     def __init__(self, app_id):
         self.app_id = app_id
@@ -79,11 +81,11 @@ class IntrusionPreventionSettings:
         else:
             return obj
 
-    def load(self, file_name=""):
+    def load(self, file_name=None):
         """
         Load settings
         """
-        if file_name == "":
+        if file_name == None:
             file_name = self.file_name
             
         settings_file = open( file_name )
@@ -116,23 +118,23 @@ class IntrusionPreventionSettings:
         if file_name == None:
             file_name = self.file_name
             
-        self.settings["signatures"] = {
-            "list": []
-        }
-        for signature in self.signatures.get_signatures().values():
-            msg = signature.options["msg"]
-            if msg.startswith('"') and msg.endswith('"'):
-                msg = msg[1:-1]
-            self.settings["signatures"]["list"].append( { 
-                "sid": signature.options["sid"],
-                "log": (signature.enabled == True) and ((signature.action == "alert" or signature.action == "drop")),
-                "block" : (signature.enabled == True)  and ( signature.action == "drop" ),
-                "category": signature.category,
-                "classtype": signature.options["classtype"],
-                "msg" : msg,
-                "signature": signature.build(),
-                "path": signature.path
-            } )
+        # self.settings["signatures"] = {
+        #     "list": []
+        # }
+        # for signature in self.signatures.get_signatures().values():
+        #     msg = signature.options["msg"]
+        #     if msg.startswith('"') and msg.endswith('"'):
+        #         msg = msg[1:-1]
+        #     self.settings["signatures"]["list"].append( { 
+        #         "sid": signature.options["sid"],
+        #         "log": (signature.enabled == True) and ((signature.action == "alert" or signature.action == "drop")),
+        #         "block" : (signature.enabled == True)  and ( signature.action == "drop" ),
+        #         "category": signature.category,
+        #         "classtype": signature.options["classtype"],
+        #         "msg" : msg,
+        #         "signature": signature.build(),
+        #         "path": signature.path
+        #     } )
 
         if key != None:
             # Only keep settings with the specified key and deferefenced from list.
@@ -274,20 +276,29 @@ class IntrusionPreventionSettings:
         """
         self.signatures.filter_group(active_groups, defaults_profile)
 
-    def update_rules(self, rules):
-        ## build list of currently enabled rules
-        # for rule in rules:
-        #     print(rule)
+    def update_rules(self, rules, id_regex):
         new_rules_list = []
         enabled_rules = []
         rule_id = 1
         for rule in self.settings["rules"]["list"]:
             if rule["enabled"]:
                 enabled_rules.append(rule["id"])
-            match_reserved_rule = re.search( IntrusionPreventionRule.reserved_id_regex, str(rule["id"]) )
+
+            ## !!!! remove any reserved rule....
+            match_reserved_rule = re.search( id_regex, str(rule["id"]) )
             if not match_reserved_rule:
-                rule["id"] = rule_id
-                rule_id += 1
+                int_value = None
+                try:
+                    int_value = int(rule["id"])
+                except ValueError:
+                    int_value = None
+
+                print rule["id"]
+                print int_value
+
+                if int_value is not None:
+                    rule["id"] = rule_id
+                    rule_id += 1
                 new_rules_list.append(rule)
 
         self.settings["rules"]["list"] = new_rules_list
@@ -347,9 +358,11 @@ class IntrusionPreventionSettings:
                 self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_signatures"]["categories"]
             del(self.settings["active_signatures"])
 
-        # !!! convert profiles to rules
-        # 
-        # !!! remove most signatures unless with modified flags
+        if not "version" in self.settings:
+            self.settings["version"] = self.current_version
+            if "rules" in self.settings:
+                self.settings["signatures"]["list"] = []
+            # !!! convert profiles to rules
 
     def get_signatures(self):
         """
