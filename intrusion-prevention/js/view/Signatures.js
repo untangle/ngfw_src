@@ -27,11 +27,19 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         reconfigure: 'signaturesReconfigure'
     },
 
-    tbar: ['@add', '->', '@import', '@export'],
+    // tbar: ['@add', '->', '@import', '@export'],
+    tbar: ['@add'],
     recordActions: ['edit', 'copy', 'delete'],
     copyId: 'sid',
     copyIdPreserve: true,
     copyAppendField: 'msg',
+    copyModify: [{
+        key: 'reserved',
+        value: false,
+    },{
+        key: 'default',
+        value: false,
+    }],
 
     bbar: [ 'Search'.t(), {
         xtype: 'textfield',
@@ -62,31 +70,38 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         }
     }],
 
-    emptyRow: {
-        "classtype": "unknown",
-        "category": "app-detect",
-        "msg" : "new signature",
-        "sid": "1999999",
-        "log": true,
-        "block": false,
-        "signature": "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
+    restrictedRecords: {
+        keyMatch: 'reserved',
+        valueMatch: true,
+        // editableFields:[
+        //     "log",
+        //     "block"
+        // ]
     },
 
+    recordModel: 'Ung.model.intrusionprevention.signature',
+    emptyRow: "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; gid:1; classtype:unknown; category:app-detect; content:\"matchme\"; nocase;)",
+
     columns: [{
+        header: "Gid".t(),
+        dataIndex: 'gid',
+        width: Renderer.idWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.idRenderer
+    },{
         header: "Sid".t(),
         dataIndex: 'sid',
         width: Renderer.idWidth,
-        renderer: 'sidRenderer'
+        renderer: Ung.apps.intrusionprevention.MainController.idRenderer
     },{
         header: "Classtype".t(),
         dataIndex: 'classtype',
         width: Renderer.messageWidth,
-        renderer: 'classtypeRenderer'
+        renderer: Ung.apps.intrusionprevention.MainController.classtypeRenderer
     },{
         header: "Category".t(),
         dataIndex: 'category',
         width: Renderer.messageWidth,
-        renderer: 'categoryRenderer'
+        renderer: Ung.apps.intrusionprevention.MainController.categoryRenderer
     },{
         header: "Msg".t(),
         dataIndex: 'msg',
@@ -94,68 +109,36 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         flex:3,
     },{
         header: "Reference".t(),
-        dataIndex: 'signature',
+        dataIndex: 'sid',
         width: Renderer.messageWidth,
-        renderer: 'referenceRenderer'
+        renderer: Ung.apps.intrusionprevention.MainController.referenceRenderer
     },{
-        xtype:'checkcolumn',
         header: "Log".t(),
         dataIndex: 'log',
         width: Renderer.booleanWidth,
-        listeners: {
-            beforecheckchange: 'logBeforeCheckChange'
-        },
-        checkAll: {
-            handler: 'logCheckAll'
-        }
+        // listeners: {
+        //     beforecheckchange: 'logBeforeCheckChange'
+        // }
     },{
-        xtype:'checkcolumn',
+        // xtype:'checkcolumn',
         header: "Block".t(),
         dataIndex: 'block',
         width: Renderer.booleanWidth,
-        listeners: {
-            beforecheckchange: 'blockBeforeCheckChange'
-        },
-        checkAll: {
-            handler: 'blockCheckAll'
-        }
+        // listeners: {
+        //     beforecheckchange: 'blockBeforeCheckChange'
+        // }
     }],
 
+    editorXtype: 'ung.cmp.unintrusionsignaturesrecordeditor',
     editorFields: [{
-        fieldLabel: 'Classtype'.t(),
-        editable: false,
-        xtype: 'combo',
-        queryMode: 'local',
-        bind:{
-            value: '{record.classtype}',
-            store: '{classtypes}',
-        },
-        valueField: 'name',
-        displayField: 'name',
-        forceSelection: true,
-        listeners: {
-            change: 'editorClasstypeChange'
-        }
-    },{
-        fieldLabel: 'Category'.t(),
-        bind:{
-            value: '{record.category}',
-            store: '{categories}',
-        },
-        emptyText: "[enter category]".t(),
+        xtype:'numberfield',
+        bind: '{record.gid}',
+        fieldLabel: 'Gid'.t(),
+        emptyText: '[enter gid]'.t(),
         allowBlank: false,
-        xtype: 'combo',
-        queryMode: 'local',
-        valueField: 'name',
-        displayField: 'name'
-    },{
-        xtype:'textfield',
-        bind: '{record.msg}',
-        fieldLabel: 'Msg'.t(),
-        emptyText: "[enter mg]".t(),
-        allowBlank: false,
-        listeners: {
-            change: 'editorMsgChange'
+        hideTrigger: true,
+        listeners:{
+            change: 'editorGidChange'
         }
     },{
         xtype:'numberfield',
@@ -168,6 +151,44 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
             change: 'editorSidChange'
         }
      },{
+        fieldLabel: 'Classtype'.t(),
+        editable: false,
+        xtype: 'combo',
+        queryMode: 'local',
+        bind:{
+            value: '{record.classtype}',
+        },
+        store: Ung.apps.intrusionprevention.Main.classtypes,
+        valueField: 'name',
+        displayField: 'name',
+        forceSelection: true,
+        listeners: {
+            change: 'editorClasstypeChange'
+        }
+    },{
+        fieldLabel: 'Category'.t(),
+        bind:{
+            value: '{record.category}',
+        },
+        store: Ung.apps.intrusionprevention.Main.categories,
+        emptyText: "[enter category]".t(),
+        allowBlank: false,
+        xtype: 'combo',
+        queryMode: 'local',
+        valueField: 'name',
+        displayField: 'name'
+        // !!! what to do on change?
+        // change meta field for...
+    },{
+        xtype:'textfield',
+        bind: '{record.msg}',
+        fieldLabel: 'Msg'.t(),
+        emptyText: "[enter msg]".t(),
+        allowBlank: false,
+        listeners: {
+            change: 'editorMsgChange'
+        }
+    },{
          xtype:'checkbox',
          bind: '{record.log}',
          fieldLabel: 'Log'.t(),
