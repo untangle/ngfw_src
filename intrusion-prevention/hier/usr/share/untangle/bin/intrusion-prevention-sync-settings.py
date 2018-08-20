@@ -1,9 +1,8 @@
 #!/usr/bin/python
 """
-Synchronize settings:
--   From an initial state with the current signatures.
--   Between previous and current signatures.
--   From UI patches.
+Synchronize IPS settings:
+-   Cleanup/reindex from UI.
+-   Update reserved rules.
 """
 import errno
 import os
@@ -16,6 +15,8 @@ import time
 import uvm
 from uvm import Manager
 from uvm import Uvm
+
+from shutil import copyfile
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
@@ -65,12 +66,14 @@ def main(argv):
     app_id = None
     patch_file_name = None
     settings_file_name = None
+    current_settings_file_name = None
     export_mode = False
     summary = False
     summary_report = []
 	
     try:
-        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "signatures=", "previous_signatures=", "app_id=", "status=", "patch=", "export", "debug", "summary"] )
+        # opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "signatures=", "previous_signatures=", "app_id=", "status=", "patch=", "export", "debug", "summary"] )
+        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "current_settings=", "app_id=", "status=", "export", "debug"] )
     except getopt.GetoptError:
         print("ERROR")
         usage()
@@ -84,24 +87,28 @@ def main(argv):
             _debug = True
         elif opt in ( "-n", "--app_id"):
             app_id = arg
-        elif opt in ( "-r", "--signatures"):
-            current_signatures_path = arg
-        elif opt in ( "-p", "--previous_signatures"):
-            previous_signatures_path = arg
+        # elif opt in ( "-r", "--signatures"):
+        #     current_signatures_path = arg
+        # elif opt in ( "-p", "--previous_signatures"):
+        #     previous_signatures_path = arg
         elif opt in ( "-s", "--settings"):
             settings_file_name = arg
+        elif opt in ( "-s", "--current_settings"):
+            current_settings_file_name = arg
+            copyfile(current_settings_file_name, "/tmp/ips.js")
         elif opt in ( "-a", "--status"):
             status_file_name = arg
-        elif opt in ( "-p", "--patch"):
-            patch_file_name = arg
+        # elif opt in ( "-p", "--patch"):
+        #     patch_file_name = arg
         elif opt in ( "-e", "--export"):
             export_mode = True
-        elif opt in ( "--summary"):
-            summary = True
+        # elif opt in ( "--summary"):
+        #     summary = True
 
     if app_id == None:
         print("Missing app_id")
         sys.exit(1)
+
 
     # if current_signatures_path == None:
     #     print("Missing signatures")
@@ -113,50 +120,63 @@ def main(argv):
     #     sys.exit(1)
 
     if _debug == True:
-        if current_signatures_path != None :
-            print("current_signatures_path = " + current_signatures_path)
-        if previous_signatures_path != None:
-            print("previous_signatures_path = " + previous_signatures_path)
+        # if current_signatures_path != None :
+        #     print("current_signatures_path = " + current_signatures_path)
+        # if previous_signatures_path != None:
+        #     print("previous_signatures_path = " + previous_signatures_path)
         if settings_file_name != None:
             print("settings_file_name = " + settings_file_name)
-        print("app = " + app_id)
-        print("_debug = ",  _debug)
+        print("app = {0}".format(app_id))
+        print("_debug = {0}".format(_debug))
+
+    classifications = intrusion_prevention.SnortClassifications()
+    classifications.load()
 
     defaults = intrusion_prevention.IntrusionPreventionDefaults()
     defaults.load()
 
-    patch = None
-    if patch_file_name != None:
-        patch = intrusion_prevention.IntrusionPreventionSettingsPatch()
-        patch.load(patch_file_name)
+    # patch = None
+    # if patch_file_name != None:
+    #     patch = intrusion_prevention.IntrusionPreventionSettingsPatch()
+    #     patch.load(patch_file_name)
 
-    snort_conf = intrusion_prevention.SnortConf()
+    # snort_conf = intrusion_prevention.SnortConf()
 
     #
     # Get previous rules
     #
-    previous_snort_signatures = None
-    if previous_signatures_path != None:
-        previous_snort_signatures = intrusion_prevention.SnortSignatures( app_id, previous_signatures_path )
-        previous_snort_signatures.load( True )
-        previous_snort_signatures.update_categories(defaults, True)
+    # previous_snort_signatures = None
+    # if previous_signatures_path != None:
+    #     previous_snort_signatures = intrusion_prevention.SnortSignatures( app_id, previous_signatures_path )
+    #     previous_snort_signatures.load( True )
+    #     previous_snort_signatures.update_categories(defaults, True)
 
     #
     # Get settings
     #
+    #
+    ### way to handle incoming from ui
     settings = intrusion_prevention.IntrusionPreventionSettings( app_id )
     if settings.exists() == False:
         settings.create()
     else:
-        settings.load()
-        settings.convert()
+        settings.load(current_settings_file_name)
+#        settings.convert()
+    print settings.settings['signatures']
 
     # Apply patch
-    if patch != None:
-        settings.set_patch(patch)
+    # if patch != None:
+    #     settings.set_patch(patch)
 
     # Update default rules (they may have changed from updates download)
-    settings.update_rules(defaults.get_rules())
+    #settings.update_rules(defaults.get_rules(), intrusion_prevention.IntrusionPreventionDefaults.reserved_id_regex)
+    settings.update_rules(classifications.get_rules(), intrusion_prevention.SnortClassifications.reserved_id_regex)
+
+    # for rule in settings.settings["rules"]["list"]:
+    #     print rule["id"]
+    #     print rule["conditions"]
+    # sys.exit(1)
+
 
     #
     # Get current signatures.
@@ -167,47 +187,57 @@ def main(argv):
     # * Apply settings signatures to current signatures
     # * For all signatures that have not been qualified by rules or signature mods, disable.
     #
-    current_snort_signatures = None
-    if current_signatures_path != None:
-        current_snort_signatures = intrusion_prevention.SnortSignatures( app_id, current_signatures_path )
-        current_snort_signatures.load( True )
+    # current_snort_signatures = None
+    # if current_signatures_path != None:
+    #     current_snort_signatures = intrusion_prevention.SnortSignatures( app_id, current_signatures_path )
+    #     current_snort_signatures.load( True )
 
-        if summary:
-            summary_report.append( get_signature_report(current_snort_signatures, "initial") )
+    #     ## modify signatures from settings
 
-        ## new routine to get diffs between signature sets
+    #     # if summary:
+    #     #     summary_report.append( get_signature_report(current_snort_signatures, "initial") )
 
-        # Apply category overrides from defaults.
-        # !!! will also need to be incorporated into UI signature downloads
-        current_snort_signatures.update_categories(defaults.get_categories())
+    #     ## new routine to get diffs between signature sets
 
-        # # !!! should be done from defaults
-        # # True sets log=yes.  May not be good.
-        # # current_snort_signatures.update_categories(defaults, True)
+    #     # Apply category overrides from defaults.
+    #     # !!! will also need to be incorporated into UI signature downloads
+    #     current_snort_signatures.update_categories(defaults.get_categories())
 
-        # # settings.signatures.update_categories(defaults)
+    #     # # !!! should be done from defaults
+    #     # # True sets log=yes.  May not be good.
+    #     # # current_snort_signatures.update_categories(defaults, True)
+
+    #     # # settings.signatures.update_categories(defaults)
 
 
-        # settings.get_rules().update_signatures(settings.get_signatures())
 
-        # # if patch != None and "activeGroups" in patch.settings:
-        # #     #
-        # #     # Perform updates (e.g.,from signature distributions) preserving existing modifications.
-        # #     #
-        # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures, True )
-        # # else:
-        # #     # handle rules here?
-        # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures )     
+    #     # settings.get_rules().update_signatures(settings.get_signatures())
 
-        ## should be in current signtures, pass in settings rules
-        settings.apply_rules(current_snort_signatures)
+    #     # # if patch != None and "activeGroups" in patch.settings:
+    #     # #     #
+    #     # #     # Perform updates (e.g.,from signature distributions) preserving existing modifications.
+    #     # #     #
+    #     # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures, True )
+    #     # # else:
+    #     # #     # handle rules here?
+    #     # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures )     
 
-        summary_report.append(get_signature_report(current_snort_signatures, "rules"))
+    #     ## should be in current signtures, pass in settings rules
+    #     settings.apply_rules(current_snort_signatures)
 
-        ### should be in current signatures.
-        settings.disable_signatures(current_snort_signatures)
+    #     # Synchronize modified settings with diff between previous and current
+        
+    #     # Apply custom signature overrides.
 
-        summary_report.append(get_signature_report(current_snort_signatures, "final"))
+
+    #     # summary_report.append(get_signature_report(current_snort_signatures, "rules"))
+
+    #     ### should be in current signatures.
+    #     settings.disable_signatures(current_snort_signatures)
+
+        # summary_report.append(get_signature_report(current_snort_signatures, "final"))
+
+
 
         # apply signature overrides from settings
 
@@ -230,9 +260,9 @@ def main(argv):
     else:
         settings.save(settings_file_name)
     
-    if summary:
-        for report in summary_report:
-            print report
+    # if summary:
+    #     for report in summary_report:
+    #         print report
     
     sys.exit()
 

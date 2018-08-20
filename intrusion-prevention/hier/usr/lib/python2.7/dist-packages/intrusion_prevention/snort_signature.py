@@ -134,6 +134,15 @@ class SnortSignature:
 
         if self.options_raw != new_options_raw:
             self.options_raw = new_options_raw
+
+    def get_options(self, key):
+        """
+        Set options on key with value
+        """
+        if not key in self.options:
+            return
+
+        return self.options[key]
         
     def set_msg(self, msg):
         """
@@ -154,6 +163,19 @@ class SnortSignature:
         Set sid
         """
         self.set_options( "sid", sid )
+
+    def get_sid(self):
+        """
+        Set sid
+        """
+        return self.get_options( "sid" )
+
+    def get_gid(self):
+        """
+        Set sid
+        """
+        return self.get_options( "gid" )
+
 
     def set_classtype(self, classtype):
         """

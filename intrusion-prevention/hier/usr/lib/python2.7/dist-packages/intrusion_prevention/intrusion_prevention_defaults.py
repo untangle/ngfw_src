@@ -2,12 +2,15 @@
 IntrusionPrevention defaults management
 """
 import json
+import re
 
 class IntrusionPreventionDefaults:
     """
     Profile defaults
     """
+    ## !!!! WOAH
     file_name = "/usr/share/untangle-snort-config/dev/templates/defaults.js"
+    reserved_id_regex = re.compile(r'^reserved_default_')
 
     def __init__(self):
         self.settings = {}
