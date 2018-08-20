@@ -102,6 +102,8 @@ public class IntrusionPreventionApp extends AppBase
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
+        initializeSettings();
+
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
     }
 
@@ -176,9 +178,9 @@ public class IntrusionPreventionApp extends AppBase
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        if(!wizardCompleted()){
-            throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
-        }
+        // if(!wizardCompleted()){
+        //     throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
+        // }
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "snort", 3600, "snort");
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
@@ -224,7 +226,8 @@ public class IntrusionPreventionApp extends AppBase
             " --app_id \"" + this.getAppSettings().getId().toString() + "\"" +
             " --home_net \"" + homeNetValue + "\"" +
             " --interfaces \"" + interfacesValue + "\"" +
-            " --iptables_script \"" + IPTABLES_SCRIPT + "\""
+            " --iptables_script \"" + IPTABLES_SCRIPT + "\"" +
+            " --signatures /usr/share/untangle-snort-config/current"
         );
 
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -404,10 +407,10 @@ public class IntrusionPreventionApp extends AppBase
         String appId = this.getAppSettings().getId().toString();
         String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
 
+            // " --signatures /usr/share/untangle-snort-config/current" +
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-sync-settings.py" + 
             " --app_id " + appId +
-            " --signatures /usr/share/untangle-snort-config/current" +
             " --settings " + tempFileName
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -485,8 +488,11 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * IPS settings are very large, around 30MB.  Managing this through uvm's
-     * standard settings management causes Java garbage collection to go nuts
+     * IPS settings are managed through a download hander to get/set.
+     *
+     * This seems like overkill.  However, we originally supported editing all
+     * signatures, resulting in a settings file around 300MB.  Managing this through
+     * uvm's standard settings management causes Java garbage collection to go nuts
      * and almost always causes uvm to reload.
      * 
      * Besides not wanting to re-work uvm's GC settings, the bigger issue
@@ -496,6 +502,12 @@ public class IntrusionPreventionApp extends AppBase
      *
      * Therefore, the easiest way to get around the GC issue is to simply
      * make IPS settings use the download manager for downloads and uploads.
+     *
+     * Today we use rules as the primary means to control signatures.  In theory
+     * most people will use that instead of editing signatures manually either via
+     * via the UI or export/import.  However, the fact stlll remains that uvm 
+     * doesn't need to know anything about IPS settings and that's why we retain
+     * this method so no memory is used for maintaining IPS settings/
      *
      */
     private class IntrusionPreventionSettingsDownloadHandler implements DownloadHandler
@@ -534,7 +546,44 @@ public class IntrusionPreventionApp extends AppBase
                 return;
             }
 
-            if( action.equals("load") ||
+            if(action.equals("signatures")){
+                resp.setCharacterEncoding(CHARACTER_ENCODING);
+                resp.setHeader("Content-Type","text/plain");
+
+                List<File> signatureFiles = new LinkedList<>();
+                getSignatureFiles( signatureFiles, new File("/usr/share/untangle-snort-config/current"));
+
+                byte[] buffer = new byte[1024];
+                int read;
+                FileInputStream fis = null;
+                try{
+                    OutputStream out = resp.getOutputStream();
+                    for(File entry: signatureFiles){
+                        String entryLine = "# filename: " + entry.getName() + "\n";
+                        byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
+                        out.write( name);
+                        // out.write(entry.getName() + "\n", 0);
+                        fis = new FileInputStream(entry);
+                        while ( ( read = fis.read( buffer ) ) > 0 ) {
+                            out.write( buffer, 0, read);
+                        }
+                        fis.close();
+                    }
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                    logger.warn("Failed to load IPS settings",e);
+                }finally{
+                    try{
+                        if(fis != null){
+                            fis.close();
+                        }
+                    }catch( IOException e){
+                        logger.warn("Failed to close file");
+                    }
+                }
+
+            }else if( action.equals("load") ||
                 action.equals("wizard") ){
                 String settingsName;
                 if( action.equals("wizard") ){
@@ -587,7 +636,7 @@ public class IntrusionPreventionApp extends AppBase
                  * without compression.  To get around this, we receive a JSON "patch"
                  * which we pass to the configuration management scripts to integrate into settings.
                  */
-                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
+                // String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
                 String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
                 int verifyResult = 1;
                 FileOutputStream fos = null;
@@ -595,7 +644,7 @@ public class IntrusionPreventionApp extends AppBase
                     byte[] buffer = new byte[1024];
                     int read;
                     InputStream in = req.getInputStream();
-                    fos = new FileOutputStream( tempPatchName );
+                    fos = new FileOutputStream( tempSettingsName );
 
                     while ( ( read = in.read( buffer ) ) > 0 ) {
                         fos.write( buffer, 0, read);
@@ -604,21 +653,18 @@ public class IntrusionPreventionApp extends AppBase
                     in.close();
                     fos.flush();
 
-                    /*
-                     * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
-                     */
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempSettingsName + "> /dev/null 2>&1" );
                     verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
 
                     String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") + 
-                        "/intrusion-prevention-sync-settings.py" + 
+                        System.getProperty("uvm.bin.dir") +
+                        "/intrusion-prevention-sync-settings.py" +
                         " --app_id " + appId +
-                        " --signatures /usr/share/untangle-snort-config/current" +
-                        " --settings " + tempSettingsName + 
-                        " --patch " + tempPatchName
+                        " --current_settings " + tempSettingsName +
+                        " --settings " + tempSettingsName
                     );
                     String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+
                     try{
                         String[] lines = result.split("\\r?\\n");
                         for ( String line : lines ){
@@ -630,8 +676,10 @@ public class IntrusionPreventionApp extends AppBase
                         logger.warn("Unable to initialize settings: ", e );
                     }
 
-                    File fp = new File( tempPatchName );
-                    fp.delete();
+                    app.saveSettings( tempSettingsName );
+
+                    // File fp = new File( tempSettingsName );
+                    // fp.delete();
                 }catch( IOException e ){
                     logger.warn("Failed to save IPS settings");
                 }finally{
@@ -645,12 +693,7 @@ public class IntrusionPreventionApp extends AppBase
                 }
 
                 String responseText = "{success:true}";
-                if( verifyResult == 0 ){
-                    app.saveSettings( tempSettingsName );
-                }else{
-                    responseText = "{success:false}";
-                }
-
+ 
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
                     resp.setHeader("Content-Type","application/json");
@@ -738,6 +781,25 @@ public class IntrusionPreventionApp extends AppBase
                     logger.warn("Failed to export IPS settings",e);
                 }
             }
+        }
+
+        /**
+         * [getSignatureFiles description]
+         * @param files [description]
+         * @param path  [description]
+         */
+        private void getSignatureFiles(List<File> files, File path){
+            if(path.isDirectory()){
+                File[] entries = path.listFiles();
+                for(File entry : entries){
+                    getSignatureFiles(files, entry);
+                }
+            }else{
+                if(path.getName().endsWith(".rules")){
+                    files.add(path);
+                }
+            }
+            return;
         }
     }
 
