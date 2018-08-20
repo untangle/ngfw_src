@@ -9,8 +9,6 @@ class IntrusionPreventionRule:
 
     global_values = None
 
-    reserved_id_regex = re.compile(r'^reserved_')
-
     def __init__(self, settingsRule):
         self.rule = settingsRule
 
@@ -28,6 +26,9 @@ class IntrusionPreventionRule:
 
     def get_enabled(self):
         return self.rule["enabled"]
+
+    def get_action(self):
+        return self.rule["action"]
 
     # def get_id(self):
     #     return self.rule["id"]
@@ -122,9 +123,9 @@ class IntrusionPreventionRule:
         elif comparator == "!=":
             return sourceValue != targetValue
         elif comparator == "substr":
-            return targetValue in targetValue
+            return targetValue in sourceValue
         elif comparator == "!substr":
-            return not targetValue in targetValue
+            return not targetValue in sourceValue
 
         return False
 
