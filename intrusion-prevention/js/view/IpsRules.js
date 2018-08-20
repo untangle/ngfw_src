@@ -5,6 +5,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     title: 'Rules'.t(),
     scrollable: true,
 
+    controller: 'unintrusionrulegrid',
+
     emptyText: 'No Rules Defined'.t(),
     name: 'rules',
 
@@ -18,42 +20,18 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     region: 'center',
 
-    // plugins: [
-    //     'gridfilters'
-    // ],
-    // features: [{
-    //     ftype: 'grouping',
-    //     groupHeaderTpl: '{columnName}: {name} ({rows.length} signature{[values.rows.length > 1 ? "s" : ""]})',
-    //     startCollapsed: true
-    //  }],
-
     bind: '{rules}',
 
-    // listeners: {
-    //     reconfigure: 'signaturesReconfigure'
-    // },
-
-    // bbar: [{
-    //     xtype: 'tbtext',
-    //     name: 'searchStatus',
-    //     html: 'Loading...'.t(),
-    //     // listeners: {
-    //     //     afterrender: 'updateSearchStatusBar'
-    //     // }
-    // },{
-    //     xtype: 'tbtext',
-    //     name: 'searchStatus',
-    //     html: 'Loading...'.t(),
-    //     // listeners: {
-    //     //     afterrender: 'updateSearchStatusBar'
-    //     // }
-    // }],
+    bbar: [{
+        xtype: 'tbtext',
+        name: 'ruleStatus',
+    }],
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete'],
     copyId: 'id',
-    //copyIdPreserve: true,
     copyAppendField: 'description',
+    recordModel: 'Ung.model.intrusionprevention.rule',
 
     emptyRow: {
         'enabled': true,
@@ -129,6 +107,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             comparator: 'comparator',
             value: 'value',
         },
+
         conditions: [{
             name: "SID",
             displayName: "Signature Identifier".t(),
@@ -137,11 +116,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         },{
             name:"GID",
             displayName: "Group Identifier".t(),
-            type: 'textfield',
-            comparator: 'numeric'
-        },{
-            name:"ID",
-            displayName: "Signature & Group Indentifier".t(),
             type: 'textfield',
             comparator: 'numeric'
         },{
@@ -198,8 +172,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             vtype:"ipMatcher",
             comparator: 'numeric'
         },{
-            name:"RULE",
-            displayName: "Rule".t(),
+            name:"SIGNATURE",
+            displayName: "Any part of signature".t(),
             type: 'textfield',
             comparator: 'text'
         // },
