@@ -35,7 +35,7 @@ task :kindaclean do
   info "[rm -rf  ] #{BuildEnv::SRC.staging}"
   FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
   info "[rm -rf  ] debian/dirs"
-  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
+  FileUtils.rm_rf(FileList['debian/*'].select { |f| f != 'debian/source' and File.directory?(f) })
   info "[rm -rf  ] debian/*init"
   FileUtils.rm_rf(FileList['debian/*init'])
   ## Clear the stamp hashes
