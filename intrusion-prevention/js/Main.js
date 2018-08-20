@@ -12,6 +12,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 value: 'log',
                 display: 'Log'.t()
             },{
+                value: 'blocklog',
+                display: 'Block if Logged'.t()
+            },{
                 value: 'block',
                 display: 'Block'.t()
             },{
@@ -32,16 +35,13 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             },
             rules: {
                 storeId: 'rulesStore',
-                fields: [{
-                    name: 'enabled',
-                },{
-                    name: 'description'
-                },{
-                    name: 'conditions'
-                },{
-                    name: 'actions'
-                }],
-                data: '{settings.rules.list}'
+                model: 'Ung.model.intrusionprevention.rule',
+                data: '{settings.rules.list}',
+                sorters:[{
+                    sorterFn: function(){
+                        return Ung.apps.intrusionprevention.MainController.ruleSortActionPrecedence.apply(this, arguments);
+                    }
+                }]
             },
             signatures: {
                 storeId: 'signaturesStore',
@@ -65,7 +65,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     name: 'block',
                     type: 'boolean'
                 }],
-                data: '{settings.signatures.list}',
+                data: '{signaturesList}',
                 groupField: 'classtype',
                 sorters: [{
                     property: 'sid',
@@ -266,5 +266,4 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             return record.get('description');
         },
     }
-
 });

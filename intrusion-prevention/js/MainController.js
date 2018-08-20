@@ -13,10 +13,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
+        var t0 = performance.now();
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getLastUpdateCheck'),
             Rpc.asyncPromise(v.appManager, 'getLastUpdate'),
             Rpc.directPromise('rpc.companyName'),
+            Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
             function(){ return Ext.Ajax.request({
                 url: "/admin/download",
                 method: 'POST',
@@ -35,13 +37,26 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     arg2: vm.get('instance.id')
                 },
                 timeout: 600000});
+            },function(){ return Ext.Ajax.request({
+                url: "/admin/download",
+                method: 'POST',
+                params: {
+                    type: "IntrusionPreventionSettings",
+                    arg1: "signatures",
+                    arg2: vm.get('instance.id')
+                },
+                timeout: 600000});
         }]).then(function(result){
             if(Util.isDestroyed(me, vm)){
                 return;
             }
+
+            var t1 = performance.now();
+            // console.log(t1-t0);
+
             var settings = null;
             try{
-                settings = Ext.decode( result[3].responseText);
+                settings = Ext.decode( result[4].responseText);
             }catch(error){
                 v.setLoading(false);
                 Util.handleException({
@@ -53,12 +68,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 lastUpdateCheck: (result[0] !== null && result[0].time !== 0 ) ? Renderer.timestamp(result[0]) : "Never".t(),
                 lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
                 companyName: result[2],
+                system_memory: result[3],
                 settings: settings,
-                wizardDefaults: Ext.decode( result[4].responseText ),
+                wizardDefaults: Ext.decode( result[5].responseText ),
                 profileStoreLoad: true,
                 signaturesStoreLoad: true,
                 variablesStoreLoad: true
             });
+            me.buildSignatures( result[6], settings);
             v.getController().updateStatus();
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -72,52 +89,104 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
     },
 
-    getChangedDataRecords: function(target){
-        var v = this.getView();
-        var changed = {};
-        v.query('app-intrusion-prevention-' + target).forEach(function(grid){
-            var store = grid.getStore();
-            store.getModifiedRecords().forEach( function(record){
-                var data = {
-                    op: 'modified',
-                    recData: record.data
-                };
-                if(record.get('markedForDelete')){
-                    data.op = 'deleted';
-                }else if(record.get('markedForNew')){
-                    data.op = 'added';
+    buildSignatures: function(reserved, settinns){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        var t0 = performance.now();
+        var t1 = performance.now();
+        var t2 = performance.now();
+
+        var filenameRegex = new RegExp("^# filename: (emerging\-|)(.+)\.rules$");
+        var filenameStrips = ['emerging-'];
+        var matches;
+        var category;
+        var signatures = [];
+        reserved.responseText.split("\n").forEach(function(line){
+            // if(category == 'dshield'){
+            //     return false;
+            // }
+            if( filenameRegex.test( line ) ){
+                var matches = line.match(filenameRegex);
+                if( matches ){
+                    category = matches[2];
                 }
-                changed[record.get('_id')] = data;
-            });
-            store.commitChanges();
-        });
-
-        return changed;
-    },
-
-    getChangedData: function(){
-        var me = this, vm = this.getViewModel();
-
-        var settings = vm.get('settings');
-        var changedDataSet = {};
-        var keys = Object.keys(settings);
-        for( var i = 0; i < keys.length; i++){
-            if( ( keys[i] == "signatures" ) ||
-                ( keys[i] == "variables" ) ||
-                ( keys[i] == "rules" ) ||
-                ( keys[i] == "profileId" ) ||
-                ( keys[i] == "activeGroups") ){
-                continue;
+            }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
+                signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
             }
-            changedDataSet[keys[i]] = settings[keys[i]];
-        }
+        });
+        // console.log(signatures);
+        t1 = performance.now();
+        // console.log(t1-t0);
 
-        changedDataSet.rules = me.getChangedDataRecords('rules');
-        changedDataSet.signatures = me.getChangedDataRecords('signatures');
-        changedDataSet.variables = me.getChangedDataRecords('variables');
-
-        return changedDataSet;
+        // Process custom signatures
+        vm.get('settings.signatures.list').forEach(function(settingsSignature){
+            if(typeof(settingsSignature) == 'object'){
+                signatures.forEach(function( signature ){
+                    if(signature.get('gid') == settingsSignature['gid'] &&
+                       signature.get('sid') == settingsSignature['sid']){
+                        signature.set( 'log', settingsSignature['log']);
+                        signature.set( 'block', settingsSignature['block']);
+                        signature.set( 'default', false);
+                    }
+                });
+            }else{
+                signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature, null, false));
+            }
+        });
+        vm.set({
+            signaturesList: signatures
+        });
     },
+
+    // getChangedDataRecords: function(target){
+    //     var v = this.getView();
+    //     var changed = {};
+    //     v.query('app-intrusion-prevention-' + target).forEach(function(grid){
+    //         var store = grid.getStore();
+    //         store.getModifiedRecords().forEach( function(record){
+    //             console.log(record.get('_id'));
+    //             var data = {
+    //                 op: 'modified',
+    //                 recData: record.getRecord ? record.getRecord() : record.data
+    //             };
+    //             if(record.get('markedForDelete')){
+    //                 data.op = 'deleted';
+    //             }else if(record.get('markedForNew')){
+    //                 data.op = 'added';
+    //             }
+    //             // console.log(record);
+    //             // changed[record.get('_id')] = record.getRecord ? record.getRecord() : data;
+    //             changed[record.get('_id')] = data;
+    //         });
+    //         store.commitChanges();
+    //     });
+
+    //     return changed;
+    // },
+
+    // getChangedData: function(){
+    //     var me = this, vm = this.getViewModel();
+
+    //     var settings = vm.get('settings');
+    //     var changedDataSet = {};
+    //     var keys = Object.keys(settings);
+    //     for( var i = 0; i < keys.length; i++){
+    //         if( ( keys[i] == "signatures" ) ||
+    //             ( keys[i] == "variables" ) ||
+    //             ( keys[i] == "rules" ) ||
+    //             ( keys[i] == "profileId" ) ||
+    //             ( keys[i] == "activeGroups") ){
+    //             continue;
+    //         }
+    //         changedDataSet[keys[i]] = settings[keys[i]];
+    //     }
+
+    //     changedDataSet.rules = me.getChangedDataRecords('rules');
+    //     changedDataSet.signatures = me.getChangedDataRecords('signatures');
+    //     changedDataSet.variables = me.getChangedDataRecords('variables');
+
+    //     return changedDataSet;
+    // },
 
     setSettings: function (additionalChanged) {
         var me = this, v = this.getView(), vm = this.getViewModel();
@@ -128,16 +197,76 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
-        var changedData = me.getChangedData();
-        if(arguments.length == 1){
-            if(additionalChanged){
-                changedData= Ext.Object.merge(changedData,additionalChanged);
+        v.query('ungrid').forEach(function (grid) {
+
+            // path for listProperty=grid.bind.owner.config.stores.variables.data
+            var settingsProperty = grid.listProperty;
+            if(grid.getBind().store){
+                var bindName = grid.getBind().store.stub.name;
+                settingsProperty = grid.getBind().store.owner.config.stores[bindName].data;
+                settingsProperty = settingsProperty.substring(1,settingsProperty.length - 1);
             }
-        }
+            // console.log('settingsProperty=' + settingsProperty);
+
+            if(settingsProperty){
+                var store = grid.getStore();
+                if(settingsProperty == 'signaturesList'){
+                    var signatures = [];
+                    store.each(function(record){
+                        if(!record.get('default') && !record.get('markedForDelete')) {
+                        // if(!record.get('markedForDelete')) {
+                            signatures.push(record.getRecord());
+                        }
+                    });
+                    // console.log('signatures=');
+                    // console.log(signatures);
+                    vm.set('settings.signatures.list', signatures);
+                }else{
+                    if (store.getModifiedRecords().length > 0 ||
+                        store.getNewRecords().length > 0 ||
+                        store.getRemovedRecords().length > 0 ||
+                        store.isReordered) {
+                        store.each(function (record) {
+                            if (record.get('markedForDelete')) {
+                                record.drop();
+                            }
+                        });
+                        store.isReordered = undefined;
+                        // console.log('GRID MODEL='+grid.recordModel);
+                        // console.log(Ext.ClassManager.get(grid.recordModel).fields);
+                        var recordFields = Ext.Array.pluck(Ext.ClassManager.get(grid.recordModel).fields, 'name');
+                        var data = Ext.Array.pluck(store.getRange(), 'data');
+                        data.forEach(function(record){
+                            delete record['_id'];
+                            delete record['markedForNew'];
+                        });
+                        // or cleanup in sync?
+                        // data.forEach( function(record){
+                        //     delete record['_id'];
+                        //     for(var fieldName in record){
+                        //         if(Ext.Array.indexOf(recordFields, fieldName) == -1){
+                        //             delete record[fieldName];
+                        //         }
+                        //     }
+                        // });
+                        vm.set(settingsProperty, data);
+                    }
+                }
+            }
+        });
+
+        // var changedData = me.getChangedData();
+        // if(arguments.length == 1){
+        //     if(additionalChanged){
+        //         changedData= Ext.Object.merge(changedData,additionalChanged);
+        //     }
+        // }
+
+        // console.log(vm.get('settings'));
 
         Ext.Ajax.request({
             url: "/admin/download",
-            jsonData: changedData,
+            jsonData: vm.get('settings'),
             method: 'POST',
             params: {
                 type: "IntrusionPreventionSettings",
@@ -313,12 +442,198 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     statics:{
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
-            var displayValue = table.up('grid').getController().getViewModel().get('ruleActionsStore').findRecord('value', value).get('display');
+            var displayValue = table.up('grid').getController().getViewModel().get('ruleActionsStore').findRecord('value', value, 0, false, false, true).get('display');
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
             return displayValue;
-        }
-    }
+        },
 
+        idRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+            var sid = record.get('sid');
+            var gid = record.getOption('gid');
+            if(!gid){
+                gid = '1';
+            }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( "Sid".t() + ": " + sid + ", " + "Gid".t() + ":" + gid) + '"';
+            return value;
+        },
+
+        classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+            var vm = this.getViewModel();
+            var description = value;
+            var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('name', value);
+            if( classtypeRecord != null ){
+                description = classtypeRecord.get('description');
+            }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description ) + '"';
+            return value;
+        },
+
+        categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+            var vm = this.getViewModel();
+            var description = value;
+            var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('name', value);
+            if( categoryRecord != null ){
+                description = categoryRecord.get('description');
+            }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description  ) + '"';
+            return value;
+        },
+
+        referencesMap: {
+            "bugtraq": "http://www.securityfocus.com/bid/",
+            "cve": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=",
+            "nessus": "http://cgi.nessus.org/plugins/dump.php3?id=",
+            "arachnids": "http://www.whitehats.com/info/IDS",
+            "mcafee": "http://vil.nai.com/vil/content/v",
+            "osvdb": "http://osvdb.org/show/osvdb/",
+            "msb": "http://technet.microsoft.com/en-us/security/bulletin/",
+            "url": "http://"
+        },
+        referenceRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+            var references = [];
+            var optionReferences = record.getOption('reference');
+            if(optionReferences != null){
+                if(!Array.isArray(optionReferences)){
+                    optionReferences = [optionReferences];
+                }
+                optionReferences.forEach(function(reference){
+                    if(typeof(reference) != 'string'){
+                        return false;
+                    }
+                    reference = reference.split(',', 2);
+                    if(Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]]){
+                        reference[1].split(',').forEach( function(target){
+                            target = target.trim(target);
+                            if((target.charAt(0) == '"') &&
+                                (target.charAt(target.length - 1) == '"')){
+                                target = target.substr(1,target.length - 2);
+                            }
+                            var url = Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]] + target;
+                            references.push('<a href="'+ url + '" class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
+                        });
+                    }
+                });
+            }
+            return references.join("");
+        },
+        ruleActionPrecedence: {
+            'default': 0, 
+            'log' : 1, 
+            'blocklog': 2, 
+            'block': 3, 
+            'disable': 4
+        },
+        ruleSortActionPrecedence: function( record1, record2){
+            var action1 = record1.get('action');
+            var action2 = record2.get('action');
+            return ( Ung.apps.intrusionprevention.MainController.ruleActionPrecedence[action1] > Ung.apps.intrusionprevention.MainController.ruleActionPrecedence[action2] ) ? 1 : ( (action1 == action2) ? 0 : -1); 
+        },
+    }
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.unintrusionrulegrid',
+
+    control: {
+        '#': {
+            reconfigure: 'updateRuleStatus',
+        },
+        'checkcolumn': {
+            checkchange: 'updateRuleStatus'
+        },
+        'ungrid':{
+            edit: 'updateRuleStatus'
+        },
+        'window': {
+            close: 'updateRuleStatus'
+        }
+    },
+
+
+    updateRuleStatus: function(){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+        var conditions = Ext.Array.findBy(v.editorFields, function(field){
+            if(field.xtype == 'conditionseditor'){
+                return true;
+            }
+        }).conditions;
+
+        var status = {
+            log: {},
+            block: {},
+            disable: {}
+        };
+        var t0 = performance.now();
+        var t1 = performance.now();
+        var statusIndex;
+        var signatures = vm.get('signatures');
+        vm.get('rules').each(function(rule){
+            if(rule.get('enabled')){
+                var ruleAction = rule.get('action');
+                var ruleActionDefault = ( ruleAction == 'default' );
+                statusIndex = ruleAction;
+                signatures.each( function(signature){
+                    if(rule.matchSignature(signature, conditions, vm)){
+                        if(ruleActionDefault){
+                            statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
+                        }
+                        if(ruleAction == 'blocklog'){
+                            statusIndex = signature.data['log'] ? 'block' : 'disable';
+                        }
+
+                        var signatureId = signature.data['id'];
+                        for(var action in status){
+                            if(action == statusIndex){
+                                continue;
+                            }
+                            if(status[action][signatureId]){
+                                status[action][signatureId] = false;
+                                break;
+                            }
+                        }
+                        status[statusIndex][signatureId] = true;
+                    }
+                });
+                // console.log('rule ' + rule.get('description'));
+                // console.log(performance.now()- t0);
+                t0 = t1;
+                t1 = performance.now();
+            }
+        });
+        t0 = performance.now();
+        var found, 
+            signatureId;
+        signatures.each( function(signature){
+            signatureId = signature.data['id'] ;
+            found = false;
+            for(var action in status){
+                if(action == 'disable'){
+                    continue;
+                }
+                if(status[action][signatureId]){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                status['disable'][signatureId] = true;
+            }
+        });
+        // console.log('disabled');
+        t1 = performance.now();
+        // console.log(t1-t0);
+
+        var ruleStatusBar = v.down("[name=ruleStatus]");
+        var statusLengths = {};
+        for(var statusKey in status){
+            statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
+        }
+        
+        ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
+    }
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditor', {
@@ -332,28 +647,21 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unintrusionsignaturesrecordeditorcontroller',
 
-    editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
+    editorGidChange: function( me, newValue, oldValue, eOpts ){
+        var v = this.getView();
         var vm = this.getViewModel();
-        if( newValue == null || Ung.apps.intrusionprevention.Main.classtypes.findExact('name', newValue) == null ){
-            me.setValidation("Unknown classtype".t());
+
+        // Perform validation
+        if( ! /^[0-9]+$/.test( newValue )){
+            me.setValidation("Sid must be numeric".t());
             return false;
         }
-        me.setValidation(true);
 
-        this.getView().up('grid').getController().updateSignature( this.getViewModel().get('record'), 'classtype', newValue );
+        // !!! check gid+sid combo
+
+        me.setValidation(true);
     },
 
-    editorMsgChange: function( me, newValue, oldValue, eOpts ){
-        if( /[";]/.test( newValue ) ){
-            me.setValidation( 'Msg contains invalid characters.'.t() );
-            return false;
-        }
-        me.setValidation(true);
-        this.getView().up('grid').getController().updateSignature( this.getViewModel().get('record'), 'msg', newValue );
-    },
-
-    sidRegex: /\s+sid:([^;]+);/,
-    gidRegex: /\s+gid:\s*([^;]+);/,
     editorSidChange: function( me, newValue, oldValue, eOpts ){
         var v = this.getView();
         var vm = this.getViewModel();
@@ -366,23 +674,16 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         var record = vm.get('record');
         var originalRecord = v.record;
 
-        var gid = '1';
-        var signature = record.get('signature');
-        if( this.gidRegex.test( signature )){
-            gid = this.gidRegex.exec( signature )[1];
-        }
+        var gid = record.get('gid');
 
+        // !!! make this a function to share with gid validation.
         var match = false;
         vm.get('signatures').each( function( storeRecord ) {
             if( storeRecord != originalRecord && storeRecord.get('sid') == newValue) {
                 var signatureGid = "1";
                 signatureValue = storeRecord.get("signature");
-                if( this.gidRegex.test( signatureValue ) ) {
-                    signatureGid = this.gidRegex.exec( signatureValue )[1];
-                    this.gidRegex.lastIndex = 0;
-                }
 
-                if( gid == signatureGid ){
+                if( storeRecord.get('gid') == originalRecord.get('gid') ){
                     match = true;
                     return false;
                 }
@@ -395,58 +696,44 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         }
 
         me.setValidation(true);
-        this.getView().up('grid').getController().updateSignature( this.getViewModel().get('record'), 'sid', newValue );
+        // this.getView().up('grid').getController().updateSignature( this.getViewModel().get('record'), 'sid', newValue );
+    },
+
+    editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
+        var vm = this.getViewModel();
+        if( newValue == null || Ung.apps.intrusionprevention.Main.classtypes.findExact('name', newValue) == null ){
+            me.setValidation("Unknown classtype".t());
+            return false;
+        }
+        me.setValidation(true);
+    },
+
+    editorMsgChange: function( me, newValue, oldValue, eOpts ){
+        if( /[";]/.test( newValue ) ){
+            me.setValidation( 'Msg contains invalid characters.'.t() );
+            return false;
+        }
+        me.setValidation(true);
     },
 
     editorLogChange: function( me, newValue, oldValue, eOpts ) {
-        // If log disabled, ensure that block is also disabled.
-        var record = this.getViewModel().get('record');
         if( newValue === false) {
-            record.set('block', false);
+            this.getViewModel().get('record').set('block', false);
         }
-        this.getView().up('grid').getController().updateSignature( record, 'log', newValue );
     },
 
     editorBlockChange: function( me, newValue, oldValue, eOpts ) {
-        // If block enabled, that log is also enabled.
-        var record = this.getViewModel().get('record');
         if( newValue === true ){
-            record.set('log', true);
+            this.getViewModel().get('record').set('log', true);
         }
-        this.getView().up('grid').getController().updateSignature( record, 'block', newValue );
     },
 
-    actionRegex: /^([#]+|)\s*(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     editorSignatureChange: function( me, newValue, oldValue, eOpts ){
-        var signature = new Ung.model.intrusionprevention.signature(newValue);
-
-        if(!signature.get('valid')){
-            return;
+        if(!Ung.model.intrusionprevention.signature.isValid(newValue)){
+            me.setValidation( 'Signature is invalid.'.t() );
+            return false;
         }
-
-        var record = this.getViewModel().get('record');
-
-        record.set('sid', signature.getOption('sid'));
-        record.set('gid', signature.getOption('gid'));
-        record.set('msg', signature.getOption('msg'));
-
-        var log = false;
-        var block = false;
-        if(signature.get('enabled')){
-            var action = signature.get('action');
-            if(action == 'alert'){
-                log = true;
-                block = false;
-            }else if(action == 'drop'){
-                log = true;
-                block = true;
-            }else if(action == 'sdrop'){
-                log = false;
-                block = true;
-            }
-        }
-        record.set('log', log);
-        record.set('block', block);
+        me.setValidation(true);
     }
 
 });
@@ -456,154 +743,26 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
 
     alias: 'controller.unintrusionsignaturesgrid',
 
-    editorWin: function (record) {
-        this.dialog = this.getView().add({
-            xtype: 'ung.cmp.unintrusionsignaturesrecordeditor',
-            record: record
-        });
-        this.dialog.show();
-    },
-
-    regexSignatureGid: /\s+gid:\s*([^;]+);/,
-    sidRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var sid = record.get('sid');
-        var gid = '1';
-        if( this.regexSignatureGid.test( record.get('signature') ) ){
-            gid = this.regexSignatureGid.exec( record.get('signature') )[1];
-        }
-        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( "Sid".t() + ": " + sid + ", " + "Gid".t() + ":" + gid) + '"';
-        return value;
-    },
-
-    classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var vm = this.getViewModel();
-        var description = value;
-        var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('name', value);
-        if( classtypeRecord != null ){
-            description = classtypeRecord.get('description');
-        }
-        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description ) + '"';
-        return value;
-    },
-
-    categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var vm = this.getViewModel();
-        var description = value;
-        var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('name', value);
-        if( categoryRecord != null ){
-            description = categoryRecord.get('description');
-        }
-        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description  ) + '"';
-        return value;
-    },
-
-    regexSignatureReference: /\s+reference:\s*([^\;]+)\;/g,
-    referencesMap: {
-        "bugtraq": "http://www.securityfocus.com/bid/",
-        "cve": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=",
-        "nessus": "http://cgi.nessus.org/plugins/dump.php3?id=",
-        "arachnids": "http://www.whitehats.com/info/IDS",
-        "mcafee": "http://vil.nai.com/vil/content/v",
-        "osvdb": "http://osvdb.org/show/osvdb/",
-        "msb": "http://technet.microsoft.com/en-us/security/bulletin/",
-        "url": "http://"
-    },
-    referenceRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-        var matches = null;
-        matches = value.match(this.regexSignatureReference);
-        if( matches == null ){
-            return "";
-        }
-        var references = [];
-        for( var i = 0; i < matches.length; i++ ){
-            var rmatches = this.regexSignatureReference.exec( matches[i] );
-            this.regexSignatureReference.lastIndex = 0;
-
-            var url = "";
-            var referenceFields = rmatches[1].split(",");
-            var prefix = this.referencesMap[referenceFields[0]];
-            if( prefix != null ){
-                referenceFields[1] = referenceFields[1].trim();
-                if((referenceFields[1].charAt(0) == '"') &&
-                    (referenceFields[1].charAt(referenceFields[1].length - 1) == '"')){
-                    referenceFields[1] = referenceFields[1].substr(1,referenceFields[1].length - 2);
-                }
-                url = prefix + referenceFields[1];
-                references.push('<a href="'+ url + '" class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
-            }
-        }
-        return references.join("");
-    },
-
     logBeforeCheckChange: function ( elem, rowIndex, checked ){
         var record = elem.getView().getRecord(rowIndex);
+        record.set('default', false);
         if( !checked){
             record.set('log', false);
             record.set('block', false );
-            this.updateSignature(record, 'block', false );
-            this.updateSignature(record, 'log', false );
         }else{
             record.set('log', true);
-            this.updateSignature(record, 'log', true );
         }
-    },
-
-    logCheckAll: function(checkbox, checked){
-        Ext.MessageBox.wait(checked ? "Checking All ...".t() : "Unchecking All ...".t(), "Please wait".t());
-        Ext.Function.defer(function() {
-            var grid=checkbox.up("grid");
-            var records=grid.getStore().getRange();
-            grid.getStore().suspendEvents(true);
-            var record;
-            for(var i=0; i<records.length; i++) {
-                record = records[i];
-                if(checked == false ) {
-                    record.set('block', false);
-                    this.updateSignature(records[i], 'block', checked );
-                }
-                record.set('log', checked);
-                this.updateSignature(records[i], 'log', checked );
-            }
-            grid.getStore().resumeEvents();
-            grid.getStore().getFilters().notify('endupdate');
-            Ext.MessageBox.hide();
-        }, 100, this);
-
     },
 
     blockBeforeCheckChange: function ( elem, rowIndex, checked ){
         var record = elem.getView().getRecord(rowIndex);
+        record.set('default', false);
         if(checked) {
             record.set('log', true );
             record.set('block', true);
-            this.updateSignature(record, 'log', true );
-            this.updateSignature(record, 'block', true );
         }else{
             record.set('block', false);
-            this.updateSignature(record, 'block', false );
         }
-    },
-
-    blockCheckAll: function(checkbox, checked){
-        Ext.MessageBox.wait(checked ? "Checking All ...".t() : "Unchecking All ...".t(), "Please wait".t());
-        Ext.Function.defer(function() {
-            var grid=checkbox.up("grid");
-            var records=grid.getStore().getRange();
-            grid.getStore().suspendEvents(true);
-            var record;
-            for(var i=0; i<records.length; i++) {
-                record = records[i];
-                if(checked) {
-                    record.set('log', true);
-                    this.updateSignature(records[i], 'log', checked );
-                }
-                record.set('block', checked);
-                this.updateSignature(records[i], 'block', checked );
-            }
-            grid.getStore().resumeEvents();
-            grid.getStore().getFilters().notify('endupdate');
-            Ext.MessageBox.hide();
-        }, 100, this);
     },
 
     updateSearchStatusBar: function(){
@@ -730,42 +889,17 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         var signatureValue = record.get('signature');
         var updatedSubkey = null;
 
-        var signature = new Ung.model.intrusionprevention.signature(signatureValue);
-        if(!signature.get('valid')){
+        if(!Ung.model.intrusionprevention.signature.isValid(signatureValue)){
             return;
         }
 
         // Action replacement
-        if(updatedKey == 'log' || updatedKey == 'block'){
-            var logValue = record.get('log');
-            var blockValue = record.get('block');
-            if(updatedKey == 'log'){
-                logValue = updatedValue;
-            }
-            if(updatedKey == 'block'){
-                blockValue = updatedValue;
-            }
-
-            signature.set('action', 'alert');
-            signature.set('enabled', true);
-            if( logValue === true && blockValue === true ) {
-                signature.set('action', 'drop');
-            } else if( logValue === false && blockValue === true ) {
-                signature.set('action', 'sdrop');
-            }else if( logValue === false && blockValue === false ) {
-                signature.set('enabled', false);
-            }
-
-            // Update metadata with indicator that user has changed to preserve on signature updates.
-            var date = new Date(Date.now() + Renderer.timestampOffset);
-            signature.setMetadataOption('untangle_action', Ext.util.Format.date(date, "Y_m_d"));
-        }else{
-            signature.setOption(updatedKey, updatedValue);
+        record.set(updatedKey, updatedValue);
+        if( updatedKey != 'log' && updatedKey != 'block' ){
+            record.setOption(updatedKey, updatedValue);
         }
-        record.set('signature', signature.build());
-    },
-
-
+        record.set('signature', record.build());
+    }
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditor', {
@@ -850,15 +984,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
 Ext.define('Ung.model.intrusionprevention.signature',{
     extend: 'Ext.data.Model',
     fields:[{
-        name: 'valid',
+        name: 'reserved',
         type: 'boolean'
     },{
-        name: 'enabled',
+        name: 'default',
         type: 'boolean'
-    },{
-        name: 'action',
-        type: 'string',
-        defaultValue: 'alert'
     },{
         name: 'protocol',
         type: 'string'
@@ -878,77 +1008,211 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         name: 'rport',
         type: 'string'
     },{
-        name: 'options'
+        name: 'options',
     },{
-        name: 'optionsMetadata'
+        name: 'category',
+        type: 'string'
+    },{
+        name: 'classtype',
+        type: 'string'
+    },{
+        name: 'block',
+        type: 'boolean'
+    },{
+        name: 'log',
+        type: 'boolean'
+    },{
+        name: 'sid',
+        type: 'string'
+    },{
+        name: 'gid',
+        type: 'string'
+    },{
+        name: 'msg',
+        type: 'string'
+    },{
+        name: 'signature',
+        type: 'string'
+    },{
+        name: 'defaultSignature',
+        type: 'string'
     }],
 
-    signatureRegexMatch: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
-    constructor: function(signature, session){
-        var data = {
-            valid: true,
-            enabled: false,
-            action: 'alert',
-            protocol: '',
-            lnet: '',
-            lport: '',
-            direction: '',
-            rnet: '',
-            rport: '',
-            options: [],
-            metadataOptions: []
-        };
+    optionsMapIndexes: {},
 
-        if(!this.signatureRegexMatch.test(signature)){
-            data['valid'] = false;
-        }else{
-            var matches = this.signatureRegexMatch.exec(signature);
+    constructor: function(signature, category, reserved, session){
+        var me = this;
+        var data = signature;
+        var valid = false;
+        if(typeof signature == "string"){
+            data = {
+                reserved: reserved,
+                default: reserved ? true : false,
+                protocol: '',
+                lnet: '',
+                lport: '',
+                direction: '',
+                rnet: '',
+                rport: '',
+                options: [],
+                category: category,
+                log: false,
+                block: false,
+                sid: '1',
+                gid: '1'
+            };
 
-            data['enabled'] = matches[1] == '#' ? false : true;
-            data['action'] = matches[2].toLowerCase();
-            if(matches[3] != ""){
-                data['protocol'] = matches[4].toLowerCase();
-                data['lnet'] = matches[5];
-                data['lport'] = matches[6];
-                data['direction'] = matches[7];
-                data['rnet'] = matches[8];
-                data['rport'] = matches[9];
-            }
-            data['options'] = matches[10].trim().split(';');
-            data['options'].forEach( function(option, index, options){
-                options[index] = option.trim();
-                var kv = option.trim().split(':');
-                if(kv[0] == 'metadata'){
-                    data['optionsMetadata'] = kv[1].trim().split(',');
-                    data['optionsMetadata'].forEach( function( moption, mindex, moptions){
-                        moptions[mindex] = moption.trim();
-                    });
+            var action = 'alert';
+            valid = Ung.model.intrusionprevention.signature.signatureRegex.test(signature);
+            if(valid){
+                var matches = Ung.model.intrusionprevention.signature.signatureRegex.exec(signature);
+
+                data['signature'] = signature;
+                alert = matches[2].toLowerCase();
+                if(matches[3] != ""){
+                    data['protocol'] = matches[4].toLowerCase();
+                    data['lnet'] = matches[5];
+                    data['lport'] = matches[6];
+                    data['direction'] = matches[7];
+                    data['rnet'] = matches[8];
+                    data['rport'] = matches[9];
                 }
-            });
+                data['options'] = matches[10].trim().split(';');
+                data['options'].forEach( function(option, index, options){
+                    options[index] = option.trim();
+                });
+
+                if(matches[1] == '#'){
+                    data['log'] = false;
+                    data['block'] = false;
+                }else{
+                    if(action == 'alert'){
+                        data['log'] = true;
+                        data['block'] = false;
+                    }else if(action == 'drop'){
+                        data['log'] = true;
+                        data['block'] = true;
+                    }else if(action == 'sdrop'){
+                        data['log'] = false;
+                        data['block'] = true;
+                    }
+                }
+            }
         }
 
         this.callParent([data], session);
+
+        if(typeof signature == "string" && valid){
+            me.optionsMapIndexes = {};
+            var key = null;
+            me.data['options'].forEach(function(option, index){
+                key = option.substr(0, option.indexOf(':')).trim();
+                Ung.model.intrusionprevention.signature.optionsMap.forEach(function(mappedOption){
+                    if(mappedOption.name == key){
+                        me.optionsMapIndexes[mappedOption] = index;
+                        var value = me.massageGetOptionValue(option.substr(option.indexOf(':') + 1));
+                        if(option.defaultValue){
+                            value = value ? value : option.defaultValue;
+                        }
+                        me.data[mappedOption.name] = value;
+                    }
+                });
+            });
+            me.data['id'] = me.data['sid'] + '_' + me.data['gid'];
+        }
+    },
+
+    get: function(fieldName) {
+        var me = this;
+        var result = this.callParent(arguments);
+
+        Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
+            if(fieldName == option.name){
+                result = me.getOption(option.name);
+            }
+        });
+
+        return result;
+    },
+
+    set: function(fieldName, newValue, options) {
+        var me = this;
+
+        var signatureChange = ( fieldName == 'signature' ) && me.data['signature'] && ( newValue != me.data['signature'] );
+
+        var result = this.callParent(arguments);
+
+        if(fieldName != 'signature'){
+            Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
+                if(fieldName == option.name){
+                    me.setOption(option.name, newValue);
+                }
+            });
+            if(Ung.model.intrusionprevention.signature.rebuildSignatureKeys.indexOf(fieldName) != -1){
+                var newSignature = me.build();
+                if(me.data['signature'] != newSignature){
+                    me.set('signature', newSignature);
+                }
+            }
+        }else if(signatureChange){
+            var signature = new Ung.model.intrusionprevention.signature(newValue, me.data['category'], me.data['reserved']);
+
+            Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
+                var value = signature.getOption(option.name);
+                if(option.defaultValue){
+                    value = value ? value : option.defaultValue;
+                }
+                me.set(option.name, value);
+            });
+        }
+
+        return result;
+    },
+
+    massageGetOptionValue: function(value){
+        value = value.trim();
+        if(value[0] == '"' && value[value.length -1] == '"'){
+            value = value.substring(1,value.length - 1);
+        }
+        return value;
     },
 
     getOption: function(key){
-        value = null;
+        var me = this,
+            value = null;
 
         var options = this.get('options');
-        var kv;
-        options.forEach( function( option, index, optionsMetadata){
-            kv = option.split(':');
-            if(kv[0].trim() == key){
-                kv[1] = kv[1].trim();
-                if(kv[1][0] == '"' && kv[1][kv[1].length -1] == '"'){
-                    kv[1] = kv[1].substring(1,kv[1].length - 1);
+
+        var kv = null;
+        if(me.optionsMapIndexes && key in me.optionsMapIndexes){
+            kv = options[me.optionsMapIndexes[key]].split(':');
+            value = me.massageGetOptionValue(kv[1]);
+        }else{
+            options.forEach( function( option, index, optionsMetadata){
+                kv = option.split(':');
+                if(kv[0].trim() == key){
+                    if(me.optionsMapIndexes && !(key in me.optionsMapIndexes)){
+                        me.optionsMapIndexes[key] = index;
+                    }
+                    kv[1] = me.massageGetOptionValue(kv[1]);
+                    if(value != null){
+                        // Found second key of same name; create array for return.
+                        value = [value];
+                    }else if(Array.isArray(value)){
+                        value.push(kv[1]);
+                    }else{
+                        value = kv[1];
+                    }
                 }
-                value = kv[1];
-            }
-        });
+            });
+        }
         return value;
     },
 
     setOption: function( key, value){
+
+        // optionmap
+
         var options = this.get('options');
         var found = false;
         var kv;
@@ -962,68 +1226,215 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 }
                 kv[1] = (preserveQuotes ? '"' : '' ) + value + (preserveQuotes ? '"' : '' );
                 found = true;
-                options[index] = kv.join(': ');
+                options[index] = kv.join(':');
             }
         });
         if(!found){
-            options.push(key + ': ' + value);
+            options.push(key + ':' + value);
         }
         this.set('options', options);
     },
 
-    setMetadataOption: function( key, value){
-        var optionsMetadata = this.get('optionsMetadata');
-        if(optionsMetadata === undefined){
-            optionsMetadata = [];
+    getRecord: function(){
+        if(this.get('reserved') == true){
+            return {
+                sid: this.get('sid'),
+                gid: this.get('gid'),
+                log: this.get('log'),
+                block: this.get('block')
+            };
+        }else{
+            return this.build();
         }
-        var found = false;
-        var kv;
-        optionsMetadata.forEach( function( option, index, optionsMetadata){
-            kv = option.split(' ');
-            if(kv[0].trim() == key){
-                kv[1] = value;
-                found = true;
-                optionsMetadata[index] = kv.join(' ');
-            }
-        });
-        if(!found){
-            optionsMetadata.push(key + ' ' + value);
-        }
-        this.set('optionsMetadata', optionsMetadata);
     },
 
     build: function(){
+        var me = this;
 
-        var options = this.get('options');
-        var metadataOptions = this.get('optionsMetadata');
-        if(metadataOptions){
-            metadataOptions = metadataOptions.join(', ');
-            var metadataFound = false;
-            options.forEach( function(option, index, options){
-                var kv = option.split(':');
-                if(kv[0].trim() == 'metadata'){
-                    kv[1] = metadataOptions;
-                    options[index] = kv.join(': ');
-                    metadataFound = true;
-                }
-            });
-            if(!metadataFound){
-                options.push('metadata: ' + metadataOptions);
-            }
+        var action = 'alert';
+        var log =this.get('log');
+
+        var block = this.get('block');
+        if( log && block ){
+            action = 'drop';
+        }else if(!log && !block){
+            action = '#' + action;
         }
-        options = options.join('; ');
 
-        return (this.get('enabled')  ? '' : '#') +
-            this.get('action') + " " +
+        return action + " " +
             (this.get('protocol') ? this.get('protocol') + ' ' : '') +
             (this.get('lnet') ? this.get('lnet') + ' ' : '') +
             (this.get('lport') ? this.get('lport') + ' ' : '') +
             (this.get('direction') ? this.get('direction') + ' ' : '') +
             (this.get('rnet') ? this.get('rnet') + ' ' : '') +
             (this.get('rport') ? this.get('rport') + ' ' : '') +
-            "( " + options + " )";
+            "(" + this.get('options').join(';') + ")";
+    },
+    
+    statics:{
+        signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
+        optionsMap: [{
+            name: 'gid',
+            defaultValue: '1'
+        },{
+            name: 'sid'
+        },{
+            name: 'classtype',
+            defaultValue: 'unknown'
+        },{
+            name: 'msg'
+        }],
+        rebuildSignatureKeys:[
+            'gid',
+            'sid',
+            'classtype',
+            'category',
+            'msg',
+            'log',
+            'block'
+        ],
+        isValid: function(signature){
+            return Ung.model.intrusionprevention.signature.signatureRegex.test(signature);
+        }
     }
 });
+
+Ext.define('Ung.model.intrusionprevention.rule',{
+    extend: 'Ext.data.Model',
+    fields:[{
+        name: 'action',
+        type: 'string'
+    },{
+        name: 'conditions'
+    },{
+        name: 'description',
+        type: 'string'
+    },{
+        name: 'enabled',
+        type: 'boolean'
+    },{
+        name: 'id',
+        type: 'string'
+    }],
+
+    matchSignature: function(signature, editorConditions, vm){
+        var me = this;
+        if(!me.get('enabled')){
+            return false;
+        }
+        var allMatch = true;
+        me.get('conditions').list.forEach(function(condition){
+            var match = true;
+            var editorCondition = editorConditions[condition.type];
+
+            var targetConditionValue = null;
+            var conditionKey = condition.type.toLowerCase();
+            switch(conditionKey){
+                case 'system_memory':
+                    targetConditionValue = vm.get('system_memory');
+                    break;
+                case 'signature':
+                    targetConditionValue = signature.data['signature'];
+                    break;
+                case 'classtype':
+                    targetConditionValue = signature.data['classtype'];
+                    break;
+                case 'msg':
+                    targetConditionValue = signature.data['msg'];
+                    break;
+                case 'src_addr':
+                    targetConditionValue = signature.data['lnet'];
+                    break;
+                case 'src_port':
+                    targetConditionValue = signature.data['lport'];
+                    break;
+                case 'dst_addr':
+                    targetConditionValue = signature.data['rnet'];
+                    break;
+                case 'dst_port':
+                    targetConditionValue = signature.data['rport'];
+                    break;
+                default:
+                    targetConditionValue = signature.data[conditionKey];
+            }
+
+            switch(editorCondition.comparator){
+                case 'numeric':
+                    match = me.matchesNumeric(parseInt(targetConditionValue, 10), condition.comparator, parseInt(condition.value, 10) );
+                    break;
+                case 'boolean':
+                    var listValue = condition.value;
+                    if(typeof(listValue) != 'object'){
+                        listValue = listValue.split(',');
+                    }
+                    match = me.matchesIn(targetConditionValue, condition.comparator, listValue);
+                    break;
+                case 'text':
+                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value);
+                    break;
+                default:
+                    // !!! throw exception
+                    console.log('unknown comparator:' + editorCondition.comparator);
+                    match = false;
+            }
+
+            if(!match){
+                allMatch = false;
+            }
+        });
+
+        return allMatch;
+    },
+
+    matchesNumeric: function(sourceValue, comparator, targetValue){
+        switch(comparator){
+            case "=":
+                return sourceValue == targetValue;
+            case "!=":
+                return sourceValue != targetValue;
+            case "<=":
+                return sourceValue <= targetValue;
+            case "<":
+                return sourceValue < targetValue;
+            case ">":
+                return sourceValue > targetValue;
+            case ">=":
+                return sourceValue >= targetValue;
+        }
+
+        return false;
+    },
+
+    matchesText: function(sourceValue, comparator, targetValue){
+        switch(comparator){
+            case "=":
+                return sourceValue == targetValue;
+            case "!=":
+                return sourceValue != targetValue;
+            case "substr":
+                return sourceValue.indexOf(targetValue) != -1;
+            case "!substr":
+                return sourceValue.indexOf(targetValue) == -1;
+        }
+
+        return false;
+    },
+
+    matchesIn: function(sourceValue, comparator, targetValue){
+        var isIn = Ext.Array.contains(targetValue, sourceValue);
+
+        // console.log(isIn);
+
+        if(comparator == "="){
+            return isIn;
+        }else if(comparator == "!="){
+            return !isIn;
+        }
+
+        return false;
+    }
+});
+
 
 Ext.define ('Ung.apps.intrusionprevention.model.Condition', {
     extend: 'Ext.data.Model' ,
