@@ -4,7 +4,7 @@
 
 package com.untangle.app.captive_portal;
 
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 /**
@@ -22,14 +22,14 @@ import org.apache.log4j.Logger;
 public class CaptivePortalUserCookieTable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private Hashtable<String, CaptivePortalUserEntry> userTable;
+    private ConcurrentHashMap<String, CaptivePortalUserEntry> userTable;
 
     /**
      * Constructor
      */
     public CaptivePortalUserCookieTable()
     {
-        userTable = new Hashtable<String, CaptivePortalUserEntry>();
+        userTable = new ConcurrentHashMap<String, CaptivePortalUserEntry>();
     }
 
     /**
