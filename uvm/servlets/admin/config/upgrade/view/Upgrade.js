@@ -70,10 +70,25 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
                 hidden: '{!settings.autoUpgrade}'
             },
             items: [{
+                xtype: 'combo',
+                itemId: 'dayscombo',
+                reference: 'dayscombo',
+                queryMode: 'local',
+                editable: false,
+                publishes: 'value',
+                store: [['any', 'Any week day'.t()], ['all', 'All week days'.t()], ['specific', 'Specific days'.t()]],
+                listeners: {
+                    change: 'onDaysComboChange'
+                }
+            }, {
                 xtype: 'checkboxgroup',
+                itemId: 'daysgroup',
                 columns: 1,
                 vertical: true,
-                bind: '{settings.autoUpgradeDays}',
+                hidden: true,
+                bind: {
+                    hidden: '{dayscombo.value !== "specific"}'
+                },
                 items: [
                     { boxLabel: 'Sunday'.t(), name: 'cb', inputValue: '1' },
                     { boxLabel: 'Monday'.t(), name: 'cb', inputValue: '2' },
@@ -82,17 +97,16 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
                     { boxLabel: 'Thursday'.t(), name: 'cb', inputValue: '5' },
                     { boxLabel: 'Friday'.t(), name: 'cb', inputValue: '6' },
                     { boxLabel: 'Saturday'.t(), name: 'cb', inputValue: '7' }
-                ]
+                ],
+                listeners: {
+                    change: 'onDaysGroupChange'
+                }
             }, {
                 xtype: 'timefield',
                 fieldLabel: 'Auto Upgrade Time'.t(),
                 labelAlign: 'top',
                 editable: false,
-                // format: 'H:i',
-                bind: {
-                    value: '{upgradeTime}',
-                    disabled: '{settings.autoUpgradeDays.length === 0}'
-                },
+                format: 'H:i',
                 listeners: {
                     change: 'onUpgradeTimeChange'
                 }

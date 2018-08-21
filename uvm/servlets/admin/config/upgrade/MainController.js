@@ -4,15 +4,44 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     control: {
         '#': {
-            afterrender: 'loadSettings'
+            afterrender: 'onAfterRender'
         }
     },
 
-    settingsValueMap: {
-        "settings.autoUpgradeDays": {
-            "any": "1,2,3,4,5,6,7"
-        }
+    onAfterRender: function() {
+        var me = this, view = me.getView(),
+            daysCombo = view.down('#dayscombo'),
+            daysGroup = view.down('#daysgroup');
+
+        // bind once to set the initial upgrade days/hours
+        me.getViewModel().bind('{settings}', function (settings) {
+            var autoUpgradeDays = settings.autoUpgradeDays,
+                upgradeTime = new Date(); // used for setting upgrade hours
+
+            if (autoUpgradeDays === 'any' || autoUpgradeDays === 'all') {
+                daysCombo.setValue(autoUpgradeDays);
+            } else {
+                daysCombo.setValue('specific');
+                daysGroup.setValue(autoUpgradeDays);
+            }
+
+            upgradeTime.setHours(settings.autoUpgradeHour || 0);
+            upgradeTime.setMinutes(settings.autoUpgradeMinute || 0);
+            view.down('timefield').setValue(upgradeTime);
+        }, me, {
+            single: true
+        });
+
+        view.down('progressbar').wait({
+            interval: 500,
+            text: 'Checking for upgrades...'.t()
+        });
+
+        me.loadSettings();
+        me.checkUpgrades();
+
     },
+
     loadSettings: function () {
         var me = this,
             v = me.getView(),
@@ -20,64 +49,49 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.systemManager.getSettings')
-        .then(function(result){
-            if(Util.isDestroyed(me, v, vm)){
-                return;
-            }
-
-            vm.set('settings', result);
-
-            for( var key in this.settingsValueMap){
-                for( var settingsKey in this.settingsValueMap[key]){
-                    if( vm.get(key) == settingsKey){
-                        vm.set(key, this.settingsValueMap[key][settingsKey]);
-                    }
+            .then(function(result){
+                if(Util.isDestroyed(me, v, vm)){
+                    return;
                 }
-            }
-            vm.set('panel.saveDisabled', false);
-            v.setLoading(false);
-        }, function(ex) {
-            if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', true);
-                v.setLoading(false);
-            }
-        });
 
-        v.down('progressbar').wait({
-            interval: 500,
-            text: 'Checking for upgrades...'.t()
-        });
-        this.checkUpgrades();
+                vm.set('settings', result);
+
+                vm.set('panel.saveDisabled', false);
+                v.setLoading(false);
+            }, function(ex) {
+                if(!Util.isDestroyed(v, vm)){
+                    vm.set('panel.saveDisabled', true);
+                    v.setLoading(false);
+                }
+            });
     },
 
     saveSettings: function () {
         var me = this, v = me.getView(),
-            vm = me.getViewModel();
+            vm = me.getViewModel(), settings = vm.get('settings');
 
-        v.setLoading(true);
-
-        for( var key in this.settingsValueMap){
-            for( var settingsKey in this.settingsValueMap[key]){
-                if( vm.get(key) == this.settingsValueMap[key][settingsKey]){
-                    vm.set(key, settingsKey);
-                }
-            }
-        }
-
-        Rpc.asyncData('rpc.systemManager.setSettings', vm.get('settings'))
-        .then(function () {
-            if(Util.isDestroyed(me, v, vm)){
+        if (settings.autoUpgrade) {
+            if (settings.autoUpgradeDays === '') {
+                Ext.Msg.alert('Warning!', 'Please set automatic upgrade days schedule!');
                 return;
             }
-            me.loadSettings();
-            Util.successToast('Upgrade Settings'.t() + ' saved!');
-            Ext.fireEvent('resetfields', v);
-        }, function(ex) {
-            if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', true);
-                v.setLoading(false);
-            }
-        });
+        }
+        v.setLoading(true);
+
+        Rpc.asyncData('rpc.systemManager.setSettings', settings)
+            .then(function () {
+                if(Util.isDestroyed(me, v, vm)){
+                    return;
+                }
+                me.loadSettings();
+                Util.successToast('Upgrade Settings'.t() + ' saved!');
+                Ext.fireEvent('resetfields', v);
+            }, function(ex) {
+                if(!Util.isDestroyed(v, vm)){
+                    vm.set('panel.saveDisabled', true);
+                    v.setLoading(false);
+                }
+            });
     },
 
     checkUpgrades: function () {
@@ -207,9 +221,23 @@ Ext.define('Ung.config.upgrade.MainController', {
         }, this));
     },
 
+    onDaysComboChange: function (combo, value) {
+        var me = this, vm = me.getViewModel(), daysGroup = me.getView().down('#daysgroup');
+        if (value !== 'specific') {
+            vm.set('settings.autoUpgradeDays', value);
+        } else {
+            daysGroup.setValue('1,2,3,4,5,6,7');
+        }
+    },
+
+    onDaysGroupChange: function (cmp, value) {
+        this.getViewModel().set('settings.autoUpgradeDays', value);
+    },
+
     onUpgradeTimeChange: function (field, value) {
-        this.getViewModel().set('settings.autoUpgradeHour', value.getHours());
-        this.getViewModel().set('settings.autoUpgradeMinute', value.getMinutes());
+        var vm = this.getViewModel();
+        vm.set('settings.autoUpgradeHour', value.getHours());
+        vm.set('settings.autoUpgradeMinute', value.getMinutes());
     }
 
 });

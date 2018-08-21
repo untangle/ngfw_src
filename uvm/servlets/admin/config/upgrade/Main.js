@@ -16,15 +16,6 @@ Ext.define('Ung.config.upgrade.Main', {
             title: 'Upgrade'.t(),
             iconName: 'upgrade'
         },
-        formulas: {
-            upgradeTime: {
-                get: function (get) {
-                    var hour = get('settings.autoUpgradeHour'),
-                        minute = get('settings.autoUpgradeMinute') ? get('settings.autoUpgradeMinute') : '00';
-                    return hour + ':' + minute;
-                }
-            }
-        }
     },
 
     items: [
