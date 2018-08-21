@@ -74,6 +74,13 @@ Ext.define('Ung.view.main.MainHeading', {
         hidden: true,
         responsiveConfig: null
     }, {
+        iconCls: 'fa fa-lightbulb-o fa-lg',
+        href: 'https://feedback.untangle.com',
+        hrefTarget: '_blank',
+        tooltip: 'Suggest Idea'.t(),
+        width: 52,
+        responsiveConfig: null
+    }, {
         iconCls: 'fa fa-question-circle fa-lg',
         handler: 'helpHandler',
         tooltip: 'Help'.t(),
