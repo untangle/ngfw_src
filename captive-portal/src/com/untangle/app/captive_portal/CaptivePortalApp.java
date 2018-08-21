@@ -1465,15 +1465,20 @@ public class CaptivePortalApp extends AppBase
                 return;
             }
 
+            HookBucket bucket = (HookBucket) o;
+
             /**
              * We search for an active user with a name matching the string in
              * the bucket. If the user is logged in, we increment the number in
              * the bucket to prevent the name from being removed from the host
              * table.
              */
-            HookBucket bucket = (HookBucket) o;
-            CaptivePortalUserEntry entry = captureUserTable.searchByUsername(bucket.getString(), false);
-            if (entry != null) bucket.incrementNumber();
+            try {
+                CaptivePortalUserEntry entry = captureUserTable.searchByUsername(bucket.getString(), false);
+                if (entry != null) bucket.incrementNumber();
+            } catch (Exception exn) {
+                logger.warn("Exception in username callback checking:" + bucket.getString(), exn);
+            }
         }
     }
 }
