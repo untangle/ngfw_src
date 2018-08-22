@@ -75,8 +75,7 @@ Ext.define('Ung.view.main.MainHeading', {
         responsiveConfig: null
     }, {
         iconCls: 'fa fa-lightbulb-o fa-lg',
-        href: 'https://untanglengfirewall.featureupvote.com',
-        hrefTarget: '_blank',
+        handler: 'suggestHandler',
         tooltip: 'Suggest Idea'.t(),
         width: 52,
         responsiveConfig: null
