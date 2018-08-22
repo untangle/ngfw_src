@@ -12,7 +12,7 @@ class SnortConf:
     
     # Regex parsing
     comment_regex = re.compile(r'^#\s*(.*)')
-    var_regex = re.compile(r'^(ipvar|portvar|var)\s+([^\s+]+)\s+([^\s+]+)')
+    var_regex = re.compile(r'^(ipvar|portvar|var)\s+([^\s+]+)\s+([^\s+]+|)')
     include_regex = re.compile(r'^(\#|)\s*include\s+([^\s]+)')
     include_rulepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
     output_regex = re.compile(r'^output\s+([^:]+)')
