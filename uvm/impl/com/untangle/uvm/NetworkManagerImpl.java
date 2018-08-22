@@ -2419,13 +2419,22 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             }
             int maxChannel = 0;
-            for ( Integer ch : channels ) { if ( ch > maxChannel ) maxChannel = ch; }
+            int minChannel = 99999;
+            for ( Integer ch : channels ) {
+                if ( ch > maxChannel ) maxChannel = ch;
+                if ( ch < minChannel ) minChannel = ch;
+            }
+            // for 2.4 default to max (11)
+            // for 5.0 default to min (36)
+            int defaultChannel = maxChannel;
+            if ( maxChannel > 100 )
+                defaultChannel = minChannel;
 
             intf.setIsWan( false );
             intf.setConfigType( InterfaceSettings.ConfigType.BRIDGED );
             intf.setBridgedTo( intfToBridge );
 
-            intf.setWirelessChannel(maxChannel);
+            intf.setWirelessChannel(defaultChannel);
             intf.setWirelessMode( InterfaceSettings.WirelessMode.AP );
             if ( i > 1 ) {
                 intf.setWirelessSsid( ssid + "-" + i );
