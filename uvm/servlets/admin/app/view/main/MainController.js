@@ -123,6 +123,11 @@ Ext.define('Ung.view.main.MainController', {
         window.open(helpUrl);
     },
 
+    suggestHandler: function (btn) {
+        var suggestUrl = Rpc.directData('rpc.helpUrl') + '?fragment=feedback&' + Util.getAbout();
+        window.open(suggestUrl);
+    },
+
     supportHandler: function (btn) {
         var me = this;
         // check here if support is enabled and show modal only if not, otherwise open support window
