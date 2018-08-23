@@ -756,7 +756,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 width: Renderer.sizeWidth,
                 dataIndex: 'mtu',
                 renderer: function (value) {
-                    return value || 'Auto'.t();
+                    if (value == null || value === "")
+                        return 'Auto'.t();
+                    return value;
                 },
                 editor: {
                     xtype: 'numberfield'
