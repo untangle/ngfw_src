@@ -43,10 +43,10 @@ def checkLicense(app):
                 validity = ((validity == 'True') or (validity == 'true')) 
 
             if validity == True:
-                print("License found: Valid";)
+                print("License found: Valid")
                 return True;
             if validity == False:
-                print("License found: Invalid";)
+                print("License found: Invalid")
                 return False;
 
     except Exception, e:
