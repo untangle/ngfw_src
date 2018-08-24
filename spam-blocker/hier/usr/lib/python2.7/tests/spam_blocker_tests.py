@@ -35,4 +35,13 @@ class SpamBlockerTests(SpamBlockerBaseTests):
         result = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
         assert ( result == 0 )
 
+    # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
+    def test_021_check_for_mailshell(self):
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
+        if ( events != None ):
+            assert( events.get('list') != None )
+            assert('MAILSHELL_SCORE_' in events['list'][0]['spam_blocker_tests_string'])
+        else:
+            raise unittest2.SkipTest('No events to check for MAIL_SHELL')            
+
 test_registry.registerApp("spam-blocker", SpamBlockerTests)
