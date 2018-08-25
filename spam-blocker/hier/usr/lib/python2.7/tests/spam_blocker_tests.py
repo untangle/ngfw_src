@@ -9,6 +9,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 from tests.spam_blocker_base_tests import SpamBlockerBaseTests
+import global_functions
 import test_registry
 
 #
