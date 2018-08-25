@@ -986,6 +986,8 @@ class CaptivePortalTests(unittest2.TestCase):
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
         app.setSettings(appData)
+        result_dns = remote_control.run_command("host test.untangle.com")
+        print("DNS resolve result: %s" % result_dns)
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_080.out http://test.untangle.com/",stdout=True)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_080.out")
         
