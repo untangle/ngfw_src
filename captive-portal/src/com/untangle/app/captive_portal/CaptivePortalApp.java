@@ -1474,7 +1474,7 @@ public class CaptivePortalApp extends AppBase
              * table.
              */
             try {
-                CaptivePortalUserEntry entry = captureUserTable.searchByUsername(bucket.getString(), false);
+                CaptivePortalUserEntry entry = captureUserTable.searchByUsername(bucket.getString(), true);
                 if (entry != null) bucket.incrementNumber();
             } catch (Exception exn) {
                 logger.warn("Exception in username callback checking:" + bucket.getString(), exn);
