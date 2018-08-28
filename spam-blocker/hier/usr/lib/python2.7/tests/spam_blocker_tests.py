@@ -38,7 +38,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
     def test_021_check_for_mailshell(self):
-        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,8)
         if events != None:
             assert( events.get('list') != None )
             found = False
