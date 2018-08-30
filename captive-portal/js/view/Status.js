@@ -43,8 +43,9 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
             items: [{
                 xtype: 'ungrid',
                 itemId: 'activeUsers',
+                minHeight: 150,
                 trackMouseOver: false,
-                sortableColumns: false,
+                sortableColumns: true,
                 enableColumnHide: false,
 
                 emptyText: 'No Active Sessions',
@@ -60,22 +61,26 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                 columns: [{
                     header: 'User Address'.t(),
                     dataIndex: 'userAddress',
-                    width: Renderer.usernameWidth
+                    width: Renderer.usernameWidth,
+                    filter: Renderer.stringFilter
                 }, {
                     header: 'User Name'.t(),
                     dataIndex: 'userName',
                     width: Renderer.usernameWidth,
-                    flex: 1
+                    flex: 1,
+                    filter: Renderer.stringFilter
                 }, {
                     header: 'Login Time'.t(),
                     dataIndex: 'sessionCreation',
                     width: Renderer.timestampWidth,
-                    renderer: Renderer.timestamp
+                    renderer: Renderer.timestamp,
+                    filter: Renderer.timestampFilter
                 }, {
                     header: 'Session Count'.t(),
                     dataIndex: 'sessionCounter',
                     width: Renderer.sizeWidth,
-                    renderer: Renderer.count
+                    renderer: Renderer.count,
+                    filter: Renderer.numericFilter
                 }, {
                     header: 'Logout'.t(),
                     xtype: 'actioncolumn',
