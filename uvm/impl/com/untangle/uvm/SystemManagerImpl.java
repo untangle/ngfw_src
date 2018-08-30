@@ -104,13 +104,6 @@ public class SystemManagerImpl implements SystemManager
         } else {
             this.settings = readSettings;
 
-            /* 12.1 conversion */
-            if (this.settings.getVersion() < 3) {
-                this.settings.setCloudEnabled(this.settings.getSupportEnabled());
-                this.settings.setVersion(3);
-                this.setSettings(this.settings);
-            }
-
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
@@ -617,7 +610,8 @@ public class SystemManagerImpl implements SystemManager
             UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
         }
         // if not running and should be, start it
-        if ((0 != exitValue) && settings.getCloudEnabled() && UvmContextImpl.context().isWizardComplete()) {
+        //(UvmContextImpl.context().isWizardComplete()) || UvmContextImpl.context().isAppliance())
+        if ((0 != exitValue) && settings.getCloudEnabled()) {
             UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
             UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
         }
