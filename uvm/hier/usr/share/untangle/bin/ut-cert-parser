@@ -53,13 +53,6 @@ for item in list:
             errorExit("The uploaded certificate contains more than one private key.")
         keyData = item.as_text()
 
-    # handle the private key
-    if isinstance(item, pem._core.RSAPrivateKey):
-        # if we find more than one key we return an error
-        if len(keyData) != 0:
-            errorExit("The uploaded certificate contains more than one private key.")
-        keyData = item.as_text()
-
 # put any valid data in a dictionary and then dump the dictionary in JSON
 # format for the caller
 result = {}
