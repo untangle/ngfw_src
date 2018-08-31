@@ -44,6 +44,8 @@ function doRestore()
     cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
+    @PREFIX@/usr/share/untangle/bin/ut-show-upgrade-splash start "Restore in progress. Do not reboot or power off the server!"
+
     # stop the untangle-vm
     if [ -x @PREFIX@/etc/init.d/untangle-vm ] ; then
         @PREFIX@/etc/init.d/untangle-vm stop
