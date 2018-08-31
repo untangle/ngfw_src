@@ -47,11 +47,15 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class CertificateManagerImpl implements CertificateManager
 {
+    private static final String CERTIFICATE_PARSER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-cert-parser";
+    private static final String CERTIFICATE_PARSER_FILE = "/tmp/certificate.upload";
+
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
     private static final String ROOT_CERT_INSTALLER_FILE = CERT_STORE_PATH + "RootCAInstaller.exe";
 
     private static final String CERTIFICATE_UPLOAD_FILE = CERT_STORE_PATH + "upload.crt";
+    private static final String KEY_UPLOAD_FILE = CERT_STORE_PATH + "upload.key";
     private static final String EXTERNAL_REQUEST_FILE = CERT_STORE_PATH + "request.csr";
 
     private static final String ROOT_CERT_FILE = CERT_STORE_PATH + "untangle.crt";
@@ -192,201 +196,16 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
-            String baseName = Long.toString(System.currentTimeMillis() / 1000l);
-            String certString = new String(fileItem.get());
+            // save the uploaded file
+            FileOutputStream fileStream = new FileOutputStream(CERTIFICATE_PARSER_FILE);
+            fileStream.write(fileItem.get());
+            fileStream.close();
 
-            FileOutputStream certStream = null;
-            int certLen = 0;
-            int keyLen = 0;
+            // call the external utility to parse the uploaded file
+            String certData = UvmContextFactory.context().execManager().execOutput(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE);
 
-            int certTop = certString.indexOf(MARKER_CERT_HEAD);
-            int certEnd = certString.indexOf(MARKER_CERT_TAIL);
-
-            // if both cert markers found then calculate the length
-            if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
-
-            if (certLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate.");
-
-            int keyTop = certString.indexOf(MARKER_RKEY_HEAD);
-            int keyEnd = certString.indexOf(MARKER_RKEY_TAIL);
-
-            // if both key markers found then calculate the length
-            if ((keyTop >= 0) && (keyEnd >= 0)) {
-                keyLen = (keyEnd - keyTop + MARKER_RKEY_TAIL.length());
-            }
-
-            // didn't find the RSA style so check for generic format
-            else {
-                keyTop = certString.indexOf(MARKER_GKEY_HEAD);
-                keyEnd = certString.indexOf(MARKER_GKEY_TAIL);
-
-                if ((keyTop >= 0) && (keyEnd >= 0)) {
-                    keyLen = (keyEnd - keyTop + MARKER_GKEY_TAIL.length());
-                }
-            }
-
-            // if the uploaded file only contains a cert then we expect it was
-            // created from a CSR we generated so combine with our private key
-            if (keyLen == 0) {
-                // start by writing the uploaded cert to a temporary file
-                try {
-                    certStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
-                    certStream.write(certString.getBytes(), certTop, certLen);
-                    certStream.close();
-                } catch (Exception exn) {
-                    logger.warn("Exception during certificate download", exn);
-                } finally {
-                    try {
-                        if (certStream != null) {
-                            certStream.close();
-                        }
-                    } catch (IOException ex) {
-                        logger.error("Unable to close file", ex);
-                    }
-                    certStream = null;
-                }
-
-                // Make sure the cert they uploaded matches our private key 
-                String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
-                logger.info("CRT MODULUS " + CERTIFICATE_UPLOAD_FILE + " = " + certMod);
-                String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
-                logger.info("KEY MODULUS " + LOCAL_KEY_FILE + " = " + keyMod);
-
-                // if they cert and key modulus don't match then it's garbage 
-                if (certMod.compareTo(keyMod) != 0) {
-                    return new ExecManagerResult(1, "The uploaded certificate does not include a private key, and does not match the server private key used to create CSR's (certificate signing requests) on this server.");
-                }
-
-                // the cert and key match so save the certificate to a file
-                try {
-                    certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
-                    certStream.write(certString.getBytes(), certTop, certLen);
-                    certStream.write('\n');
-                    certStream.close();
-                } catch (Exception exn) {
-                    logger.warn("Exception during certificate download", exn);
-                } finally {
-                    try {
-                        if (certStream != null) {
-                            certStream.close();
-                        }
-                    } catch (IOException ex) {
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-
-                // make a copy of the server key file in the certificate key file
-                UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + CERT_STORE_PATH + baseName + ".key");
-
-                // next create the certificate PEM file from the certificate KEY and CRT files
-                UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
-            }
-
-            // we found a cert and a key and maybe other stuff so save the
-            // uploaded file as the pem and generate the crt and key files
-            else {
-                certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".pem");
-                certStream.write(fileItem.get());
-                certStream.close();
-
-                // finally we create .crt and .key files from the contents of the .pem file
-                File certFile = new File(CERT_STORE_PATH + baseName + ".pem");
-                BufferedReader certReader = null;
-                FileWriter crtStream = null;
-                FileWriter keyStream = null;
-                try {
-                    certReader = new BufferedReader(new FileReader(certFile));
-                    crtStream = new FileWriter(CERT_STORE_PATH + baseName + ".crt");
-                    keyStream = new FileWriter(CERT_STORE_PATH + baseName + ".key");
-                    StringBuilder rawdata = new StringBuilder();
-                    String grabstr;
-                    boolean crtflag = false;
-                    boolean keyflag = false;
-
-                    /*
-                     * We read each line of the file looking look for crt and
-                     * key head and tail markers to control some simple state
-                     * logic that lets us stream the certificates into the crt
-                     * file and the private key into it's own key file.
-                     */
-                    for (;;) {
-                        grabstr = certReader.readLine();
-                        if (grabstr == null) break;
-
-                        // if we're not working on a crt or key we look for the
-                        // beginning of either set the appropriate flag if found
-                        if ((crtflag == false) && (keyflag == false)) {
-                            if (grabstr.indexOf(MARKER_CERT_HEAD) >= 0) crtflag = true;
-                            if (grabstr.indexOf(MARKER_RKEY_HEAD) >= 0) keyflag = true;
-                            if (grabstr.indexOf(MARKER_GKEY_HEAD) >= 0) keyflag = true;
-                            continue;
-                        }
-
-                        // if we find the end of a crt but we're not working on a
-                        // crt clear the flag and buffer since it must be garbage
-                        if (grabstr.indexOf(MARKER_CERT_TAIL) >= 0) {
-                            if (crtflag == false) {
-                                rawdata.setLength(0);
-                                keyflag = false;
-                                continue;
-                            }
-
-                            // found the end of a crt and we were working on a crt so
-                            // write the crt to the file and reset buffer and flag
-                            crtStream.write(MARKER_CERT_HEAD + "\n");
-                            crtStream.write(rawdata.toString());
-                            crtStream.write(MARKER_CERT_TAIL + "\n");
-                            rawdata.setLength(0);
-                            crtflag = false;
-                            continue;
-                        }
-
-                        // if we find the end of a key but we're not working on a 
-                        // key clear the flag and buffer since it must be garbage
-                        if ((grabstr.indexOf(MARKER_RKEY_TAIL) >= 0) || (grabstr.indexOf(MARKER_GKEY_TAIL) >= 0)) {
-                            if (keyflag == false) {
-                                rawdata.setLength(0);
-                                crtflag = false;
-                                continue;
-                            }
-
-                            // found the end of a key and we were working on a key so
-                            // write the key to the file and reset buffer and flag
-                            keyStream.write(MARKER_RKEY_HEAD + "\n");
-                            keyStream.write(rawdata.toString());
-                            keyStream.write(MARKER_RKEY_TAIL + "\n");
-                            rawdata.setLength(0);
-                            keyflag = false;
-                            continue;
-                        }
-
-                        // we're working on a crt or key so add the line to the buffer
-                        rawdata.append(grabstr);
-                        rawdata.append("\n");
-                    }
-                } catch (Exception exn) {
-                    logger.warn("Exception during certificate download", exn);
-                } finally {
-                    try {
-                        if (certReader != null) {
-                            certReader.close();
-                        }
-                        if (crtStream != null) {
-                            crtStream.close();
-                        }
-                        if (keyStream != null) {
-                            keyStream.close();
-                        }
-                    } catch (IOException ex) {
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-            }
-            // last thing we do is convert the certificate PEM file to PFX format
-            // for apps that use SSLEngine like web filter and captive portal
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
-
-            return new ExecManagerResult(0, "Certificate successfully uploaded.");
+            ExecManagerResult result = new ExecManagerResult(0, certData);
+            return (result);
         }
     }
 
@@ -644,9 +463,9 @@ public class CertificateManagerImpl implements CertificateManager
 
             // look for the header and trailer strings
             String pemString = new String(certData);
-            int certTop = pemString.indexOf("-----BEGIN CERTIFICATE-----");
-            int certEnd = pemString.indexOf("-----END CERTIFICATE-----");
-            int certLen = (certEnd - certTop + 25);
+            int certTop = pemString.indexOf(MARKER_CERT_HEAD);
+            int certEnd = pemString.indexOf(MARKER_CERT_TAIL);
+            int certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
 
             // if either certTop or certEnd returned an error something is
             // wrong so just return what we have so far
@@ -819,6 +638,223 @@ public class CertificateManagerImpl implements CertificateManager
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
         if (result.getResult() != 0) return (false);
         return (true);
+    }
+
+    /**
+     * Called to create a new server certificate using the data provided.
+     * 
+     * @param certData
+     *        The certificate data
+     * @param keyData
+     *        The optional key data. If not provided we try to use our own key
+     * @param extraData
+     *        Optional intermediate certificates
+     * @return The result of the operation
+     */
+    public ExecManagerResult createServerCertificate(String certData, String keyData, String extraData)
+    {
+        String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+        FileOutputStream fileStream = null;
+        int certLen = 0;
+        int keyLen = 0;
+
+        // make sure all of the strings passed have a trailing newline character
+        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData.concat("\n");
+        if ((keyData.length() > 0) && (!keyData.endsWith("\n"))) keyData.concat("\n");
+        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData.concat("\n");
+
+        int certTop = certData.indexOf(MARKER_CERT_HEAD);
+        int certEnd = certData.indexOf(MARKER_CERT_TAIL);
+
+        // if both cert markers found then calculate the length
+        if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
+
+        if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
+
+        int keyTop = keyData.indexOf(MARKER_RKEY_HEAD);
+        int keyEnd = keyData.indexOf(MARKER_RKEY_TAIL);
+
+        // if both key markers found then calculate the length
+        if ((keyTop >= 0) && (keyEnd >= 0)) {
+            keyLen = (keyEnd - keyTop + MARKER_RKEY_TAIL.length());
+        }
+
+        // didn't find the RSA style so check for generic format
+        else {
+            keyTop = keyData.indexOf(MARKER_GKEY_HEAD);
+            keyEnd = keyData.indexOf(MARKER_GKEY_TAIL);
+
+            if ((keyTop >= 0) && (keyEnd >= 0)) {
+                keyLen = (keyEnd - keyTop + MARKER_GKEY_TAIL.length());
+            }
+        }
+
+        /*
+         * If the uploaded file only contains a cert then we expect it was
+         * created from a CSR we generated so combine with our private key
+         */
+
+        if (keyLen == 0) {
+            // start by writing the uploaded cert to a temporary file
+            try {
+                fileStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
+                fileStream.write(certData.getBytes());
+                fileStream.close();
+            } catch (Exception exn) {
+                logger.warn("Exception saving certificate file", exn);
+            } finally {
+                try {
+                    if (fileStream != null) {
+                        fileStream.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+                fileStream = null;
+            }
+
+            // Make sure the cert they uploaded matches our private key 
+            String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
+            logger.info("CRT MODULUS " + CERTIFICATE_UPLOAD_FILE + " = " + certMod);
+            String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
+            logger.info("KEY MODULUS " + LOCAL_KEY_FILE + " = " + keyMod);
+
+            // if the cert and key modulus do not match then it's garbage 
+            if (certMod.compareTo(keyMod) != 0) {
+                return new ExecManagerResult(1, "The uploaded certificate does not include a private key, and does not match the server private key used to create CSR's (certificate signing requests) on this server.");
+            }
+
+            // the cert and key match so save the certificate to a file
+            try {
+                fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
+                fileStream.write(certData.getBytes());
+                if (extraData.length() > 0) fileStream.write(extraData.getBytes());
+                fileStream.close();
+            } catch (Exception exn) {
+                logger.warn("Exception saving certificate file", exn);
+            } finally {
+                try {
+                    if (fileStream != null) {
+                        fileStream.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+                fileStream = null;
+            }
+
+            // make a copy of the server key file in the certificate key file
+            UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + CERT_STORE_PATH + baseName + ".key");
+
+            // next create the certificate PEM file from the certificate KEY and CRT files
+            UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
+
+            // last thing we do is convert the certificate PEM file to PFX format
+            // for apps that use SSLEngine like web filter and captive portal
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
+
+            return new ExecManagerResult(0, "Certificate successfully uploaded");
+        }
+
+        /*
+         * If we get here it means we have a cert, a key, and maybe some
+         * intermediate certificates so we create the crt, key, and pem files
+         * after we make sure the cert and key will work together.
+         */
+
+        // start by writing the uploaded cert to a temporary file
+        try {
+            fileStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
+            fileStream.write(certData.getBytes());
+            fileStream.close();
+        } catch (Exception exn) {
+            logger.warn("Exception saving certificate file", exn);
+        } finally {
+            try {
+                if (fileStream != null) {
+                    fileStream.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+            fileStream = null;
+        }
+
+        // next we write the uploaded key to a temporary file
+        try {
+            fileStream = new FileOutputStream(KEY_UPLOAD_FILE);
+            fileStream.write(keyData.getBytes());
+            fileStream.close();
+        } catch (Exception exn) {
+            logger.warn("Exception saving key file", exn);
+        } finally {
+            try {
+                if (fileStream != null) {
+                    fileStream.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+            fileStream = null;
+        }
+
+        // Make sure the uploaded cert matches the uploaded key
+        String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
+        logger.info("CRT MODULUS " + CERTIFICATE_UPLOAD_FILE + " = " + certMod);
+        String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + KEY_UPLOAD_FILE);
+        logger.info("KEY MODULUS " + KEY_UPLOAD_FILE + " = " + keyMod);
+
+        // if they cert and key modulus do not match then it's garbage 
+        if (certMod.compareTo(keyMod) != 0) {
+            return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
+        }
+
+        // create the crt file with the certData and extraData
+        try {
+            fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
+            fileStream.write(certData.getBytes());
+            if (extraData.length() > 0) fileStream.write(extraData.getBytes());
+            fileStream.close();
+        } catch (Exception exn) {
+            logger.warn("Exception saving certificate file", exn);
+        } finally {
+            try {
+                if (fileStream != null) {
+                    fileStream.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+            fileStream = null;
+        }
+
+        // create the key file
+        try {
+            fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".key");
+            fileStream.write(keyData.getBytes());
+            fileStream.close();
+        } catch (Exception exn) {
+            logger.warn("Exception saving key file", exn);
+        } finally {
+            try {
+                if (fileStream != null) {
+                    fileStream.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+            fileStream = null;
+        }
+
+        // next create the certificate PEM file from the certificate KEY and CRT files
+        UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
+
+        // last thing we do is convert the certificate PEM file to PFX format
+        // for apps that use SSLEngine like web filter and captive portal
+        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
+
+        logger.info("certData:" + certData + " keyData:" + keyData + " extraData:" + extraData);
+        return new ExecManagerResult(0, "Certificate successfully uploaded");
     }
 
     /**
