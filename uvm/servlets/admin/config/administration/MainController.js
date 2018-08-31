@@ -470,9 +470,33 @@ Ext.define('Ung.config.administration.MainController', {
                 xtype: 'form',
                 url: 'upload',
                 border: false,
-                width: Math.min(Renderer.calculateWith(1), 600),
+                width: Math.min(Renderer.calculateWith(1), 800),
                 layout: 'anchor',
                 items: [{
+                    xtype: 'textarea',
+                    id: 'cert_data',
+                    fieldLabel: 'Server Certificate'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 150,
+                    margin: 10,
+                }, {
+                    xtype: 'textarea',
+                    id: 'key_data',
+                    fieldLabel: 'Certificate Key'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 150,
+                    margin: 10,
+                }, {
+                    xtype: 'textarea',
+                    id: 'extra_data',
+                    fieldLabel: 'Intermediate Certificates'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 200,
+                    margin: 10,
+                }, {
                     xtype: 'filefield',
                     anchor: '100%',
                     fieldLabel: 'File'.t(),
@@ -485,24 +509,53 @@ Ext.define('Ung.config.administration.MainController', {
                     xtype: 'hidden',
                     name: 'type',
                     value: 'server_cert'
+                }, {
+                    xtype: 'hidden',
+                    name: 'argument',
+                    value: 'certfile'
                 }],
                 buttons: [{
-                    text: 'Cancel'.t(),
-                    handler: function () {
-                        me.uploadDialog.close();
+                    text: 'Upload Certificate'.t(),
+                    formBind: false,
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        kd = Ext.get('key_data');
+                        ed = Ext.get('extra_data');
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.createServerCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
+                        .then(function(status){
+                            if (status.result === 0) {
+                                Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
+                            } else {
+                                Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
+                            }
+                        });
+//                        me.uploadDialog.close();
                     }
                 }, {
-                    text: 'Upload Certificate'.t(),
+                    text: 'Import File'.t(),
                     formBind: true,
                     handler: function () {
                         me.uploadDialog.down('form').submit({
                             success: function(form, action) {
-                                me.uploadDialog.close();
+                                detail = JSON.parse(action.result.msg);
+                                if (detail.certData) {
+                                    target = Ext.get('cert_data');
+                                    target.component.setValue(detail.certData);
+                                }
+                                if (detail.keyData) {
+                                    target = Ext.get('key_data');
+                                    target.component.setValue(detail.keyData);
+                                }
+                                if (detail.extraData) {
+                                    target = Ext.get('extra_data');
+                                    target.component.setValue(detail.extraData);
+                                }
+//                                me.uploadDialog.close();
                                 me.refreshServerCertificate();
                                 parent.gridCertList.reload();
                             },
                             failure: function(form, action) {
-                                me.uploadDialog.close();
+//                                me.uploadDialog.close();
                                 Util.handleException('Failure'.t() + '<br/>' + action.result.msg);
                             }
                         });
