@@ -220,7 +220,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
         bbar: [{
             text: 'Generate Server Certificate'.t(),
             certMode: 'SERVER',
-            iconCls: 'fa fa-certificate',
+            iconCls: 'fa fa-pencil',
             handler: 'generateCertificate'
         }, {
             text: 'Upload Server Certificate'.t(),
@@ -231,6 +231,10 @@ Ext.define('Ung.config.administration.view.Certificates', {
             certMode: 'CSR',
             iconCls: 'fa fa-certificate',
             handler: 'generateCertificate'
+        }, {
+            text: 'Import Signing Request Certificate'.t(),
+            iconCls: 'fa fa-certificate',
+            handler: 'importSignedRequest',
         }]
     }, {
         region: 'east',
