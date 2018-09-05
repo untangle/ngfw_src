@@ -257,25 +257,60 @@ Ext.define('Ung.config.network.MainController', {
 
         // !!! on writes, set interface list.
 
+        /**
+         * NGFW-11756 - show exception as dialog with details instead of simple toast
+         * This is a special case for network settings.
+         * Not using asyncPromise because for some reason it fires exception handler multiple times
+         */
         v.setLoading(true);
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.networkManager.setNetworkSettings', vm.get('settings'))
-        ]).then(function(result) {
-            if(Util.isDestroyed(me, v, vm)){
+        rpc.networkManager.setNetworkSettings(function (response, exception) {
+            v.setLoading(false);
+            if(Util.isDestroyed(me, v, vm)) { return; }
+            if (exception) {
+                var details = '';
+                if ( exception.javaStack )
+                    exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+                if ( exception.name )
+                    details += '<b>' + 'Exception name'.t() + ':</b> ' + exception.name + '<br/><br/>';
+                if ( exception.code )
+                    details += '<b>' + 'Exception code'.t() + ':</b> ' + exception.code + '<br/><br/>';
+                if ( exception.message )
+                    details += '<b>' + 'Exception message'.t() + ':</b> ' + exception.message.replace(/\n/g, '<br/>') + '<br/><br/>';
+                if ( exception.javaStack )
+                    details += '<b>' + 'Exception java stack'.t() + ':</b> ' + exception.javaStack.replace(/\n/g, '<br/>') + '<br/><br/>';
+                if ( exception.stack )
+                    details += '<b>' + 'Exception js stack'.t() + ':</b> ' + exception.stack.replace(/\n/g, '<br/>') + '<br/><br/>';
+                if ( Rpc.directData('rpc.fullVersionAndRevision') != null )
+                    details += '<b>' + 'Build'.t() + ':&nbsp;</b>' + rpc.fullVersionAndRevision + '<br/><br/>';
+                details += '<b>' + 'Timestamp'.t() + ':&nbsp;</b>' + (new Date()).toString() + '<br/><br/>';
+                // if ( exception.response )
+                //     details += '<b>' + 'Exception response'.t() + ':</b> ' + Ext.util.Format.stripTags(exception.response).replace(/\s+/g,'<br/>') + '<br/><br/>';
+                Util.showWarningMessage(exception.message, details, Ext.emptyFn());
                 return;
             }
             me.loadSettings();
             Util.successToast('Network'.t() + ' settings saved!');
             Ext.fireEvent('resetfields', v);
+        }, vm.get('settings'));
 
-            vm.set('panel.saveDisabled', false);
-            v.setLoading(false);
-        }, function (ex) {
-            if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', true);
-                v.setLoading(false);
-            }
-        });
+        // Ext.Deferred.sequence([
+        //     Rpc.asyncPromise('rpc.networkManager.setNetworkSettings', vm.get('settings'))
+        // ]).then(function(result) {
+        //     if(Util.isDestroyed(me, v, vm)){
+        //         return;
+        //     }
+        //     me.loadSettings();
+        //     Util.successToast('Network'.t() + ' settings saved!');
+        //     Ext.fireEvent('resetfields', v);
+
+        //     vm.set('panel.saveDisabled', false);
+        //     v.setLoading(false);
+        // }, function (ex) {
+        //     if(!Util.isDestroyed(v, vm)){
+        //         vm.set('panel.saveDisabled', true);
+        //         v.setLoading(false);
+        //     }
+        // });
     },
 
     isSshAccessRuleEnabled: function(networkSettings) {
