@@ -40,6 +40,7 @@ Ext.define('Ung.view.apps.Apps', {
             focusable: false,
             hidden: true,
             bind: {
+                text: 'Back to Apps (<strong>{policyName}</strong>)',
                 hidden: '{onInstalledApps}'
             },
             handler: 'backToApps'
