@@ -131,6 +131,10 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
         layout: 'column',
         border: false,
         anchor: '100%',
+        hidden: true,
+        bind: {
+            hidden: '{record.type != "ping"}'
+        },
         items: [{
             xtype: 'combobox',
             fieldLabel: 'IP'.t(),
@@ -139,9 +143,7 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
             labelWidth: 170,
             bind: {
                 value: '{record.pingHostname}',
-                hidden: '{record.type != "ping"}',
                 store: '{pingListStore}'
-
             },
             allowBlank: false,
             editable: true,
