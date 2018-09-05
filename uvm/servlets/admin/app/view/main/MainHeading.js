@@ -21,8 +21,8 @@ Ext.define('Ung.view.main.MainHeading', {
     }, {
         text: 'Dashboard'.t(),
         iconCls: 'fa fa-home fa-lg',
-        href: '#',
-        bind: { userCls: '{activeItem === "dashboardMain" ? "pressed" : ""}' },
+        handler: 'onDashboard',
+        bind: { userCls: '{activeItem === "dashboardMain" ? "pressed" : ""}' }
     }, {
         text: 'Apps'.t(),
         iconCls: 'fa fa-th fa-lg',
@@ -35,7 +35,7 @@ Ext.define('Ung.view.main.MainHeading', {
     }, {
         text: 'Reports'.t(),
         iconCls: 'fa fa-area-chart fa-lg',
-        href: '#reports',
+        handler: 'onReports',
         bind: {
             userCls: '{activeItem === "reports" ? "pressed" : ""}',
         }
