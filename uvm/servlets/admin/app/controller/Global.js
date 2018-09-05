@@ -231,7 +231,7 @@ Ext.define('Ung.controller.Global', {
             viewModel.set('query', {
                 route: route,
                 conditions: conditions,
-            string: condsQuery
+                string: condsQuery
             });
         }
 
@@ -336,6 +336,7 @@ Ext.define('Ung.controller.Global', {
                             viewModel: {
                                 data: {
                                     instance: appInstance,
+                                    policyName: me.getAppsView().getViewModel().get('policyName'),
                                     props: appProps,
                                     license: policy.get('licenseMap')[app],
                                     urlName: app

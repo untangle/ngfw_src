@@ -13,7 +13,7 @@ Ext.define('Ung.cmp.AppPanel', {
             iconCls: 'fa fa-arrow-circle-left',
             hrefTarget: '_self',
             bind: {
-                text: 'Back to Apps',
+                text: 'Back to Apps (<strong>{policyName}</strong>)',
                 href: '#apps/{policyId}'
             }
         }, {
