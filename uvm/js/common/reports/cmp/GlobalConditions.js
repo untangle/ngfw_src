@@ -28,11 +28,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         xtype: 'button',
         text: 'Add'.t(),
         iconCls: 'fa fa-plus-circle',
-        hidden: true,
         focusable: false,
-        bind: {
-            hidden: '{query.conditions.length >= 3}'
-        },
         menu: {
             plain: true,
             showSeparator: false,
