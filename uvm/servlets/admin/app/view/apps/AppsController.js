@@ -45,10 +45,10 @@ Ext.define('Ung.view.apps.AppsController', {
                 xtype: me.getView().itemType,
                 itemId: 'app_' + app.name,
                 app: app,
-                viewModel: { 
-                    data: { 
-                        app: app, 
-                        instanceId: null, 
+                viewModel: {
+                    data: {
+                        app: app,
+                        instanceId: null,
                         installing: false
                     },
                     formulas: {
@@ -92,7 +92,6 @@ Ext.define('Ung.view.apps.AppsController', {
             me.getApps();
         });
 
-        // when policy changes get the apps, this is needed because
         vm.bind('{policyId}', function () {
             if (Ext.getStore('policiestree').getCount() > 0) {
                 var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
@@ -108,9 +107,14 @@ Ext.define('Ung.view.apps.AppsController', {
 
     // when policy changes the apps components are updated based on this policy app instances/props
     applyPolicy: function(policy) {
-        var me = this, vm = me.getViewModel(), appVm;
+        var me = this, vm = me.getViewModel(), appVm, app,
+            appCard = Ung.app.getMainView().down('#appCard');
 
-        var app;
+        // when loading directly an app via rout, apply policy name for back button text
+        if (appCard) {
+            appCard.getViewModel().set('policyName', me.getViewModel().get('policyName'));
+        }
+
         me.getView().query(me.getView().itemType).forEach(function (app) {
             appVm = app.getViewModel();
             if(appVm.get('state') && appVm.get('state').get('power')){
