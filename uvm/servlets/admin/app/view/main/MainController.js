@@ -146,5 +146,24 @@ Ext.define('Ung.view.main.MainController', {
             supportUrl += '&email=' + user.emailAddress;
         }
         window.open(supportUrl);
+    },
+
+    onDashboard: function () {
+        var me = this, route = 'dashboard',
+            vm = me.getView().down('#dashboardMain').getViewModel();
+        if (vm.get('query.string')) {
+            route += vm.get('query.string').replace('&', '?');
+        }
+        Ung.app.redirectTo(route);
+    },
+
+    onReports: function () {
+        var me = this, route = 'reports',
+            vm = me.getView().down('#reports').getViewModel();
+        if (vm.get('query.string')) {
+            route += vm.get('query.string').replace('&', '?');
+        }
+        Ung.app.redirectTo(route);
     }
+
 });
