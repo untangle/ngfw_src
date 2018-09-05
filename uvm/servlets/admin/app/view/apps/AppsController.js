@@ -499,7 +499,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 text: 'No, I will install the apps manually.',
                 handler: function () {
                     popup.close();
-                    me.getView().setActiveItem('installableApps');
+                    me.showInstall();
                 }
             }]
         });
