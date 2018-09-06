@@ -468,7 +468,7 @@ Ext.define('Ung.config.administration.MainController', {
             title: 'Upload Server Certificate'.t(),
             items: [{
                 xtype: 'form',
-                url: 'upload',
+                name: 'upload_form',
                 border: false,
                 width: Math.min(Renderer.calculateWith(1), 800),
                 layout: 'anchor',
@@ -491,7 +491,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'textarea',
                     id: 'extra_data',
-                    fieldLabel: 'Intermediate Certificates'.t(),
+                    fieldLabel: 'Optional Intermediate Certificates'.t(),
                     labelWidth: 80,
                     anchor: "100%",
                     height: 200,
@@ -499,12 +499,16 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'filefield',
                     anchor: '100%',
-                    fieldLabel: 'File'.t(),
                     name: 'filename',
                     margin: 10,
                     labelWidth: 50,
                     allowBlank: false,
-                    validateOnBlur: false
+                    validateOnBlur: false,
+                    buttonOnly: true,
+                    buttonText: 'Import a certificate or key file'.t(),
+                    listeners: {
+                        change: 'handleFileImport'
+                    }
                 }, {
                     xtype: 'hidden',
                     name: 'type',
@@ -525,40 +529,27 @@ Ext.define('Ung.config.administration.MainController', {
                         .then(function(status){
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
+                                me.uploadDialog.close();
+                                me.refreshServerCertificate();
                             } else {
                                 Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
                             }
                         });
-//                        me.uploadDialog.close();
                     }
                 }, {
-                    text: 'Import File'.t(),
-                    formBind: true,
+                    text: 'Clear Form'.t(),
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        kd = Ext.get('key_data');
+                        ed = Ext.get('extra_data');
+                        cd.component.setValue("");
+                        kd.component.setValue("");
+                        ed.component.setValue("");
+                    }
+                }, {
+                    text: 'Close'.t(),
                     handler: function () {
-                        me.uploadDialog.down('form').submit({
-                            success: function(form, action) {
-                                detail = JSON.parse(action.result.msg);
-                                if (detail.certData) {
-                                    target = Ext.get('cert_data');
-                                    target.component.setValue(detail.certData);
-                                }
-                                if (detail.keyData) {
-                                    target = Ext.get('key_data');
-                                    target.component.setValue(detail.keyData);
-                                }
-                                if (detail.extraData) {
-                                    target = Ext.get('extra_data');
-                                    target.component.setValue(detail.extraData);
-                                }
-//                                me.uploadDialog.close();
-                                me.refreshServerCertificate();
-                                parent.gridCertList.reload();
-                            },
-                            failure: function(form, action) {
-//                                me.uploadDialog.close();
-                                Util.handleException('Failure'.t() + '<br/>' + action.result.msg);
-                            }
-                        });
+                        me.uploadDialog.close();
                     }
                 }]
             }]
@@ -574,7 +565,7 @@ Ext.define('Ung.config.administration.MainController', {
             title: 'Import Signing Request Certificate'.t(),
             items: [{
                 xtype: 'form',
-                url: 'upload',
+                name: 'upload_form',
                 border: false,
                 width: Math.min(Renderer.calculateWith(1), 800),
                 layout: 'anchor',
@@ -589,7 +580,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'textarea',
                     id: 'extra_data',
-                    fieldLabel: 'Intermediate Certificates'.t(),
+                    fieldLabel: 'Optional Intermediate Certificates'.t(),
                     labelWidth: 80,
                     anchor: "100%",
                     height: 200,
@@ -597,12 +588,16 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'filefield',
                     anchor: '100%',
-                    fieldLabel: 'File'.t(),
                     name: 'filename',
                     margin: 10,
                     labelWidth: 50,
                     allowBlank: false,
-                    validateOnBlur: false
+                    validateOnBlur: false,
+                    buttonOnly: true,
+                    buttonText: 'Import a certificate file'.t(),
+                    listeners: {
+                        change: 'handleFileImport'
+                    }
                 }, {
                     xtype: 'hidden',
                     name: 'type',
@@ -622,40 +617,25 @@ Ext.define('Ung.config.administration.MainController', {
                         .then(function(status){
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
+                                me.refreshServerCertificate();
+                                me.uploadDialog.close();
                             } else {
                                 Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
                             }
                         });
-//                        me.uploadDialog.close();
                     }
                 }, {
-                    text: 'Import File'.t(),
-                    formBind: true,
+                    text: 'Clear Form'.t(),
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        ed = Ext.get('extra_data');
+                        cd.component.setValue("");
+                        ed.component.setValue("");
+                    }
+                }, {
+                    text: 'Close'.t(),
                     handler: function () {
-                        me.uploadDialog.down('form').submit({
-                            success: function(form, action) {
-                                detail = JSON.parse(action.result.msg);
-                                if (detail.certData) {
-                                    target = Ext.get('cert_data');
-                                    target.component.setValue(detail.certData);
-                                }
-                                if (detail.keyData) {
-                                    target = Ext.get('key_data');
-                                    target.component.setValue(detail.keyData);
-                                }
-                                if (detail.extraData) {
-                                    target = Ext.get('extra_data');
-                                    target.component.setValue(detail.extraData);
-                                }
-//                                me.uploadDialog.close();
-                                me.refreshServerCertificate();
-                                parent.gridCertList.reload();
-                            },
-                            failure: function(form, action) {
-//                                me.uploadDialog.close();
-                                Util.handleException('Failure'.t() + '<br/>' + action.result.msg);
-                            }
-                        });
+                        me.uploadDialog.close();
                     }
                 }]
             }]
@@ -701,6 +681,59 @@ Ext.define('Ung.config.administration.MainController', {
             vm.set('skinChanged', true);
         }
     },
+
+    /**
+     * The handleFileImport function is used to let the user build a certificate to be uploaded
+     * one piece at a time. When importing a cert or key file, the Java code passes the file to
+     * the ut-cert-parser script. The script parses the file into certData, keyData, and extraData,
+     * which are passed back to us as a JSON object. The object will only contain fields that
+     * were actually parsed, so any or all three may be missing from the object we receive. If
+     * the cert_data textarea is empty, we put certData in the cert_data textarea. If it is NOT
+     * empty, we assume the certificate has already been uploaded and append certData to the
+     * extra_data textarea. If we find keyData it always goes into the key_data textarea, and
+     * extraData is always appended to the extra_data textarea. This function is used for both
+     * uploadServerCertificate and importSignedRequest, the second of which doesn't have the
+     * key_data textarea so we check to be sure the component exists before setting the value.
+     */
+
+    handleFileImport: function(cmp){
+        var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
+        var file = Ext.ComponentQuery.query('textfield[name=filename]')[0].value;
+        if ( file == null || file.length === 0 ) {
+            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to import.'.t());
+            return;
+            }
+        form.submit({
+            url: "upload",
+            success: Ext.bind(function( form, action ) {
+                detail = JSON.parse(action.result.msg);
+                cptr = Ext.get('cert_data');
+                kptr = Ext.get('key_data');
+                eptr = Ext.get('extra_data');
+                if (detail.certData) {
+                    finder = cptr.component.getValue();
+                    if (finder.length === 0) {
+                        cptr.component.setValue(detail.certData);
+                    } else {
+                        work = eptr.component.getValue();
+                        eptr.component.setValue(work + detail.certData);
+                    }
+                }
+                if (detail.keyData) {
+                    if (kptr) {
+                        kptr.component.setValue(detail.keyData);
+                    }
+                }
+                if (detail.extraData) {
+                    work = eptr.component.getValue();
+                    eptr.component.setValue(work + detail.extraData);
+                }
+            }, this),
+            failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Import Failure'.t(), action.result.msg);
+            }, this)
+        });
+    }
 
 });
 
