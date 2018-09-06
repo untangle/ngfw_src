@@ -9,5 +9,5 @@
     "displayOrder": 1020,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "tunnel_vpn_stats",
-    "title": "Traffic Events"
+    "title": "Tunnel Stat Events"
 }
