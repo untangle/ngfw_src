@@ -17,5 +17,6 @@
     "timeDataDynamicAllowNull": true,
     "timeStyle": "AREA_STACKED",
     "title": "Top Applications Usage",
-    "type": "TIME_GRAPH_DYNAMIC"
+    "type": "TIME_GRAPH_DYNAMIC",
+    "approximation": "high"
 }
