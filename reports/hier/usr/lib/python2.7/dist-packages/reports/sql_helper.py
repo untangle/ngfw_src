@@ -8,6 +8,7 @@ import string
 import sys
 import time
 import sqlite3
+import os
 from psycopg2.extensions import DateFromMx
 
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
@@ -18,7 +19,7 @@ DEFAULT_SLICES = 150
 
 DBDRIVER = 'postgresql'
 
-UNLOGGED_ENABLED = False
+UNLOGGED_ENABLED = os.path.isfile("@PREFIX@/usr/share/untangle/conf/unsafe-postgres-flag")
 EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
 PRINT_TIMINGS = False
