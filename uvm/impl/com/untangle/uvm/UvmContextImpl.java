@@ -1672,6 +1672,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
             int maxTries = ZEROTOUCH_MAX_TRIES;
             while (zerotouchThread != null) {
+                wizardSettings = getWizardSettings();
+                if( wizardSettings.getWizardComplete() == true ||
+                    wizardSettings.getCompletedStep() != null ){
+                    /*
+                     * While waiting, someone has initiated the setup wizard, so let them go for it.
+                     */
+                    break;
+                }
                 /**
                  * Verify we have a WAN address.
                  */
