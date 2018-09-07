@@ -159,7 +159,7 @@ public class Pulse implements Runnable
     public synchronized void start()
     {
         /* Can't start unless it is in the unborn state */
-        if (PulseState.UNBORN != this.state) {
+        if (PulseState.UNBORN != this.state && PulseState.KILLED != this.state) {
             throw new IllegalStateException("Unable to start a pulse. Unexpected state: " + this.state);
         }
 
