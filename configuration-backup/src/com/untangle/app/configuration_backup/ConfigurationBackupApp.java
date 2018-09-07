@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.AppBase;
@@ -37,6 +38,7 @@ public class ConfigurationBackupApp extends AppBase
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
     
     private static final String BACKUP_URL = "https://boxbackup.untangle.com/boxbackup/backup.php";
+    private static final Integer TIMEOUT_SEC = 1200;
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
@@ -251,12 +253,19 @@ public class ConfigurationBackupApp extends AppBase
     private void uploadBackup( File backupFile )
     {
             
-        String cmd = System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh" + " -u " + BACKUP_URL + " -v -k " + UvmContextFactory.context().getServerUID() + " -t 180 " + " -f " + backupFile.getAbsoluteFile();
+        String cmd = System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh" + " -u " + BACKUP_URL + " -v -k " + UvmContextFactory.context().getServerUID() + " -t " + TIMEOUT_SEC + " -f " + backupFile.getAbsoluteFile();
 
         logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + BACKUP_URL);
         logger.info("Backup command: " + cmd);
-        
-        Integer exitCode = UvmContextFactory.context().execManager().execResult(cmd);
+
+        Integer exitCode = 0;
+        try {
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            exitCode = reader.waitFor();
+        } catch (Exception e) {
+            exitCode = 99;
+            logger.warn("Exception running backup",e);
+        }
 
         if(exitCode != 0) {
             logger.error("Backup returned non-zero error code (" + exitCode + ")");
@@ -277,6 +286,9 @@ public class ConfigurationBackupApp extends AppBase
                 break;
             case 5:
                 reason = "Timeout contacting " + BACKUP_URL;
+                break;
+            case 99:
+                reason = "Exception during backup " + BACKUP_URL;
                 break;
             default:
                 reason = "Unknown error";
@@ -305,11 +317,15 @@ public class ConfigurationBackupApp extends AppBase
             directory = "-d \"" + settings.getGoogleDriveDirectory() + "\"";
         String cmd = "/usr/share/untangle-google-connector/bin/google-drive-upload.py " + directory + " " + backupFile.getAbsoluteFile();
 
-        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to Google Drive");
-        logger.info("Backup command: " + cmd);
+        Integer exitCode = 0;
+        try {
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            exitCode = reader.waitFor();
+        } catch (Exception e) {
+            exitCode = 99;
+            logger.warn("Exception running backup",e);
+        }
         
-        Integer exitCode = UvmContextFactory.context().execManager().execResult(cmd);
-
         if(exitCode != 0) {
             logger.error("Backup returned non-zero error code (" + exitCode + ")");
 
