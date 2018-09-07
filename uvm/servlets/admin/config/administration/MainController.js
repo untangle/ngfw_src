@@ -687,11 +687,11 @@ Ext.define('Ung.config.administration.MainController', {
      * one piece at a time. When importing a cert or key file, the Java code passes the file to
      * the ut-cert-parser script. The script parses the file into certData, keyData, and extraData,
      * which are passed back to us as a JSON object. The object will only contain fields that
-     * were actually parsed, so any or all three may be missing from the object we receive. If
-     * the cert_data textarea is empty, we put certData in the cert_data textarea. If it is NOT
-     * empty, we assume the certificate has already been uploaded and append certData to the
-     * extra_data textarea. If we find keyData it always goes into the key_data textarea, and
-     * extraData is always appended to the extra_data textarea. This function is used for both
+     * were actually parsed, so any or all three may be missing from the object we receive.
+     * If we find certData it always goes into the cert_data textarea since the parser script
+     * always puts the end-entity certificate there. If we find keyData it always goes into the
+     * key_data textarea, and extraData is always appended to the extra_data textarea allowing
+     * multiple intermediate certificates to be easily added. This function is used for both
      * uploadServerCertificate and importSignedRequest, the second of which doesn't have the
      * key_data textarea so we check to be sure the component exists before setting the value.
      */
@@ -711,12 +711,8 @@ Ext.define('Ung.config.administration.MainController', {
                 kptr = Ext.get('key_data');
                 eptr = Ext.get('extra_data');
                 if (detail.certData) {
-                    finder = cptr.component.getValue();
-                    if (finder.length === 0) {
+                    if (cptr) {
                         cptr.component.setValue(detail.certData);
-                    } else {
-                        work = eptr.component.getValue();
-                        eptr.component.setValue(work + detail.certData);
                     }
                 }
                 if (detail.keyData) {
@@ -725,8 +721,10 @@ Ext.define('Ung.config.administration.MainController', {
                     }
                 }
                 if (detail.extraData) {
-                    work = eptr.component.getValue();
-                    eptr.component.setValue(work + detail.extraData);
+                    if (eptr) {
+                        work = eptr.component.getValue();
+                        eptr.component.setValue(work + detail.extraData);
+                    }
                 }
             }, this),
             failure: Ext.bind(function( form, action ) {

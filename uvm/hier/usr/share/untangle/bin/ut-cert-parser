@@ -15,6 +15,8 @@ import pem
 # parts. The parts are returned in a JSON object that is parsed by the UI
 # and placed in the corresponding textarea's in the certificate upload dialog.
 
+tempFile = "/tmp/ut-cert-parser.tmp"
+
 certData = ""
 keyData = ""
 extraData = ""
@@ -34,23 +36,39 @@ if not os.access(sys.argv[1],os.R_OK):
 list = pem.parse_file(sys.argv[1])
 
 if len(list) == 0:
-    errorExit("The uploaded file does not contain a valid certificate.")
+    errorExit("The file does not contain any valid certificates or keys")
 
 for item in list:
     # handle certificates
     if isinstance(item, pem._core.Certificate):
-        # the first certificate we find is considered the main certificate
-        if len(certData) == 0:
-            certData = item.as_text()
-        # any other certificates we find are appended to the extra section
-        else:
+
+        # write the certificate to a temporary file
+        out = open(tempFile,"w")
+        out.write(item.as_text())
+        out.close()
+
+        # pass the certificate to openssl and grep for CA:TRUE in the output
+        # endFlag will be zero for CA certs and non-zero for end-entity certs
+        endFlag = os.system("openssl x509 -noout -text -in " + tempFile + " | grep -q 'CA:TRUE'")
+
+        # remove the temporary file
+        os.remove(tempFile)
+
+        # if we found CA:TRUE then we have an intermediate certificate
+        if endFlag == 0:
             extraData += item.as_text()
+        # we did not find CA:TRUE so this must be the end-entity certificate
+        else:
+            if len(certData) != 0:
+                errorExit("The file contains more than one end-entity certificate")
+            certData = item.as_text()
 
     # handle the key
     if isinstance(item, pem._core.Key):
+
         # if we find more than one key we return an error
         if len(keyData) != 0:
-            errorExit("The uploaded certificate contains more than one private key.")
+            errorExit("The file contains more than one private key.")
         keyData = item.as_text()
 
 # put any valid data in a dictionary and then dump the dictionary in JSON
