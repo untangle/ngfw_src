@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.FileVisitOption;
 
 import org.apache.log4j.Logger;
 
@@ -80,7 +81,7 @@ public class PluginManagerImpl implements PluginManager
     {
         try {
             String pathStr = System.getProperty("uvm.lib.dir") + "/plugins";
-            Files.walk(Paths.get(pathStr))
+            Files.walk(Paths.get(pathStr), FileVisitOption.FOLLOW_LINKS)
                 .filter(Files::isRegularFile)
                 .filter(path -> !path.toString().contains("$"))
                 .filter(path -> path.toString().contains("Plugin"))
