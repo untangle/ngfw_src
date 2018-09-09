@@ -40,8 +40,10 @@ while true; do
     echo "`date -Iseconds` $0: upgrade appears complete"
     /bin/rm -f $pidfile
     echo "`date -Iseconds` $0: starting untangle-vm"
-    systemctl start untangle-vm
-    if [ -f /var/run/ut-pyconnector.pid ] ; then /usr/sbin/service untangle-pyconnector restart ; fi
+    systemctl restart untangle-vm
+    if [ -f /var/run/pyconnector.pid ] ; then
+        systemctl restart pyconnector
+    fi
     exit
 done
 
