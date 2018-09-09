@@ -10,6 +10,7 @@ if [ -f /var/run/uvm.pid ] ; then
 
         echo "Stopping untangle-vm..."
         deb-systemd-invoke stop untangle-vm
+        /etc/init.d/untangle-vm stop
         echo "Stopped  untangle-vm  $?"
 
         echo "Restarting untangle-vm after apt-get completes..."
