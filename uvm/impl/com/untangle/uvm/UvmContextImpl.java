@@ -1655,6 +1655,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             }
             zerotouchThread = Thread.currentThread();
 
+            logger.info("Launching Zero-Touch provisioning");
+
             /**
              * Create client with short timeout.
              */
@@ -1721,6 +1723,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     }
 
                     if(receivedResponse){
+                        logger.info("Ending Zero-Touch provisioning with response");
                         break;
                     }
                     response = null;
@@ -1732,6 +1735,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
                 maxTries--;
                 if(maxTries == 0){
+                    logger.info("Ending Zero-Touch provisioning after maximum tries");
                     break;
                 }
             }
