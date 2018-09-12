@@ -79,7 +79,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         serverConfiguration.add(new OpenVpnConfigItem("user", "nobody", true));
         serverConfiguration.add(new OpenVpnConfigItem("group", "nogroup", true));
         serverConfiguration.add(new OpenVpnConfigItem("tls-server", true));
-        serverConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
+        serverConfiguration.add(new OpenVpnConfigItem("compress", true));
         serverConfiguration.add(new OpenVpnConfigItem("status", "openvpn-status.log", true));
         serverConfiguration.add(new OpenVpnConfigItem("log", "/var/log/openvpn.log", true));
         serverConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
@@ -111,9 +111,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         clientConfiguration.add(new OpenVpnConfigItem("keepalive", Integer.toString(DEFAULT_PING_TIME) + " " + Integer.toString(DEFAULT_PING_TIMEOUT), true));
         clientConfiguration.add(new OpenVpnConfigItem("nobind", true));
         clientConfiguration.add(new OpenVpnConfigItem("mute-replay-warnings", true));
-        clientConfiguration.add(new OpenVpnConfigItem("ns-cert-type", "server", true));
-        clientConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
-        clientConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
+        clientConfiguration.add(new OpenVpnConfigItem("remote-cert-tls", "server", true));
+        clientConfiguration.add(new OpenVpnConfigItem("compress", true));
         clientConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
         
         /* Do not re-read key after SIGUSR1 */
