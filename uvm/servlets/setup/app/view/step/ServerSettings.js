@@ -90,12 +90,16 @@ Ext.define('Ung.Setup.ServerSettings', {
             editable: false,
             queryMode: 'local',
             store: [
-                ['business', 'Business'.t()],
                 ['school', 'School'.t()],
-                ['college', 'College/University'.t()],
-                ['government', 'Government'.t()],
-                ['nonprofit', 'Non-Profit'.t()],
+                ['college', 'Higher Education'.t()],
+                ['government', 'State & Local Government'.t()],
+                ['fedgovernment', 'Federal Government'.t()],
+                ['nonprofit', 'Nonprofit'.t()],
+                ['retail', 'Hospitality & Retail'.t()],
+                ['healthcare', 'Healthcare'.t()],
+                ['financial', 'Banking & Financial'.t()],
                 ['home', 'Home'.t()],
+                ['student', 'Student'.t()],
                 ['other', 'Other'.t()]
             ]
         }, {
