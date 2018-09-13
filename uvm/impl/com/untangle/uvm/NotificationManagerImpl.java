@@ -812,7 +812,7 @@ public class NotificationManagerImpl implements NotificationManager
                     notificationText += ", ";
                     notificationText += (t1 - t0) + " ms";
                     notificationText += ") ";
-                    notificationText += i18nUtil.tr("This may negatively effect Web Filter performance.");
+                    notificationText += i18nUtil.tr("This may negatively affect Web Filter performance.");
 
                     notificationList.add(notificationText);
                 }
