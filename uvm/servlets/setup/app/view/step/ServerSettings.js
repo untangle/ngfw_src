@@ -85,6 +85,7 @@ Ext.define('Ung.Setup.ServerSettings', {
             xtype: 'combo',
             name: 'installType',
             value: '',
+            allowBlank: false,
             fieldLabel: 'Choose Type'.t(),
             emptyText: 'Select'.t(),
             editable: false,
