@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.AutoUpgrades', {
     alias: 'widget.AutoUpgrades',
 
     title: 'Auto Upgrades'.t(),
-    description: 'Configure Automatic Upgrade Settings'.t(),
+    description: 'Automatic Upgrades and Command Center Access'.t(),
 
     layout: {
         type: 'vbox',
@@ -27,12 +27,12 @@ Ext.define('Ung.Setup.AutoUpgrades', {
         margin: '20 0 0 0',
         items: [{
             xtype: 'checkbox',
-            boxLabel: '<strong>' + Ext.String.format('Connect to {0} Cloud'.t(), rpc.oemName) + '</strong>',
+            boxLabel: '<strong>' + 'Connect to Command Center'.t() + '</strong>',
             bind: { value: '{systemSettings.cloudEnabled}' }
         }, {
             xtype: 'component',
             margin: '0 0 0 20',
-            html: Ext.String.format('Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access.'.t(), rpc.oemName) + '<br/>' +
+            html: Ext.String.format('Remain securely connected to the Command Center for cloud management, hot fixes, and support access.'.t(), rpc.oemName) + '<br/>' +
                 'This is the recommended choice for most sites.'.t()
         }]
     }],

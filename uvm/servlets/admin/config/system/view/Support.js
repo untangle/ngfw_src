@@ -19,7 +19,7 @@ Ext.define('Ung.config.system.view.Support', {
         title: 'Support'.t(),
         items: [{
             xtype: 'checkbox',
-            boxLabel: Ext.String.format('Connect to {0} cloud'.t(), this.oemName),
+            boxLabel: 'Connect to Command Center'.t(),
             bind: '{systemSettings.cloudEnabled}'
         }, {
             xtype: 'checkbox',
@@ -65,7 +65,7 @@ Ext.define('Ung.config.system.view.Support', {
             },
             items: [{
                 xtype: 'displayfield',
-                value: 'Power off the server.'.t(),
+                value: 'Power off the server.'.t()
             }, {
                 xtype: 'button',
                 margin: '0 0 0 10',
