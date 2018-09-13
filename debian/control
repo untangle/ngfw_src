@@ -291,7 +291,7 @@ Architecture: all
 Conflicts: untangle-node-intrusion-prevention
 Replaces: untangle-node-intrusion-prevention
 Provides: untangle-node-intrusion-prevention
-Depends: ${misc:Depends}, untangle-vm, untangle-snort-config, python
+Depends: ${misc:Depends}, untangle-vm, untangle-suricata-config, python
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
