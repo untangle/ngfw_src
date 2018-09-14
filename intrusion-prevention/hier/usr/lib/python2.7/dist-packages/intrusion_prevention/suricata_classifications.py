@@ -1,13 +1,13 @@
 """
-IntrusionPrevention defaults management
+Suricata classfivcations
 """
 import re
 
-class SnortClassifications:
+class SuricataClassifications:
     """
     Profile defaults
     """
-    file_name = "/usr/share/untangle-snort-config/current/rules/classification.config"
+    file_name = "/usr/share/untangle-suricata-config/current/rules/classification.config"
     classification_regex = re.compile(r'^config classification: ([^,]+),([^,]+),(\d+)')
     reserved_id_regex = re.compile(r'^reserved_classification_')
 
@@ -45,7 +45,7 @@ class SnortClassifications:
         classification_file = open(file_name)
         for line in classification_file:
             line = line.rstrip( "\n" )
-            match_classification = re.search( SnortClassifications.classification_regex, line )
+            match_classification = re.search( SuricataClassifications.classification_regex, line )
             if match_classification:
                 # print match_classification
                 # print match_classification.group(3,1)
