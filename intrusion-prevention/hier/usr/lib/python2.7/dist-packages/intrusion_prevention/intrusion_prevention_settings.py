@@ -5,8 +5,8 @@ import json
 import os
 import re
 
-from intrusion_prevention.snort_signature import SnortSignature
-from intrusion_prevention.snort_signatures import SnortSignatures
+from intrusion_prevention.suricata_signature import SuricataSignature
+from intrusion_prevention.suricata_signatures import SuricataSignatures
 from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule
 
 class IntrusionPreventionSettings:
@@ -39,6 +39,19 @@ class IntrusionPreventionSettings:
                 "deleted": []
             }
         },
+        "suricata": {
+            "outputs": {
+                "eve-log": {
+                    "enabled": False
+                },
+                "fast": {
+                    "enabled": False
+                }
+            },
+            "stats": {
+                "enabled": False
+            }
+        },
         "configured": False,
         "max_scan_size": 1024
     }
@@ -49,7 +62,7 @@ class IntrusionPreventionSettings:
         self.app_id = app_id
         self.file_name = "@PREFIX@/usr/share/untangle/settings/intrusion-prevention/settings_" + self.app_id + ".js"
             
-        self.signatures = SnortSignatures(app_id)
+        self.signatures = SuricataSignatures()
         self.settings = {}
 
     def json_load_decoder(self,obj):
@@ -64,13 +77,13 @@ class IntrusionPreventionSettings:
             # a way around that with this hook (we could free it but garbage collecting
             # doesn't seem to happen fast enough to make a difference).  
             # This is better than nothing and can save up to 40% of memory.
-            match_signature = re.search(SnortSignature.text_regex, obj["signature"])
+            match_signature = re.search(SuricataSignature.text_regex, obj["signature"])
             if match_signature:
                 if "path" in obj:
                     path = obj["path"]
                 else:
                     path = "signatures"
-                signature = SnortSignature(match_signature, obj["category"], path)
+                signature = SuricataSignature(match_signature, obj["category"], path)
                 signature.set_action(obj["log"], obj["block"])
                 signature.set_msg(obj["msg"])
                 signature.set_sid(obj["sid"])
@@ -101,7 +114,7 @@ class IntrusionPreventionSettings:
     def create(self):
         """
         Create a new settings file based on the processed
-        signature set and default variables from snort configuration.
+        signature set and default variables from suricata configuration.
         """
         if hasattr( self, 'settings') == False:
             self.settings = IntrusionPreventionSettings.default_settings
@@ -198,21 +211,21 @@ class IntrusionPreventionSettings:
         """
         Signature diff to add, modify, remove
         """
-        snort_signature = None
-        match_signature = re.search( SnortSignature.text_regex, signature["recData"]["signature"] )
+        suricata_signature = None
+        match_signature = re.search( SuricataSignature.text_regex, signature["recData"]["signature"] )
         if match_signature:
-            snort_signature = SnortSignature( match_signature, signature["recData"]["category"] )
+            suricata_signature = SuricataSignature( match_signature, signature["recData"]["category"] )
 
-        if snort_signature == None:
+        if suricata_signature == None:
             return
 
         operation = signature["op"] 
         if operation == "added":
-            self.signatures.add_signature( snort_signature )
+            self.signatures.add_signature( suricata_signature )
         elif operation == "modified":
-            self.signatures.modify_signature( snort_signature )
+            self.signatures.modify_signature( suricata_signature )
         elif operation == "deleted":
-            self.signatures.delete_signature( snort_signature.signature_id )
+            self.signatures.delete_signature( suricata_signature.signature_id )
 
     def set_patch_rule(self, rulePatch):
         """
@@ -252,7 +265,7 @@ class IntrusionPreventionSettings:
         """
         Variable diff to add, modify, remove
         """
-        snort_variable = { 
+        suricata_variable = { 
             "variable": variable["recData"]["variable"],
             "definition": variable["recData"]["definition"],
             "description": variable["recData"]["description"]
@@ -263,12 +276,12 @@ class IntrusionPreventionSettings:
             modified = False;
             for index, settings_variable in enumerate(self.settings["variables"]["list"]):
                 if settings_variable["variable"] == variable["recData"]["variable"]:
-                    self.settings["variables"]["list"][index] = snort_variable
+                    self.settings["variables"]["list"][index] = suricata_variable
                     modified = True
             if modified is False:
-                self.settings["variables"]["list"].append( snort_variable )
+                self.settings["variables"]["list"].append( suricata_variable )
         elif operation == "deleted":
-            self.settings["variables"]["list"].remove(snort_variable)
+            self.settings["variables"]["list"].remove(suricata_variable)
 
     def set_patch_active_groups(self, active_groups, defaults_profile=None):
         """
