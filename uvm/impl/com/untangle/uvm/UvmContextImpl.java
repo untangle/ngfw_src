@@ -11,7 +11,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,13 +19,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
 
 import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
@@ -41,7 +33,6 @@ import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
 
-/** UvmContextImpl */
 /** UvmContextImpl */
 /** This is the root object "context" providing the Untangle VM functionality for applications and the user interface */
 public class UvmContextImpl extends UvmContextBase implements UvmContext
@@ -73,10 +64,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
     private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
-    private static final String ZEROTOUCH_API = "/appliance/IsProvisioned?serialNumber=%serial%&uid=%uid%";
-    private static final int ZEROTOUCH_SLEEP_TIME_MILLI = 5 * 1000;
-    private static final int ZEROTOUCH_MAX_TRIES = 60;
-    private static final int ZEROTOUCH_TIMEOUT_TIME_MILLI = 30 * 1000;
 
     private static final Object startupWaitLock = new Object();
 
@@ -134,8 +121,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
-    private volatile Thread zerotouchThread;
-    private zerotouchLauncher zerotouch = new zerotouchLauncher();
     
     /**
      * UvmContextImpl - private because its a singleton and cannot be instantiated
@@ -1348,7 +1333,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // write status
         writeStatusFile( "running" );
 
-        UvmContextFactory.context().newThread(this.zerotouch).start();
+        cloudManager.startZeroTouchMonitor();
 
         // call startup hook
         callPostStartupHooks();
@@ -1611,138 +1596,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             } catch (IOException e) {
                 logger.warn("Failed to run post-startup hooks",e);
-            }
-        }
-    }
-
-    /**
-     * On a newly installed system, launch zero Touch provisioning.
-     */
-    private class zerotouchLauncher implements Runnable
-    {
-        /**
-         * Launch zerotouch API query if system qualifies.
-         */
-        public void run()
-        {
-            /**
-             * Determine if we need to run.  Don't run if:
-             * -    Setup Wizard has already complated.
-             * -    Setup Wizard has been started already.
-             * -    Serial number or uid is null.
-             */
-            WizardSettings wizardSettings = getWizardSettings();
-            String serialNumber = getServerSerialNumber();
-            String uid = getServerUID();
-            if( wizardSettings.getWizardComplete() == true ||
-                wizardSettings.getCompletedStep() != null ||
-                serialNumber == null ||
-                uid == null){
-                return;
-            }
-
-            /**
-             * Build API call, replacing serial and uid parameters.
-             */
-            String zerotouchApiCall = getStoreUrl() + ZEROTOUCH_API;
-            try{
-                zerotouchApiCall = zerotouchApiCall
-                .replace("%serial%",URLEncoder.encode(serialNumber, "UTF-8"))
-                .replace("%uid%",URLEncoder.encode(uid, "UTF-8"));
-            } catch(Exception exn){
-                logger.error("Unable to encode: " + exn);
-                return;
-            }
-            zerotouchThread = Thread.currentThread();
-
-            logger.info("Launching Zero-Touch provisioning");
-
-            /**
-             * Create client with short timeout.
-             */
-            RequestConfig.Builder config = RequestConfig.custom()
-                .setConnectTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setConnectionRequestTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setSocketTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI);
-            CloseableHttpClient httpClient = HttpClientBuilder
-                .create()
-                .setDefaultRequestConfig(config.build())
-                .build();
-            CloseableHttpResponse response = null;
-            HttpGet get;
-            URL url;
-
-            int maxTries = ZEROTOUCH_MAX_TRIES;
-            while (zerotouchThread != null) {
-                wizardSettings = getWizardSettings();
-                if( wizardSettings.getWizardComplete() == true ||
-                    wizardSettings.getCompletedStep() != null ){
-                    /*
-                     * While waiting, someone has initiated the setup wizard, so let them go for it.
-                     */
-                    break;
-                }
-                /**
-                 * Verify we have a WAN address.
-                 */
-                InetAddress firstWan = networkManager().getFirstWanAddress();
-                if(firstWan != null){
-                    boolean receivedResponse = false;
-
-                    /**
-                     * Peform query.
-                     */
-                    try {
-                        logger.info("Requesting zerotouch: " + zerotouchApiCall);
-                        url = new URL(zerotouchApiCall);
-                        get = new HttpGet(url.toString());
-                        response = httpClient.execute(get);
-                        if ( response != null ) {
-                            /**
-                             * It doesn't matter what the response is.
-                             * If false, nothing will be done.
-                             * If true, command center will contact unit to launch ut-restore.sh.
-                             */
-                            receivedResponse = true;
-                            response.close();
-                        }
-                    } catch ( java.net.UnknownHostException e ) {
-                        logger.warn("Exception requesting zerotouch (unknown host):" + e.toString());
-                    } catch ( java.net.ConnectException e ) {
-                        logger.warn("Exception requesting zerotouch (connect exception):" + e.toString());
-                    } catch ( Exception e ) {
-                        logger.warn("Exception requesting zerotouch (other exception):" + e.toString());
-                    } finally {
-                        try {
-                            if ( response != null ){
-                                response.close();
-                            }
-                        } catch (Exception e) {
-                            logger.warn("zerotouch close",e);
-                        }
-                    }
-
-                    if(receivedResponse){
-                        logger.info("Ending Zero-Touch provisioning with response");
-                        break;
-                    }
-                    response = null;
-                }
-
-                try {
-                    Thread.sleep(ZEROTOUCH_SLEEP_TIME_MILLI);
-                } catch (Exception e) {}
-
-                maxTries--;
-                if(maxTries == 0){
-                    logger.info("Ending Zero-Touch provisioning after maximum tries");
-                    break;
-                }
-            }
-            try {
-                httpClient.close();
-            } catch (Exception e) {
-                logger.warn("zerotouch close",e);
             }
         }
     }

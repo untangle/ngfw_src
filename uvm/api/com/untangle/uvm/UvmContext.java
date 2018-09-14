@@ -326,6 +326,12 @@ public interface UvmContext
      * Example: aaaa-bbbb-cccc-dddd
      */
     String getServerUID();
+
+    /**
+     * Returns the serial number of the server
+     * Example: MMYYTWRSSSSSSS
+     */
+    String getServerSerialNumber();
     
     /**
      * mark the wizard as complete
