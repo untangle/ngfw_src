@@ -31,8 +31,8 @@ def usage():
     print("usage...")
     print("help\t\tusage")
     print("settings\tSettings configuration file name")
-    print("conf\t\tSnort configuration file name")
-    print("signatures\t\tSnort signature file name")
+    print("conf\t\tSuricata configuration file name")
+    print("signatures\t\tSuricata signature file name")
     print("app\t\tApp identifier")
     print("debug\t\tEnable debugging")
 
@@ -109,7 +109,6 @@ def main(argv):
         print("Missing app_id")
         sys.exit(1)
 
-
     # if current_signatures_path == None:
     #     print("Missing signatures")
     #     sys.exit(1)
@@ -129,7 +128,7 @@ def main(argv):
         print("app = {0}".format(app_id))
         print("_debug = {0}".format(_debug))
 
-    classifications = intrusion_prevention.SnortClassifications()
+    classifications = intrusion_prevention.SuricataClassifications()
     classifications.load()
 
     defaults = intrusion_prevention.IntrusionPreventionDefaults()
@@ -140,16 +139,16 @@ def main(argv):
     #     patch = intrusion_prevention.IntrusionPreventionSettingsPatch()
     #     patch.load(patch_file_name)
 
-    # snort_conf = intrusion_prevention.SnortConf()
+    # suricata_conf = intrusion_prevention.SuricataConf()
 
     #
     # Get previous rules
     #
-    # previous_snort_signatures = None
+    # previous_suricata_signatures = None
     # if previous_signatures_path != None:
-    #     previous_snort_signatures = intrusion_prevention.SnortSignatures( app_id, previous_signatures_path )
-    #     previous_snort_signatures.load( True )
-    #     previous_snort_signatures.update_categories(defaults, True)
+    #     previous_suricata_signatures = intrusion_prevention.SuricataSignatures()
+    #     previous_suricata_signatures.load()
+    #     previous_suricata_signatures.update_categories(defaults, True)
 
     #
     # Get settings
@@ -161,7 +160,7 @@ def main(argv):
         settings.create()
     else:
         settings.load(current_settings_file_name)
-#        settings.convert()
+        settings.convert()
     print settings.settings['signatures']
 
     # Apply patch
@@ -170,7 +169,7 @@ def main(argv):
 
     # Update default rules (they may have changed from updates download)
     #settings.update_rules(defaults.get_rules(), intrusion_prevention.IntrusionPreventionDefaults.reserved_id_regex)
-    settings.update_rules(classifications.get_rules(), intrusion_prevention.SnortClassifications.reserved_id_regex)
+    settings.update_rules(classifications.get_rules(), intrusion_prevention.SuricataClassifications.reserved_id_regex)
 
     # for rule in settings.settings["rules"]["list"]:
     #     print rule["id"]
@@ -187,25 +186,25 @@ def main(argv):
     # * Apply settings signatures to current signatures
     # * For all signatures that have not been qualified by rules or signature mods, disable.
     #
-    # current_snort_signatures = None
+    # current_suricata_signatures = None
     # if current_signatures_path != None:
-    #     current_snort_signatures = intrusion_prevention.SnortSignatures( app_id, current_signatures_path )
-    #     current_snort_signatures.load( True )
+    #     current_suricata_signatures = intrusion_prevention.SuricataSignatures()
+    #     current_suricata_signatures.load()
 
     #     ## modify signatures from settings
 
     #     # if summary:
-    #     #     summary_report.append( get_signature_report(current_snort_signatures, "initial") )
+    #     #     summary_report.append( get_signature_report(current_suricata_signatures, "initial") )
 
     #     ## new routine to get diffs between signature sets
 
     #     # Apply category overrides from defaults.
     #     # !!! will also need to be incorporated into UI signature downloads
-    #     current_snort_signatures.update_categories(defaults.get_categories())
+    #     current_suricata_signatures.update_categories(defaults.get_categories())
 
     #     # # !!! should be done from defaults
     #     # # True sets log=yes.  May not be good.
-    #     # # current_snort_signatures.update_categories(defaults, True)
+    #     # # current_suricata_signatures.update_categories(defaults, True)
 
     #     # # settings.signatures.update_categories(defaults)
 
@@ -217,25 +216,25 @@ def main(argv):
     #     # #     #
     #     # #     # Perform updates (e.g.,from signature distributions) preserving existing modifications.
     #     # #     #
-    #     # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures, True )
+    #     # #     settings.signatures.update( settings, suricata_conf, current_suricata_signatures, previous_suricata_signatures, True )
     #     # # else:
     #     # #     # handle rules here?
-    #     # #     settings.signatures.update( settings, snort_conf, current_snort_signatures, previous_snort_signatures )     
+    #     # #     settings.signatures.update( settings, suricata_conf, current_suricata_signatures, previous_suricata_signatures )     
 
     #     ## should be in current signtures, pass in settings rules
-    #     settings.apply_rules(current_snort_signatures)
+    #     settings.apply_rules(current_suricata_signatures)
 
     #     # Synchronize modified settings with diff between previous and current
         
     #     # Apply custom signature overrides.
 
 
-    #     # summary_report.append(get_signature_report(current_snort_signatures, "rules"))
+    #     # summary_report.append(get_signature_report(current_suricata_signatures, "rules"))
 
     #     ### should be in current signatures.
-    #     settings.disable_signatures(current_snort_signatures)
+    #     settings.disable_signatures(current_suricata_signatures)
 
-        # summary_report.append(get_signature_report(current_snort_signatures, "final"))
+        # summary_report.append(get_signature_report(current_suricata_signatures, "final"))
 
 
 
