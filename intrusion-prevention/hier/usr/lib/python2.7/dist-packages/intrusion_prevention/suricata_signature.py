@@ -1,19 +1,19 @@
 """
-Snort signature
+Suricata signature
 """
 import re
 
-class SnortSignature:
+class SuricataSignature:
     """
-    Process signature from the snort format.
+    Process signature from the suricata format.
     """
-    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
+    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
     var_regex = re.compile(r'^\$(.+)')
 
     options_key_regexes = {}
     
     # For the very rare circumstances where we need to override a signature's enabled value.
-    # Currently being used for Snort version 2.9.2.2 compiled for Jessie.
+    # Currently being used for Suricata version 2.9.2.2 compiled for Jessie.
     # Once we have a newer version and confirm the signature no longer has a problem,
     # remove this particular signature.
     signature_enabled_overrides = [{
@@ -71,7 +71,7 @@ class SnortSignature:
             
     def dump(self):
         """
-        print(snort signature)
+        print(suricata signature)
         """
         print("signature dump")
         for prop, value in vars(self).iteritems():
@@ -196,8 +196,8 @@ class SnortSignature:
         Get enabled
         """
         enabled = self.enabled
-        if len(SnortSignature.signature_enabled_overrides):
-            for override in SnortSignature.signature_enabled_overrides:
+        if len(SuricataSignature.signature_enabled_overrides):
+            for override in SuricataSignature.signature_enabled_overrides:
                 match = True
                 for signature_key in override.keys():
                     if signature_key == "enabled":
@@ -270,7 +270,7 @@ class SnortSignature:
     
     def build(self):
         """
-        Build for snort.conf usage
+        Build for suricata.conf usage
         """
         if self.get_enabled() == True:
             enabled = ""
@@ -307,7 +307,7 @@ class SnortSignature:
         for prop, value in vars(self).iteritems():
             if isinstance( value, str ) == False:
                 continue
-            match_variable = re.search( SnortSignature.var_regex, value )
+            match_variable = re.search( SuricataSignature.var_regex, value )
             if match_variable:
                 if variables.count( match_variable.group( 1 ) ) == 0:
                     variables.append( match_variable.group( 1 ) )
@@ -322,7 +322,7 @@ class SnortSignature:
                 key, value = option.split( ':', 1 )
                 key = key.strip()
                 value = value.strip()
-                match_variable = re.search( SnortSignature.var_regex, value )
+                match_variable = re.search( SuricataSignature.var_regex, value )
                 if match_variable:
                     if variables.count( match_variable.group( 1 ) ) == 0:
                         variables.append( match_variable.group( 1 ) )

@@ -10,7 +10,7 @@ class IntrusionPreventionEventMap:
     #
     # NGFW event map management
     #
-    file_name = "/etc/snort/intrusion-prevention.event.map.conf"
+    file_name = "/etc/suricata/intrusion-prevention.event.map.conf"
     
     def __init__(self, signatures):
         self.settings = {}
@@ -20,7 +20,7 @@ class IntrusionPreventionEventMap:
     def create(self):
         """
         Create a new settings file based on the processed
-        signature set and default variables from snort configuration.
+        signature set and default variables from suricata configuration.
         """
         self.settings = { 
             "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap",

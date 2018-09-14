@@ -1,48 +1,42 @@
 """
-Snort signature set management
+Suricata signature set management
 """
 import os
 import re
 
-from intrusion_prevention.snort_signature import SnortSignature
+from intrusion_prevention.suricata_signature import SuricataSignature
 
-class SnortSignatures:
+class SuricataSignatures:
     """
-    Process a set of snort signatures such as downloaded signatures.
+    Process a set of suricata signatures such as downloaded signatures.
+
+    The signature set is always loaded from a fixed, unmodified source.
+    Then modifications can be performed on the set.
+    It's always saved to a single monolothic file.
+
     """
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
     file_name_category_regex =re.compile(r'(/|\-)([^/\-]+)\.rules$')
 
     signature_paths = ["rules", "preproc_rules", "emerging_rules"]
-    
-    def __init__(self, app_id="0", path="", file_name=""):
-        self.app_id = app_id
-        self.path = path
-        self.file_name = self.path + "/"
-        if file_name != "":
-            self.file_name = self.file_name + file_name
-        else:
-            self.file_name = self.file_name + "app_" + self.app_id + ".rules"
-        
+
+    input_paths = ["/usr/share/untangle-suricata-config/current", "/etc/suricata"]
+    output_file_name = "/etc/suricata/ngfw.rules"
+
+    def __init__(self):
         self.signatures = {}
         self.variables = []
 
-    def set_path(self, path=""):
-        """
-        Path for reading.
-        """
-        self.path = path
-
-    def load(self, path=False):
+    def load(self):
         """
         Load signatureset
         """
-        if path == True:
+        for path in self.input_paths:
             #
             # Parse directory trees
             #
-            for signature_path in SnortSignatures.signature_paths:
-                parse_path = self.path + "/" + signature_path 
+            for signature_path in SuricataSignatures.signature_paths:
+                parse_path = path + "/" + signature_path 
                 if os.path.isdir(parse_path) == False:
                     continue
                 for file_name in os.listdir( parse_path ):
@@ -50,9 +44,8 @@ class SnortSignatures:
                     if extension != ".rules":
                         continue
                     self.load_file( parse_path + "/" + file_name, signature_path )
-        else:
-            self.load_file( self.file_name )
-            
+
+    # !! wan to remove signature path, but need to confirm that order doesn't matter.            
     def load_file(self, file_name, signature_path="rules"):
         """
         Category based on "major" file name separator. 
@@ -64,47 +57,53 @@ class SnortSignatures:
 
         signature_count = 0
         # defalt category is from filename, remove prefix
-        match_file_name_category = re.search(SnortSignatures.file_name_category_regex, file_name)
+        match_file_name_category = re.search(SuricataSignatures.file_name_category_regex, file_name)
         if match_file_name_category:
             category = self.format_category(match_file_name_category.group(2))
 
         signatures_file = open( file_name )
         for line in signatures_file:
             # Alternate category match from pulledpork output
-            match_category = re.search( SnortSignatures.category_regex, line )
+            match_category = re.search( SuricataSignatures.category_regex, line )
             if match_category:
                 category = match_category.group(1)
             else:
                 ## ?? are these regexes compiled on each instance?            
-                match_signature = re.search( SnortSignature.text_regex, line )
+                match_signature = re.search( SuricataSignature.text_regex, line )
                 if match_signature:
-                    self.add_signature(SnortSignature( match_signature, category, signature_path))
+                    self.add_signature(SuricataSignature( match_signature, category, signature_path))
                     signature_count = signature_count + 1
         signatures_file.close()
-            
-    def save(self, path=None, classtypes=None, categories=None, msgs=None):
+
+    ## just save to passed filename            
+    ### classtypes, categories, msgs don't matter!
+    # def save(self, path=None, classtypes=None, categories=None, msgs=None):
+    def save(self):
         """
         Save signature set
         """
-        if classtypes == None:
-            classtypes = []
-        if categories == None:
-            categories = []
-        if msgs == None:
-            msgs = []
+        # if classtypes == None:
+        #     classtypes = []
+        # if categories == None:
+        #     categories = []
+        # if msgs == None:
+        #     msgs = []
 
-        if os.path.isdir(path) == False:
-            os.makedirs(path)
+        # if os.path.isdir(path) == False:
+        #     os.makedirs(path)
 
-        file_name = path + "/" + "app_" + self.app_id + ".rules"
-        signature_path = os.path.split( path )[1]
+        # file_name = path + "/" + "app_" + self.app_id + ".rules"
+        # !!! constant
+        # file_name = path + "/untangle.rules"
+        # signature_path = os.path.split( path )[1]
 
-        temp_file_name = file_name + ".tmp"
+        temp_file_name = self.output_file_name + ".tmp"
         signatures_file = open( temp_file_name, "w" )
         category = "undefined"
         # ? order by category
         for signature in self.signatures.values():
-            if ( signature.get_enabled() == True ) and ( signature.path == signature_path ):
+            # if ( signature.get_enabled() == True ) and ( signature.path == signature_path ):
+            if ( signature.get_enabled() == True ):
                 if signature.category != category:
                     category = signature.category
                     signatures_file.write("\n\n# ---- Begin " + category + " Rules Category ----#" + "\n\n")
@@ -112,9 +111,9 @@ class SnortSignatures:
                 signatures_file.write( signature.build() + "\n" )
         signatures_file.close()
         
-        if os.path.isfile( file_name ):
-            os.remove( file_name )
-        os.rename( temp_file_name, file_name )
+        if os.path.isfile( self.output_file_name ):
+            os.remove( self.output_file_name )
+        os.rename( temp_file_name, self.output_file_name )
 
     def add_signature(self, signature):
         """
@@ -191,7 +190,7 @@ class SnortSignatures:
         If previous is not specified, then the difference will be just
         a populated added_signature_rids list.
 
-        A happy side effect of only comparing old and new Snort signaturesets
+        A happy side effect of only comparing old and new Suricata signaturesets
         is that custom signatures are preserved (unless their signature identifiers
         conflict, of course).
         """
