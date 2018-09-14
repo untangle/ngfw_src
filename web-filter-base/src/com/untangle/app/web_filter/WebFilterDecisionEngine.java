@@ -206,8 +206,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * 
      * @param domain
      *        The domain
-     * @param port
-     *        The port
      * @param uri
      *        The URI
      * @return The category list
