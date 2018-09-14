@@ -20,11 +20,13 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortStatisticsP
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortUnified2Parser;
 
 /**
- * Wach the snort unified2 log for activity.  
+ * Wach the snort/suricata unified2 event directory for activity.
  * If file size changes or new file is added, parse into event log.
  */
 class IntrusionPreventionEventMonitor implements Runnable
 {
+    private static final String EVENT_DIRECTORY = "/var/log/suricata";
+    private static final String EVENT_FILE_PREFIX = "unified2.alert.";
     public static final long SLEEP_TIME_MSEC = (long)30 * 1000;
 
     /* Delay a second while the thread is joining */
@@ -73,7 +75,7 @@ class IntrusionPreventionEventMonitor implements Runnable
             /* Update the current time */
             now.setTime( System.currentTimeMillis() );
 
-            processSnortLogFiles();
+            processEventFiles();
 
             /* sleep */
             try {
@@ -136,9 +138,9 @@ class IntrusionPreventionEventMonitor implements Runnable
     private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
 
     /** 
-     * Walk snort log files and for those that qualify, send to parser.
+     * Walk snort event files and for those that qualify, send to parser.
      */
-    public void processSnortLogFiles()
+    public void processEventFiles()
     {
         /*
          * Process log entries
@@ -147,19 +149,19 @@ class IntrusionPreventionEventMonitor implements Runnable
         long startPosition = 0;
         
         File[] files = getFiles( currentTime );
-        logger.debug("processSnortLogFiles: number of files to process=" + files.length);
+        logger.debug("processEventFiles: number of files to process=" + files.length);
         for( File f: files ){
             try{
                 startPosition = 
                     ( fileLastPositions.get(f.getCanonicalFile()) != null )
                     ? fileLastPositions.get(f.getCanonicalFile())
                     : 0;
-                logger.debug("processSnortLogFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
+                logger.debug("processEventFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
                 lastPosition = unified2Parser.parse( f, startPosition, app, currentTime );
                     
                 fileLastPositions.put( f.getCanonicalFile(), lastPosition );
             }catch( Exception e) {
-                logger.debug("processSnortLogFiles: Unable to parse file: " + e );
+                logger.debug("processEventFiles: Unable to parse file: " + e );
             }
             currentTime = f.lastModified();
         }
@@ -177,7 +179,7 @@ class IntrusionPreventionEventMonitor implements Runnable
                         found = true;
                     }
                 }catch( Exception e ){
-                    logger.debug("processSnortLogFiles: Unable to compare filenames: " + e );
+                    logger.debug("processEventFiles: Unable to compare filenames: " + e );
                 }
             }
             if( found == false ){
@@ -198,7 +200,7 @@ class IntrusionPreventionEventMonitor implements Runnable
      */
     public File[] getFiles( final long currentTime ){
             
-        File directory = new File( "/var/log/snort" );
+        File directory = new File( EVENT_DIRECTORY );
         File[] files = directory.listFiles( 
             new FilenameFilter() 
             {
@@ -215,7 +217,7 @@ class IntrusionPreventionEventMonitor implements Runnable
                 @Override
                 public boolean accept( File directory, String name )
                 {
-                    if( name.startsWith("snort.log.") == false ){
+                    if( name.startsWith(EVENT_FILE_PREFIX) == false ){
                         return false;
                     }
                     try{
