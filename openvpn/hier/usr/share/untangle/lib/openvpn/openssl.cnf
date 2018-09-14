@@ -95,13 +95,13 @@ nsCertType             = server
 nsComment              = "OpenSSL Generated Server Certificate"
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid,issuer:always
-keyUsage               = nonRepudiation, digitalSignature, keyEncipherment
+keyUsage               = digitalSignature, keyEncipherment
 extendedKeyUsage       = serverAuth
 
 [ v3_req ]
 # Extensions to add to a certificate request
 basicConstraints       = CA:FALSE
-keyUsage               = nonRepudiation, digitalSignature, keyEncipherment
+keyUsage               = digitalSignature, keyEncipherment
 
 [ v3_ca ]
 basicConstraints       = CA:true
