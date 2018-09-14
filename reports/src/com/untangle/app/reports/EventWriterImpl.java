@@ -51,7 +51,7 @@ public class EventWriterImpl implements Runnable
     /**
      * Maximum number of events to write per work cycle
      */
-    private static int MAX_EVENTS_PER_CYCLE = 100000;
+    private static int MAX_EVENTS_PER_CYCLE = 50000;
 
     private static boolean forceFlush = false;
 
