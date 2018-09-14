@@ -62,13 +62,15 @@ public class IntrusionPreventionApp extends AppBase
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IntrusionPreventionEventMonitor ipsEventMonitor;    
 
-    private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/740-snort";
+    private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
-    private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
-    private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
-    private static final String SNORT_CONF = "/etc/snort/snort.conf";
+    private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
+    private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
+    private static final String DEFAULTS_SETTINGS = CURRENT_RULES_DIRECTORY + "/templates/defaults.js";
+    // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
+    // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
-    private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
+    // private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
 
     private boolean updatedSettingsFlag = false;
 
@@ -88,7 +90,7 @@ public class IntrusionPreventionApp extends AppBase
         super( appSettings, appProperties );
 
         this.handler = new EventHandler(this);
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
         this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
@@ -148,19 +150,19 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Post IPS stop.  Shut down snort.  Run iptables rules to remove.
+     * Post IPS stop.  Shut down suricata.  Run iptables rules to remove.
      *
      * @param isPermanentTransition
      */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "suricata" );
         iptablesRules();
     }
 
     /**
-     * Pre IPS start. Check setup wizard, start snort, unregister calllback hook.
+     * Pre IPS start. Check setup wizard, start suricata, unregister calllback hook.
      *
      * @param isPermanentTransition
      */
@@ -168,21 +170,22 @@ public class IntrusionPreventionApp extends AppBase
     protected void preStart( boolean isPermanentTransition )
     {
         File settingsFile = new File( getSettingsFileName() );
-        File snortConf = new File(SNORT_CONF);
-        File snortDebianConf = new File(SNORT_DEBIAN_CONF);
-        if (settingsFile.lastModified() > snortDebianConf.lastModified() ||
-            snortConf.lastModified() > snortDebianConf.lastModified() ) {
-            logger.warn("Settings file newer than snort debian configuration, Syncing...");
-            reconfigure();
-        }
+        // File suricataConf = new File(SURICATA_CONF);
+        // File suricataDebianConf = new File(SNORT_DEBIAN_CONF);
+        // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
+        // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
+        //     suricataConf.lastModified() > suricataDebianConf.lastModified() ) {
+        //     logger.warn("Settings file newer than suricata debian configuration, Syncing...");
+        //     reconfigure();
+        // }
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         // if(!wizardCompleted()){
         //     throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
         // }
-        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "snort", 3600, "snort");
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "suricata" );
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "suricata", 3600, "suricata");
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
     }
@@ -205,7 +208,7 @@ public class IntrusionPreventionApp extends AppBase
     public void reconfigure()
     {
 
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
         this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
@@ -221,13 +224,12 @@ public class IntrusionPreventionApp extends AppBase
                 ( interfacesValue.length() > 0 ? "," : "" ) + i; 
         }
 
+        // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
             " --app_id \"" + this.getAppSettings().getId().toString() + "\"" +
             " --home_net \"" + homeNetValue + "\"" +
-            " --interfaces \"" + interfacesValue + "\"" +
-            " --iptables_script \"" + IPTABLES_SCRIPT + "\"" +
-            " --signatures /usr/share/untangle-snort-config/current"
+            " --iptables_script \"" + IPTABLES_SCRIPT + "\""
         );
 
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -239,7 +241,7 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
         }catch( Exception e ){
-            logger.warn( "Unable to generate snort configuration:", e );
+            logger.warn( "Unable to generate suricata.configuration:", e );
         }
         reloadEventMonitorMap();
         stop();
@@ -326,16 +328,18 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Return result of snort status.
-     * @return String of snort log.
+     * Return result of suricata status.
+     * @return String of suricata log.
      */
     public String getStatus()
     {
-        return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
+        // ??? maybe use systemctl status instead
+        // return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
+        return "";
     }
 
     /**
-     * Insert or remove iptables rules if snort daemon is running
+     * Insert or remove iptables rules if suricata daemon is running
      */
     private synchronized void iptablesRules()
     {
@@ -361,7 +365,7 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Insert or remove iptables rules if snort daemon is running
+     * Insert or remove iptables rules if suricata daemon is running
      *
      * @return  true if wizard has been run, false if not.
      */
@@ -407,7 +411,7 @@ public class IntrusionPreventionApp extends AppBase
         String appId = this.getAppSettings().getId().toString();
         String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
 
-            // " --signatures /usr/share/untangle-snort-config/current" +
+            // " --signatures /usr/share/untangle-suricata.config/current" +
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-sync-settings.py" + 
             " --app_id " + appId +
@@ -498,7 +502,7 @@ public class IntrusionPreventionApp extends AppBase
      * Besides not wanting to re-work uvm's GC settings, the bigger issue
      * is that uvm does not need to know anything about IPS settings;
      * everything is handled in backend scripts that manage and generate
-     * configuration for Snort.
+     * configuration for Suricata.
      *
      * Therefore, the easiest way to get around the GC issue is to simply
      * make IPS settings use the download manager for downloads and uploads.
@@ -551,7 +555,9 @@ public class IntrusionPreventionApp extends AppBase
                 resp.setHeader("Content-Type","text/plain");
 
                 List<File> signatureFiles = new LinkedList<>();
-                getSignatureFiles( signatureFiles, new File("/usr/share/untangle-snort-config/current"));
+                // !!! LOOP ENGINE_RULES_DIRECTORY
+                getSignatureFiles( signatureFiles, new File(CURRENT_RULES_DIRECTORY));
+                getSignatureFiles( signatureFiles, new File(ENGINE_RULES_DIRECTORY));
 
                 byte[] buffer = new byte[1024];
                 int read;
@@ -561,8 +567,7 @@ public class IntrusionPreventionApp extends AppBase
                     for(File entry: signatureFiles){
                         String entryLine = "# filename: " + entry.getName() + "\n";
                         byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
-                        out.write( name);
-                        // out.write(entry.getName() + "\n", 0);
+                        out.write(name);
                         fis = new FileInputStream(entry);
                         while ( ( read = fis.read( buffer ) ) > 0 ) {
                             out.write( buffer, 0, read);
@@ -678,8 +683,8 @@ public class IntrusionPreventionApp extends AppBase
 
                     app.saveSettings( tempSettingsName );
 
-                    // File fp = new File( tempSettingsName );
-                    // fp.delete();
+                    File fp = new File( tempSettingsName );
+                    fp.delete();
                 }catch( IOException e ){
                     logger.warn("Failed to save IPS settings");
                 }finally{
@@ -725,11 +730,12 @@ public class IntrusionPreventionApp extends AppBase
                     String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
                     UvmContextFactory.context().execManager().execResult(verifyCommand);
 
+                    // !!! also need ENGINE_RULES_DIRECTORY
                     String configCmd = new String(
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
                         " --app_id " + appId +
-                        " --signatures /usr/share/untangle-snort-config/current" +
+                        " --signatures " + CURRENT_RULES_DIRECTORY +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName + 
                         " --export"
@@ -804,21 +810,20 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /*
-     * The HOME_NET snort value is highly dependent on non-WAN interface values.
-     * If it changes, we must reconfigure snort.  However, reconfiguring snort
-     * is an expensive operation due to timeto restart snort.  To make this as painless
+     * The HOME_NET suricata value is highly dependent on non-WAN interface values.
+     * If it changes, we must reconfigure suricata.  However, reconfiguring suricata
+     * is an expensive operation due to timeto restart suricata.  To make this as painless
      * as possible, at startup we calculate initial HOME_NET value and recalc on
      * network changes.  Only if HOME_NET changes will a reconfigure occur.
      */
 
     /**
-     * Build non-WAN networks
+     * Build known networks
      *
      * @param networkSettings   Network settings.
-     * @param getWan            Get the WAN address
      * @return List of IP addresses.
      */
-    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings, boolean getWan )
+    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings)
     {
         boolean match;
         IPMaskedAddress maskedAddress;
@@ -831,10 +836,6 @@ public class IntrusionPreventionApp extends AppBase
                 continue;
             }
             if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
-                continue;
-            }
-            if( ( ( getWan == false ) && ( interfaceSettings.getIsWan() == true ) ) ||
-                ( ( getWan == true ) && ( interfaceSettings.getIsWan() == false ) ) ){
                 continue;
             }
             
@@ -856,50 +857,34 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }   
         }
-        if( getWan == true ){
-            /*
-             * Pull dynamic addresses for WAN interfaces
-             */
-            boolean isWanInterface;
-            for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
-                isWanInterface = false;
-                for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-                    if(interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId()) {
-                        continue;
-                    }
-                    if(interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED) {
-                        continue;
-                    }
-                    if(interfaceSettings.getIsWan()) {
-                        isWanInterface = true;
-                    }
-                }
-                if( isWanInterface == false ){
+        /*
+         * Pull dynamic addresses for WAN interfaces
+         */
+        boolean isWanInterface;
+        for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
+            isWanInterface = false;
+            for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+                if(interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId()) {
                     continue;
                 }
-                if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null ){
+                if(interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED) {
                     continue;
-                }
-                match = false;
-                maskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
-                for( IPMaskedAddress ma : addresses ){
-                    if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
-                        ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
-                        match = true;
-                    }
-                }
-                if( match == false ){
-                    addresses.add( maskedAddress );
                 }
             }
-        }
-        if( addresses.isEmpty() && !getWan ) {
-            /*
-             * No LAN interfaces were found.  This means the system
-             * is in bridged-to-WAN networking mode and we should
-             * use the WAN network as home.
-             */
-            addresses = calculateHomeNetworks(networkSettings, true);
+            if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null ){
+                continue;
+            }
+            match = false;
+            maskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
         }
         return addresses; 
     }
@@ -931,7 +916,7 @@ public class IntrusionPreventionApp extends AppBase
      */
     private void networkSettingsEvent( NetworkSettings networkSettings ) throws Exception
     {
-        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings, false );
+        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings);
 
         boolean sameNetworks = true;
         if( newHomeNetworks.size() != this.homeNetworks.size() ){
