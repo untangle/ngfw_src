@@ -45,4 +45,8 @@ public interface CloudManager
      */
     JSONObject accountCreate( String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType ) throws Exception;
 
+    /**
+     * 
+     */
+    void startZeroTouchMonitor();
 }
