@@ -43,7 +43,7 @@ public class WebFilterHandler extends WebFilterBaseHandler
     {
         app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), 80, getRequestLine(session), requestHeader);
+        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }

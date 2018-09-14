@@ -70,14 +70,12 @@ public abstract class DecisionEngine
      * Engine It must return a list of categories (strings) for a given URL
      * 
      * @param dom
-     *        The dom
-     * @param port
-     *        The port
+     *        The domain (host header)
      * @param uri
-     *        The uri
+     *        The uri of the request
      * @return The list of categories
      */
-    protected abstract List<String> categorizeSite(String dom, int port, String uri);
+    protected abstract List<String> categorizeSite(String dom, String uri);
 
     /**
      * Checks if the request should be blocked, giving an appropriate response
@@ -132,7 +130,7 @@ public abstract class DecisionEngine
         host = UrlMatchingUtil.normalizeHostname(host);
 
         // start by getting the category for the request and attach to session
-        bestCategory = checkCategory(sess, clientIp, host, port, requestLine);
+        bestCategory = checkCategory(sess, clientIp, host, requestLine);
         if (bestCategory != null) bestCategoryStr = bestCategory.getName();
 
         // tag the session with the metadata
@@ -169,11 +167,11 @@ public abstract class DecisionEngine
         // restrict google applications
         if (app.getSettings().getRestrictGoogleApps()) {
             String allowedDomains = app.getSettings().getRestrictGoogleAppsDomain();
-            if (allowedDomains != null && !"".equals(allowedDomains.trim()) && port == 443) {
-                UrlMatcher matcher = new UrlMatcher("*google*");
-                if (matcher.isMatch(host, uri.toString()) || host.contains("google")) {
-                    header.addField("X-GoogApps-Allowed-Domains", app.getSettings().getRestrictGoogleAppsDomain());
+            if (allowedDomains != null && !"".equals(allowedDomains.trim()) && port == 443 && host.contains("google")) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding X-GoogApps-Allowed-Domains header: " + allowedDomains + " to " + host + " port " + port);
                 }
+                header.addField("X-GoogApps-Allowed-Domains", allowedDomains);
             }
         }
 
@@ -535,13 +533,11 @@ public abstract class DecisionEngine
      *        The client address
      * @param host
      *        The destination host
-     * @param port
-     *        The destination port
      * @param requestLine
      *        The request line token
      * @return The first matching rule or null
      */
-    private GenericRule checkCategory(AppTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine)
+    private GenericRule checkCategory(AppTCPSession sess, InetAddress clientIp, String host, RequestLineToken requestLine)
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -557,7 +553,7 @@ public abstract class DecisionEngine
 
         logger.debug("checkCategory: " + host + uri);
 
-        List<String> categories = categorizeSite(host, port, uri);
+        List<String> categories = categorizeSite(host, uri);
 
         if (categories == null) {
             logger.warn("NULL categories returned (should be empty list?)");
