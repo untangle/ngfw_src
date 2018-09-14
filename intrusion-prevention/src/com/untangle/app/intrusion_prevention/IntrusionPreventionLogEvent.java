@@ -139,7 +139,8 @@ public class IntrusionPreventionLogEvent extends LogEvent
         pstmt.setObject(++i, getIpDestination().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, ( getDportIcode() & 0xffff ) );
         pstmt.setInt(++i, getProtocol() );
-        pstmt.setBoolean(++i, ( getBlocked() == 1 ) ? true : false  );
+        logger.warn(getBlocked());
+        pstmt.setBoolean(++i, ( getBlocked() != 0 ) ? true : false  );
 
         pstmt.setString(++i, getCategory() );
         pstmt.setString(++i, getClasstype() );
