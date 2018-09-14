@@ -98,7 +98,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     },
     Ung.cmp.ConditionsEditor.build({
         xtype: 'conditionseditor',
-        allowEmpty: false,
         bind: '{record.conditions}',
         flex: 1,
         model: 'Ung.apps.intrusionprevention.model.Condition',
