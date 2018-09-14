@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# set most recent settings file to current time, forcing snort config rebuild when uvm is restarted
+# set most recent settings file to current time, forcing suricata config rebuild when uvm is restarted
 SETTINGS_DIRECTORY=/usr/share/untangle/settings/intrusion-prevention/
 
 if [ -d $SETTINGS_DIRECTORY ] ; then
