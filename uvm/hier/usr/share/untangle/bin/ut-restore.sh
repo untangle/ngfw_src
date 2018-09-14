@@ -83,9 +83,6 @@ function doRestore()
         @PREFIX@/etc/init.d/untangle-vm restart
     fi
 
-    # restart pyconnector
-    systemctl restart untangle-pyconnector
-
     debug "Completed.  Success"
 }
 
