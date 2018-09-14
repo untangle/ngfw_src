@@ -285,10 +285,10 @@ class Update:
             args = [
                 "@PREFIX@/usr/share/untangle/bin/intrusion-prevention-sync-settings.py",
                 "--app_id", str(app_id),
-                "--previous_signatures", "/usr/share/untangle-snort-config/previous",
-                "--signatures", "/usr/share/untangle-snort-config/current",
+                "--previous_signatures", "/usr/share/untangle-suricata-config/previous",
+                "--signatures", "/usr/share/untangle-suricata-config/current",
                 "--settings", temp_settings_file_name,
-                "--status", "/usr/share/untangle-snort-config/last-update.js"
+                "--status", "/usr/share/untangle-suricata-config/last-update.js"
             ]
             try: 
                 process = subprocess.Popen( args )
@@ -316,7 +316,7 @@ def usage():
     """
     print("usage")
     print("help\t\tusage")
-    print("signatures_template_directory\t\tSnort signature template directory")
+    print("signatures_template_directory\t\tSuricata signature template directory")
         
 def main(argv):
     """
@@ -324,8 +324,8 @@ def main(argv):
     """
     global DEBUG
     global FORCE_SYNC
-    signatures_template_directory = "/usr/share/untangle-snort-config"
-    url = "https://ids.untangle.com/snortsignatures.tar.gz"
+    signatures_template_directory = "/usr/share/untangle-suricata-config"
+    url = "https://ids.untangle.com/suricatasignatures.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
     force_download = False
 	
@@ -364,7 +364,7 @@ def main(argv):
 
     """
     Always update last updated time even if nothing was downloaded 
-    (snort signatures aren't updated every day)
+    (suricata signatures aren't updated every day)
     Otherwise customers will call to complain.
     """
     if os.path.exists(update_ran_file_name):
