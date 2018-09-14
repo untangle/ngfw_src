@@ -102,16 +102,23 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var category;
         var signatures = [];
         reserved.responseText.split("\n").forEach(function(line){
-            // if(category == 'dshield'){
+            // if(category == 'attack_response'){
             //     return false;
             // }
-            if( filenameRegex.test( line ) ){
-                var matches = line.match(filenameRegex);
-                if( matches ){
-                    category = matches[2];
+            line = line.trim();
+           if(line){
+            // if(line && line != "#" && !line.startsWith("# ") && !line.startsWith("#**") ){
+                if( filenameRegex.test( line ) ){
+                    var matches = line.match(filenameRegex);
+                    if( matches ){
+                        category = matches[2];
+                        // console.log(category);
+                    }
+                }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
+                    signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
+                // }else{
+                //     console.log("invalid signature:" + line);
                 }
-            }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
-                signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
             }
         });
         // console.log(signatures);
@@ -459,7 +466,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
-            var description = value;
             var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('name', value);
             if( classtypeRecord != null ){
                 description = classtypeRecord.get('description');
@@ -1272,7 +1278,8 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     },
     
     statics:{
-        signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
+        // signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip|http|ftp|tls|smb|dns|smtp)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
+        signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
         optionsMap: [{
             name: 'gid',
             defaultValue: '1'
