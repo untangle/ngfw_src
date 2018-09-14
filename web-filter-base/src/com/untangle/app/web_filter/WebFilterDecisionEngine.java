@@ -213,7 +213,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The category list
      */
     @Override
-    protected List<String> categorizeSite(String domain, int port, String uri)
+    protected List<String> categorizeSite(String domain, String uri)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("start-checkDecisionEngineDatabase");
@@ -307,7 +307,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public List<String> lookupSite(String url)
     {
         String[] urlSplit = splitUrl(url);
-        return categorizeSite(urlSplit[0], Integer.parseInt(urlSplit[1]), urlSplit[2]);
+        return categorizeSite(urlSplit[0], urlSplit[2]);
     }
 
     /**
