@@ -103,6 +103,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.categoryRenderer
     },{
+        header: "Protocol".t(),
+        dataIndex: 'protocol',
+        width: Renderer.protocolWidth
+    },{
         header: "Msg".t(),
         dataIndex: 'msg',
         width: Renderer.messageWidth,
