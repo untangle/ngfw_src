@@ -410,7 +410,7 @@ public class CaptivePortalSSLEngine
         // extract the URL from the request
         top = request.indexOf(" ", end);
         end = request.indexOf("HTTP/", top);
-        if ((top >= 0) && (end >= 0)) uriStr = new String(request.substring(top + 1, end));
+        if ((top >= 0) && (end >= 0)) uriStr = new String(request.substring(top + 1, end - 1));
 
         // extract the destination host from the request
         String look = "HOST: ";
