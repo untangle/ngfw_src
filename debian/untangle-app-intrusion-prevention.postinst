@@ -10,5 +10,10 @@ if [ -d $SETTINGS_DIRECTORY ] ; then
     fi
 fi
 
+OLD_SNORT_PYTHON_LIBRARY=/usr/lib/python2.7/intrusion_prevention
+if [ -d $OLD_SNORT_PYTHON_LIBRARY ] ; then
+    rm -rf $OLD_SNORT_PYTHON_LIBRARY
+fi
+
 exit 0
 
