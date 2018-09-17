@@ -38,7 +38,7 @@ public class GeographyManagerImpl implements GeographyManager
     private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
     private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
     private final static String LOCAL_COUNTRY_CODE = "XL";
-    private final static String UNKNOWN_COUNTRY_CODE = "XL";
+    private final static String UNKNOWN_COUNTRY_CODE = "XU";
 
     // we check for the update file once per hour which is more than enough
     private final static long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
