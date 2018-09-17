@@ -16,8 +16,8 @@ if ( "@PREFIX@" != ''):
 	
 import intrusion_prevention
 
-from intrusion_prevention.suricata_signature import SuricataSignature
-from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule
+from intrusion_prevention import SuricataSignature
+from intrusion_prevention import IntrusionPreventionRule
 
 def usage():
     """
