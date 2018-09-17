@@ -8,8 +8,7 @@ class IntrusionPreventionDefaults:
     """
     Profile defaults
     """
-    ## !!!! WOAH
-    file_name = "/usr/share/untangle-suricata-config/dev/templates/defaults.js"
+    file_name = "/usr/share/untangle-suricata-config/current/templates/defaults.js"
     reserved_id_regex = re.compile(r'^reserved_default_')
 
     def __init__(self):
