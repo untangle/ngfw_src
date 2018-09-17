@@ -46,10 +46,10 @@ class IntrusionPreventionSettings:
                 },
                 "fast": {
                     "enabled": False
+                },
+                "stats": {
+                    "enabled": False
                 }
-            },
-            "stats": {
-                "enabled": False
             }
         },
         "configured": False,
