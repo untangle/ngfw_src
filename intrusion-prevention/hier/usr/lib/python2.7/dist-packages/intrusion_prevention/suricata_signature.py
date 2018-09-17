@@ -83,8 +83,10 @@ class SuricataSignature:
         """
         if log == True and block == True:
             self.action = "drop"
+        # elif log == False and block == True:
+        #     self.action = "sdrop"
         elif log == False and block == True:
-            self.action = "sdrop"
+            self.action = "drop"
         else:
             self.action = "alert"
 
