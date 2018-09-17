@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 
-import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortStatisticsParser;
+import com.untangle.app.intrusion_prevention.IntrusionPreventionStatisticsParser;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSnortUnified2Parser;
 
 /**
@@ -133,7 +133,7 @@ class IntrusionPreventionEventMonitor implements Runnable
     }
 
     public IntrusionPreventionSnortUnified2Parser unified2Parser = new IntrusionPreventionSnortUnified2Parser();
-    public IntrusionPreventionSnortStatisticsParser statisticsParser = new IntrusionPreventionSnortStatisticsParser();
+    public IntrusionPreventionStatisticsParser statisticsParser = new IntrusionPreventionStatisticsParser();
     private long currentTime = System.currentTimeMillis();    
     private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
 
