@@ -408,7 +408,8 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | tr "\\n" " " | tr -s " "'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | sed -e "s/promiscuity .*$/00:00:00:00:00:00/g" | tr "\\n" " " | tr -s " "'),
+            // Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | tr "\\n" " " | tr -s " "'),
             Rpc.asyncPromise('rpc.execManager.execOutput', 'ip addr show dev ' + symbolicDev + ' | grep inet | grep global | tr "\\n" " " | tr -s " "')
         ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
