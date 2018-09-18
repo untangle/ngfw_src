@@ -519,7 +519,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     // set series name
                     seriesName = column;
                     if (seriesRenderer) {
-                        seriesName = seriesRenderer(column);
+                        seriesName = seriesRenderer(parseInt(column, 10));
                         if (seriesName.substr(-1) != ']') {
                             seriesName += ' [' + column + ']';
                         }
@@ -552,7 +552,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     if (!seriesRenderer) {
                         seriesName = colVal !== undefined ? colVal : 'None'.t();
                     } else {
-                        seriesName = seriesRenderer(colVal);
+                        seriesName = seriesRenderer(parseInt(colVal, 10));
                     }
 
                     if (idx < entry.get('pieNumSlices')) {
