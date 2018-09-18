@@ -244,16 +244,14 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
                     }]
                 }],
                 items: [{
-                    xtype: 'datepicker',
+                    xtype: 'datepicker-conditions',
                     itemId: 'startDate',
                     value: since,
                     showToday: false,
-                    // margin: '5 5 0 5',
                     maxDate: Util.serverToClientDate(new Date(Util.getMilliseconds())),
                     listeners: {
                         select: function (el, date) {
                             since.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-                            // me.setValue();
                         }
                     }
                 }, {
@@ -307,11 +305,10 @@ Ext.define('Ung.reports.cmp.TimeConditions', {
                 }],
 
                 items: [{
-                    xtype: 'datepicker',
+                    xtype: 'datepicker-conditions',
                     itemId: 'endDate',
                     value: until,
                     showToday: false,
-                    // margin: '5 5 0 0',
                     maxDate: Util.serverToClientDate(new Date(Util.getMilliseconds())),
                     disabled: !me.getUntil(),
                     listeners: {
