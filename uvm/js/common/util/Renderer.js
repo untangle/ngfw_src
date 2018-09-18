@@ -61,7 +61,7 @@ Ext.define('Ung.util.Renderer', {
     /**
      * Array store with renderers used in Reports Settings
      */
-    forReports: [['', 'None'.t()], ['interface', 'Interface'], ['protocol', 'Protocol'.t()]],
+    forReports: [['', 'None'.t()], ['interface', 'Interface'], ['protocol', 'Protocol'.t()], ['policy_id', 'Policy'.t()]],
 
     /*
      * Grid filters
@@ -464,6 +464,17 @@ Ext.define('Ung.util.Renderer', {
 
     id: function(value){
         return ( value < 0 || value === undefined ) ? 'new'.t() : value;
-    }
+    },
+
+    policy_id: function (value) {
+        var policyMap = {};
+        Ext.getStore('policiestree').each(function (policy) {
+            policyMap[policy.get('policyId')] = policy.get('name');
+        });
+        if (!value || value === 0) {
+            return 'Default'.t() + ' [0]';
+        }
+        return policyMap[value] || value.toString();
+    },
 
 });
