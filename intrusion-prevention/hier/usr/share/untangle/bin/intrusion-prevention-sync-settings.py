@@ -31,8 +31,6 @@ def usage():
     print("usage...")
     print("help\t\tusage")
     print("settings\tSettings configuration file name")
-    print("conf\t\tSuricata configuration file name")
-    print("signatures\t\tSuricata signature file name")
     print("app\t\tApp identifier")
     print("debug\t\tEnable debugging")
 
@@ -59,8 +57,6 @@ def main(argv):
     """
     global _debug
     _debug = False
-    current_signatures_path = None
-    previous_signatures_path = None
     settings_file_name = None
     status_file_name = None
     app_id = None
@@ -72,7 +68,6 @@ def main(argv):
     summary_report = []
 	
     try:
-        # opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "signatures=", "previous_signatures=", "app_id=", "status=", "patch=", "export", "debug", "summary"] )
         opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "current_settings=", "app_id=", "status=", "export", "debug"] )
     except getopt.GetoptError:
         print("ERROR")
@@ -87,10 +82,6 @@ def main(argv):
             _debug = True
         elif opt in ( "-n", "--app_id"):
             app_id = arg
-        # elif opt in ( "-r", "--signatures"):
-        #     current_signatures_path = arg
-        # elif opt in ( "-p", "--previous_signatures"):
-        #     previous_signatures_path = arg
         elif opt in ( "-s", "--settings"):
             settings_file_name = arg
         elif opt in ( "-s", "--current_settings"):
@@ -109,20 +100,12 @@ def main(argv):
         print("Missing app_id")
         sys.exit(1)
 
-    # if current_signatures_path == None:
-    #     print("Missing signatures")
-    #     sys.exit(1)
-
     # if settings_file_name == None:
     #     ## Must never write to actual location.
     #     print("Missing settings file name")
     #     sys.exit(1)
 
     if _debug == True:
-        # if current_signatures_path != None :
-        #     print("current_signatures_path = " + current_signatures_path)
-        # if previous_signatures_path != None:
-        #     print("previous_signatures_path = " + previous_signatures_path)
         if settings_file_name != None:
             print("settings_file_name = " + settings_file_name)
         print("app = {0}".format(app_id))
@@ -142,15 +125,6 @@ def main(argv):
     # suricata_conf = intrusion_prevention.SuricataConf()
 
     #
-    # Get previous rules
-    #
-    # previous_suricata_signatures = None
-    # if previous_signatures_path != None:
-    #     previous_suricata_signatures = intrusion_prevention.SuricataSignatures()
-    #     previous_suricata_signatures.load()
-    #     previous_suricata_signatures.update_categories(defaults, True)
-
-    #
     # Get settings
     #
     #
@@ -168,7 +142,6 @@ def main(argv):
     #     settings.set_patch(patch)
 
     # Update default rules (they may have changed from updates download)
-    #settings.update_rules(defaults.get_rules(), intrusion_prevention.IntrusionPreventionDefaults.reserved_id_regex)
     settings.update_rules(classifications.get_rules(), intrusion_prevention.SuricataClassifications.reserved_id_regex)
 
     # for rule in settings.settings["rules"]["list"]:
