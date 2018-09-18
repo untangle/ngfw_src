@@ -5,6 +5,7 @@ import json
 import os
 import re
 
+from intrusion_prevention.suricata_conf import SuricataConf
 from intrusion_prevention.suricata_signature import SuricataSignature
 from intrusion_prevention.suricata_signatures import SuricataSignatures
 from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule
@@ -39,19 +40,30 @@ class IntrusionPreventionSettings:
                 "deleted": []
             }
         },
-        "suricata": {
-            "outputs": {
-                "eve-log": {
-                    "enabled": False
-                },
-                "fast": {
-                    "enabled": False
-                },
-                "stats": {
-                    "enabled": False
-                }
-            }
-        },
+        # "suricata": {
+        #     "outputs": {
+        #         "eve-log": {
+        #             "enabled": False
+        #         },
+        #         "fast": {
+        #             "enabled": False
+        #         },
+        #         "stats": {
+        #             "enabled": False
+        #         }
+        #     },
+        #     "logging": {
+        #         "outputs": {
+        #             "file": {
+        #                 "enabled": False
+        #             },
+        #             "syslog":{
+        #                 "enabled": True
+        #             }
+        #         }
+        #     }
+        # },
+        "suricata": {},
         "configured": False,
         "max_scan_size": 1024
     }
@@ -105,25 +117,6 @@ class IntrusionPreventionSettings:
         self.settings = json.load( settings_file, object_hook=self.json_load_decoder )
         settings_file.close()
         
-    def exists(self):
-        """
-        See if settings exist
-        """
-        return os.path.exists( self.file_name )
-
-    def create(self):
-        """
-        Create a new settings file based on the processed
-        signature set and default variables from suricata configuration.
-        """
-        if hasattr( self, 'settings') == False:
-            self.settings = IntrusionPreventionSettings.default_settings
-        else:            
-            settings_keys = self.settings.keys()
-            for key in IntrusionPreventionSettings.default_settings.keys():
-                if not key in settings_keys:
-                    self.settings[key] = IntrusionPreventionSettings.default_settings[key]
-                
     def save(self, file_name=None, key=None):
         """
         Save settings
@@ -164,6 +157,54 @@ class IntrusionPreventionSettings:
             False, True, True, True, None, 0 
             )
         settings_file.close()
+
+    def exists(self):
+        """
+        See if settings exist
+        """
+        return os.path.exists( self.file_name )
+
+    def create(self):
+        """
+        Create a new settings file based on the processed
+        signature set and default variables from suricata configuration.
+        """
+        if hasattr( self, 'settings') == False:
+            self.settings = IntrusionPreventionSettings.default_settings
+        else:
+            settings_keys = self.settings.keys()
+            for key in IntrusionPreventionSettings.default_settings.keys():
+                if not key in settings_keys:
+                    self.settings[key] = IntrusionPreventionSettings.default_settings[key]
+
+        SuricataConf.merge_default_settings(self.settings["suricata"])
+
+    def convert(self):
+        """
+        Convert to current file format
+        """
+        ## !!! add defaults
+        settings_keys = self.settings.keys()
+        for key in IntrusionPreventionSettings.default_settings.keys():
+            if not key in settings_keys:
+                self.settings[key] = IntrusionPreventionSettings.default_settings[key]
+
+        SuricataConf.merge_default_settings(self.settings["suricata"])
+
+        if "active_signatures" in self.settings:
+            self.settings["activeGroups"]["classtypes"] = self.settings["active_signatures"]["classtypes_group"]
+            self.settings["activeGroups"]["categories"] = self.settings["active_signatures"]["categories_group"]
+            if "classtypes" in self.settings["active_signatures"]:
+                self.settings["activeGroups"]["classtypesSelected"] = self.settings["active_signatures"]["classtypes"]
+            if "categories" in self.settings["active_signatures"]:
+                self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_signatures"]["categories"]
+            del(self.settings["active_signatures"])
+
+        if not "version" in self.settings:
+            self.settings["version"] = self.current_version
+            if "rules" in self.settings:
+                self.settings["signatures"]["list"] = []
+            # !!! convert profiles to rules
 
     # def set_patch(self, patch, defaults_profile=None):
     def set_patch(self, patch):
@@ -352,30 +393,6 @@ class IntrusionPreventionSettings:
         for signature in signatures.get_signatures().values():
             if not signature.get_action_changed():
                 signature.set_action(False, False)
-
-
-    def convert(self):
-        """
-        Convert to current file format
-        """
-        settings_keys = self.settings.keys()
-        for key in IntrusionPreventionSettings.default_settings.keys():
-            if not key in settings_keys:
-                self.settings[key] = IntrusionPreventionSettings.default_settings[key]
-        if "active_signatures" in self.settings:
-            self.settings["activeGroups"]["classtypes"] = self.settings["active_signatures"]["classtypes_group"]
-            self.settings["activeGroups"]["categories"] = self.settings["active_signatures"]["categories_group"]
-            if "classtypes" in self.settings["active_signatures"]:
-                self.settings["activeGroups"]["classtypesSelected"] = self.settings["active_signatures"]["classtypes"]
-            if "categories" in self.settings["active_signatures"]:
-                self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_signatures"]["categories"]
-            del(self.settings["active_signatures"])
-
-        if not "version" in self.settings:
-            self.settings["version"] = self.current_version
-            if "rules" in self.settings:
-                self.settings["signatures"]["list"] = []
-            # !!! convert profiles to rules
 
     def get_signatures(self):
         """
