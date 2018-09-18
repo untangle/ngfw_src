@@ -61,7 +61,6 @@ public class IntrusionPreventionStatisticsParser
     {
 
         String result = IntrusionPreventionStatisticsParser.execManager.execOutput( STATISTICS_COMMAND );
-        logger.warn(result);
 
         try{
             JSONObject resultJson = new JSONObject(result);
