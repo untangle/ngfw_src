@@ -66,7 +66,6 @@ public class IntrusionPreventionApp extends AppBase
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
     private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
-    private static final String DEFAULTS_SETTINGS = CURRENT_RULES_DIRECTORY + "/templates/defaults.js";
     // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
@@ -162,7 +161,7 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Pre IPS start. Check setup wizard, start suricata, unregister calllback hook.
+     * Pre IPS start. Start suricata, unregister calllback hook.
      *
      * @param isPermanentTransition
      */
@@ -181,9 +180,6 @@ public class IntrusionPreventionApp extends AppBase
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        // if(!wizardCompleted()){
-        //     throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
-        // }
         UvmContextFactory.context().daemonManager().incrementUsageCount( "suricata" );
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "suricata", 3600, "suricata");
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
@@ -365,24 +361,6 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Insert or remove iptables rules if suricata daemon is running
-     *
-     * @return  true if wizard has been run, false if not.
-     */
-    private Boolean wizardCompleted()
-    {
-        String settingsFileName = getSettingsFileName();
-        File f = new File(settingsFileName);
-        if(f.exists()){
-            int retCode = UvmContextFactory.context().execManager().execResult( "grep -q '\"configured\": true,' " + settingsFileName);
-            if(retCode == 0){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get settings filename
      *
      * @return  Settings filename.
@@ -390,16 +368,6 @@ public class IntrusionPreventionApp extends AppBase
     public String getSettingsFileName()
     {
         return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
-    }
-
-    /**
-     * Get default settings filename
-     *
-     * @return  default Settings filename.
-     */
-    public String getDefaultsSettingsFileName()
-    {
-        return DEFAULTS_SETTINGS;
     }
 
     /**
@@ -588,14 +556,9 @@ public class IntrusionPreventionApp extends AppBase
                     }
                 }
 
-            }else if( action.equals("load") ||
-                action.equals("wizard") ){
+            }else if( action.equals("load") ){
                 String settingsName;
-                if( action.equals("wizard") ){
-                    settingsName = app.getDefaultsSettingsFileName();
-                }else{
                     settingsName = app.getSettingsFileName();
-                }
                 FileInputStream fis = null;
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
@@ -735,7 +698,6 @@ public class IntrusionPreventionApp extends AppBase
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
                         " --app_id " + appId +
-                        " --signatures " + CURRENT_RULES_DIRECTORY +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName + 
                         " --export"

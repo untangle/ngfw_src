@@ -285,8 +285,6 @@ class Update:
             args = [
                 "@PREFIX@/usr/share/untangle/bin/intrusion-prevention-sync-settings.py",
                 "--app_id", str(app_id),
-                "--previous_signatures", "/usr/share/untangle-suricata-config/previous",
-                "--signatures", "/usr/share/untangle-suricata-config/current",
                 "--settings", temp_settings_file_name,
                 "--status", "/usr/share/untangle-suricata-config/last-update.js"
             ]
