@@ -1,8 +1,9 @@
 /**
  * Override needed so when month/year is changed via menus, the select event to be fired
  */
-Ext.define('Ung.overrides.picker.Date', {
-    override: 'Ext.picker.Date',
+Ext.define('Ung.reports.cmp.DatePicker', {
+    extend: 'Ext.picker.Date',
+    alias: 'widget.datepicker-conditions',
 
     onOkClick: function(picker, value) {
         var me = this,
