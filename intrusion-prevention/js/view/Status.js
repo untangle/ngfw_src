@@ -31,58 +31,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 hidden: '{!license || !license.trial}'
             }
         }, {
-            xtype: 'appstate',
-            hidden: true,
-            bind: {
-                hidden: '{settings.configured == false}'
-            }
-        }, {
-            xtype: 'fieldset',
-            title: '<i class="fa fa-magic"></i> ' + "Setup Wizard".t(),
-            items: [{
-                xtype: 'component',
-                html: "Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention.".t(),
-                cls: 'warning',
-                hidden: true,
-                bind: {
-                    hidden: '{settings.configured == true}'
-                }
-            },{
-                xtype: 'fieldset',
-                title: "Profile".t(),
-                defaults: {
-                    labelWidth: 200
-                },
-                hidden: true,
-                bind: {
-                    hidden: '{!state.on}'
-                },
-                items: [{
-                    xtype: 'displayfield',
-                    fieldLabel: "Classtypes".t(),
-                    bind: {
-                        value: '{classtypesProfile.value}',
-                    },
-                    listeners:{
-                        change: 'bindChange'
-                    }
-                }, {
-                    xtype: 'displayfield',
-                    fieldLabel: "Categories".t(),
-                    bind: {
-                        value: '{categoriesProfile.value}',
-                    },
-                    listeners:{
-                        change: 'bindChange'
-                    }
-                }]
-            }, {
-                xtype: 'button',
-                margin: '10 0 10 0',
-                text: "Run Intrusion Prevention Setup Wizard".t(),
-                iconCls: 'fa fa-magic',
-                handler: 'runWizard'
-            }]
+            xtype: 'appstate'
         },{
             xtype: 'fieldset',
             title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),

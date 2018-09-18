@@ -111,6 +111,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 direction: 'ASC'
             }],
             data: [
+            [ "", "Base rules".t(), "high"],
             [ "attempted-admin", "Attempted Administrator Privilege Gain".t(), "high"],
             [ "attempted-user", "Attempted User Privilege Gain".t(), "high" ],
             [ "inappropriate-content", "Inappropriate Content was Detected".t(), "high" ],

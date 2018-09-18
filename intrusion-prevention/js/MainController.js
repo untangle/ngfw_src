@@ -33,15 +33,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 method: 'POST',
                 params: {
                     type: "IntrusionPreventionSettings",
-                    arg1: "wizard",
-                    arg2: vm.get('instance.id')
-                },
-                timeout: 600000});
-            },function(){ return Ext.Ajax.request({
-                url: "/admin/download",
-                method: 'POST',
-                params: {
-                    type: "IntrusionPreventionSettings",
                     arg1: "signatures",
                     arg2: vm.get('instance.id')
                 },
@@ -70,13 +61,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 companyName: result[2],
                 system_memory: result[3],
                 settings: settings,
-                wizardDefaults: Ext.decode( result[5].responseText ),
                 profileStoreLoad: true,
                 signaturesStoreLoad: true,
                 variablesStoreLoad: true
             });
-            me.buildSignatures( result[6], settings);
-            v.getController().updateStatus();
+            me.buildSignatures( result[5], settings);
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
@@ -354,12 +343,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return isUsed;
     },
 
-    runWizard: function (btn) {
-        this.wizard = this.getView().add({
-            xtype: 'app-intrusion-prevention-wizard'
-        });
-        this.wizard.show();
-    },
+    // runWizard: function (btn) {
+    //     this.wizard = this.getView().add({
+    //         xtype: 'app-intrusion-prevention-wizard'
+    //     });
+    //     this.wizard.show();
+    // },
 
     storeDataChanged: function( store ){
         /*
@@ -385,55 +374,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             store.commitChanges();
             vm.set( storeId + 'Load', false);
         }
-    },
-
-    /*
-     * Update bind variables for the Setup Wizard display on status screen.
-     * On first blush we could do these as formulas but the code is basically the
-     * same and would be duplicated.  So we do it here after the data has been
-     * loaded.
-     */
-    updateStatus: function(){
-        var me = this, vm = me.getViewModel();
-        var activeGroups = vm.get('settings.activeGroups');
-        var profileId= vm.get('settings.profileId');
-
-        var types = ['classtypes', 'categories'];
-        types.forEach(function(type){
-            var current = activeGroups[type];
-            var profile = {};
-
-            var rawSelected = null;
-            if(current === 'custom'){
-                rawSelected = Ext.clone(activeGroups[type+'Selected']);
-            }else{
-                vm.get('wizardDefaults').profiles.forEach(function(wizardProfile){
-                    if(wizardProfile.profileId === profileId){
-                        rawSelected = Ext.clone( wizardProfile.activeGroups[type+'Selected'] );
-                    }
-                });
-            }
-
-            var selected = [];
-            rawSelected.forEach(function(item){
-                if(item[0] === '-'){
-                    return;
-                }
-                if(item[0] === '+'){
-                    item = item.substring(1);
-                }
-                selected.push(item);
-            });
-            profile.selected = selected;
-
-            if(current === 'custom'){
-                profile.value = 'Custom'.t() + Ext.String.format( ': {0}', selected.join(', ') );
-            }else{
-                profile.value = 'Recommended'.t();
-            }
-            profile.tip = selected.join(', ');
-            vm.set(type+'Profile', profile);
-        });
     },
 
     /**
