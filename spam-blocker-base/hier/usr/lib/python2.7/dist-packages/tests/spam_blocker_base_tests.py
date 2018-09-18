@@ -101,6 +101,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
         except Exception,e:
             canRelay = False
+        self.canRelay = canRelay
         getLatestMailSender()
         # flush quarantine.
         curQuarantine = appSP.getQuarantineMaintenenceView()
