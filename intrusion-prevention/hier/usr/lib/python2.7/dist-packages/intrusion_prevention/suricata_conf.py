@@ -25,7 +25,38 @@ class SuricataConf:
     # output_regex = re.compile(r'^output\s+([^:]+)')
     # preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
     # preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
+    default_settings = {
+        "outputs": {
+            "eve-log": {
+                "enabled": False
+            },
+            "fast": {
+                "enabled": False
+            },
+            "stats": {
+                "enabled": False
+            }
+        },
+        "logging": {
+            "outputs": {
+                "file": {
+                    "enabled": False
+                },
+                "syslog":{
+                    "enabled": True
+                }
+            }
+        }
+    }
     
+    @staticmethod
+    def merge_default_settings(settings):
+        ## ?? recurse
+        settings_keys = settings.keys()
+        for key in SuricataConf.default_settings.keys():
+            if not key in settings_keys:
+                settings[key] = SuricataConf.default_settings[key]
+
     def __init__(self, _debug=False):
         self.last_comment = ""
         self.conf = []
@@ -45,7 +76,15 @@ class SuricataConf:
                 value = u'no'
             return yaml_self.represent_scalar(u'tag:yaml.org,2002:bool', text_type(value))
 
+        ruamel.yaml.emitter.Emitter.write_comment_orig = ruamel.yaml.emitter.Emitter.write_comment
+        def strip_empty_lines_write_comment(self, comment):
+            # print('{:02d} {:02d} {!r}'.format(self.column, comment.start_mark.column, comment.value))
+            comment.value = comment.value.replace('\n', '')
+            if comment.value:
+                self.write_comment_orig(comment)
+
         ruamel.yaml.representer.RoundTripRepresenter.add_representer(bool, represent_bool)
+        ruamel.yaml.emitter.Emitter.write_comment = strip_empty_lines_write_comment
 
     def load(self):
         """
@@ -93,7 +132,7 @@ class SuricataConf:
             os.remove(backup_file_name)
         else:
             os.rename(backup_file_name,SuricataConf.file_name)
-        
+
     def save_variables(self):
         """
         Save suricata variables
@@ -218,6 +257,7 @@ class SuricataConf:
         """
         Get variables
         """
+        print self.conf["vars"]
         for group in self.conf["vars"]:
             for variable in self.conf["vars"][group]:
                  if variable == key:
