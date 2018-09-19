@@ -111,7 +111,6 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 direction: 'ASC'
             }],
             data: [
-            [ "", "Base rules".t(), "high"],
             [ "attempted-admin", "Attempted Administrator Privilege Gain".t(), "high"],
             [ "attempted-user", "Attempted User Privilege Gain".t(), "high" ],
             [ "inappropriate-content", "Inappropriate Content was Detected".t(), "high" ],
@@ -148,7 +147,8 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             [ "string-detect", "A suspicious string was detected".t(), "low" ],
             [ "unknown", "Unknown Traffic".t(), "low" ],
 
-            [ "tcp-connection", "A TCP connection was detected".t(), "low" ]
+            [ "tcp-connection", "A TCP connection was detected".t(), "low" ],
+            [ "general", "General rules".t(), "low"]
             ]
         }),
 
