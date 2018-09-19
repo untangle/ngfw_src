@@ -26,12 +26,18 @@ class SuricataConf:
     # preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
     # preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
     default_settings = {
+        "rule-files": [
+            "ngfw.rules"
+        ],
         "outputs": {
             "eve-log": {
                 "enabled": False
             },
             "fast": {
                 "enabled": False
+            },
+            "unified2-alert": {
+                "enabled": True
             },
             "stats": {
                 "enabled": False
