@@ -472,7 +472,7 @@ Ext.define('Ung.util.Renderer', {
             policyMap[policy.get('policyId')] = policy.get('name');
         });
         if (!value || value === 0) {
-            return 'Default'.t() + ' [0]';
+            return 'None'.t() + ' [0]';
         }
         return policyMap[value] || value.toString();
     },
