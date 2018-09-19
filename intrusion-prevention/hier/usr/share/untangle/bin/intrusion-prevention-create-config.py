@@ -181,7 +181,7 @@ def main(argv):
         print("Modifying suricata configuration")
     suricata_conf = intrusion_prevention.SuricataConf( _debug=_debug )
 
-    print("loaded conf")
+#    print("loaded conf")
     # print suricata_conf.conf
     # for key in suricata_conf.conf:
     #     print key
@@ -190,7 +190,7 @@ def main(argv):
     #         for subkey in suricata_conf.conf[key]:
     #             print "\t" + subkey
 
-    print 'HOME_NET=' + suricata_conf.get_variable('HOME_NET')
+ #   print 'HOME_NET=' + suricata_conf.get_variable('HOME_NET')
 
 
 
