@@ -628,7 +628,6 @@ public class IntrusionPreventionApp extends AppBase
                         System.getProperty("uvm.bin.dir") +
                         "/intrusion-prevention-sync-settings.py" +
                         " --app_id " + appId +
-                        " --current_settings " + tempSettingsName +
                         " --settings " + tempSettingsName
                     );
                     String result = UvmContextFactory.context().execManager().execOutput(configCmd );
