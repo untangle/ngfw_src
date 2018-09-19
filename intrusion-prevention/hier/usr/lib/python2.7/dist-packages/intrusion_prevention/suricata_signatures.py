@@ -21,7 +21,7 @@ class SuricataSignatures:
     signature_paths = ["rules", "preproc_rules", "emerging_rules"]
 
     input_paths = ["/usr/share/untangle-suricata-config/current", "/etc/suricata"]
-    output_file_name = "/etc/suricata/ngfw.rules"
+    output_file_name = "/etc/suricata/rules/ngfw.rules"
 
     def __init__(self):
         self.signatures = {}
