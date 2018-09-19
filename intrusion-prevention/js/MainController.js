@@ -95,7 +95,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             //     return false;
             // }
             line = line.trim();
-           if(line){
+            if(line){
+                // if(line.startsWith('# filename')){
+                //     console.log(line);
+                // }
             // if(line && line != "#" && !line.startsWith("# ") && !line.startsWith("#**") ){
                 if( filenameRegex.test( line ) ){
                     var matches = line.match(filenameRegex);
@@ -104,7 +107,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                         // console.log(category);
                     }
                 }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
-                    signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
+                    // if(category == 'files'){
+                        // console.log(line);
+                        signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
+                    // }
                 // }else{
                 //     console.log("invalid signature:" + line);
                 }
@@ -407,6 +413,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('name', value);
+            // if( classtypeRecord == null ){
+            //     console.log("classtype not found=" + value);
+            // }
+            var description = value;
             if( classtypeRecord != null ){
                 description = classtypeRecord.get('description');
             }
@@ -418,6 +428,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var vm = this.getViewModel();
             var description = value;
             var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('name', value);
+            // if( categoryRecord == null ){
+            //     console.log("category not found=" + value);
+            // }
             if( categoryRecord != null ){
                 description = categoryRecord.get('description');
             }
@@ -1051,10 +1064,12 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         if(typeof signature == "string" && valid){
             me.optionsMapIndexes = {};
             var key = null;
+            var foundOptions = [];
             me.data['options'].forEach(function(option, index){
                 key = option.substr(0, option.indexOf(':')).trim();
                 Ung.model.intrusionprevention.signature.optionsMap.forEach(function(mappedOption){
                     if(mappedOption.name == key){
+                        foundOptions.push(key);
                         me.optionsMapIndexes[mappedOption] = index;
                         var value = me.massageGetOptionValue(option.substr(option.indexOf(':') + 1));
                         if(option.defaultValue){
@@ -1063,6 +1078,11 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                         me.data[mappedOption.name] = value;
                     }
                 });
+            });
+            Ung.model.intrusionprevention.signature.optionsMap.forEach(function(mappedOption){
+                if(foundOptions.indexOf(mappedOption.name) == -1){
+                    me.data[mappedOption.name] = mappedOption.defaultValue;
+                }
             });
             me.data['id'] = me.data['sid'] + '_' + me.data['gid'];
         }
@@ -1227,7 +1247,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             name: 'sid'
         },{
             name: 'classtype',
-            defaultValue: 'unknown'
+            defaultValue: 'general'
         },{
             name: 'msg'
         }],

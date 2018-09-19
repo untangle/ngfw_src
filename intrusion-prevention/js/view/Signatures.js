@@ -17,7 +17,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     ],
     features: [{
         ftype: 'grouping',
-        groupHeaderTpl: '{columnName}: {name} ({rows.length} signature{[values.rows.length > 1 ? "s" : ""]})',
+        groupHeaderTpl: ['{columnName}: {name:this.formatName} ({rows.length} signature{[values.rows.length > 1 ? "s" : ""]})',{
+            formatName: function(name){
+                return name == null ? "general" : Ext.String.trim(name);
+            }
+        }],
         startCollapsed: true
      }],
 
