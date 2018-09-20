@@ -20,7 +20,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             },{
                 value: 'disable',
                 display: 'Disable'.t()
-            }],
+            }]
         },
         stores: {
             ruleActionsStore: {
@@ -92,6 +92,18 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 listeners:{
                     datachanged: 'storeDataChanged'
                 }
+            },
+            searchConditions: {
+                fields: [{
+                    name: 'value',
+                },{
+                    name: 'name'
+                }],
+                sorters: [{
+                    property: 'value',
+                    direction: 'ASC'
+                }],
+                data: '{searchConditionsList}'
             }
         }
     },
