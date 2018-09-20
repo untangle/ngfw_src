@@ -5,7 +5,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings',
-        },
+        }
     },
 
     getSettings: function () {
@@ -509,6 +509,15 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         }
     },
 
+    getConditions: function(){
+        var conditions = {};
+        this.getView().editorFields.forEach( function(field){
+            if(field.xtype == 'conditionseditor'){
+                conditions = field.conditions;
+            }
+        });
+        return conditions;
+    },
 
     updateRuleStatus: function(){
         var me = this,
@@ -699,8 +708,30 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
 
 Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     extend: 'Ung.cmp.GridController',
-
     alias: 'controller.unintrusionsignaturesgrid',
+
+    control: {
+        '#': {
+            afterrender: 'afterrender',
+        }
+    },
+
+    afterrender: function(component){
+        var vm = component.up('apppanel').getController().getViewModel();
+        var storeValues = [];
+        var conditions = component.up('tabpanel').down('[name=rules]').getController().getConditions(); 
+        for(var name in conditions){
+            if(name == 'SYSTEM_MEMORY'){
+                continue;
+            }
+            storeValues.push({
+                value: name, 
+                name: conditions[name]['displayName']
+            });
+        }
+        vm.set('searchConditionsList', storeValues);
+        vm.set('searchField', 'MSG');
+    },
 
     logBeforeCheckChange: function ( elem, rowIndex, checked ){
         var record = elem.getView().getRecord(rowIndex);
@@ -727,22 +758,23 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     updateSearchStatusBar: function(){
         var v = this.getView();
         var searchStatus = v.down("[name=searchStatus]");
-        var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() === true ) || ( v.down("[name=searchBlock]").getValue() === true );
-        var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
+        // var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() === true ) || ( v.down("[name=searchBlock]").getValue() === true );
+        // var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
+        var hasFilter = v.down("[name=searchFilter]").getValue().length >= 2;
         var statusText = "", logOrBlockText = "", totalEnabled = 0;
-        if(!hasLogOrBlockFilter) {
-            v.getStore().each(function( record ){
-                if( ( record.get('log')) || ( record.get('block')) ) {
-                    totalEnabled++;
-                }
-            });
-            logOrBlockText = Ext.String.format( '{0} logging or blocking'.t(), totalEnabled);
-        }
+        // if(!hasLogOrBlockFilter) {
+        //     v.getStore().each(function( record ){
+        //         if( ( record.get('log')) || ( record.get('block')) ) {
+        //             totalEnabled++;
+        //         }
+        //     });
+        //     logOrBlockText = Ext.String.format( '{0} logging or blocking'.t(), totalEnabled);
+        // }
         if(hasFilter) {
             statusText = Ext.String.format( '{0} matching signature(s) found'.t(), v.getStore().getCount() );
-            if(!hasLogOrBlockFilter) {
-                statusText += ', ' + logOrBlockText;
-            }
+            // if(!hasLogOrBlockFilter) {
+            //     statusText += ', ' + logOrBlockText;
+            // }
         } else {
             statusText = Ext.String.format( '{0} available signatures'.t(), v.getStore().getCount()) + ', ' + logOrBlockText;
         }
@@ -753,14 +785,50 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         filterFn: function(){}
     }),
     filterSearch: function(elem, newValue, oldValue, eOpts){
+        var vm = elem.up('apppanel').getController().getViewModel();
+
+        var searchField = vm.get('searchField');
+        var searchValue = newValue;
+
+        var comparator = null;
+        var conditions = elem.up('tabpanel').down('[name=rules]').getController().getConditions(); 
+        for(var name in conditions){
+            if(name == searchField){
+                comparator = conditions[name].comparator;
+            }
+        }
+        var signatureField = searchField.toLowerCase();
+        switch(searchField){
+            case 'src_addr':
+                signatureField = 'lnet';
+                break;
+            case 'src_port':
+                signatureField = 'lport';
+                break;
+            case 'dst_addr':
+                signatureField = 'rnet';
+                break;
+            case 'dst_port':
+                signatureField = 'rport';
+                break;
+        }
+
         var store = this.getView().getStore();
         if( newValue ){
             if( newValue.length > 1 ){
-                var re = new RegExp(newValue, 'gi');
+                // var re = new RegExp(newValue, 'gi');
+                var compareNewValue = newValue;
+                if( typeof(newValue) == 'string' ){
+                    compareNewValue = compareNewValue.toLowerCase();
+                }
                 this.searchFilter.setFilterFn( function(record){
-                    return re.test(record.get('category')) ||
-                        re.test(record.get('signature'));
+                    if(comparator == 'text'){
+                        return record.get(signatureField).toLowerCase().indexOf(compareNewValue) > -1;
+                    }else{
+                        return record.get(signatureField) == compareNewValue;
+                    }
                 });
+                this.searchFilter.value = newValue;
                 store.addFilter( this.searchFilter );
             }
         }else{
@@ -770,6 +838,43 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             }
         }
         this.updateSearchStatusBar();
+    },
+
+
+
+    createRuleFromSearch: function(button){
+        var vm = button.up('apppanel').getController().getViewModel();
+        var signaturesTab = button.up('tabpanel').getActiveTab();
+        var rulesTab = button.up('tabpanel').setActiveTab('rules');
+        var filters = this.getView().getStore().getFilters();
+        var searchField = vm.get('searchConditions').findRecord( 'value', vm.get('searchField')).get('value');
+
+        var comparatorText = "contains".t();
+        var comparator = 'contains';
+        var conditions = button.up('tabpanel').down('[name=rules]').getController().getConditions(); 
+        for(var name in conditions){
+            if(name == searchField){
+                if(conditions[name].comparator == "numeric" || conditions[name].comparator == "boolean"){
+                    comparatorText = "equals".t();
+                    comparator = '='; 
+                }
+            }
+        }
+
+        rulesTab.getController().addRecord({
+            'enabled': true,
+            'id': -1,
+            'description': '"' + vm.get('searchConditions').findRecord( 'value', vm.get('searchField')).get('name') + '" ' + comparatorText + ' "' + ( filters.items ? filters.items[0].value : '' ) + '"',
+            'conditions': {
+                'list': [{
+                    'javaClass': '',
+                    'type': vm.get('searchField'),
+                    'comparator': comparator,
+                    'value': filters.items ? filters.items[0].value : ''
+                }]
+            },
+            'action': 'log'
+        });
     },
 
     logFilter: Ext.create('Ext.util.Filter', {

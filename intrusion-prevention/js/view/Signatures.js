@@ -45,26 +45,54 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         value: false,
     }],
 
-    bbar: [ 'Search'.t(), {
+    bbar: [ 
+    'Search'.t(), {
+        xtype: 'combo',
+        name: 'searchField',
+        // listeners: {
+        //     change: 'filterSearch'
+        // }
+        queryMode: 'local',
+        valueField: 'value',
+        displayField: 'name',
+        bind:{
+            store: '{searchConditions}',
+            value: '{searchField}'
+        }
+        // store: Ext.create('Ext.data.ArrayStore', {
+        //     model: 'Ext.data.Model',
+        //     fields: ['name', 'displayField'],
+        //     data : []
+        // }),
+        // forceSelection: true,
+    },
+        'contains'.t(), {
         xtype: 'textfield',
         name: 'searchFilter',
         listeners: {
             change: 'filterSearch'
         }
     },{
-        xtype: 'checkbox',
-        name: 'searchLog',
-        boxLabel: 'Log'.t(),
+        xtype: 'button',
+        text: 'Create Rule',
+        iconCls: 'fa fa-plus-circle',
         listeners: {
-            change: 'filterLog'
+            click: 'createRuleFromSearch'
         }
-    }, {
-        xtype: 'checkbox',
-        name: 'searchBlock',
-        boxLabel: 'Block'.t(),
-        listeners: {
-            change: 'filterBlock'
-        }
+    // },{
+    //     xtype: 'checkbox',
+    //     name: 'searchLog',
+    //     boxLabel: 'Log'.t(),
+    //     listeners: {
+    //         change: 'filterLog'
+    //     }
+    // }, {
+    //     xtype: 'checkbox',
+    //     name: 'searchBlock',
+    //     boxLabel: 'Block'.t(),
+    //     listeners: {
+    //         change: 'filterBlock'
+    //     }
     },{
         xtype: 'tbtext',
         name: 'searchStatus',
