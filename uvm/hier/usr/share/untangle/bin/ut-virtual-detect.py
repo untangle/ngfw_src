@@ -2,6 +2,7 @@
 
 import getopt
 import sys
+import os
 
 Debug = False
 
