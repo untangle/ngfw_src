@@ -16,8 +16,8 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
-    addRecord: function () {
-        this.editorWin(null);
+    addRecord: function (template) {
+        this.editorWin(null, null, template);
     },
 
     addRecordInline: function () {
@@ -109,12 +109,13 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
-    editorWin: function (record, action) {
+    editorWin: function (record, action, template) {
         this.dialog = this.getView().add({
             xtype: this.getView().editorXtype,
             renderTo: Ext.getBody(),
             record: record,
-            action: action // add or edit
+            action: action, // add or edit
+            template: template
         });
 
         // look for window overrides in the parent grid
