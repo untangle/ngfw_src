@@ -16,8 +16,8 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
-    addRecord: function (template) {
-        this.editorWin(null, null, template);
+    addRecord: function () {
+        this.editorWin(null, null, arguments.length > 2 ? arguments[2] : null);
     },
 
     addRecordInline: function () {
