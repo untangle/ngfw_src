@@ -308,7 +308,10 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     defaults: {
                         padding: '0 10'
                     },
-                    items: ckItems
+                    items: ckItems,
+                    listeners:{
+                        change: 'forceValidate'
+                    }
                 });
                 break;
             case 'countryfield':
