@@ -71,9 +71,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'sid',
                     direction: 'ASC'
                 }],
-                listeners:{
-                    datachanged: 'storeDataChanged'
-                }
+                // listeners:{
+                //     datachanged: 'storeDataChanged'
+                // }
             },
             variables: {
                 storeId: 'variablesStore',
@@ -103,7 +103,19 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'value',
                     direction: 'ASC'
                 }],
-                data: '{searchConditionsList}'
+                data: '{searchConditionsData}'
+            },
+            searchComparators: {
+                fields: [{
+                    name: 'value',
+                },{
+                    name: 'name'
+                }],
+                sorters: [{
+                    property: 'value',
+                    direction: 'ASC'
+                }],
+                data: '{searchComparatorsData}'
             }
         }
     },
