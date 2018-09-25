@@ -374,12 +374,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
          * Thanks, ExtJs.
          *
          */
-        var vm = this.getViewModel();
-        var storeId = store.getStoreId();
-        if(vm.get( storeId + 'Load') == true){
-            store.commitChanges();
-            vm.set( storeId + 'Load', false);
-        }
+        // console.log('hre');
+        // var vm = this.getViewModel();
+        // var storeId = store.getStoreId();
+        // if(vm.get( storeId + 'Load') == true){
+        //     store.commitChanges();
+        //     vm.set( storeId + 'Load', false);
+        // }
     },
 
     /**
@@ -391,6 +392,138 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         cmp.getEl().set({
             'data-qtip': cmp.bind.value.stub.parentValue.tip
         });
+    },
+
+    ruleSignatureMatches: function(matchRule){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+
+        // var conditions = Ext.Array.findBy(v.editorFields, function(field){
+        //     if(field.xtype == 'ipsrulesconditionseditor'){
+        //         return true;
+        //     }
+        // }).conditions;
+        var conditions = v.down('[name=rules]').getController().getConditions(); 
+        // console.log(conditions);
+
+        var status = {
+            log: {},
+            block: {},
+            disable: {},
+            default: {}
+        };
+        var t0 = performance.now();
+        var t1 = performance.now();
+        var statusIndex;
+        var signatures = vm.get('signatures');
+
+        // var rules = (rule != null) ? Ext.create() : vm.get('rules');
+        var rules = vm.get('rules');
+        if(matchRule != null){
+            rules = Ext.create('Ext.data.Store');
+            rules.add(matchRule);
+        }
+
+        var ruleAction, ruleActionDefault, ruleActionMatchAny;
+        // if(rule != null){
+        //     ruleAction = rule.get('action');
+        //     ruleActionDefault = ( ruleAction == 'default' );
+        //     statusIndex = ruleAction;
+        //     signatures.each( function(signature){
+        //         if(rule.matchSignature(signature, conditions, vm)){
+        //             if(ruleActionDefault){
+        //                 statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
+        //             }
+        //             if(ruleAction == 'blocklog'){
+        //                 statusIndex = signature.data['log'] ? 'block' : 'disable';
+        //             }
+        //             var signatureId = signature.data['id'];
+        //             status[statusIndex][signatureId] = true;
+        //         }
+        //     });
+        //     console.log('rule ' + rule.get('description'));
+        //     console.log(performance.now()- t0);
+        //     t0 = t1;
+        //     t1 = performance.now();
+        // }else{
+        // vm.get('rules').each(function(rule){
+        rules.each(function(rule){
+            if(rule.get('enabled')){
+                ruleAction = rule.get('action');
+                ruleActionDefault = ( !matchRule && ruleAction == 'default' );
+                ruleActionMatchAny = (matchRule != null);
+                // console.log('ruleActionMatchAny=' + ruleActionMatchAny);
+                statusIndex = ruleAction;
+
+                // var sigCount = 0;
+                signatures.each( function(signature){
+                    // sigCount++;
+                    if(rule.matchSignature(signature, conditions, vm)){
+                        if(ruleActionDefault || ruleActionMatchAny){
+                            statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
+                        }
+                        if(ruleAction == 'blocklog'){
+                            statusIndex = signature.data['log'] ? 'block' : 'disable';
+                        }
+
+                        var signatureId = signature.data['id'];
+
+                        for(var action in status){
+                            if(action == statusIndex){
+                                continue;
+                            }
+                            if(status[action][signatureId]){
+                                // status[action][signatureId] = false;
+                                delete status[action][signatureId];
+                                break;
+                            }
+                        }
+                        status[statusIndex][signatureId] = true;
+                    }
+                }, this, true);
+                // console.log(sigCount);
+                // console.log('rule ' + rule.get('description'));
+                // console.log(performance.now()- t0);
+                t0 = t1;
+                t1 = performance.now();
+            }
+        });
+        t0 = performance.now();
+
+        if(matchRule == null){
+            var found, 
+                signatureId;
+            signatures.each( function(signature){
+                signatureId = signature.data['id'] ;
+                found = false;
+                for(var action in status){
+                    if(action == 'disable'){
+                        continue;
+                    }
+                    if(status[action][signatureId]){
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found){
+                    status['disable'][signatureId] = true;
+                }
+            });
+            // console.log('disabled');
+            t1 = performance.now();
+            // console.log(t1-t0);
+        }
+
+        return status;
+
+        // var ruleStatusBar = v.down("[name=ruleStatus]");
+        // var statusLengths = {};
+        // for(var statusKey in status){
+        //     statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
+        // }
+        
+        // ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));        
     },
 
     statics:{
@@ -512,87 +645,29 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     getConditions: function(){
         var conditions = {};
         this.getView().editorFields.forEach( function(field){
-            if(field.xtype == 'conditionseditor'){
+            if(field.xtype == 'ipsrulesconditionseditor'){
                 conditions = field.conditions;
             }
         });
         return conditions;
     },
 
+    // getComparators: function(){
+    //     var conditions = {};
+    //     this.getView().editorFields.forEach( function(field){
+    //         if(field.xtype == 'ipsrulesconditionseditor'){
+    //             conditions = field.comparators;
+    //         }
+    //     });
+    //     return conditions;
+    // },
+
     updateRuleStatus: function(){
         var me = this,
             v = me.getView(),
             vm = me.getViewModel();
-        var conditions = Ext.Array.findBy(v.editorFields, function(field){
-            if(field.xtype == 'conditionseditor'){
-                return true;
-            }
-        }).conditions;
 
-        var status = {
-            log: {},
-            block: {},
-            disable: {}
-        };
-        var t0 = performance.now();
-        var t1 = performance.now();
-        var statusIndex;
-        var signatures = vm.get('signatures');
-        vm.get('rules').each(function(rule){
-            if(rule.get('enabled')){
-                var ruleAction = rule.get('action');
-                var ruleActionDefault = ( ruleAction == 'default' );
-                statusIndex = ruleAction;
-                signatures.each( function(signature){
-                    if(rule.matchSignature(signature, conditions, vm)){
-                        if(ruleActionDefault){
-                            statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
-                        }
-                        if(ruleAction == 'blocklog'){
-                            statusIndex = signature.data['log'] ? 'block' : 'disable';
-                        }
-
-                        var signatureId = signature.data['id'];
-                        for(var action in status){
-                            if(action == statusIndex){
-                                continue;
-                            }
-                            if(status[action][signatureId]){
-                                status[action][signatureId] = false;
-                                break;
-                            }
-                        }
-                        status[statusIndex][signatureId] = true;
-                    }
-                });
-                // console.log('rule ' + rule.get('description'));
-                // console.log(performance.now()- t0);
-                t0 = t1;
-                t1 = performance.now();
-            }
-        });
-        t0 = performance.now();
-        var found, 
-            signatureId;
-        signatures.each( function(signature){
-            signatureId = signature.data['id'] ;
-            found = false;
-            for(var action in status){
-                if(action == 'disable'){
-                    continue;
-                }
-                if(status[action][signatureId]){
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                status['disable'][signatureId] = true;
-            }
-        });
-        // console.log('disabled');
-        t1 = performance.now();
-        // console.log(t1-t0);
+        var status = me.getView().up('apppanel').getController().ruleSignatureMatches();
 
         var ruleStatusBar = v.down("[name=ruleStatus]");
         var statusLengths = {};
@@ -601,6 +676,96 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         }
         
         ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
+    }
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unintrusionrulesrecordeditor',
+
+    controller: 'unintrusionrulesrecordeditorcontroller'
+
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unintrusionrulesrecordeditorcontroller',
+
+    onAfterRender: function (view) {
+        this.callParent([view]);
+
+        var formpanel = view.down('form');
+        formpanel.addDocked({
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [{
+                xtype: 'tbtext',
+                name: 'matchStatus',
+                html: '',
+            }]
+        });
+    }
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.IpsRulesConditionsEditor', {
+    extend: 'Ung.cmp.ConditionsEditor',
+    alias: 'widget.ipsrulesconditionseditor',
+
+    controller: 'ipsrulesconditionseditorcontroller',
+
+
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.IpsRulesConditionsEditorController', {
+    extend: 'Ung.cmp.ConditionsEditorController',
+    alias: 'controller.ipsrulesconditionseditorcontroller',
+
+    onAfterRender: function (component) {
+        var me = this;
+
+        me.callParent([component]);
+
+        me.updateMatchStatus();
+    },
+
+    forceValidate: function(){
+        this.callParent();
+
+        this.updateMatchStatus();
+    },
+
+    updateMatchStatusCalculator: function(){
+        var me = this,
+            view = this.getView(),
+            store = view.down('grid').getStore(),
+            rule = new Ung.model.intrusionprevention.rule({
+                action: 'default',
+                enabled: 'true',
+                conditions: {
+                    list: Ext.Array.pluck(store.getRange(), 'data')
+                }
+            }),
+            status = view.up('apppanel').getController().ruleSignatureMatches(rule),
+            matchStatus = view.up('form').down('[name=matchStatus]');
+
+        console.log(rule);
+
+        var affectedCount = 0;
+        Object.keys(status).forEach(function(k){
+            affectedCount += Object.keys(status[k]).length;
+        });
+
+        matchStatus.update('Affected signatures:'.t() + ' ' + affectedCount);
+    },
+
+    updateMatchStatusCalculatorTask: null,
+    updateMatchStatus: function(){
+        var me= this;
+
+        if(me.updateMatchStatusCalculatorTask == null){
+            me.updateMatchStatusCalculatorTask = new Ext.util.DelayedTask( Ext.bind(this.updateMatchStatusCalculator, me) );
+        }
+        me.updateMatchStatusCalculatorTask.delay( 500 );
     }
 });
 
@@ -719,7 +884,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     afterrender: function(component){
         var vm = component.up('apppanel').getController().getViewModel();
         var storeValues = [];
-        var conditions = component.up('tabpanel').down('[name=rules]').getController().getConditions(); 
+        var conditions = component.up('tabpanel').down('[name=rules]').getController().getConditions();
         for(var name in conditions){
             if(name == 'SYSTEM_MEMORY'){
                 continue;
@@ -729,8 +894,21 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                 name: conditions[name]['displayName']
             });
         }
-        vm.set('searchConditionsList', storeValues);
-        vm.set('searchField', 'MSG');
+
+        // Default to searching the message.
+        var defaultField = 'MSG';
+        var defaultComparator = 'substr';
+        var defaultComparatorList = null;
+        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
+            if(comparator['name'] == conditions[defaultField]['comparator']){
+                defaultComparatorList = comparator['store'];
+            }
+        });
+
+        vm.set('searchConditionsData', storeValues);
+        vm.set('searchCondition', defaultField);
+        vm.set('searchComparatorsData', defaultComparatorList);
+        vm.set('searchComparator', 'substr');
     },
 
     logBeforeCheckChange: function ( elem, rowIndex, checked ){
@@ -760,7 +938,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         var searchStatus = v.down("[name=searchStatus]");
         // var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() === true ) || ( v.down("[name=searchBlock]").getValue() === true );
         // var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
-        var hasFilter = v.down("[name=searchFilter]").getValue().length >= 2;
+        var hasFilter = v.down("[name=searchFilter]").getValue().length > 1;
         var statusText = "", logOrBlockText = "", totalEnabled = 0;
         // if(!hasLogOrBlockFilter) {
         //     v.getStore().each(function( record ){
@@ -784,51 +962,39 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     searchFilter: Ext.create('Ext.util.Filter', {
         filterFn: function(){}
     }),
-    filterSearch: function(elem, newValue, oldValue, eOpts){
-        var vm = elem.up('apppanel').getController().getViewModel();
+    filterSearchCalculator: function(elem, newValue){
+        var me = this,
+            view = me.getView(),
+            vm = view.up('apppanel').getController().getViewModel(),
+            store = view.getStore(),
+            searchFilter = vm.get('searchFilter');
 
-        var searchField = vm.get('searchField');
-        var searchValue = newValue;
-
-        var comparator = null;
-        var conditions = elem.up('tabpanel').down('[name=rules]').getController().getConditions(); 
-        for(var name in conditions){
-            if(name == searchField){
-                comparator = conditions[name].comparator;
-            }
-        }
-        var signatureField = searchField.toLowerCase();
-        switch(searchField){
-            case 'src_addr':
-                signatureField = 'lnet';
-                break;
-            case 'src_port':
-                signatureField = 'lport';
-                break;
-            case 'dst_addr':
-                signatureField = 'rnet';
-                break;
-            case 'dst_port':
-                signatureField = 'rport';
-                break;
-        }
-
-        var store = this.getView().getStore();
-        if( newValue ){
-            if( newValue.length > 1 ){
-                // var re = new RegExp(newValue, 'gi');
-                var compareNewValue = newValue;
-                if( typeof(newValue) == 'string' ){
-                    compareNewValue = compareNewValue.toLowerCase();
-                }
-                this.searchFilter.setFilterFn( function(record){
-                    if(comparator == 'text'){
-                        return record.get(signatureField).toLowerCase().indexOf(compareNewValue) > -1;
-                    }else{
-                        return record.get(signatureField) == compareNewValue;
+        if( searchFilter ){
+            if( searchFilter.length > 1 ){
+                var rule = new Ung.model.intrusionprevention.rule({
+                    action: 'default',
+                    enabled: 'true',
+                    conditions: {
+                        list: [{
+                            type: vm.get('searchCondition'),
+                            comparator: vm.get('searchComparator'),
+                            value: searchFilter
+                        }]
                     }
                 });
-                this.searchFilter.value = newValue;
+
+                var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
+                console.log(status);
+                store.clearFilter();
+                this.searchFilter.setFilterFn( function(record){
+                    for(var action in status){
+                        if(status[action][record.data['id']]){
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                // this.searchFilter.value = searchFilter;
                 store.addFilter( this.searchFilter );
             }
         }else{
@@ -839,38 +1005,32 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         }
         this.updateSearchStatusBar();
     },
+    filterSearchCalculateTask: null,
+    filterSearch: function(elem, newValue){
+        var me = this;
 
-
+        if(me.filterSearchCalculateTask == null){
+            me.filterSearchCalculateTask = new Ext.util.DelayedTask( Ext.bind(this.filterSearchCalculator, me) );
+        }
+        me.filterSearchCalculateTask.delay( 500 );
+    },
 
     createRuleFromSearch: function(button){
-        var vm = button.up('apppanel').getController().getViewModel();
-        var signaturesTab = button.up('tabpanel').getActiveTab();
-        var rulesTab = button.up('tabpanel').setActiveTab('rules');
-        var filters = this.getView().getStore().getFilters();
-        var searchField = vm.get('searchConditions').findRecord( 'value', vm.get('searchField')).get('value');
+        var vm = button.up('apppanel').getController().getViewModel(),
+            searchCondition = vm.get('searchCondition'),
+            searchComparator = vm.get('searchComparator'),
+            searchFilter = vm.get('searchFilter');
 
-        var comparatorText = "contains".t();
-        var comparator = 'contains';
-        var conditions = button.up('tabpanel').down('[name=rules]').getController().getConditions(); 
-        for(var name in conditions){
-            if(name == searchField){
-                if(conditions[name].comparator == "numeric" || conditions[name].comparator == "boolean"){
-                    comparatorText = "equals".t();
-                    comparator = '='; 
-                }
-            }
-        }
-
-        rulesTab.getController().addRecord({
+        button.up('tabpanel').setActiveTab('rules').getController().addRecord(null, null, {
             'enabled': true,
             'id': -1,
-            'description': '"' + vm.get('searchConditions').findRecord( 'value', vm.get('searchField')).get('name') + '" ' + comparatorText + ' "' + ( filters.items ? filters.items[0].value : '' ) + '"',
+            'description': '"' + vm.get('searchConditions').findRecord( 'value', searchCondition).get('name') + '" ' + vm.get('searchComparators').findRecord('value', vm.get('searchComparator')).get('name') + ' "' + searchFilter + '"',
             'conditions': {
                 'list': [{
                     'javaClass': '',
-                    'type': vm.get('searchField'),
-                    'comparator': comparator,
-                    'value': filters.items ? filters.items[0].value : ''
+                    'type': searchCondition,
+                    'comparator': searchComparator,
+                    'value': searchFilter
                 }]
             },
             'action': 'log'
