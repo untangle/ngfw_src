@@ -39,6 +39,7 @@ import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.SettingsManager;
 
 /**
  * Manage Intrusion Prevention configuration.
@@ -75,8 +76,11 @@ public class IntrusionPreventionApp extends AppBase
 
     private final HookCallback networkSettingsChangeHook;
 
+    private IntrusionPreventionSettings settings = null;
+
+
     private List<IPMaskedAddress> homeNetworks = null;
-    private List<String> interfaceIds = null;
+    // private List<String> interfaceIds = null;
 
     /**
      * Setup IPS application
@@ -90,7 +94,7 @@ public class IntrusionPreventionApp extends AppBase
 
         this.handler = new EventHandler(this);
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -102,8 +106,6 @@ public class IntrusionPreventionApp extends AppBase
         setBlockCount(0);
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
-
-        initializeSettings();
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
     }
@@ -127,10 +129,85 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void postInit()
     {
-        logger.info("Post init");
+        String appID = this.getAppSettings().getId().toString();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        IntrusionPreventionSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
+
+        try {
+            readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.initializeSettings();
+        } else {
+            logger.info("Loading Settings...");
+
+            this.settings = readSettings;
+            logger.debug("Settings: " + this.settings.toJSONString());
+        }
 
         readAppSettings();
     }
+
+    /**
+     * Get intrusion prevention settings.
+     *
+     * @return IntrusionPreventionSettings
+     *
+     */
+    public IntrusionPreventionSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Set intrusion prevention settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public void setSettings(final IntrusionPreventionSettings newSettings)
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "intrusion-prevention/" + "settings_" + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+
+            //         String configCmd = new String(
+            //             System.getProperty("uvm.bin.dir") +
+            //             "/intrusion-prevention-sync-settings.py" +
+            //             " --app_id " + appId +
+            //             " --current_settings " + tempSettingsName +
+            //             " --settings " + tempSettingsName
+            //         );
+            //         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+            //         Look at result to indicate change.  If change, 
+
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
+
+        this.reconfigure();
+    }
+
 
     /**
      * Pre IPS stop. Register callback?
@@ -205,7 +282,7 @@ public class IntrusionPreventionApp extends AppBase
     {
 
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
@@ -214,11 +291,11 @@ public class IntrusionPreventionApp extends AppBase
                 ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
         }
 
-        String interfacesValue = "";
-        for( String i : this.interfaceIds ){
-            interfacesValue += 
-                ( interfacesValue.length() > 0 ? "," : "" ) + i; 
-        }
+        // String interfacesValue = "";
+        // for( String i : this.interfaceIds ){
+        //     interfacesValue += 
+        //         ( interfacesValue.length() > 0 ? "," : "" ) + i; 
+        // }
 
         // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
@@ -375,49 +452,35 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void initializeSettings()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appId = this.getAppSettings().getId().toString();
-        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
+        this.settings = new IntrusionPreventionSettings();
+        setSettings(this.settings);
+        // SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        // String appId = this.getAppSettings().getId().toString();
+        // String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
 
-            // " --signatures /usr/share/untangle-suricata.config/current" +
-        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-            "/intrusion-prevention-sync-settings.py" + 
-            " --app_id " + appId +
-            " --settings " + tempFileName
-        );
-        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-        try{
-            String[] lines = result.split("\\r?\\n");
-            for ( String line : lines ){
-                if( line.trim().length() > 1 ){
-                    logger.warn("initializeSettings: intrusion-prevention-sync-settings: " + line);
-                }
-            }
-        }catch( Exception e ){
-            logger.warn("Unable to initialize settings: ", e );
-        }
+        //     // " --signatures /usr/share/untangle-suricata.config/current" +
+        // String configCmd = new String(System.getProperty("uvm.bin.dir") + 
+        //     "/intrusion-prevention-sync-settings.py" + 
+        //     " --app_id " + appId +
+        //     " --settings " + tempFileName
+        // );
+        // String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+        // try{
+        //     String[] lines = result.split("\\r?\\n");
+        //     for ( String line : lines ){
+        //         if( line.trim().length() > 1 ){
+        //             logger.warn("initializeSettings: intrusion-prevention-sync-settings: " + line);
+        //         }
+        //     }
+        // }catch( Exception e ){
+        //     logger.warn("Unable to initialize settings: ", e );
+        // }
 
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
-    }
-
-    /**
-     * Save settings.
-     *
-     * @param tempFileName  Temporary filename.
-     */
-    public void saveSettings( String tempFileName )
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
+        // try {
+        //     settingsManager.save( getSettingsFileName(), tempFileName, true );
+        // } catch (Exception exn) {
+        //     logger.error("Could not save app settings", exn);
+        // }
     }
 
     /**
@@ -554,124 +617,6 @@ public class IntrusionPreventionApp extends AppBase
                     }catch( IOException e){
                         logger.warn("Failed to close file");
                     }
-                }
-
-            }else if( action.equals("load") ){
-                String settingsName;
-                    settingsName = app.getSettingsFileName();
-                FileInputStream fis = null;
-                try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    File f = new File( settingsName );
-                    if( !f.exists() && 
-                        action.equals("load") ){
-                        app.initializeSettings();
-                    }
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    fis = new FileInputStream(settingsName);
-                    OutputStream out = resp.getOutputStream();
-                
-                    while ( ( read = fis.read( buffer ) ) > 0 ) {
-                        out.write( buffer, 0, read);
-                    }
-
-                    fis.close();
-                    out.flush();
-                    out.close();
-
-                } catch (Exception e) {
-                    logger.warn("Failed to load IPS settings",e);
-                }finally{
-                    try{
-                        if(fis != null){
-                            fis.close();
-                        }
-                    }catch( IOException e){
-                        logger.warn("Failed to close file");
-                    }
-                }
-                app.setUpdatedSettingsFlag( false );
-            }else if( action.equals("save")) {
-                /*
-                 * Save/uploads are a bit of a problem due to size.  For load/downloads,
-                 * the settings file is automatically compressed by Apache/Tomcat from 
-                 * around 30MB to 3MB which is hardly noticable.
-                 *
-                 * The reverse is almost never true and the client will attempt to upload 
-                 * without compression.  To get around this, we receive a JSON "patch"
-                 * which we pass to the configuration management scripts to integrate into settings.
-                 */
-                // String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
-                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
-                int verifyResult = 1;
-                FileOutputStream fos = null;
-                try{
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    InputStream in = req.getInputStream();
-                    fos = new FileOutputStream( tempSettingsName );
-
-                    while ( ( read = in.read( buffer ) ) > 0 ) {
-                        fos.write( buffer, 0, read);
-                    }
-
-                    in.close();
-                    fos.flush();
-
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempSettingsName + "> /dev/null 2>&1" );
-                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
-
-                    String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") +
-                        "/intrusion-prevention-sync-settings.py" +
-                        " --app_id " + appId +
-                        " --current_settings " + tempSettingsName +
-                        " --settings " + tempSettingsName
-                    );
-                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-
-                    try{
-                        String[] lines = result.split("\\r?\\n");
-                        for ( String line : lines ){
-                            if( line.trim().length() > 1 ){
-                                logger.warn("DownloadHandler: intrusion-prevention-sync-settings: " + line);
-                            }
-                        }
-                    }catch( Exception e ){
-                        logger.warn("Unable to initialize settings: ", e );
-                    }
-
-                    app.saveSettings( tempSettingsName );
-
-                    File fp = new File( tempSettingsName );
-                    fp.delete();
-                }catch( IOException e ){
-                    logger.warn("Failed to save IPS settings");
-                }finally{
-                    try{
-                        if(fos != null){
-                            fos.close();
-                        }
-                    }catch( IOException e){
-                        logger.warn("Failed to close file");
-                    }
-                }
-
-                String responseText = "{success:true}";
- 
-                try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    OutputStream out = resp.getOutputStream();
-                    out.write( responseText.getBytes(), 0, responseText.getBytes().length );
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    logger.warn("Failed to send IPS save response");
                 }
             }else if(action.equals("export")){
                 String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
@@ -894,7 +839,7 @@ public class IntrusionPreventionApp extends AppBase
         }
         if( sameNetworks == false ){
             this.homeNetworks = newHomeNetworks;
-            this.interfaceIds = calculateInterfaces(networkSettings);
+            // this.interfaceIds = calculateInterfaces(networkSettings);
             this.reconfigure();
         }
     }

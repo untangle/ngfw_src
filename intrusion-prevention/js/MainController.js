@@ -19,16 +19,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             Rpc.asyncPromise(v.appManager, 'getLastUpdate'),
             Rpc.directPromise('rpc.companyName'),
             Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
             function(){ return Ext.Ajax.request({
-                url: "/admin/download",
-                method: 'POST',
-                params: {
-                    type: "IntrusionPreventionSettings",
-                    arg1: "load",
-                    arg2: vm.get('instance.id')
-                },
-                timeout: 600000});
-            },function(){ return Ext.Ajax.request({
                 url: "/admin/download",
                 method: 'POST',
                 params: {
@@ -45,27 +37,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var t1 = performance.now();
             // console.log(t1-t0);
 
-            var settings = null;
-            try{
-                settings = Ext.decode( result[4].responseText);
-            }catch(error){
-                v.setLoading(false);
-                Util.handleException({
-                    message: 'Intrusion Prevention settings file is corrupt.'.t()
-                });
-                return;
-            }
             vm.set({
                 lastUpdateCheck: (result[0] !== null && result[0].time !== 0 ) ? Renderer.timestamp(result[0]) : "Never".t(),
                 lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
                 companyName: result[2],
                 system_memory: result[3],
-                settings: settings,
-                profileStoreLoad: true,
-                signaturesStoreLoad: true,
-                variablesStoreLoad: true
+                settings: result[4]
             });
-            me.buildSignatures( result[5], settings);
+            me.buildSignatures( result[5], vm.get('settings'));
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
@@ -78,7 +57,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
     },
 
-    buildSignatures: function(reserved, settinns){
+    buildSignatures: function(reserved, settings){
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         var t0 = performance.now();
@@ -266,58 +245,24 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         // console.log(vm.get('settings'));
 
-        Ext.Ajax.request({
-            url: "/admin/download",
-            jsonData: vm.get('settings'),
-            method: 'POST',
-            params: {
-                type: "IntrusionPreventionSettings",
-                arg1: "save",
-                arg2: vm.get('instance.id')
-            },
-            scope: this,
-            timeout: 600000
-        }).then(function(result){
-            if(Util.isDestroyed(me, v, vm)){
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
+            Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
 
-            var response = Ext.decode( result.responseText );
-            vm.set({
-                profileStoreLoad: true,
-                signaturesStoreLoad: true,
-                variablesStoreLoad: true
-            });
-
-            if( !response.success) {
-                Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
-            } else {
-                Rpc.asyncData(v.appManager, 'reconfigure')
-                .then( function(result){
-                    if(Util.isDestroyed(me, v, vm)){
-                        return;
-                    }
-                    v.setLoading(false);
-                    Util.successToast('Settings saved...');
-                    v.down('appstate').getController().reload();
-                    me.getSettings();
-                    Ext.fireEvent('resetfields', v);
-                }, function(response){
-                    if(!Util.isDestroyed(me, v, vm)){
-                        v.setLoading(false);
-                        vm.set('panel.saveDisabled', true);
-                    }
-                    Util.handleException(response);
-                });
-            }
-        }, function(response){
-            Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
-            if(!Util.isDestroyed(me, v, vm)){
+        //             v.down('appstate').getController().reload();
+            me.getSettings();
+            Ext.fireEvent('resetfields', v);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
-                Util.successToast('Unable to save settings...');
-                return;
             }
-            Util.handleException(response);
+            Util.handleException(ex);
         });
 
     },
