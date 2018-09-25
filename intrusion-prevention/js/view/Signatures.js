@@ -48,7 +48,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     bbar: [ 
     'Search'.t(), {
         xtype: 'combo',
-        name: 'searchField',
+        name: 'searchCondition',
         // listeners: {
         //     change: 'filterSearch'
         // }
@@ -57,18 +57,25 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         displayField: 'name',
         bind:{
             store: '{searchConditions}',
-            value: '{searchField}'
+            value: '{searchCondition}'
         }
-        // store: Ext.create('Ext.data.ArrayStore', {
-        //     model: 'Ext.data.Model',
-        //     fields: ['name', 'displayField'],
-        //     data : []
-        // }),
-        // forceSelection: true,
-    },
-        'contains'.t(), {
+    },{
+        xtype: 'combo',
+        name: 'searchComparator',
+        // listeners: {
+        //     change: 'filterSearch'
+        // }
+        queryMode: 'local',
+        valueField: 'value',
+        displayField: 'name',
+        bind:{
+            store: '{searchComparators}',
+            value: '{searchComparator}'
+        }
+    },{
         xtype: 'textfield',
         name: 'searchFilter',
+        bind: '{searchFilter}',
         listeners: {
             change: 'filterSearch'
         }
