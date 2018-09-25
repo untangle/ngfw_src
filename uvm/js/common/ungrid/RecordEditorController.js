@@ -22,7 +22,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }
 
         if (!v.record) {
-            v.record = Ext.create(this.mainGrid.recordModel, Ung.util.Util.activeClone(v.template ? v.template : this.mainGrid.emptyRow));
+            v.record = Ext.create(this.mainGrid.recordModel, Ung.util.Util.activeClone(v.template != null ? v.template : this.mainGrid.emptyRow));
             v.record.set('markedForNew', true);
             this.action = 'add';
             vm.set({
