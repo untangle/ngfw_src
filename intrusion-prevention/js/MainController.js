@@ -349,13 +349,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return isUsed;
     },
 
-    // runWizard: function (btn) {
-    //     this.wizard = this.getView().add({
-    //         xtype: 'app-intrusion-prevention-wizard'
-    //     });
-    //     this.wizard.show();
-    // },
-
     storeDataChanged: function( store ){
         /*
          * Inexplicably, extjs does not see 'inline' data loads as "proper" store
@@ -399,13 +392,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        // var conditions = Ext.Array.findBy(v.editorFields, function(field){
-        //     if(field.xtype == 'ipsrulesconditionseditor'){
-        //         return true;
-        //     }
-        // }).conditions;
         var conditions = v.down('[name=rules]').getController().getConditions(); 
-        // console.log(conditions);
 
         var status = {
             log: {},
@@ -418,7 +405,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var statusIndex;
         var signatures = vm.get('signatures');
 
-        // var rules = (rule != null) ? Ext.create() : vm.get('rules');
         var rules = vm.get('rules');
         if(matchRule != null){
             rules = Ext.create('Ext.data.Store');
@@ -426,28 +412,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
 
         var ruleAction, ruleActionDefault, ruleActionMatchAny;
-        // if(rule != null){
-        //     ruleAction = rule.get('action');
-        //     ruleActionDefault = ( ruleAction == 'default' );
-        //     statusIndex = ruleAction;
-        //     signatures.each( function(signature){
-        //         if(rule.matchSignature(signature, conditions, vm)){
-        //             if(ruleActionDefault){
-        //                 statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
-        //             }
-        //             if(ruleAction == 'blocklog'){
-        //                 statusIndex = signature.data['log'] ? 'block' : 'disable';
-        //             }
-        //             var signatureId = signature.data['id'];
-        //             status[statusIndex][signatureId] = true;
-        //         }
-        //     });
-        //     console.log('rule ' + rule.get('description'));
-        //     console.log(performance.now()- t0);
-        //     t0 = t1;
-        //     t1 = performance.now();
-        // }else{
-        // vm.get('rules').each(function(rule){
         rules.each(function(rule){
             if(rule.get('enabled')){
                 ruleAction = rule.get('action');
@@ -516,14 +480,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
 
         return status;
-
-        // var ruleStatusBar = v.down("[name=ruleStatus]");
-        // var statusLengths = {};
-        // for(var statusKey in status){
-        //     statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
-        // }
-        
-        // ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));        
     },
 
     statics:{
@@ -747,8 +703,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.IpsRulesConditionsEditorController'
             }),
             status = view.up('apppanel').getController().ruleSignatureMatches(rule),
             matchStatus = view.up('form').down('[name=matchStatus]');
-
-        console.log(rule);
 
         var affectedCount = 0;
         Object.keys(status).forEach(function(k){
@@ -984,7 +938,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                 });
 
                 var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
-                console.log(status);
                 store.clearFilter();
                 this.searchFilter.setFilterFn( function(record){
                     for(var action in status){
@@ -994,7 +947,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                     }
                     return false;
                 });
-                // this.searchFilter.value = searchFilter;
                 store.addFilter( this.searchFilter );
             }
         }else{
@@ -1590,6 +1542,10 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                     targetConditionValue = signature.data[conditionKey];
             }
 
+            if(typeof(targetConditionValue) == 'string'){
+                targetConditionValue = targetConditionValue.toLowerCase();
+            }
+
             switch(editorCondition.comparator){
                 case 'numeric':
                     match = me.matchesNumeric(parseInt(targetConditionValue, 10), condition.comparator, parseInt(condition.value, 10) );
@@ -1597,12 +1553,12 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'boolean':
                     var listValue = condition.value;
                     if(typeof(listValue) != 'object'){
-                        listValue = listValue.split(',');
+                        listValue = listValue.toLowerCase().split(',');
                     }
                     match = me.matchesIn(targetConditionValue, condition.comparator, listValue);
                     break;
                 case 'text':
-                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value);
+                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value.toLowerCase());
                     break;
                 default:
                     // !!! throw exception
