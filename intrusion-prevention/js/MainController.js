@@ -608,16 +608,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         return conditions;
     },
 
-    // getComparators: function(){
-    //     var conditions = {};
-    //     this.getView().editorFields.forEach( function(field){
-    //         if(field.xtype == 'ipsrulesconditionseditor'){
-    //             conditions = field.comparators;
-    //         }
-    //     });
-    //     return conditions;
-    // },
-
     updateRuleStatus: function(){
         var me = this,
             v = me.getView(),
@@ -849,20 +839,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             });
         }
 
-        // Default to searching the message.
-        var defaultField = 'MSG';
-        var defaultComparator = 'substr';
-        var defaultComparatorList = null;
-        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
-            if(comparator['name'] == conditions[defaultField]['comparator']){
-                defaultComparatorList = comparator['store'];
-            }
-        });
-
         vm.set('searchConditionsData', storeValues);
-        vm.set('searchCondition', defaultField);
-        vm.set('searchComparatorsData', defaultComparatorList);
-        vm.set('searchComparator', 'substr');
+        vm.set('searchCondition', 'MSG');
     },
 
     logBeforeCheckChange: function ( elem, rowIndex, checked ){
@@ -911,6 +889,29 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             statusText = Ext.String.format( '{0} available signatures'.t(), v.getStore().getCount()) + ', ' + logOrBlockText;
         }
         searchStatus.update( statusText );
+    },
+
+    searchConditionChange: function(eleme, newValue){
+        var me = this,
+            view = me.getView(),
+            vm = view.up('apppanel').getController().getViewModel(),
+            conditionComparator = view.up('apppanel').down('[name=rules]').getController().getConditions()[newValue].comparator,
+            currentComparator = vm.get('searchComparator');
+
+        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
+            if(comparator['name'] == conditionComparator){
+                vm.set('searchComparatorsData', comparator.store);
+                var found = false;
+                comparator.store.forEach(function(sv){
+                    if(currentComparator == sv[0]){
+                        found = true;
+                    }
+                });
+                if(!found){
+                    vm.set('searchComparator', comparator.defaultValue);
+                }
+            }
+        });
     },
 
     searchFilter: Ext.create('Ext.util.Filter', {
