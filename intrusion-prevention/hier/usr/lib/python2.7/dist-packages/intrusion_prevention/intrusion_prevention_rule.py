@@ -63,7 +63,7 @@ class IntrusionPreventionRule:
                     condition["value"] = condition["value"].split(',')
                 match = self.matches_in(signature.options["classtype"], comparator, condition["value"])
             elif condition["type"] == "MSG":
-                match = self.matches_text(signature.options["msg"], comparator, targetValue)
+                match = self.matches_text(signature.options["msg"].lower(), comparator, targetValue.lower())
             elif condition["type"] == "PROTOCOL":
                 if not isinstance(condition["value"],list):
                     condition["value"] = condition["value"].split(',')
@@ -87,6 +87,8 @@ class IntrusionPreventionRule:
                 conditionArgs["comparatorType"] = "text"
             elif condition["type"] == "SYSTEM_MEMORY":
                 match = self.matches_numeric(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"], comparator, targetValue)
+            elif condition["type"] == "SIGNATURE":
+                match = self.matches_text(signature.build().lower(), comparator, targetValue.lower())
             else:
                 ### exception
                 print("UNKNOWN")
@@ -130,7 +132,7 @@ class IntrusionPreventionRule:
         return False
 
     def matches_in(self, sourceValue, comparator, targetValue):
-        is_in = sourceValue in targetValue
+        is_in = sourceValue in (value.lower() for value in targetValue)
 
         if comparator == "=":
             return is_in
