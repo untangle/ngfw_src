@@ -85,6 +85,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         },
     }],
 
+    editorXtype: 'ung.cmp.unintrusionrulesrecordeditor',
     editorFields: [{
         xtype:'checkbox',
         bind: '{record.enabled}',
@@ -97,7 +98,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         allowBlank: false
     },
     Ung.cmp.ConditionsEditor.build({
-        xtype: 'conditionseditor',
+        // xtype: 'conditionseditor',
+        xtype: 'ipsrulesconditionseditor',
         bind: '{record.conditions}',
         flex: 1,
         model: 'Ung.apps.intrusionprevention.model.Condition',
