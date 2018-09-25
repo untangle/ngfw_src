@@ -26,6 +26,7 @@ class SuricataConf:
     # preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
     # preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
     default_settings = {
+        "default-rule-path": "/etc/suricata",
         "rule-files": [
             "ngfw.rules"
         ],
