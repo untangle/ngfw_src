@@ -49,9 +49,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     'Search'.t(), {
         xtype: 'combo',
         name: 'searchCondition',
-        // listeners: {
-        //     change: 'filterSearch'
-        // }
+        listeners: {
+            change: 'searchConditionChange'
+        },
         queryMode: 'local',
         valueField: 'value',
         displayField: 'name',
