@@ -364,6 +364,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
 
         comparators: [{
             name: 'invert',
+            defaultValue: 'is',
             store: [[
                 true, 'is NOT'.t()
             ],[
@@ -371,6 +372,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             ]]
         },{
             name: 'numeric',
+            defaultValue: '=',
             store:  [[
                 '<', '<'.t()
             ],[
@@ -386,6 +388,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             ]]
         },{
             name: 'text',
+            defaultValue: 'substr',
             store: [[
                 '=', '='.t()
             ],[
@@ -398,6 +401,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             // More accurately a "boolean in string" where is:= and is not:!=
             name: 'boolean',
+            defaultValue: 'is',
             store: [[
                 '=', 'is'.t()
             ],[
