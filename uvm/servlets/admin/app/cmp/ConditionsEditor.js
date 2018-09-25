@@ -401,7 +401,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             // More accurately a "boolean in string" where is:= and is not:!=
             name: 'boolean',
-            defaultValue: 'is',
+            defaultValue: '=',
             store: [[
                 '=', 'is'.t()
             ],[
