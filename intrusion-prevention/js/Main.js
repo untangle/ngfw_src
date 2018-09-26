@@ -113,7 +113,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 }],
                 sorters: [{
                     property: 'value',
-                    direction: 'ASC'
+                    direction: 'DESC'
                 }],
                 data: '{searchComparatorsData}'
             }
