@@ -12,14 +12,15 @@ import subprocess
 import tarfile
 import urllib2
 
-import uvm
-from uvm import Manager
-from uvm import AppManager
-from uvm import Uvm
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
+
+import uvm
+from uvm import Manager
+from uvm import AppManager
+from uvm import Uvm
 
 import intrusion_prevention
 
@@ -280,32 +281,9 @@ class Update:
         for app_id in self.app_ids:
             app = self.app_manager.app(app_id)
 
-            temp_settings_file_name = "/tmp/" + str(app_id) + ".js"
-            ## Syncronize
-            args = [
-                "@PREFIX@/usr/share/untangle/bin/intrusion-prevention-sync-settings.py",
-                "--app_id", str(app_id),
-                "--settings", temp_settings_file_name,
-                "--status", "/usr/share/untangle-suricata-config/last-update.js"
-            ]
-            try: 
-                process = subprocess.Popen( args )
-                result = process.wait()
-            except:
-                self.errors.append( {
-                    'msg': "Unable to run sync script with arguments = " + ",".join(args),
-                    'error': "\n".join( str(v) for v in sys.exc_info() )
-                })
-                return False
+            app.synchronizeSettingsWithDefaults()
+            app.synchronizeSettingsWithClassifications()
             
-            if result == 0:
-                app.saveSettings( temp_settings_file_name )
-                app.setUpdatedSettingsFlag( True )
-                try:
-                    app.reconfigure()
-                except:
-                    # This may time out on slow machines, continue on
-                    pass
         return True
 
 def usage():

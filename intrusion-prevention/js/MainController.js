@@ -19,16 +19,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             Rpc.asyncPromise(v.appManager, 'getLastUpdate'),
             Rpc.directPromise('rpc.companyName'),
             Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
             function(){ return Ext.Ajax.request({
-                url: "/admin/download",
-                method: 'POST',
-                params: {
-                    type: "IntrusionPreventionSettings",
-                    arg1: "load",
-                    arg2: vm.get('instance.id')
-                },
-                timeout: 600000});
-            },function(){ return Ext.Ajax.request({
                 url: "/admin/download",
                 method: 'POST',
                 params: {
@@ -45,27 +37,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var t1 = performance.now();
             // console.log(t1-t0);
 
-            var settings = null;
-            try{
-                settings = Ext.decode( result[4].responseText);
-            }catch(error){
-                v.setLoading(false);
-                Util.handleException({
-                    message: 'Intrusion Prevention settings file is corrupt.'.t()
-                });
-                return;
-            }
             vm.set({
                 lastUpdateCheck: (result[0] !== null && result[0].time !== 0 ) ? Renderer.timestamp(result[0]) : "Never".t(),
                 lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
                 companyName: result[2],
                 system_memory: result[3],
-                settings: settings,
-                profileStoreLoad: true,
-                signaturesStoreLoad: true,
-                variablesStoreLoad: true
+                settings: result[4]
             });
-            me.buildSignatures( result[5], settings);
+            me.buildSignatures( result[5], vm.get('settings'));
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
@@ -78,7 +57,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
     },
 
-    buildSignatures: function(reserved, settinns){
+    buildSignatures: function(reserved, settings){
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         var t0 = performance.now();
@@ -266,58 +245,24 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         // console.log(vm.get('settings'));
 
-        Ext.Ajax.request({
-            url: "/admin/download",
-            jsonData: vm.get('settings'),
-            method: 'POST',
-            params: {
-                type: "IntrusionPreventionSettings",
-                arg1: "save",
-                arg2: vm.get('instance.id')
-            },
-            scope: this,
-            timeout: 600000
-        }).then(function(result){
-            if(Util.isDestroyed(me, v, vm)){
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
                 return;
             }
+            Util.successToast('Settings saved');
+            vm.set('panel.saveDisabled', false);
+            v.setLoading(false);
 
-            var response = Ext.decode( result.responseText );
-            vm.set({
-                profileStoreLoad: true,
-                signaturesStoreLoad: true,
-                variablesStoreLoad: true
-            });
-
-            if( !response.success) {
-                Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
-            } else {
-                Rpc.asyncData(v.appManager, 'reconfigure')
-                .then( function(result){
-                    if(Util.isDestroyed(me, v, vm)){
-                        return;
-                    }
-                    v.setLoading(false);
-                    Util.successToast('Settings saved...');
-                    v.down('appstate').getController().reload();
-                    me.getSettings();
-                    Ext.fireEvent('resetfields', v);
-                }, function(response){
-                    if(!Util.isDestroyed(me, v, vm)){
-                        v.setLoading(false);
-                        vm.set('panel.saveDisabled', true);
-                    }
-                    Util.handleException(response);
-                });
-            }
-        }, function(response){
-            Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
-            if(!Util.isDestroyed(me, v, vm)){
+        //             v.down('appstate').getController().reload();
+            me.getSettings();
+            Ext.fireEvent('resetfields', v);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
-                Util.successToast('Unable to save settings...');
-                return;
             }
-            Util.handleException(response);
+            Util.handleException(ex);
         });
 
     },
@@ -348,13 +293,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         return isUsed;
     },
-
-    // runWizard: function (btn) {
-    //     this.wizard = this.getView().add({
-    //         xtype: 'app-intrusion-prevention-wizard'
-    //     });
-    //     this.wizard.show();
-    // },
 
     storeDataChanged: function( store ){
         /*
@@ -399,13 +337,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        // var conditions = Ext.Array.findBy(v.editorFields, function(field){
-        //     if(field.xtype == 'ipsrulesconditionseditor'){
-        //         return true;
-        //     }
-        // }).conditions;
         var conditions = v.down('[name=rules]').getController().getConditions(); 
-        // console.log(conditions);
 
         var status = {
             log: {},
@@ -418,7 +350,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var statusIndex;
         var signatures = vm.get('signatures');
 
-        // var rules = (rule != null) ? Ext.create() : vm.get('rules');
         var rules = vm.get('rules');
         if(matchRule != null){
             rules = Ext.create('Ext.data.Store');
@@ -426,28 +357,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
 
         var ruleAction, ruleActionDefault, ruleActionMatchAny;
-        // if(rule != null){
-        //     ruleAction = rule.get('action');
-        //     ruleActionDefault = ( ruleAction == 'default' );
-        //     statusIndex = ruleAction;
-        //     signatures.each( function(signature){
-        //         if(rule.matchSignature(signature, conditions, vm)){
-        //             if(ruleActionDefault){
-        //                 statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
-        //             }
-        //             if(ruleAction == 'blocklog'){
-        //                 statusIndex = signature.data['log'] ? 'block' : 'disable';
-        //             }
-        //             var signatureId = signature.data['id'];
-        //             status[statusIndex][signatureId] = true;
-        //         }
-        //     });
-        //     console.log('rule ' + rule.get('description'));
-        //     console.log(performance.now()- t0);
-        //     t0 = t1;
-        //     t1 = performance.now();
-        // }else{
-        // vm.get('rules').each(function(rule){
         rules.each(function(rule){
             if(rule.get('enabled')){
                 ruleAction = rule.get('action');
@@ -516,14 +425,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
 
         return status;
-
-        // var ruleStatusBar = v.down("[name=ruleStatus]");
-        // var statusLengths = {};
-        // for(var statusKey in status){
-        //     statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
-        // }
-        
-        // ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));        
     },
 
     statics:{
@@ -652,16 +553,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         return conditions;
     },
 
-    // getComparators: function(){
-    //     var conditions = {};
-    //     this.getView().editorFields.forEach( function(field){
-    //         if(field.xtype == 'ipsrulesconditionseditor'){
-    //             conditions = field.comparators;
-    //         }
-    //     });
-    //     return conditions;
-    // },
-
     updateRuleStatus: function(){
         var me = this,
             v = me.getView(),
@@ -747,8 +638,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.IpsRulesConditionsEditorController'
             }),
             status = view.up('apppanel').getController().ruleSignatureMatches(rule),
             matchStatus = view.up('form').down('[name=matchStatus]');
-
-        console.log(rule);
 
         var affectedCount = 0;
         Object.keys(status).forEach(function(k){
@@ -895,20 +784,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             });
         }
 
-        // Default to searching the message.
-        var defaultField = 'MSG';
-        var defaultComparator = 'substr';
-        var defaultComparatorList = null;
-        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
-            if(comparator['name'] == conditions[defaultField]['comparator']){
-                defaultComparatorList = comparator['store'];
-            }
-        });
-
         vm.set('searchConditionsData', storeValues);
-        vm.set('searchCondition', defaultField);
-        vm.set('searchComparatorsData', defaultComparatorList);
-        vm.set('searchComparator', 'substr');
+        vm.set('searchCondition', 'MSG');
     },
 
     logBeforeCheckChange: function ( elem, rowIndex, checked ){
@@ -959,6 +836,29 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         searchStatus.update( statusText );
     },
 
+    searchConditionChange: function(eleme, newValue){
+        var me = this,
+            view = me.getView(),
+            vm = view.up('apppanel').getController().getViewModel(),
+            conditionComparator = view.up('apppanel').down('[name=rules]').getController().getConditions()[newValue].comparator,
+            currentComparator = vm.get('searchComparator');
+
+        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
+            if(comparator['name'] == conditionComparator){
+                vm.set('searchComparatorsData', comparator.store);
+                var found = false;
+                comparator.store.forEach(function(sv){
+                    if(currentComparator == sv[0]){
+                        found = true;
+                    }
+                });
+                if(!found){
+                    vm.set('searchComparator', comparator.defaultValue);
+                }
+            }
+        });
+    },
+
     searchFilter: Ext.create('Ext.util.Filter', {
         filterFn: function(){}
     }),
@@ -984,7 +884,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                 });
 
                 var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
-                console.log(status);
                 store.clearFilter();
                 this.searchFilter.setFilterFn( function(record){
                     for(var action in status){
@@ -994,7 +893,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                     }
                     return false;
                 });
-                // this.searchFilter.value = searchFilter;
                 store.addFilter( this.searchFilter );
             }
         }else{
@@ -1590,6 +1488,10 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                     targetConditionValue = signature.data[conditionKey];
             }
 
+            if(typeof(targetConditionValue) == 'string'){
+                targetConditionValue = targetConditionValue.toLowerCase();
+            }
+
             switch(editorCondition.comparator){
                 case 'numeric':
                     match = me.matchesNumeric(parseInt(targetConditionValue, 10), condition.comparator, parseInt(condition.value, 10) );
@@ -1597,12 +1499,12 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'boolean':
                     var listValue = condition.value;
                     if(typeof(listValue) != 'object'){
-                        listValue = listValue.split(',');
+                        listValue = listValue.toLowerCase().split(',');
                     }
                     match = me.matchesIn(targetConditionValue, condition.comparator, listValue);
                     break;
                 case 'text':
-                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value);
+                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value.toLowerCase());
                     break;
                 default:
                     // !!! throw exception
