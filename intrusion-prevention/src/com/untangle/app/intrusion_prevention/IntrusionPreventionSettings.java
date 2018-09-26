@@ -18,7 +18,8 @@ import java.util.Map;
 public class IntrusionPreventionSettings implements Serializable, JSONString
 {
     private Integer version = 3;
-    private Integer defaultsVersion = 0;
+    private String defaultsMd5sum = "";
+    private String classificationMd5sum = "";
     private List<IntrusionPreventionRule> rules = new LinkedList<>();
     private List<String> signatures = new LinkedList<>();
     private Map<String, String> variables = new HashMap<String, String>();
@@ -40,8 +41,11 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public Integer getDefaultsVersion() { return defaultsVersion; }
-    public void setDefaultsVersion(Integer defaultsVersion) { this.defaultsVersion = defaultsVersion; }
+    public String getDefaultsMd5sum() { return defaultsMd5sum; }
+    public void setDefaultsMd5sum(String defaultsMd5sum) { this.defaultsMd5sum = defaultsMd5sum; }
+
+    public String getClassificationMd5sum() { return classificationMd5sum; }
+    public void setClassificationMd5sum(String classificationMd5sum) { this.classificationMd5sum = classificationMd5sum; }
 
     public List<IntrusionPreventionRule> getRules() { return rules; }
     public void setRules(List<IntrusionPreventionRule> signatures) { this.rules = rules; }
