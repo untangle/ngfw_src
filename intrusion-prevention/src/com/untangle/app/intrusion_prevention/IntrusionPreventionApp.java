@@ -11,18 +11,32 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jabsorb.JSONSerializer;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Hex;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -39,6 +53,7 @@ import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.SettingsManager;
 
 /**
  * Manage Intrusion Prevention configuration.
@@ -66,17 +81,24 @@ public class IntrusionPreventionApp extends AppBase
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
     private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
+    private static final String DEFAULTS_FILE = "/usr/share/untangle-suricata-config/current/templates/defaults.js";
+    private static final String CLASSIFICATION_FILE = "/usr/share/untangle-suricata-config/current/rules/classification.config";
     // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     // private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
+    private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
+    private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
 
     private boolean updatedSettingsFlag = false;
 
     private final HookCallback networkSettingsChangeHook;
 
+    private IntrusionPreventionSettings settings = null;
+
+
     private List<IPMaskedAddress> homeNetworks = null;
-    private List<String> interfaceIds = null;
+    // private List<String> interfaceIds = null;
 
     /**
      * Setup IPS application
@@ -90,7 +112,7 @@ public class IntrusionPreventionApp extends AppBase
 
         this.handler = new EventHandler(this);
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -102,8 +124,6 @@ public class IntrusionPreventionApp extends AppBase
         setBlockCount(0);
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
-
-        initializeSettings();
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
     }
@@ -127,9 +147,311 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void postInit()
     {
-        logger.info("Post init");
+        String appID = this.getAppSettings().getId().toString();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        IntrusionPreventionSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
+
+        try {
+            readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.settings = new IntrusionPreventionSettings();
+        }else{ 
+            logger.info("Loading Settings...");
+
+            this.settings = readSettings;
+            logger.debug("Settings: " + this.settings.toJSONString());
+        }
+        synchronizeSettingsWithDefaults();
+        synchronizeSettingsWithClassifications();
 
         readAppSettings();
+    }
+
+    /**
+     * Get intrusion prevention settings.
+     *
+     * @return IntrusionPreventionSettings
+     *
+     */
+    public IntrusionPreventionSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Set intrusion prevention settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public void setSettings(final IntrusionPreventionSettings newSettings)
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "intrusion-prevention/" + "settings_" + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
+
+        this.reconfigure();
+    }
+
+    /**
+     * Initialize settings.
+     */
+    public void initializeSettings()
+    {
+        this.settings = new IntrusionPreventionSettings();
+        synchronizeSettingsWithDefaults();
+        synchronizeSettingsWithClassifications();
+    }
+
+    /**
+     * Merge JSON object into another.
+     * @param  source        [description]
+     * @param  destination   [description]
+     * @return               [description]
+     * @throws JSONException [description]
+     */
+    private static JSONObject merge(JSONObject source, JSONObject destination) throws JSONException {
+        for (String key: JSONObject.getNames(source)) {
+                Object value = source.get(key);
+                if (!destination.has(key)) {
+                    // new value for "key":
+                    destination.put(key, value);
+                } else {
+                    // existing value for "key" - recursively deep merge:
+                    if (value instanceof JSONObject) {
+                        JSONObject valueJson = (JSONObject)value;
+                        merge(valueJson, destination.getJSONObject(key));
+                    } else {
+                        destination.put(key, value);
+                    }
+                }
+        }
+        return destination;
+    }
+
+    /**
+     * Integrate values from defaults into settings.
+     * The defaults.js file is distributed with the signature downloads and lets
+     * us make in the field modifications of settings.
+     */
+    public void synchronizeSettingsWithDefaults(){
+        File f = new File(DEFAULTS_FILE);
+        if( f.exists() ){
+            JSONObject defaults = null;
+            String defaultsContents = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(DEFAULTS_FILE);
+                defaultsContents = IOUtils.toString(is, "UTF-8");
+                defaults = new JSONObject( defaultsContents );
+            }catch (Exception e){
+                logger.error("synchronizeSettingsWithDefaults: jsonobject",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("synchronizeSettingsWithDefaults: failed to close file");
+                }
+            }
+            try{
+                String defaultsMd5sum = md5sum(defaultsContents);
+                if(!defaultsMd5sum.equals(this.settings.getDefaultsMd5sum())){
+                    /**
+                     * Only sync if file has changed.
+                     */
+                    JSONSerializer serializer = UvmContextFactory.context().getSerializer();
+                    Iterator<?> keys = defaults.keys();
+                    while( keys.hasNext()){
+                        String key = (String) keys.next();
+                        if(key.equals("rules")){
+                            /**
+                             * Special handling for rules:  Replace but keep existing enabled values.
+                             */
+                            List<IntrusionPreventionRule> rules = settings.getRules();
+
+                            JSONArray defaultRules = defaults.getJSONObject(key).getJSONArray("list");
+                            for(int i = 0; i < defaultRules.length(); i++){
+                                IntrusionPreventionRule defaultRule = (IntrusionPreventionRule) serializer.fromJSON(defaultRules.getString(i));
+
+                                boolean found = false;
+                                for(int j = 0; j < rules.size(); j++){
+                                    IntrusionPreventionRule rule = rules.get(j);
+                                    if(rule.getId().equals(defaultRule.getId())){
+                                        defaultRule.setEnabled(rule.getEnabled());
+                                        rules.set(j, defaultRule);
+                                        found = true;
+                                    }
+                                }
+                                if(found == false){
+                                    rules.add(defaultRule);
+                                }
+                            }
+                        }else{
+                            try{
+                                /**
+                                 * For everything else, perform a straight merge assuming methods exist.
+                                 */
+                                Method getMethod = this.settings.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
+                                Method setMethod = this.settings.getClass().getMethod("set" + key.substring(0, 1).toUpperCase() + key.substring(1), defaults.get(key).getClass());
+                                if(defaults.get(key).getClass().toString().equals("JSONObject")){
+                                    setMethod.invoke(this.settings, merge((JSONObject) defaults.get(key), (JSONObject) getMethod.invoke(this.settings)));
+                                }else{
+                                    setMethod.invoke(this.settings, defaults.get(key));                                    
+                                }
+                            }catch(Exception e){
+                                logger.error("synchronizeSettingsWithDefaults: method exception", e);
+                            }
+                        }
+
+                    }
+                    this.settings.setDefaultsMd5sum(defaultsMd5sum);
+                    this.setSettings(this.settings);
+                }
+            }catch(Exception e){
+                logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
+            }
+        }
+    }
+
+    /**
+     * Integrate values from defaults into settings.
+     * The defaults.js file is distributed with the signature downloads and lets
+     * us make in the field modifications of settings.
+     */
+    public void synchronizeSettingsWithClassifications(){
+        File f = new File(CLASSIFICATION_FILE);
+        if( f.exists() ){
+            String classificationContents = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(CLASSIFICATION_FILE);
+                classificationContents = IOUtils.toString(is, "UTF-8");
+            }catch (Exception e){
+                logger.error("synchronizeSettingsWithClassifications: open",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("synchronizeSettingsWithClassifications: failed to close file");
+                }
+            }
+            try{
+                String classificationMd5sum = md5sum(classificationContents);
+                if(!classificationMd5sum.equals(this.settings.getClassificationMd5sum())){
+                    /**
+                     * Only sync if file has changed.
+                     */
+                    List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
+                    List<IntrusionPreventionRuleCondition> classificationConditions = null;
+
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical", false, CLASSIFICATION_ID_PREFIX + "_1")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High", false, CLASSIFICATION_ID_PREFIX + "_2")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("log", classificationConditions, "Medium", false, CLASSIFICATION_ID_PREFIX + "_3")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("default", classificationConditions, "Low", false, CLASSIFICATION_ID_PREFIX + "_4")
+                    );
+
+                    Matcher match = null;
+                    for(String line : classificationContents.split("\\r?\\n")){
+                        Matcher matcher = CLASSIFICATION_PATTERN.matcher(line);
+                        if(matcher.find()){
+                            for(IntrusionPreventionRule rule : classificationRules){
+                                String id = rule.getId();
+                                if(id.substring(id.length() -1).equals(matcher.group(3))){
+                                    classificationConditions = rule.getConditions();
+                                    String value = classificationConditions.get(0).getValue();
+                                    classificationConditions.get(0).setValue( value + ( value.isEmpty() ? ""  : ",") + matcher.group(1));
+                                    rule.setConditions(classificationConditions);
+                                }
+                            }
+                        }
+                    }
+
+                    List<IntrusionPreventionRule> rules = settings.getRules();
+                    for(IntrusionPreventionRule classificationRule : classificationRules){
+                        boolean found = false;
+                        for(int j = 0; j < rules.size(); j++){
+                            IntrusionPreventionRule rule = rules.get(j);
+                            if(rule.getId().equals(classificationRule.getId())){
+                                classificationRule.setEnabled(rule.getEnabled());
+                                rules.set(j, classificationRule);
+                                found = true;
+                            }
+                        }
+                        if(found == false){
+                             rules.add(classificationRule);
+                        }
+                    }
+
+                    this.settings.setClassificationMd5sum(classificationMd5sum);
+                    this.setSettings(this.settings);
+                }
+
+            }catch(Exception e){
+                logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
+            }
+        }
+    }
+
+    /**
+     * Calculate md5 sym
+     * @param  input String to perform md5sum on.
+     * @return     Hext string of md5 sum.
+     */
+    private String md5sum(String input) {
+        String sum = "";
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(input.getBytes(Charset.forName("UTF8")));
+            byte[] resultByte = messageDigest.digest();
+            sum = new String(Hex.encodeHex(resultByte));
+        }catch(Exception e){
+            logger.error("md5sum:", e);
+        }
+        return sum;
     }
 
     /**
@@ -168,7 +490,7 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        File settingsFile = new File( getSettingsFileName() );
+        //File settingsFile = new File( getSettingsFileName() );
         // File suricataConf = new File(SURICATA_CONF);
         // File suricataDebianConf = new File(SNORT_DEBIAN_CONF);
         // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
@@ -205,7 +527,7 @@ public class IntrusionPreventionApp extends AppBase
     {
 
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
@@ -214,11 +536,11 @@ public class IntrusionPreventionApp extends AppBase
                 ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
         }
 
-        String interfacesValue = "";
-        for( String i : this.interfaceIds ){
-            interfacesValue += 
-                ( interfacesValue.length() > 0 ? "," : "" ) + i; 
-        }
+        // String interfacesValue = "";
+        // for( String i : this.interfaceIds ){
+        //     interfacesValue += 
+        //         ( interfacesValue.length() > 0 ? "," : "" ) + i; 
+        // }
 
         // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
@@ -360,65 +682,15 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
-    /**
-     * Get settings filename
-     *
-     * @return  Settings filename.
-     */
-    public String getSettingsFileName()
-    {
-        return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
-    }
-
-    /**
-     * Initialize settings.
-     */
-    public void initializeSettings()
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appId = this.getAppSettings().getId().toString();
-        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
-
-            // " --signatures /usr/share/untangle-suricata.config/current" +
-        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-            "/intrusion-prevention-sync-settings.py" + 
-            " --app_id " + appId +
-            " --settings " + tempFileName
-        );
-        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-        try{
-            String[] lines = result.split("\\r?\\n");
-            for ( String line : lines ){
-                if( line.trim().length() > 1 ){
-                    logger.warn("initializeSettings: intrusion-prevention-sync-settings: " + line);
-                }
-            }
-        }catch( Exception e ){
-            logger.warn("Unable to initialize settings: ", e );
-        }
-
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
-    }
-
-    /**
-     * Save settings.
-     *
-     * @param tempFileName  Temporary filename.
-     */
-    public void saveSettings( String tempFileName )
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
-    }
+    // /**
+    //  * Get settings filename
+    //  *
+    //  * @return  Settings filename.
+    //  */
+    // public String getSettingsFileName()
+    // {
+    //     return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
+    // }
 
     /**
      * Set the update settings flag.
@@ -555,124 +827,6 @@ public class IntrusionPreventionApp extends AppBase
                         logger.warn("Failed to close file");
                     }
                 }
-
-            }else if( action.equals("load") ){
-                String settingsName;
-                    settingsName = app.getSettingsFileName();
-                FileInputStream fis = null;
-                try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    File f = new File( settingsName );
-                    if( !f.exists() && 
-                        action.equals("load") ){
-                        app.initializeSettings();
-                    }
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    fis = new FileInputStream(settingsName);
-                    OutputStream out = resp.getOutputStream();
-                
-                    while ( ( read = fis.read( buffer ) ) > 0 ) {
-                        out.write( buffer, 0, read);
-                    }
-
-                    fis.close();
-                    out.flush();
-                    out.close();
-
-                } catch (Exception e) {
-                    logger.warn("Failed to load IPS settings",e);
-                }finally{
-                    try{
-                        if(fis != null){
-                            fis.close();
-                        }
-                    }catch( IOException e){
-                        logger.warn("Failed to close file");
-                    }
-                }
-                app.setUpdatedSettingsFlag( false );
-            }else if( action.equals("save")) {
-                /*
-                 * Save/uploads are a bit of a problem due to size.  For load/downloads,
-                 * the settings file is automatically compressed by Apache/Tomcat from 
-                 * around 30MB to 3MB which is hardly noticable.
-                 *
-                 * The reverse is almost never true and the client will attempt to upload 
-                 * without compression.  To get around this, we receive a JSON "patch"
-                 * which we pass to the configuration management scripts to integrate into settings.
-                 */
-                // String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
-                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
-                int verifyResult = 1;
-                FileOutputStream fos = null;
-                try{
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    InputStream in = req.getInputStream();
-                    fos = new FileOutputStream( tempSettingsName );
-
-                    while ( ( read = in.read( buffer ) ) > 0 ) {
-                        fos.write( buffer, 0, read);
-                    }
-
-                    in.close();
-                    fos.flush();
-
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempSettingsName + "> /dev/null 2>&1" );
-                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
-
-                    String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") +
-                        "/intrusion-prevention-sync-settings.py" +
-                        " --app_id " + appId +
-                        " --current_settings " + tempSettingsName +
-                        " --settings " + tempSettingsName
-                    );
-                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-
-                    try{
-                        String[] lines = result.split("\\r?\\n");
-                        for ( String line : lines ){
-                            if( line.trim().length() > 1 ){
-                                logger.warn("DownloadHandler: intrusion-prevention-sync-settings: " + line);
-                            }
-                        }
-                    }catch( Exception e ){
-                        logger.warn("Unable to initialize settings: ", e );
-                    }
-
-                    app.saveSettings( tempSettingsName );
-
-                    File fp = new File( tempSettingsName );
-                    fp.delete();
-                }catch( IOException e ){
-                    logger.warn("Failed to save IPS settings");
-                }finally{
-                    try{
-                        if(fos != null){
-                            fos.close();
-                        }
-                    }catch( IOException e){
-                        logger.warn("Failed to close file");
-                    }
-                }
-
-                String responseText = "{success:true}";
- 
-                try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    OutputStream out = resp.getOutputStream();
-                    out.write( responseText.getBytes(), 0, responseText.getBytes().length );
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    logger.warn("Failed to send IPS save response");
-                }
             }else if(action.equals("export")){
                 String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
                 String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
@@ -692,27 +846,6 @@ public class IntrusionPreventionApp extends AppBase
                      */
                     String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
                     UvmContextFactory.context().execManager().execResult(verifyCommand);
-
-                    // !!! also need ENGINE_RULES_DIRECTORY
-                    String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") + 
-                        "/intrusion-prevention-sync-settings.py" + 
-                        " --app_id " + appId +
-                        " --settings " + tempSettingsName + 
-                        " --patch " + tempPatchName + 
-                        " --export"
-                    );
-                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-                    try{
-                        String lines[] = result.split("\\r?\\n");
-                        for ( String line : lines ){
-                            if( line.trim().length() > 1 ){
-                                logger.warn("DownloadHandler: export, intrusion-prevention-sync-settings: " + line);
-                            }
-                        }
-                    }catch( Exception e ){
-                        logger.warn("Unable to sync export settings: ", e );
-                    }
 
                     File fp = new File( tempPatchName );
                     fp.delete();
@@ -894,7 +1027,7 @@ public class IntrusionPreventionApp extends AppBase
         }
         if( sameNetworks == false ){
             this.homeNetworks = newHomeNetworks;
-            this.interfaceIds = calculateInterfaces(networkSettings);
+            // this.interfaceIds = calculateInterfaces(networkSettings);
             this.reconfigure();
         }
     }
