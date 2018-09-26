@@ -12,12 +12,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 
@@ -32,6 +36,7 @@ import org.json.JSONException;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Hex;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -77,10 +82,13 @@ public class IntrusionPreventionApp extends AppBase
     private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
     private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
     private static final String DEFAULTS_FILE = "/usr/share/untangle-suricata-config/current/templates/defaults.js";
+    private static final String CLASSIFICATION_FILE = "/usr/share/untangle-suricata-config/current/rules/classification.config";
     // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     // private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
+    private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
+    private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
 
     private boolean updatedSettingsFlag = false;
 
@@ -156,13 +164,15 @@ public class IntrusionPreventionApp extends AppBase
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
 
-            this.initializeSettings();
-        } else {
+            this.settings = new IntrusionPreventionSettings();
+        }else{ 
             logger.info("Loading Settings...");
 
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+        synchronizeSettingsWithDefaults();
+        synchronizeSettingsWithClassifications();
 
         readAppSettings();
     }
@@ -214,6 +224,7 @@ public class IntrusionPreventionApp extends AppBase
     {
         this.settings = new IntrusionPreventionSettings();
         synchronizeSettingsWithDefaults();
+        synchronizeSettingsWithClassifications();
     }
 
     /**
@@ -251,26 +262,28 @@ public class IntrusionPreventionApp extends AppBase
         File f = new File(DEFAULTS_FILE);
         if( f.exists() ){
             JSONObject defaults = null;
+            String defaultsContents = null;
             FileInputStream is = null;
             try{
                 is = new FileInputStream(DEFAULTS_FILE);
-                defaults = new JSONObject( IOUtils.toString(is, "UTF-8") );
+                defaultsContents = IOUtils.toString(is, "UTF-8");
+                defaults = new JSONObject( defaultsContents );
             }catch (Exception e){
-                logger.warn("synchronizeSettingsWithDefaults: jsonobject",e);
+                logger.error("synchronizeSettingsWithDefaults: jsonobject",e);
             }finally{
                 try{
                     if(is != null){
                         is.close();
                     }
                 }catch( IOException e){
-                    logger.warn("synchronizeSettingsWithDefaults: failed to close file");
+                    logger.error("synchronizeSettingsWithDefaults: failed to close file");
                 }
             }
             try{
-                int defaultsVersion = defaults.getInt("defaultsVersion");
-                if(defaultsVersion > this.settings.getDefaultsVersion()){
+                String defaultsMd5sum = md5sum(defaultsContents);
+                if(!defaultsMd5sum.equals(this.settings.getDefaultsMd5sum())){
                     /**
-                     * Only sync if defaults version is higher.
+                     * Only sync if file has changed.
                      */
                     JSONSerializer serializer = UvmContextFactory.context().getSerializer();
                     Iterator<?> keys = defaults.keys();
@@ -312,18 +325,133 @@ public class IntrusionPreventionApp extends AppBase
                                     setMethod.invoke(this.settings, defaults.get(key));                                    
                                 }
                             }catch(Exception e){
-                                logger.warn("synchronizeSettingsWithDefaults: method exception", e);
+                                logger.error("synchronizeSettingsWithDefaults: method exception", e);
                             }
                         }
 
                     }
-                    this.settings.setDefaultsVersion(defaultsVersion);
+                    this.settings.setDefaultsMd5sum(defaultsMd5sum);
                     this.setSettings(this.settings);
                 }
             }catch(Exception e){
-                logger.warn("synchronizeSettingsWithDefaults: json parsing - ", e);
+                logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
             }
         }
+    }
+
+    /**
+     * Integrate values from defaults into settings.
+     * The defaults.js file is distributed with the signature downloads and lets
+     * us make in the field modifications of settings.
+     */
+    public void synchronizeSettingsWithClassifications(){
+        File f = new File(CLASSIFICATION_FILE);
+        if( f.exists() ){
+            String classificationContents = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(CLASSIFICATION_FILE);
+                classificationContents = IOUtils.toString(is, "UTF-8");
+            }catch (Exception e){
+                logger.error("synchronizeSettingsWithClassifications: open",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("synchronizeSettingsWithClassifications: failed to close file");
+                }
+            }
+            try{
+                String classificationMd5sum = md5sum(classificationContents);
+                if(!classificationMd5sum.equals(this.settings.getClassificationMd5sum())){
+                    /**
+                     * Only sync if file has changed.
+                     */
+                    List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
+                    List<IntrusionPreventionRuleCondition> classificationConditions = null;
+
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical", false, CLASSIFICATION_ID_PREFIX + "_1")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High", false, CLASSIFICATION_ID_PREFIX + "_2")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("log", classificationConditions, "Medium", false, CLASSIFICATION_ID_PREFIX + "_3")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("default", classificationConditions, "Low", false, CLASSIFICATION_ID_PREFIX + "_4")
+                    );
+
+                    Matcher match = null;
+                    for(String line : classificationContents.split("\\r?\\n")){
+                        Matcher matcher = CLASSIFICATION_PATTERN.matcher(line);
+                        if(matcher.find()){
+                            for(IntrusionPreventionRule rule : classificationRules){
+                                String id = rule.getId();
+                                if(id.substring(id.length() -1).equals(matcher.group(3))){
+                                    classificationConditions = rule.getConditions();
+                                    String value = classificationConditions.get(0).getValue();
+                                    classificationConditions.get(0).setValue( value + ( value.isEmpty() ? ""  : ",") + matcher.group(1));
+                                    rule.setConditions(classificationConditions);
+                                }
+                            }
+                        }
+                    }
+
+                    List<IntrusionPreventionRule> rules = settings.getRules();
+                    for(IntrusionPreventionRule classificationRule : classificationRules){
+                        boolean found = false;
+                        for(int j = 0; j < rules.size(); j++){
+                            IntrusionPreventionRule rule = rules.get(j);
+                            if(rule.getId().equals(classificationRule.getId())){
+                                classificationRule.setEnabled(rule.getEnabled());
+                                rules.set(j, classificationRule);
+                                found = true;
+                            }
+                        }
+                        if(found == false){
+                             rules.add(classificationRule);
+                        }
+                    }
+
+                    this.settings.setClassificationMd5sum(classificationMd5sum);
+                    this.setSettings(this.settings);
+                }
+
+            }catch(Exception e){
+                logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
+            }
+        }
+    }
+
+    /**
+     * Calculate md5 sym
+     * @param  input String to perform md5sum on.
+     * @return     Hext string of md5 sum.
+     */
+    private String md5sum(String input) {
+        String sum = "";
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(input.getBytes(Charset.forName("UTF8")));
+            byte[] resultByte = messageDigest.digest();
+            sum = new String(Hex.encodeHex(resultByte));
+        }catch(Exception e){
+            logger.error("md5sum:", e);
+        }
+        return sum;
     }
 
     /**
