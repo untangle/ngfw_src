@@ -284,6 +284,7 @@ public class CloudManagerImpl implements CloudManager
                     /**
                      * Peform query.
                      */
+                    String responseBody = "";
                     try {
                         logger.info("zerotouchMonitor: Requesting: " + zerotouchApiCall);
                         url = new URL(zerotouchApiCall);
@@ -296,6 +297,7 @@ public class CloudManagerImpl implements CloudManager
                              * If true, command center will contact unit to launch ut-restore.sh.
                              */
                             receivedResponse = true;
+                            responseBody = EntityUtils.toString(response.getEntity());
                             response.close();
                         }
                     } catch ( java.net.UnknownHostException e ) {
@@ -315,7 +317,7 @@ public class CloudManagerImpl implements CloudManager
                     }
 
                     if(receivedResponse){
-                        logger.info("zerotouchMonitor: stopping after receiving response");
+                        logger.info("zerotouchMonitor: stopping after receiving response: " + responseBody);
                         break;
                     }
                     response = null;
