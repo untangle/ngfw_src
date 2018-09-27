@@ -202,8 +202,8 @@ def main(argv):
     suricata_conf.set_variable( "HOME_NET", default_home_net )
     suricata_conf.set_variable("EXTERNAL_NET", "!$HOME_NET");
 
-    if "suricata" in settings.settings:
-        suricata_conf.set(settings.settings["suricata"])
+    if "suricataSettings" in settings.settings:
+        suricata_conf.set(settings.settings["suricataSettings"])
 
     # interfaces = settings.get_interfaces()
     # interfaces = None
