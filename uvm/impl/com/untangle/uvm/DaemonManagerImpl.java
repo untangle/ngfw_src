@@ -271,10 +271,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     /**
      * Checks to see if a daemon is running. If monitoring is enabled, we search
      * for the searchString associated with the DaemonObject, otherwise we just
-     * look for the daemon name. TODO - This function won't properly handle
-     * daemons that have request monitoring enabled, since it will pass the
-     * searchString to pgrep which won't work, since in those cases the the
-     * search string would be found in the server response.
+     * look for the daemon name.
      * 
      * @param daemonName
      *        The daemon name
@@ -285,11 +282,11 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null) return (false);
 
-        String daemonSearchString = (daemonObject.searchString != null ? daemonObject.searchString : daemonName);
-        String result[] = UvmContextFactory.context().execManager().execOutput("pgrep -il " + daemonSearchString + "| grep systemctl | wc -l && pgrep -il " + daemonSearchString + "| grep -v systemctl | wc -l").split("\\r?\\n");
-        if (Integer.parseInt(result[0].trim()) == 0 && Integer.parseInt(result[1].trim()) > 0) return true;
-        else return false;
-
+        String daemonSearchString = ( (daemonObject.monitorType == MonitorType.DAEMON && daemonObject.searchString != null) ? daemonObject.searchString : daemonName);
+        daemonSearchString = "[" + daemonSearchString.substring(0,1) + "]" + daemonSearchString.substring(1);
+        String result = UvmContextFactory.context().execManager().execOutput("ps -e -o command h | cut -f1 -d' ' | grep " + daemonSearchString + " | wc -l");
+        logger.warn(result);
+        return ( Integer.parseInt(result.trim()) == 1 ) ? true : false;
     }
 
     /**
