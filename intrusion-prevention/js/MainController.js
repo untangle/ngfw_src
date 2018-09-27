@@ -179,15 +179,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         v.query('ungrid').forEach(function (grid) {
-
-            // path for listProperty=grid.bind.owner.config.stores.variables.data
             var settingsProperty = grid.listProperty;
             if(grid.getBind().store){
                 var bindName = grid.getBind().store.stub.name;
                 settingsProperty = grid.getBind().store.owner.config.stores[bindName].data;
                 settingsProperty = settingsProperty.substring(1,settingsProperty.length - 1);
             }
-            // console.log('settingsProperty=' + settingsProperty);
 
             if(settingsProperty){
                 var store = grid.getStore();
@@ -199,8 +196,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             signatures.push(record.getRecord());
                         }
                     });
-                    // console.log('signatures=');
-                    // console.log(signatures);
                     vm.set('settings.signatures.list', signatures);
                 }else{
                     if (store.getModifiedRecords().length > 0 ||
@@ -213,37 +208,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             }
                         });
                         store.isReordered = undefined;
-                        // console.log('GRID MODEL='+grid.recordModel);
-                        // console.log(Ext.ClassManager.get(grid.recordModel).fields);
-                        var recordFields = Ext.Array.pluck(Ext.ClassManager.get(grid.recordModel).fields, 'name');
-                        var data = Ext.Array.pluck(store.getRange(), 'data');
-                        data.forEach(function(record){
-                            delete record['_id'];
-                            delete record['markedForNew'];
-                        });
-                        // or cleanup in sync?
-                        // data.forEach( function(record){
-                        //     delete record['_id'];
-                        //     for(var fieldName in record){
-                        //         if(Ext.Array.indexOf(recordFields, fieldName) == -1){
-                        //             delete record[fieldName];
-                        //         }
-                        //     }
-                        // });
-                        vm.set(settingsProperty, data);
+                        vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
                     }
                 }
             }
         });
-
-        // var changedData = me.getChangedData();
-        // if(arguments.length == 1){
-        //     if(additionalChanged){
-        //         changedData= Ext.Object.merge(changedData,additionalChanged);
-        //     }
-        // }
-
-        // console.log(vm.get('settings'));
 
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){
@@ -1432,6 +1401,10 @@ Ext.define('Ung.model.intrusionprevention.signature',{
 Ext.define('Ung.model.intrusionprevention.rule',{
     extend: 'Ext.data.Model',
     fields:[{
+        name: 'javaClass',
+        type: 'string',
+        defaultValue: 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule'
+    },{
         name: 'action',
         type: 'string'
     },{

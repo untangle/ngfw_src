@@ -29,7 +29,7 @@ public class IntrusionPreventionRuleCondition implements Serializable, JSONStrin
     }
 
     public String getComparator() { return comparator; }
-    public void setComparator(String description) { this.comparator = comparator; }
+    public void setComparator(String comparator) { this.comparator = comparator; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }

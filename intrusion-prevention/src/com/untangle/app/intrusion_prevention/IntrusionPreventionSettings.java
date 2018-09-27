@@ -48,7 +48,7 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     public void setClassificationMd5sum(String classificationMd5sum) { this.classificationMd5sum = classificationMd5sum; }
 
     public List<IntrusionPreventionRule> getRules() { return rules; }
-    public void setRules(List<IntrusionPreventionRule> signatures) { this.rules = rules; }
+    public void setRules(List<IntrusionPreventionRule> rules) { this.rules = rules; }
 
     public List<String> getSignatures() { return signatures; }
     public void setSignatures(List<String> signatures) { this.signatures = signatures; }
