@@ -20,11 +20,9 @@ IPTABLES=${IPTABLES:-iptables}
 TABLE_NAME_MANGLE=mangle
 TABLE_NAME_RAW=raw
 CHAIN_NAME=suricata-scanning
-SURICATA_QUEUE_NUM=2930
-SURICATA_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','max_scan_size');")
-if [ -z "${SURICATA_MAX_SCAN_SIZE}" -o "${SURICATA_MAX_SCAN_SIZE}" = "None" ] ; then
-    SURICATA_MAX_SCAN_SIZE=1024
-fi
+SURICATA_QUEUE_NUM=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','iptablesNfqNumber');")
+SURICATA_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','iptablesMaxScanSize');")
+SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
 
 #
 # See if suricata is running.
@@ -41,13 +39,6 @@ is_queue_open()
         return 1
     fi
 
-    t_queue_portid=`awk -v queue=${SURICATA_QUEUE_NUM} '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue`
-
-    if [ -z "${t_queue_portid}" ]; then
-        echo "[`date`] The suricata netfilter queue is not open - not inserting rules for suricata"
-        return 1
-    fi
-   
     return 0
 }
 
@@ -132,9 +123,14 @@ fi
 ## If the queue is open generate the new rules
 flush_suricata_iptables_rules
 
-is_queue_open && {
-    echo "[`date`] suricata is running. Inserting rules."
-    insert_suricata_iptables_rules
-}
+if [ "${SURICATA_RUNNING}" = "0" ]; then
+    echo "[`date`] Suricata is not running - not inserting rules for suricata"
+else
+    is_queue_open && {
+        echo "[`date`] suricata is running. Inserting rules."
+        insert_suricata_iptables_rules
+    }
+fi
+
 
 true
