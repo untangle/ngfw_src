@@ -285,7 +285,6 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         String daemonSearchString = ( (daemonObject.monitorType == MonitorType.DAEMON && daemonObject.searchString != null) ? daemonObject.searchString : daemonName);
         daemonSearchString = "[" + daemonSearchString.substring(0,1) + "]" + daemonSearchString.substring(1);
         String result = UvmContextFactory.context().execManager().execOutput("ps -e -o command h | cut -f1 -d' ' | grep " + daemonSearchString + " | wc -l");
-        logger.warn(result);
         return ( Integer.parseInt(result.trim()) == 1 ) ? true : false;
     }
 
