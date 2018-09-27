@@ -61,19 +61,20 @@ public class IntrusionPreventionStatisticsParser
     {
 
         String result = IntrusionPreventionStatisticsParser.execManager.execOutput( STATISTICS_COMMAND );
-
-        try{
-            JSONObject resultJson = new JSONObject(result);
-            if(resultJson.get(STATISTICS_RETURN_KEY).toString().equals(STATISTICS_RETURN_INVALID)){
-                return;
+        if(result.substring(0,1).equals("{")){
+            try{
+                JSONObject resultJson = new JSONObject(result);
+                if(resultJson.get(STATISTICS_RETURN_KEY).toString().equals(STATISTICS_RETURN_INVALID)){
+                    return;
+                }
+                resultJson = resultJson.getJSONObject(STATISTICS_MESSAGE_KEY);
+                ipsApp.setDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
+                long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_REJECTED_KEY) + resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_BLOCKED_KEY);
+                ipsApp.setBlockCount( blocked);
+                ipsApp.setScanCount( resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_ACCEPTED_KEY) + blocked);
+            }catch(Exception e){
+                logger.warn("IntrusionPreventionStatisticsParser, parse", e);
             }
-            resultJson = resultJson.getJSONObject(STATISTICS_MESSAGE_KEY);
-            ipsApp.setDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
-            long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_REJECTED_KEY) + resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_BLOCKED_KEY);
-            ipsApp.setBlockCount( blocked);
-            ipsApp.setScanCount( resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_ACCEPTED_KEY) + blocked);
-        }catch(Exception e){
-            logger.warn("IntrusionPreventionStatisticsParser, parse", e);
         }
     }
 }
