@@ -33,7 +33,7 @@ public class IntrusionPreventionRule implements Serializable, JSONString
     }
 
     public String getAction() { return action; }
-    public void setVersion(String action) { this.action = action; }
+    public void setAction(String action) { this.action = action; }
 
     public List<IntrusionPreventionRuleCondition> getConditions() { return conditions; }
     public void setConditions(List<IntrusionPreventionRuleCondition> conditions) { this.conditions = conditions; }
