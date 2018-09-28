@@ -192,7 +192,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     var signatures = [];
                     store.each(function(record){
                         if(!record.get('default') && !record.get('markedForDelete')) {
-                        // if(!record.get('markedForDelete')) {
                             signatures.push(record.getRecord());
                         }
                     });
@@ -208,7 +207,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             }
                         });
                         store.isReordered = undefined;
-                        vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                        vm.set(settingsProperty, Ext.Array.pluck(store.getRange(), 'data'));
                     }
                 }
             }
