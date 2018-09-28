@@ -7,9 +7,6 @@ import re
 import sys
 import ruamel.yaml
 from ruamel.yaml.compat import text_type
-# yaml.boolean_representation = ['no', 'yes']
-#ruamel.yaml.add_representer(bool, lambda yaml_self, value : yaml_self.represent_scalar(u'tag:yaml.org,2002:bool', u"yes" if value else u"no" ) )
-#ruamel.yaml.representer.SafeRepresenter.represent_bool = lambda yaml_self, value : yaml_self.represent_scalar(u'tag:yaml.org,2002:bool', u"yes" if value else u"no" )
 
 class SuricataConf:
     """
@@ -17,53 +14,6 @@ class SuricataConf:
     """
     file_name = "/etc/suricata/suricata.yaml"
     
-    # Regex parsing
-    # comment_regex = re.compile(r'^#\s*(.*)')
-    # var_regex = re.compile(r'^(ipvar|portvar|var)\s+([^\s+]+)\s+([^\s+]+|)')
-    # include_regex = re.compile(r'^(\#|)\s*include\s+([^\s]+)')
-    # include_signaturepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
-    # output_regex = re.compile(r'^output\s+([^:]+)')
-    # preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
-    # preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
-    default_settings = {
-        "default-rule-path": "/etc/suricata",
-        "rule-files": [
-            "ngfw.rules"
-        ],
-        "outputs": {
-            "eve-log": {
-                "enabled": False
-            },
-            "fast": {
-                "enabled": False
-            },
-            "unified2-alert": {
-                "enabled": True
-            },
-            "stats": {
-                "enabled": False
-            }
-        },
-        "logging": {
-            "outputs": {
-                "file": {
-                    "enabled": False
-                },
-                "syslog":{
-                    "enabled": True
-                }
-            }
-        }
-    }
-    
-    @staticmethod
-    def merge_default_settings(settings):
-        ## ?? recurse
-        settings_keys = settings.keys()
-        for key in SuricataConf.default_settings.keys():
-            if not key in settings_keys:
-                settings[key] = SuricataConf.default_settings[key]
-
     def __init__(self, _debug=False):
         self.last_comment = ""
         self.conf = []
@@ -85,7 +35,6 @@ class SuricataConf:
 
         ruamel.yaml.emitter.Emitter.write_comment_orig = ruamel.yaml.emitter.Emitter.write_comment
         def strip_empty_lines_write_comment(self, comment):
-            # print('{:02d} {:02d} {!r}'.format(self.column, comment.start_mark.column, comment.value))
             comment.value = comment.value.replace('\n', '')
             if comment.value:
                 self.write_comment_orig(comment)
@@ -306,7 +255,18 @@ class SuricataConf:
                     if len(path) == 1:
                         config[key] = value
                     else:
+                        if config[key] == None and len(path[1:]) == 1:
+                            config[key] = {}
+                            # Bizzare hack for retaining nfq comments.
+                            # The first two items refer to the comment prefix.
+                            # The last two are comments after the key.  When adding a dict,
+                            # the last two are duplicated.
+                            if key in self.conf.ca.items and len(self.conf.ca.items[key]) == 4:
+                                self.conf.ca.items[key] = self.conf.ca.items[key][:2]
                         self.set_config_from_path(path[1:], value, config[key])
+                else:
+                    if len(path) == 1:
+                        config[key] = value
 
     def set(self, config_path, read_path=None):
         """Set configuration from path
