@@ -86,7 +86,7 @@ public class IntrusionPreventionApp extends AppBase
     // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
-    // private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/snort.log | /usr/bin/tac";
+    private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
     private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
 
@@ -651,9 +651,7 @@ public class IntrusionPreventionApp extends AppBase
      */
     public String getStatus()
     {
-        // ??? maybe use systemctl status instead
-        // return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
-        return "";
+        return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
     }
 
     /**
