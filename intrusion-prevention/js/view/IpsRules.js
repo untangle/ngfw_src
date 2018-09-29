@@ -34,13 +34,15 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     recordModel: 'Ung.model.intrusionprevention.rule',
 
     emptyRow: {
-        'enabled': true,
-        'id': -1,
-        'description': '',
-        'conditions': {
+        javaClass: 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
+        enabled: true,
+        id: -1,
+        description: '',
+        conditions: {
+            javaClass: "java.util.LinkedList",
             'list': []
         },
-        'action': 'default'
+        action: 'default'
     },
 
     columns: [{
@@ -108,6 +110,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             comparator: 'comparator',
             value: 'value',
         },
+        javaClassValue: 'com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition',
 
         conditions: [{
             name: "SID",

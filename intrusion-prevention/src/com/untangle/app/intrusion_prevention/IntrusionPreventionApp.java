@@ -375,22 +375,22 @@ public class IntrusionPreventionApp extends AppBase
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical", false, CLASSIFICATION_ID_PREFIX + "_1")
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "High", false, CLASSIFICATION_ID_PREFIX + "_2")
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("log", classificationConditions, "Medium", false, CLASSIFICATION_ID_PREFIX + "_3")
+                        new IntrusionPreventionRule("log", classificationConditions, "Medium Priority", false, CLASSIFICATION_ID_PREFIX + "_3")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("default", classificationConditions, "Low", false, CLASSIFICATION_ID_PREFIX + "_4")
+                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
                     );
 
                     Matcher match = null;
