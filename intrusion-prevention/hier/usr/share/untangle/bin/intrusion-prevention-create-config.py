@@ -13,9 +13,10 @@ from netaddr import IPNetwork
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
-	
-import intrusion_prevention
 
+from uvm.settings_reader import get_app_settings
+
+import intrusion_prevention
 from intrusion_prevention import SuricataSignature
 from intrusion_prevention import IntrusionPreventionRule
 
@@ -60,11 +61,9 @@ def main(argv):
     if _debug is True:
         print("Loading ips settings")
 
-    settings = intrusion_prevention.IntrusionPreventionSettings( app_id )
-    if settings.exists() == False:
-        print("cannot find settings file")
-        sys.exit()
-    settings.load()
+    settings = get_app_settings("intrusion-prevention")
+
+    SuricataSignature.block_action = settings["blockAction"]
 
     if _debug is True:
         print("Loading signatures")
@@ -78,7 +77,7 @@ def main(argv):
     ##
     ## Integrate modifications from settings.
     ##
-    for settings_signature in settings.settings["signatures"]["list"]:
+    for settings_signature in settings["signatures"]["list"]:
         ##
         ## Add a custom new rule.
         ##
@@ -86,12 +85,13 @@ def main(argv):
         if match_signature:
             signatures.add_signature(SuricataSignature( match_signature, "unknown"))
 
+
     if _debug is True:
         print("Applying rules")
 
     ## process rules over signatures
     rules = []
-    for settings_rule in settings.settings["rules"]["list"]:
+    for settings_rule in settings["rules"]["list"]:
         rules.append(IntrusionPreventionRule(settings_rule))
 
     # Process rules in action precedence order.
@@ -140,7 +140,8 @@ def main(argv):
     suricata_conf = intrusion_prevention.SuricataConf( _debug=_debug )
 
     # Override suricata configuration variables with settings variables
-    for settings_variable in settings.get_variables():
+    # for settings_variable in settings.get_variables():
+    for settings_variable in settings["variables"]["list"]:
         name = settings_variable["name"]
         value = settings_variable["value"]
         if settings_variable["name"] == "HOME_NET":
@@ -152,8 +153,8 @@ def main(argv):
 
         suricata_conf.set_variable( name, value )
 
-    if "suricataSettings" in settings.settings:
-        suricata_conf.set(settings.settings["suricataSettings"])
+    if "suricataSettings" in settings:
+        suricata_conf.set(settings["suricataSettings"])
 
     suricata_conf.save()
 
