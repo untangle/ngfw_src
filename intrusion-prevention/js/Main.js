@@ -124,7 +124,15 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         { xtype: 'app-intrusion-prevention-status' },
         { xtype: 'app-intrusion-prevention-rules' },
         { xtype: 'app-intrusion-prevention-signatures' },
-        { xtype: 'app-intrusion-prevention-variables' }
+        { xtype: 'app-intrusion-prevention-variables' },
+        { xtype: 'app-intrusion-prevention-advanced',
+            tabConfig:{
+                hidden: true,
+                bind: {
+                    hidden: '{!isExpertMode}'
+                }
+            }
+        }
     ],
 
     statics: {
