@@ -32,11 +32,10 @@ def main(argv):
     """
     global _debug
     _debug = False
-    app_id = "0"
     default_home_net = ""
 
     try:
-        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "app_id=", "home_net=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "home_net=", "debug"] )
     except getopt.GetoptError as error:
         print error
         usage()
@@ -47,19 +46,13 @@ def main(argv):
             sys.exit()
         elif opt in ( "-d", "--debug"):
             _debug = True
-        elif opt in ( "-n", "--app_id"):
-            app_id = arg
         elif opt in ( "-v", "--home_net"):
             default_home_net = arg
             if default_home_net.find(",") != -1:
                 default_home_net = "[" + default_home_net + "]"
 
     if _debug is True:
-        print("app_id = %s" % (app_id))
         print("_debug = %r" % (_debug))
-
-    if _debug is True:
-        print("Loading ips settings")
 
     settings = get_app_settings("intrusion-prevention")
 
@@ -89,12 +82,16 @@ def main(argv):
     if _debug is True:
         print("Applying rules")
 
-    ## process rules over signatures
+    ##
+    ## Process rules over signatures
+    ##
     rules = []
     for settings_rule in settings["rules"]["list"]:
         rules.append(IntrusionPreventionRule(settings_rule))
 
-    # Process rules in action precedence order.
+    ##
+    ## Process rules in action precedence order.
+    ##
     priority = { 'default': 0, 'log' : 1, 'blocklog': 2, 'block': 3, 'disable': 4}
     for rule in sorted(rules, key=lambda rule: (priority[rule.get_action()] )):
         if not rule.get_enabled():
@@ -103,7 +100,9 @@ def main(argv):
             if rule.matches(signature):
                 rule.set_signature_action(signature)
 
-    # Disable signatures not modified by any rule.
+    ##
+    ## Disable signatures not modified by any rule.
+    ##
     for signature in signatures.get_signatures().values():
         if not signature.get_action_changed():
             signature.set_action(False, False)
@@ -130,6 +129,9 @@ def main(argv):
 
     signatures.save()
 
+    ##
+    ## Create event map
+    ##
     if _debug is True:
         print("Creating event map")
     intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap( signatures )
@@ -139,8 +141,10 @@ def main(argv):
         print("Modifying suricata configuration")
     suricata_conf = intrusion_prevention.SuricataConf( _debug=_debug )
 
-    # Override suricata configuration variables with settings variables
-    # for settings_variable in settings.get_variables():
+    ##
+    ## Override suricata configuration variables with settings variables
+    ## for settings_variable in settings.get_variables():
+    ##
     for settings_variable in settings["variables"]["list"]:
         name = settings_variable["name"]
         value = settings_variable["value"]
@@ -158,19 +162,12 @@ def main(argv):
 
     suricata_conf.save()
 
-
-    ### !!! write override for systemctl
-
-    # queue_num = "0"
-    # ipf = open( iptables_script )
-    # for line in ipf:
-    #     line = line.strip()
-    #     setting = line.split("=")
-    #     if setting[0] == "SURICATA_QUEUE_NUM":
-    #         queue_num = setting[1] 
-    # ipf.close()
-    # 
-    # !! also modify systemd/system/system.suricata/overlay file reference
+    ##
+    ## Set nfq queue number for systemd
+    ##
+    with open("/etc/systemd/system/suricata.service.d/local.conf", "w") as text_file:
+        text_file.write("[Service]\n")
+        text_file.write("Environment=\"NFQUEUE={0}\"\n".format(settings["iptablesNfqNumber"]))
     
 if __name__ == "__main__":
     main(sys.argv[1:])
