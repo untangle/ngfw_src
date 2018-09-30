@@ -564,7 +564,6 @@ public class IntrusionPreventionApp extends AppBase
         // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --app_id \"" + this.getAppSettings().getId().toString() + "\"" +
             " --home_net \"" + homeNetValue + "\""
         );
 
