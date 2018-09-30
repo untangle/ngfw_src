@@ -20,16 +20,18 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private Integer version = 3;
     private String defaultsMd5sum = "";
     private String classificationMd5sum = "";
+    private String variablesMd5sum = "";
     private List<IntrusionPreventionRule> rules = new LinkedList<>();
     private List<String> signatures = new LinkedList<>();
-    private Map<String, String> variables = new HashMap<String, String>();
+    private List<IntrusionPreventionVariable> variables = new LinkedList<>();
     private Integer iptablesNfqNumber = 2930;
     private Integer iptablesMaxScanSize = 1024;
+    private String blockAction = "reject";
     private JSONObject suricataSettings = new JSONObject();
 
     public IntrusionPreventionSettings() { }
 
-    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<String> signatures, Map<String, String> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize)
+    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<String> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize)
     {
         this.rules = rules;
         this.signatures = signatures;
@@ -47,14 +49,17 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     public String getClassificationMd5sum() { return classificationMd5sum; }
     public void setClassificationMd5sum(String classificationMd5sum) { this.classificationMd5sum = classificationMd5sum; }
 
+    public String getVariablesMd5sum() { return variablesMd5sum; }
+    public void setVariablesMd5sum(String variablesMd5sum) { this.variablesMd5sum = variablesMd5sum; }
+
     public List<IntrusionPreventionRule> getRules() { return rules; }
     public void setRules(List<IntrusionPreventionRule> rules) { this.rules = rules; }
 
     public List<String> getSignatures() { return signatures; }
     public void setSignatures(List<String> signatures) { this.signatures = signatures; }
 
-    public Map<String,String> getVariables() { return variables; }
-    public void setVariables(Map<String, String> variables) { this.variables = variables; }
+    public List<IntrusionPreventionVariable> getVariables() { return variables; }
+    public void setVariables(List<IntrusionPreventionVariable> variables) { this.variables = variables; }
 
     public JSONObject getSuricataSettings() { return suricataSettings; }
     public void setSuricataSettings(JSONObject suricataSettings) { this.suricataSettings = suricataSettings; }
@@ -64,6 +69,9 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public Integer getIptablesMaxScanSize() { return iptablesMaxScanSize; }
     public void setIptablesMaxScanSize(Integer iptablesMaxScanSize) { this.iptablesMaxScanSize = iptablesMaxScanSize; }
+
+    public String getBlockAction() { return blockAction; }
+    public void setBlockAction(String blockAction) { this.blockAction = blockAction; }
 
     /**
      * Returns settings as a JSON string.
