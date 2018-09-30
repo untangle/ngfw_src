@@ -20,6 +20,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             Rpc.directPromise('rpc.companyName'),
             Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
             Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.directPromise('rpc.isExpertMode'),
             function(){ return Ext.Ajax.request({
                 url: "/admin/download",
                 method: 'POST',
@@ -42,9 +43,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 lastUpdate: (result[1] !== null && result[1].time !== 0 ) ? Renderer.timestamp(result[1]) : "Never".t(),
                 companyName: result[2],
                 system_memory: result[3],
-                settings: result[4]
+                settings: result[4],
+                isExpertMode: result[5]
             });
-            me.buildSignatures( result[5], vm.get('settings'));
+            me.buildSignatures( result[6], vm.get('settings'));
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
