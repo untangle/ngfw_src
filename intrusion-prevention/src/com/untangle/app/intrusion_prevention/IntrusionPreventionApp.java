@@ -51,6 +51,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.SettingsManager;
@@ -530,7 +531,6 @@ public class IntrusionPreventionApp extends AppBase
         // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
         //     suricataConf.lastModified() > suricataDebianConf.lastModified() ) {
         //     logger.warn("Settings file newer than suricata debian configuration, Syncing...");
-        //     reconfigure();
         // }
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
@@ -558,9 +558,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void reconfigure()
     {
-
+        if(this.settings == null){
+            return;
+        }
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
@@ -569,13 +570,6 @@ public class IntrusionPreventionApp extends AppBase
                 ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
         }
 
-        // String interfacesValue = "";
-        // for( String i : this.interfaceIds ){
-        //     interfacesValue += 
-        //         ( interfacesValue.length() > 0 ? "," : "" ) + i; 
-        // }
-
-        // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
             " --home_net \"" + homeNetValue + "\""
@@ -593,8 +587,16 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn( "Unable to generate suricata.configuration:", e );
         }
         reloadEventMonitorMap();
-        stop();
-        start();
+
+        try {
+            if (getRunState() == AppSettings.AppState.RUNNING) {
+                stop();
+                start();
+            }
+        } catch (Exception exn) {
+            logger.error("Could not save IPS settings", exn);
+        }
+
     }
 
     /**
