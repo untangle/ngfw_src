@@ -78,6 +78,7 @@ public class IntrusionPreventionApp extends AppBase
     private final IntrusionPreventionEventMonitor ipsEventMonitor;    
 
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
+    private static final String GET_CONFIG = System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-config.py";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
     private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
@@ -173,6 +174,7 @@ public class IntrusionPreventionApp extends AppBase
         }
         synchronizeSettingsWithDefaults();
         synchronizeSettingsWithClassifications();
+        synchronizeSettingsWithVariables();
 
         readAppSettings();
     }
@@ -215,16 +217,6 @@ public class IntrusionPreventionApp extends AppBase
         try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
 
         this.reconfigure();
-    }
-
-    /**
-     * Initialize settings.
-     */
-    public void initializeSettings()
-    {
-        this.settings = new IntrusionPreventionSettings();
-        synchronizeSettingsWithDefaults();
-        synchronizeSettingsWithClassifications();
     }
 
     /**
@@ -436,6 +428,33 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
+     * Integrate variables from suricata.configuration.
+     */
+    public void synchronizeSettingsWithVariables(){
+        String result = UvmContextFactory.context().execManager().execOutput(GET_CONFIG + " --variables");
+        String variablesMd5sum = md5sum(result);
+        if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
+            List<IntrusionPreventionVariable> variables = this.settings.getVariables();
+            for ( String line : result.split("\\r?\\n") ){
+                String variableLine[] = line.split("=");
+
+                Boolean found = false;
+                for( IntrusionPreventionVariable variable : variables){
+                    if(variable.getName().equals(variableLine[0])){
+                        found = true;
+                    }
+                }
+                if(found == false){
+                    variables.add( new IntrusionPreventionVariable(variableLine[0], variableLine[1]) );
+                }
+            }
+            this.settings.setVariables(variables);
+            this.settings.setVariablesMd5sum(variablesMd5sum);
+            this.setSettings(this.settings);
+        }
+    }
+
+    /**
      * Calculate md5 sym
      * @param  input String to perform md5sum on.
      * @return     Hext string of md5 sum.
@@ -545,9 +564,7 @@ public class IntrusionPreventionApp extends AppBase
         // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --app_id \"" + this.getAppSettings().getId().toString() + "\"" +
-            " --home_net \"" + homeNetValue + "\"" +
-            " --iptables_script \"" + IPTABLES_SCRIPT + "\""
+            " --home_net \"" + homeNetValue + "\""
         );
 
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );

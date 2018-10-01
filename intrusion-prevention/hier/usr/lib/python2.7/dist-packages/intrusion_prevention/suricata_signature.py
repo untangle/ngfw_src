@@ -24,6 +24,8 @@ class SuricataSignature:
 
     action_changed = False
 
+    block_action = "drop"
+
     def __init__(self, match, category, path="rules"):
         self.category = category
         self.path = path
@@ -81,12 +83,8 @@ class SuricataSignature:
         """
         Set signature action based on log, block
         """
-        if log == True and block == True:
-            self.action = "drop"
-        # elif log == False and block == True:
-        #     self.action = "sdrop"
-        elif log == False and block == True:
-            self.action = "drop"
+        if block == True:
+            self.action = self.block_action
         else:
             self.action = "alert"
 

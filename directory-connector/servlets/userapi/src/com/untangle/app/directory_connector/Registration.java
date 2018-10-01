@@ -218,7 +218,9 @@ public class Registration extends HttpServlet
 
                     out.print( chunk.toString() );
                 } else if ( replaceSecret != -1 ) {
-                    chunk.replace( replaceSecret, replaceSecret+AD_REPLACE_SECRET.length(), directoryConnector.getSettings().getApiSecretKey());
+                    String secretKey = directoryConnector.getSettings().getApiSecretKey();
+                    secretKey = secretKey == null ? "" : secretKey;
+                    chunk.replace( replaceSecret, replaceSecret+AD_REPLACE_SECRET.length(), secretKey);
                     out.print( chunk.toString() );
                 } else {
                     out.print( line );
