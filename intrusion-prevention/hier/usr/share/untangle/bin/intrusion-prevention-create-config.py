@@ -7,8 +7,8 @@ import os
 import getopt
 import sys
 import re
-
 from netaddr import IPNetwork
+from subprocess import call
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
@@ -168,6 +168,7 @@ def main(argv):
     with open("/etc/systemd/system/suricata.service.d/local.conf", "w") as text_file:
         text_file.write("[Service]\n")
         text_file.write("Environment=\"NFQUEUE={0}\"\n".format(settings["iptablesNfqNumber"]))
+    call(["systemctl", "daemon-reload"])
     
 if __name__ == "__main__":
     main(sys.argv[1:])
