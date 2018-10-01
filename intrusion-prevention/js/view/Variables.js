@@ -20,33 +20,23 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     copyAppendField: 'description',
 
     emptyRow: {
-        'variable': '',
-        'definition': '',
-        'description': ''
+        name: '',
+        value: '',
+        javaClass: 'com.untangle.app.intrusion_prevention.IntrusionPreventionVariable',
     },
 
     columns: [{
         header: 'Name'.t(),
         width: Renderer.messageWidth,
-        dataIndex: 'variable'
+        dataIndex: 'name'
     },{
-        header: 'Definition'.t(),
+        header: 'Value'.t(),
         width: Renderer.messageWidth,
         flex: 1,
-        dataIndex: 'definition',
+        dataIndex: 'value',
         editor: {
             xtype:'textfield',
-            emptyText: "[enter definition]".t(),
-            allowBlank: false
-        }
-    },{
-        header: 'Description'.t(),
-        dataIndex: 'description',
-        width: Renderer.messageWidth,
-        flex: 2,
-        editor: {
-            xtype:'textfield',
-            emptyText: "[enter description]".t(),
+            emptyText: "[enter value]".t(),
             allowBlank: false
         }
     }],
@@ -57,7 +47,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
         margin: '0 0 4 80',
         items: [{
             xtype:'textfield',
-            bind: '{record.variable}',
+            bind: '{record.name}',
             fieldLabel: 'Name'.t(),
             emptyText: '[enter name]'.t(),
             labelAlign: 'right',
@@ -76,15 +66,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
         }]
     },{
         xtype:'textfield',
-        bind: '{record.definition}',
-        fieldLabel: 'Definition'.t(),
-        emptyText: '[enter definition]'.t(),
-        allowBlank: false
-    },{
-        xtype:'textfield',
-        bind: '{record.description}',
-        fieldLabel: 'Description'.t(),
-        emptyText: '[enter description]'.t(),
+        bind: '{record.value}',
+        fieldLabel: 'Value'.t(),
+        emptyText: '[enter value]'.t(),
         allowBlank: false
     }]
 });

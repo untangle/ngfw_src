@@ -152,17 +152,24 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
             bind: '{settings.concurrentLoginsEnabled}',
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Allow Cookie-based authentication'.t(),
-            tooltip: 'This will allow authenicated clients to continue to access even after session idle and timeout values.'.t(),
-            bind: '{settings.sessionCookiesEnabled}'
-        }, {
-            xtype: 'checkbox',
             boxLabel: 'Track logins using MAC address'.t(),
             tooltip: 'This will allow client authentication to be tracked by MAC address instead of IP address.'.t(),
             bind: '{settings.useMacAddress}'
         }, {
+            xtype: 'checkbox',
+            boxLabel: 'Allow Cookie-based authentication'.t(),
+            tooltip: 'This will allow authenicated clients to continue to access even after session idle and timeout values.'.t(),
+            bind: '{settings.sessionCookiesEnabled}'
+        }, {
             xtype: 'container',
+            margin: '0 0 0 20',
             layout: { type: 'hbox', align: 'middle' },
+            disabled: true,
+            hidden: true,
+            bind: {
+                disabled: '{!settings.sessionCookiesEnabled}',
+                hidden: '{!settings.sessionCookiesEnabled}'
+            },
             items: [{
                 xtype: 'numberfield',
                 fieldLabel: 'Cookie Timeout (minutes)'.t(),
