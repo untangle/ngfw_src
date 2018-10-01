@@ -890,12 +890,14 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             searchFilter = vm.get('searchFilter');
 
         button.up('tabpanel').setActiveTab('rules').getController().addRecord(null, null, {
+            'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
             'enabled': true,
             'id': -1,
             'description': '"' + vm.get('searchConditions').findRecord( 'value', searchCondition).get('name') + '" ' + vm.get('searchComparators').findRecord('value', vm.get('searchComparator')).get('name') + ' "' + searchFilter + '"',
             'conditions': {
+                'javaClass': "java.util.LinkedList",
                 'list': [{
-                    'javaClass': '',
+                    'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition',
                     'type': searchCondition,
                     'comparator': searchComparator,
                     'value': searchFilter
