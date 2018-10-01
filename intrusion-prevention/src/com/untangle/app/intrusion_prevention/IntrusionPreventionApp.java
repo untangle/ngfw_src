@@ -146,12 +146,14 @@ public class IntrusionPreventionApp extends AppBase
      * @return PipelineConector
      */
     @Override
-    protected void postInit()
+    protected void preInit()
     {
         String appID = this.getAppSettings().getId().toString();
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         IntrusionPreventionSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
+
+        readAppSettings();
 
         try {
             readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
@@ -172,11 +174,15 @@ public class IntrusionPreventionApp extends AppBase
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-        synchronizeSettingsWithDefaults();
-        synchronizeSettingsWithClassifications();
-        synchronizeSettingsWithVariables();
+        boolean updated = false;
+        updated = synchronizeSettingsWithDefaults();
+        updated = synchronizeSettingsWithClassifications() || updated;
+        updated = synchronizeSettingsWithVariables() || updated;
 
-        readAppSettings();
+        if(updated){
+            this.setSettings(this.settings);
+            this.reconfigure();
+        }
     }
 
     /**
@@ -249,8 +255,10 @@ public class IntrusionPreventionApp extends AppBase
      * Integrate values from defaults into settings.
      * The defaults.js file is distributed with the signature downloads and lets
      * us make in the field modifications of settings.
+     * @return               Boolean true if defaults were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithDefaults(){
+    public boolean synchronizeSettingsWithDefaults(){
+        boolean changed = false;
         File f = new File(DEFAULTS_FILE);
         if( f.exists() ){
             JSONObject defaults = null;
@@ -323,20 +331,23 @@ public class IntrusionPreventionApp extends AppBase
 
                     }
                     this.settings.setDefaultsMd5sum(defaultsMd5sum);
-                    this.setSettings(this.settings);
+                    changed = true;
                 }
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
             }
         }
+        return changed;
     }
 
     /**
-     * Integrate values from defaults into settings.
+     * Integrate values from classifications into settings.
      * The defaults.js file is distributed with the signature downloads and lets
      * us make in the field modifications of settings.
+     * @return               Boolean true if classifications were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithClassifications(){
+    public boolean synchronizeSettingsWithClassifications(){
+        boolean changed = false;
         File f = new File(CLASSIFICATION_FILE);
         if( f.exists() ){
             String classificationContents = null;
@@ -418,19 +429,22 @@ public class IntrusionPreventionApp extends AppBase
                     }
 
                     this.settings.setClassificationMd5sum(classificationMd5sum);
-                    this.setSettings(this.settings);
+                    changed = true;
                 }
 
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
             }
         }
+        return changed;
     }
 
     /**
      * Integrate variables from suricata.configuration.
+     * @return               Boolean true if rules were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithVariables(){
+    public boolean synchronizeSettingsWithVariables(){
+        boolean changed = false;
         String result = UvmContextFactory.context().execManager().execOutput(GET_CONFIG + " --variables");
         String variablesMd5sum = md5sum(result);
         if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
@@ -450,8 +464,9 @@ public class IntrusionPreventionApp extends AppBase
             }
             this.settings.setVariables(variables);
             this.settings.setVariablesMd5sum(variablesMd5sum);
-            this.setSettings(this.settings);
+            changed = true;
         }
+        return changed;
     }
 
     /**
