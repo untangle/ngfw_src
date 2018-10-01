@@ -181,7 +181,6 @@ public class IntrusionPreventionApp extends AppBase
 
         if(updated){
             this.setSettings(this.settings);
-            this.reconfigure();
         }
     }
 
