@@ -56,6 +56,10 @@ def main(argv):
 
     settings = get_app_settings("intrusion-prevention")
 
+    if settings is None:
+        print "Unable to read settings"
+        sys.exit(2)
+
     SuricataSignature.block_action = settings["blockAction"]
 
     if _debug is True:
