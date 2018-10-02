@@ -26,7 +26,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             email: '',
             password: '',
             passwordBase64Hash: '',
-            localExpires: new Date(),
+            localExpires: Util.serverToClientDate(new Date()),
             localForever: true,
             localEmpty: true,
             expirationTime: 0,
