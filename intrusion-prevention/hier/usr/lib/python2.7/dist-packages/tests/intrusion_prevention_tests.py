@@ -1,574 +1,86 @@
-"""
-Intrusion Prevention Test Suite
-"""
 import unittest2
 import time
 import sys
+import pdb
+import os
+import subprocess
 
-import json
-import pycurl
-import ssl
-import urllib
-import urllib2
-import copy
-import socket
-from datetime import datetime
-from StringIO import StringIO
-
+from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from global_functions import uvmContext
+from uvm import Manager
 from uvm import Uvm
+from datetime import datetime
 import remote_control
-import global_functions
 import test_registry
+import global_functions
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "", sys.version_info[0], sys.version_info[1] )
-if ( "" != ''):
-    sys.path.insert(0, UNTANGLE_DIR)
-
-default_rack_id = 1
+default_policy_id = 1
+appSettings = None
 app = None
 
-class IntrusionPreventionInterface:
-    """
-    Intrusion Prevention management object
-    """
-    config_url = "https://localhost/admin/download?"
-    config_request_arguments_template = {
-        "type": "IntrusionPreventionSettings",
-        "arg1": "load",
-        "arg2" : "0"
-    }
-    config_request_patch_template = {
-        "configured":True,
-        "interfaces":{
-            "list":[]
-        },
-        "max_scan_size":1024,
-        "profileId":"low_32",
-        "profileVersion":1,
-        "updated":{
-            "signatures":{
-                "added":[],
-                "deleted":[],
-                "modified":[]
-            }
-        }
-    }
+#pdb.set_trace()
 
-    def __init__(self, app_id, timeout=120 ):
-        self.app_id = app_id
+def create_signature( gid = "1", sid = "1999999", classtype="attempted-admin", category="app-detect",  msg="Msg", log=True, block=False, 
+    action="alert", type="tcp", source_ip="any", source_port="any", dest_ip="any", dest_port="any"):
+    if block:
+        action = "drop"
+    else:
+        action = "alert"
+    signature =   action + " " + type + " " + source_ip + " " + source_port + " -> " + dest_ip + " " + dest_port + " (" + \
+            "msg:\"" + msg + "\";" + \
+            "classtype:" + classtype + ";" + \
+            "sid:" + sid + ";" + \
+            "gid:" + gid + ";" + \
+            "classtype:" + classtype + ";" + \
+            "category:" + category + ";" +  \
+            "content:\"matchme\";nocase;)"
+    return signature
 
-    def config_request(self, action, patch = ""):
-        """
-        Send a configuration request
-        """
-        response = StringIO()
-
-        request_arguments = IntrusionPreventionInterface.config_request_arguments_template
-        request_arguments["arg1"] = action
-        request_arguments["arg2"] = self.app_id
-
-        patch = json.dumps(patch)
-
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-
-        method = "POST"
-        handler = urllib2.HTTPSHandler(context=ctx)
-        opener = urllib2.build_opener(handler)
-        data = patch.encode('utf-8')
-        request = urllib2.Request(IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments), data=data)
-        request.add_header("Content-Type","text/plain; charset=utf-8")
-        request.get_method = lambda: method
-        try:
-            connection = opener.open(request)
-        except Exception, e:
-            print(e)
-            connection = e
-
-        if connection.code == 200:
-            data = connection.read()
-            return data
-        else:
-            raise JSONRPCException( "Unable to get data.  Failed with code [%i]" % connection.code)
-
-        return False
-
-    def create_patch(self, type = None, action = None, extended = None ):
-        """
-        Create a patch
-        """
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-
-        patch_action = ""
-        if action == "add":
-            patch_action = "added"
-        if action == "modify":
-            patch_action = "modified"
-
-        if type == "signature":
-            patch_signature = extended
-            patch["signatures"] = {
-                "-1": {
-                    "op": patch_action,
-                    "recData": patch_signature,
-                    "page":1
-                }
-            }
-            patch["variables"] = {}
-        return patch
-
-    last_sid = 1999999
-    def create_signature(self, sid = None, category="app-detect", classtype="attempted-admin", msg="Msg", log=True, block=False, 
-        signature=None, action="alert", type="tcp", source_ip="any", source_port="any", dest_ip="any", dest_port="any", directive="", 
-        originalId="", path="rules"):
-        """
-        Create a signature
-        """
-        if sid == None:
-            sid = str(self.last_sid)
-            self.last_sid = self.last_sid - 1
-
-        if log == True:
-            action = "alert"
-        if block == True:
-            action = "drop"
-
-        if signature == None:
-            signature = action + " " + type + " " + source_ip + " " + source_port + " -> " + dest_ip + " " + dest_port + " ( msg:\""+msg+"\"; classtype:"+classtype+"; sid:"+sid+"; " + directive + ")"
-
-        signature = {
-            "sid": sid,
-            "category": category,
-            "classtype":classtype,
-            "msg": msg,
-            "signature": signature,
-            "log": log,
-            "block": block,
-            "originalId":originalId,
-            "path": path
-        }
-        return signature
-
-    ## Change the timeout for receiving a response
-    def set_timeout( self, timeout ):
-        """
-        Set CURL timeout
-        """
-        self.__curl.setopt( pycurl.TIMEOUT, timeout )
-
-    def setup(self):
-        """
-        Perform initialization
-        """
-        settings = json.loads( self.config_request( "load" ) )
-        del(settings)
-
-    def count_enabled_signatures(self, settings):
-        """
-        Count enabled signatures
-        """
-        enabled_count = 0
-        for signature in settings["signatures"]["list"]:
-            if signature["log"] == True or signature["block"] == True:
-                enabled_count = enabled_count + 1
-        return enabled_count
-
-    def count_variables(self, settings):
-        """
-        Count variables
-        """
-        count = 0
-        for signature in settings["variables"]["list"]:
-            count = count + 1
-        return count
-
-def flush_events():
-    """
-    Clear Intrusion Prevention events
-    """
-    reports = uvmContext.appManager().app("reports")
-    if (reports != None):
-        reports.flushEvents()
-
-def createBypassConditionRule( conditionType, value ):
-    return {
-        "bypass": True,
-        "description": "test bypass " + str(conditionType) + " " + str(value),
-        "enabled": True,
-        "javaClass": "com.untangle.uvm.network.BypassRule",
-        "conditions": {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                {
-                    "invert": False,
-                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
-                    "conditionType": str(conditionType),
-                    "value": str(value)
-                },
-                {
-                    "invert": False,
-                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
-                    "conditionType": "PROTOCOL",
-                    "value": "TCP,UDP"
-                }
-            ]
-        },
-        "ruleId": 1
-    }
 
 class IntrusionPreventionTests(unittest2.TestCase):
-    """
-    Tests
-    """
+
     @staticmethod
     def appName():
-        """
-        Get App name
-        """
         return "intrusion-prevention"
 
     @staticmethod
+    def vendorName():
+        return "Untangle"
+
+    @staticmethod
     def initialSetUp(self):
-        global app
+        global app, appSettings
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
-        app = uvmContext.appManager().instantiate(self.appName(), default_rack_id)
-
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(app.getAppSettings()["id"])
-        self.intrusion_prevention_interface.setup()
-
-        # create blank signatureset to start
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["activeGroups"] = {
-            "classtypes": "custom",
-            "classtypesSelected": [],
-            "categories": "custom",
-            "categoriesSelected": []
-        }
-        self.intrusion_prevention_interface.config_request( "save", patch )
-        app.reconfigure()
+        app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
+        app.start()
+        appSettings = app.getSettings()
 
     def setUp(self):
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(app.getAppSettings()["id"])
-        self.intrusion_prevention_interface.setup()
-        flush_events()
-
-    def test_010_client_is_online(self):
-        """
-        Verify client is online
-        """
+        pass
+            
+    def test_010_clientIsOnline(self):
         result = remote_control.is_online()
-
         assert (result == 0)
 
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.appName()))
 
-    #
-    # Wizard tests just compare before/after of enabled signatures.
-    #
-    def test_021_wizard_classtypes_custom_categories_recommended(self):
-        """
-        Setup Wizard, custom classtypes, recommended categories
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["activeGroups"] = {
-            "classtypes": "custom",
-            "classtypesSelected": [
-                "+attempted-admin"
-            ],
-            "categories": "recommended"
-        }
-
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count != post_count)
-
-    def test_022_wizard_classtypes_recommended_categories_custom(self):
-        """
-        Setup Wizard, recommended classtypes, custom categories
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["activeGroups"] = {
-            "classtypes": "recommended",
-            "categories": "custom",
-            "categoriesSelected": [
-                "+app_detect"
-            ]
-        }
-
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count != post_count)
-
-    def test_023_wizard_classtypes_custom_categories_custom(self):
-        """
-        Setup Wiard, custom classtypes, custom categories
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["activeGroups"] = {
-            "classtypes": "custom",
-            "classtypesSelected": [
-                "+attempted-admin"
-            ],
-            "categories": "custom",
-            "categoriesSelected": [
-                "+app_detect"
-            ]
-        }
-
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count != post_count)
-
-    def test_024_wizard_classtypes_recommended_categories_recommended(self):
-        """
-        Setup Wizard, recommended classtypes, recommended categories
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["activeGroups"] = {
-            "classtypes": "recommended",
-            "categories": "recommended"
-        }
-
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count != post_count)
-
-    #
-    # Add/modify/delete signatures
-    #
-    def test_030_signature_add(self):
-        """
-        UI, Add signature
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["signatures"] = {
-            "-1": {
-                "op":"added",
-                "recData": {
-                    "sid":"1999999",
-                    "category":"app-detect",
-                    "classtype":"attempted-admin",
-                    "msg":"CompanySecret",
-                    "signature":"alert tcp any any -> any any ( msg:\"CompanySecret\"; classtype:attempted-admin; sid:1999999; content:\"CompanySecret\"; nocase;)",
-                    "log": True,
-                    "block": False,
-                    "originalId":"",
-                    "path":"",
-                    "internalId":-1
-                },
-                "page":1
-            }
-        }
-        patch["variables"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count < post_count)
-
-    def test_031_signature_modify(self):
-        """
-        UI, Modify signature
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["signatures"] = {
-            "1":{
-                "op":"modified",
-                "recData":{
-                    "sid":"1999999",
-                    "category":"app-detect",
-                    "classtype":"unknown",
-                    "msg":"new signature",
-                    "signature":"drop tcp any any -> any any ( msg:\"CompanySecret\"; classtype:attempted-admin; sid:1999999; content:\"CompanySecret\"; nocase;)",
-                    "log":True,
-                    "block":True,
-                    "originalId":"1999999_1",
-                    "path":"",
-                    "internalId":1
-                },
-                "page":1
-            }
-        }
-        patch["variables"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count == post_count)
-
-    def test_032_signature_delete(self):
-        """
-        UI, delete signature
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["signatures"] = {
-            "4194":{
-                "op":"deleted",
-                "recData":{
-                    "sid":"1999999",
-                    "category":"app-detect",
-                    "classtype":"attempted-admin",
-                    "msg":"CompanySecret",
-                    "signature":"drop tcp any any -> any any (  msg:\"CompanySecret\"; classtype:attempted-admin; sid:1999999; content:\"CompanySecret\"; nocase; )",
-                    "log":True,
-                    "block":True,
-                    "originalId":"1999999_1",
-                    "path":"rules",
-                    "internalId":4194
-                },
-                "page":1
-            }
-        }
-        patch["variables"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_enabled_signatures(settings)
-        assert(pre_count != post_count)
-
-    #
-    # Add/modify/delete variables
-    #
-    def test_040_variable_add(self):
-        """
-        UI, add variable
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_variables(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["variables"] = {
-            "-1":{
-                "op":"added",
-                "recData":{
-                    "variable":"newvar",
-                    "definition":"192.168.1.1",
-                    "description":"description",
-                    "originalId":"",
-                    "internalId":-1
-                },
-                "page":1
-            }
-        }
-        patch["signatures"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print("pre_count: %i"%pre_count)
-        print("post_count: %i"%post_count)
-        assert(pre_count < post_count)
-
-    def test_041_variable_modify(self):
-        """
-        UI, modify variable
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_variables(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["variables"] = {
-            "1":{
-                "op":"modified",
-                "recData":{
-                    "variable":"newvar",
-                    "definition":"192.168.1.2",
-                    "description":"description",
-                    "originalId":"newvar",
-                    "internalId":1
-                },
-                "page":1
-            }
-        }
-        patch["signatures"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print("pre_count: %i"%pre_count)
-        print("post_count: %i"%post_count)
-        assert(pre_count == post_count)
-
-    def test_042_variable_delete(self):
-        """
-        UI, delete variable
-        """
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        pre_count = self.intrusion_prevention_interface.count_variables(settings)
-
-        patch = copy.deepcopy(IntrusionPreventionInterface.config_request_patch_template)
-        patch["variables"] = {
-            "8":{
-                "op":"deleted",
-                "recData":{
-                    "variable":"newvar",
-                    "definition":"192.168.1.2",
-                    "description":"description",
-                    "originalId":"newvar",
-                    "internalId":8
-                },
-                "page":1
-            }
-        }
-        patch["signatures"] = {}
-        self.intrusion_prevention_interface.config_request( "save", patch )
-
-        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        post_count = self.intrusion_prevention_interface.count_variables(settings)
-        print("pre_count: %i"%pre_count)
-        print("post_count: %i"%post_count)
-        assert(pre_count > post_count)
-
-    #
-    # Functional
-    #
     def test_050_functional_tcp_log(self):
-        """
-        Functional, TCP log
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+        global app, appSettings
+        appSettings['signatures']['list'].append(create_signature( gid = "1", 
+                                                sid = "1999999", 
+                                                classtype="attempted-admin", 
+                                                category="app-detect",  
+                                                msg="CompanySecret", 
+                                                log=True, 
+                                                block=False, 
+                                                action="alert", 
+                                                type="tcp"))
+        app.setSettings(appSettings)
 
         startTime = datetime.now()
-        signature = self.intrusion_prevention_interface.create_signature(msg="TCP Log", type="tcp", block=False, directive="content:\"CompanySecret\"; nocase;")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
         loopLimit = 10
         result = 4 # Network failure
         # If there is a network error with wget, retry up to ten times.
@@ -579,259 +91,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
+                                               'msg', "CompanySecret",
                                                'blocked', False,
                                                min_date=startTime)
-        assert( found )
-        
-    def test_051_functional_udp_log(self):
-        """
-        Functional, UDP log
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        startTime = datetime.now()
-        signature = self.intrusion_prevention_interface.create_signature(msg="UDP Log", type="udp", block=False, directive="content:\"CompanySecret\"; nocase;")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
-                                               'blocked', False,
-                                               min_date=startTime)
-        assert( found )
-
-    def test_052_functional_icmp_log(self):
-        """
-        Functional, ICMP log
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        dest_ip_address = remote_control.run_command("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
-        signature = self.intrusion_prevention_interface.create_signature(msg="ICMP Log", type="icmp", dest_ip=dest_ip_address, block=False)
-
-        startTime = datetime.now()
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("ping -c 5 " + dest_ip_address + " > /dev/null")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
-                                               'blocked', False,
-                                               min_date=startTime)
-        assert( found )
-
-    def test_053_functional_tcp_block(self):
-        """
-        Functional, TCP block
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        signature = self.intrusion_prevention_interface.create_signature(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
-
-        startTime = datetime.now()
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
-                                               'blocked', True,
-                                               min_date=startTime)
-        assert( found )
-
-    def test_054_functional_udp_block(self):
-        """
-        Functional, UDP block
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        startTime = datetime.now()
-        signature = self.intrusion_prevention_interface.create_signature(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
-                                               'blocked', True,
-                                               min_date=startTime)
-        assert( found )
-
-    def test_055_functional_icmp_block(self):
-        """
-        Functional, ICMP block
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        startTime = datetime.now()
-        dest_ip_address = remote_control.run_command("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
-        signature = self.intrusion_prevention_interface.create_signature(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("ping -c 5 " + dest_ip_address + " > /dev/null")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', signature['msg'],
-                                               'blocked', True,
-                                               min_date=startTime)
-        assert( found )
-
-    def test_060_app_stats(self):
-        """
-        Checks that the scan, detect, and block stats are properly incremented
-        """
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        signature = self.intrusion_prevention_interface.create_signature(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-
-        app.reconfigure()
-        app.forceUpdateStats()
-
-        time.sleep(5)
-
-        pre_events_scan = global_functions.get_app_metric_value(app,"scan")
-        pre_events_detect = global_functions.get_app_metric_value(app,"detect")
-        pre_events_block = global_functions.get_app_metric_value(app,"block")
-        
-        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
-        time.sleep(5)
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-        found = global_functions.check_events( events.get('list'), 5, 'msg', signature['msg'], 'blocked', True)
-        assert( found )
-
-        post_events_scan = global_functions.get_app_metric_value(app,"scan")
-        post_events_detect = global_functions.get_app_metric_value(app,"detect")
-        post_events_block = global_functions.get_app_metric_value(app,"block")
-
-        print("pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan)))
-        print("pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect)))
-        print("pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block)))
-        # assert(pre_events_scan < post_events_scan)
-        assert(pre_events_detect < post_events_detect)
-        assert(pre_events_block < post_events_block)
-
-    def test_070_bypass_udp_block(self):
-        """
-        UDP blocked but bypassed so UDP should work
-        """
-        raise unittest2.SkipTest('test correctly fails - disabling for 13.0 - NGFW-10144')
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-        tracerouteExists = remote_control.run_command("test -x /usr/sbin/traceroute")
-        if tracerouteExists != 0:
-            raise unittest2.SkipTest("Traceroute app needs to be installed on client")
-
-        # use IP address instead of hostname to avoid false positive with DNS IPS block.
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings = copy.deepcopy( orig_netsettings )
-        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
-        # netsettings['logBypassedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
-
-        startTime = datetime.now()
-        signature = self.intrusion_prevention_interface.create_signature(msg="UDP Block", type="udp", block=True, directive="")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 500,
-                                               "source_addr", remote_control.clientIP,
-                                               "dest_addr", test_untangle_com_ip,
-                                               "dest_port", 1234,
-                                               "protocol", 17,
-                                               "blocked", True,
-                                               min_date=startTime )
-
-        print("found: %s"%str(found))
-        assert(not found)
-
-    def test_071_bypass_tcp_block(self):
-        """
-        TCP blocked but bypassed so TCP should work
-        """
-        raise unittest2.SkipTest('test correctly fails - disabling for 13.0 - NGFW-10144')
-        global app
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings = copy.deepcopy( orig_netsettings )
-        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
-        # netsettings['logBypassedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
-
-        startTime = datetime.now()
-        signature = self.intrusion_prevention_interface.create_signature(msg="TCP Block", type="tcp", block=True, directive="")
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "signature", "add", signature ) )
-        app.reconfigure()
-
-        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 500,
-                                               "source_addr", remote_control.clientIP,
-                                               "dest_addr", test_untangle_com_ip,
-                                               "dest_port", 80,
-                                               "protocol", 6,
-                                               "blocked", True,
-                                               min_date=startTime )
-
-        print("found: %s"%str(found))
-        assert(not found)
+        assert(found)
 
     @staticmethod
     def finalTearDown(self):
-        """
-        Shut down
-        """
         global app
-        if app == None:
-            return
-        uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        app = None
-        
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
 test_registry.registerApp("intrusion-prevention", IntrusionPreventionTests)
