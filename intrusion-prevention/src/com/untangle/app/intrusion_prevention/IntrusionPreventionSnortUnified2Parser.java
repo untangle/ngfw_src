@@ -416,7 +416,6 @@ public class IntrusionPreventionSnortUnified2Parser
 		ipsEvent.setDportIcode( bufIdsEvent.getShort( pos ) );
         pos += IDS_EVENT_PORT_DST_SIZE;
         
-        logger.warn(bufIdsEvent.get( pos ));
 		ipsEvent.setProtocol( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_PROTOCOL_SIZE;
 
@@ -431,7 +430,6 @@ public class IntrusionPreventionSnortUnified2Parser
         // ipsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
         // pos += IDS_EVENT_IMPACT_SIZE;
         //
-        logger.warn(bufIdsEvent.get( pos ));
 		ipsEvent.setBlocked( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_BLOCKED_SIZE;
   
