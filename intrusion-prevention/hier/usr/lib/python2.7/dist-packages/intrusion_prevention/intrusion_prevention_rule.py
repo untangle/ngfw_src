@@ -47,12 +47,12 @@ class IntrusionPreventionRule:
             targetValue = condition["value"]
 
             if condition["type"] == "SID":
-                match = self.matches_numeric(int(signature.options["sid"]), comparator, targetValue)
+                match = self.matches_numeric(int(signature.options["sid"]), comparator, int(targetValue))
             elif condition["type"] == "GID":
-                match = self.matches_numeric(int(signature.options["gid"]), comparator, targetValue)
+                match = self.matches_numeric(int(signature.options["gid"]), comparator, int(targetValue))
             elif condition["type"] == "ID":
                 conditionArgs["actualValue"] = signature.signature_id
-                match = self.matches_numeric(signature.signature_id, comparator, targetValue)
+                match = self.matches_text(signature.signature_id, comparator, targetValue)
                 #comparator: 'numeric'
             elif condition["type"] == "CATEGORY":
                 if not isinstance(condition["value"],list):
@@ -72,13 +72,13 @@ class IntrusionPreventionRule:
                 conditionArgs["actualValue"] = signature.lnet
                 conditionArgs["comparatorType"] = "network"
             elif condition["type"] == "SRC_PORT":
-                match = self.matches_numeric(int(signature.lport), comparator, targetValue)
+                match = self.matches_numeric(int(signature.lport), comparator, int(targetValue))
             elif condition["type"] == "DST_ADDR":
                 conditionArgs["actualValue"] = signature.rnet
                 conditionArgs["comparatorType"] = "network"
             elif condition["type"] == "DST_PORT":
                 conditionArgs["actualValue"] = signature.rport
-                match = self.matches_numeric(int(signature.rport), comparator, targetValue)
+                match = self.matches_numeric(int(signature.rport), comparator, int(targetValue))
             elif condition["type"] == "RULE":
                 conditionArgs["actualValue"] = signature.options_raw
                 conditionArgs["comparatorType"] = "text"
@@ -86,7 +86,7 @@ class IntrusionPreventionRule:
                 conditionArgs["actualValue"] = signature.path
                 conditionArgs["comparatorType"] = "text"
             elif condition["type"] == "SYSTEM_MEMORY":
-                match = self.matches_numeric(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"], comparator, targetValue)
+                match = self.matches_numeric(int(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"]), comparator, int(targetValue))
             elif condition["type"] == "SIGNATURE":
                 match = self.matches_text(signature.build().lower(), comparator, targetValue.lower())
             else:

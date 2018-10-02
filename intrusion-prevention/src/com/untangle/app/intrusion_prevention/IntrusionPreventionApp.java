@@ -51,6 +51,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.SettingsManager;
@@ -146,12 +147,14 @@ public class IntrusionPreventionApp extends AppBase
      * @return PipelineConector
      */
     @Override
-    protected void postInit()
+    protected void preInit()
     {
         String appID = this.getAppSettings().getId().toString();
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         IntrusionPreventionSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
+
+        readAppSettings();
 
         try {
             readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
@@ -172,11 +175,14 @@ public class IntrusionPreventionApp extends AppBase
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-        synchronizeSettingsWithDefaults();
-        synchronizeSettingsWithClassifications();
-        synchronizeSettingsWithVariables();
+        boolean updated = false;
+        updated = synchronizeSettingsWithDefaults();
+        updated = synchronizeSettingsWithClassifications() || updated;
+        updated = synchronizeSettingsWithVariables() || updated;
 
-        readAppSettings();
+        if(updated){
+            this.setSettings(this.settings);
+        }
     }
 
     /**
@@ -249,8 +255,10 @@ public class IntrusionPreventionApp extends AppBase
      * Integrate values from defaults into settings.
      * The defaults.js file is distributed with the signature downloads and lets
      * us make in the field modifications of settings.
+     * @return               Boolean true if defaults were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithDefaults(){
+    public boolean synchronizeSettingsWithDefaults(){
+        boolean changed = false;
         File f = new File(DEFAULTS_FILE);
         if( f.exists() ){
             JSONObject defaults = null;
@@ -323,20 +331,23 @@ public class IntrusionPreventionApp extends AppBase
 
                     }
                     this.settings.setDefaultsMd5sum(defaultsMd5sum);
-                    this.setSettings(this.settings);
+                    changed = true;
                 }
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
             }
         }
+        return changed;
     }
 
     /**
-     * Integrate values from defaults into settings.
+     * Integrate values from classifications into settings.
      * The defaults.js file is distributed with the signature downloads and lets
      * us make in the field modifications of settings.
+     * @return               Boolean true if classifications were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithClassifications(){
+    public boolean synchronizeSettingsWithClassifications(){
+        boolean changed = false;
         File f = new File(CLASSIFICATION_FILE);
         if( f.exists() ){
             String classificationContents = null;
@@ -418,19 +429,22 @@ public class IntrusionPreventionApp extends AppBase
                     }
 
                     this.settings.setClassificationMd5sum(classificationMd5sum);
-                    this.setSettings(this.settings);
+                    changed = true;
                 }
 
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
             }
         }
+        return changed;
     }
 
     /**
      * Integrate variables from suricata.configuration.
+     * @return               Boolean true if rules were synchronized, otherwise false.
      */
-    public void synchronizeSettingsWithVariables(){
+    public boolean synchronizeSettingsWithVariables(){
+        boolean changed = false;
         String result = UvmContextFactory.context().execManager().execOutput(GET_CONFIG + " --variables");
         String variablesMd5sum = md5sum(result);
         if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
@@ -450,8 +464,9 @@ public class IntrusionPreventionApp extends AppBase
             }
             this.settings.setVariables(variables);
             this.settings.setVariablesMd5sum(variablesMd5sum);
-            this.setSettings(this.settings);
+            changed = true;
         }
+        return changed;
     }
 
     /**
@@ -516,7 +531,6 @@ public class IntrusionPreventionApp extends AppBase
         // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
         //     suricataConf.lastModified() > suricataDebianConf.lastModified() ) {
         //     logger.warn("Settings file newer than suricata debian configuration, Syncing...");
-        //     reconfigure();
         // }
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
@@ -544,9 +558,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void reconfigure()
     {
-
+        if(this.settings == null){
+            return;
+        }
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
@@ -555,13 +570,6 @@ public class IntrusionPreventionApp extends AppBase
                 ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
         }
 
-        // String interfacesValue = "";
-        // for( String i : this.interfaceIds ){
-        //     interfacesValue += 
-        //         ( interfacesValue.length() > 0 ? "," : "" ) + i; 
-        // }
-
-        // ALSO NEED ENGINE_RULES_DIRECTORY
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
             " --home_net \"" + homeNetValue + "\""
@@ -579,8 +587,16 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn( "Unable to generate suricata.configuration:", e );
         }
         reloadEventMonitorMap();
-        stop();
-        start();
+
+        try {
+            if (getRunState() == AppSettings.AppState.RUNNING) {
+                stop();
+                start();
+            }
+        } catch (Exception exn) {
+            logger.error("Could not save IPS settings", exn);
+        }
+
     }
 
     /**
