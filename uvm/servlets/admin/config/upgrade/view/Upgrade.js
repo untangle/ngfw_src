@@ -76,7 +76,7 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
                 queryMode: 'local',
                 editable: false,
                 publishes: 'value',
-                store: [['any', 'Any week day'.t()], ['all', 'All week days'.t()], ['specific', 'Specific days'.t()]],
+                store: [['any', 'Any week day'.t()], ['specific', 'Specific days'.t()]],
                 listeners: {
                     change: 'onDaysComboChange'
                 }
