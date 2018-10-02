@@ -532,16 +532,18 @@ public class IntrusionPreventionApp extends AppBase
         String rulesFilename = null;
         try{
             rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
-            rulesFilename += this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+            rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
         }catch(Exception e){
             logger.warn("preStart: Unable to get rulesFilename", e);
         }
 
-        if(rulesFilename != null){
-            File f = new File( rulesFilename );
-            if( !f.exists() ){
-                reconfigure();
-            }
+        if(rulesFilename == null){
+            return;
+        }
+
+        File f = new File( rulesFilename );
+        if( !f.exists() ){
+            reconfigure();
         }
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
