@@ -322,7 +322,7 @@ public class FirewallApp extends AppBase
         matcherList = new LinkedList<FirewallRuleCondition>();
         matcherList.add(addrMatch3);
         matcherList.add(portMatch3);
-        ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
+        ruleList.add(new FirewallRule(false, matcherList, true, false, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
 
         FirewallSettings settings = new FirewallSettings(ruleList);
         settings.setVersion(1);
