@@ -85,8 +85,6 @@ public class IntrusionPreventionApp extends AppBase
     private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
     private static final String DEFAULTS_FILE = "/usr/share/untangle-suricata-config/current/templates/defaults.js";
     private static final String CLASSIFICATION_FILE = "/usr/share/untangle-suricata-config/current/rules/classification.config";
-    // private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
-    // private static final String SURICATA_CONF = "/etc/snort/suricata.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
@@ -100,7 +98,6 @@ public class IntrusionPreventionApp extends AppBase
 
 
     private List<IPMaskedAddress> homeNetworks = null;
-    // private List<String> interfaceIds = null;
 
     /**
      * Setup IPS application
@@ -114,7 +111,6 @@ public class IntrusionPreventionApp extends AppBase
 
         this.handler = new EventHandler(this);
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
-        // this.interfaceIds = this.calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -533,6 +529,23 @@ public class IntrusionPreventionApp extends AppBase
         //     logger.warn("Settings file newer than suricata debian configuration, Syncing...");
         // }
 
+        String rulesFilename = null;
+        try{
+            rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
+            rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+        }catch(Exception e){
+            logger.warn("preStart: Unable to get rulesFilename", e);
+        }
+
+        if(rulesFilename == null){
+            return;
+        }
+
+        File f = new File( rulesFilename );
+        if( !f.exists() ){
+            reconfigure();
+        }
+
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         UvmContextFactory.context().daemonManager().incrementUsageCount( "suricata" );
@@ -826,7 +839,6 @@ public class IntrusionPreventionApp extends AppBase
                 resp.setHeader("Content-Type","text/plain");
 
                 List<File> signatureFiles = new LinkedList<>();
-                // !!! LOOP ENGINE_RULES_DIRECTORY
                 getSignatureFiles( signatureFiles, new File(CURRENT_RULES_DIRECTORY));
                 getSignatureFiles( signatureFiles, new File(ENGINE_RULES_DIRECTORY));
 
@@ -1058,7 +1070,6 @@ public class IntrusionPreventionApp extends AppBase
         }
         if( sameNetworks == false ){
             this.homeNetworks = newHomeNetworks;
-            // this.interfaceIds = calculateInterfaces(networkSettings);
             this.reconfigure();
         }
     }

@@ -111,7 +111,13 @@ Ext.define('Ung.config.local-directory.MainController', {
 
     statics:{
         expirationRenderer: function( value ){
-            return(value > 0 ? Renderer.timestamp(value) : 'Never'.t());
+            var date;
+            if (value > 0) {
+                date = new Date(value);
+                return Renderer.timestamp(Util.clientToServerDate(date).getTime());
+            } else {
+                return 'Never'.t();
+            }
         }
     }
 
