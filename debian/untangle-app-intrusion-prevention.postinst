@@ -10,7 +10,7 @@ if [ -d $SETTINGS_DIRECTORY ] ; then
             rm -f $filename
         fi
     done
-    find ${SETTINGS} -xtype l -delete
+    find ${SETTINGS_DIRECTORY} -xtype l -delete
 fi
 
 OLD_SNORT_PYTHON_LIBRARY=/usr/lib/python2.7/intrusion_prevention

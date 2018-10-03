@@ -20,9 +20,9 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
         }, {
             xtype: 'checkbox',
             boxLabel: 'Enable BitDefender&reg; Scan'.t(),
+            hidden: rpc.architecture === "arm",
             bind: {
                 value: '{settings.enableLocalScan}',
-                hidden: rpc.architecture === "arm"
             }
         }]
     }],
@@ -35,7 +35,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
 
     items: [{
         title: 'File Extensions'.t(),
-        itemId: 'file_extenions',
+        itemId: 'file_extensions',
         emptyText: 'No File Extensions defined'.t(),
 
         listProperty: 'settings.httpFileExtensions.list',
