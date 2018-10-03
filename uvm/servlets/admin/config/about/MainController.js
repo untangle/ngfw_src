@@ -26,7 +26,8 @@ Ext.define('Ung.config.about.MainController', {
             Rpc.asyncPromise('rpc.hostTable.getCurrentActiveSize'),
             Rpc.asyncPromise('rpc.hostTable.getMaxActiveSize'),
             Rpc.directPromise('rpc.fullVersionAndRevision'),
-            Rpc.directPromise('rpc.serverUID')
+            Rpc.directPromise('rpc.serverUID'),
+            Rpc.directPromise('rpc.serverSerialnumber')
         ], this)
         .then(function (result) {
             if(Util.isDestroyed(v, vm)){
@@ -39,7 +40,8 @@ Ext.define('Ung.config.about.MainController', {
                 activeSize: result[3],
                 maxActiveSize: result[4],
                 fullVersionAndRevision: result[5],
-                serverUID: result[6]
+                serverUID: result[6],
+                serialNumber: (result[7] != "") ? '<br/>' + 'Serial Number'.t() + ': ' + result[7] : ""
             });
 
             var accountComponent = v.down('[itemId=account]');
