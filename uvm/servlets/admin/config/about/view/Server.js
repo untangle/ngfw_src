@@ -18,8 +18,9 @@ Ext.define('Ung.config.about.view.Server', {
         items: [{
             xtype: 'component',
             bind:{
-                html: 'Do not publicly post or share the UID or account information.'.t() + '<br/>' +
-                    'UID'.t() + ': ' + '{serverUID}'
+                html: 'Do not publicly post or share the system or account information.'.t() + '<br/>' +
+                    'UID'.t() + ': ' + '{serverUID}' + 
+                    '{serialNumber}'
             }
         },{
             xtype: 'component',
