@@ -935,14 +935,14 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * If already in the ARP table, continue
              */
-            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q ether");
             if (result == 0) continue;
 
             /**
              * If not, force arp resolution with ping Then recheck ARP table
              */
             result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
-            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q ether");
             if (result == 0) continue;
 
             String notificationText = "";

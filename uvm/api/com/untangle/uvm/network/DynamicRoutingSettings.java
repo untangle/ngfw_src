@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -44,11 +45,11 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     private String bgpRouterAs = "";
     private String ospfRouterId = "";
 
-    private List<DynamicRouteBgpNeighbor> bgpNeighbors = null;
-    private List<DynamicRouteNetwork> bgpNetworks = null;
-    private List<DynamicRouteNetwork> ospfNetworks = null;
-    private List<DynamicRouteOspfArea> ospfAreas = null;
-    private List<DynamicRouteOspfInterface> ospfInterfaces = null;
+    private List<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
+    private List<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
+    private List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
+    private List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
+    private List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
 
     public Boolean getEnabled() { return this.enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
