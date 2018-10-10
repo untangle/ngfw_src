@@ -7,6 +7,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     controller: 'unintrusionrulegrid',
 
+    viewConfig: {
+        listeners: {
+            drop: 'updateRuleStatus'
+        }
+    },
+
     emptyText: 'No Rules Defined'.t(),
     name: 'rules',
 
@@ -28,7 +34,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     }],
 
     tbar: ['@add', '->', '@import', '@export'],
-    recordActions: ['edit', 'copy', 'delete'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
     copyId: 'id',
     copyAppendField: 'description',
     recordModel: 'Ung.model.intrusionprevention.rule',

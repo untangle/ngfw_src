@@ -330,20 +330,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         rules.each(function(rule){
             if(rule.get('enabled')){
                 ruleAction = rule.get('action');
-                ruleActionDefault = ( !matchRule && ruleAction == 'default' );
-                ruleActionMatchAny = (matchRule != null);
-                // console.log('ruleActionMatchAny=' + ruleActionMatchAny);
                 statusIndex = ruleAction;
 
                 // var sigCount = 0;
                 signatures.each( function(signature){
                     // sigCount++;
                     if(rule.matchSignature(signature, conditions, vm)){
-                        if(ruleActionDefault || ruleActionMatchAny){
-                            statusIndex = signature.data['block'] ? 'block' : ( signature.data['log'] ? 'log' : 'disable');
-                        }
                         if(ruleAction == 'blocklog'){
-                            statusIndex = signature.data['log'] ? 'block' : 'disable';
+                            statusIndex = signature.data['log'] ? 'block' : ( signature.data['block'] ? 'block' : 'disable');
                         }
 
                         var signatureId = signature.data['id'];
@@ -353,9 +347,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                                 continue;
                             }
                             if(status[action][signatureId]){
-                                // status[action][signatureId] = false;
                                 delete status[action][signatureId];
-                                break;
                             }
                         }
                         status[statusIndex][signatureId] = true;
@@ -478,19 +470,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 });
             }
             return references.join("");
-        },
-        ruleActionPrecedence: {
-            'default': 0, 
-            'log' : 1, 
-            'blocklog': 2, 
-            'block': 3, 
-            'disable': 4
-        },
-        ruleSortActionPrecedence: function( record1, record2){
-            var action1 = record1.get('action');
-            var action2 = record2.get('action');
-            return ( Ung.apps.intrusionprevention.MainController.ruleActionPrecedence[action1] > Ung.apps.intrusionprevention.MainController.ruleActionPrecedence[action2] ) ? 1 : ( (action1 == action2) ? 0 : -1); 
-        },
+        }
     }
 });
 

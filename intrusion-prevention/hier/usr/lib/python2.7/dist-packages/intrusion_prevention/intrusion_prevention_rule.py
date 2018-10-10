@@ -142,36 +142,14 @@ class IntrusionPreventionRule:
         return False
 
     def set_signature_action(self, signature):
-        current_action = signature.get_action()
-
-        modified = str(current_action) == str(signature.initial_action)
-        # set rule_action_applied field in signature.
-        # if block set, don't do anything else.
-
-        ## precidence:
-        # default
-        # log
-        # block
-        # disabled
-
         if self.rule["action"] == "default":
             signature.set_action(current_action["log"], current_action["block"])
-        # elif self.rule["action"] == "log":
         elif self.rule["action"] == "log":
-            # if not current_action["enabled"] and not current_action["log"]
-            # print("set log")
-            signature.set_action(True, current_action["block"])
+            signature.set_action(True, False)
         elif self.rule["action"] == "blocklog":
-            # if not current_action["enabled"] and not current_action["block"]
-            # print("set block")
             if signature.get_action()["log"] is True:
-                signature.set_action(current_action["log"], True)
+                signature.set_action(True, True)
         elif self.rule["action"] == "block":
-            # if not current_action["enabled"] and not current_action["block"]
-            # print("set block")
-            signature.set_action(current_action["log"], True)
+            signature.set_action(True, True)
         elif self.rule["action"] == "disable":
-            if not modified:
-                # if not current_action["enabled"] and not current_action["block"]
-                # print("set disabled")
-                signature.set_action(False, False)
+            signature.set_action(False, False)
