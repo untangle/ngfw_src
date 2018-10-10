@@ -94,10 +94,9 @@ def main(argv):
         rules.append(IntrusionPreventionRule(settings_rule))
 
     ##
-    ## Process rules in action precedence order.
+    ## Process rules in order.
     ##
-    priority = { 'default': 0, 'log' : 1, 'blocklog': 2, 'block': 3, 'disable': 4}
-    for rule in sorted(rules, key=lambda rule: (priority[rule.get_action()] )):
+    for rule in rules:
         if not rule.get_enabled():
             continue
         for signature in signatures.get_signatures().values():

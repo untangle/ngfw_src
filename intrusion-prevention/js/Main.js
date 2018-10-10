@@ -36,12 +36,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             rules: {
                 storeId: 'rulesStore',
                 model: 'Ung.model.intrusionprevention.rule',
-                data: '{settings.rules.list}',
-                sorters:[{
-                    sorterFn: function(){
-                        return Ung.apps.intrusionprevention.MainController.ruleSortActionPrecedence.apply(this, arguments);
-                    }
-                }]
+                data: '{settings.rules.list}'
             },
             signatures: {
                 storeId: 'signaturesStore',
