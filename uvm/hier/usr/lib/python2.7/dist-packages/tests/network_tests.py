@@ -21,8 +21,6 @@ import global_functions
 
 
 ftp_file_name = ""
-dyn_hostname = ""
-dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
 
 default_policy_id = 1
 orig_netsettings = None
@@ -36,10 +34,10 @@ office_ftp_client = "10.111.56.23"
 
 def get_usable_name(dyn_checkip):
     selected_name = ""
+    names,filler = global_functions.get_live_account_info("dyndns")
+    dyn_names = names.split(",") 
     for hostname in dyn_names:
-        result = subprocess.check_output("host -R3 -4 " + hostname + " " + dyndns_resolver, shell=True)
-        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        hostname_ip = (match.group()).replace('address ','')
+        hostname_ip = global_functions.get_hostname_ip_address(hostname=hostname)
         if dyn_checkip != hostname_ip:
             selected_name = hostname
             break
@@ -839,40 +837,42 @@ class NetworkTests(unittest2.TestCase):
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
-        global dyn_hostname
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-        wan_count = 0
+            raise unittest2.SkipTest("Skipping a time consuming test")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        for interface in netsettings['interfaces']['list']:
-            if interface['isWan'] and not interface.get('disabled') == False:
-                wan_count += 1
-        
-        if (wan_count > 1):
+        index_of_wans = global_functions.get_wan_tuples()
+        if (len(index_of_wans) > 1):
             raise unittest2.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
         outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
-        outside_IP = outside_IP.rstrip()  # strip return character
 
         dyn_hostname = get_usable_name(outside_IP)
         if dyn_hostname == "":
-            raise unittest2.SkipTest('Skipping since all dyndns names already used')
+            raise unittest2.SkipTest("Skipping since all dyndns names already used")
         else:
             print("Using name: %s" % dyn_hostname)
         dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
         if dyn_DNS_user_name == "message":
-            raise unittest2.SkipTest('no dyn user')
+            raise unittest2.SkipTest("no dyn user")
 
         # Clear the ddclient cache and set DynDNS info
         ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
         if os.path.isfile(ddclient_cache_file):
             os.remove(ddclient_cache_file)        
         set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
-        
 
+        # myip.dnsomatic.com site is sometimes offline so use test. 
+        ddclient_file = "/etc/ddclient.conf"
+        with open(ddclient_file) as f:
+            newText=f.read().replace('myip.dnsomatic.com', 'test.untangle.com/cgi-bin/myipaddress.py')
+        with open(ddclient_file, "w") as f:
+            f.write(newText)        
+        # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
+        subprocess.check_output("systemctl restart ddclient.service", shell=True)
+        
         loop_counter = 80
         dyn_IP_found = False
         while loop_counter > 0 and not dyn_IP_found:
@@ -885,15 +885,13 @@ class NetworkTests(unittest2.TestCase):
                 pass # executable environment not ready
             # time.sleep(10)
             loop_counter -= 1
-            result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
-            match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-            dynIP = (match.group()).replace('address ','')
+            dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
             print("IP address of outside_IP <%s> dynIP <%s> " % (outside_IP,dynIP))
             dyn_IP_found = False
             if outside_IP == dynIP:
                 dyn_IP_found = True
             else:
-                time.sleep(10)
+                time.sleep(60)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert(dyn_IP_found)
