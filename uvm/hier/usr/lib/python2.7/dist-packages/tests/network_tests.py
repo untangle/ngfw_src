@@ -615,29 +615,17 @@ class NetworkTests(unittest2.TestCase):
     # test a NAT rules
     def test_050_nat_rule(self):
         # check if more than one WAN
-        myWANs = {}
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        for interface in netsettings['interfaces']['list']:
-            # if its not a static WAN its not testable
-            detectedIPlist =[]
-            if interface['isWan'] and interface['v4ConfigType'] == "STATIC" and interface['v4StaticAddress'] != None:
-                addr = interface['v4StaticAddress']
-                # Check if WAN address is recognized by test.untangle.com
-                detectedIP = global_functions.get_public_ip_address(extra_options="--bind-address=" + addr,localcall=True)
-                detectedIP = detectedIP.rstrip()  # strip return character
-                if detectedIP not in detectedIPlist:
-                    detectedIPlist.append(detectedIP)
-                    myWANs[addr] = detectedIP
-        if (len(myWANs) < 2):
+        index_of_wans = global_functions.get_wan_tuples()
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
-        for wanIP in myWANs:
+
+        for wan in index_of_wans:
             nuke_first_level_rule("natRules")
             # Create NAT rule for port 80
-            set_first_level_rule(create_nat_rule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
+            set_first_level_rule(create_nat_rule("test out " + wan[1], "DST_PORT","80",wan[1]),"natRules")
             # Determine current outgoing IP
             result = global_functions.get_public_ip_address()
-            # print("result " + result + " wanIP " + myWANs[wanIP])
-            assert (result == myWANs[wanIP])
+            assert (result == wan[2])
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
