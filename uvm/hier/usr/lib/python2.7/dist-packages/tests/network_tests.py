@@ -297,23 +297,23 @@ def add_dns_rule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def find_used_ip(startIP):
+def find_used_ip(start_ip):
     # Find an IP that is not currently used.
     loopLimit = 20
-    testIP = ipaddr.IPAddress(startIP)
-    ipUsed = True
-    while (ipUsed and (loopLimit > 0)):
+    test_ip = ipaddr.IPAddress(start_ip)
+    ip_used = True
+    while (ip_used and (loopLimit > 0)):
         loopLimit -= 1
-        testIP += 1
-        testIPResult = subprocess.call(["ping","-c","1",str(testIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if testIPResult != 0:
-            ipUsed = False
+        test_ip += 1
+        test_ip_result = subprocess.call(["ping","-c","1",str(test_ip)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if test_ip_result != 0:
+            ip_used = False
 
-    if ipUsed:
+    if ip_used:
         # no unused IP found
         return False
     else:
-        return str(testIP)
+        return str(test_ip)
 
 def append_vlan(parentInterfaceID):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -356,28 +356,28 @@ def append_vlan(parentInterfaceID):
     uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
 
-def append_aliases(parentInterfaceID):
+def append_aliases():
+    ip_found = False
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for i in range(len(netsettings['interfaces']['list'])):
-        if netsettings['interfaces']['list'][i]['interfaceId'] == parentInterfaceID:
-            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
-                testStartIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
-                ipFound = find_used_ip(testStartIP)
+        if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED":
+            if netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
+                test_start_ip =  netsettings['interfaces']['list'][i]['v4StaticAddress']
+                ip_found = find_used_ip(test_start_ip)
                 break;
-            else:
-                # only use if interface is addressed
-                return False
-    if ipFound:
-        testAliasIP = find_used_ip(ipFound)
-        if testAliasIP:
-            netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(testAliasIP,
-                                                                             netsettings['interfaces']['list'][i]['v4StaticNetmask'],
-                                                                             netsettings['interfaces']['list'][i]['v4StaticPrefix']))
-            uvmContext.networkManager().setNetworkSettings(netsettings)
-        else:
-            return False
+            elif interface['v4ConfigType'] == "AUTO":
+                nicDevice = str(netsettings['interfaces']['list'][i]['symbolicDev'])
+                test_start_ip = global_functions.__get_ip_address(nicDevice)
+                ip_found = find_used_ip(test_start_ip)
+                break;
 
-    return testAliasIP
+    if ip_found:
+        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(ip_found,
+                                                                         netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                         netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+    print("Alias IP: " + ip_found)
+    return ip_found
 
 def nuke_first_level_rule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -481,9 +481,9 @@ class NetworkTests(unittest2.TestCase):
 
 
     def test_016_add_alias(self):
-        raise unittest2.SkipTest("Review changes in test")
+        # raise unittest2.SkipTest("Review changes in test")
         # Add Alias IP
-        alias_ip = append_aliases(remote_control.interface)
+        alias_ip = append_aliases()
         if alias_ip:
             # print("alias_ip <%s>" % AliasIP)
             result = remote_control.run_command("ping -c 1 %s" % alias_ip)
