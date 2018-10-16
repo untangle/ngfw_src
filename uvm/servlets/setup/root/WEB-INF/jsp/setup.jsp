@@ -47,7 +47,7 @@
 
             String.prototype.t = function() {
                 if (rpc.language !== 'en') {
-                    return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                    return rpc.translations[this.valueOf()] || (rpc.language === 'xx' ? '<cite>' + this.valueOf() + '</cite>' : this.valueOf());
                 }
                 return this.valueOf();
             };
@@ -83,5 +83,5 @@
 
   </head>
   <body>
-  </body>
+</body>
 </html>
