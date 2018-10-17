@@ -22,7 +22,7 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private String classificationMd5sum = "";
     private String variablesMd5sum = "";
     private List<IntrusionPreventionRule> rules = new LinkedList<>();
-    private List<String> signatures = new LinkedList<>();
+    private List<IntrusionPreventionSignature> signatures = new LinkedList<>();
     private List<IntrusionPreventionVariable> variables = new LinkedList<>();
     private Integer iptablesNfqNumber = 2930;
     private Integer iptablesMaxScanSize = 1024;
@@ -31,7 +31,7 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public IntrusionPreventionSettings() { }
 
-    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<String> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize)
+    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<IntrusionPreventionSignature> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize)
     {
         this.rules = rules;
         this.signatures = signatures;
@@ -55,8 +55,8 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     public List<IntrusionPreventionRule> getRules() { return rules; }
     public void setRules(List<IntrusionPreventionRule> rules) { this.rules = rules; }
 
-    public List<String> getSignatures() { return signatures; }
-    public void setSignatures(List<String> signatures) { this.signatures = signatures; }
+    public List<IntrusionPreventionSignature> getSignatures() { return signatures; }
+    public void setSignatures(List<IntrusionPreventionSignature> signatures) { this.signatures = signatures; }
 
     public List<IntrusionPreventionVariable> getVariables() { return variables; }
     public void setVariables(List<IntrusionPreventionVariable> variables) { this.variables = variables; }
