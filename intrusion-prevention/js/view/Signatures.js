@@ -119,7 +119,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },
 
     recordModel: 'Ung.model.intrusionprevention.signature',
-    emptyRow: "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; gid:1; classtype:unknown; category:app-detect; content:\"matchme\"; nocase;)",
+    emptyRow: "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; gid:1; content:\"matchme\"; nocase;)",
 
     columns: [{
         header: "Gid".t(),
