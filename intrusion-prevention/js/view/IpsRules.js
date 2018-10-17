@@ -156,7 +156,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"PROTOCOL",
             displayName: "Protocol".t(),
             type: 'checkboxgroup',
-            values: [["TCP","TCP"],["UDP","UDP"],["ICMP", "ICMP"], ["ANY", "ANY"]],
+            values: [],
             comparator: 'boolean'
         },{
             name:"SRC_ADDR",
