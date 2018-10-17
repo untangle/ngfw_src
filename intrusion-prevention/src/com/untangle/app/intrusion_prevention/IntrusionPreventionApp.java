@@ -46,6 +46,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
@@ -1024,6 +1025,24 @@ public class IntrusionPreventionApp extends AppBase
                 addresses.add( maskedAddress );
             }
         }
+
+        /**
+         * Pull static routes
+         */
+        for (StaticRoute route : UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes()) {
+            match = false;
+            maskedAddress = new IPMaskedAddress( route.getNetwork(), route.getPrefix());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == route.getPrefix() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
+        }
+
         return addresses; 
     }
 
