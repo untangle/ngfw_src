@@ -103,18 +103,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         // Process custom signatures
         vm.get('settings.signatures.list').forEach(function(settingsSignature){
-            if(typeof(settingsSignature) == 'object'){
-                signatures.forEach(function( signature ){
-                    if(signature.get('gid') == settingsSignature['gid'] &&
-                       signature.get('sid') == settingsSignature['sid']){
-                        signature.set( 'log', settingsSignature['log']);
-                        signature.set( 'block', settingsSignature['block']);
-                        signature.set( 'default', false);
-                    }
-                });
-            }else{
-                signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature, null, false));
-            }
+            signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
         });
         vm.set({
             signaturesList: signatures
@@ -194,9 +183,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     var signatures = [];
                     store.each(function(record){
                         if(!record.get('default') && !record.get('markedForDelete')) {
-                            signatures.push(record.getRecord());
+                            signatures.push({
+                                javaClass: 'com.untangle.app.intrusion_prevention.IntrusionPreventionSignature',
+                                signature: record.getRecord(),
+                                category: record.get('category')
+                            });
                         }
-                    });
+                    }, this, true);
                     vm.set('settings.signatures.list', signatures);
                 }else{
                     if (store.getModifiedRecords().length > 0 ||
@@ -207,7 +200,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             if (record.get('markedForDelete')) {
                                 record.drop();
                             }
-                        });
+                        }, this, true);
                         store.isReordered = undefined;
                         vm.set(settingsProperty, Ext.Array.pluck(store.getRange(), 'data'));
                     }
@@ -1085,7 +1078,8 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         name: 'options',
     },{
         name: 'category',
-        type: 'string'
+        type: 'string',
+        defaultValue: 'misc'
     },{
         name: 'classtype',
         type: 'string'
@@ -1238,6 +1232,14 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         }else if(signatureChange){
             var signature = new Ung.model.intrusionprevention.signature(newValue, me.data['category'], me.data['reserved']);
 
+            // set everything
+            for(var dataKey in me.data){
+                if(dataKey == '_id'){
+                    continue;
+                }
+                me.data[dataKey] = signature.data[dataKey];
+            }
+
             Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
                 var value = signature.getOption(option.name);
                 if(option.defaultValue){
@@ -1291,9 +1293,6 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     },
 
     setOption: function( key, value){
-
-        // optionmap
-
         var options = this.get('options');
         var found = false;
         var kv;
