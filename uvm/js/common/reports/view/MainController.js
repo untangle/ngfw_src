@@ -126,6 +126,7 @@ Ext.define('Ung.view.reports.MainController', {
         } else {
             Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
         }
+        me.getView().down('breadcrumb').setSelection(node); // updates breadcrumb selection
         me.showNode(node);
     },
 
