@@ -108,6 +108,24 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         vm.set({
             signaturesList: signatures
         });
+
+
+        // Add protocols found in Suricata rules.
+        var conditions = v.down('[name=rules]').getController().getConditions();
+        var protocols = conditions['PROTOCOL'].values;
+        var found;
+        signatures.forEach(function(signature){
+            var signatureProtocol = signature.get('protocol');
+            found = false;
+            protocols.forEach( function(protocol){
+                if(protocol[0] == signatureProtocol){
+                    found = true;
+                }
+            });
+            if(found == false){
+                protocols.push([signatureProtocol, signatureProtocol]);
+            }
+        });
     },
 
     // getChangedDataRecords: function(target){
