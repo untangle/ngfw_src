@@ -78,9 +78,9 @@ def main(argv):
         ##
         ## Add a custom new rule.
         ##
-        match_signature = re.search( SuricataSignature.text_regex, settings_signature )
+        match_signature = re.search( SuricataSignature.text_regex, settings_signature['signature'] )
         if match_signature:
-            signatures.add_signature(SuricataSignature( match_signature, "unknown"))
+            signatures.add_signature(SuricataSignature( match_signature, settings_signature['category']))
 
 
     if _debug is True:
