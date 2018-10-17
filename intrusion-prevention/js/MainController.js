@@ -46,9 +46,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 settings: result[4],
                 isExpertMode: result[5]
             });
+            v.setLoading(false);
             me.buildSignatures( result[6], vm.get('settings'));
             vm.set('panel.saveDisabled', false);
-            v.setLoading(false);
 
         }, function (ex) {
             if(!Util.isDestroyed(me, v )){
@@ -61,6 +61,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     buildSignatures: function(reserved, settings){
         var me = this, v = this.getView(), vm = this.getViewModel();
+        v.setLoading('Loading signatures...'.t());
 
         var t0 = performance.now();
         var t1 = performance.now();
@@ -109,7 +110,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             signaturesList: signatures
         });
 
-
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
         var protocols = conditions['PROTOCOL'].values;
@@ -126,6 +126,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
         });
+        v.setLoading(false);
     },
 
     // getChangedDataRecords: function(target){
