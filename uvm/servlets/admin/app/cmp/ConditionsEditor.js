@@ -229,7 +229,15 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                         valueRenderer = [Renderer.datasize(value)];
                         break;
                     case 'boolean':
-                        valueRenderer = ['True'.t()];
+                        if(conditionsMap[type].values){
+                            conditionsMap[type].values.forEach(function(field){
+                                if(field[0].toString() == value.toString().toLowerCase()){
+                                    valueRenderer = [field[1]];
+                                }
+                            });
+                        }else{
+                            valueRenderer = ['True'.t()];
+                        }
                         break;
                 }
 
