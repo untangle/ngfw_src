@@ -365,7 +365,7 @@ def append_aliases():
                 test_start_ip =  netsettings['interfaces']['list'][i]['v4StaticAddress']
                 ip_found = find_used_ip(test_start_ip)
                 break;
-            elif interface['v4ConfigType'] == "AUTO":
+            elif netsettings['interfaces']['list'][i]['v4ConfigType'] == "AUTO":
                 nicDevice = str(netsettings['interfaces']['list'][i]['symbolicDev'])
                 test_start_ip = global_functions.__get_ip_address(nicDevice)
                 ip_found = find_used_ip(test_start_ip)
