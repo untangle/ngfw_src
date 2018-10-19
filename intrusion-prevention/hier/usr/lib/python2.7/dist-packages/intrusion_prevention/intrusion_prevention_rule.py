@@ -142,6 +142,7 @@ class IntrusionPreventionRule:
         return False
 
     def set_signature_action(self, signature):
+        current_action = signature.get_action()
         if self.rule["action"] == "default":
             signature.set_action(current_action["log"], current_action["block"])
         elif self.rule["action"] == "log":
