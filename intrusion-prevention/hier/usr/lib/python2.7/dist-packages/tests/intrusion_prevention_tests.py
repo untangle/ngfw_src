@@ -32,11 +32,12 @@ def create_signature( gid = "1", sid = "1999999", classtype="attempted-admin", c
             "classtype:" + classtype + ";" + \
             "sid:" + sid + ";" + \
             "gid:" + gid + ";" + \
-            "classtype:" + classtype + ";" + \
-            "category:" + category + ";" +  \
             "content:\"matchme\";nocase;)"
-    return signature
-
+    return  {
+        "category": category,
+        "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionSignature",
+        "signature": signature
+    };
 
 class IntrusionPreventionTests(unittest2.TestCase):
 
