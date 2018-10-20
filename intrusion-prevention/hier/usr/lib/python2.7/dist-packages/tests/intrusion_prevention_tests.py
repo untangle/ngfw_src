@@ -32,12 +32,33 @@ def create_signature( gid = "1", sid = "1999999", classtype="attempted-admin", c
             "classtype:" + classtype + ";" + \
             "sid:" + sid + ";" + \
             "gid:" + gid + ";" + \
-            "content:\"matchme\";nocase;)"
+            "content:\"" + msg + "\";nocase;)"
     return  {
         "category": category,
         "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionSignature",
         "signature": signature
     };
+    
+def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_value="attempted-admin", enable_rule = True):
+    return {
+        "action": action,
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "comparator": "=",
+                    "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition",
+                    "type": rule_type,
+                    "value": type_value
+                }
+            ]
+        },
+        "description": desc,
+        "enabled": enable_rule,
+        "id": "1",
+        "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRule"
+    };
+    
 
 class IntrusionPreventionTests(unittest2.TestCase):
 
@@ -61,6 +82,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
     def setUp(self):
         pass
             
+
+    def test_009_IsRunning(self):
+        result = subprocess.call("ps aux | grep suricata | grep -v grep >/dev/null 2>&1", shell=True)
+        assert (result == 0)
+
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -79,21 +105,24 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 block=False, 
                                                 action="alert", 
                                                 type="tcp"))
+        appSettings['rules']['list'].append(create_rule(rule_type="CATEGORY",type_value="app-detect"))
         app.setSettings(appSettings)
 
+    	time.sleep(60)  # It can take a minute for sessions to start scanning
+
         startTime = datetime.now()
-        loopLimit = 10
-        result = 4 # Network failure
-        # If there is a network error with wget, retry up to ten times.
-        while (result == 4 and loopLimit > 0):
+        loopLimit = 4
+        # Send four requests for test rebustnewss 
+        while (loopLimit > 0):
             time.sleep(1)
+            loopLimit -= 1
             result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', "CompanySecret",
-                                               'blocked', False,
+                                               'blocked', True,
                                                min_date=startTime)
         assert(found)
 
