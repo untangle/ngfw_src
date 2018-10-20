@@ -96,12 +96,14 @@ def main(argv):
     ##
     ## Process rules in order.
     ##
-    for rule in rules:
-        if not rule.get_enabled():
-            continue
-        for signature in signatures.get_signatures().values():
+    for signature in signatures.get_signatures().values():
+        for rule in rules:
+            if not rule.get_enabled():
+                continue
             if rule.matches(signature):
                 rule.set_signature_action(signature)
+                # break from rest of rules - action is taken from the first matching rule
+                break
 
     ##
     ## Disable signatures not modified by any rule.
