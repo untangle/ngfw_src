@@ -374,23 +374,23 @@ public class IntrusionPreventionApp extends AppBase
 
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
+                    classificationRules.add(0,
+                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
-                    );
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
+                    classificationRules.add(0,
                         new IntrusionPreventionRule("log", classificationConditions, "Medium Priority", false, CLASSIFICATION_ID_PREFIX + "_3")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
+                    classificationRules.add(0,
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(0,
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
                     );
 
                     Matcher match = null;
