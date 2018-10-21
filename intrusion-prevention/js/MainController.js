@@ -482,7 +482,19 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 });
             }
             return references.join("");
-        }
+        },
+
+        actionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+            var vm = this.getViewModel();
+            var description = value;
+            var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', value);
+            if( actionRecord != null ){
+                description = actionRecord.get('description');
+            }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description  ) + '"';
+            return Ext.String.htmlEncode( description );
+        },
+
     }
 });
 
@@ -632,55 +644,63 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
     alias: 'controller.unintrusionsignaturesrecordeditorcontroller',
 
     editorGidChange: function( me, newValue, oldValue, eOpts ){
-        var v = this.getView();
-        var vm = this.getViewModel();
+        var v = this.getView(),
+            vm = this.getViewModel();
 
-        // Perform validation
         if( ! /^[0-9]+$/.test( newValue )){
-            me.setValidation("Sid must be numeric".t());
+            me.setValidation("Gid must be numeric".t());
             return false;
         }
 
-        // !!! check gid+sid combo
+        var record = vm.get('record');
+        if(v.getController().validateId(v, record) == false){
+            return false;
+        }
+        record.setOption('gid', newValue);
+        record.set('signature', record.build());
 
         me.setValidation(true);
     },
 
     editorSidChange: function( me, newValue, oldValue, eOpts ){
-        var v = this.getView();
-        var vm = this.getViewModel();
+        var v = this.getView(),
+            vm = this.getViewModel();
 
-        // Perform validation
         if( ! /^[0-9]+$/.test( newValue )){
             me.setValidation("Sid must be numeric".t());
             return false;
         }
+
         var record = vm.get('record');
-        var originalRecord = v.record;
-
-        var gid = record.get('gid');
-
-        // !!! make this a function to share with gid validation.
-        var match = false;
-        vm.get('signatures').each( function( storeRecord ) {
-            if( storeRecord != originalRecord && storeRecord.get('sid') == newValue) {
-                var signatureGid = "1";
-                signatureValue = storeRecord.get("signature");
-
-                if( storeRecord.get('gid') == originalRecord.get('gid') ){
-                    match = true;
-                    return false;
-                }
-            }
-        }, this);
-
-        if( match === true ){
-            me.setValidation("Sid already in use.".t());
+        if(v.getController().validateId(v, record) == false){
             return false;
         }
 
+        record.setOption('sid', newValue);
+        record.set('signature', record.build());
+
         me.setValidation(true);
-        // this.getView().up('grid').getController().updateSignature( this.getViewModel().get('record'), 'sid', newValue );
+    },
+
+    validateId: function(view, compareRecord){
+        var vm = this.getViewModel(),
+            gidComponent = view.down('[name=gid]'),
+            gidValue = gidComponent.getValue(),
+            sidComponent = view.down('[name=sid]'),
+            sidValue = sidComponent.getValue(),
+            match = false;
+
+        vm.get('signatures').each( function( record ) {
+            if( record.get('_id') != compareRecord.get('_id') ){
+                if( gidValue == record.get('gid') &&
+                    sidValue == record.get('sid')){
+                    match = true;
+                }
+            }
+        }, this, true);
+
+        gidComponent.setValidation( match ? "Gid/Sid already in use.".t() : true );
+        sidComponent.setValidation( match ? "Gid/Sid already in use.".t() : true );
     },
 
     editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
@@ -689,33 +709,47 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
             me.setValidation("Unknown classtype".t());
             return false;
         }
+        var record = vm.get('record');
+        record.set('classtype', newValue);
+        record.set('signature', record.build());
         me.setValidation(true);
     },
 
     editorMsgChange: function( me, newValue, oldValue, eOpts ){
+        var vm = this.getViewModel();
         if( /[";]/.test( newValue ) ){
             me.setValidation( 'Msg contains invalid characters.'.t() );
             return false;
         }
+        var record = vm.get('record');
+        record.setOption('msg', newValue);
+        record.set('signature', record.build());
         me.setValidation(true);
     },
 
-    editorLogChange: function( me, newValue, oldValue, eOpts ) {
-        if( newValue === false) {
-            this.getViewModel().get('record').set('block', false);
+    editorDefaultActionChange: function( me, newValue, oldValue, eOpts ){
+        var vm = this.getViewModel(),
+            record = vm.get('record');
+        if( newValue == null || Ung.apps.intrusionprevention.Main.actions.findExact('name', newValue) == null ){
+            me.setValidation("Unknown action".t());
+            return false;
         }
-    },
-
-    editorBlockChange: function( me, newValue, oldValue, eOpts ) {
-        if( newValue === true ){
-            this.getViewModel().get('record').set('log', true);
-        }
+        record.set('defaultAction', newValue);
+        record.set('signature', record.build());
+        me.setValidation(true);
     },
 
     editorSignatureChange: function( me, newValue, oldValue, eOpts ){
         if(!Ung.model.intrusionprevention.signature.isValid(newValue)){
             me.setValidation( 'Signature is invalid.'.t() );
             return false;
+        }
+        var vm = this.getViewModel(),
+            record = vm.get('record');
+        var signature = new Ung.model.intrusionprevention.signature(newValue, record.get('category'), false);
+
+        for( var key in signature.data){
+            record.set(key, signature.data[key]);
         }
         me.setValidation(true);
     }
@@ -748,28 +782,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
 
         vm.set('searchConditionsData', storeValues);
         vm.set('searchCondition', 'MSG');
-    },
-
-    logBeforeCheckChange: function ( elem, rowIndex, checked ){
-        var record = elem.getView().getRecord(rowIndex);
-        record.set('default', false);
-        if( !checked){
-            record.set('log', false);
-            record.set('block', false );
-        }else{
-            record.set('log', true);
-        }
-    },
-
-    blockBeforeCheckChange: function ( elem, rowIndex, checked ){
-        var record = elem.getView().getRecord(rowIndex);
-        record.set('default', false);
-        if(checked) {
-            record.set('log', true );
-            record.set('block', true);
-        }else{
-            record.set('block', false);
-        }
     },
 
     updateSearchStatusBar: function(){
@@ -899,41 +911,41 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         });
     },
 
-    logFilter: Ext.create('Ext.util.Filter', {
-        property: 'log',
-        value: true
-    }),
+    // logFilter: Ext.create('Ext.util.Filter', {
+    //     property: 'log',
+    //     value: true
+    // }),
 
-    filterLog: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore();
-        if( newValue ){
-            store.addFilter( this.logFilter );
-        }else{
-            store.removeFilter( this.logFilter );
-            if(store.filters.length === 0){
-                this.getView().reconfigure();
-            }
-        }
-        this.updateSearchStatusBar();
-    },
+    // filterLog: function(elem, newValue, oldValue, eOpts){
+    //     var store = this.getView().getStore();
+    //     if( newValue ){
+    //         store.addFilter( this.logFilter );
+    //     }else{
+    //         store.removeFilter( this.logFilter );
+    //         if(store.filters.length === 0){
+    //             this.getView().reconfigure();
+    //         }
+    //     }
+    //     this.updateSearchStatusBar();
+    // },
 
-    blockFilter: Ext.create('Ext.util.Filter', {
-        property: 'block',
-        value: true
-    }),
+    // blockFilter: Ext.create('Ext.util.Filter', {
+    //     property: 'block',
+    //     value: true
+    // }),
 
-    filterBlock: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore();
-        if( newValue ){
-            store.addFilter( this.blockFilter );
-        }else{
-            store.removeFilter( this.blockFilter );
-            if(store.filters.length === 0){
-                this.getView().reconfigure();
-            }
-        }
-        this.updateSearchStatusBar();
-    },
+    // filterBlock: function(elem, newValue, oldValue, eOpts){
+    //     var store = this.getView().getStore();
+    //     if( newValue ){
+    //         store.addFilter( this.blockFilter );
+    //     }else{
+    //         store.removeFilter( this.blockFilter );
+    //         if(store.filters.length === 0){
+    //             this.getView().reconfigure();
+    //         }
+    //     }
+    //     this.updateSearchStatusBar();
+    // },
 
     exportData: function(){
         var grid = this.getView(),
@@ -959,11 +971,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         this.callParent(arguments);
         var store = this.getView().getStore();
 
-        store.each( function(record){
-            me.updateSignature(record, 'log', record.get('log') );
-            me.updateSignature(record, 'block', record.get('block') );
+        // store.each( function(record){
+        //     me.updateSignature(record, 'log', record.get('log') );
+        //     me.updateSignature(record, 'block', record.get('block') );
 
-        });
+        // });
     },
 
     signaturesReconfigure: function( me , store , columns , oldStore , oldColumns , eOpts ){
@@ -981,7 +993,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
 
         // Action replacement
         record.set(updatedKey, updatedValue);
-        if( updatedKey != 'log' && updatedKey != 'block' ){
+        // if( updatedKey != 'log' && updatedKey != 'block' ){
+        if( updatedKey != 'action'){
             record.setOption(updatedKey, updatedValue);
         }
         record.set('signature', record.build());
@@ -1103,11 +1116,11 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         name: 'classtype',
         type: 'string'
     },{
-        name: 'block',
-        type: 'boolean'
+        name: 'defaultAction',
+        type: 'string'
     },{
-        name: 'log',
-        type: 'boolean'
+        name: 'currentAction',
+        type: 'string'
     },{
         name: 'sid',
         type: 'string'
@@ -1143,8 +1156,8 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 rport: '',
                 options: [],
                 category: category,
-                log: false,
-                block: false,
+                defaultAction: 'log',
+                currentAction: 'disable',
                 sid: '1',
                 gid: '1'
             };
@@ -1170,18 +1183,12 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 });
 
                 if(matches[1] == '#'){
-                    data['log'] = false;
-                    data['block'] = false;
+                    data['defaultAction'] = 'disable';
                 }else{
                     if(action == 'alert'){
-                        data['log'] = true;
-                        data['block'] = false;
+                        data['defaultAction'] = 'log';
                     }else if(action == 'drop'){
-                        data['log'] = true;
-                        data['block'] = true;
-                    }else if(action == 'sdrop'){
-                        data['log'] = false;
-                        data['block'] = true;
+                        data['defaultAction'] = 'block';
                     }
                 }
             }
@@ -1216,55 +1223,16 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         }
     },
 
-    get: function(fieldName) {
-        var me = this;
-        var result = this.callParent(arguments);
-
-        Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
-            if(fieldName == option.name){
-                result = me.getOption(option.name);
-            }
-        });
-
-        return result;
-    },
-
     set: function(fieldName, newValue, options) {
-        var me = this;
-
-        var signatureChange = ( fieldName == 'signature' ) && me.data['signature'] && ( newValue != me.data['signature'] );
-
         var result = this.callParent(arguments);
+        var me = this;
 
         if(fieldName != 'signature'){
+            // Write back to options
             Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
                 if(fieldName == option.name){
                     me.setOption(option.name, newValue);
                 }
-            });
-            if(Ung.model.intrusionprevention.signature.rebuildSignatureKeys.indexOf(fieldName) != -1){
-                var newSignature = me.build();
-                if(me.data['signature'] != newSignature){
-                    me.set('signature', newSignature);
-                }
-            }
-        }else if(signatureChange){
-            var signature = new Ung.model.intrusionprevention.signature(newValue, me.data['category'], me.data['reserved']);
-
-            // set everything
-            for(var dataKey in me.data){
-                if(dataKey == '_id'){
-                    continue;
-                }
-                me.data[dataKey] = signature.data[dataKey];
-            }
-
-            Ung.model.intrusionprevention.signature.optionsMap.forEach(function(option){
-                var value = signature.getOption(option.name);
-                if(option.defaultValue){
-                    value = value ? value : option.defaultValue;
-                }
-                me.set(option.name, value);
             });
         }
 
@@ -1339,8 +1307,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             return {
                 sid: this.get('sid'),
                 gid: this.get('gid'),
-                log: this.get('log'),
-                block: this.get('block')
+                defaultAction: this.get('action')
             };
         }else{
             return this.build();
@@ -1350,17 +1317,15 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     build: function(){
         var me = this;
 
-        var action = 'alert';
-        var log =this.get('log');
-
-        var block = this.get('block');
-        if( log && block ){
-            action = 'drop';
-        }else if(!log && !block){
-            action = '#' + action;
+        var signatureAction = 'alert';
+        var action = this.get('defaultAction');
+        if( action == 'block' ){
+            signatureAction = 'reject';
+        }else if(action == 'disable'){
+            signatureAction = '#' + signatureAction;
         }
 
-        return action + " " +
+        return signatureAction + " " +
             (this.get('protocol') ? this.get('protocol') + ' ' : '') +
             (this.get('lnet') ? this.get('lnet') + ' ' : '') +
             (this.get('lport') ? this.get('lport') + ' ' : '') +
@@ -1371,7 +1336,6 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     },
     
     statics:{
-        // signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip|http|ftp|tls|smb|dns|smtp)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
         signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
         optionsMap: [{
             name: 'gid',
@@ -1390,8 +1354,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             'classtype',
             'category',
             'msg',
-            'log',
-            'block'
+            'defaultAction'
         ],
         isValid: function(signature){
             return Ung.model.intrusionprevention.signature.signatureRegex.test(signature);

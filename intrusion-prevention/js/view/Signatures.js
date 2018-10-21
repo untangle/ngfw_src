@@ -111,11 +111,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
 
     restrictedRecords: {
         keyMatch: 'reserved',
-        valueMatch: true,
-        // editableFields:[
-        //     "log",
-        //     "block"
-        // ]
+        valueMatch: true
     },
 
     recordModel: 'Ung.model.intrusionprevention.signature',
@@ -156,25 +152,16 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.referenceRenderer
     },{
-        header: "Log".t(),
-        dataIndex: 'log',
-        width: Renderer.booleanWidth,
-        // listeners: {
-        //     beforecheckchange: 'logBeforeCheckChange'
-        // }
-    },{
-        // xtype:'checkcolumn',
-        header: "Block".t(),
-        dataIndex: 'block',
-        width: Renderer.booleanWidth,
-        // listeners: {
-        //     beforecheckchange: 'blockBeforeCheckChange'
-        // }
+        header: "Default Action".t(),
+        dataIndex: 'defaultAction',
+        width: Renderer.messageWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.actionRenderer
     }],
 
     editorXtype: 'ung.cmp.unintrusionsignaturesrecordeditor',
     editorFields: [{
         xtype:'numberfield',
+        name: 'gid',
         bind: '{record.gid}',
         fieldLabel: 'Gid'.t(),
         emptyText: '[enter gid]'.t(),
@@ -185,6 +172,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         }
     },{
         xtype:'numberfield',
+        name: 'sid',
         bind: '{record.sid}',
         fieldLabel: 'Sid'.t(),
         emptyText: '[enter sid]'.t(),
@@ -220,8 +208,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         queryMode: 'local',
         valueField: 'name',
         displayField: 'name'
-        // !!! what to do on change?
-        // change meta field for...
     },{
         xtype:'textfield',
         bind: '{record.msg}',
@@ -231,20 +217,21 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         listeners: {
             change: 'editorMsgChange'
         }
-    },{
-         xtype:'checkbox',
-         bind: '{record.log}',
-         fieldLabel: 'Log'.t(),
-         listeners: {
-             change: 'editorLogChange'
-         }
      },{
-         xtype:'checkbox',
-         bind: '{record.block}',
-         fieldLabel: 'Block'.t(),
-         listeners: {
-             change: 'editorBlockChange'
-         }
+        fieldLabel: 'Default Action'.t(),
+        editable: false,
+        xtype: 'combo',
+        queryMode: 'local',
+        bind:{
+            value: '{record.defaultAction}',
+        },
+        store: Ung.apps.intrusionprevention.Main.actions,
+        valueField: 'name',
+        displayField: 'description',
+        forceSelection: true,
+        listeners: {
+            change: 'editorDefaultActionChange'
+        }
      },{
         xtype:'textareafield',
         bind: '{record.signature}',
