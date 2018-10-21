@@ -7,13 +7,13 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         data:{
             ruleActions: [{
                 value: 'default',
-                display: 'Default'.t()
+                display: 'Use default'.t()
             },{
                 value: 'log',
                 display: 'Log'.t()
             },{
                 value: 'blocklog',
-                display: 'Block if Logged'.t()
+                display: 'Block if default is Log'.t()
             },{
                 value: 'block',
                 display: 'Block'.t()
@@ -52,13 +52,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 },{
                     name: 'signature'
                 },{
-                    name: 'path'
-                },{
-                    name: 'log',
-                    type: 'boolean'
-                },{
-                    name: 'block',
-                    type: 'boolean'
+                    name: 'action'
                 }],
                 data: '{signaturesList}',
                 groupField: 'classtype',
@@ -84,9 +78,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'variable',
                     direction: 'ASC'
                 }],
-                listeners:{
-                    datachanged: 'storeDataChanged'
-                }
+                // listeners:{
+                //     datachanged: 'storeDataChanged'
+                // }
             },
             searchConditions: {
                 fields: [{
@@ -131,6 +125,25 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     ],
 
     statics: {
+        actions: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'name', 'description'],
+            // sorters: [{
+            //     property: 'name',
+            //     direction: 'ASC'
+            // }],
+            data: [
+                [ 'default', 'Use default'.t() ],
+                [ 'log', 'Log'.t() ],
+                // [ 'blocklog', 'Block if default is Log'.t() ],
+                [ 'block', 'Block'.t() ],
+                [ 'disable', 'Disable'.t() ]
+            ]
+        }),
+
+        actionRenderer: function(value, meta, record){
+            return record.get('description');
+        },
+
         classtypes: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description', 'priority' ],
             sorters: [{
