@@ -324,8 +324,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var status = {
             log: {},
             block: {},
-            disable: {},
-            default: {}
+            disable: {}
         };
         var t0 = performance.now();
         var t1 = performance.now();
@@ -338,65 +337,33 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             rules.add(matchRule);
         }
 
-        var ruleAction, ruleActionDefault, ruleActionMatchAny;
-        rules.each(function(rule){
-            if(rule.get('enabled')){
-                ruleAction = rule.get('action');
-                statusIndex = ruleAction;
-
-                // var sigCount = 0;
-                signatures.each( function(signature){
-                    // sigCount++;
-                    if(rule.matchSignature(signature, conditions, vm)){
-                        if(ruleAction == 'blocklog'){
-                            statusIndex = signature.data['log'] ? 'block' : ( signature.data['block'] ? 'block' : 'disable');
-                        }
-
-                        var signatureId = signature.data['id'];
-
-                        for(var action in status){
-                            if(action == statusIndex){
-                                continue;
-                            }
-                            if(status[action][signatureId]){
-                                delete status[action][signatureId];
-                            }
-                        }
-                        status[statusIndex][signatureId] = true;
-                    }
-                }, this, true);
-                // console.log(sigCount);
-                // console.log('rule ' + rule.get('description'));
-                // console.log(performance.now()- t0);
-                t0 = t1;
-                t1 = performance.now();
+        var signatureDefaultAction, signatureCurrentAction;
+        signatures.each( function(signature){
+            signatureDefaultAction = signature.get('defaultAction');
+            if(!matchRule){
+                signature.data['currentAction'] = 'disable';
             }
-        });
-        t0 = performance.now();
-
-        if(matchRule == null){
-            var found, 
-                signatureId;
-            signatures.each( function(signature){
-                signatureId = signature.data['id'] ;
-                found = false;
-                for(var action in status){
-                    if(action == 'disable'){
-                        continue;
+            rules.each(function(rule){
+                if(rule.get('enabled')){
+                    if(rule.matchSignature(signature, conditions, vm)){
+                        var action = rule.get('action');
+                        if(action == 'default'){
+                            action = signatureDefaultAction;
+                        }
+                        if(action == 'blocklog'){
+                            action = ( signatureDefaultAction == 'log' || signatureDefaultAction == 'block') ? 'block' : 'disable';
+                        }
+                        if(!matchRule){
+                            signature.data['currentAction'] = rule.get('id');
+                        }
+                        status[action][signature.get('id')] = true;
+                        return false;
                     }
-                    if(status[action][signatureId]){
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found){
-                    status['disable'][signatureId] = true;
                 }
             });
-            // console.log('disabled');
-            t1 = performance.now();
-            // console.log(t1-t0);
-        }
+        }, this, true);
+        // console.log(performance.now()- t0);
+        // console.log(status);
 
         return status;
     },
@@ -494,8 +461,36 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description  ) + '"';
             return Ext.String.htmlEncode( description );
         },
+        signatureRuleActionRenderer: function(value, metaData, record, rowIdx, colIdx, store){
+            var v = this.getView(),
+                vm = this.getViewModel();
+            var actionDescription = value;
+            var ruleDescription = '';
 
-    }
+            rule = v.up('apppanel').getViewModel().get('rules').findRecord('id', value);
+            if(rule != null){
+                var ruleAction = rule.get('action');
+                var signatureDefaultAction = record.get('defaultAction');
+                var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', rule.get('action'));
+                if( actionRecord != null ){
+                    actionDescription = actionRecord.get('description');
+                }
+                ruleDescription = ' ('+ rule.get('description')+', ' + Ung.apps.intrusionprevention.Main.actions.findRecord('name', ruleAction).get('description') + ')';
+                if(ruleAction == 'default'){
+                    actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', signatureDefaultAction).get('description');
+                }else if(ruleAction == 'blocklog'){
+                    if(signatureDefaultAction == 'log'){
+                        actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', 'block').get('description');
+                    }
+                }
+            }else{
+                actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', 'disable').get('description');
+                ruleDescription = ' (' + 'No rule match'.t() + ')';
+            }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionDescription  ) + Ext.String.htmlEncode( ruleDescription  ) + '"';
+            return Ext.String.htmlEncode( actionDescription );
+        }
+}
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
@@ -653,10 +648,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         }
 
         var record = vm.get('record');
-        if(v.getController().validateId(v, record) == false){
+        if(v.getController().validateId(v) == false){
             return false;
         }
         record.setOption('gid', newValue);
+        record.setId();
         record.set('signature', record.build());
 
         me.setValidation(true);
@@ -672,17 +668,18 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         }
 
         var record = vm.get('record');
-        if(v.getController().validateId(v, record) == false){
+        if(v.getController().validateId(v) == false){
             return false;
         }
 
         record.setOption('sid', newValue);
+        record.setId();
         record.set('signature', record.build());
 
         me.setValidation(true);
     },
 
-    validateId: function(view, compareRecord){
+    validateId: function(view){
         var vm = this.getViewModel(),
             gidComponent = view.down('[name=gid]'),
             gidValue = gidComponent.getValue(),
@@ -690,6 +687,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
             sidValue = sidComponent.getValue(),
             match = false;
 
+        compareRecord = view.record;
         vm.get('signatures').each( function( record ) {
             if( record.get('_id') != compareRecord.get('_id') ){
                 if( gidValue == record.get('gid') &&
@@ -749,6 +747,9 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         var signature = new Ung.model.intrusionprevention.signature(newValue, record.get('category'), false);
 
         for( var key in signature.data){
+            if(key == '_id'){
+                continue;
+            }
             record.set(key, signature.data[key]);
         }
         me.setValidation(true);
@@ -841,7 +842,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             view = me.getView(),
             vm = view.up('apppanel').getController().getViewModel(),
             store = view.getStore(),
-            searchFilter = vm.get('searchFilter');
+            searchFilter = vm.get('searchFilter'),
+            status;
 
         if( searchFilter ){
             if( searchFilter.length > 1 ){
@@ -857,7 +859,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                     }
                 });
 
-                var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
+                status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
                 store.clearFilter();
                 this.searchFilter.setFilterFn( function(record){
                     for(var action in status){
@@ -870,6 +872,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                 store.addFilter( this.searchFilter );
             }
         }else{
+            status = me.getView().up('apppanel').getController().ruleSignatureMatches();
             store.removeFilter( this.searchFilter );
             if(store.filters.length === 0){
                 this.getView().reconfigure();
@@ -1219,8 +1222,12 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                     me.data[mappedOption.name] = mappedOption.defaultValue;
                 }
             });
-            me.data['id'] = me.data['sid'] + '_' + me.data['gid'];
+            this.setId();
         }
+    },
+
+    setId: function(){
+        this.set('id', this.data['sid'] + '_' + this.data['gid']);
     },
 
     set: function(fieldName, newValue, options) {
