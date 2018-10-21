@@ -156,6 +156,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         dataIndex: 'defaultAction',
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.actionRenderer
+    },{
+        header: "Rule Action".t(),
+        dataIndex: 'currentAction',
+        width: Renderer.messageWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRuleActionRenderer
     }],
 
     editorXtype: 'ung.cmp.unintrusionsignaturesrecordeditor',
