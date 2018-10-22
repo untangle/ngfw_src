@@ -337,9 +337,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             rules.add(matchRule);
         }
 
-        var signatureDefaultAction, signatureCurrentAction;
+        var signatureRecommendedAction, signatureCurrentAction;
         signatures.each( function(signature){
-            signatureDefaultAction = signature.get('defaultAction');
+            signatureRecommendedAction = signature.get('recommendedAction');
             if(!matchRule){
                 signature.data['currentAction'] = 'disable';
             }
@@ -348,10 +348,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     if(rule.matchSignature(signature, conditions, vm) == true){
                         var action = rule.get('action');
                         if(action == 'default'){
-                            action = signatureDefaultAction;
+                            action = signatureRecommendedAction;
                         }
                         if(action == 'blocklog'){
-                            action = ( signatureDefaultAction == 'log' || signatureDefaultAction == 'block') ? 'block' : 'disable';
+                            action = ( signatureRecommendedAction == 'log' || signatureRecommendedAction == 'block') ? 'block' : 'disable';
                         }
                         if(!matchRule){
                             signature.data['currentAction'] = rule.get('id');
@@ -451,7 +451,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             return references.join("");
         },
 
-        actionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+        recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
             var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', value);
@@ -470,16 +470,16 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             rule = v.up('apppanel').getViewModel().get('rules').findRecord('id', value);
             if(rule != null){
                 var ruleAction = rule.get('action');
-                var signatureDefaultAction = record.get('defaultAction');
+                var signatureRecommendedAction = record.get('recommendedAction');
                 var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', rule.get('action'));
                 if( actionRecord != null ){
                     actionDescription = actionRecord.get('description');
                 }
-                ruleDescription = ' ('+ rule.get('description')+', ' + Ung.apps.intrusionprevention.Main.actions.findRecord('name', ruleAction).get('description') + ')';
+                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.actions.findRecord('name', ruleAction).get('description'));
                 if(ruleAction == 'default'){
-                    actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', signatureDefaultAction).get('description');
+                    actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', signatureRecommendedAction).get('description');
                 }else if(ruleAction == 'blocklog'){
-                    if(signatureDefaultAction == 'log'){
+                    if(signatureRecommendedAction == 'log'){
                         actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', 'block').get('description');
                     }
                 }
@@ -730,14 +730,14 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
         me.setValidation(true);
     },
 
-    editorDefaultActionChange: function( me, newValue, oldValue, eOpts ){
+    editorRecommendedActionChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel(),
             record = vm.get('record');
         if( newValue == null || Ung.apps.intrusionprevention.Main.actions.findExact('name', newValue) == null ){
             me.setValidation("Unknown action".t());
             return false;
         }
-        record.set('defaultAction', newValue);
+        record.set('recommendedAction', newValue);
         record.set('signature', record.build());
         me.setValidation(true);
     },
@@ -1124,7 +1124,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         name: 'classtype',
         type: 'string'
     },{
-        name: 'defaultAction',
+        name: 'recommendedAction',
         type: 'string'
     },{
         name: 'currentAction',
@@ -1164,7 +1164,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 rport: '',
                 options: [],
                 category: category,
-                defaultAction: 'log',
+                recommendedAction: 'log',
                 currentAction: 'disable',
                 sid: '1',
                 gid: '1'
@@ -1191,12 +1191,12 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 });
 
                 if(matches[1] == '#'){
-                    data['defaultAction'] = 'disable';
+                    data['recommendedAction'] = 'disable';
                 }else{
-                    if(action == 'alert'){
-                        data['defaultAction'] = 'log';
-                    }else if(action == 'drop'){
-                        data['defaultAction'] = 'block';
+                    if(matches[2] == 'alert'){
+                        data['recommendedAction'] = 'log';
+                    }else if(matches[2] == 'reject'){
+                        data['recommendedAction'] = 'block';
                     }
                 }
             }
@@ -1319,7 +1319,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             return {
                 sid: this.get('sid'),
                 gid: this.get('gid'),
-                defaultAction: this.get('action')
+                recommendedAction: this.get('recommendedAction')
             };
         }else{
             return this.build();
@@ -1330,7 +1330,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         var me = this;
 
         var signatureAction = 'alert';
-        var action = this.get('defaultAction');
+        var action = this.get('recommendedAction');
         if( action == 'block' ){
             signatureAction = 'reject';
         }else if(action == 'disable'){
@@ -1366,7 +1366,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             'classtype',
             'category',
             'msg',
-            'defaultAction'
+            'recommendedAction'
         ],
         isValid: function(signature){
             return Ung.model.intrusionprevention.signature.signatureRegex.test(signature);

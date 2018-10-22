@@ -7,7 +7,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         data:{
             ruleActions: [{
                 value: 'default',
-                display: 'Use default'.t()
+                display: 'Use recommeded'.t()
             },{
                 value: 'log',
                 display: 'Log'.t()
@@ -132,7 +132,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             //     direction: 'ASC'
             // }],
             data: [
-                [ 'default', 'Use default'.t() ],
+                // [ 'default', 'Use default'.t() ],
                 [ 'log', 'Log'.t() ],
                 // [ 'blocklog', 'Block if default is Log'.t() ],
                 [ 'block', 'Block'.t() ],
