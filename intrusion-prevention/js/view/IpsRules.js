@@ -106,8 +106,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         allowBlank: false
     },
     Ung.cmp.ConditionsEditor.build({
-        // xtype: 'conditionseditor',
         xtype: 'ipsrulesconditionseditor',
+        text:{
+            condition: 'For all signatures that match the following conditions:'.t(),
+            action: 'Modify each signature as:'.t(),
+        },
         bind: '{record.conditions}',
         flex: 1,
         model: 'Ung.apps.intrusionprevention.model.Condition',
@@ -212,7 +215,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     }),
     {
         xtype: 'combo',
-        fieldLabel: 'Actions'.t(),
+        fieldLabel: 'Action'.t(),
         labelAlign: 'right',
         width: 400,
         bind: {
