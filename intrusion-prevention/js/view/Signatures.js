@@ -152,10 +152,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.referenceRenderer
     },{
-        header: "Default Action".t(),
-        dataIndex: 'defaultAction',
+        header: "Recommended Action".t(),
+        dataIndex: 'recommendedAction',
         width: Renderer.messageWidth,
-        renderer: Ung.apps.intrusionprevention.MainController.actionRenderer
+        renderer: Ung.apps.intrusionprevention.MainController.recommendedActionRenderer
     },{
         header: "Rule Action".t(),
         dataIndex: 'currentAction',
@@ -223,19 +223,19 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
             change: 'editorMsgChange'
         }
      },{
-        fieldLabel: 'Default Action'.t(),
+        fieldLabel: 'Recommended Action'.t(),
         editable: false,
         xtype: 'combo',
         queryMode: 'local',
         bind:{
-            value: '{record.defaultAction}',
+            value: '{record.recommendedAction}',
         },
         store: Ung.apps.intrusionprevention.Main.actions,
         valueField: 'name',
         displayField: 'description',
         forceSelection: true,
         listeners: {
-            change: 'editorDefaultActionChange'
+            change: 'editorRecommendedActionChange'
         }
      },{
         xtype:'textareafield',
