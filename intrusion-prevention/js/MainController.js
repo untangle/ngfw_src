@@ -13,6 +13,28 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
+        var searchConditions = [];
+        Ext.Object.each(v.down('[name=rules]').getController().getConditions(), function(k,v){
+            searchConditions[k] = v;
+            if(k == 'ACTION'){
+                searchConditions['ACTIONR'] = Ext.clone(v);
+                searchConditions['ACTIONR']['displayName'] = 'Rule Action'.t();
+            }
+        });
+        vm.set('searchConditions', searchConditions);
+        var storeValues = [];
+        for(var name in searchConditions){
+            if(name == 'SYSTEM_MEMORY'){
+                continue;
+            }
+            storeValues.push({
+                value: name,
+                name: searchConditions[name]['displayName']
+            });
+        }
+
+        vm.set('searchFieldsData', storeValues);
+
         var t0 = performance.now();
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getLastUpdateCheck'),
@@ -46,6 +68,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 settings: result[4],
                 isExpertMode: result[5]
             });
+
             v.setLoading(false);
             me.buildSignatures( result[6], vm.get('settings'));
             vm.set('panel.saveDisabled', false);
@@ -319,7 +342,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        var conditions = v.down('[name=signatures]').getController().searchConditions;
+        var conditions = vm.get('searchConditions');
 
         var status = {
             log: {},
@@ -786,30 +809,9 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
 
     afterrender: function(component){
         var me = this,
-            vm = component.up('apppanel').getController().getViewModel(),
-            storeValues = [];
+            vm = component.up('apppanel').getController().getViewModel();
 
-        me.searchConditions = {};
-        Ext.Object.each(component.up('tabpanel').down('[name=rules]').getController().getConditions(), function(k,v){
-            me.searchConditions[k] = v;
-            if(k == 'ACTION'){
-                me.searchConditions['ACTIONR'] = Ext.clone(v);
-                me.searchConditions['ACTIONR']['displayName'] = 'Rule Action'.t();
-            }
-        });
-
-        for(var name in me.searchConditions){
-            if(name == 'SYSTEM_MEMORY'){
-                continue;
-            }
-            storeValues.push({
-                value: name, 
-                name: me.searchConditions[name]['displayName']
-            });
-        }
-
-        vm.set('searchConditionsData', storeValues);
-        vm.set('searchCondition', 'MSG');
+        vm.set('searchField', 'MSG');
     },
 
     updateSearchStatusBar: function(){
@@ -842,8 +844,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         var me = this,
             view = me.getView(),
             vm = view.up('apppanel').getController().getViewModel(),
-            // conditionComparator = view.up('apppanel').down('[name=rules]').getController().getConditions()[newValue].comparator,
-            conditionComparator = me.searchConditions[newValue].comparator,
+            conditionComparator =vm.get('searchConditions')[newValue].comparator,
             currentComparator = vm.get('searchComparator');
 
         Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
@@ -880,7 +881,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
                     enabled: 'true',
                     conditions: {
                         list: [{
-                            type: vm.get('searchCondition'),
+                            type: vm.get('searchField'),
                             comparator: vm.get('searchComparator'),
                             value: searchFilter
                         }]
@@ -920,7 +921,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
 
     createRuleFromSearch: function(button){
         var vm = button.up('apppanel').getController().getViewModel(),
-            searchCondition = vm.get('searchCondition'),
+            searchCondition = vm.get('searchField'),
             searchComparator = vm.get('searchComparator'),
             searchFilter = vm.get('searchFilter');
 
@@ -928,7 +929,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
             'enabled': true,
             'id': -1,
-            'description': '"' + vm.get('searchConditions').findRecord( 'value', searchCondition).get('name') + '" ' + vm.get('searchComparators').findRecord('value', vm.get('searchComparator')).get('name') + ' "' + searchFilter + '"',
+            'description': '"' + vm.get('searchFields').findRecord( 'value', searchCondition).get('name') + '" ' + vm.get('searchComparators').findRecord('value', vm.get('searchComparator')).get('name') + ' "' + searchFilter + '"',
             'conditions': {
                 'javaClass': "java.util.LinkedList",
                 'list': [{

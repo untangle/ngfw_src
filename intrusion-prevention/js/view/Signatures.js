@@ -48,7 +48,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     bbar: [ 
     'Search'.t(), {
         xtype: 'combo',
-        name: 'searchCondition',
+        name: 'searchField',
         listeners: {
             change: 'searchConditionChange'
         },
@@ -56,8 +56,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         valueField: 'value',
         displayField: 'name',
         bind:{
-            store: '{searchConditions}',
-            value: '{searchCondition}'
+            store: '{searchFields}',
+            value: '{searchField}'
         }
     },{
         xtype: 'combo',
