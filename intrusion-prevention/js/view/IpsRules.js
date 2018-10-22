@@ -186,6 +186,16 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Any part of signature".t(),
             type: 'textfield',
             comparator: 'text'
+        },{
+            name:"CUSTOM",
+            displayName: "Custom signature".t(),
+            type: 'boolean',
+            comparator: 'boolean',
+            values: [[
+                "true","True".t()
+            ],[
+                "false","False".t()
+            ]]
         // },
         //     // ??? checkboxgroup
         // {
