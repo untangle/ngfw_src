@@ -4,35 +4,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     controller: 'app-intrusion-prevention',
 
     viewModel: {
-        data:{
-            ruleActions: [{
-                value: 'default',
-                display: 'Use recommeded'.t()
-            },{
-                value: 'log',
-                display: 'Log'.t()
-            },{
-                value: 'blocklog',
-                display: 'Block if default is Log'.t()
-            },{
-                value: 'block',
-                display: 'Block'.t()
-            },{
-                value: 'disable',
-                display: 'Disable'.t()
-            }]
-        },
         stores: {
-            ruleActionsStore: {
-                data: '{ruleActions}',
-                fields:[{
-                    name: 'value',
-                    type: 'string'
-                },{
-                    name: 'display',
-                    type: 'string'
-                }]
-            },
             rules: {
                 storeId: 'rulesStore',
                 model: 'Ung.model.intrusionprevention.rule',
@@ -125,17 +97,22 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     ],
 
     statics: {
-        actions: Ext.create('Ext.data.ArrayStore', {
+        signatureActions: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description'],
-            // sorters: [{
-            //     property: 'name',
-            //     direction: 'ASC'
-            // }],
             data: [
-                // [ 'default', 'Use default'.t() ],
                 [ 'log', 'Log'.t() ],
-                // [ 'blocklog', 'Block if default is Log'.t() ],
                 [ 'block', 'Block'.t() ],
+                [ 'disable', 'Disable'.t() ]
+            ]
+        }),
+
+        ruleActions: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'name', 'description'],
+            data: [
+                [ 'default', 'Use recommeded'.t()],
+                [ 'log', 'Log'.t() ],
+                [ 'blocklog', 'Block if recommended is Log'.t() ],
+                [ 'block', 'Block'.t()],
                 [ 'disable', 'Disable'.t() ]
             ]
         }),

@@ -85,11 +85,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             xtype: 'combo',
             editable: false,
             queryMode: 'local',
-            bind: {
-                store: '{ruleActionsStore}'
-            },
-            displayField: 'display',
-            valueField: 'value'
+            store: Ung.apps.intrusionprevention.Main.ruleActions,
+            displayField: 'description',
+            valueField: 'name'
         },
     }],
 
@@ -218,15 +216,15 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         fieldLabel: 'Action'.t(),
         labelAlign: 'right',
         width: 400,
+        store: Ung.apps.intrusionprevention.Main.ruleActions,
         bind: {
-            store: '{ruleActionsStore}',
             value: '{record.action}'
-            },
+        },
         queryMode: 'local',
         editable: false,
         // !!! move outside into conditions set as fields:
         typeField: 'type',
-        displayField: 'display',
-        valueField: 'value',
+        displayField: 'description',
+        valueField: 'name',
     }]
 });
