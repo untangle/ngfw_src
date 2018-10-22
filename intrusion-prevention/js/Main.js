@@ -54,7 +54,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 //     datachanged: 'storeDataChanged'
                 // }
             },
-            searchConditions: {
+            searchFields: {
                 fields: [{
                     name: 'value',
                 },{
@@ -64,7 +64,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'value',
                     direction: 'ASC'
                 }],
-                data: '{searchConditionsData}'
+                data: '{searchFieldsData}'
             },
             searchComparators: {
                 fields: [{
