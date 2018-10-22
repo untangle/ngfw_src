@@ -423,6 +423,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             "msb": "http://technet.microsoft.com/en-us/security/bulletin/",
             "url": "http://"
         },
+
         referenceRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var references = [];
             var optionReferences = record.getOption('reference');
@@ -448,7 +449,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     }
                 });
             }
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
             return references.join("");
+        },
+
+        signatureRenderer: function(value, metaData, record, rowIdx, colIdx, store){
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
+            return Ext.String.htmlEncode( value );
         },
 
         recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
