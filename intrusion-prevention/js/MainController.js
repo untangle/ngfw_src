@@ -319,7 +319,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        var conditions = v.down('[name=rules]').getController().getConditions(); 
+        var conditions = v.down('[name=signatures]').getController().searchConditions;
 
         var status = {
             log: {},
@@ -341,7 +341,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         signatures.each( function(signature){
             signatureRecommendedAction = signature.get('recommendedAction');
             if(!matchRule){
-                signature.data['currentAction'] = 'disable';
+                signature.data['ruleAction'] = 'disable';
+                signature.data['ruleMatch'] = 'disable';
             }
             rules.each(function(rule){
                 if(rule.get('enabled')){
@@ -354,14 +355,15 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             action = ( signatureRecommendedAction == 'log' || signatureRecommendedAction == 'block') ? 'block' : 'disable';
                         }
                         if(!matchRule){
-                            signature.data['currentAction'] = rule.get('id');
+                            signature.data['ruleAction'] = action;
+                            signature.data['ruleMatch'] = rule.get('id');
                         }
                         status[action][signature.get('id')] = true;
                         return false;
                     }
                 }
             });
-            if(!matchRule && signature.data['currentAction'] == 'disable'){
+            if(!matchRule && signature.data['ruleAction'] == 'disable'){
                 status['disable'][signature.get('id')] = true;
             }
         }, this, true);
@@ -783,16 +785,26 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     },
 
     afterrender: function(component){
-        var vm = component.up('apppanel').getController().getViewModel();
-        var storeValues = [];
-        var conditions = component.up('tabpanel').down('[name=rules]').getController().getConditions();
-        for(var name in conditions){
+        var me = this,
+            vm = component.up('apppanel').getController().getViewModel(),
+            storeValues = [];
+
+        me.searchConditions = {};
+        Ext.Object.each(component.up('tabpanel').down('[name=rules]').getController().getConditions(), function(k,v){
+            me.searchConditions[k] = v;
+            if(k == 'ACTION'){
+                me.searchConditions['ACTIONR'] = Ext.clone(v);
+                me.searchConditions['ACTIONR']['displayName'] = 'Rule Action'.t();
+            }
+        });
+
+        for(var name in me.searchConditions){
             if(name == 'SYSTEM_MEMORY'){
                 continue;
             }
             storeValues.push({
                 value: name, 
-                name: conditions[name]['displayName']
+                name: me.searchConditions[name]['displayName']
             });
         }
 
@@ -830,7 +842,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
         var me = this,
             view = me.getView(),
             vm = view.up('apppanel').getController().getViewModel(),
-            conditionComparator = view.up('apppanel').down('[name=rules]').getController().getConditions()[newValue].comparator,
+            // conditionComparator = view.up('apppanel').down('[name=rules]').getController().getConditions()[newValue].comparator,
+            conditionComparator = me.searchConditions[newValue].comparator,
             currentComparator = vm.get('searchComparator');
 
         Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
@@ -1137,7 +1150,10 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         name: 'recommendedAction',
         type: 'string'
     },{
-        name: 'currentAction',
+        name: 'ruleAction',
+        type: 'string'
+    },{
+        name: 'ruleMatch',
         type: 'string'
     },{
         name: 'sid',
@@ -1175,7 +1191,8 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 options: [],
                 category: category,
                 recommendedAction: 'log',
-                currentAction: 'disable',
+                ruleAction: 'disable',
+                ruleMatch: 'disable',
                 sid: '1',
                 gid: '1'
             };
@@ -1448,6 +1465,9 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                     break;
                 case 'action':
                     targetConditionValue = signature.data['recommendedAction'];
+                    break;
+                case 'actionr':
+                    targetConditionValue = signature.data['ruleAction'];
                     break;
                 default:
                     targetConditionValue = signature.data[conditionKey];
