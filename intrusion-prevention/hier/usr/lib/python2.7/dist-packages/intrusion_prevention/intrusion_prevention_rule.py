@@ -62,6 +62,17 @@ class IntrusionPreventionRule:
                 if not isinstance(condition["value"],list):
                     condition["value"] = condition["value"].split(',')
                 match = self.matches_in(signature.options["classtype"], comparator, condition["value"])
+            elif condition["type"] == "ACTION":
+                if not isinstance(condition["value"],list):
+                    condition["value"] = condition["value"].split(',')
+                action = signature.action
+                if signature.enabled is False:
+                    action = "disable"
+                elif action == "alert":
+                    action = "log"
+                elif action in ["reject", "drop"]:
+                    action = "block"
+                match = self.matches_in(action, comparator, condition["value"])
             elif condition["type"] == "MSG":
                 match = self.matches_text(signature.options["msg"].lower(), comparator, targetValue.lower())
             elif condition["type"] == "PROTOCOL":

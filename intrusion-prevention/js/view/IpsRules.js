@@ -197,6 +197,15 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             ],[
                 "false","False".t()
             ]]
+        },{
+            name:"ACTION",
+            displayName: "Recommended Action".t(),
+            type: 'checkboxgroup',
+            store: Ung.apps.intrusionprevention.Main.signatureActions,
+            storeValue: 'name',
+            storeLabel: 'description',
+            storeTip: Ung.apps.intrusionprevention.Main.actionRenderer,
+            comparator: 'boolean'
         // },
         //     // ??? checkboxgroup
         // {

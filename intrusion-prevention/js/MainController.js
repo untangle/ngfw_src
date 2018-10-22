@@ -1446,6 +1446,9 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'custom':
                     targetConditionValue = signature.data['reserved'] ? "false" : "true";
                     break;
+                case 'action':
+                    targetConditionValue = signature.data['recommendedAction'];
+                    break;
                 default:
                     targetConditionValue = signature.data[conditionKey];
             }
