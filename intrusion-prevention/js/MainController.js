@@ -532,7 +532,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
         }
         
-        ruleStatusBar.update(Ext.String.format( 'Log: {0}, Block:{1}, Disabled:{2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
+        ruleStatusBar.update(Ext.String.format( '<b>' + 'Signatures affected'.t() + ':</b> ' + 'Log: {0}, Block: {1}, Disabled: {2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
     }
 });
 
