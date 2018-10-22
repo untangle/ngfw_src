@@ -26,9 +26,10 @@ class SuricataSignature:
 
     block_action = "drop"
 
-    def __init__(self, match, category, path="rules"):
+    def __init__(self, match, category, path=None):
         self.category = category
         self.path = path
+        self.custom = path is None
         if len(match.group(1)) > 0 and (match.group(1)[0] == "#"):
             self.enabled = False
         else:
