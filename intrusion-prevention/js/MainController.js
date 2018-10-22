@@ -361,6 +361,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     }
                 }
             });
+            if(!matchRule && signature.data['currentAction'] == 'disable'){
+                status['disable'][signature.get('id')] = true;
+            }
         }, this, true);
         // console.log(performance.now()- t0);
         // console.log(status);
@@ -370,7 +373,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     statics:{
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
-            var displayValue = table.up('grid').getController().getViewModel().get('ruleActionsStore').findRecord('value', value, 0, false, false, true).get('display');
+            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('name', value).get('description');
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
             return displayValue;
         },
@@ -461,7 +464,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
-            var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', value);
+            var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', value);
             if( actionRecord != null ){
                 description = actionRecord.get('description');
             }
@@ -478,20 +481,20 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(rule != null){
                 var ruleAction = rule.get('action');
                 var signatureRecommendedAction = record.get('recommendedAction');
-                var actionRecord = Ung.apps.intrusionprevention.Main.actions.findRecord('name', rule.get('action'));
+                var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', ruleAction);
                 if( actionRecord != null ){
                     actionDescription = actionRecord.get('description');
                 }
-                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.actions.findRecord('name', ruleAction).get('description'));
+                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('name', ruleAction).get('description'));
                 if(ruleAction == 'default'){
-                    actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', signatureRecommendedAction).get('description');
+                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', signatureRecommendedAction).get('description');
                 }else if(ruleAction == 'blocklog'){
                     if(signatureRecommendedAction == 'log'){
-                        actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', 'block').get('description');
+                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', 'block').get('description');
                     }
                 }
             }else{
-                actionDescription = Ung.apps.intrusionprevention.Main.actions.findRecord('name', 'disable').get('description');
+                actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', 'disable').get('description');
                 ruleDescription = ' (' + 'No rule match'.t() + ')';
             }
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionDescription  ) + Ext.String.htmlEncode( ruleDescription  ) + '"';
@@ -740,7 +743,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
     editorRecommendedActionChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel(),
             record = vm.get('record');
-        if( newValue == null || Ung.apps.intrusionprevention.Main.actions.findExact('name', newValue) == null ){
+        if( newValue == null || Ung.apps.intrusionprevention.Main.signtureActions.findExact('name', newValue) == null ){
             me.setValidation("Unknown action".t());
             return false;
         }

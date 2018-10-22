@@ -232,7 +232,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         bind:{
             value: '{record.recommendedAction}',
         },
-        store: Ung.apps.intrusionprevention.Main.actions,
+        store: Ung.apps.intrusionprevention.Main.signatureActions,
         valueField: 'name',
         displayField: 'description',
         forceSelection: true,
