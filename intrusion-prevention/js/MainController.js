@@ -345,7 +345,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
             rules.each(function(rule){
                 if(rule.get('enabled')){
-                    if(rule.matchSignature(signature, conditions, vm)){
+                    if(rule.matchSignature(signature, conditions, vm) == true){
                         var action = rule.get('action');
                         if(action == 'default'){
                             action = signatureDefaultAction;
@@ -506,9 +506,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         },
         'ungrid':{
             edit: 'updateRuleStatus'
-        },
-        'window': {
-            close: 'updateRuleStatus'
         }
     },
 
@@ -543,7 +540,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.unintrusionrulesrecordeditor',
 
-    controller: 'unintrusionrulesrecordeditorcontroller'
+    controller: 'unintrusionrulesrecordeditorcontroller',
+
+    doDestroy: function(){
+        var masterGrid = this.getController().masterGrid;
+        this.callParent();
+        masterGrid.getController().updateRuleStatus();
+    }
 
 });
 
@@ -552,6 +555,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     alias: 'controller.unintrusionrulesrecordeditorcontroller',
 
     onAfterRender: function (view) {
+        this.masterGrid = view.up('grid');
+
         this.callParent([view]);
 
         var formpanel = view.down('form');
