@@ -160,7 +160,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         renderer: Ung.apps.intrusionprevention.MainController.recommendedActionRenderer
     },{
         header: "Rule Action".t(),
-        dataIndex: 'currentAction',
+        dataIndex: 'ruleMatch',
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.signatureRuleActionRenderer
     }],
