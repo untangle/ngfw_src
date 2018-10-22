@@ -1440,6 +1440,9 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'dst_port':
                     targetConditionValue = signature.data['rport'];
                     break;
+                case 'custom':
+                    targetConditionValue = signature.data['reserved'] ? "false" : "true";
+                    break;
                 default:
                     targetConditionValue = signature.data[conditionKey];
             }
@@ -1455,7 +1458,11 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'boolean':
                     var listValue = condition.value;
                     if(typeof(listValue) != 'object'){
-                        listValue = listValue.toLowerCase().split(',');
+                        if( typeof(listValue) == 'string' ){
+                            listValue = listValue.toLowerCase().split(',');
+                        }else{
+                            listValue = ["true"];
+                        }
                     }
                     match = me.matchesIn(targetConditionValue, condition.comparator, listValue);
                     break;
