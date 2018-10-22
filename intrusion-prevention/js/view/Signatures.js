@@ -140,12 +140,14 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },{
         header: "Protocol".t(),
         dataIndex: 'protocol',
-        width: Renderer.protocolWidth
+        width: Renderer.protocolWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRenderer
     },{
         header: "Msg".t(),
         dataIndex: 'msg',
         width: Renderer.messageWidth,
         flex:3,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRenderer
     },{
         header: "Reference".t(),
         dataIndex: 'sid',
