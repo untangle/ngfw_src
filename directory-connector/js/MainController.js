@@ -132,7 +132,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             dialog.show();
             dialog.down("[name=mapGrid]").getStore().loadData(result);
             Ext.MessageBox.close();
-            dialog.down('ungridstatus').fireEvent('update');
         }, function(ex){
             Ext.MessageBox.close();
             Util.handleException(ex);
@@ -161,7 +160,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             dialog.show();
             dialog.down("[name=mapGrid]").getStore().loadData(result);
             Ext.MessageBox.close();
-            dialog.down('ungridstatus').fireEvent('update');
         }, function(ex){
             Ext.MessageBox.close();
             Util.handleException(ex);
