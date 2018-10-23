@@ -103,7 +103,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },{
         xtype: 'tbtext',
         name: 'searchStatus',
-        html: 'Loading...'.t(),
+        bind:{
+            html: '{searchStatus}'
+        },
         listeners: {
             afterrender: 'updateSearchStatusBar'
         }

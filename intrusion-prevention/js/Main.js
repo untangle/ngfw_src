@@ -4,6 +4,12 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     controller: 'app-intrusion-prevention',
 
     viewModel: {
+        data: {
+            signatureStatusTotal: '',
+            signatureStatusLog: '',
+            signatureStatusBlock: '',
+            signatureStatusDisable: '',
+        },
         stores: {
             rules: {
                 storeId: 'rulesStore',
@@ -32,9 +38,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'sid',
                     direction: 'ASC'
                 }],
-                // listeners:{
-                //     datachanged: 'storeDataChanged'
-                // }
+                listeners:{
+                    datachanged: 'signaturesChanged'
+                }
             },
             variables: {
                 storeId: 'variablesStore',
