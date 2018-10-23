@@ -48,8 +48,6 @@ Ext.define('Ung.view.extra.DevicesController', {
                 if(store.getSorters().items.length == 0){
                     store.sort('macAddress', 'ASC');
                 }
-
-                v.down('ungridstatus').fireEvent('update');
             });
     },
 
@@ -60,11 +58,9 @@ Ext.define('Ung.view.extra.DevicesController', {
         Ext.state.Manager.clear(grid.stateId);
         store.getSorters().removeAll();
         store.sort('macAddress', 'ASC');
-        this.getView().down('ungridfilter').setValue('');
         store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
-
 
     saveDevices: function () {
         var me = this, list = [];
