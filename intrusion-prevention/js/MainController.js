@@ -122,16 +122,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
         });
         // console.log(signatures);
-        t1 = performance.now();
-        // console.log(t1-t0);
+        // t1 = performance.now();
+        // console.log('build signatures: ' + (t1-t0));
 
         // Process custom signatures
         vm.get('settings.signatures.list').forEach(function(settingsSignature){
             signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
         });
-        vm.set({
-            signaturesList: signatures
-        });
+        vm.set('signaturesList', signatures);
 
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
@@ -299,6 +297,29 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return isUsed;
     },
 
+    signaturesChanged: function(store){
+        var me = this,
+            vm = this.getViewModel();
+
+        me.watchSignatureStoreTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            var me = this,
+                vm = me.getViewModel(),
+                store = vm.get('signatures');
+            if(store == null){
+                me.watchSignatureStoreTask.delay( 500 );
+            }else{
+                var status = me.ruleSignatureMatches();
+                vm.set({
+                    signatureStatusTotal: store.getCount(),
+                    signatureStatusLog: Ext.Array.sum(Ext.Object.getValues(status.log)),
+                    signatureStatusBlock: Ext.Array.sum(Ext.Object.getValues(status.block)),
+                    signatureStatusDisable: Ext.Array.sum(Ext.Object.getValues(status.disable))
+                });
+            }
+        }, me) );
+        me.watchSignatureStoreTask.delay( 500 );
+    },
+
     storeDataChanged: function( store ){
         /*
          * Inexplicably, extjs does not see 'inline' data loads as "proper" store
@@ -353,6 +374,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var t1 = performance.now();
         var statusIndex;
         var signatures = vm.get('signatures');
+
+        if(signatures == null){
+            return status;
+        }
 
         var rules = vm.get('rules');
         if(matchRule != null){
@@ -768,7 +793,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
     editorRecommendedActionChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel(),
             record = vm.get('record');
-        if( newValue == null || Ung.apps.intrusionprevention.Main.signtureActions.findExact('name', newValue) == null ){
+        if( newValue == null || Ung.apps.intrusionprevention.Main.signatureActions.findExact('name', newValue) == null ){
             me.setValidation("Unknown action".t());
             return false;
         }
@@ -815,8 +840,10 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     },
 
     updateSearchStatusBar: function(){
-        var v = this.getView();
-        var searchStatus = v.down("[name=searchStatus]");
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            appvm = v.up('apppanel').getController().getViewModel(); 
+        // var searchStatus = v.down("[name=searchStatus]");
         // var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() === true ) || ( v.down("[name=searchBlock]").getValue() === true );
         // var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
         var hasFilter = v.down("[name=searchFilter]").getValue().length > 1;
@@ -835,9 +862,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
             //     statusText += ', ' + logOrBlockText;
             // }
         } else {
-            statusText = Ext.String.format( '{0} available signatures'.t(), v.getStore().getCount()) + ', ' + logOrBlockText;
+            statusText = Ext.String.format( '{0} signatures available'.t(), v.getStore().getCount());
+            // statusText = Ext.String.format( 'Signatures available: {signatureStatusTotal}, Log: {1}, Block: {2}, Disabled: {3}'.t(), appvm.get('signatureStatusTotal'), appvm.get('signatureStatusLog'), appvm.get('signatureStatusBlock'), appvm.get('signatureStatusDisable'));
         }
-        searchStatus.update( statusText );
+        // searchStatus.update( statusText );
+        vm.set('searchStatus', statusText);
     },
 
     searchConditionChange: function(eleme, newValue){
