@@ -575,9 +575,6 @@ Ext.define('Ung.cmp.GridController', {
             store.sort(defaultDataIndex, 'ASC');
         }
 
-        if(view.down('ungridfilter')){
-            view.down('ungridfilter').setValue('');
-        }
         store.clearFilter();
         view.reconfigure(null, view.initialConfig.columns);
     },
@@ -613,20 +610,5 @@ Ext.define('Ung.cmp.GridController', {
         } else {
             console.log('External action not defined!');
         }
-    },
-
-    /**
-     * updates the grid status each time filters are changed
-     */
-    updateFilterStatus: function (store, filters) {
-        var me = this, gridStatus = null;
-        try {
-            gridStatus = me.getView().up('panel').down('ungridstatus') || me.getView().up('entry').down('ungridstatus');
-        } catch (ex) {}
-
-        if (gridStatus) {
-            gridStatus.fireEvent('update');
-        }
     }
-
 });
