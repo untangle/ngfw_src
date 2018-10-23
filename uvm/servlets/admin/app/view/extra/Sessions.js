@@ -774,7 +774,5 @@ Ext.define('Ung.view.extra.Sessions', {
     '-',
     {
         xtype: 'ungridfilter'
-    },{
-        xtype: 'ungridstatus'
     }]
 });

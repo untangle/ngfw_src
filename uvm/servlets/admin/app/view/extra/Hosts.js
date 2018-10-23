@@ -434,8 +434,6 @@ Ext.define('Ung.view.extra.Hosts', {
     },
     '-', {
         xtype: 'ungridfilter'
-    },{
-        xtype: 'ungridstatus'
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

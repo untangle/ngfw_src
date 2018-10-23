@@ -153,6 +153,7 @@ Ext.define('Ung.view.extra.Devices', {
             }
         }, {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
+            flex: 1,
             dataIndex: 'httpUserAgent',
             width: Renderer.messageWidth,
             filter: Renderer.stringFilter,
@@ -244,9 +245,8 @@ Ext.define('Ung.view.extra.Devices', {
     },
     '-',
     {
-        xtype: 'ungridfilter'
-    },{
-        xtype: 'ungridstatus'
+        xtype: 'ungridfilter',
+        store: 'devices'
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),
