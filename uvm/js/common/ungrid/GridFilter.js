@@ -1,28 +1,42 @@
 Ext.define('Ung.cmp.GridFilter', {
-    extend: 'Ext.form.field.Text',
+    extend: 'Ext.form.FieldSet',
     alias: 'widget.ungridfilter',
 
     controller: 'ungridfilter',
 
-    reference: 'filterfield',
-    fieldLabel: 'Filter'.t(),
-    emptyText: 'Filter data ...'.t(),
-    labelWidth: 'auto',
-    enableKeyEvents: true,
-
-    triggers: {
-        clear: {
-            cls: 'x-form-clear-trigger',
-            hidden: true,
-            handler: function (field) {
-                field.setValue('');
-            }
+    viewModel: {
+        data: {
+            filterSummary: ''
         }
     },
 
-    listeners: {
-        change: 'filterEventList',
-        buffer: 100
-    }
+    layout: 'hbox',
+    border: 0,
 
+    items: [{
+        xtype: 'textfield',
+        iconCls: 'fa fa-plus-search fa-lg',
+        reference: 'filterfield',
+        fieldLabel: 'Filter'.t(),
+        emptyText: 'Text to match ...'.t(),
+        labelWidth: 'auto',
+        enableKeyEvents: true,
+        triggers: {
+            clear: {
+                cls: 'x-form-clear-trigger',
+                hidden: true,
+                handler: function (field) {
+                    field.setValue('');
+                }
+            }
+        },
+        listeners: {
+            change: 'changeFilter',
+            buffer: 100
+        }
+    },{
+        xtype: 'tbtext',
+        margin: 4,
+        bind: '{filterSummary}'
+    }]
 });
