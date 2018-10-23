@@ -188,8 +188,6 @@ Ext.define('Ung.view.reports.Entry', {
             },
             items: [{
                 xtype: 'ungridfilter'
-            },{
-                xtype: 'ungridstatus'
             }]
         }],
         items: [{
