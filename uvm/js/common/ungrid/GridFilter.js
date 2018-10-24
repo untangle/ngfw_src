@@ -11,6 +11,7 @@ Ext.define('Ung.cmp.GridFilter', {
         xtype: 'textfield',
         reference: 'filterfield',
         fieldLabel: 'Filter'.t(),
+        _neverDirty: true,
         bind: {
             // This does not work but we're leaving it here in the hope that it will.
             style: '{filterStyle}'
