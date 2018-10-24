@@ -5,6 +5,8 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
     title: 'Categories'.t(),
 
     tbar: [{
+        xtype: 'ungridfilter'
+    },{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px', fontWeight: 600 },
