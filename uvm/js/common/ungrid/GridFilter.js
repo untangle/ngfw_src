@@ -4,20 +4,17 @@ Ext.define('Ung.cmp.GridFilter', {
 
     controller: 'ungridfilter',
 
-    viewModel: {
-        data: {
-            filterSummary: ''
-        }
-    },
-
     layout: 'hbox',
     border: 0,
 
     items: [{
         xtype: 'textfield',
-        iconCls: 'fa fa-plus-search fa-lg',
         reference: 'filterfield',
         fieldLabel: 'Filter'.t(),
+        bind: {
+            // This does not work but we're leaving it here in the hope that it will.
+            style: '{filterStyle}'
+        },
         emptyText: 'Text to match ...'.t(),
         labelWidth: 'auto',
         enableKeyEvents: true,
@@ -36,7 +33,10 @@ Ext.define('Ung.cmp.GridFilter', {
         }
     },{
         xtype: 'tbtext',
+        bind: {
+            style: '{filterStyle}',
+            html: '{filterSummary}'
+        },
         margin: 4,
-        bind: '{filterSummary}'
     }]
 });
