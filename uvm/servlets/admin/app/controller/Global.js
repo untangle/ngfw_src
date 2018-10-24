@@ -131,7 +131,7 @@ Ext.define('Ung.controller.Global', {
 
         var dirtyFields = false, dirtyGrids = false;
         Ext.Array.each(cmp.query('field'), function (field) {
-            if (field._isChanged && !dirtyFields) {
+            if (!field._neverDirty && field._isChanged && !dirtyFields) {
                 dirtyFields = true;
             }
         });
