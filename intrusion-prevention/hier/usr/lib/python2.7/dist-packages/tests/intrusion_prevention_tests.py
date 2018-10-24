@@ -126,6 +126,26 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                min_date=startTime)
         assert(found)
 
+def test_080_nmap_log(self):
+        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
+        device_in_office = global_functions.is_in_office_network(wan_ip)
+        # Also test that it can probably reach us (we're on a 10.x network)
+        if not device_in_office:
+            raise unittest2.SkipTest("Not on office network, skipping")
+        if (not iperf_avail):
+            raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
+
+        startTime = datetime.now()
+        # start nmap on client
+        remote_control.run_command("nmap " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
+        app.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', "NMAP",
+                                               'blocked', False,
+                                               min_date=startTime)
+
     @staticmethod
     def finalTearDown(self):
         global app
