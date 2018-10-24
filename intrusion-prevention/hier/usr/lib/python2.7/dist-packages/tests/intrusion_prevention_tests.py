@@ -39,7 +39,7 @@ def create_signature( gid = "1", sid = "1999999", classtype="attempted-admin", c
         "signature": signature
     };
     
-def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_value="attempted-admin", enable_rule = True):
+def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_value="attempted-admin", enable_rule=True):
     return {
         "action": action,
         "conditions": {
@@ -105,7 +105,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 block=False, 
                                                 action="alert", 
                                                 type="tcp"))
-        appSettings['rules']['list'] = [create_rule(rule_type="CATEGORY",type_value="app-detect")] + appSettings['rules']['list']
+        # insert rule at the beginning of the list so other rules do not interfere. 
+        appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings)
 
     	time.sleep(60)  # It can take a minute for sessions to start scanning
@@ -124,6 +125,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'msg', "CompanySecret",
                                                'blocked', True,
                                                min_date=startTime)
+        del appSettings['rules']['list'][0] # delete the first rule just added
+        app.setSettings(appSettings)
         assert(found)
 
     def test_080_nmap_log(self):
