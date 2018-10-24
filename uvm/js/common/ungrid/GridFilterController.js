@@ -9,33 +9,37 @@ Ext.define('Ung.cmp.GridFilterController', {
         }
     },
 
+    setStore: function(){
+        var me = this,
+            vm = me.getViewModel(),
+            store = me.getView().up('grid') ? me.getView().up('grid').getStore() : me.getView().up('panel').down('grid').getStore();
+
+        if(store == null || store.isEmptyStore){
+            me.setStoreTask.delay( 100 );
+        }else{
+            store.on(
+                'datachanged',
+                me.updateFilterSummary,
+                me,{
+                    args: [true]
+                });
+            store.on('filterchange', Ext.bind(me.updateFilterSummary, me));
+            me.updateFilterSummary();
+        }
+    },
+
     afterrender: function(){
         var me = this;
-        /**
-         * Attach listeners to grid's store events.
-         */
-        var store = this.getView().up('panel').down('grid').getStore();
-        /**
-         * A store clearFilter will fire datachanged.
-         * If this happens, pass argument to updateFilterSunmary to check
-         * filter count.
-         * If we try to unconditionalluy check via a filterchange, we'll end up always
-         * clearing the filter text.
-         */
-        store.on(
-            'datachanged',
-            this.updateFilterSummary,
-            me,{
-                args: [true]
-            });
-        store.on('filterchange', Ext.bind(this.updateFilterSummary, me));
+        me.setStoreTask = new Ext.util.DelayedTask( me.setStore, me );
+        me.setStoreTask.delay( 100 );
     },
 
     changeFilter: function (field) {
         var me = this,
             vm = me.getViewModel(),
             value = field.getValue(),
-            grid = field.up('panel').down('grid'),
+            grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
+            store = this.getView().up('grid') ? this.getView().up('grid').getStore() : this.getView().up('panel').down('grid').getStore(),
             cols = grid.getVisibleColumns(),
             routeFilter = field.up('panel').routeFilter;
 
@@ -43,27 +47,33 @@ Ext.define('Ung.cmp.GridFilterController', {
          * Remove only the filters added through filter data box
          * leave alone the grid filters from columns or routes
          */
-        grid.getStore().getFilters().each(function (filter) {
+        store.getFilters().each(function (filter) {
             if (filter.isGridFilter || filter.source === 'route') {
                 return;
             }
             // If filter string is not empty, allow event. Prevent if empty.
-            grid.getStore().removeFilter(filter, value != '' ? true : false);
+            store.removeFilter(filter, value != '' ? true : false);
         });
 
         // add route filter
         if (routeFilter) {
-            grid.getStore().getFilters().add(routeFilter);
+            store.getFilters().add(routeFilter);
         }
 
         if (!value) {
             field.getTrigger('clear').hide();
+            vm.set('filterStyle', {fontWeight: 'normal'});
+            // UGH: fieldLabel styling does not work so modify the dom.
+            field.labelEl.dom.style.fontWeight = 'normal';
             return;
         }
+        vm.set('filterStyle', {fontWeight: 'bold'});
+        // UGH: fieldLabel styling does not work so modify the dom.
+        field.labelEl.dom.style.fontWeight = 'bold';
 
         var regex = Ext.String.createRegex(value, false, false, true);
 
-        grid.getStore().getFilters().add(function (item) {
+        store.getFilters().add(function (item) {
             var str = [], filtered = false;
 
             Ext.Array.each(cols, function (col) {
@@ -89,7 +99,7 @@ Ext.define('Ung.cmp.GridFilterController', {
         var me = this,
             view = this.getView(),
             vm = this.getViewModel(),
-            store = view.up('panel').down('grid').getStore(),
+            store = this.getView().up('grid') ? this.getView().up('grid').getStore() : this.getView().up('panel').down('grid').getStore(),
             count = store.getCount();
 
         if( ( checkReset === true ) &&
@@ -102,6 +112,10 @@ Ext.define('Ung.cmp.GridFilterController', {
             view.down('textfield').setValue('');
         }
 
-        vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
+        if(!count){
+            vm.set('filterSummary', '');
+        }else{
+            vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
+        }
     }
 });
