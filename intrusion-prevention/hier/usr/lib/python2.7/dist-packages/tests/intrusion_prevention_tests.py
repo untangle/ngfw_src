@@ -105,7 +105,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 block=False, 
                                                 action="alert", 
                                                 type="tcp"))
-        appSettings['rules']['list'].append(create_rule(rule_type="CATEGORY",type_value="app-detect"))
+        appSettings['rules']['list'] = [create_rule(rule_type="CATEGORY",type_value="app-detect")] + appSettings['rules']['list']
         app.setSettings(appSettings)
 
     	time.sleep(60)  # It can take a minute for sessions to start scanning
@@ -126,7 +126,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                min_date=startTime)
         assert(found)
 
-def test_080_nmap_log(self):
+    def test_080_nmap_log(self):
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
