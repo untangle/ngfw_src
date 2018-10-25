@@ -24,7 +24,7 @@ class SuricataSignature:
 
     action_changed = False
 
-    block_action = "drop"
+    block_action = "reject"
 
     def __init__(self, match, category, path=None):
         self.category = category
