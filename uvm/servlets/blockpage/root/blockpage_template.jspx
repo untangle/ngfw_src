@@ -52,7 +52,7 @@
 
   <body class="blockpage">
     <div class="block">
-      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo"/></a>
+      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo" style="max-width: 150px; max-height: 140px;"/></a>
       <hr/>
 
       <h1><c:out value="${title}" escapeXml="false"/></h1>
