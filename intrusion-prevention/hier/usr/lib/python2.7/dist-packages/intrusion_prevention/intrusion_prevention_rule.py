@@ -161,8 +161,10 @@ class IntrusionPreventionRule:
         elif self.rule["action"] == "log":
             signature.set_action(True, False)
         elif self.rule["action"] == "blocklog":
-            if signature.get_action()["log"] is True:
+            if signature.get_action()["log"] is True or signature.get_action()["block"] is True:
                 signature.set_action(True, True)
+            else:
+                signature.set_action(False, False)
         elif self.rule["action"] == "block":
             signature.set_action(True, True)
         elif self.rule["action"] == "disable":
