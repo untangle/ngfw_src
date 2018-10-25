@@ -9,6 +9,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             signatureStatusLog: '',
             signatureStatusBlock: '',
             signatureStatusDisable: '',
+            memoryUsage: '',
         },
         stores: {
             rules: {
@@ -59,30 +60,6 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 // listeners:{
                 //     datachanged: 'storeDataChanged'
                 // }
-            },
-            searchFields: {
-                fields: [{
-                    name: 'value',
-                },{
-                    name: 'name'
-                }],
-                sorters: [{
-                    property: 'value',
-                    direction: 'ASC'
-                }],
-                data: '{searchFieldsData}'
-            },
-            searchComparators: {
-                fields: [{
-                    name: 'value',
-                },{
-                    name: 'name'
-                }],
-                sorters: [{
-                    property: 'value',
-                    direction: 'DESC'
-                }],
-                data: '{searchComparatorsData}'
             }
         }
     },
@@ -115,10 +92,10 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         ruleActions: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description'],
             data: [
-                [ 'default', 'Use recommeded'.t()],
-                [ 'log', 'Log'.t() ],
-                [ 'blocklog', 'Block if recommended is Log'.t() ],
-                [ 'block', 'Block'.t()],
+                [ 'default', 'Recommended'.t()],
+                [ 'log', 'Enable Log'.t() ],
+                [ 'blocklog', 'Enable Block if Recommended is Enabled'.t() ],
+                [ 'block', 'Enable Block'.t()],
                 [ 'disable', 'Disable'.t() ]
             ]
         }),
