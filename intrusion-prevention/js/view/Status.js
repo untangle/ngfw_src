@@ -64,6 +64,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 bind: '{signatureStatusDisable}'
             },{
                 xtype: 'displayfield',
+                fieldLabel: "Memory usage".t(),
+                bind: '{memoryUsage}'
+            },{
+                xtype: 'displayfield',
                 fieldLabel: "Last check for updates".t(),
                 bind: '{lastUpdateCheck}'
             }, {

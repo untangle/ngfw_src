@@ -32,7 +32,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },
 
     // tbar: ['@add', '->', '@import', '@export'],
-    tbar: ['@add'],
+    tbar: [
+        '@add',
+        '-',
+    {
+        xtype: 'signatureungridfilter'
+    }],
     recordActions: ['edit', 'copy', 'delete'],
     copyId: 'sid',
     copyIdPreserve: true,
@@ -45,62 +50,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         value: false,
     }],
 
-    bbar: [ 
-    'Search'.t(), {
-        xtype: 'combo',
-        name: 'searchField',
-        listeners: {
-            change: 'searchConditionChange'
-        },
-        queryMode: 'local',
-        valueField: 'value',
-        displayField: 'name',
-        bind:{
-            store: '{searchFields}',
-            value: '{searchField}'
-        }
-    },{
-        xtype: 'combo',
-        name: 'searchComparator',
-        // listeners: {
-        //     change: 'filterSearch'
-        // }
-        queryMode: 'local',
-        valueField: 'value',
-        displayField: 'name',
-        bind:{
-            store: '{searchComparators}',
-            value: '{searchComparator}'
-        }
-    },{
-        xtype: 'textfield',
-        name: 'searchFilter',
-        bind: '{searchFilter}',
-        listeners: {
-            change: 'filterSearch'
-        }
-    },{
-        xtype: 'button',
-        text: 'Create Rule',
-        iconCls: 'fa fa-plus-circle',
-        listeners: {
-            click: 'createRuleFromSearch'
-        }
-    // },{
-    //     xtype: 'checkbox',
-    //     name: 'searchLog',
-    //     boxLabel: 'Log'.t(),
-    //     listeners: {
-    //         change: 'filterLog'
-    //     }
-    // }, {
-    //     xtype: 'checkbox',
-    //     name: 'searchBlock',
-    //     boxLabel: 'Block'.t(),
-    //     listeners: {
-    //         change: 'filterBlock'
-    //     }
-    },{
+    bbar: [{
         xtype: 'tbtext',
         name: 'searchStatus',
         bind:{
