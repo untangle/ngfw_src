@@ -8,15 +8,26 @@ Ext.define('Ung.cmp.GridFilter', {
     border: 0,
 
     items: [{
-        xtype: 'textfield',
-        reference: 'filterfield',
-        fieldLabel: 'Filter'.t(),
-        _neverDirty: true,
+        xtype: 'displayfield',
+        labelCls: 'fa fa-search',
+        labelWidth: 'auto',
+        padding: '6 -10 -6 0'
+    },{
+        xtype: 'displayfield',
+        cls: 'x-btn-inner-default-toolbar-small',
+        name: 'filterLabel',
+        value: 'Filter'.t(),
+        labelWidth: 'auto',
+        padding: '2 0 0 5',
         bind: {
-            // This does not work but we're leaving it here in the hope that it will.
-            style: '{filterStyle}'
+            fieldStyle: '{filterStyle}'
         },
-        emptyText: 'Text to match ...'.t(),
+    },{
+        xtype: 'textfield',
+        name: 'filterSearch',
+        _neverDirty: true,
+        padding: '2 0 0 0',
+        emptyText: 'Search ...'.t(),
         labelWidth: 'auto',
         enableKeyEvents: true,
         triggers: {
@@ -29,7 +40,7 @@ Ext.define('Ung.cmp.GridFilter', {
             }
         },
         listeners: {
-            change: 'changeFilter',
+            change: 'changeFilterSearch',
             buffer: 100
         }
     },{
@@ -38,6 +49,6 @@ Ext.define('Ung.cmp.GridFilter', {
             style: '{filterStyle}',
             html: '{filterSummary}'
         },
-        margin: 4,
+        padding: '5 0 0 6'
     }]
 });

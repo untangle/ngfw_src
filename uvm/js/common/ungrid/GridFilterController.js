@@ -34,13 +34,12 @@ Ext.define('Ung.cmp.GridFilterController', {
         me.setStoreTask.delay( 100 );
     },
 
-    changeFilter: function (field) {
+    changeFilterSearch: function (field) {
         var me = this,
             vm = me.getViewModel(),
             value = field.getValue(),
             grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
-            store = this.getView().up('grid') ? this.getView().up('grid').getStore() : this.getView().up('panel').down('grid').getStore(),
-            cols = grid.getVisibleColumns(),
+            store = grid.getStore(),
             routeFilter = field.up('panel').routeFilter;
 
         /**
@@ -63,13 +62,18 @@ Ext.define('Ung.cmp.GridFilterController', {
         if (!value) {
             field.getTrigger('clear').hide();
             vm.set('filterStyle', {fontWeight: 'normal'});
-            // UGH: fieldLabel styling does not work so modify the dom.
-            field.labelEl.dom.style.fontWeight = 'normal';
             return;
         }
         vm.set('filterStyle', {fontWeight: 'bold'});
-        // UGH: fieldLabel styling does not work so modify the dom.
-        field.labelEl.dom.style.fontWeight = 'bold';
+
+        this.createFilter(value, grid, store, routeFilter);
+
+        field.getTrigger('clear').show();
+    },
+
+    createFilter: function(value, grid, store, routeFilter){
+        var me = this,
+            cols = grid.getVisibleColumns();
 
         var regex = Ext.String.createRegex(value, false, false, true);
 
@@ -91,8 +95,6 @@ Ext.define('Ung.cmp.GridFilterController', {
             }
             return filtered;
         });
-
-        field.getTrigger('clear').show();
     },
 
     updateFilterSummary: function(checkReset){
@@ -109,10 +111,11 @@ Ext.define('Ung.cmp.GridFilterController', {
              * If so, and that external souce cleared filters, we should clear
              * the filter text. 
              */
-            view.down('textfield').setValue('');
+            view.down('[name=filterSearch]').setValue('');
         }
 
-        if(!count){
+        vm.set('matchesFound', view.down('[name=filterSearch]').getValue() != '' && count ? true : false);
+        if(!count ){
             vm.set('filterSummary', '');
         }else{
             vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
