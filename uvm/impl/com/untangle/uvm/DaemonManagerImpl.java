@@ -119,8 +119,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
+     * Return status from systemctl.
+     *
+     * @param daemonName
+     *        The daemon name
+     * @return String of systemctl status.
+     */
+    public String getStatus(String daemonName)
+    {
+        return execDaemonControlSafe(daemonName, "status", false);
+    }
+
+    /**
      * Increments the usage count for a particular daemon
-     * 
+     *
      * @param daemonName
      *        The daemon name
      */
@@ -139,7 +151,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
     /**
      * Decrements the usage count for a particular daemon
-     * 
+     *
      * @param daemonName
      *        The daemon name
      */
@@ -335,23 +347,45 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * execManager can only run one at at time. If the daemon name is provided,
      * we exec systemctl passing the command and the daemonName. If daemonName
      * is null, we simply exec the command as provided.
-     * 
+     *
      * @param daemonName
      *        The daemon name
      * @param command
      *        The systemctl command to execute, such as start, stop, restart,
      *        etc. or the raw command to execute if daemonName is null
      */
-    private void execDaemonControlSafe(String daemonName, String command)
+    private void execDaemonControlSafe(String daemonName, String command){
+        execDaemonControlSafe(daemonName, command, true);
+    }
+
+    /**
+     * Executes daemon control command using execOutput() which is safer but the
+     * execManager can only run one at at time. If the daemon name is provided,
+     * we exec systemctl passing the command and the daemonName. If daemonName
+     * is null, we simply exec the command as provided.
+     *
+     * @param daemonName
+     *        The daemon name
+     * @param command
+     *        The systemctl command to execute, such as start, stop, restart,
+     *        etc. or the raw command to execute if daemonName is null
+     * @param log
+     *        If true, log output.
+     * @return String of command output.
+     */
+    private String execDaemonControlSafe(String daemonName, String command, boolean log)
     {
         String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);
         String output = UvmContextFactory.context().execManager().execOutput(cmd);
-        try {
-            String lines[] = output.split("\\r?\\n");
-            for (String line : lines)
-                logger.info(cmd + ": " + line);
-        } catch (Exception exn) {
+        if(log){
+            try {
+                String lines[] = output.split("\\r?\\n");
+                for (String line : lines)
+                    logger.info(cmd + ": " + line);
+            } catch (Exception exn) {
+            }
         }
+        return output;
     }
 
     /**
