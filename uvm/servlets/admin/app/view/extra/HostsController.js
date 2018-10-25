@@ -114,7 +114,7 @@ Ext.define('Ung.view.extra.HostsController', {
             var store = grid.getStore();
 
             var filters = store.getFilters().clone();
-            store.clearFilter();
+            store.clearFilter(true);
 
             if (store.getModifiedRecords().length > 0 ||
                 store.getNewRecords().length > 0 ||
