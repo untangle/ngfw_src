@@ -75,6 +75,26 @@ Ext.define('Ung.util.Util', {
         return new Date().getTime();
     },
 
+    humanReadableMap: {
+        'P': 1125899906842624,
+        'T': 1125899906842624,
+        'G': 1073741824,
+        'M': 1048576,
+        'K': 1014
+    },
+    regexHumanReadable: /([-+]?[0-9]*\.?[0-9]+)\s*(.)/,
+    humanReadabletoBytes: function(value){
+        bytes = 0;
+        if(this.regexHumanReadable.test(value)){
+            var matches = this.regexHumanReadable.exec(value);
+            matches[2] = matches[2].toUpperCase();
+            if(matches[2] in this.humanReadableMap){
+                bytes = parseFloat(matches[1]) * this.humanReadableMap[matches[2].toUpperCase()];
+            }
+        }
+        return bytes;
+    },
+
     bytesToHumanReadable: function (bytes, si) {
         var thresh = si ? 1000 : 1024;
         if(Math.abs(bytes) < thresh) {
