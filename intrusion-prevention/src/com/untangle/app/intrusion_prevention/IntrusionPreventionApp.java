@@ -614,39 +614,41 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Get the last time signarures were updated.
-     *
-     * @return Last signature update.
+     * Get status information.
+     * @return JSONObject containing keys
      */
-    public Date getLastUpdate()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
-            long timeSeconds = Long.parseLong( result.trim());
+    public JSONObject getAppStatus(){
+        JSONObject status = null;
+        try{
+            status = new JSONObject();
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
-    }
+            String result = null;
+            long timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
+                timeSeconds = Long.parseLong( result.trim());
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update.", e );
+            }
+            status.put("lastUpdate", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
-    /**
-     * Get the last time signarures were checked.  An update may not have occured if signures didn't change.
-     *
-     * @return Last signature update.
-     */
-    public Date getLastUpdateCheck()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
-            long timeSeconds = Long.parseLong( result.trim());
+            timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
+                timeSeconds = Long.parseLong( result.trim());
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update check.", e );
+            }
+            status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
+
+            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( "suricata" ) );
+        }catch (Exception e){
+            logger.error("getStatus: jsonobject",e);
+        }
+
+
+        return status;
     }
 
     // private methods ---------------------------------------------------------
