@@ -58,6 +58,7 @@ Ext.define('Ung.cmp.GridFilterController', {
         if (routeFilter) {
             store.getFilters().add(routeFilter);
         }
+        var grouping = grid.getView().findFeature('grouping');
 
         if (!value) {
             field.getTrigger('clear').hide();
@@ -65,7 +66,6 @@ Ext.define('Ung.cmp.GridFilterController', {
             store.getFilters().add(function (record) {
                 return true;
             });
-            var grouping = grid.getView().findFeature('grouping');
             if(grouping){
                 grouping.collapseAll();
             }
@@ -74,7 +74,6 @@ Ext.define('Ung.cmp.GridFilterController', {
         vm.set('filterStyle', {fontWeight: 'bold'});
 
         this.createFilter(grid, store, routeFilter);
-        var grouping = grid.getView().findFeature('grouping');
         if(grouping){
             grouping.collapseAll();
         }
