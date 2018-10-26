@@ -50,16 +50,16 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         value: false,
     }],
 
-    bbar: [{
-        xtype: 'tbtext',
-        name: 'searchStatus',
-        bind:{
-            html: '{searchStatus}'
-        },
-        listeners: {
-            afterrender: 'updateSearchStatusBar'
-        }
-    }],
+    // bbar: [{
+    //     xtype: 'tbtext',
+    //     name: 'searchStatus',
+    //     bind:{
+    //         html: '{searchStatus}'
+    //     },
+    //     listeners: {
+    //         afterrender: 'updateSearchStatusBar'
+    //     }
+    // }],
 
     restrictedRecords: {
         keyMatch: 'reserved',
@@ -149,8 +149,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
             value: '{record.classtype}',
         },
         store: Ung.apps.intrusionprevention.Main.classtypes,
-        valueField: 'name',
-        displayField: 'name',
+        valueField: 'value',
+        displayField: 'value',
         forceSelection: true,
         listeners: {
             change: 'editorClasstypeChange'
@@ -165,8 +165,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         allowBlank: false,
         xtype: 'combo',
         queryMode: 'local',
-        valueField: 'name',
-        displayField: 'name'
+        valueField: 'value',
+        displayField: 'value'
     },{
         xtype:'textfield',
         bind: '{record.msg}',
@@ -185,7 +185,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
             value: '{record.recommendedAction}',
         },
         store: Ung.apps.intrusionprevention.Main.signatureActions,
-        valueField: 'name',
+        valueField: 'value',
         displayField: 'description',
         forceSelection: true,
         listeners: {

@@ -81,7 +81,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
 
     statics: {
         signatureActions: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description'],
+            fields: [ 'value', 'description'],
             data: [
                 [ 'log', 'Log'.t() ],
                 [ 'block', 'Block'.t() ],
@@ -90,7 +90,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         }),
 
         ruleActions: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description'],
+            fields: [ 'value', 'description'],
             data: [
                 [ 'default', 'Recommended'.t()],
                 [ 'log', 'Enable Log'.t() ],
@@ -105,9 +105,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         },
 
         classtypes: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description', 'priority' ],
+            fields: [ 'value', 'description', 'priority' ],
             sorters: [{
-                property: 'name',
+                property: 'value',
                 direction: 'ASC'
             }],
             data: [
@@ -157,9 +157,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         },
 
         categories: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description' ],
+            fields: [ 'value', 'description' ],
             sorters: [{
-                property: 'name',
+                property: 'value',
                 direction: 'ASC'
             }],
             data: [
