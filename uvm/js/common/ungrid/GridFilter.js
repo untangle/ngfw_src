@@ -2,6 +2,13 @@ Ext.define('Ung.cmp.GridFilter', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.ungridfilter',
 
+    viewModel: {
+        data: {
+            filterSearchDisabled: false,
+            searchValue: ''
+        }
+    },
+
     controller: 'ungridfilter',
 
     layout: 'hbox',
@@ -39,9 +46,16 @@ Ext.define('Ung.cmp.GridFilter', {
                 }
             }
         },
+        disabled: true,
+        hidden: true,
+        bind:{
+            'value': '{searchValue}',
+            'disabled': '{filterSearchDisabled}',
+            'hidden': '{filterSearchDisabled}'
+        },
         listeners: {
             change: 'changeFilterSearch',
-            buffer: 100
+            buffer: 500
         }
     },{
         xtype: 'tbtext',
