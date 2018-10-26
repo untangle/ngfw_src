@@ -409,7 +409,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     statics:{
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
-            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('name', value).get('description');
+            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value).get('description');
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
             return displayValue;
         },
@@ -426,10 +426,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
-            var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('name', value);
-            // if( classtypeRecord == null ){
-            //     console.log("classtype not found=" + value);
-            // }
+            var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('value', value);
             var description = value;
             if( classtypeRecord != null ){
                 description = classtypeRecord.get('description');
@@ -441,10 +438,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
-            var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('name', value);
-            // if( categoryRecord == null ){
-            //     console.log("category not found=" + value);
-            // }
+            var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('value', value);
             if( categoryRecord != null ){
                 description = categoryRecord.get('description');
             }
@@ -500,7 +494,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
-            var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', value);
+            var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', value);
             if( actionRecord != null ){
                 description = actionRecord.get('description');
             }
@@ -517,20 +511,20 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(rule != null){
                 var ruleAction = rule.get('action');
                 var signatureRecommendedAction = record.get('recommendedAction');
-                var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', ruleAction);
+                var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', ruleAction);
                 if( actionRecord != null ){
                     actionDescription = actionRecord.get('description');
                 }
-                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('name', ruleAction).get('description'));
+                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', ruleAction).get('description'));
                 if(ruleAction == 'default'){
-                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', signatureRecommendedAction).get('description');
+                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', signatureRecommendedAction).get('description');
                 }else if(ruleAction == 'blocklog'){
                     if(signatureRecommendedAction == 'log'){
-                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', 'block').get('description');
+                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description');
                     }
                 }
             }else{
-                actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('name', 'disable').get('description');
+                actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
                 ruleDescription = ' (' + 'No rule match'.t() + ')';
             }
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionDescription  ) + Ext.String.htmlEncode( ruleDescription  ) + '"';
@@ -754,7 +748,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
 
     editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel();
-        if( newValue == null || Ung.apps.intrusionprevention.Main.classtypes.findExact('name', newValue) == null ){
+        if( newValue == null || Ung.apps.intrusionprevention.Main.classtypes.findExact('value', newValue) == null ){
             me.setValidation("Unknown classtype".t());
             return false;
         }
@@ -779,7 +773,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
     editorRecommendedActionChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel(),
             record = vm.get('record');
-        if( newValue == null || Ung.apps.intrusionprevention.Main.signatureActions.findExact('name', newValue) == null ){
+        if( newValue == null || Ung.apps.intrusionprevention.Main.signatureActions.findExact('value', newValue) == null ){
             me.setValidation("Unknown action".t());
             return false;
         }
@@ -815,12 +809,15 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilter', {
     controller: 'signatureungridfilter',
 
     viewModel: {
+        data: {
+            filterValueDisabled: true
+        },
         stores: {
             fields: {
                 fields: [{
                     name: 'value',
                 },{
-                    name: 'name'
+                    name: 'description'
                 }],
                 sorters: [{
                     property: 'value',
@@ -832,7 +829,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilter', {
                 fields: [{
                     name: 'value',
                 },{
-                    name: 'name'
+                    name: 'description'
                 }],
                 sorters: [{
                     property: 'value',
@@ -844,7 +841,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilter', {
                 fields: [{
                     name: 'value',
                 },{
-                    name: 'name'
+                    name: 'description'
                 }],
                 sorters: [{
                     property: 'value',
@@ -872,40 +869,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             v = me.getView(),
             vm = me.getViewModel();
 
-        v.insert(2,{
-            xtype: 'combo',
-            padding: '2 0 0 0',
-            _neverDirty: true,
-            labelWidth: 'auto',
-            name: 'filterField',
-            listeners: {
-                change: 'changeField'
-            },
-            queryMode: 'local',
-            valueField: 'value',
-            displayField: 'name',
-            bind:{
-                store: '{fields}',
-                value: '{field}'
-            }
-        });
-        v.insert(3,{
-            xtype: 'combo',
-            padding: '2 0 0 0',
-            _neverDirty: true,
-            // name: 'filterComparator',
-            // listeners: {
-            //     change: 'filterSearch'
-            // }
-            queryMode: 'local',
-            valueField: 'value',
-            displayField: 'name',
-            bind:{
-                store: '{comparators}',
-                value: '{comparator}'
-            }
-        });
-        v.insert(5, {
+        v.insert(3, {
             xtype: 'button',
             baseCls: 'x-toolbar-item x-btn-default-toolbar-small',
             margin: '2 4 0 0',
@@ -919,23 +883,68 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 disabled: '{!matchesFound}'
             }
         });
-        // v.insert(4,{
-
-    // },{
-    //     xtype: 'combo',
-    //     // name: 'filterComparator',
-    //    _neverDirty: true,
-    //     // listeners: {
-    //     //     change: 'filterSearch'
-    //     // }
-    //     // !!! hidden
-    //     queryMode: 'local',
-    //     valueField: 'value',
-    //     displayField: 'name',
-    //     bind:{
-    //         store: '{values}',
-    //         value: '{value}'
-    //     }
+        v.insert(2, {
+            xtype: 'combo',
+            name: 'filterValue',
+            _neverDirty: true,
+            listeners: {
+                change: 'changeFilterSearch',
+                buffer: 500
+            },
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'description',
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    hidden: true,
+                    handler: function (field) {
+                        field.setValue('');
+                    }
+                }
+            },
+            disabled: true,
+            hidden: true,
+            bind:{
+                store: '{values}',
+                value: '{searchValue}',
+                disabled: '{filterValueDisabled}',
+                hidden: '{filterValueDisabled}'
+            }
+        });
+        v.insert(2,{
+            xtype: 'combo',
+            padding: '2 0 0 0',
+            _neverDirty: true,
+            listeners: {
+                change: 'changeFilterComparator',
+                buffer: 500
+            },
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'description',
+            bind:{
+                store: '{comparators}',
+                value: '{comparator}'
+            }
+        });
+        v.insert(2,{
+            xtype: 'combo',
+            padding: '2 0 0 0',
+            _neverDirty: true,
+            labelWidth: 'auto',
+            name: 'filterField',
+            listeners: {
+                change: 'changeField'
+            },
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'description',
+            bind:{
+                store: '{fields}',
+                value: '{field}'
+            }
+        });
 
         var filterConditions = [];
         Ext.Object.each(v.up('apppanel').down('[name=rules]').getController().getConditions(), function(k,v){
@@ -954,7 +963,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             }
             fieldsData.push({
                 value: name,
-                name: filterConditions[name]['displayName']
+                description: filterConditions[name]['displayName']
             });
         }
         vm.set('fieldsData', fieldsData);
@@ -982,11 +991,57 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 }
             }
         });
+
+        vm.set('searchValue', '');
+        if(vm.get('filterConditions')[newValue].store){
+            vm.set('valuesData', Ext.Array.pluck(vm.get('filterConditions')[newValue].store.getRange(), 'data'));
+            vm.set('filterValueDisabled', false);
+            vm.set('filterSearchDisabled', true);
+        }else{
+            vm.set('filterValueDisabled', true);
+            vm.set('filterSearchDisabled', false);
+        }
     },
 
-    createFilter: function(value, grid, store, routeFilter){
+    changeFilterComparator:function(field){
+        var me = this,
+            vm = me.getViewModel(),
+            value = field.getValue(),
+            grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
+            store = grid.getStore(),
+            routeFilter = field.up('panel').routeFilter;
+
+        /**
+         * Remove only the filters added through filter data box
+         * leave alone the grid filters from columns or routes
+         */
+        store.getFilters().each(function (filter) {
+            if (filter.isGridFilter || filter.source === 'route') {
+                return;
+            }
+            // If filter string is not empty, allow event. Prevent if empty.
+            store.removeFilter(filter, value != '' ? true : false);
+        });
+
+        // add route filter
+        if (routeFilter) {
+            store.getFilters().add(routeFilter);
+        }
+
+        this.createFilter(grid, store, routeFilter);
+    },
+
+    createFilter: function(grid, store, routeFilter){
         var me = this,
             vm = me.getViewModel();
+
+        console.log('createFilter');
+        console.log(vm.get('comparator'));
+        var searchValue = vm.get('searchValue');
+
+        if(searchValue == ''){
+            return;
+        }
 
         var rule = new Ung.model.intrusionprevention.rule({
             action: 'default',
@@ -995,10 +1050,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 list: [{
                     type: vm.get('field'),
                     comparator: vm.get('comparator'),
-                    value: value
+                    value: searchValue
                 }]
             }
         });
+
+        console.log('rule=');
+        console.log(rule.data.conditions.list[0]);
 
         var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
         store.getFilters().add(function (record) {
@@ -1017,13 +1075,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             vm = me.getViewModel(),
             field = vm.get('field'),
             comparator = vm.get('comparator'),
-            value = view.down('[name=filterSearch]').getValue('');
+            value = vm.get('searchValue');
 
         button.up('tabpanel').setActiveTab('rules').getController().addRecord(null, null, {
             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
             'enabled': true,
             'id': -1,
-            'description': '"' + vm.get('fields').findRecord( 'value', field).get('name') + '" ' + vm.get('comparators').findRecord('value', comparator).get('name') + ' "' + value + '"',
+            'description': '"' + vm.get('fields').findRecord( 'value', field).get('description') + '" ' + vm.get('comparators').findRecord('value', comparator).get('description') + ' "' + value + '"',
             'conditions': {
                 'javaClass': "java.util.LinkedList",
                 'list': [{

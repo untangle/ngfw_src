@@ -80,6 +80,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         header: "Action".t(),
         dataIndex: 'action',
         width: Renderer.messageWidth,
+        flex: 2,
         renderer: Ung.apps.intrusionprevention.MainController.ruleActionsRenderer,
         editor: {
             xtype: 'combo',
@@ -87,7 +88,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             queryMode: 'local',
             store: Ung.apps.intrusionprevention.Main.ruleActions,
             displayField: 'description',
-            valueField: 'name'
+            valueField: 'value'
         },
     }],
 
@@ -134,8 +135,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Category".t(),
             type: 'checkboxgroup',
             store: Ung.apps.intrusionprevention.Main.categories,
-            storeValue: 'name',
-            storeLabel: 'name',
+            storeValue: 'value',
+            storeLabel: 'value',
             storeTip: Ung.apps.intrusionprevention.Main.categoryRenderer,
             comparator: 'boolean'
         },{
@@ -143,8 +144,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Classtype".t(),
             type: 'checkboxgroup',
             store: Ung.apps.intrusionprevention.Main.classtypes,
-            storeValue: 'name',
-            storeLabel: 'name',
+            storeValue: 'value',
+            storeLabel: 'value',
             storeTip: Ung.apps.intrusionprevention.Main.classtypeRenderer,
             comparator: 'boolean'
         },{
@@ -202,7 +203,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Recommended Action".t(),
             type: 'checkboxgroup',
             store: Ung.apps.intrusionprevention.Main.signatureActions,
-            storeValue: 'name',
+            storeValue: 'value',
             storeLabel: 'description',
             storeTip: Ung.apps.intrusionprevention.Main.actionRenderer,
             comparator: 'boolean'
@@ -231,9 +232,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         },
         queryMode: 'local',
         editable: false,
-        // !!! move outside into conditions set as fields:
         typeField: 'type',
         displayField: 'description',
-        valueField: 'name',
+        valueField: 'value'
     }]
 });
