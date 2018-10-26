@@ -47,8 +47,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             });
 
             vm.set({
-                lastUpdateCheck: (status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
-                lastUpdate: (status['lastUpdate'] !== null && status['lastUpdate'].time !== 0 ) ? Renderer.timestamp(status['lastUpdate']) : "Never".t(),
+                lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
+                lastUpdate: (status['lastUpdate'] && status['lastUpdate'] !== null && status['lastUpdate'].time !== 0 ) ? Renderer.timestamp(status['lastUpdate']) : "Never".t(),
                 memoryUsage: Math.floor( ( Ung.util.Util.humanReadabletoBytes(daemonMemory)/ Ung.util.Util.humanReadabletoBytes(Ext.getStore('stats').getAt(0).get('totalMemory'))) * 100) + '%',
                 companyName: result[1],
                 system_memory: result[2],
@@ -1035,8 +1035,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
         var me = this,
             vm = me.getViewModel();
 
-        console.log('createFilter');
-        console.log(vm.get('comparator'));
+        // console.log('createFilter');
+        // console.log(vm.get('comparator'));
         var searchValue = vm.get('searchValue');
 
         if(searchValue == ''){
@@ -1055,8 +1055,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             }
         });
 
-        console.log('rule=');
-        console.log(rule.data.conditions.list[0]);
+        // console.log('rule=');
+        // console.log(rule.data.conditions.list[0]);
 
         var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
         store.getFilters().add(function (record) {
