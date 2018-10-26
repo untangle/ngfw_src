@@ -62,20 +62,32 @@ Ext.define('Ung.cmp.GridFilterController', {
         if (!value) {
             field.getTrigger('clear').hide();
             vm.set('filterStyle', {fontWeight: 'normal'});
+            store.getFilters().add(function (record) {
+                return true;
+            });
+            var grouping = grid.getView().findFeature('grouping');
+            if(grouping){
+                grouping.collapseAll();
+            }
             return;
         }
         vm.set('filterStyle', {fontWeight: 'bold'});
 
-        this.createFilter(value, grid, store, routeFilter);
+        this.createFilter(grid, store, routeFilter);
+        var grouping = grid.getView().findFeature('grouping');
+        if(grouping){
+            grouping.collapseAll();
+        }
 
         field.getTrigger('clear').show();
     },
 
-    createFilter: function(value, grid, store, routeFilter){
+    createFilter: function(grid, store, routeFilter){
         var me = this,
+            vm = me.getViewModel(),
             cols = grid.getVisibleColumns();
 
-        var regex = Ext.String.createRegex(value, false, false, true);
+        var regex = Ext.String.createRegex(vm.get('searchValue'), false, false, true);
 
         store.getFilters().add(function (item) {
             var str = [], filtered = false;
@@ -115,7 +127,7 @@ Ext.define('Ung.cmp.GridFilterController', {
         }
 
         vm.set('matchesFound', view.down('[name=filterSearch]').getValue() != '' && count ? true : false);
-        if(!count ){
+        if(!count && ( store.getFilters().getCount() == 0)){
             vm.set('filterSummary', '');
         }else{
             vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
