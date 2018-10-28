@@ -153,6 +153,7 @@ public abstract class DecisionEngine
                     logger.debug("Adding X-GoogApps-Allowed-Domains header: " + allowedDomains + " to " + host + " port " + port);
                 }
                 header.addField("X-GoogApps-Allowed-Domains", allowedDomains);
+            }
         }
 
         // check client IP pass list
