@@ -283,10 +283,6 @@ Ext.define('Ung.view.reports.EventReport', {
             if( vm.get('eventProperty') == null ){
                 v.down('grid').getSelectionModel().select(0);
             }
-
-            if( v.up('entry') && v.up('entry').down('ungridstatus') ){
-                v.up('entry').down('ungridstatus').fireEvent('update');
-            }
         }
     }
 });

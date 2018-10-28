@@ -27,7 +27,7 @@ Ext.define('Ung.view.reports.Entry', {
             cls: 'report-header',
             padding: '5 10',
             style: { background: '#FFF' },
-            // ui: 'footer',
+            ui: 'footer',
             defaults: {
                 focusable: false
             },
@@ -62,106 +62,121 @@ Ext.define('Ung.view.reports.Entry', {
                     disabled: '{r_autoRefreshBtn.pressed || fetching}'
                 }
             }, {
-                text: 'Auto'.t() + ' (5 sec)',
-                reference: 'r_autoRefreshBtn',
-                enableToggle: true,
-                publishes: 'pressed',
-                bind: {
-                    iconCls: '{r_autoRefreshBtn.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                }
-                // handler: 'setAutoRefresh'
-            }, '-', {
-                // xtype: 'checkbox',
-                text: 'Data View'.t(),
-                reference: 'dataCk',
-                enableToggle: true,
-                hidden: true,
-                disabled: true,
-                bind: {
-                    iconCls: '{dataCk.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
-                    hidden: '{!entry || entry.type === "EVENT_LIST" || eEntry}',
-                    disabled: '{fetching}'
-                }
-            }, {
-                // todo:add resetView
-                text: 'Reset View'.t(),
-                iconCls: 'fa fa-refresh',
-                itemId: 'resetBtn',
-                handler: 'resetView',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    // hidden: '{!entry || entry.type !== "EVENT_LIST" || eEntry}',
-                    // disabled: '{fetching}'
-                }
-            }, {
-                itemId: 'downloadBtn',
-                text: 'Download (Image)'.t(),
-                iconCls: 'fa fa-download',
-                handler: 'downloadGraph',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    hidden: '{entry.type === "EVENT_LIST" || entry.type === "TEXT" || eEntry}',
-                    disabled: '{fetching}'
-                }
-            }, {
-                xtype: 'combo',
-                itemId: 'eventsLimitSelector',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    hidden: '{entry.type !== "EVENT_LIST"}',
-                    disabled: '{fetching}'
+                xtype: 'container',
+                layout: 'hbox',
+                defaults: {
+                    xtype: 'button',
+                    margin: '0 2'
                 },
-                editable: false,
-                value: 1000,
-                store: [
-                    [100, '100 ' + 'Events'.t()],
-                    [500, '500 ' + 'Events'.t()],
-                    [1000, '1000 ' + 'Events'.t()],
-                    [5000, '5000 ' + 'Events'.t()],
-                    [10000, '10000 ' + 'Events'.t()],
-                    [50000, '50000 ' + 'Events'.t()],
-                ],
-                queryMode: 'local',
-                listeners: {
-                    change: 'refresh'
-                }
-            }, {
-                itemId: 'dashboardBtn',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
-                    text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
-                    hidden: '{context !== "ADMIN" || eEntry}',
-                    disabled: '{fetching}'
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'width >= 800': { hidden: false },
+                    'width < 800': { hidden: true }
                 },
-                handler: 'dashboardAddRemove'
-            }, {
-                itemId: 'exportBtn',
-                text: 'Export Data (csv)'.t(),
-                iconCls: 'fa fa-external-link-square',
-                handler: 'exportEventsHandler',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    hidden: '{entry.type !== "EVENT_LIST" || eEntry}',
-                    disabled: '{fetching}'
-                }
-            }, {
-                text: 'Settings'.t(),
-                reference: 'settingsBtn',
-                // enableToggle: true,
-                iconCls: 'fa fa-cog',
-                hidden: true,
-                disabled: true,
-                bind: {
-                    hidden: '{!entry || eEntry || context !== "ADMIN"}',
-                    disabled: '{fetching}'
-                },
-                handler: 'editEntry'
+                items: [{
+                    text: 'Auto'.t() + ' (5 sec)',
+                    reference: 'r_autoRefreshBtn',
+                    enableToggle: true,
+                    publishes: 'pressed',
+                    bind: {
+                        iconCls: '{r_autoRefreshBtn.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                    }
+                    // handler: 'setAutoRefresh'
+                }, {
+                    xtype: 'tbseparator'
+                }, {
+                    // xtype: 'checkbox',
+                    text: 'Data View'.t(),
+                    reference: 'dataCk',
+                    enableToggle: true,
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        iconCls: '{dataCk.pressed ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                        hidden: '{!entry || entry.type === "EVENT_LIST" || eEntry}',
+                        disabled: '{fetching}'
+                    }
+                }, {
+                    // todo:add resetView
+                    text: 'Reset View'.t(),
+                    iconCls: 'fa fa-refresh',
+                    itemId: 'resetBtn',
+                    handler: 'resetView',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        // hidden: '{!entry || entry.type !== "EVENT_LIST" || eEntry}',
+                        // disabled: '{fetching}'
+                    }
+                }, {
+                    itemId: 'downloadBtn',
+                    text: 'Download (Image)'.t(),
+                    iconCls: 'fa fa-download',
+                    handler: 'downloadGraph',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{entry.type === "EVENT_LIST" || entry.type === "TEXT" || eEntry}',
+                        disabled: '{fetching}'
+                    }
+                }, {
+                    xtype: 'combo',
+                    itemId: 'eventsLimitSelector',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{entry.type !== "EVENT_LIST"}',
+                        disabled: '{fetching}'
+                    },
+                    editable: false,
+                    value: 1000,
+                    store: [
+                        [100, '100 ' + 'Events'.t()],
+                        [500, '500 ' + 'Events'.t()],
+                        [1000, '1000 ' + 'Events'.t()],
+                        [5000, '5000 ' + 'Events'.t()],
+                        [10000, '10000 ' + 'Events'.t()],
+                        [50000, '50000 ' + 'Events'.t()],
+                    ],
+                    queryMode: 'local',
+                    listeners: {
+                        change: 'refresh'
+                    }
+                }, {
+                    itemId: 'dashboardBtn',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        iconCls: 'fa {widget ? "fa-minus-circle" : "fa-plus-circle" }',
+                        text: '{widget ? "Remove from " : "Add to "}' + ' Dashboard',
+                        hidden: '{context !== "ADMIN" || eEntry}',
+                        disabled: '{fetching}'
+                    },
+                    handler: 'dashboardAddRemove'
+                }, {
+                    itemId: 'exportBtn',
+                    text: 'Export Data (csv)'.t(),
+                    iconCls: 'fa fa-external-link-square',
+                    handler: 'exportEventsHandler',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{entry.type !== "EVENT_LIST" || eEntry}',
+                        disabled: '{fetching}'
+                    }
+                }, {
+                    text: 'Settings'.t(),
+                    reference: 'settingsBtn',
+                    // enableToggle: true,
+                    iconCls: 'fa fa-cog',
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        hidden: '{!entry || eEntry || context !== "ADMIN"}',
+                        disabled: '{fetching}'
+                    },
+                    handler: 'editEntry'
+                }]
             }]
         }, {
             xtype: 'toolbar',
@@ -173,8 +188,6 @@ Ext.define('Ung.view.reports.Entry', {
             },
             items: [{
                 xtype: 'ungridfilter'
-            },{
-                xtype: 'ungridstatus'
             }]
         }],
         items: [{

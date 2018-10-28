@@ -62,6 +62,17 @@ class IntrusionPreventionRule:
                 if not isinstance(condition["value"],list):
                     condition["value"] = condition["value"].split(',')
                 match = self.matches_in(signature.options["classtype"], comparator, condition["value"])
+            elif condition["type"] == "ACTION":
+                if not isinstance(condition["value"],list):
+                    condition["value"] = condition["value"].split(',')
+                action = signature.action
+                if signature.enabled is False:
+                    action = "disable"
+                elif action == "alert":
+                    action = "log"
+                elif action in ["reject", "drop"]:
+                    action = "block"
+                match = self.matches_in(action, comparator, condition["value"])
             elif condition["type"] == "MSG":
                 match = self.matches_text(signature.options["msg"].lower(), comparator, targetValue.lower())
             elif condition["type"] == "PROTOCOL":
@@ -89,6 +100,8 @@ class IntrusionPreventionRule:
                 match = self.matches_numeric(int(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"]), comparator, int(targetValue))
             elif condition["type"] == "SIGNATURE":
                 match = self.matches_text(signature.build().lower(), comparator, targetValue.lower())
+            elif condition["type"] == "CUSTOM":
+                match = self.matches_in(signature.custom, comparator, [True if targetValue.lower() == "true" else False])
             else:
                 ### exception
                 print("UNKNOWN")
@@ -132,7 +145,7 @@ class IntrusionPreventionRule:
         return False
 
     def matches_in(self, sourceValue, comparator, targetValue):
-        is_in = sourceValue in (value.lower() for value in targetValue)
+        is_in = sourceValue in ( ( value.lower() if hasattr(value, "lower") else value ) for value in targetValue)
 
         if comparator == "=":
             return is_in
@@ -143,35 +156,16 @@ class IntrusionPreventionRule:
 
     def set_signature_action(self, signature):
         current_action = signature.get_action()
-
-        modified = str(current_action) == str(signature.initial_action)
-        # set rule_action_applied field in signature.
-        # if block set, don't do anything else.
-
-        ## precidence:
-        # default
-        # log
-        # block
-        # disabled
-
         if self.rule["action"] == "default":
             signature.set_action(current_action["log"], current_action["block"])
-        # elif self.rule["action"] == "log":
         elif self.rule["action"] == "log":
-            # if not current_action["enabled"] and not current_action["log"]
-            # print("set log")
-            signature.set_action(True, current_action["block"])
+            signature.set_action(True, False)
         elif self.rule["action"] == "blocklog":
-            # if not current_action["enabled"] and not current_action["block"]
-            # print("set block")
-            if signature.get_action()["log"] is True:
-                signature.set_action(current_action["log"], True)
-        elif self.rule["action"] == "block":
-            # if not current_action["enabled"] and not current_action["block"]
-            # print("set block")
-            signature.set_action(current_action["log"], True)
-        elif self.rule["action"] == "disable":
-            if not modified:
-                # if not current_action["enabled"] and not current_action["block"]
-                # print("set disabled")
+            if signature.get_action()["log"] is True or signature.get_action()["block"] is True:
+                signature.set_action(True, True)
+            else:
                 signature.set_action(False, False)
+        elif self.rule["action"] == "block":
+            signature.set_action(True, True)
+        elif self.rule["action"] == "disable":
+            signature.set_action(False, False)

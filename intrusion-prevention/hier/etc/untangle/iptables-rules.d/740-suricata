@@ -24,6 +24,11 @@ SURICATA_QUEUE_NUM=$(python -c "from uvm.settings_reader import get_app_settings
 SURICATA_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','iptablesMaxScanSize');")
 SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
 
+CONNBYTES="-m connbytes --connbytes 0:${SURICATA_MAX_SCAN_SIZE} --connbytes-dir both --connbytes-mode bytes"
+if [ ${SURICATA_MAX_SCAN_SIZE} -eq 0 ]; then
+    CONNBYTES=
+fi
+
 #
 # See if suricata is running.
 #
@@ -84,7 +89,7 @@ insert_suricata_iptables_rules()
     fi
 
     # mangle: all other traffic will be handed off to our netfilter queue
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -j NFQUEUE --queue-num ${SURICATA_QUEUE_NUM} --queue-bypass -m connbytes --connbytes 0:${SURICATA_MAX_SCAN_SIZE} --connbytes-dir both --connbytes-mode bytes -m comment --comment "queue for suricata"
+    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -j NFQUEUE --queue-num ${SURICATA_QUEUE_NUM} --queue-bypass ${CONNBYTES} -m comment --comment "queue for suricata"
 
     # mangle: ----- now that we have created our table we need some rules to send us traffic
     # mangle: ----- these next rules will grab only traffic that we need to classify

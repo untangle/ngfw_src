@@ -34,7 +34,7 @@ td.title {
 td.description {
 	color: #ffffff;
 	background-color: #858585;
-	font-size: 12px;	
+	font-size: 12px;
 }
 
 </style>
@@ -44,7 +44,7 @@ td.description {
 <table>
 <tr style="background-color:#ffffff; color:#333333;">
 <td style="width:82px;">
-<img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}"/>
+<img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}" style="max-width: 150px; max-height: 140px;"/>
 </td>
 <td style="font-size:22px; font-weight:bold; vertical-align:top; padding:10px;">
 <br/>
@@ -128,7 +128,7 @@ Summary
 {% trans "Version" %}
 </td>
 <td>
-{{ getFullVersion }} 
+{{ getFullVersion }}
 {% if systemManager.upgradesAvailable == true %}
 {%trans "(upgrades available)" %}
 {% endif%}
@@ -196,7 +196,7 @@ Summary
 					<tr><td><table>
 					<tr style="background-color:#d0d0d0;">
 						<td style="width:48px;">
-						<img src="{{ attachment,/usr/share/untangle/web/icons/apps/{{ app.getAppProperties.getName }}.svg|id=icon-{{ app.getAppProperties.getName }}@untangle.com }}" />
+						<img src="{{ attachment,/usr/share/untangle/web/icons/apps/{{ app.getAppProperties.getName }}_42x42.png|id=icon-{{ app.getAppProperties.getName }}@untangle.com }}" />
 						</td>
 						<td style="font-size:20px; color:#444444; font-weight:bold;">
 						{{ app.getAppProperties.getDisplayName }}

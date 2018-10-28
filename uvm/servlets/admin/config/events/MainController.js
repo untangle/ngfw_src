@@ -48,6 +48,11 @@ Ext.define('Ung.config.events.MainController', {
                             case 'boolean':
                                 field.type = 'boolean';
                                 field.comparator = 'boolean';
+                                field.values = [[
+                                    true,"True".t()
+                                ],[
+                                    false,"False".t()
+                                ]];
                                 break;
                             case 'double':
                             case 'float':

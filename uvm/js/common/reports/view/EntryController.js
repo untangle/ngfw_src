@@ -177,11 +177,6 @@ Ext.define('Ung.view.reports.EntryController', {
             // if autorefresh enabled refetch data in 5 seconds
             vm.set('reportData', data);
 
-            // trigger change event for EVENT_REPORT so it shows status (number of filtered entries)
-            if (entry.get('type') === 'EVENT_LIST') {
-                me.getView().down('ungridfilter').fireEvent('change');
-            }
-
             if (vm.get('r_autoRefreshBtn.pressed')) {
                 me.refreshTimeout = setTimeout(function () {
                     me.reload();

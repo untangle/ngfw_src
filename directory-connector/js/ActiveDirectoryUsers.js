@@ -13,10 +13,6 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectoryUsers', {
 
     tbar: [{
         xtype: 'ungridfilter'
-    },{
-        xtype: 'ungridstatus',
-        tplFiltered: '{0} filtered, {1} total users'.t(),
-        tplUnfiltered: '{0} users'.t()
     }],
 
     items: [{
