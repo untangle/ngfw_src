@@ -68,6 +68,11 @@ body.blockpage {
     box-shadow: inset 0 3px 5px rgba(0,0,0,.2);
 }
 
+.company-logo {
+    max-width: 150px;
+    max-height: 140px;
+}
+
 @media ( max-width : 320px) {
     .block .company-logo {
         height: 60px;

@@ -92,8 +92,8 @@ Ext.define('Ung.view.reports.Main', {
                 }
             }],
             responsiveConfig: {
-                wide: { hidden: true },
-                tall: { hidden: false }
+                'width >= 800': { hidden: true },
+                'width < 800': { hidden: false }
             }
         }],
 
@@ -114,9 +114,10 @@ Ext.define('Ung.view.reports.Main', {
             plugins: 'responsive',
             store: 'reportstree',
 
-            bind: {
-                width: '{editing ? 0 : 250}'
-            },
+            // comment out so it does not affect the responsiveConfig
+            // bind: {
+            //     width: '{editing ? 0 : 250}'
+            // },
 
             viewConfig: {
                 selectionModel: {
@@ -195,8 +196,8 @@ Ext.define('Ung.view.reports.Main', {
             },
 
             responsiveConfig: {
-                wide: { hidden: false },
-                tall: { hidden: true }
+                'width >= 800': { width: 250 },
+                'width < 800': { width: 0 }
             }
         }, {
             /**

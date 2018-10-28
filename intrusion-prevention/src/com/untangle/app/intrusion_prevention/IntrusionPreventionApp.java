@@ -46,6 +46,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
@@ -374,12 +375,7 @@ public class IntrusionPreventionApp extends AppBase
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
-                    );
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
+                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
                     );
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
@@ -389,7 +385,12 @@ public class IntrusionPreventionApp extends AppBase
                     classificationConditions = new LinkedList<>();
                     classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
                     classificationRules.add(
-                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
                     );
 
                     Matcher match = null;
@@ -420,7 +421,7 @@ public class IntrusionPreventionApp extends AppBase
                             }
                         }
                         if(found == false){
-                             rules.add(classificationRule);
+                            rules.add(0, classificationRule);
                         }
                     }
 
@@ -613,39 +614,41 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * Get the last time signarures were updated.
-     *
-     * @return Last signature update.
+     * Get status information.
+     * @return JSONObject containing keys
      */
-    public Date getLastUpdate()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
-            long timeSeconds = Long.parseLong( result.trim());
+    public JSONObject getAppStatus(){
+        JSONObject status = null;
+        try{
+            status = new JSONObject();
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
-    }
+            String result = null;
+            long timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
+                timeSeconds = Long.parseLong( result.trim());
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update.", e );
+            }
+            status.put("lastUpdate", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
-    /**
-     * Get the last time signarures were checked.  An update may not have occured if signures didn't change.
-     *
-     * @return Last signature update.
-     */
-    public Date getLastUpdateCheck()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
-            long timeSeconds = Long.parseLong( result.trim());
+            timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
+                timeSeconds = Long.parseLong( result.trim());
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update check.", e );
+            }
+            status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
+
+            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( "suricata" ) );
+        }catch (Exception e){
+            logger.error("getStatus: jsonobject",e);
+        }
+
+
+        return status;
     }
 
     // private methods ---------------------------------------------------------
@@ -1024,6 +1027,24 @@ public class IntrusionPreventionApp extends AppBase
                 addresses.add( maskedAddress );
             }
         }
+
+        /**
+         * Pull static routes
+         */
+        for (StaticRoute route : UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes()) {
+            match = false;
+            maskedAddress = new IPMaskedAddress( route.getNetwork(), route.getPrefix());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == route.getPrefix() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
+        }
+
         return addresses; 
     }
 

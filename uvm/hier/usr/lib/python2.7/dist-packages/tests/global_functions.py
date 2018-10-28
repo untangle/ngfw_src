@@ -15,6 +15,7 @@ import remote_control
 import ipaddr
 import smtplib
 import json
+import urllib
 
 from uvm import Uvm
 
@@ -62,7 +63,7 @@ iperf_server = ""
 
 test_start_time = None
 
-def get_public_ip_address(base_URL="test.untangle.com",extra_options="",localcall=False):
+def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
     timeout = 4
     result = ""
     while result == "" and timeout > 0:
@@ -71,7 +72,24 @@ def get_public_ip_address(base_URL="test.untangle.com",extra_options="",localcal
             result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
         else:
             result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
+    result = result.rstrip()
     return result
+    
+def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
+    # get the IP for the hostname from DNS server 'resolver'
+    hostname_ip = "0.0.0.0"
+    found = False
+    timeout = 4
+    while timeout > 0 and not found:
+        timeout -= 1
+        try:
+            hostname_ip = subprocess.check_output("dig +short @" + resolver +  " " + hostname, shell=True)
+        except subprocess.CalledProcessError:
+            found = False
+        else:
+            found = True
+    hostname_ip = hostname_ip.rstrip()
+    return hostname_ip
     
 def verify_iperf_configuration(wan_ip):
     # https://iperf.fr/
@@ -308,13 +326,10 @@ def get_live_account_info(accounttype):
         return ("message",ACCOUNT_FILE_SERVER + " not available")
     # result_ping = subprocess.check_output("ping -c 1 " + ACCOUNT_FILE_SERVER, shell=True)
     # remove old file if it exist
-    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + ACCOUNT_FILE_SERVER + "/account_login.json -O " + ACCOUNT_FILE, shell=True)
-    if not os.path.isfile(ACCOUNT_FILE):
-        return ("message",ACCOUNT_FILE + " file not available")
-    with open(ACCOUNT_FILE) as data_file:    
-        accounts = json.load(data_file)    
-    if os.path.isfile(ACCOUNT_FILE):
-        os.remove(ACCOUNT_FILE)
+    account_url = "http://" + ACCOUNT_FILE_SERVER + "/account_login.json"
+    response = urllib.urlopen(account_url)
+    accounts = json.loads(response.read())
+
     for account in accounts: #i is each student's name, class, and number
         if account[0] == accounttype:
             return (account[1], account[2])
@@ -326,7 +341,7 @@ def get_wan_tuples():
     for interface in netsettings['interfaces']['list']:
         wan_ip = ""
         wanGateway = ""
-        if interface['isWan']:
+        if interface['isWan'] and interface['configType'] == "ADDRESSED":
             if interface['v4ConfigType'] == "STATIC":
                 wanIndex =  interface['interfaceId']
                 wan_ip =  interface['v4StaticAddress']

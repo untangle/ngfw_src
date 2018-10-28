@@ -42,7 +42,6 @@ Ext.define('Ung.view.extra.SessionsController', {
         Ext.state.Manager.clear(grid.stateId);
         store.getSorters().removeAll();
         store.sort('bypassed', 'ASC');
-        this.getView().down('ungridfilter').setValue('');
         store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
@@ -91,8 +90,6 @@ Ext.define('Ung.view.extra.SessionsController', {
                 if(store.getSorters().items.length == 0){
                     store.sort('bypassed', 'ASC');
                 }
-
-                v.down('ungridstatus').fireEvent('update');
 
                 grid.getSelectionModel().select(0);
             });

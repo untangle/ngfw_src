@@ -40,7 +40,6 @@ Ext.define('Ung.view.extra.HostsController', {
         Ext.state.Manager.clear(grid.stateId);
         store.getSorters().removeAll();
         store.sort('address', 'ASC');
-        this.getView().down('ungridfilter').setValue('');
         store.clearFilter();
         grid.reconfigure(null, grid.initialConfig.columns);
     },
@@ -77,8 +76,6 @@ Ext.define('Ung.view.extra.HostsController', {
                 if(store.getSorters().items.length == 0){
                     store.sort('address', 'ASC');
                 }
-
-                v.down('ungridstatus').fireEvent('update');
 
                 grid.getSelectionModel().select(0);
             });
@@ -117,7 +114,7 @@ Ext.define('Ung.view.extra.HostsController', {
             var store = grid.getStore();
 
             var filters = store.getFilters().clone();
-            store.clearFilter();
+            store.clearFilter(true);
 
             if (store.getModifiedRecords().length > 0 ||
                 store.getNewRecords().length > 0 ||

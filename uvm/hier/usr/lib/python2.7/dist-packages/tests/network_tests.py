@@ -21,8 +21,6 @@ import global_functions
 
 
 ftp_file_name = ""
-dyn_hostname = ""
-dyn_names = ['ats.dataprotected.net', 'atsbeta.dataprotected.net', 'atsgamma.dataprotected.net', 'atsdelta.dataprotected.net']
 
 default_policy_id = 1
 orig_netsettings = None
@@ -36,10 +34,10 @@ office_ftp_client = "10.111.56.23"
 
 def get_usable_name(dyn_checkip):
     selected_name = ""
+    names,filler = global_functions.get_live_account_info("dyndns")
+    dyn_names = names.split(",") 
     for hostname in dyn_names:
-        result = subprocess.check_output("host -R3 -4 " + hostname + " " + dyndns_resolver, shell=True)
-        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        hostname_ip = (match.group()).replace('address ','')
+        hostname_ip = global_functions.get_hostname_ip_address(hostname=hostname)
         if dyn_checkip != hostname_ip:
             selected_name = hostname
             break
@@ -299,23 +297,23 @@ def add_dns_rule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def find_used_ip(startIP):
+def find_used_ip(start_ip):
     # Find an IP that is not currently used.
     loopLimit = 20
-    testIP = ipaddr.IPAddress(startIP)
-    ipUsed = True
-    while (ipUsed and (loopLimit > 0)):
+    test_ip = ipaddr.IPAddress(start_ip)
+    ip_used = True
+    while (ip_used and (loopLimit > 0)):
         loopLimit -= 1
-        testIP += 1
-        testIPResult = subprocess.call(["ping","-c","1",str(testIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if testIPResult != 0:
-            ipUsed = False
+        test_ip += 1
+        test_ip_result = subprocess.call(["ping","-c","1",str(test_ip)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if test_ip_result != 0:
+            ip_used = False
 
-    if ipUsed:
+    if ip_used:
         # no unused IP found
         return False
     else:
-        return str(testIP)
+        return str(test_ip)
 
 def append_vlan(parentInterfaceID):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -358,28 +356,28 @@ def append_vlan(parentInterfaceID):
     uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
 
-def append_aliases(parentInterfaceID):
+def append_aliases():
+    ip_found = False
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for i in range(len(netsettings['interfaces']['list'])):
-        if netsettings['interfaces']['list'][i]['interfaceId'] == parentInterfaceID:
-            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
-                testStartIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
-                ipFound = find_used_ip(testStartIP)
+        if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED":
+            if netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
+                test_start_ip =  netsettings['interfaces']['list'][i]['v4StaticAddress']
+                ip_found = find_used_ip(test_start_ip)
                 break;
-            else:
-                # only use if interface is addressed
-                return False
-    if ipFound:
-        testAliasIP = find_used_ip(ipFound)
-        if testAliasIP:
-            netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(testAliasIP,
-                                                                             netsettings['interfaces']['list'][i]['v4StaticNetmask'],
-                                                                             netsettings['interfaces']['list'][i]['v4StaticPrefix']))
-            uvmContext.networkManager().setNetworkSettings(netsettings)
-        else:
-            return False
+            elif netsettings['interfaces']['list'][i]['v4ConfigType'] == "AUTO":
+                nicDevice = str(netsettings['interfaces']['list'][i]['symbolicDev'])
+                test_start_ip = global_functions.__get_ip_address(nicDevice)
+                ip_found = find_used_ip(test_start_ip)
+                break;
 
-    return testAliasIP
+    if ip_found:
+        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(ip_found,
+                                                                         netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                         netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+    print("Alias IP: " + ip_found)
+    return ip_found
 
 def nuke_first_level_rule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -483,9 +481,9 @@ class NetworkTests(unittest2.TestCase):
 
 
     def test_016_add_alias(self):
-        raise unittest2.SkipTest("Review changes in test")
+        # raise unittest2.SkipTest("Review changes in test")
         # Add Alias IP
-        alias_ip = append_aliases(remote_control.interface)
+        alias_ip = append_aliases()
         if alias_ip:
             # print("alias_ip <%s>" % AliasIP)
             result = remote_control.run_command("ping -c 1 %s" % alias_ip)
@@ -617,29 +615,17 @@ class NetworkTests(unittest2.TestCase):
     # test a NAT rules
     def test_050_nat_rule(self):
         # check if more than one WAN
-        myWANs = {}
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        for interface in netsettings['interfaces']['list']:
-            # if its not a static WAN its not testable
-            detectedIPlist =[]
-            if interface['isWan'] and interface['v4ConfigType'] == "STATIC" and interface['v4StaticAddress'] != None:
-                addr = interface['v4StaticAddress']
-                # Check if WAN address is recognized by test.untangle.com
-                detectedIP = global_functions.get_public_ip_address(extra_options="--bind-address=" + addr,localcall=True)
-                detectedIP = detectedIP.rstrip()  # strip return character
-                if detectedIP not in detectedIPlist:
-                    detectedIPlist.append(detectedIP)
-                    myWANs[addr] = detectedIP
-        if (len(myWANs) < 2):
+        index_of_wans = global_functions.get_wan_tuples()
+        if (len(index_of_wans) < 2):
             raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
-        for wanIP in myWANs:
+
+        for wan in index_of_wans:
             nuke_first_level_rule("natRules")
             # Create NAT rule for port 80
-            set_first_level_rule(create_nat_rule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
+            set_first_level_rule(create_nat_rule("test out " + wan[1], "DST_PORT","80",wan[1]),"natRules")
             # Determine current outgoing IP
             result = global_functions.get_public_ip_address()
-            # print("result " + result + " wanIP " + myWANs[wanIP])
-            assert (result == myWANs[wanIP])
+            assert (result == wan[2])
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -839,40 +825,42 @@ class NetworkTests(unittest2.TestCase):
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
-        global dyn_hostname
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-        wan_count = 0
+            raise unittest2.SkipTest("Skipping a time consuming test")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        for interface in netsettings['interfaces']['list']:
-            if interface['isWan'] and not interface.get('disabled') == False:
-                wan_count += 1
-        
-        if (wan_count > 1):
+        index_of_wans = global_functions.get_wan_tuples()
+        if (len(index_of_wans) > 1):
             raise unittest2.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
         outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
-        outside_IP = outside_IP.rstrip()  # strip return character
 
         dyn_hostname = get_usable_name(outside_IP)
         if dyn_hostname == "":
-            raise unittest2.SkipTest('Skipping since all dyndns names already used')
+            raise unittest2.SkipTest("Skipping since all dyndns names already used")
         else:
             print("Using name: %s" % dyn_hostname)
         dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
         if dyn_DNS_user_name == "message":
-            raise unittest2.SkipTest('no dyn user')
+            raise unittest2.SkipTest("no dyn user")
 
         # Clear the ddclient cache and set DynDNS info
         ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
         if os.path.isfile(ddclient_cache_file):
             os.remove(ddclient_cache_file)        
         set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
-        
 
+        # myip.dnsomatic.com site is sometimes offline so use test. 
+        ddclient_file = "/etc/ddclient.conf"
+        with open(ddclient_file) as f:
+            newText=f.read().replace('myip.dnsomatic.com', 'test.untangle.com/cgi-bin/myipaddress.py')
+        with open(ddclient_file, "w") as f:
+            f.write(newText)        
+        # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
+        subprocess.check_output("systemctl restart ddclient.service", shell=True)
+        
         loop_counter = 80
         dyn_IP_found = False
         while loop_counter > 0 and not dyn_IP_found:
@@ -885,15 +873,13 @@ class NetworkTests(unittest2.TestCase):
                 pass # executable environment not ready
             # time.sleep(10)
             loop_counter -= 1
-            result = remote_control.run_command("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
-            match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-            dynIP = (match.group()).replace('address ','')
+            dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
             print("IP address of outside_IP <%s> dynIP <%s> " % (outside_IP,dynIP))
             dyn_IP_found = False
             if outside_IP == dynIP:
                 dyn_IP_found = True
             else:
-                time.sleep(10)
+                time.sleep(60)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert(dyn_IP_found)

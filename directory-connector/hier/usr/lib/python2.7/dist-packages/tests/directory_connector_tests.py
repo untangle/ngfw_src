@@ -6,6 +6,7 @@ import time
 import string
 import random
 import subprocess
+import urllib2
 from uvm import Uvm
 import remote_control
 import test_registry
@@ -345,6 +346,24 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert(found_username)
         assert (result == 0)
         assert (test_name in user_list)
+
+    def test_033_checkUserNotificationLoginScriptDownload(self):
+        """
+        Check download of user notification script
+        """
+        # remove leading and trailing spaces.
+        http_admin = global_functions.get_http_url()
+        assert(http_admin)
+        
+        script_uri = "userapi/registration?download=download"
+        script_url = http_admin + script_uri
+        response = urllib2.urlopen(script_url)
+        user_script = response.read()
+        # print(user_script)
+
+        assert ("serverLocation" in user_script)
+        assert ("secret" in user_script)
+        assert ("urlProtocol" in user_script)
 
     def test_040_checkADSettings_NonSecure(self):
         """

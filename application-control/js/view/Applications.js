@@ -19,7 +19,11 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
     }, {
         xtype: 'toolbar',
         dock: 'top',
-        items: ['->', '@replace', '@export']
+        items: [{
+            xtype: 'ungridfilter'
+        },
+        '->', '@replace', '@export'
+        ]
     }],
 
     columns: [{

@@ -4,44 +4,18 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     controller: 'app-intrusion-prevention',
 
     viewModel: {
-        data:{
-            ruleActions: [{
-                value: 'default',
-                display: 'Default'.t()
-            },{
-                value: 'log',
-                display: 'Log'.t()
-            },{
-                value: 'blocklog',
-                display: 'Block if Logged'.t()
-            },{
-                value: 'block',
-                display: 'Block'.t()
-            },{
-                value: 'disable',
-                display: 'Disable'.t()
-            }]
+        data: {
+            signatureStatusTotal: '',
+            signatureStatusLog: '',
+            signatureStatusBlock: '',
+            signatureStatusDisable: '',
+            memoryUsage: '',
         },
         stores: {
-            ruleActionsStore: {
-                data: '{ruleActions}',
-                fields:[{
-                    name: 'value',
-                    type: 'string'
-                },{
-                    name: 'display',
-                    type: 'string'
-                }]
-            },
             rules: {
                 storeId: 'rulesStore',
                 model: 'Ung.model.intrusionprevention.rule',
-                data: '{settings.rules.list}',
-                sorters:[{
-                    sorterFn: function(){
-                        return Ung.apps.intrusionprevention.MainController.ruleSortActionPrecedence.apply(this, arguments);
-                    }
-                }]
+                data: '{settings.rules.list}'
             },
             signatures: {
                 storeId: 'signaturesStore',
@@ -57,13 +31,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 },{
                     name: 'signature'
                 },{
-                    name: 'path'
-                },{
-                    name: 'log',
-                    type: 'boolean'
-                },{
-                    name: 'block',
-                    type: 'boolean'
+                    name: 'action'
                 }],
                 data: '{signaturesList}',
                 groupField: 'classtype',
@@ -71,9 +39,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'sid',
                     direction: 'ASC'
                 }],
-                // listeners:{
-                //     datachanged: 'storeDataChanged'
-                // }
+                listeners:{
+                    datachanged: 'signaturesChanged'
+                }
             },
             variables: {
                 storeId: 'variablesStore',
@@ -89,33 +57,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'variable',
                     direction: 'ASC'
                 }],
-                listeners:{
-                    datachanged: 'storeDataChanged'
-                }
-            },
-            searchConditions: {
-                fields: [{
-                    name: 'value',
-                },{
-                    name: 'name'
-                }],
-                sorters: [{
-                    property: 'value',
-                    direction: 'ASC'
-                }],
-                data: '{searchConditionsData}'
-            },
-            searchComparators: {
-                fields: [{
-                    name: 'value',
-                },{
-                    name: 'name'
-                }],
-                sorters: [{
-                    property: 'value',
-                    direction: 'DESC'
-                }],
-                data: '{searchComparatorsData}'
+                // listeners:{
+                //     datachanged: 'storeDataChanged'
+                // }
             }
         }
     },
@@ -136,10 +80,34 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     ],
 
     statics: {
+        signatureActions: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'value', 'description'],
+            data: [
+                [ 'log', 'Log'.t() ],
+                [ 'block', 'Block'.t() ],
+                [ 'disable', 'Disable'.t() ]
+            ]
+        }),
+
+        ruleActions: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'value', 'description'],
+            data: [
+                [ 'default', 'Recommended'.t()],
+                [ 'log', 'Enable Log'.t() ],
+                [ 'blocklog', 'Enable Block if Recommended is Enabled'.t() ],
+                [ 'block', 'Enable Block'.t()],
+                [ 'disable', 'Disable'.t() ]
+            ]
+        }),
+
+        actionRenderer: function(value, meta, record){
+            return record.get('description');
+        },
+
         classtypes: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description', 'priority' ],
+            fields: [ 'value', 'description', 'priority' ],
             sorters: [{
-                property: 'name',
+                property: 'value',
                 direction: 'ASC'
             }],
             data: [
@@ -189,9 +157,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         },
 
         categories: Ext.create('Ext.data.ArrayStore', {
-            fields: [ 'name', 'description' ],
+            fields: [ 'value', 'description' ],
             sorters: [{
-                property: 'name',
+                property: 'value',
                 direction: 'ASC'
             }],
             data: [

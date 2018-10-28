@@ -78,9 +78,9 @@ def main(argv):
         ##
         ## Add a custom new rule.
         ##
-        match_signature = re.search( SuricataSignature.text_regex, settings_signature )
+        match_signature = re.search( SuricataSignature.text_regex, settings_signature['signature'] )
         if match_signature:
-            signatures.add_signature(SuricataSignature( match_signature, "unknown"))
+            signatures.add_signature(SuricataSignature( match_signature, settings_signature['category']))
 
 
     if _debug is True:
@@ -94,15 +94,16 @@ def main(argv):
         rules.append(IntrusionPreventionRule(settings_rule))
 
     ##
-    ## Process rules in action precedence order.
+    ## Process rules in order.
     ##
-    priority = { 'default': 0, 'log' : 1, 'blocklog': 2, 'block': 3, 'disable': 4}
-    for rule in sorted(rules, key=lambda rule: (priority[rule.get_action()] )):
-        if not rule.get_enabled():
-            continue
-        for signature in signatures.get_signatures().values():
+    for signature in signatures.get_signatures().values():
+        for rule in rules:
+            if not rule.get_enabled():
+                continue
             if rule.matches(signature):
                 rule.set_signature_action(signature)
+                # break from rest of rules - action is taken from the first matching rule
+                break
 
     ##
     ## Disable signatures not modified by any rule.

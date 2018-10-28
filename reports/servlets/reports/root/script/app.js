@@ -107,6 +107,8 @@ Ext.define('Ung.controller.Global', {
             condsQuery = '', decoded, parts, key, sep, val, fmt;
 
         if (query) {
+            // need to remove the 'reports' string from query in some routing cases
+            query = query.replace('reports', '');
             Ext.Array.each(query.replace('?', '').split('&'), function (part) {
                 decoded = decodeURIComponent(part);
 

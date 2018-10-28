@@ -68,8 +68,16 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client can pass UDP
     def test_15_client_is_online_udp(self):
-        assert ( remote_control.run_command("host cnn.com 8.8.8.8") == 0 )
-        assert ( remote_control.run_command("host google.com 8.8.8.8") == 0 )
+        timeout = 5
+        result_cnn = 1
+        result_google = 1
+        while timeout > 0 and (result_cnn != 0 or result_google != 0):
+            timeout -= 1
+            result_cnn =  remote_control.run_command("host cnn.com 8.8.8.8")
+            result_google = remote_control.run_command("host google.com 8.8.8.8")
+        
+        assert ( result_cnn == 0 )
+        assert ( result_google == 0 )
 
     # verify client is online
     def test_16_client_not_running_openvpn(self):

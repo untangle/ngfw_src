@@ -34,7 +34,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             xtype: 'appstate'
         },{
             xtype: 'fieldset',
-            title: '<i class="fa fa-clock-o"></i> ' + "Updates".t(),
+            title: '<i class="fa fa-clock-o"></i> ' + "Overview".t(),
             defaults: {
                 labelWidth: 200
             },
@@ -48,6 +48,26 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
 
             items: [{
                 xtype: 'displayfield',
+                fieldLabel: "Signatures available".t(),
+                bind: '{signatureStatusTotal}'
+            },{
+                xtype: 'displayfield',
+                fieldLabel: "Signatures set to log".t(),
+                bind: '{signatureStatusLog}'
+            },{
+                xtype: 'displayfield',
+                fieldLabel: "Signatures set to block".t(),
+                bind: '{signatureStatusBlock}'
+            },{
+                xtype: 'displayfield',
+                fieldLabel: "Signatures disabled".t(),
+                bind: '{signatureStatusDisable}'
+            },{
+                xtype: 'displayfield',
+                fieldLabel: "Memory usage".t(),
+                bind: '{memoryUsage}'
+            },{
+                xtype: 'displayfield',
                 fieldLabel: "Last check for updates".t(),
                 bind: '{lastUpdateCheck}'
             }, {
@@ -57,7 +77,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             }, {
                 xtype: 'component',
                 bind:{
-                    html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', '{companyName}')
+                    html: Ext.String.format("{0}Note:{1} {2} continues to maintain the recommended signature settings through automatic updates. You are free to add signatures, however it is not required.".t(), '<b>', '</b>', '{companyName}')
                 }
             }]
         }, {

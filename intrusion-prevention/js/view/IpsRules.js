@@ -7,6 +7,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     controller: 'unintrusionrulegrid',
 
+    viewConfig: {
+        listeners: {
+            drop: 'updateRuleStatus'
+        }
+    },
+
     emptyText: 'No Rules Defined'.t(),
     name: 'rules',
 
@@ -28,7 +34,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     }],
 
     tbar: ['@add', '->', '@import', '@export'],
-    recordActions: ['edit', 'copy', 'delete'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
     copyId: 'id',
     copyAppendField: 'description',
     recordModel: 'Ung.model.intrusionprevention.rule',
@@ -74,15 +80,14 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         header: "Action".t(),
         dataIndex: 'action',
         width: Renderer.messageWidth,
+        flex: 2,
         renderer: Ung.apps.intrusionprevention.MainController.ruleActionsRenderer,
         editor: {
             xtype: 'combo',
             editable: false,
             queryMode: 'local',
-            bind: {
-                store: '{ruleActionsStore}'
-            },
-            displayField: 'display',
+            store: Ung.apps.intrusionprevention.Main.ruleActions,
+            displayField: 'description',
             valueField: 'value'
         },
     }],
@@ -100,8 +105,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         allowBlank: false
     },
     Ung.cmp.ConditionsEditor.build({
-        // xtype: 'conditionseditor',
         xtype: 'ipsrulesconditionseditor',
+        text:{
+            condition: 'For all signatures that match the following conditions:'.t(),
+            action: 'Modify each signature as:'.t(),
+        },
         bind: '{record.conditions}',
         flex: 1,
         model: 'Ung.apps.intrusionprevention.model.Condition',
@@ -127,8 +135,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Category".t(),
             type: 'checkboxgroup',
             store: Ung.apps.intrusionprevention.Main.categories,
-            storeValue: 'name',
-            storeLabel: 'name',
+            storeValue: 'value',
+            storeLabel: 'value',
             storeTip: Ung.apps.intrusionprevention.Main.categoryRenderer,
             comparator: 'boolean'
         },{
@@ -136,8 +144,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Classtype".t(),
             type: 'checkboxgroup',
             store: Ung.apps.intrusionprevention.Main.classtypes,
-            storeValue: 'name',
-            storeLabel: 'name',
+            storeValue: 'value',
+            storeLabel: 'value',
             storeTip: Ung.apps.intrusionprevention.Main.classtypeRenderer,
             comparator: 'boolean'
         },{
@@ -150,7 +158,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"PROTOCOL",
             displayName: "Protocol".t(),
             type: 'checkboxgroup',
-            values: [["TCP","TCP"],["UDP","UDP"],["ICMP", "ICMP"], ["ANY", "ANY"]],
+            values: [],
             comparator: 'boolean'
         },{
             name:"SRC_ADDR",
@@ -180,6 +188,25 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             displayName: "Any part of signature".t(),
             type: 'textfield',
             comparator: 'text'
+        },{
+            name:"CUSTOM",
+            displayName: "Custom signature".t(),
+            type: 'boolean',
+            comparator: 'boolean',
+            values: [[
+                "true","True".t()
+            ],[
+                "false","False".t()
+            ]]
+        },{
+            name:"ACTION",
+            displayName: "Recommended Action".t(),
+            type: 'checkboxgroup',
+            store: Ung.apps.intrusionprevention.Main.signatureActions,
+            storeValue: 'value',
+            storeLabel: 'description',
+            storeTip: Ung.apps.intrusionprevention.Main.actionRenderer,
+            comparator: 'boolean'
         // },
         //     // ??? checkboxgroup
         // {
@@ -196,18 +223,17 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     }),
     {
         xtype: 'combo',
-        fieldLabel: 'Actions'.t(),
+        fieldLabel: 'Action'.t(),
         labelAlign: 'right',
         width: 400,
+        store: Ung.apps.intrusionprevention.Main.ruleActions,
         bind: {
-            store: '{ruleActionsStore}',
             value: '{record.action}'
-            },
+        },
         queryMode: 'local',
         editable: false,
-        // !!! move outside into conditions set as fields:
         typeField: 'type',
-        displayField: 'display',
-        valueField: 'value',
+        displayField: 'description',
+        valueField: 'value'
     }]
 });

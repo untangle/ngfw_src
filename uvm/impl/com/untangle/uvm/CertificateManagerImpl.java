@@ -944,6 +944,7 @@ public class CertificateManagerImpl implements CertificateManager
         for (InterfaceSettings iset : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
             if (iset.getV4StaticAddress() == null) continue;
             if (iset.igetDisabled()) continue;
+            if (iset.igetBridged()) continue;
             machineList.add(iset.getV4StaticAddress().getHostAddress());
         }
 
