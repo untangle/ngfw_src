@@ -142,6 +142,19 @@ public abstract class DecisionEngine
             sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED, bestCategory.getBlocked());
         }
 
+        // restrict google applications
+        if (app.getSettings().getRestrictGoogleApps()) {
+            String allowedDomains = app.getSettings().getRestrictGoogleAppsDomain();
+            if (allowedDomains != null &&
+                !"".equals(allowedDomains.trim()) && 
+                port == 443 &&
+                (host.contains("google") || host.contains("youtube"))) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding X-GoogApps-Allowed-Domains header: " + allowedDomains + " to " + host + " port " + port);
+                }
+                header.addField("X-GoogApps-Allowed-Domains", allowedDomains);
+        }
+
         // check client IP pass list
         // If a client is on the pass list is is passed regardless of any other settings
         GenericRule rule = UrlMatchingUtil.checkClientList(clientIp, app.getSettings().getPassedClients());
@@ -162,19 +175,6 @@ public abstract class DecisionEngine
             logger.debug("LOG: in site pass list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
-        }
-
-        // restrict google applications
-        if (app.getSettings().getRestrictGoogleApps()) {
-            String allowedDomains = app.getSettings().getRestrictGoogleAppsDomain();
-            if (allowedDomains != null && !"".equals(allowedDomains.trim()) && port == 443) {
-                if (host.contains("google") || host.contains("youtube")) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Adding X-GoogApps-Allowed-Domains header: " + allowedDomains + " to " + host + " port " + port);
-                    }
-                    header.addField("X-GoogApps-Allowed-Domains", allowedDomains);
-                }
-            }
         }
 
         String refererHeader = header.getValue("referer");

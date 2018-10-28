@@ -210,11 +210,23 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             var valueBind = '{record.' + view.fields.value + '}';
             switch (condition.type) {
             case 'boolean':
-                widget.container.add({
-                    xtype: 'component',
-                    padding: 3,
-                    html: 'True'.t()
-                });
+                if(condition.values){
+                    widget.container.add({
+                        xtype: 'combo',
+                        editable: false,
+                        matchFieldWidth: false,
+                        bind: {
+                            value: valueBind
+                        },
+                        store: condition.values
+                    });
+                }else{
+                    widget.container.add({
+                        xtype: 'component',
+                        padding: 3,
+                        html: 'True'.t()
+                    });
+                }
                 break;
             case 'textfield':
                 widget.container.add({

@@ -32,7 +32,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },
 
     // tbar: ['@add', '->', '@import', '@export'],
-    tbar: ['@add'],
+    tbar: [
+        '@add',
+        '-',
+    {
+        xtype: 'signatureungridfilter'
+    }],
     recordActions: ['edit', 'copy', 'delete'],
     copyId: 'sid',
     copyIdPreserve: true,
@@ -45,81 +50,24 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         value: false,
     }],
 
-    bbar: [ 
-    'Search'.t(), {
-        xtype: 'combo',
-        name: 'searchCondition',
-        listeners: {
-            change: 'searchConditionChange'
-        },
-        queryMode: 'local',
-        valueField: 'value',
-        displayField: 'name',
-        bind:{
-            store: '{searchConditions}',
-            value: '{searchCondition}'
-        }
-    },{
-        xtype: 'combo',
-        name: 'searchComparator',
-        // listeners: {
-        //     change: 'filterSearch'
-        // }
-        queryMode: 'local',
-        valueField: 'value',
-        displayField: 'name',
-        bind:{
-            store: '{searchComparators}',
-            value: '{searchComparator}'
-        }
-    },{
-        xtype: 'textfield',
-        name: 'searchFilter',
-        bind: '{searchFilter}',
-        listeners: {
-            change: 'filterSearch'
-        }
-    },{
-        xtype: 'button',
-        text: 'Create Rule',
-        iconCls: 'fa fa-plus-circle',
-        listeners: {
-            click: 'createRuleFromSearch'
-        }
-    // },{
-    //     xtype: 'checkbox',
-    //     name: 'searchLog',
-    //     boxLabel: 'Log'.t(),
+    // bbar: [{
+    //     xtype: 'tbtext',
+    //     name: 'searchStatus',
+    //     bind:{
+    //         html: '{searchStatus}'
+    //     },
     //     listeners: {
-    //         change: 'filterLog'
+    //         afterrender: 'updateSearchStatusBar'
     //     }
-    // }, {
-    //     xtype: 'checkbox',
-    //     name: 'searchBlock',
-    //     boxLabel: 'Block'.t(),
-    //     listeners: {
-    //         change: 'filterBlock'
-    //     }
-    },{
-        xtype: 'tbtext',
-        name: 'searchStatus',
-        html: 'Loading...'.t(),
-        listeners: {
-            afterrender: 'updateSearchStatusBar'
-        }
-    }],
+    // }],
 
     restrictedRecords: {
         keyMatch: 'reserved',
-        valueMatch: true,
-        // editableFields:[
-        //     "log",
-        //     "block"
-        // ]
+        valueMatch: true
     },
 
     recordModel: 'Ung.model.intrusionprevention.signature',
-    emptyRow: "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; gid:1; classtype:unknown; category:app-detect; content:\"matchme\"; nocase;)",
+    emptyRow: "alert tcp any any -> any any ( msg:\"new signature\"; classtype:unknown; sid:1999999; gid:1; content:\"matchme\"; nocase;)",
 
     columns: [{
         header: "Gid".t(),
@@ -144,37 +92,35 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     },{
         header: "Protocol".t(),
         dataIndex: 'protocol',
-        width: Renderer.protocolWidth
+        width: Renderer.protocolWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRenderer
     },{
         header: "Msg".t(),
         dataIndex: 'msg',
         width: Renderer.messageWidth,
         flex:3,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRenderer
     },{
         header: "Reference".t(),
         dataIndex: 'sid',
         width: Renderer.messageWidth,
         renderer: Ung.apps.intrusionprevention.MainController.referenceRenderer
     },{
-        header: "Log".t(),
-        dataIndex: 'log',
-        width: Renderer.booleanWidth,
-        // listeners: {
-        //     beforecheckchange: 'logBeforeCheckChange'
-        // }
+        header: "Recommended Action".t(),
+        dataIndex: 'recommendedAction',
+        width: Renderer.messageWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.recommendedActionRenderer
     },{
-        // xtype:'checkcolumn',
-        header: "Block".t(),
-        dataIndex: 'block',
-        width: Renderer.booleanWidth,
-        // listeners: {
-        //     beforecheckchange: 'blockBeforeCheckChange'
-        // }
+        header: "Rule Action".t(),
+        dataIndex: 'ruleMatch',
+        width: Renderer.messageWidth,
+        renderer: Ung.apps.intrusionprevention.MainController.signatureRuleActionRenderer
     }],
 
     editorXtype: 'ung.cmp.unintrusionsignaturesrecordeditor',
     editorFields: [{
         xtype:'numberfield',
+        name: 'gid',
         bind: '{record.gid}',
         fieldLabel: 'Gid'.t(),
         emptyText: '[enter gid]'.t(),
@@ -185,6 +131,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         }
     },{
         xtype:'numberfield',
+        name: 'sid',
         bind: '{record.sid}',
         fieldLabel: 'Sid'.t(),
         emptyText: '[enter sid]'.t(),
@@ -202,8 +149,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
             value: '{record.classtype}',
         },
         store: Ung.apps.intrusionprevention.Main.classtypes,
-        valueField: 'name',
-        displayField: 'name',
+        valueField: 'value',
+        displayField: 'value',
         forceSelection: true,
         listeners: {
             change: 'editorClasstypeChange'
@@ -218,10 +165,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         allowBlank: false,
         xtype: 'combo',
         queryMode: 'local',
-        valueField: 'name',
-        displayField: 'name'
-        // !!! what to do on change?
-        // change meta field for...
+        valueField: 'value',
+        displayField: 'value'
     },{
         xtype:'textfield',
         bind: '{record.msg}',
@@ -231,20 +176,21 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         listeners: {
             change: 'editorMsgChange'
         }
-    },{
-         xtype:'checkbox',
-         bind: '{record.log}',
-         fieldLabel: 'Log'.t(),
-         listeners: {
-             change: 'editorLogChange'
-         }
      },{
-         xtype:'checkbox',
-         bind: '{record.block}',
-         fieldLabel: 'Block'.t(),
-         listeners: {
-             change: 'editorBlockChange'
-         }
+        fieldLabel: 'Recommended Action'.t(),
+        editable: false,
+        xtype: 'combo',
+        queryMode: 'local',
+        bind:{
+            value: '{record.recommendedAction}',
+        },
+        store: Ung.apps.intrusionprevention.Main.signatureActions,
+        valueField: 'value',
+        displayField: 'description',
+        forceSelection: true,
+        listeners: {
+            change: 'editorRecommendedActionChange'
+        }
      },{
         xtype:'textareafield',
         bind: '{record.signature}',

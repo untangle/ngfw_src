@@ -152,8 +152,7 @@ Ext.define('Ung.cmp.Grid', {
     },
 
     listeners: {
-        beforeedit: 'beforeEdit',
-        filterchange: 'updateFilterStatus'
+        beforeedit: 'beforeEdit'
     },
 
     initComponent: function () {

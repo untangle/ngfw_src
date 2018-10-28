@@ -57,6 +57,10 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
+
+            var filters = store.getFilters().clone();
+            store.clearFilter(true);
+
             if (store.getModifiedRecords().length > 0 ||
                 store.getNewRecords().length > 0 ||
                 store.getRemovedRecords().length > 0 ||
@@ -65,10 +69,14 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
                     if (record.get('markedForDelete')) {
                         record.drop();
                     }
-                });
+                }, this, true);
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
             }
+
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
         });
 
         v.setLoading(true);

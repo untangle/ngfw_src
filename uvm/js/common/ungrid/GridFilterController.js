@@ -1,41 +1,94 @@
 Ext.define('Ung.cmp.GridFilterController', {
     extend: 'Ext.app.ViewController',
-
     alias: 'controller.ungridfilter',
 
-    filterEventList: function () {
+    control: {
+        'ungridfilter': {
+            afterrender: 'afterrender',
+            update: 'updateFilterSummary'
+        }
+    },
+
+    setStore: function(){
         var me = this,
-            field = me.getView(),
+            vm = me.getViewModel(),
+            store = me.getView().up('grid') ? me.getView().up('grid').getStore() : me.getView().up('panel').down('grid').getStore();
+
+        if(store == null || store.isEmptyStore){
+            me.setStoreTask.delay( 100 );
+        }else{
+            store.on(
+                'datachanged',
+                me.updateFilterSummary,
+                me,{
+                    args: [true]
+                });
+            store.on('filterchange', Ext.bind(me.updateFilterSummary, me));
+            me.updateFilterSummary();
+        }
+    },
+
+    afterrender: function(){
+        var me = this;
+        me.setStoreTask = new Ext.util.DelayedTask( me.setStore, me );
+        me.setStoreTask.delay( 100 );
+    },
+
+    changeFilterSearch: function (field) {
+        var me = this,
+            vm = me.getViewModel(),
             value = field.getValue(),
-            grid = field.up('panel').down('grid'),
-            cols = grid.getVisibleColumns(),
+            grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
+            store = grid.getStore(),
             routeFilter = field.up('panel').routeFilter;
 
         /**
-         * remove only the filters added through filer data box
+         * Remove only the filters added through filter data box
          * leave alone the grid filters from columns or routes
          */
-        grid.getStore().getFilters().each(function (filter) {
+        store.getFilters().each(function (filter) {
             if (filter.isGridFilter || filter.source === 'route') {
                 return;
             }
-            grid.getStore().removeFilter(filter);
+            // If filter string is not empty, allow event. Prevent if empty.
+            store.removeFilter(filter, value != '' ? true : false);
         });
-        // grid.getStore().clearFilter();
 
         // add route filter
         if (routeFilter) {
-            grid.getStore().getFilters().add(routeFilter);
+            store.getFilters().add(routeFilter);
         }
+        var grouping = grid.getView().findFeature('grouping');
 
         if (!value) {
             field.getTrigger('clear').hide();
+            vm.set('filterStyle', {fontWeight: 'normal'});
+            store.getFilters().add(function (record) {
+                return true;
+            });
+            if(grouping){
+                grouping.collapseAll();
+            }
             return;
         }
+        vm.set('filterStyle', {fontWeight: 'bold'});
 
-        var regex = Ext.String.createRegex(value, false, false, true);
+        this.createFilter(grid, store, routeFilter);
+        if(grouping){
+            grouping.collapseAll();
+        }
 
-        grid.getStore().getFilters().add(function (item) {
+        field.getTrigger('clear').show();
+    },
+
+    createFilter: function(grid, store, routeFilter){
+        var me = this,
+            vm = me.getViewModel(),
+            cols = grid.getVisibleColumns();
+
+        var regex = Ext.String.createRegex(vm.get('searchValue'), false, false, true);
+
+        store.getFilters().add(function (item) {
             var str = [], filtered = false;
 
             Ext.Array.each(cols, function (col) {
@@ -53,7 +106,30 @@ Ext.define('Ung.cmp.GridFilterController', {
             }
             return filtered;
         });
+    },
 
-        field.getTrigger('clear').show();
+    updateFilterSummary: function(checkReset){
+        var me = this,
+            view = this.getView(),
+            vm = this.getViewModel(),
+            store = this.getView().up('grid') ? this.getView().up('grid').getStore() : this.getView().up('panel').down('grid').getStore(),
+            count = store.getCount();
+
+        if( ( checkReset === true ) &&
+            ( store.getFilters().getCount() == 0) ){
+            /**
+             * We're told to check if the filter was reset by an external source.
+             * If so, and that external souce cleared filters, we should clear
+             * the filter text. 
+             */
+            view.down('[name=filterSearch]').setValue('');
+        }
+
+        vm.set('matchesFound', view.down('[name=filterSearch]').getValue() != '' && count ? true : false);
+        if(!count && ( store.getFilters().getCount() == 0)){
+            vm.set('filterSummary', '');
+        }else{
+            vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
+        }
     }
 });

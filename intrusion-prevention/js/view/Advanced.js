@@ -29,7 +29,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Advanced', {
         },
         items: [{
             xtype: 'numberfield',
-            fieldLabel: 'Maximum scan size (bytes)'.t(),
+            fieldLabel: 'Maximum scan depth (bytes)'.t(),
             labelWidth: 200,
             width: 300,
             allowBlank: false,

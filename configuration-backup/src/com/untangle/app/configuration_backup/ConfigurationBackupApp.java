@@ -38,7 +38,7 @@ public class ConfigurationBackupApp extends AppBase
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
     
     private static final String BACKUP_URL = "https://boxbackup.untangle.com/boxbackup/backup.php";
-    private static final Integer TIMEOUT_SEC = 1200;
+    private static final String TIMEOUT_SEC = "1200";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
@@ -253,7 +253,12 @@ public class ConfigurationBackupApp extends AppBase
     private void uploadBackup( File backupFile )
     {
             
-        String cmd = System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh" + " -u " + BACKUP_URL + " -v -k " + UvmContextFactory.context().getServerUID() + " -t " + TIMEOUT_SEC + " -f " + backupFile.getAbsoluteFile();
+        String[] cmd = new String[]{System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh",
+                                    "-u",BACKUP_URL,
+                                    "-v",
+                                    "-k",UvmContextFactory.context().getServerUID(),
+                                    "-t",TIMEOUT_SEC,
+                                    "-f",backupFile.getAbsoluteFile().toString()};
 
         logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + BACKUP_URL);
         logger.info("Backup command: " + cmd);
@@ -311,12 +316,14 @@ public class ConfigurationBackupApp extends AppBase
     private void uploadBackupToGoogleDrive( File backupFile )
     {
         String directory = null;
+        String[] cmd;
         if ( settings.getGoogleDriveDirectory() == null || "".equals(settings.getGoogleDriveDirectory()) )
-            directory = "";
+            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
+                               backupFile.getAbsoluteFile().toString()};
         else
-            directory = "-d \"" + settings.getGoogleDriveDirectory() + "\"";
-        String cmd = "/usr/share/untangle-google-connector/bin/google-drive-upload.py " + directory + " " + backupFile.getAbsoluteFile();
-
+            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
+                               "-d",settings.getGoogleDriveDirectory(),
+                               backupFile.getAbsoluteFile().toString()};
         Integer exitCode = 0;
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
