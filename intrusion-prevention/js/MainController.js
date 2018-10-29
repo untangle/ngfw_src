@@ -524,6 +524,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     }else{
                         actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
                     }
+                }else{
+                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', actionDescription).get('description');
                 }
             }else{
                 actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
