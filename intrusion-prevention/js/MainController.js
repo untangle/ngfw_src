@@ -45,6 +45,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     daemonMemory = daemonMemoryRegex.exec(line)[1];
                 }
             });
+            // console.log('status=');
+            // console.log(status);
+            // console.log(daemonMemory);
 
             vm.set({
                 lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
@@ -511,16 +514,15 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(rule != null){
                 var ruleAction = rule.get('action');
                 var signatureRecommendedAction = record.get('recommendedAction');
-                var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', ruleAction);
-                if( actionRecord != null ){
-                    actionDescription = actionRecord.get('description');
-                }
+                actionDescription = rule.get('action');
                 ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', ruleAction).get('description'));
                 if(ruleAction == 'default'){
                     actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', signatureRecommendedAction).get('description');
                 }else if(ruleAction == 'blocklog'){
                     if(signatureRecommendedAction == 'log'){
                         actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description');
+                    }else{
+                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
                     }
                 }
             }else{
