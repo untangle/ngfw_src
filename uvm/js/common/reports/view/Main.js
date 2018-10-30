@@ -79,16 +79,7 @@ Ext.define('Ung.view.reports.Main', {
                 store: 'reportstree',
                 useSplitButtons: false,
                 listeners: {
-                    selectionchange: function (el, node) {
-                        if (!node.get('url')) { return; }
-                        if (node) {
-                            if (node.get('url')) {
-                                Ung.app.redirectTo('#reports?' + node.get('url'));
-                            } else {
-                                Ung.app.redirectTo('#reports');
-                            }
-                        }
-                    }
+                    selectionchange: 'onSelectReport'
                 }
             }],
             responsiveConfig: {
