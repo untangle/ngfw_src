@@ -13,6 +13,8 @@ public interface DaemonManager
 
     public void decrementUsageCount(String daemonName);
 
+    public void reload(String daemonName);
+
     public int getUsageCount(String daemonName);
 
     public String getStatus(String daemonName);
