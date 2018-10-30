@@ -81,6 +81,7 @@ public class IntrusionPreventionApp extends AppBase
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IntrusionPreventionEventMonitor ipsEventMonitor;    
 
+    private static final String DAEMON_NAME = "suricata";
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
     private static final String GET_CONFIG = System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-config.py";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
@@ -514,7 +515,7 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount( "suricata" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( DAEMON_NAME );
         iptablesRules();
     }
 
@@ -553,8 +554,8 @@ public class IntrusionPreventionApp extends AppBase
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        UvmContextFactory.context().daemonManager().incrementUsageCount( "suricata" );
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( "suricata", 3600, "suricata");
+        UvmContextFactory.context().daemonManager().incrementUsageCount( DAEMON_NAME );
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( DAEMON_NAME, 3600, DAEMON_NAME);
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
     }
@@ -608,8 +609,7 @@ public class IntrusionPreventionApp extends AppBase
 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {
-                stop();
-                start();
+                UvmContextFactory.context().daemonManager().reload( DAEMON_NAME );
             }
         } catch (Exception exn) {
             logger.error("Could not save IPS settings", exn);
@@ -646,7 +646,7 @@ public class IntrusionPreventionApp extends AppBase
             }
             status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
-            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( "suricata" ) );
+            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ) );
         }catch (Exception e){
             logger.error("getStatus: jsonobject",e);
         }
@@ -704,7 +704,7 @@ public class IntrusionPreventionApp extends AppBase
     public void updateMetricsMemory()
     {
         long memory = 0;
-        String[] lines = UvmContextFactory.context().daemonManager().getStatus( "suricata" ).split("\\r?\\n");
+        String[] lines = UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ).split("\\r?\\n");
         for ( String line : lines ){
             Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
             if(matcher.find()){
