@@ -150,7 +150,7 @@ public class IntrusionPreventionApp extends AppBase
      * @return PipelineConector
      */
     @Override
-    protected void preInit()
+    protected void postInit()
     {
         String appID = this.getAppSettings().getId().toString();
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -527,24 +527,12 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        // File suricataConf = new File(SURICATA_CONF);
-        // File suricataDebianConf = new File(SNORT_DEBIAN_CONF);
-        // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
-        // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
-        //     suricataConf.lastModified() > suricataDebianConf.lastModified() ) {
-        //     logger.warn("Settings file newer than suricata debian configuration, Syncing...");
-        // }
-
         String rulesFilename = null;
         try{
             rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
             rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
         }catch(Exception e){
             logger.warn("preStart: Unable to get rulesFilename", e);
-        }
-
-        if(rulesFilename == null){
-            return;
         }
 
         File f = new File( rulesFilename );
@@ -570,6 +558,25 @@ public class IntrusionPreventionApp extends AppBase
     {
         iptablesRules();
 
+    }
+
+    /**
+     * When app removed, remove the rules file to force it be re-created if reinstaled.
+     */
+    @Override
+    protected void postDestroy(){
+        String rulesFilename = null;
+        try{
+            rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
+            rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+        }catch(Exception e){
+            logger.warn("preStart: Unable to get rulesFilename", e);
+        }
+
+        File f = new File( rulesFilename );
+        if(f.exists() ){
+            f.delete();
+        }
     }
 
     /**
