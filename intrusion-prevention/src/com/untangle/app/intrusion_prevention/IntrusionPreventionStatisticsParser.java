@@ -68,10 +68,11 @@ public class IntrusionPreventionStatisticsParser
                     return;
                 }
                 resultJson = resultJson.getJSONObject(STATISTICS_MESSAGE_KEY);
-                ipsApp.setDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
+                ipsApp.setMetricsDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
                 long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_REJECTED_KEY) + resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_BLOCKED_KEY);
-                ipsApp.setBlockCount( blocked);
-                ipsApp.setScanCount( resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_ACCEPTED_KEY) + blocked);
+                ipsApp.setMetricsBlockCount( blocked);
+                ipsApp.setMetricsScanCount( resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_ACCEPTED_KEY) + blocked);
+                ipsApp.updateMetricsMemory();
             }catch(Exception e){
                 logger.warn("IntrusionPreventionStatisticsParser, parse", e);
             }

@@ -64,10 +64,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 bind: '{signatureStatusDisable}'
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Memory usage".t(),
-                bind: '{memoryUsage}'
-            },{
-                xtype: 'displayfield',
                 fieldLabel: "Last check for updates".t(),
                 bind: '{lastUpdateCheck}'
             }, {
@@ -88,9 +84,14 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
         border: false,
         width: Math.ceil(Ext.getBody().getViewSize().width / 4),
         split: true,
-        layout: 'fit',
         items: [{
+            xtype: 'appmemory',
+            region: 'north',
+            height: 200,
+            split: true,
+        }, {
             xtype: 'appmetrics',
+            region: 'center'
         }],
         bbar: [{
             xtype: 'appremove',

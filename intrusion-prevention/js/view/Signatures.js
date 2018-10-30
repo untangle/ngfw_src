@@ -12,6 +12,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     region: 'center',
 
     sortableColumns: true,
+    enableColumnHide: true,
     plugins: [
         'gridfilters'
     ],
@@ -100,6 +101,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         width: Renderer.messageWidth,
         flex:3,
         renderer: Ung.apps.intrusionprevention.MainController.signatureRenderer
+    },{
+        header: "Signature".t(),
+        dataIndex: 'signature',
+        width: Renderer.messageWidth,
+        flex:3,
+        hidden: true
     },{
         header: "Reference".t(),
         dataIndex: 'sid',

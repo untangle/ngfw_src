@@ -77,10 +77,10 @@ Ext.define('Ung.util.Util', {
 
     humanReadableMap: {
         'P': 1125899906842624,
-        'T': 1125899906842624,
+        'T': 1099511627776,
         'G': 1073741824,
         'M': 1048576,
-        'K': 1014
+        'K': 1024
     },
     regexHumanReadable: /([-+]?[0-9]*\.?[0-9]+)\s*(.)/,
     humanReadabletoBytes: function(value){
