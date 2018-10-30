@@ -56,6 +56,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.util.StringUtil;
 
 /**
  * Manage Intrusion Prevention configuration.
@@ -74,6 +75,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final String STAT_SCAN = "scan";
     private static final String STAT_DETECT = "detect";
     private static final String STAT_BLOCK = "block";
+    private static final String STAT_MEMORY = "memory";
     
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
@@ -90,6 +92,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
     private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
+    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^\\s*Memory: (.+)");
 
     private boolean updatedSettingsFlag = false;
 
@@ -117,10 +120,12 @@ public class IntrusionPreventionApp extends AppBase
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new AppMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_MEMORY, I18nUtil.marktr("Memory usage")));
 
-        setScanCount(0);
-        setDetectCount(0);
-        setBlockCount(0);
+        setMetricsScanCount(0);
+        setMetricsDetectCount(0);
+        setMetricsBlockCount(0);
+        updateMetricsMemory();
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
@@ -521,7 +526,6 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        //File settingsFile = new File( getSettingsFileName() );
         // File suricataConf = new File(SURICATA_CONF);
         // File suricataDebianConf = new File(SNORT_DEBIAN_CONF);
         // if (settingsFile.lastModified() > suricataDebianConf.lastModified() ||
@@ -669,7 +673,7 @@ public class IntrusionPreventionApp extends AppBase
      *
      * @param value     New scan count value
      */
-    public void setScanCount( long value )
+    public void setMetricsScanCount( long value )
     {
         this.setMetric(STAT_SCAN, value);
     }
@@ -679,7 +683,7 @@ public class IntrusionPreventionApp extends AppBase
      *
      * @param value     New detect count value
      */
-    public void setDetectCount( long value)
+    public void setMetricsDetectCount( long value)
     {
         this.setMetric(STAT_DETECT, value);
     }
@@ -689,9 +693,25 @@ public class IntrusionPreventionApp extends AppBase
      *
      * @param value     New block count value
      */
-    public void setBlockCount( long value )
+    public void setMetricsBlockCount( long value )
     {
         this.setMetric(STAT_BLOCK, value);
+    }
+
+    /**
+     * Set the memory used by Suricata.
+     */
+    public void updateMetricsMemory()
+    {
+        long memory = 0;
+        String[] lines = UvmContextFactory.context().daemonManager().getStatus( "suricata" ).split("\\r?\\n");
+        for ( String line : lines ){
+            Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
+            if(matcher.find()){
+                memory = StringUtil.humanReadabletoLong(matcher.group(1));
+            }
+        }
+        this.setMetric(STAT_MEMORY, memory );
     }
 
     /**
@@ -728,16 +748,6 @@ public class IntrusionPreventionApp extends AppBase
             throw new RuntimeException("Failed to manage iptables rules");
         }
     }
-
-    // /**
-    //  * Get settings filename
-    //  *
-    //  * @return  Settings filename.
-    //  */
-    // public String getSettingsFileName()
-    // {
-    //     return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
-    // }
 
     /**
      * Set the update settings flag.
