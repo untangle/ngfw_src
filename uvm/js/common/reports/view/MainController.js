@@ -112,10 +112,12 @@ Ext.define('Ung.view.reports.MainController', {
     },
 
     /**
-     * Redirects (updates route) based on selected reports tree node
+     * Redirects (updates route) based on selected reports tree node or breadcrumb node
      */
     onSelectReport: function (el, node) {
         var me = this, vm = me.getViewModel(), condsQuery = '';
+
+        if (!node.get('url')) { return; }
 
         Ext.Array.each(vm.get('query.conditions'), function (c) {
             condsQuery += '&' + c.column + ':' + encodeURIComponent(c.operator) + ':' + encodeURIComponent(c.value) + ':' + (c.autoFormatValue === true ? 1 : 0);
@@ -126,7 +128,6 @@ Ext.define('Ung.view.reports.MainController', {
         } else {
             Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
         }
-        me.getView().down('breadcrumb').setSelection(node); // updates breadcrumb selection
         me.showNode(node);
     },
 
