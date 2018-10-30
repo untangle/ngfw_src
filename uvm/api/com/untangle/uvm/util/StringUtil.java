@@ -4,6 +4,11 @@
 
 package com.untangle.uvm.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * String utility class
  */
@@ -14,6 +19,17 @@ public class StringUtil
     /* Done this way to add magic like yes, no, etc */
     private final String TRUTH_CONSTANTS[] = { "true" };
     private final String FALSE_CONSTANTS[] = { "false" };
+
+    private static final Pattern HUMAN_READABLE_PATTERN = Pattern.compile("([-+]?[0-9]*\\.?[0-9]+)\\s*(.)");
+    private static final Map<String,Long> humanReadableMap;
+    static {
+        humanReadableMap = new HashMap<String,Long>();
+        humanReadableMap.put("P", 1125899906842624L);
+        humanReadableMap.put("T", 1099511627776L);
+        humanReadableMap.put("G", 1073741824L);
+        humanReadableMap.put("M", 1048576L);
+        humanReadableMap.put("K", 1024L);
+    }
 
     /**
      * Constructor
@@ -72,5 +88,24 @@ public class StringUtil
     public static StringUtil getInstance()
     {
         return INSTANCE;
+    }
+
+    /**
+     * Convert a human readable value like 1k to 1024.
+     *
+     * @param value
+     *        String value to convert.
+     * @return long of numeric value.
+     */
+    static public long humanReadabletoLong(String value){
+        double bytes = 0;
+        Matcher matcher = HUMAN_READABLE_PATTERN.matcher(value);
+        if(matcher.find()){
+            String q = matcher.group(2).toUpperCase();
+            if(humanReadableMap.get(q) != null){
+                bytes = Double.parseDouble(matcher.group(1)) * (double) humanReadableMap.get(q);
+            }
+        }
+        return Math.round(bytes);
     }
 }
