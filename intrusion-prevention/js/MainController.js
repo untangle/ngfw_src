@@ -35,24 +35,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
 
             var t1 = performance.now();
-            // console.log(t1-t0);
-
-            var status = result[0];
-            var daemonMemory = 0;
-            daemonMemoryRegex = /^\s+Memory: (.+)/;
-            status['daemonStatus'].split('\n').forEach(function(line){
-                if(daemonMemoryRegex.test(line)){
-                    daemonMemory = daemonMemoryRegex.exec(line)[1];
-                }
-            });
-            // console.log('status=');
-            // console.log(status);
-            // console.log(daemonMemory);
-
             vm.set({
                 lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
                 lastUpdate: (status['lastUpdate'] && status['lastUpdate'] !== null && status['lastUpdate'].time !== 0 ) ? Renderer.timestamp(status['lastUpdate']) : "Never".t(),
-                memoryUsage: Math.floor( ( Ung.util.Util.humanReadabletoBytes(daemonMemory)/ Ung.util.Util.humanReadabletoBytes(Ext.getStore('stats').getAt(0).get('totalMemory'))) * 100) + '%',
                 companyName: result[1],
                 system_memory: result[2],
                 settings: result[3],
