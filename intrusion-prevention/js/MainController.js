@@ -26,11 +26,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 params: {
                     type: "IntrusionPreventionSettings",
                     arg1: "signatures",
-                    arg2: vm.get('instance.id')
+                    arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null
                 },
                 timeout: 600000});
         }]).then(function(result){
-            if(Util.isDestroyed(me, vm)){
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
 
