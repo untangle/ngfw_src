@@ -12,7 +12,13 @@ Ext.define('Ung.cmp.GridFilterController', {
     setStore: function(){
         var me = this,
             vm = me.getViewModel(),
-            store = me.getView().up('grid') ? me.getView().up('grid').getStore() : me.getView().up('panel').down('grid').getStore();
+            v = me.getView();
+
+        if(v == null){
+            return;
+        }
+
+        var store = v.up('grid') ? v.up('grid').getStore() : v.up('panel').down('grid').getStore();
 
         if(store == null || store.isEmptyStore){
             me.setStoreTask.delay( 100 );
@@ -36,9 +42,15 @@ Ext.define('Ung.cmp.GridFilterController', {
 
     changeFilterSearch: function (field) {
         var me = this,
+            v = me.getView(),
             vm = me.getViewModel(),
-            value = field.getValue(),
-            grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
+            value = field.getValue();
+
+        if(v == null){
+            return;
+        }
+
+        var grid = v.up('grid') ? v.up('grid') : v.up('panel').down('grid'),
             store = grid.getStore(),
             routeFilter = field.up('panel').routeFilter;
 
@@ -110,9 +122,13 @@ Ext.define('Ung.cmp.GridFilterController', {
 
     updateFilterSummary: function(checkReset){
         var me = this,
-            view = this.getView(),
-            vm = this.getViewModel(),
-            store = this.getView().up('grid') ? this.getView().up('grid').getStore() : this.getView().up('panel').down('grid').getStore(),
+            v = this.getView(),
+            vm = this.getViewModel();
+
+        if(v == null){
+            return;
+        }
+        var store = v.up('grid') ? v.up('grid').getStore() : v.up('panel').down('grid').getStore(),
             count = store.getCount();
 
         if( ( checkReset === true ) &&
@@ -122,10 +138,10 @@ Ext.define('Ung.cmp.GridFilterController', {
              * If so, and that external souce cleared filters, we should clear
              * the filter text. 
              */
-            view.down('[name=filterSearch]').setValue('');
+            v.down('[name=filterSearch]').setValue('');
         }
 
-        vm.set('matchesFound', view.down('[name=filterSearch]').getValue() != '' && count ? true : false);
+        vm.set('matchesFound', v.down('[name=filterSearch]').getValue() != '' && count ? true : false);
         if(!count && ( store.getFilters().getCount() == 0)){
             vm.set('filterSummary', '');
         }else{
