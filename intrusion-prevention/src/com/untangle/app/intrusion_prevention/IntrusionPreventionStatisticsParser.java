@@ -65,8 +65,10 @@ public class IntrusionPreventionStatisticsParser
             try{
                 JSONObject resultJson = new JSONObject(result);
                 if(resultJson.get(STATISTICS_RETURN_KEY).toString().equals(STATISTICS_RETURN_INVALID)){
+                    ipsApp.setDaemonReady(false);
                     return;
                 }
+                ipsApp.setDaemonReady(true);
                 resultJson = resultJson.getJSONObject(STATISTICS_MESSAGE_KEY);
                 ipsApp.setMetricsDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
                 long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_REJECTED_KEY) + resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_BLOCKED_KEY);
