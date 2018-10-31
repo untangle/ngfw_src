@@ -96,11 +96,11 @@ public class IntrusionPreventionApp extends AppBase
     private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^\\s*Memory: (.+)");
 
     private boolean updatedSettingsFlag = false;
+    private boolean daemonReady = false;
 
     private final HookCallback networkSettingsChangeHook;
 
     private IntrusionPreventionSettings settings = null;
-
 
     private List<IPMaskedAddress> homeNetworks = null;
 
@@ -633,6 +633,8 @@ public class IntrusionPreventionApp extends AppBase
         try{
             status = new JSONObject();
 
+            status.put("daemonReady", daemonReady);
+
             String result = null;
             long timeSeconds = 0;
             try {
@@ -652,12 +654,9 @@ public class IntrusionPreventionApp extends AppBase
                 logger.warn( "Unable to get last update check.", e );
             }
             status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
-
-            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ) );
         }catch (Exception e){
             logger.error("getStatus: jsonobject",e);
         }
-
 
         return status;
     }
@@ -719,6 +718,15 @@ public class IntrusionPreventionApp extends AppBase
             }
         }
         this.setMetric(STAT_MEMORY, memory );
+    }
+
+    /**
+     * [setDaemonReady description]
+     * @param  ready [description]
+     * @return       [description]
+     */
+    public void setDaemonReady(boolean ready){
+        daemonReady = ready;
     }
 
     /**
