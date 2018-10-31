@@ -26,11 +26,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 params: {
                     type: "IntrusionPreventionSettings",
                     arg1: "signatures",
-                    arg2: vm.get('instance.id')
+                    arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null
                 },
                 timeout: 600000});
         }]).then(function(result){
-            if(Util.isDestroyed(me, vm)){
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
 
@@ -982,7 +982,17 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
         });
 
         vm.set('searchValue', '');
-        if(vm.get('filterConditions')[newValue].store){
+        if(vm.get('filterConditions')[newValue].store || vm.get('filterConditions')[newValue].values){
+            if(!vm.get('filterConditions')[newValue].store){
+                vm.get('filterConditions')[newValue].store = Ext.create('Ext.data.ArrayStore', {
+                    fields: [ 'value', 'description' ],
+                    sorters: [{
+                        property: 'value',
+                        direction: 'ASC'
+                    }],
+                    data: vm.get('filterConditions')[newValue].values
+                });
+            }
             vm.set('valuesData', Ext.Array.pluck(vm.get('filterConditions')[newValue].store.getRange(), 'data'));
             vm.set('filterValueDisabled', false);
             vm.set('filterSearchDisabled', true);
