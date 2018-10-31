@@ -175,6 +175,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
+     * Send configuration reload command to daemon.
+     *
+     * @param daemonName
+     *        The daemon name
+     */
+    public void reload(String daemonName)
+    {
+        DaemonObject daemonObject = getDaemonObject(daemonName);
+        synchronized (daemonObject) {
+            execDaemonControlEvil(daemonName, "reload");
+        }
+    }
+
+    /**
      * Used to set an optional additional command that should be executed after
      * the normal restart command is executed.
      * 
