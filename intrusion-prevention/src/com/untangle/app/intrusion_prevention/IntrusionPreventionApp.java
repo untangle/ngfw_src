@@ -721,9 +721,8 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
-     * [setDaemonReady description]
-     * @param  ready [description]
-     * @return       [description]
+     * Set daemonReady flag.
+     * @param  ready boolean true if daeon ready, false it not.
      */
     public void setDaemonReady(boolean ready){
         daemonReady = ready;
