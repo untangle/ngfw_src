@@ -92,7 +92,8 @@ public class IntrusionPreventionApp extends AppBase
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
-    private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
+    private static final String RESERVED_RULE_PREFIX = "reserved_";
+    private static final String CLASSIFICATION_ID_PREFIX = RESERVED_RULE_PREFIX + "classification_";
     private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^MemoryCurrent=(.+)");
 
     private boolean updatedSettingsFlag = false;
@@ -207,6 +208,17 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
+        /**
+         * Set the rule ids.
+         */
+        int idx = 0;
+        for (IntrusionPreventionRule rule : newSettings.getRules()) {
+            if(!rule.getId().startsWith(RESERVED_RULE_PREFIX)){
+                idx = ++idx;
+                rule.setId(Integer.toString(idx));
+            }
+        }
+
         /**
          * Save the settings
          */
