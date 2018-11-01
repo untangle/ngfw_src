@@ -93,7 +93,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
     private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
-    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^\\s*Memory: (.+)");
+    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^MemoryCurrent=(.+)");
 
     private boolean updatedSettingsFlag = false;
     private boolean daemonReady = false;
@@ -714,7 +714,7 @@ public class IntrusionPreventionApp extends AppBase
         for ( String line : lines ){
             Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
             if(matcher.find()){
-                memory = StringUtil.humanReadabletoLong(matcher.group(1));
+                memory = Long.parseLong(matcher.group(1));
             }
         }
         this.setMetric(STAT_MEMORY, memory );
