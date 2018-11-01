@@ -639,7 +639,9 @@ public class IntrusionPreventionApp extends AppBase
             long timeSeconds = 0;
             try {
                 result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
-                timeSeconds = Long.parseLong( result.trim());
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update.", e );
             }
@@ -648,8 +650,9 @@ public class IntrusionPreventionApp extends AppBase
             timeSeconds = 0;
             try {
                 result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
-                timeSeconds = Long.parseLong( result.trim());
-
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update check.", e );
             }
@@ -716,7 +719,9 @@ public class IntrusionPreventionApp extends AppBase
             if(matcher.find()){
                 String value = matcher.group(1);
                 if(!value.equals("18446744073709551615")){
-                    memory = Long.parseLong(value);
+                    try{
+                        memory = Long.parseLong(value);
+                    }catch(Exception e){}
                 }
             }
         }
