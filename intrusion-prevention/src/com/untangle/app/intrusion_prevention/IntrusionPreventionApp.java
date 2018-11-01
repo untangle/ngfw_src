@@ -714,7 +714,10 @@ public class IntrusionPreventionApp extends AppBase
         for ( String line : lines ){
             Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
             if(matcher.find()){
-                memory = Long.parseLong(matcher.group(1));
+                String value = matcher.group(1);
+                if(!value.equals("18446744073709551615")){
+                    memory = Long.parseLong(value);
+                }
             }
         }
         this.setMetric(STAT_MEMORY, memory );
