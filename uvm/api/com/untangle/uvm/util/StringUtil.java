@@ -103,7 +103,9 @@ public class StringUtil
         if(matcher.find()){
             String q = matcher.group(2).toUpperCase();
             if(humanReadableMap.get(q) != null){
-                bytes = Double.parseDouble(matcher.group(1)) * (double) humanReadableMap.get(q);
+                try{
+                    bytes = Double.parseDouble(matcher.group(1)) * (double) humanReadableMap.get(q);
+                }catch(Exception e){}
             }
         }
         return Math.round(bytes);

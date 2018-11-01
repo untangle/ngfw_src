@@ -119,7 +119,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
-     * Return status from systemctl.
+     * Return status from systemctl in machine readable format
      *
      * @param daemonName
      *        The daemon name
@@ -127,7 +127,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     public String getStatus(String daemonName)
     {
-        return execDaemonControlSafe(daemonName, "status", false);
+        return execDaemonControlSafe(daemonName, "show", false);
     }
 
     /**
