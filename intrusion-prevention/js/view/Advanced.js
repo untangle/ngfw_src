@@ -36,5 +36,23 @@ Ext.define('Ung.apps.intrusionprevention.view.Advanced', {
             minValue: 0,
             bind: '{settings.iptablesMaxScanSize}'
         }]
+    },{
+        title: 'Signature Options'.t(),
+        defaults: {
+            margin: '5 0'
+        },
+        items: [{
+            xtype: 'combo',
+            fieldLabel: 'Block action'.t(),
+            bind: '{settings.blockAction}',
+            queryMode: 'local',
+            editable: false,
+            displayField: 'description',
+            valueField: 'value',
+            store: [
+                ['reject', 'reject (default)'.t()],
+                ['drop', 'drop'.t()]
+            ]
+        }]
     }]
 });
