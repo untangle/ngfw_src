@@ -71,7 +71,12 @@ public class IntrusionPreventionStatisticsParser
                 ipsApp.setDaemonReady(true);
                 resultJson = resultJson.getJSONObject(STATISTICS_MESSAGE_KEY);
                 ipsApp.setMetricsDetectCount( resultJson.getJSONObject(STATISTICS_DETECT_KEY).getInt(STATISTICS_DETECT_LOG_KEY) );
-                long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_REJECTED_KEY) + resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_BLOCKED_KEY);
+                /**
+                 * If block action is reject (default), use the ips/rejected counter.
+                 * Otherwise for drop, use ips/blocked.
+                 * In reject mode, ips/blocked has values that seem to be wrong and not actually reflect reject actions.
+                 */
+                long blocked = resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(ipsApp.getSettings().getBlockAction().equals("drop") ? STATISTICS_IPS_BLOCKED_KEY : STATISTICS_IPS_REJECTED_KEY);
                 ipsApp.setMetricsBlockCount( blocked);
                 ipsApp.setMetricsScanCount( resultJson.getJSONObject(STATISTICS_IPS_KEY).getInt(STATISTICS_IPS_ACCEPTED_KEY) + blocked);
                 ipsApp.updateMetricsMemory();
