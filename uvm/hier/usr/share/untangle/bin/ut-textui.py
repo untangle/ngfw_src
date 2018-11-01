@@ -1583,7 +1583,7 @@ class UiApp(object):
                 "text": "Ping",
                 "class": Ping
             },{
-                "text": "Remote Suppport",
+                "text": "Remote Support",
                 "class": RemoteSupport
             },{
                 "text": "Upgrade",
