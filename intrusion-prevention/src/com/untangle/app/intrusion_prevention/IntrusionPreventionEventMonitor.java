@@ -142,6 +142,11 @@ class IntrusionPreventionEventMonitor implements Runnable
      */
     public void processEventFiles()
     {
+        /**
+         * Parse statistics immediately.
+         */
+        statisticsParser.parse( app );
+
         /*
          * Process log entries
          */
@@ -186,8 +191,6 @@ class IntrusionPreventionEventMonitor implements Runnable
                 it.remove();
             }
         }
-        
-        statisticsParser.parse( app );
 	}
     
     /**

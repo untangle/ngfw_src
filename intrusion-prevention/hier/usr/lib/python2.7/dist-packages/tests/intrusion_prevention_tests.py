@@ -59,6 +59,12 @@ def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_
         "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRule"
     };
 
+def wait_For_daemon_ready():
+    while True:
+        if app.getAppStatus()["daemonReady"] is True:
+            break
+        time.sleep(10)
+
 class IntrusionPreventionTests(unittest2.TestCase):
 
     @staticmethod
@@ -76,6 +82,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
+        while True:
+            if app.getAppStatus()["daemonReady"] is True:
+                break
+            time.sleep(10)
         appSettings = app.getSettings()
 
     def setUp(self):
@@ -114,7 +124,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings)
 
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
+        wait_For_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -130,48 +140,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'msg', "CompanySecret",
                                                'blocked', True,
                                                min_date=startTime)
-        del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings)
-        assert(found)
-
-    def test_030_rule_add(self):
-        """
-        Custom rule and rule to enable it
-        """
-        global app, appSettings
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        appSettings['signatures']['list'].append(create_signature( gid = "1", 
-                                                sid = "1999999", 
-                                                classtype="attempted-admin", 
-                                                category="app-detect",  
-                                                msg="CompanySecret", 
-                                                log=True, 
-                                                block=False, 
-                                                action="alert", 
-                                                type="tcp"))
-        # insert rule at the beginning of the list so other rules do not interfere. 
-        appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings)
-
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
-
-        startTime = datetime.now()
-        loopLimit = 4
-        # Send four requests for test rebustnewss 
-        while (loopLimit > 0):
-            time.sleep(1)
-            loopLimit -= 1
-            result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
-
-        app.forceUpdateStats()
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
-        found = global_functions.check_events( events.get('list'), 5,
-                                               'msg', "CompanySecret",
-                                               'blocked', True,
-                                               min_date=startTime)
-        app.setSettings(appSettings)
+        # del appSettings['rules']['list'][0] # delete the first rule just added
+        # app.setSettings(appSettings)
         assert(found)
 
     def test_031_rule_modify(self):
@@ -189,7 +159,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
             appSettings['rules']['list'][0]['action'] = "log"
             app.setSettings(appSettings)
 
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
+        wait_For_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -230,7 +200,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="log", rule_type="CATEGORY", type_value="scan"))
         app.setSettings(appSettings)
 
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
+        wait_For_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -269,7 +239,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings)
 
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
+        wait_For_daemon_ready()
 
         startTime = datetime.now()
         result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
@@ -307,9 +277,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings)
+        wait_For_daemon_ready()
 
-    	time.sleep(60)  # It can take a minute for sessions to start scanning
-
+        app.forceUpdateStats()
         pre_events_scan = global_functions.get_app_metric_value(app,"scan")
         pre_events_detect = global_functions.get_app_metric_value(app,"detect")
         pre_events_block = global_functions.get_app_metric_value(app,"block")
@@ -322,6 +292,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
             loopLimit -= 1
             result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
+        time.sleep(10)
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
         found = global_functions.check_events( events.get('list'), 5,
@@ -329,7 +300,6 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'blocked', True,
                                                min_date=startTime)
 
-        time.sleep(30)
         post_events_scan = global_functions.get_app_metric_value(app,"scan")
         post_events_detect = global_functions.get_app_metric_value(app,"detect")
         post_events_block = global_functions.get_app_metric_value(app,"block")

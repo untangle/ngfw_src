@@ -93,14 +93,14 @@ public class IntrusionPreventionApp extends AppBase
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
     private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
-    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^\\s*Memory: (.+)");
+    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^MemoryCurrent=(.+)");
 
     private boolean updatedSettingsFlag = false;
+    private boolean daemonReady = false;
 
     private final HookCallback networkSettingsChangeHook;
 
     private IntrusionPreventionSettings settings = null;
-
 
     private List<IPMaskedAddress> homeNetworks = null;
 
@@ -633,11 +633,15 @@ public class IntrusionPreventionApp extends AppBase
         try{
             status = new JSONObject();
 
+            status.put("daemonReady", daemonReady);
+
             String result = null;
             long timeSeconds = 0;
             try {
                 result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
-                timeSeconds = Long.parseLong( result.trim());
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update.", e );
             }
@@ -646,18 +650,16 @@ public class IntrusionPreventionApp extends AppBase
             timeSeconds = 0;
             try {
                 result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
-                timeSeconds = Long.parseLong( result.trim());
-
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update check.", e );
             }
             status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
-
-            status.put("daemonStatus", UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ) );
         }catch (Exception e){
             logger.error("getStatus: jsonobject",e);
         }
-
 
         return status;
     }
@@ -715,10 +717,23 @@ public class IntrusionPreventionApp extends AppBase
         for ( String line : lines ){
             Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
             if(matcher.find()){
-                memory = StringUtil.humanReadabletoLong(matcher.group(1));
+                String value = matcher.group(1);
+                if(!value.equals("18446744073709551615")){
+                    try{
+                        memory = Long.parseLong(value);
+                    }catch(Exception e){}
+                }
             }
         }
         this.setMetric(STAT_MEMORY, memory );
+    }
+
+    /**
+     * Set daemonReady flag.
+     * @param  ready boolean true if daeon ready, false it not.
+     */
+    public void setDaemonReady(boolean ready){
+        daemonReady = ready;
     }
 
     /**
