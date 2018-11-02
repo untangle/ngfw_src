@@ -129,6 +129,10 @@ class IntrusionPreventionRule:
             return sourceValue > targetValue
         elif comparator == ">=":
             return sourceValue >= targetValue
+        elif comparator == "substr":
+            return str(targetValue) in str(sourceValue)
+        elif comparator == "!substr":
+            return not str(targetValue) in str(sourceValue)
 
         return False
 
