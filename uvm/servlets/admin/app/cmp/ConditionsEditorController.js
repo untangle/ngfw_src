@@ -602,11 +602,10 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             var comparatorType = condition.comparator != undefined ? condition.comparator : 'invert';
 
             var comparator = null;
-            Ung.cmp.ConditionsEditor.comparators.forEach(function(c){
+            view.comparators.forEach( function(c){
                 if(c.name == comparatorType){
                     comparator = c;
                 }
-
             });
 
             if(comparator == null){
@@ -680,7 +679,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         switch(conditionField){
                             case 'comparator':
                                 var comparator = null;
-                                Ung.cmp.ConditionsEditor.comparators.forEach(function(c){
+                                view.comparators.forEach(function(c){
                                     if(c.name == view.conditions[conditionName].comparator){
                                         comparator = c;
                                     }
