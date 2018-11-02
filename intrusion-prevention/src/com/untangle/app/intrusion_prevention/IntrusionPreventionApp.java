@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
@@ -92,9 +94,12 @@ public class IntrusionPreventionApp extends AppBase
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
-    private static final String CLASSIFICATION_ID_PREFIX = "reserved_classification_";
-    private static final Pattern SYSTEMCTL_STATUS_MEMORY_PATTERN = Pattern.compile("^MemoryCurrent=(.+)");
+    private static final String RESERVED_RULE_PREFIX = "reserved_";
+    private static final String CLASSIFICATION_ID_PREFIX = RESERVED_RULE_PREFIX + "classification_";
+    private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
+    private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
 
+    private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
     private boolean daemonReady = false;
 
@@ -207,6 +212,17 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
+        /**
+         * Set the rule ids.
+         */
+        int idx = 0;
+        for (IntrusionPreventionRule rule : newSettings.getRules()) {
+            if(!rule.getId().startsWith(RESERVED_RULE_PREFIX)){
+                idx = ++idx;
+                rule.setId(Integer.toString(idx));
+            }
+        }
+
         /**
          * Save the settings
          */
@@ -546,6 +562,7 @@ public class IntrusionPreventionApp extends AppBase
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring( DAEMON_NAME, 3600, DAEMON_NAME);
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
+        updateMetricsMemory();
     }
 
     /**
@@ -709,20 +726,37 @@ public class IntrusionPreventionApp extends AppBase
 
     /**
      * Set the memory used by Suricata.
+     *
+     * In theory getting systemctl status for suricata will give us the resident memory we
+     * want under the MemoryCurrent field.
+     *
+     * Except systemctl under a 3.x kernel will not return the memory even with
+     * memory auditing enabled.  So we need to work to get the kernel page size
+     * and the number of resident memory pages from proc.
+     *
      */
     public void updateMetricsMemory()
     {
         long memory = 0;
         String[] lines = UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ).split("\\r?\\n");
         for ( String line : lines ){
-            Matcher matcher = SYSTEMCTL_STATUS_MEMORY_PATTERN.matcher(line);
+            Matcher matcher = SYSTEMCTL_STATUS_MAINPID.matcher(line);
             if(matcher.find()){
-                String value = matcher.group(1);
-                if(!value.equals("18446744073709551615")){
-                    try{
-                        memory = Long.parseLong(value);
-                    }catch(Exception e){}
-                }
+                String mainPid = matcher.group(1);
+                try{
+                    if(this.kernelPageSize == 0){
+                        for(String smapLine : new String(Files.readAllBytes(Paths.get(new File("/proc/" + mainPid + "/smaps").getPath()))).split("\\r?\\n")){
+                            Matcher smapMatcher = SMAP_KERNEL_PAGE_SIZE.matcher(smapLine);
+                            if(smapMatcher.find()){
+                                this.kernelPageSize = StringUtil.humanReadabletoLong(smapMatcher.group(1));
+                                break;
+                            }
+                        }
+                    }
+                    File statmFile = new File("/proc/" + mainPid + "/statm");
+                    String value = new String(Files.readAllBytes(Paths.get(statmFile.getPath()))).split(" ")[1];
+                    memory = Long.parseLong(value) * this.kernelPageSize;
+                }catch(Exception e){}
             }
         }
         this.setMetric(STAT_MEMORY, memory );
