@@ -106,6 +106,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         vm.set('signaturesList', signatures);
 
+        var collect = {
+            lnet: {}, 
+            lport: {}, 
+            direction: {}, 
+            rnet: {}, 
+            rport: {}
+        };
+
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
         var protocols = conditions['PROTOCOL'].values;
@@ -121,7 +129,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(found == false){
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
+            collect['lnet'][signature.get('lnet')] = true;
+            collect['lport'][signature.get('lport')] = true;
+            collect['direction'][signature.get('direction')] = true;
+            collect['rnet'][signature.get('rnet')] = true;
+            collect['rport'][signature.get('rport')] = true;
+
         });
+        console.log(collect);
         v.setLoading(false);
     },
 
@@ -548,6 +563,16 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         return conditions;
     },
 
+    getComparators: function(){
+        var comparators = {};
+        this.getView().editorFields.forEach( function(field){
+            if(field.xtype == 'ipsrulesconditionseditor'){
+                comparators = field.comparators;
+            }
+        });
+        return comparators;
+    },
+
     updateRuleStatus: function(){
         var me = this,
             v = me.getView(),
@@ -970,7 +995,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             conditionComparator =vm.get('filterConditions')[newValue].comparator,
             currentComparator = vm.get('comparator');
 
-        Ung.cmp.ConditionsEditor.comparators.forEach( function(comparator){
+        view.up('apppanel').down('[name=rules]').getController().getComparators().forEach(function(comparator){
             if(comparator['name'] == conditionComparator){
                 vm.set('comparatorsData', comparator.store);
                 var found = false;
@@ -1679,6 +1704,10 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 return sourceValue > targetValue;
             case ">=":
                 return sourceValue >= targetValue;
+            case "substr":
+                return sourceValue.toString().indexOf(targetValue.toString()) != -1;
+            case "!substr":
+                return sourceValue.toString().indexOf(targetValue.toString()) == -1;
         }
 
         return false;
