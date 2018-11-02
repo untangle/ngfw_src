@@ -754,6 +754,10 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
             return false;
         }
         var record = vm.get('record');
+        var content = record.getOption('content');
+        if((content == "matchme" && oldValue == "new signature") || ( content == oldValue)){
+            record.setOption('content', newValue);
+        }
         record.setOption('msg', newValue);
         record.set('signature', record.build());
         me.setValidation(true);
