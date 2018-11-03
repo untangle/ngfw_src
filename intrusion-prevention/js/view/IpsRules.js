@@ -120,6 +120,28 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         },
         javaClassValue: 'com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition',
 
+        comparators:[{
+            name: 'numeric',
+            defaultValue: '=',
+            store:  [[
+                '<', '<'.t()
+            ],[
+                '<=', '<='.t()
+            ],[
+                '=', '='.t()
+            ],[
+                '!=', '!='.t()
+            ],[
+                '>=', '>='.t()
+            ],[
+                '>', '>'.t(),
+            ],[
+                'substr', 'Contains'.t()
+            ],[
+                '!substr', 'Does not contain'.t()
+            ]]
+        }],
+
         conditions: [{
             name: "SID",
             displayName: "Signature Identifier".t(),

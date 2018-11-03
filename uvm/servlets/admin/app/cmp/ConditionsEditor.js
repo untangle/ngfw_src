@@ -326,12 +326,26 @@ Ext.define('Ung.cmp.ConditionsEditor', {
 
         },
         build: function(config){
-
+            var comparators = Ext.clone(Ung.cmp.ConditionsEditor.comparators);
+            var found;
             for(var key in config){
-                if(key == 'conditions'){
+                if(key == 'comparators'){
+                    config[key].forEach( function(comparator){
+                        found = false;
+                        comparators.forEach(function(existingComparator, index){
+                            if(existingComparator['name'] == comparator['name']){
+                                found = true;
+                                comparators[index] = comparator;
+                            }
+                        });
+                        if(found == false){
+                            comparators.push(comparator);
+                        }
+                    });
+                }else if(key == 'conditions'){
                     var conditionsOrder = [];
                     var conditions = [];
-                    var found = false;
+                    found = false;
                     config[key].forEach( function(configCondition){
                         configCondition = typeof(configCondition) == 'object' ? configCondition : {name: configCondition};
 
@@ -367,6 +381,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     }
                 }
             }
+            config['comparators'] = comparators;
             return Ext.apply({}, config);
         },
 
@@ -392,7 +407,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             ],[
                 '>=', '>='.t()
             ],[
-                '>', '>'.t(),
+                '>', '>'.t()
             ]]
         },{
             name: 'text',
