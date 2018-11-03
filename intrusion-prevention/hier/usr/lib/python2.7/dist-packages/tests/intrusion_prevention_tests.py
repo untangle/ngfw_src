@@ -59,7 +59,8 @@ def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_
         "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRule"
     };
 
-def wait_For_daemon_ready():
+def wait_for_daemon_ready():
+    time.sleep(1)
     while True:
         if app.getAppStatus()["daemonReady"] is True:
             break
@@ -82,10 +83,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
         app.start()
-        while True:
-            if app.getAppStatus()["daemonReady"] is True:
-                break
-            time.sleep(10)
+        wait_for_daemon_ready()
         appSettings = app.getSettings()
 
     def setUp(self):
@@ -122,9 +120,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 type="tcp"))
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
 
-        wait_For_daemon_ready()
+        wait_for_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -141,7 +139,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'blocked', True,
                                                min_date=startTime)
         # del appSettings['rules']['list'][0] # delete the first rule just added
-        # app.setSettings(appSettings)
+        # app.setSettings(appSettings, True)
         assert(found)
 
     def test_031_rule_modify(self):
@@ -157,9 +155,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping as test test_030_rule_add is needed')
         else:
             appSettings['rules']['list'][0]['action'] = "log"
-            app.setSettings(appSettings)
+            app.setSettings(appSettings, True)
 
-        wait_For_daemon_ready()
+        wait_for_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -176,7 +174,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'blocked', False,
                                                min_date=startTime)
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
         assert(found)
 
     def test_052_functional_icmp_log(self):
@@ -198,9 +196,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="log", rule_type="CATEGORY", type_value="scan"))
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
 
-        wait_For_daemon_ready()
+        wait_for_daemon_ready()
 
         startTime = datetime.now()
         loopLimit = 4
@@ -217,7 +215,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                'blocked', False,
                                                min_date=startTime)
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
         assert(found)
 
     def test_054_functional_udp_block(self):
@@ -237,9 +235,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
 
-        wait_For_daemon_ready()
+        wait_for_daemon_ready()
 
         startTime = datetime.now()
         result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
@@ -252,7 +250,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                min_date=startTime)
 
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
         assert(found)
 
     def test_060_app_stats(self):
@@ -276,8 +274,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
                                                 type="tcp"))
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings)
-        wait_For_daemon_ready()
+        app.setSettings(appSettings, True)
+        wait_for_daemon_ready()
 
         app.forceUpdateStats()
         pre_events_scan = global_functions.get_app_metric_value(app,"scan")
@@ -305,7 +303,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         post_events_block = global_functions.get_app_metric_value(app,"block")
 
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings)
+        app.setSettings(appSettings, True)
         assert(found)
 
         print("pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan)))
