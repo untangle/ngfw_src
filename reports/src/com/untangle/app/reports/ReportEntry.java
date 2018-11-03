@@ -442,16 +442,16 @@ public class ReportEntry implements Serializable, JSONString
 
         for ( String distinctValue : distinctValues ) {
             if ( distinctValue == null ) {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END), null) " +
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \"None\"";
             } else if ( distinctValue.trim().equals("") ) {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " +
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \" \"";
             } else {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " +
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \"" + distinctValue.replaceAll("\"","") + "\"";
             }
         }
