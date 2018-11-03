@@ -98,6 +98,8 @@ public class IntrusionPreventionApp extends AppBase
     private static final String CLASSIFICATION_ID_PREFIX = RESERVED_RULE_PREFIX + "classification_";
     private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
     private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
+    private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
+
 
     private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
@@ -212,6 +214,20 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
+        setSettings(newSettings, false);
+    }
+
+
+    /**
+     * Set intrusion prevention settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     * @param block
+     *      Daemon blocking to send to reconfigure.
+     */
+    public void setSettings(final IntrusionPreventionSettings newSettings, boolean block)
+    {
         /**
          * Set the rule ids.
          */
@@ -241,7 +257,7 @@ public class IntrusionPreventionApp extends AppBase
         this.settings = newSettings;
         try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
 
-        this.reconfigure();
+        this.reconfigure(block);
     }
 
     /**
@@ -553,7 +569,7 @@ public class IntrusionPreventionApp extends AppBase
 
         File f = new File( rulesFilename );
         if( !f.exists() ){
-            reconfigure();
+            reconfigure(false);
         }
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
@@ -598,8 +614,11 @@ public class IntrusionPreventionApp extends AppBase
 
     /**
      * Reconfigure IPS.
+     *
+     * @param block
+     *        Boolean if true, use suricatasc which blocks.  Otherwise, just send the signal to suricata.
      */
-    public void reconfigure()
+    public void reconfigure(boolean block)
     {
         if(this.settings == null){
             return;
@@ -633,7 +652,21 @@ public class IntrusionPreventionApp extends AppBase
 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {
-                UvmContextFactory.context().daemonManager().reload( DAEMON_NAME );
+                if(block){
+                    result = UvmContextFactory.context().execManager().execOutput(RELOAD_RULES_COMMAND);
+                    try{
+                        String lines[] = result.split("\\r?\\n");
+                        for ( String line : lines ){
+                            if( line.trim().length() > 1 ){
+                                logger.warn("reconfigure: reload suricata rules: " + line);
+                            }
+                        }
+                    }catch( Exception e ){
+                        logger.warn( "Unable to reload suricata rules:", e );
+                    }
+                }else{
+                    UvmContextFactory.context().daemonManager().reload( DAEMON_NAME );
+                }
             }
         } catch (Exception exn) {
             logger.error("Could not save IPS settings", exn);
@@ -1157,7 +1190,7 @@ public class IntrusionPreventionApp extends AppBase
         }
         if( sameNetworks == false ){
             this.homeNetworks = newHomeNetworks;
-            this.reconfigure();
+            this.reconfigure(false);
         }
     }
 
