@@ -51,28 +51,36 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 fieldLabel: "Signatures available".t(),
                 bind:{
                     value: '{signatureStatusTotal}',
-                    hidden: '{signatureStatusTotal == ""}',
+                    hidden: '{signatureStatusTotal == 0}',
                 }
             },{
                 xtype: 'displayfield',
                 fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'log').get('description'),
                 bind: {
                     value: '{signatureStatusLog}',
-                    hidden: '{signatureStatusLog == ""}'
+                    hidden: '{signatureStatusLog == 0}'
                 }
             },{
                 xtype: 'displayfield',
                 fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description'),
                 bind: {
                     value: '{signatureStatusBlock}',
-                    hidden: '{signatureStatusBlock == ""}'
+                    hidden: '{signatureStatusBlock == 0}'
                 }
             },{
                 xtype: 'displayfield',
                 fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description'),
                 bind: {
                     value: '{signatureStatusDisable}',
-                    hidden: '{signatureStatusDisable == ""}'
+                    hidden: '{signatureStatusDisable == 0}'
+                }
+            }, {
+                xtype: 'component',
+                style: 'background-color: yellow;',
+                padding: '10px 0px 10px 0px',
+                bind:{
+                    html: Ext.String.format("{0}Warning:{1} No signatures are enabled for Log or Block.".t(), '<b>', '</b>'),
+                    hidden: '{signatureStatusTotal == 0 || signatureStatusTotal != signatureStatusDisable}'
                 }
             }, {
                 xtype: 'displayfield',

@@ -5,10 +5,10 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
 
     viewModel: {
         data: {
-            signatureStatusTotal: '',
-            signatureStatusLog: '',
-            signatureStatusBlock: '',
-            signatureStatusDisable: '',
+            signatureStatusTotal: 0,
+            signatureStatusLog: 0,
+            signatureStatusBlock: 0,
+            signatureStatusDisable: 0,
             lastUpdateCheck: '',
             lastUpdate: ''
         },
