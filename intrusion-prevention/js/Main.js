@@ -9,7 +9,8 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             signatureStatusLog: '',
             signatureStatusBlock: '',
             signatureStatusDisable: '',
-            memoryUsage: '',
+            lastUpdateCheck: '',
+            lastUpdate: ''
         },
         stores: {
             rules: {

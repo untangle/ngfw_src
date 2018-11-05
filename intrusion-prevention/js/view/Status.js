@@ -49,27 +49,45 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             items: [{
                 xtype: 'displayfield',
                 fieldLabel: "Signatures available".t(),
-                bind: '{signatureStatusTotal}'
+                bind:{
+                    value: '{signatureStatusTotal}',
+                    hidden: '{signatureStatusTotal == ""}',
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures set to log".t(),
-                bind: '{signatureStatusLog}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'log').get('description'),
+                bind: {
+                    value: '{signatureStatusLog}',
+                    hidden: '{signatureStatusLog == ""}'
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures set to block".t(),
-                bind: '{signatureStatusBlock}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description'),
+                bind: {
+                    value: '{signatureStatusBlock}',
+                    hidden: '{signatureStatusBlock == ""}'
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures disabled".t(),
-                bind: '{signatureStatusDisable}'
-            },{
-                xtype: 'displayfield',
-                fieldLabel: "Last check for updates".t(),
-                bind: '{lastUpdateCheck}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description'),
+                bind: {
+                    value: '{signatureStatusDisable}',
+                    hidden: '{signatureStatusDisable == ""}'
+                }
             }, {
                 xtype: 'displayfield',
                 fieldLabel: "Last update".t(),
-                bind: '{lastUpdate}'
+                bind: {
+                    value: '{lastUpdate}',
+                    hidden: '{lastUpdate == ""}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: '&nbsp;'.repeat(5) + "Last check".t(),
+                bind: {
+                    value: '{lastUpdateCheck}',
+                    hidden: '{lastUpdateCheck == ""}'
+                }
             }, {
                 xtype: 'component',
                 bind:{
