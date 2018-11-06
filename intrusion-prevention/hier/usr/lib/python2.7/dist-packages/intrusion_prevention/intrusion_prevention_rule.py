@@ -150,7 +150,6 @@ class IntrusionPreventionRule:
             sourceValues =  re.split(r'\s*,\s*', sourceValue[1:-1])
         else:
             sourceValues.append(sourceValue)
-#        print sourceValues
 
         targetPrefix = 32;
         match_signature = re.search(IntrusionPreventionRule.ipv4NetworkRegex, targetValue)
@@ -187,14 +186,34 @@ class IntrusionPreventionRule:
         return False
 
     def matches_port(self, sourceValue, comparator, targetValue):
+        equal_comparator = comparator[-1] == '='
+
+        sourceValues = [];
+        if sourceValue[0] == '[':
+            sourceValues =  re.split(r'\s*,\s*', sourceValue[1:-1])
+        else:
+            sourceValues.append(sourceValue)
+
+        record = None
+        for value in sourceValues:
+            matchValue = value
+
+            if equal_comparator:
+                if matchValue == targetValue:
+                    record = value
+                    break
+            else:
+                if targetValue in value:
+                    record = value
+
         if comparator == "=":
-            return sourceValue == targetValue
+            return record != None
         elif comparator == "!=":
-            return sourceValue != targetValue
+            return record == None
         elif comparator == "substr":
-            return targetValue in sourceValue
+            return record != None
         elif comparator == "!substr":
-            return not targetValue in sourceValue
+            return record == None
 
         return False
 
