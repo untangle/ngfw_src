@@ -49,27 +49,53 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             items: [{
                 xtype: 'displayfield',
                 fieldLabel: "Signatures available".t(),
-                bind: '{signatureStatusTotal}'
+                bind:{
+                    value: '{signatureStatusTotal}',
+                    hidden: '{signatureStatusTotal == 0}',
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures set to log".t(),
-                bind: '{signatureStatusLog}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'log').get('description'),
+                bind: {
+                    value: '{signatureStatusLog}',
+                    hidden: '{signatureStatusLog == 0}'
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures set to block".t(),
-                bind: '{signatureStatusBlock}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description'),
+                bind: {
+                    value: '{signatureStatusBlock}',
+                    hidden: '{signatureStatusBlock == 0}'
+                }
             },{
                 xtype: 'displayfield',
-                fieldLabel: "Signatures disabled".t(),
-                bind: '{signatureStatusDisable}'
-            },{
-                xtype: 'displayfield',
-                fieldLabel: "Last check for updates".t(),
-                bind: '{lastUpdateCheck}'
+                fieldLabel: '&nbsp;'.repeat(5) + Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description'),
+                bind: {
+                    value: '{signatureStatusDisable}',
+                    hidden: '{signatureStatusDisable == 0}'
+                }
+            }, {
+                xtype: 'component',
+                style: 'background-color: yellow;',
+                padding: '10px 0px 10px 0px',
+                bind:{
+                    html: Ext.String.format("{0}Warning:{1} No signatures are enabled for Log or Block.".t(), '<b>', '</b>'),
+                    hidden: '{signatureStatusTotal == 0 || signatureStatusTotal != signatureStatusDisable}'
+                }
             }, {
                 xtype: 'displayfield',
                 fieldLabel: "Last update".t(),
-                bind: '{lastUpdate}'
+                bind: {
+                    value: '{lastUpdate}',
+                    hidden: '{lastUpdate == ""}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: '&nbsp;'.repeat(5) + "Last check".t(),
+                bind: {
+                    value: '{lastUpdateCheck}',
+                    hidden: '{lastUpdateCheck == ""}'
+                }
             }, {
                 xtype: 'component',
                 bind:{
