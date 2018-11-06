@@ -618,17 +618,12 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     bind: {
                         value: comparatorBind
                     },
-                    store: comparator.store
-                    // listeners: {
-                    //     change: function(combo, newValue, oldValue){
-                    //         console.log('change');
-                    //         console.log(arguments);
-                    //         // Ext.QuickTips.register({
-                    //         //     target: this.getEl(),
-                    //         //     text: c.getDisplayValue()
-                    //         // });
-                    //     },
-                    // }
+                    store: comparator.store,
+                    listeners: {
+                        change: function(combo, newValue, oldValue){
+                            combo.up('conditionseditor').getController().forceValidate();
+                        }
+                    }
                 });
             }
 
