@@ -44,8 +44,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 isExpertMode: result[4]
             });
 
-            v.setLoading(false);
-            me.buildSignatures( result[5], vm.get('settings'));
+            v.setLoading('Loading signatures...'.t());
+            var dt = new Ext.util.DelayedTask( Ext.bind(function(){
+                me.buildSignatures(result[5], vm.get('settings'));
+            }, me));
+            dt.delay(100);
             vm.set('panel.saveDisabled', false);
 
         }, function (ex) {
@@ -59,7 +62,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     buildSignatures: function(reserved, settings){
         var me = this, v = this.getView(), vm = this.getViewModel();
-        v.setLoading('Loading signatures...'.t());
 
         var t0 = performance.now();
         var t1 = performance.now();
@@ -72,6 +74,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var signatures = [];
         reserved.responseText.split("\n").forEach(function(line){
             // if(category == 'attack_response'){
+            // if(category == 'games'){
             //     return false;
             // }
             line = line.trim();
@@ -1676,6 +1679,12 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'text':
                     match = me.matchesText(targetConditionValue, condition.comparator, condition.value.toLowerCase());
                     break;
+                case 'network':
+                    match = me.matchesNetwork(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    break;
+                case 'port':
+                    match = me.matchesPort(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    break;
                 default:
                     // !!! throw exception
                     console.log('unknown comparator:' + editorCondition.comparator);
@@ -1713,6 +1722,18 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
+    matchesIn: function(sourceValue, comparator, targetValue){
+        var isIn = Ext.Array.contains(targetValue, sourceValue);
+
+        if(comparator == "="){
+            return isIn;
+        }else if(comparator == "!="){
+            return !isIn;
+        }
+
+        return false;
+    },
+
     matchesText: function(sourceValue, comparator, targetValue){
         switch(comparator){
             case "=":
@@ -1728,18 +1749,108 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
-    matchesIn: function(sourceValue, comparator, targetValue){
-        var isIn = Ext.Array.contains(targetValue, sourceValue);
+    ipv4NetworkToLong: function(ip, prefix){
+        if(prefix == 0){
+            return 0;
+        }
+        var network = 0;
+        ip.split('.').forEach( function(octet){
+            network <<= 8;
+            network += parseInt(octet, 10);
+        });
+        return ( (network >>> 0) & ( ( ~0 << (32 - prefix)) >>> 0) );
+    },
 
-        // console.log(isIn);
+    /**
+     * Match network as follows:
+     *
+     * = or !=              Exact string match or signature contains exact network match.
+     * substr or !substr    Text substring match.
+     *
+     * If sourceValue is a list, any match of the list is considered a valid match.
+     * For example, if the list contains a lit of IP addresses like [1.2.3.4, 2.3.4.5], a targetValue
+     * of 1.2.3.0/24 or 2.0.0.0/8 would match even though it's not matching the entire list.
+     *
+     * @param  {[type]} sourceValue Either a single value or a list if it is inside square brackets.
+     * @param  {[type]} comparator  =, !=, substr, ~substr
+     * @param  {[type]} targetValue Value to check.
+     * @return {[type]}             true if match, false if not.
+     */
+    matchesNetwork: function(sourceValue, comparator, targetValue){
+        var equalComparator = comparator.substring(comparator.length-1) == '=';
 
-        if(comparator == "="){
-            return isIn;
-        }else if(comparator == "!="){
-            return !isIn;
+        var matches;
+        var sourceValues = [];
+        if(sourceValue[0] == '['){
+            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        }else{
+            sourceValues.push(sourceValue);
+        }
+
+        var targetPrefix = 32;
+        if( equalComparator &&
+            Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(targetValue)){
+            matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(targetValue);
+            targetPrefix = matches[4] ? parseInt(matches[4], 10) : 32;
+            targetValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
+        }
+
+        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+            var matchValue = value;
+            if(equalComparator){
+                if(Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(value)){
+                    matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(value);
+                    matchValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
+                    // console.log('compare: ' + matches[1] + ' - ' + matchValue + ' vs ' + targetValue);
+                }
+                if(matchValue == targetValue){
+                    // console.log('equal match');
+                    return true;
+                }
+            }else{
+                if(value.indexOf(targetValue) != -1 ){
+                    // console.log('substr match');
+                    return true;
+                }
+            } 
+        }, this) );
+
+        switch(comparator){
+            case "=":
+                return record != null;
+            case "!=":
+                return record == null;
+            case "substr":
+                return record != null;
+            case "!substr":
+                return record == null;
         }
 
         return false;
+    },
+
+    matchesPort: function(sourceValue, comparator, targetValue){
+        // sourceValue matches portbegin
+        // sourceValue matches portbegin-portend or por1,port2,po34, etc
+        //  convert to list
+        //  = is exact match
+        //  substr is targetValue in lit.
+
+        switch(comparator){
+            case "=":
+                return sourceValue == targetValue;
+            case "!=":
+                return sourceValue != targetValue;
+            case "substr":
+                return sourceValue.indexOf(targetValue) != -1;
+            case "!substr":
+                return sourceValue.indexOf(targetValue) == -1;
+        }
+
+        return false;
+    },
+    statics:{
+        ipv4NetworkRegex: /((\d{1,3}\.){3,3}\d{1,3})(\/(\d{1,2}|)|)/
     }
 });
 
