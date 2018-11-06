@@ -1801,18 +1801,15 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 if(Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(value)){
                     matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(value);
                     matchValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
-                    // console.log('compare: ' + matches[1] + ' - ' + matchValue + ' vs ' + targetValue);
                 }
                 if(matchValue == targetValue){
-                    // console.log('equal match');
                     return true;
                 }
             }else{
                 if(value.indexOf(targetValue) != -1 ){
-                    // console.log('substr match');
                     return true;
                 }
-            } 
+            }
         }, this) );
 
         switch(comparator){
@@ -1830,21 +1827,37 @@ Ext.define('Ung.model.intrusionprevention.rule',{
     },
 
     matchesPort: function(sourceValue, comparator, targetValue){
-        // sourceValue matches portbegin
-        // sourceValue matches portbegin-portend or por1,port2,po34, etc
-        //  convert to list
-        //  = is exact match
-        //  substr is targetValue in lit.
+        var equalComparator = comparator.substring(comparator.length-1) == '=';
+
+        var sourceValues = [];
+        if(sourceValue[0] == '['){
+            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        }else{
+            sourceValues.push(sourceValue);
+        }
+
+        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+            var matchValue = value;
+            if(equalComparator){
+                if(matchValue == targetValue){
+                    return true;
+                }
+            }else{
+                if(value.indexOf(targetValue) != -1 ){
+                    return true;
+                }
+            }
+        }, this) );
 
         switch(comparator){
             case "=":
-                return sourceValue == targetValue;
+                return record != null;
             case "!=":
-                return sourceValue != targetValue;
+                return record == null;
             case "substr":
-                return sourceValue.indexOf(targetValue) != -1;
+                return record != null;
             case "!substr":
-                return sourceValue.indexOf(targetValue) == -1;
+                return record == null;
         }
 
         return false;

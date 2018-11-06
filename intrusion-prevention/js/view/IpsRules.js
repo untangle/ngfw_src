@@ -215,17 +215,19 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"SRC_PORT",
             displayName: "Source Port".t(),
             type: 'textfield',
-            vtype:"ipMatcher",
+            vtype: undefined,
             comparator: 'port'
         },{
             name:"DST_ADDR",
             displayName: "Destination Address".t(),
             type: 'textfield',
+            vtype: undefined,
             comparator: 'network'
         },{
             name:"DST_PORT",
             displayName: "Destination Port".t(),
             type: 'textfield',
+            vtype: undefined,
             comparator: 'port'
         },{
             name:"SIGNATURE",

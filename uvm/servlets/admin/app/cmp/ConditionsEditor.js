@@ -260,7 +260,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                                     comparatorRender = comparator;
                             }
                             break;
-                        case 'text':
+                        default:
                             switch(comparator){
                                 case 'substr':
                                     comparatorRender = '&sub;';
@@ -272,8 +272,6 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                                     comparatorRender = comparator;
                             }
                             break;
-                        default:
-                            comparatorRender = comparator;
                     }
                 }
                 resp.push(new Ext.Template(
