@@ -139,6 +139,18 @@ class IntrusionPreventionRule:
 
         return False
 
+    def matches_text(self, sourceValue, comparator, targetValue):
+        if comparator == "=":
+            return sourceValue == targetValue
+        elif comparator == "!=":
+            return sourceValue != targetValue
+        elif comparator == "substr":
+            return targetValue in sourceValue
+        elif comparator == "!substr":
+            return not targetValue in sourceValue
+
+        return False
+
     def address_to_bits(self, address):
         return ''.join('{:08b}'.format(int(x)) for x in address.split('.'))
 
