@@ -31,6 +31,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     bbar: [{
         xtype: 'tbtext',
         name: 'ruleStatus',
+        bind: {
+            html: Ext.String.format('{0}Signatures affected:{1} Log: {2}, Block: {3}, Disabled: {4}'.t(), '<b>', '</b>', '{signatureStatusLog}', '{signatureStatusBlock}', '{signatureStatusDisable}'),
+            hidden: '{signatureStatusTotal == 0}'
+        }
     }],
 
     tbar: ['@add', '->', '@import', '@export'],
