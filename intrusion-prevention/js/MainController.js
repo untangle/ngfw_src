@@ -109,13 +109,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         vm.set('signaturesList', signatures);
 
-        var collect = {
-            lnet: {}, 
-            lport: {}, 
-            direction: {}, 
-            rnet: {}, 
-            rport: {}
-        };
+        // var collect = {
+        //     lnet: {}, 
+        //     lport: {}, 
+        //     direction: {}, 
+        //     rnet: {}, 
+        //     rport: {}
+        // };
 
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
@@ -132,66 +132,18 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(found == false){
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
-            collect['lnet'][signature.get('lnet')] = true;
-            collect['lport'][signature.get('lport')] = true;
-            collect['direction'][signature.get('direction')] = true;
-            collect['rnet'][signature.get('rnet')] = true;
-            collect['rport'][signature.get('rport')] = true;
+            // collect['lnet'][signature.get('lnet')] = true;
+            // collect['lport'][signature.get('lport')] = true;
+            // collect['direction'][signature.get('direction')] = true;
+            // collect['rnet'][signature.get('rnet')] = true;
+            // collect['rport'][signature.get('rport')] = true;
 
         });
-        console.log(collect);
+        // console.log(collect);
         v.setLoading(false);
+
+        // console.log('buildSignatures complete');
     },
-
-    // getChangedDataRecords: function(target){
-    //     var v = this.getView();
-    //     var changed = {};
-    //     v.query('app-intrusion-prevention-' + target).forEach(function(grid){
-    //         var store = grid.getStore();
-    //         store.getModifiedRecords().forEach( function(record){
-    //             console.log(record.get('_id'));
-    //             var data = {
-    //                 op: 'modified',
-    //                 recData: record.getRecord ? record.getRecord() : record.data
-    //             };
-    //             if(record.get('markedForDelete')){
-    //                 data.op = 'deleted';
-    //             }else if(record.get('markedForNew')){
-    //                 data.op = 'added';
-    //             }
-    //             // console.log(record);
-    //             // changed[record.get('_id')] = record.getRecord ? record.getRecord() : data;
-    //             changed[record.get('_id')] = data;
-    //         });
-    //         store.commitChanges();
-    //     });
-
-    //     return changed;
-    // },
-
-    // getChangedData: function(){
-    //     var me = this, vm = this.getViewModel();
-
-    //     var settings = vm.get('settings');
-    //     var changedDataSet = {};
-    //     var keys = Object.keys(settings);
-    //     for( var i = 0; i < keys.length; i++){
-    //         if( ( keys[i] == "signatures" ) ||
-    //             ( keys[i] == "variables" ) ||
-    //             ( keys[i] == "rules" ) ||
-    //             ( keys[i] == "profileId" ) ||
-    //             ( keys[i] == "activeGroups") ){
-    //             continue;
-    //         }
-    //         changedDataSet[keys[i]] = settings[keys[i]];
-    //     }
-
-    //     changedDataSet.rules = me.getChangedDataRecords('rules');
-    //     changedDataSet.signatures = me.getChangedDataRecords('signatures');
-    //     changedDataSet.variables = me.getChangedDataRecords('variables');
-
-    //     return changedDataSet;
-    // },
 
     setSettings: function (additionalChanged) {
         var me = this, v = this.getView(), vm = this.getViewModel();
@@ -311,33 +263,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
         }, me) );
         me.watchSignatureStoreTask.delay( 500 );
-    },
-
-    storeDataChanged: function( store ){
-        /*
-         * Inexplicably, extjs does not see 'inline' data loads as "proper" store
-         * reloads so it will never fire the 'load' event which logically sounds
-         * like the correct event to listen to.
-         *
-         * The problem occurs on saves where data is "reloaded" but seen in
-         * the store as a wholesale change.  Which is ridiculous and on the next
-         * save in the same session, causes to see all records as modified
-         * and therefore, send send ALL data back.
-         *
-         * To get around this, we have the inline loader routines set the
-         * 'storeId'Load variable and if we see it here, cause all of those changes
-         * to be "commited" since nothing has changed.
-         *
-         * Thanks, ExtJs.
-         *
-         */
-        // console.log('hre');
-        // var vm = this.getViewModel();
-        // var storeId = store.getStoreId();
-        // if(vm.get( storeId + 'Load') == true){
-        //     store.commitChanges();
-        //     vm.set( storeId + 'Load', false);
-        // }
     },
 
     /**
@@ -544,18 +469,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.unintrusionrulegrid',
 
-    control: {
-        '#': {
-            reconfigure: 'updateRuleStatus',
-        },
-        'checkcolumn': {
-            checkchange: 'updateRuleStatus'
-        },
-        'ungrid':{
-            edit: 'updateRuleStatus'
-        }
-    },
-
     getConditions: function(){
         var conditions = {};
         this.getView().editorFields.forEach( function(field){
@@ -574,22 +487,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         });
         return comparators;
-    },
-
-    updateRuleStatus: function(){
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
-
-        var status = me.getView().up('apppanel').getController().ruleSignatureMatches();
-
-        var ruleStatusBar = v.down("[name=ruleStatus]");
-        var statusLengths = {};
-        for(var statusKey in status){
-            statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
-        }
-        
-        ruleStatusBar.update(Ext.String.format( '<b>' + 'Signatures affected'.t() + ':</b> ' + 'Log: {0}, Block: {1}, Disabled: {2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
     }
 });
 
@@ -602,7 +499,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     doDestroy: function(){
         var masterGrid = this.getController().masterGrid;
         this.callParent();
-        masterGrid.getController().updateRuleStatus();
+        masterGrid.up('apppanel').getController().signaturesChanged();
     }
 
 });
@@ -1066,8 +963,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
         var me = this,
             vm = me.getViewModel();
 
-        // console.log('createFilter');
-        // console.log(vm.get('comparator'));
         var searchValue = vm.get('searchValue');
 
         if(searchValue == ''){
@@ -1085,9 +980,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 }]
             }
         });
-
-        // console.log('rule=');
-        // console.log(rule.data.conditions.list[0]);
 
         var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
         store.getFilters().add(function (record) {

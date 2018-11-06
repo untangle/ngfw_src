@@ -51,7 +51,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 fieldLabel: "Signatures available".t(),
                 bind:{
                     value: '{signatureStatusTotal}',
-                    hidden: '{signatureStatusTotal == 0}',
+                    hidden: '{signatureStatusTotal == 0}'
                 }
             },{
                 xtype: 'displayfield',
