@@ -207,6 +207,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     refresh: function () {
+        this.getView().down('eventreport').fireEvent('refresh');
         this.reload(false);
     },
 
