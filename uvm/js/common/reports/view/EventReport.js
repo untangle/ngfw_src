@@ -134,7 +134,7 @@ Ext.define('Ung.view.reports.EventReport', {
                 if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
                     column.hidden = true;
                 }
-                if(!column.renderer){
+                if(!column.renderer && column.xtype != 'actioncolumn'){
                     column.renderer = Ung.view.reports.EventReport.renderer;
                 }
                 // TO REVISIT THIS BECASE OF STATEFUL
