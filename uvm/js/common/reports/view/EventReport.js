@@ -134,6 +134,9 @@ Ext.define('Ung.view.reports.EventReport', {
                 if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
                     column.hidden = true;
                 }
+                if(!column.renderer){
+                    column.renderer = Ung.view.reports.EventReport.renderer;
+                }
                 // TO REVISIT THIS BECASE OF STATEFUL
                 // grid.initComponentColumn(column);
             });
@@ -295,5 +298,12 @@ Ext.define('Ung.view.reports.EventReport', {
                 v.down('grid').getSelectionModel().select(0);
             }
         }
+    },
+    statics:{
+        renderer: function(value, meta, record, x,y, z, table){
+            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( value ) + '"';
+            return value;
+        },
+
     }
 });
