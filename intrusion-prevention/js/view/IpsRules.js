@@ -31,6 +31,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     bbar: [{
         xtype: 'tbtext',
         name: 'ruleStatus',
+        bind: {
+            html: Ext.String.format('{0}Signatures affected:{1} Log: {2}, Block: {3}, Disabled: {4}'.t(), '<b>', '</b>', '{signatureStatusLog}', '{signatureStatusBlock}', '{signatureStatusDisable}'),
+            hidden: '{signatureStatusTotal == 0}'
+        }
     }],
 
     tbar: ['@add', '->', '@import', '@export'],
@@ -123,7 +127,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         comparators:[{
             name: 'numeric',
             defaultValue: '=',
-            store:  [[
+            store: [[
                 '<', '<'.t()
             ],[
                 '<=', '<='.t()
@@ -135,6 +139,30 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
                 '>=', '>='.t()
             ],[
                 '>', '>'.t(),
+            ],[
+                'substr', 'Contains'.t()
+            ],[
+                '!substr', 'Does not contain'.t()
+            ]]
+        },{
+            name: 'network',
+            defaultValue: 'substr',
+            store: [[
+                '=', '='.t()
+            ],[
+                '!=', '!='.t()
+            ],[
+                'substr', 'Contains'.t()
+            ],[
+                '!substr', 'Does not contain'.t()
+            ]]
+        },{
+            name: 'port',
+            defaultValue: 'substr',
+            store: [[
+                '=', '='.t()
+            ],[
+                '!=', '!='.t()
             ],[
                 'substr', 'Contains'.t()
             ],[
@@ -174,7 +202,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"MSG",
             displayName: "Message".t(),
             type: 'textfield',
-            // vtype: 'email'
             comparator: 'text'
         },{
             name:"PROTOCOL",
@@ -186,25 +213,26 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"SRC_ADDR",
             displayName: "Source Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher",
-            comparator: 'text'
+            vtype: undefined,
+            comparator: 'network'
         },{
             name:"SRC_PORT",
             displayName: "Source Port".t(),
             type: 'textfield',
-            comparator: 'numeric'
+            vtype: undefined,
+            comparator: 'port'
         },{
             name:"DST_ADDR",
             displayName: "Destination Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher",
-            comparator: 'text'
+            vtype: undefined,
+            comparator: 'network'
         },{
             name:"DST_PORT",
             displayName: "Destination Port".t(),
             type: 'textfield',
-            vtype:"ipMatcher",
-            comparator: 'numeric'
+            vtype: undefined,
+            comparator: 'port'
         },{
             name:"SIGNATURE",
             displayName: "Any part of signature".t(),
@@ -229,16 +257,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             storeLabel: 'description',
             storeTip: Ung.apps.intrusionprevention.Main.actionRenderer,
             comparator: 'boolean'
-        // },
-        //     // ??? checkboxgroup
-        // {
-        //     name:"SOURCE",
-        //     displayName: "Source".t(),
-        //     type: 'textfield'
         },{
             name:"SYSTEM_MEMORY",
             displayName: "System Memory".t(),
-            // type: 'numberfield',
             type: 'sizefield',
             comparator: 'numeric'
         }]

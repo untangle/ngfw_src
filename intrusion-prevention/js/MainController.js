@@ -44,8 +44,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 isExpertMode: result[4]
             });
 
-            v.setLoading(false);
-            me.buildSignatures( result[5], vm.get('settings'));
+            v.setLoading('Loading signatures...'.t());
+            var dt = new Ext.util.DelayedTask( Ext.bind(function(){
+                me.buildSignatures(result[5], vm.get('settings'));
+            }, me));
+            dt.delay(100);
             vm.set('panel.saveDisabled', false);
 
         }, function (ex) {
@@ -59,7 +62,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     buildSignatures: function(reserved, settings){
         var me = this, v = this.getView(), vm = this.getViewModel();
-        v.setLoading('Loading signatures...'.t());
 
         var t0 = performance.now();
         var t1 = performance.now();
@@ -72,6 +74,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var signatures = [];
         reserved.responseText.split("\n").forEach(function(line){
             // if(category == 'attack_response'){
+            // if(category == 'games'){
             //     return false;
             // }
             line = line.trim();
@@ -106,13 +109,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         vm.set('signaturesList', signatures);
 
-        var collect = {
-            lnet: {}, 
-            lport: {}, 
-            direction: {}, 
-            rnet: {}, 
-            rport: {}
-        };
+        // var collect = {
+        //     lnet: {}, 
+        //     lport: {}, 
+        //     direction: {}, 
+        //     rnet: {}, 
+        //     rport: {}
+        // };
 
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
@@ -129,66 +132,18 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(found == false){
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
-            collect['lnet'][signature.get('lnet')] = true;
-            collect['lport'][signature.get('lport')] = true;
-            collect['direction'][signature.get('direction')] = true;
-            collect['rnet'][signature.get('rnet')] = true;
-            collect['rport'][signature.get('rport')] = true;
+            // collect['lnet'][signature.get('lnet')] = true;
+            // collect['lport'][signature.get('lport')] = true;
+            // collect['direction'][signature.get('direction')] = true;
+            // collect['rnet'][signature.get('rnet')] = true;
+            // collect['rport'][signature.get('rport')] = true;
 
         });
-        console.log(collect);
+        // console.log(collect);
         v.setLoading(false);
+
+        // console.log('buildSignatures complete');
     },
-
-    // getChangedDataRecords: function(target){
-    //     var v = this.getView();
-    //     var changed = {};
-    //     v.query('app-intrusion-prevention-' + target).forEach(function(grid){
-    //         var store = grid.getStore();
-    //         store.getModifiedRecords().forEach( function(record){
-    //             console.log(record.get('_id'));
-    //             var data = {
-    //                 op: 'modified',
-    //                 recData: record.getRecord ? record.getRecord() : record.data
-    //             };
-    //             if(record.get('markedForDelete')){
-    //                 data.op = 'deleted';
-    //             }else if(record.get('markedForNew')){
-    //                 data.op = 'added';
-    //             }
-    //             // console.log(record);
-    //             // changed[record.get('_id')] = record.getRecord ? record.getRecord() : data;
-    //             changed[record.get('_id')] = data;
-    //         });
-    //         store.commitChanges();
-    //     });
-
-    //     return changed;
-    // },
-
-    // getChangedData: function(){
-    //     var me = this, vm = this.getViewModel();
-
-    //     var settings = vm.get('settings');
-    //     var changedDataSet = {};
-    //     var keys = Object.keys(settings);
-    //     for( var i = 0; i < keys.length; i++){
-    //         if( ( keys[i] == "signatures" ) ||
-    //             ( keys[i] == "variables" ) ||
-    //             ( keys[i] == "rules" ) ||
-    //             ( keys[i] == "profileId" ) ||
-    //             ( keys[i] == "activeGroups") ){
-    //             continue;
-    //         }
-    //         changedDataSet[keys[i]] = settings[keys[i]];
-    //     }
-
-    //     changedDataSet.rules = me.getChangedDataRecords('rules');
-    //     changedDataSet.signatures = me.getChangedDataRecords('signatures');
-    //     changedDataSet.variables = me.getChangedDataRecords('variables');
-
-    //     return changedDataSet;
-    // },
 
     setSettings: function (additionalChanged) {
         var me = this, v = this.getView(), vm = this.getViewModel();
@@ -308,33 +263,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
         }, me) );
         me.watchSignatureStoreTask.delay( 500 );
-    },
-
-    storeDataChanged: function( store ){
-        /*
-         * Inexplicably, extjs does not see 'inline' data loads as "proper" store
-         * reloads so it will never fire the 'load' event which logically sounds
-         * like the correct event to listen to.
-         *
-         * The problem occurs on saves where data is "reloaded" but seen in
-         * the store as a wholesale change.  Which is ridiculous and on the next
-         * save in the same session, causes to see all records as modified
-         * and therefore, send send ALL data back.
-         *
-         * To get around this, we have the inline loader routines set the
-         * 'storeId'Load variable and if we see it here, cause all of those changes
-         * to be "commited" since nothing has changed.
-         *
-         * Thanks, ExtJs.
-         *
-         */
-        // console.log('hre');
-        // var vm = this.getViewModel();
-        // var storeId = store.getStoreId();
-        // if(vm.get( storeId + 'Load') == true){
-        //     store.commitChanges();
-        //     vm.set( storeId + 'Load', false);
-        // }
     },
 
     /**
@@ -541,18 +469,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.unintrusionrulegrid',
 
-    control: {
-        '#': {
-            reconfigure: 'updateRuleStatus',
-        },
-        'checkcolumn': {
-            checkchange: 'updateRuleStatus'
-        },
-        'ungrid':{
-            edit: 'updateRuleStatus'
-        }
-    },
-
     getConditions: function(){
         var conditions = {};
         this.getView().editorFields.forEach( function(field){
@@ -571,22 +487,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         });
         return comparators;
-    },
-
-    updateRuleStatus: function(){
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
-
-        var status = me.getView().up('apppanel').getController().ruleSignatureMatches();
-
-        var ruleStatusBar = v.down("[name=ruleStatus]");
-        var statusLengths = {};
-        for(var statusKey in status){
-            statusLengths[statusKey] = Ext.Array.sum(Ext.Object.getValues(status[statusKey]));
-        }
-        
-        ruleStatusBar.update(Ext.String.format( '<b>' + 'Signatures affected'.t() + ':</b> ' + 'Log: {0}, Block: {1}, Disabled: {2}'.t(), statusLengths['log'], statusLengths['block'], statusLengths['disable']));
     }
 });
 
@@ -599,7 +499,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     doDestroy: function(){
         var masterGrid = this.getController().masterGrid;
         this.callParent();
-        masterGrid.getController().updateRuleStatus();
+        masterGrid.up('apppanel').getController().signaturesChanged();
     }
 
 });
@@ -1063,8 +963,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
         var me = this,
             vm = me.getViewModel();
 
-        // console.log('createFilter');
-        // console.log(vm.get('comparator'));
         var searchValue = vm.get('searchValue');
 
         if(searchValue == ''){
@@ -1082,9 +980,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 }]
             }
         });
-
-        // console.log('rule=');
-        // console.log(rule.data.conditions.list[0]);
 
         var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
         store.getFilters().add(function (record) {
@@ -1676,6 +1571,12 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'text':
                     match = me.matchesText(targetConditionValue, condition.comparator, condition.value.toLowerCase());
                     break;
+                case 'network':
+                    match = me.matchesNetwork(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    break;
+                case 'port':
+                    match = me.matchesPort(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    break;
                 default:
                     // !!! throw exception
                     console.log('unknown comparator:' + editorCondition.comparator);
@@ -1713,6 +1614,18 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
+    matchesIn: function(sourceValue, comparator, targetValue){
+        var isIn = Ext.Array.contains(targetValue, sourceValue);
+
+        if(comparator == "="){
+            return isIn;
+        }else if(comparator == "!="){
+            return !isIn;
+        }
+
+        return false;
+    },
+
     matchesText: function(sourceValue, comparator, targetValue){
         switch(comparator){
             case "=":
@@ -1728,18 +1641,121 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
-    matchesIn: function(sourceValue, comparator, targetValue){
-        var isIn = Ext.Array.contains(targetValue, sourceValue);
+    ipv4NetworkToLong: function(ip, prefix){
+        if(prefix == 0){
+            return 0;
+        }
+        var network = 0;
+        ip.split('.').forEach( function(octet){
+            network <<= 8;
+            network += parseInt(octet, 10);
+        });
+        return ( (network >>> 0) & ( ( ~0 << (32 - prefix)) >>> 0) );
+    },
 
-        // console.log(isIn);
+    /**
+     * Match network as follows:
+     *
+     * = or !=              Exact string match or signature contains exact network match.
+     * substr or !substr    Text substring match.
+     *
+     * If sourceValue is a list, any match of the list is considered a valid match.
+     * For example, if the list contains a lit of IP addresses like [1.2.3.4, 2.3.4.5], a targetValue
+     * of 1.2.3.0/24 or 2.0.0.0/8 would match even though it's not matching the entire list.
+     *
+     * @param  {[type]} sourceValue Either a single value or a list if it is inside square brackets.
+     * @param  {[type]} comparator  =, !=, substr, ~substr
+     * @param  {[type]} targetValue Value to check.
+     * @return {[type]}             true if match, false if not.
+     */
+    matchesNetwork: function(sourceValue, comparator, targetValue){
+        var equalComparator = comparator.substring(comparator.length-1) == '=';
 
-        if(comparator == "="){
-            return isIn;
-        }else if(comparator == "!="){
-            return !isIn;
+        var matches;
+        var sourceValues = [];
+        if(sourceValue[0] == '['){
+            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        }else{
+            sourceValues.push(sourceValue);
+        }
+
+        var targetPrefix = 32;
+        if( equalComparator &&
+            Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(targetValue)){
+            matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(targetValue);
+            targetPrefix = matches[4] ? parseInt(matches[4], 10) : 32;
+            targetValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
+        }
+
+        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+            var matchValue = value;
+            if(equalComparator){
+                if(Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(value)){
+                    matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(value);
+                    matchValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
+                }
+                if(matchValue == targetValue){
+                    return true;
+                }
+            }else{
+                if(value.indexOf(targetValue) != -1 ){
+                    return true;
+                }
+            }
+        }, this) );
+
+        switch(comparator){
+            case "=":
+                return record != null;
+            case "!=":
+                return record == null;
+            case "substr":
+                return record != null;
+            case "!substr":
+                return record == null;
         }
 
         return false;
+    },
+
+    matchesPort: function(sourceValue, comparator, targetValue){
+        var equalComparator = comparator.substring(comparator.length-1) == '=';
+
+        var sourceValues = [];
+        if(sourceValue[0] == '['){
+            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        }else{
+            sourceValues.push(sourceValue);
+        }
+
+        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+            var matchValue = value;
+            if(equalComparator){
+                if(matchValue == targetValue){
+                    return true;
+                }
+            }else{
+                if(value.indexOf(targetValue) != -1 ){
+                    return true;
+                }
+            }
+        }, this) );
+
+        switch(comparator){
+            case "=":
+                return record != null;
+            case "!=":
+                return record == null;
+            case "substr":
+                return record != null;
+            case "!substr":
+                return record == null;
+        }
+
+        return false;
+    },
+    statics:{
+        ipv4NetworkRegex: /((\d{1,3}\.){3,3}\d{1,3})(\/(\d{1,2}|)|)/
     }
 });
 

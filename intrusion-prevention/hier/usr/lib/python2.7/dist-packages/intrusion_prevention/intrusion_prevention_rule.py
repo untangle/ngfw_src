@@ -9,6 +9,8 @@ class IntrusionPreventionRule:
 
     global_values = None
 
+    ipv4NetworkRegex = re.compile(r'((\d{1,3}\.){3,3}\d{1,3})(\/(\d{1,2}|)|)')
+
     def __init__(self, settingsRule):
         self.rule = settingsRule
 
@@ -80,22 +82,13 @@ class IntrusionPreventionRule:
                     condition["value"] = condition["value"].split(',')
                 match = self.matches_in(signature.protocol, comparator, condition["value"])
             elif condition["type"] == "SRC_ADDR":
-                conditionArgs["actualValue"] = signature.lnet
-                conditionArgs["comparatorType"] = "network"
+                match = self.matches_network(signature.lnet.lower(), comparator, targetValue.lower())
             elif condition["type"] == "SRC_PORT":
-                match = self.matches_numeric(int(signature.lport), comparator, int(targetValue))
+                match = self.matches_port(signature.lport.lower(), comparator, targetValue.lower())
             elif condition["type"] == "DST_ADDR":
-                conditionArgs["actualValue"] = signature.rnet
-                conditionArgs["comparatorType"] = "network"
+                match = self.matches_network(signature.rnet.lower(), comparator, targetValue.lower())
             elif condition["type"] == "DST_PORT":
-                conditionArgs["actualValue"] = signature.rport
-                match = self.matches_numeric(int(signature.rport), comparator, int(targetValue))
-            elif condition["type"] == "RULE":
-                conditionArgs["actualValue"] = signature.options_raw
-                conditionArgs["comparatorType"] = "text"
-            elif condition["type"] == "SOURCE":
-                conditionArgs["actualValue"] = signature.path
-                conditionArgs["comparatorType"] = "text"
+                match = self.matches_port(signature.rport.lower(), comparator, targetValue.lower())
             elif condition["type"] == "SYSTEM_MEMORY":
                 match = self.matches_numeric(int(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"]), comparator, int(targetValue))
             elif condition["type"] == "SIGNATURE":
@@ -136,6 +129,16 @@ class IntrusionPreventionRule:
 
         return False
 
+    def matches_in(self, sourceValue, comparator, targetValue):
+        is_in = sourceValue in ( ( value.lower() if hasattr(value, "lower") else value ) for value in targetValue)
+
+        if comparator == "=":
+            return is_in
+        elif comparator == "!=":
+            return not is_in
+
+        return False
+
     def matches_text(self, sourceValue, comparator, targetValue):
         if comparator == "=":
             return sourceValue == targetValue
@@ -148,13 +151,81 @@ class IntrusionPreventionRule:
 
         return False
 
-    def matches_in(self, sourceValue, comparator, targetValue):
-        is_in = sourceValue in ( ( value.lower() if hasattr(value, "lower") else value ) for value in targetValue)
+    def address_to_bits(self, address):
+        return ''.join('{:08b}'.format(int(x)) for x in address.split('.'))
+
+    def matches_network(self, sourceValue, comparator, targetValue):
+        equal_comparator = comparator[-1] == '='
+
+        sourceValues = [];
+        if sourceValue[0] == '[':
+            sourceValues =  re.split(r'\s*,\s*', sourceValue[1:-1])
+        else:
+            sourceValues.append(sourceValue)
+
+        targetPrefix = 32;
+        match_signature = re.search(IntrusionPreventionRule.ipv4NetworkRegex, targetValue)
+        if equal_comparator and match_signature:
+            if match_signature.group(4):
+                targetPrefix = int(match_signature.group(4))
+            targetValue = self.address_to_bits(match_signature.group(1))[:targetPrefix]
+
+        record = None
+        for value in sourceValues:
+            matchValue = value
+
+            if equal_comparator:
+                match_signature = re.search(IntrusionPreventionRule.ipv4NetworkRegex, value)
+                if match_signature:
+                    matchValue = self.address_to_bits(match_signature.group(1))[:targetPrefix]
+
+                if matchValue == targetValue:
+                    record = value
+                    break
+            else:
+                if targetValue in value:
+                    record = value
 
         if comparator == "=":
-            return is_in
+            return record != None
         elif comparator == "!=":
-            return not is_in
+            return record == None
+        elif comparator == "substr":
+            return record != None
+        elif comparator == "!substr":
+            return record == None
+
+        return False
+
+    def matches_port(self, sourceValue, comparator, targetValue):
+        equal_comparator = comparator[-1] == '='
+
+        sourceValues = [];
+        if sourceValue[0] == '[':
+            sourceValues =  re.split(r'\s*,\s*', sourceValue[1:-1])
+        else:
+            sourceValues.append(sourceValue)
+
+        record = None
+        for value in sourceValues:
+            matchValue = value
+
+            if equal_comparator:
+                if matchValue == targetValue:
+                    record = value
+                    break
+            else:
+                if targetValue in value:
+                    record = value
+
+        if comparator == "=":
+            return record != None
+        elif comparator == "!=":
+            return record == None
+        elif comparator == "substr":
+            return record != None
+        elif comparator == "!substr":
+            return record == None
 
         return False
 
