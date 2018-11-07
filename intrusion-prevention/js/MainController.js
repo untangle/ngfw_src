@@ -487,6 +487,10 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         });
         return comparators;
+    },
+
+    onDragDrop: function(){
+        this.getView().up('apppanel').getController().signaturesChanged();
     }
 });
 
