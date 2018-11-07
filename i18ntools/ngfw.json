@@ -5,10 +5,6 @@
         "ngfw_src",
 		"ngfw_hades-pkgs"
 	],
-    "json_parse_directories":[
-        "reports",
-        "events"
-    ],
     "report_fields": [
         "description",
         "title"
