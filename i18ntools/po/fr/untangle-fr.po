@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-04 11:26-0700\n"
-"PO-Revision-Date: 2018-11-07 14:07\n"
+"PO-Revision-Date: 2018-11-07 14:50\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -198,6 +198,7 @@ msgstr "Port du serveur"
 msgid "scanned"
 msgstr "a scanné"
 
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-scanned.json
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:95
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/apps/RackGraphController.js:123
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/MainHeading.js:43
@@ -235,6 +236,7 @@ msgstr "Port de destination"
 msgid "Source Port"
 msgstr "Port source"
 
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-scanned-sessions.json
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/NetworkInformation.js:45
 msgid "Scanned Sessions"
 msgstr "Sessions numérisées"
@@ -9690,6 +9692,7 @@ msgstr "inspecté"
 msgid "Alerts"
 msgstr "alerte"
 
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-bypassed-sessions.json
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/NetworkInformation.js:46
 msgid "Bypassed Sessions"
 msgstr "Sessions contournées"
@@ -17048,4 +17051,2529 @@ msgstr ""
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:102
 #: Status: UNVERIFIED
 msgid "{0}Note:{1} {2} continues to maintain the recommended signature settings through automatic updates. You are free to add signatures, however it is not required."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-tx.json
+#: Status: UNVERIFIED
+msgid "The total received data usage by interface."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-tx.json
+#: Status: UNVERIFIED
+msgid "Data Tx-Usage (by interface)"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-summary.json
+#: Status: UNVERIFIED
+msgid "A summary of network traffic."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-summary.json
+#: Status: UNVERIFIED
+msgid "Network Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/server-events.json
+#: Status: UNVERIFIED
+msgid "All system status events."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/server-events.json
+#: Status: UNVERIFIED
+msgid "Server Status Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-country-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by server (destination) country."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-country-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Server Countries"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-additions.json
+#: Status: UNVERIFIED
+msgid "The amount of devices add and removed from the device table over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-additions.json
+#: Status: UNVERIFIED
+msgid "Devices Additions"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-scanned.json
+#: Status: UNVERIFIED
+msgid "The amount of total, scanned, and bypassed sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-hour.json
+#: Status: UNVERIFIED
+msgid "The amount of total, scanned, and bypassed sessions created per hour."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-hour.json
+#: Status: UNVERIFIED
+msgid "Sessions Per Hour"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/bandwidth-usage.json
+#: Status: UNVERIFIED
+msgid "The approximate averaged data transfer rate (total, sent, received) over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/bandwidth-usage.json
+#: Status: UNVERIFIED
+msgid "Bandwidth Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates.json
+#: Status: UNVERIFIED
+msgid "All updates to devices in the device table."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates.json
+#: Status: UNVERIFIED
+msgid "Devices Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-penalty-box.json
+#: Status: UNVERIFIED
+msgid "Shows when hosts are tagged with penalty-box or have the tag removed."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-penalty-box.json
+#: Status: UNVERIFIED
+msgid "Penalty Box Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/interface-stats.json
+#: Status: UNVERIFIED
+msgid "The RX rate of each interface over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/interface-stats.json
+#: Status: UNVERIFIED
+msgid "Interface Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-minute.json
+#: Status: UNVERIFIED
+msgid "The amount of total, scanned, and bypassed sessions created per minute."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-minute.json
+#: Status: UNVERIFIED
+msgid "Sessions Per Minute"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total-by-day.json
+#: Status: UNVERIFIED
+msgid "The data usage of each interface by day"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total-by-day.json
+#: Status: UNVERIFIED
+msgid "Data Usage per Day (by interface)"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-blocked-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions blocked by filter rules."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-blocked-sessions.json
+#: Status: UNVERIFIED
+msgid "Blocked Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-protocols-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by IP protocol number."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-protocols-by-session.json
+#: Status: UNVERIFIED
+msgid "Top IP Protocols"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-updates.json
+#: Status: UNVERIFIED
+msgid "All updates to hosts in the host table."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-updates.json
+#: Status: UNVERIFIED
+msgid "Hosts Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/users-updates.json
+#: Status: UNVERIFIED
+msgid "All updates to users in the user table."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/users-updates.json
+#: Status: UNVERIFIED
+msgid "Users Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-clients-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by client (source) address."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-clients-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Client Addresses"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-bypassed-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions matching a bypass rule and bypassed."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates-report.json
+#: Status: UNVERIFIED
+msgid "The number of updates to the device table over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates-report.json
+#: Status: UNVERIFIED
+msgid "Devices Updates"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-size.json
+#: Status: UNVERIFIED
+msgid "The amount of active hosts by time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-size.json
+#: Status: UNVERIFIED
+msgid "Hosts Active"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/admin-logins.json
+#: Status: UNVERIFIED
+msgid "The number of total, successful, and failed admin logins over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/admin-logins.json
+#: Status: UNVERIFIED
+msgid "Admin Logins"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-logins.json
+#: Status: UNVERIFIED
+msgid "All local administrator logins."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-logins.json
+#: Status: UNVERIFIED
+msgid "Admin Login Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-port-forwarded-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions match a port forward rule."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-port-forwarded-sessions.json
+#: Status: UNVERIFIED
+msgid "Port Forwarded Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-updates.json
+#: Status: UNVERIFIED
+msgid "The number of updates to the host table over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-updates.json
+#: Status: UNVERIFIED
+msgid "Hosts Updates"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-scanned-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions that were not bypassed."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions handled by Untangle."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-sessions.json
+#: Status: UNVERIFIED
+msgid "All Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-servers-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by server (destination) address."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-servers-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Server Addresses"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-port-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by server (destination) port."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-port-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Server Ports"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total.json
+#: Status: UNVERIFIED
+msgid "The total data usage by interface."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total.json
+#: Status: UNVERIFIED
+msgid "Data Usage (by interface)"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/settings-changes.json
+#: Status: UNVERIFIED
+msgid "The number of settings changes over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/settings-changes.json
+#: Status: UNVERIFIED
+msgid "Settings Changes"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-settings-changes.json
+#: Status: UNVERIFIED
+msgid "All settings changes performed by an administrator."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-settings-changes.json
+#: Status: UNVERIFIED
+msgid "All Settings Changes"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-rx.json
+#: Status: UNVERIFIED
+msgid "Data Rx-Usage (by interface)"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-session-minutes.json
+#: Status: UNVERIFIED
+msgid "All sessions by minute."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-session-minutes.json
+#: Status: UNVERIFIED
+msgid "All Session Minutes"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-additions.json
+#: Status: UNVERIFIED
+msgid "The amount of hosts add and removed from the host table over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-additions.json
+#: Status: UNVERIFIED
+msgid "Hosts Additions"
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-natd-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions that have been NATd by Untangle."
+msgstr ""
+
+#: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-natd-sessions.json
+#: Status: UNVERIFIED
+msgid "NATd Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-cookie-events.json
+#: Status: UNVERIFIED
+msgid "Requests blocked by cookie filters."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-cookie-events.json
+#: Status: UNVERIFIED
+msgid "Blocked Cookie Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of ad blocker actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Ad Blocker Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/top-sites-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked ads grouped by website."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/top-sites-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Ad Sites"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-blocked-events.json
+#: Status: UNVERIFIED
+msgid "HTTP requests blocked by Ad Blocker."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-blocked-events.json
+#: Status: UNVERIFIED
+msgid "Blocked Ad Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/web-usage-all.json
+#: Status: UNVERIFIED
+msgid "The amount of detected and blocked ads over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/web-usage-all.json
+#: Status: UNVERIFIED
+msgid "Ads Blocked"
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-all-events.json
+#: Status: UNVERIFIED
+msgid "All HTTP requests scanned by Ad Blocker."
+msgstr ""
+
+#: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-all-events.json
+#: Status: UNVERIFIED
+msgid "All Ad Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of scanned session grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Scanned Hostnames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/sessions-scanned.json
+#: Status: UNVERIFIED
+msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of firewall actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Firewall Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-flagged-events.json
+#: Status: UNVERIFIED
+msgid "Events flagged by Firewall App."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-flagged-events.json
+#: Status: UNVERIFIED
+msgid "Flagged Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged session grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Hostnames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged session grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Clients"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Clients"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-blocked-events.json
+#: Status: UNVERIFIED
+msgid "Events blocked by Firewall App."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-blocked-events.json
+#: Status: UNVERIFIED
+msgid "Blocked Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged session grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Usernames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Usernames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of scanned session grouped by server (destination) port."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Scanned Server Ports"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-all-events.json
+#: Status: UNVERIFIED
+msgid "All events scanned by Firewall App."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-all-events.json
+#: Status: UNVERIFIED
+msgid "All Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of scanned session grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Scanned Usernames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-session.json
+#: Status: UNVERIFIED
+msgid "The number of scanned session grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-session.json
+#: Status: UNVERIFIED
+msgid "Top Scanned Clients"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked sessions grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Hostnames"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of flagged session grouped by server (destination) port."
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Server Ports"
+msgstr ""
+
+#: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Server Ports"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of intrusion detection and prevention actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Intrusion Prevention Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by classtype."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Classtypes (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-all.json
+#: Status: UNVERIFIED
+msgid "The amount of detected and blocked intrusions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-all.json
+#: Status: UNVERIFIED
+msgid "Intrusion Detection (all)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Categories (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by destination IP address."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Destination IP Addresses (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by signature."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Signatures (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by source port."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Source Port (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Categories (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-blocked.json
+#: Status: UNVERIFIED
+msgid "The amount of blocked intrusions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-blocked.json
+#: Status: UNVERIFIED
+msgid "Intrusion Detection (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by source IP address."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Source IP Addresses (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by protocol."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Protocols (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions blocked by destination port."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Destination Port (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by source IP address."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Source IP Addresses (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/intrusion-prevention-blocked-events.json
+#: Status: UNVERIFIED
+msgid "All sessions matching Intrusion Prevention signatures and blocked."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by source port."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Source Ports (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-logged.json
+#: Status: UNVERIFIED
+msgid "The amount of detected intrusions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-logged.json
+#: Status: UNVERIFIED
+msgid "Intrusion Detection (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by protocol."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Protocols (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by signature."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Signatures (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by destination port."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Destination Ports (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by destination IP address."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Destination IP Addresses (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-logged.json
+#: Status: UNVERIFIED
+msgid "The number of intrusions detected grouped by classtype."
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-logged.json
+#: Status: UNVERIFIED
+msgid "Top Classtypes (logged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/intrusion-prevention-all-events.json
+#: Status: UNVERIFIED
+msgid "All sessions scanned by Intrusion Prevention."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of OpenVPN actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/summary.json
+#: Status: UNVERIFIED
+msgid "OpenVPN Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/bandwidth-usage.json
+#: Status: UNVERIFIED
+msgid "The approximate amount of data transfered over openvpn connections."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/bandwidth-usage.json
+#: Status: UNVERIFIED
+msgid "OpenVPN Bandwidth Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-events.json
+#: Status: UNVERIFIED
+msgid "The amount of login and logout events over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-events.json
+#: Status: UNVERIFIED
+msgid "OpenVPN Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/top-username-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of bytes transferred grouped by remote client."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/top-username-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Clients (by usage)"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-sessions.json
+#: Status: UNVERIFIED
+msgid "The amount of openvpn sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-sessions.json
+#: Status: UNVERIFIED
+msgid "OpenVPN Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-connect-events.json
+#: Status: UNVERIFIED
+msgid "OpenVPN client connection events."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-connect-events.json
+#: Status: UNVERIFIED
+msgid "Connection Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-statistics.json
+#: Status: UNVERIFIED
+msgid "Shows all OpenVPN connection traffic statistics events."
+msgstr ""
+
+#: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-statistics.json
+#: Status: UNVERIFIED
+msgid "Statistic Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-receivers.json
+#: Status: UNVERIFIED
+msgid "The number of email addresses with phish."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-receivers.json
+#: Status: UNVERIFIED
+msgid "Top Phish Recipients"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of phish blocking actions for email activity."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Phish Blocker Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-phish-events.json
+#: Status: UNVERIFIED
+msgid "All email sessions detected as phishing attempts."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-phish-events.json
+#: Status: UNVERIFIED
+msgid "All Phish Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-all.json
+#: Status: UNVERIFIED
+msgid "The amount of scanned, clean, and phish email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-all.json
+#: Status: UNVERIFIED
+msgid "Email Usage (all)"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-spam.json
+#: Status: UNVERIFIED
+msgid "The amount of phish email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-spam.json
+#: Status: UNVERIFIED
+msgid "Email Usage (phish)"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-email-events.json
+#: Status: UNVERIFIED
+msgid "All email sessions scanned by Phish Blocker."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-email-events.json
+#: Status: UNVERIFIED
+msgid "All Email Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-quarantined-events.json
+#: Status: UNVERIFIED
+msgid "All email sessions detected as phishing attempts and quarantined."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-quarantined-events.json
+#: Status: UNVERIFIED
+msgid "Quarantined Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-clean.json
+#: Status: UNVERIFIED
+msgid "The amount of clean email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-clean.json
+#: Status: UNVERIFIED
+msgid "Email Usage (clean)"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-sender-hosts.json
+#: Status: UNVERIFIED
+msgid "The number of IP addresses sending phish."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-sender-hosts.json
+#: Status: UNVERIFIED
+msgid "Top Phish Sender Addresses"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-scanned.json
+#: Status: UNVERIFIED
+msgid "The amount of scanned email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-scanned.json
+#: Status: UNVERIFIED
+msgid "Email Usage (scanned)"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/spam-ratio.json
+#: Status: UNVERIFIED
+msgid "The ratio of phish (true) to ham (false)"
+msgstr ""
+
+#: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/spam-ratio.json
+#: Status: UNVERIFIED
+msgid "Phish Ratio"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/detection-stats.json
+#: Status: UNVERIFIED
+msgid "The number of logged and blocked sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/detection-stats.json
+#: Status: UNVERIFIED
+msgid "Detection Statistics"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-hosts.json
+#: Status: UNVERIFIED
+msgid "The top logged sessions by host."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-hosts.json
+#: Status: UNVERIFIED
+msgid "Top Logged Hosts"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "The top logged sessions by protocol."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "Top Logged Protocols"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-users.json
+#: Status: UNVERIFIED
+msgid "The top blocked sessions by user."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-users.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Users"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Application Control Lite actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Application Control Lite Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "The top blocked sessions by protocol."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Protocols"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/application-control-lite-blocked-events.json
+#: Status: UNVERIFIED
+msgid "All sessions matching an application signature and blocked."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-hosts.json
+#: Status: UNVERIFIED
+msgid "The top blocked sessions by host."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-hosts.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Hosts"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-users.json
+#: Status: UNVERIFIED
+msgid "The top logged sessions by user."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-users.json
+#: Status: UNVERIFIED
+msgid "Top Logged Users"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/application-control-lite-all-events.json
+#: Status: UNVERIFIED
+msgid "All sessions scanned by Application Control Lite."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap-percent.json
+#: Status: UNVERIFIED
+msgid "The swap utilization over time as a percent of total swap size ."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap-percent.json
+#: Status: UNVERIFIED
+msgid "Swap Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/memory.json
+#: Status: UNVERIFIED
+msgid "The amount of free memory over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/disk.json
+#: Status: UNVERIFIED
+msgid "The disk utilization over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/disk.json
+#: Status: UNVERIFIED
+msgid "Disk Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/cpu.json
+#: Status: UNVERIFIED
+msgid "The CPU load over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/alerts.json
+#: Status: UNVERIFIED
+msgid "Alerts over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/all-alert-events.json
+#: Status: UNVERIFIED
+msgid "Log of all alerts created by alert rules."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/all-alert-events.json
+#: Status: UNVERIFIED
+msgid "Alert Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap.json
+#: Status: UNVERIFIED
+msgid "The swap utilization over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap.json
+#: Status: UNVERIFIED
+msgid "Swap Usage Bytes"
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/top-alerts.json
+#: Status: UNVERIFIED
+msgid "The top alerts."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/top-alerts.json
+#: Status: UNVERIFIED
+msgid "Top Alerts"
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/active.json
+#: Status: UNVERIFIED
+msgid "The highest number of active hosts."
+msgstr ""
+
+#: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/active.json
+#: Status: UNVERIFIED
+msgid "Highest Active Hosts"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-receivers.json
+#: Status: UNVERIFIED
+msgid "The number of email addresses with spam."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-receivers.json
+#: Status: UNVERIFIED
+msgid "Top Spam Recipients"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-tarpit-events.json
+#: Status: UNVERIFIED
+msgid "All email sessions that were tarpitted."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-tarpit-events.json
+#: Status: UNVERIFIED
+msgid "Tarpit Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of spam blocking actions for email activity."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Spam Blocker Lite Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-all.json
+#: Status: UNVERIFIED
+msgid "The amount of scanned, clean, and spam email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-spam.json
+#: Status: UNVERIFIED
+msgid "The amount of spam email over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-spam.json
+#: Status: UNVERIFIED
+msgid "Email Usage (spam)"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-email-events.json
+#: Status: UNVERIFIED
+msgid "All emails scanned by Spam Blocker."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-sender-hosts.json
+#: Status: UNVERIFIED
+msgid "The number of IP addresses sending spam."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-sender-hosts.json
+#: Status: UNVERIFIED
+msgid "Top Spam Sender Addresses"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-spam-events.json
+#: Status: UNVERIFIED
+msgid "All emails marked as Spam."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-spam-events.json
+#: Status: UNVERIFIED
+msgid "All Spam Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-quarantined-events.json
+#: Status: UNVERIFIED
+msgid "All emails marked as Spam and quarantined."
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-ratio.json
+#: Status: UNVERIFIED
+msgid "The ratio of spam (true) to ham (false)"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-ratio.json
+#: Status: UNVERIFIED
+msgid "Spam Ratio"
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Directory Connector actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Directory Connector Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-usage.json
+#: Status: UNVERIFIED
+msgid "The amount of login, update and logout user notification API events over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-usage.json
+#: Status: UNVERIFIED
+msgid "API Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-events.json
+#: Status: UNVERIFIED
+msgid "Events from the user notification API."
+msgstr ""
+
+#: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-events.json
+#: Status: UNVERIFIED
+msgid "API Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-prioritized-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions prioritized by Bandwidth Control."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-prioritized-sessions.json
+#: Status: UNVERIFIED
+msgid "Prioritized Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage by priority."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-usage.json
+#: Status: UNVERIFIED
+msgid "Top Priorities Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by Application Control category."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Category (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by country."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Countries (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Bandwidth Control actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Bandwidth Control Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by priority."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Priorities (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-sent.json
+#: Status: UNVERIFIED
+msgid "The sum of the data sent grouped by Application Control application."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-sent.json
+#: Status: UNVERIFIED
+msgid "Top Application (by sent bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bypassed-by-usage.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by bypassed."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bypassed-by-usage.json
+#: Status: UNVERIFIED
+msgid "Bypassed (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage by top countries."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-usage.json
+#: Status: UNVERIFIED
+msgid "Top Countries Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage by top server port."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-usage.json
+#: Status: UNVERIFIED
+msgid "Top Server Port Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage of the top applications."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-usage.json
+#: Status: UNVERIFIED
+msgid "Top Applications Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by server port."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Ports (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage of the top clients."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-usage.json
+#: Status: UNVERIFIED
+msgid "Top Clients Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-received.json
+#: Status: UNVERIFIED
+msgid "The sum of the received data grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-received.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames (by received bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-sent.json
+#: Status: UNVERIFIED
+msgid "The sum of the data sent grouped by server port."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-sent.json
+#: Status: UNVERIFIED
+msgid "Top Ports (by sent bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage of the top hostnames."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-usage.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-all-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions processed by Bandwidth Control."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Usernames (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage of the top usernames."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-usage.json
+#: Status: UNVERIFIED
+msgid "Top Usernames Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by client address."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Clients (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-sent.json
+#: Status: UNVERIFIED
+msgid "The sum of the sent data grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-sent.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames (by sent bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-usage.json
+#: Status: UNVERIFIED
+msgid "The bandwidth usage of the top application categories."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-usage.json
+#: Status: UNVERIFIED
+msgid "Top Categories Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-received.json
+#: Status: UNVERIFIED
+msgid "The sum of the data received grouped by server port."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-received.json
+#: Status: UNVERIFIED
+msgid "Top Ports (by received bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/quota-events.json
+#: Status: UNVERIFIED
+msgid "Shows when quotas are assigned or expired."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/quota-events.json
+#: Status: UNVERIFIED
+msgid "Quota Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-received.json
+#: Status: UNVERIFIED
+msgid "Top Application (by received bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-bytes.json
+#: Status: UNVERIFIED
+msgid "The sum of the data transferred grouped by Application Control application."
+msgstr ""
+
+#: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-bytes.json
+#: Status: UNVERIFIED
+msgid "Top Application (by total bytes)"
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of configuration backup actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Configuration Backup Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-failed.json
+#: Status: UNVERIFIED
+msgid "The amount of failed configuration backups over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-failed.json
+#: Status: UNVERIFIED
+msgid "Backup Usage (failed)"
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-passed.json
+#: Status: UNVERIFIED
+msgid "The amount of successful configuration backups over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-passed.json
+#: Status: UNVERIFIED
+msgid "Backup Usage (success)"
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/configuration-backup-backup-events.json
+#: Status: UNVERIFIED
+msgid "All Configuration Backup events."
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/configuration-backup-backup-events.json
+#: Status: UNVERIFIED
+msgid "Backup Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-all.json
+#: Status: UNVERIFIED
+msgid "The amount of successes, and failures of configuration backup over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-all.json
+#: Status: UNVERIFIED
+msgid "Backup Usage (all)"
+msgstr ""
+
+#: /ngfw/ngfw_src/spam-blocker/hier/usr/share/untangle/lib/spam-blocker/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Spam Blocker Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of WAN Failover actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/summary.json
+#: Status: UNVERIFIED
+msgid "WAN Failover Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/failures-by-wan.json
+#: Status: UNVERIFIED
+msgid "The number of disconnect events grouped by WAN."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/failures-by-wan.json
+#: Status: UNVERIFIED
+msgid "WAN Disconnect Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-failed-test-events.json
+#: Status: UNVERIFIED
+msgid "All tests that resulted in failure."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-failed-test-events.json
+#: Status: UNVERIFIED
+msgid "Failed Test Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-success-test-events.json
+#: Status: UNVERIFIED
+msgid "All tests that resulted in success."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-success-test-events.json
+#: Status: UNVERIFIED
+msgid "Success Test Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outages.json
+#: Status: UNVERIFIED
+msgid "The fails tests of each interface over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outages.json
+#: Status: UNVERIFIED
+msgid "WAN Interface Outages"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-test-events.json
+#: Status: UNVERIFIED
+msgid "All test events and their outcome."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-test-events.json
+#: Status: UNVERIFIED
+msgid "Test Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outage-events.json
+#: Status: UNVERIFIED
+msgid "Events where the failure threshold was exceeded and the WAN was considered offline."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outage-events.json
+#: Status: UNVERIFIED
+msgid "Outage Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-download.json
+#: Status: UNVERIFIED
+msgid "The top IPsec users grouped by amount of data downloaded."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-download.json
+#: Status: UNVERIFIED
+msgid "Top Download Users"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of IPsec VPN actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/summary.json
+#: Status: UNVERIFIED
+msgid "IPsec VPN Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-events.json
+#: Status: UNVERIFIED
+msgid "Shows all IPsec VPN tunnel connection events."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-events.json
+#: Status: UNVERIFIED
+msgid "Tunnel Connection Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-time-stats.json
+#: Status: UNVERIFIED
+msgid "The amount of IPsec tunnel traffic over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-time-stats.json
+#: Status: UNVERIFIED
+msgid "Hourly Tunnel Traffic"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-traffic-stats.json
+#: Status: UNVERIFIED
+msgid "The amount of traffic for each IPsec tunnel."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-traffic-stats.json
+#: Status: UNVERIFIED
+msgid "Top Tunnel Traffic"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-user.json
+#: Status: UNVERIFIED
+msgid "The top IPsec VPN users by number of sessions."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-user.json
+#: Status: UNVERIFIED
+msgid "Top Active Users"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-all-events.json
+#: Status: UNVERIFIED
+msgid "Shows all user L2TP/Xauth events."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-all-events.json
+#: Status: UNVERIFIED
+msgid "L2TP/Xauth Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-upload.json
+#: Status: UNVERIFIED
+msgid "The top IPsec users grouped by amount of data uploaded."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-upload.json
+#: Status: UNVERIFIED
+msgid "Top Upload Users"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-tunnel-stats.json
+#: Status: UNVERIFIED
+msgid "Shows all IPsec tunnel traffic statistics events."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-tunnel-stats.json
+#: Status: UNVERIFIED
+msgid "Tunnel Traffic Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "The top IPsec VPN connections by protocol."
+msgstr ""
+
+#: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-protocol.json
+#: Status: UNVERIFIED
+msgid "Top Protocols"
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/policy-manager-all-events.json
+#: Status: UNVERIFIED
+msgid "Lists all sessions with the policy manager rack that handled the session."
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/usage-by-policy.json
+#: Status: UNVERIFIED
+msgid "The amount of bandwidth per policy."
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/usage-by-policy.json
+#: Status: UNVERIFIED
+msgid "Top Policy Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/sessions-by-policy.json
+#: Status: UNVERIFIED
+msgid "The number of sessions for each policy."
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/sessions-by-policy.json
+#: Status: UNVERIFIED
+msgid "Sessions By Policy"
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Policy Manager actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Policy Manager Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/traffic-by-policy.json
+#: Status: UNVERIFIED
+msgid "The amount of traffic for each policy."
+msgstr ""
+
+#: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/traffic-by-policy.json
+#: Status: UNVERIFIED
+msgid "Traffic By Policy"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-query-events.json
+#: Status: UNVERIFIED
+msgid "Shows all search querires processed by Web Filter."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-query-events.json
+#: Status: UNVERIFIED
+msgid "All Query Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Categories (by request)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Clients (by requests)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of web filter actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Web Filter Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-flagged.json
+#: Status: UNVERIFIED
+msgid "The amount of flagged, and blocked web requests over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-flagged.json
+#: Status: UNVERIFIED
+msgid "Web Usage (flagged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-flagged-web-events.json
+#: Status: UNVERIFIED
+msgid "Shows all flagged web requests."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-flagged-web-events.json
+#: Status: UNVERIFIED
+msgid "Flagged Web Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames (by requests)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-all-area.json
+#: Status: UNVERIFIED
+msgid "The amount of total, flagged, and blocked web requests over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-all-area.json
+#: Status: UNVERIFIED
+msgid "Web Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Usernames (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Hostnames (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-content-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Content (by request)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-web-events.json
+#: Status: UNVERIFIED
+msgid "Shows all scanned web requests."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-web-events.json
+#: Status: UNVERIFIED
+msgid "All Web Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web requests grouped by website."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Sites"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web requests grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Categories"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Usernames (by requests)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Categories (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web request grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by website."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Sites (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-content-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Content (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web request grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-http-events.json
+#: Status: UNVERIFIED
+msgid "Shows all scanned unencrypted HTTP requests."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-http-events.json
+#: Status: UNVERIFIED
+msgid "All HTTP Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web requests grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Categories"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web requests grouped by domain."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Domains"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web requests grouped by domain."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Domains"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-https-events.json
+#: Status: UNVERIFIED
+msgid "Shows all encrypted HTTPS requests."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-https-events.json
+#: Status: UNVERIFIED
+msgid "All HTTPS Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web request grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web requests grouped by website."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Sites"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged web request grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web request grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by website."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Sites (by request)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-blocked.json
+#: Status: UNVERIFIED
+msgid "Web Usage (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-unblocked-web-events.json
+#: Status: UNVERIFIED
+msgid "Shows all unblocked web requests"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-unblocked-web-events.json
+#: Status: UNVERIFIED
+msgid "Unblocked Web Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-usage.json
+#: Status: UNVERIFIED
+msgid "The amount of web requests per top domain."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-usage.json
+#: Status: UNVERIFIED
+msgid "Top Domains Usage"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by domain."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Domains (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-request.json
+#: Status: UNVERIFIED
+msgid "The number of web requests grouped by domain."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-request.json
+#: Status: UNVERIFIED
+msgid "Top Domains (by request)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-scanned.json
+#: Status: UNVERIFIED
+msgid "Web Usage (scanned)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-size.json
+#: Status: UNVERIFIED
+msgid "The sum of the size of requested web content grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Clients (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked web request grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-blocked-web-events.json
+#: Status: UNVERIFIED
+msgid "Shows all blocked web requests."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-blocked-web-events.json
+#: Status: UNVERIFIED
+msgid "Blocked Web Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of WAN Balancer actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/summary.json
+#: Status: UNVERIFIED
+msgid "WAN Balancer Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/sessions-by-inteface.json
+#: Status: UNVERIFIED
+msgid "The number of sessions destined to each interface."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/sessions-by-inteface.json
+#: Status: UNVERIFIED
+msgid "Sessions By Interface"
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/bytes-by-interface.json
+#: Status: UNVERIFIED
+msgid "The number of bytes destined to each interface."
+msgstr ""
+
+#: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/bytes-by-interface.json
+#: Status: UNVERIFIED
+msgid "Bytes By Interface"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/web-cache-webcache-events.json
+#: Status: UNVERIFIED
+msgid "All HTTP events processed by Web Cache."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/web-cache-webcache-events.json
+#: Status: UNVERIFIED
+msgid "Web Cache Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Web Cache actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Web Cache Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/size-stats.json
+#: Status: UNVERIFIED
+msgid "The amount of cached and uncached web data over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/size-stats.json
+#: Status: UNVERIFIED
+msgid "Cache Size Statistics"
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/cache-stats.json
+#: Status: UNVERIFIED
+msgid "The number of cache hits, misses, and sessions bypassed over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/cache-stats.json
+#: Status: UNVERIFIED
+msgid "Cache Hit-Miss Statistics"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged sessions grouped by application."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-flagged.json
+#: Status: UNVERIFIED
+msgid "Top Flagged Applications"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked sessions grouped by application."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-blocked.json
+#: Status: UNVERIFIED
+msgid "Top Blocked Applications"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-blocked-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions matching an application control signature and blocked."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-scanned.json
+#: Status: UNVERIFIED
+msgid "Scanned Sessions (all)"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Application Control actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Application Control Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-flagged.json
+#: Status: UNVERIFIED
+msgid "The amount of flagged, and blocked sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-flagged.json
+#: Status: UNVERIFIED
+msgid "Scanned Sessions (flagged)"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-flagged-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions matching an application control signature and flagged."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-flagged-sessions.json
+#: Status: UNVERIFIED
+msgid "Flagged Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-blocked.json
+#: Status: UNVERIFIED
+msgid "Scanned Sessions (blocked)"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-classified-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions matching an application control signature."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-classified-sessions.json
+#: Status: UNVERIFIED
+msgid "Classified Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-all-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions scanned by Application Control."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-usage.json
+#: Status: UNVERIFIED
+msgid "The amount of bandwidth per top application."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-hostname-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged sessions grouped by hostname."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-size.json
+#: Status: UNVERIFIED
+msgid "The number of bytes grouped by application."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-size.json
+#: Status: UNVERIFIED
+msgid "Top Applications (by size)"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-client-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged sessions grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-client-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked sessions grouped by client."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-username-by-flagged.json
+#: Status: UNVERIFIED
+msgid "The number of flagged sessions grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-username-by-blocked.json
+#: Status: UNVERIFIED
+msgid "The number of blocked sessions grouped by username."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-sessions.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by application."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-sessions.json
+#: Status: UNVERIFIED
+msgid "Top Applications (by sessions)"
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-category-by-sessions.json
+#: Status: UNVERIFIED
+msgid "The number of sessions grouped by category."
+msgstr ""
+
+#: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-category-by-sessions.json
+#: Status: UNVERIFIED
+msgid "Top Categories (by sessions)"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Captive Portal actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/summary.json
+#: Status: UNVERIFIED
+msgid "Captive Portal Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-rule-events.json
+#: Status: UNVERIFIED
+msgid "All sessions processed by Captive Portal."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-rule-events.json
+#: Status: UNVERIFIED
+msgid "All Session Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-idle-timeout.json
+#: Status: UNVERIFIED
+msgid "Sessions that reached the idle timeout."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-idle-timeout.json
+#: Status: UNVERIFIED
+msgid "Idle Timeout User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/top-blocked-clients.json
+#: Status: UNVERIFIED
+msgid "The top clients that were blocked by Captive Portal because they were not logged in."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-session-timeout.json
+#: Status: UNVERIFIED
+msgid "Sessions that reached the session timeout."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-session-timeout.json
+#: Status: UNVERIFIED
+msgid "Session Timeout User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-capture-rule-events.json
+#: Status: UNVERIFIED
+msgid "Sessions matching capture rules."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-capture-rule-events.json
+#: Status: UNVERIFIED
+msgid "Captured Session Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-admin-logout.json
+#: Status: UNVERIFIED
+msgid "Sessions logged off by the admin."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-admin-logout.json
+#: Status: UNVERIFIED
+msgid "Admin Logout User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/top-active-users.json
+#: Status: UNVERIFIED
+msgid "The top active users that logged in to Captive Portal."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-failure.json
+#: Status: UNVERIFIED
+msgid "Failed logins to Captive Portal."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-failure.json
+#: Status: UNVERIFIED
+msgid "Login Failure User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-success.json
+#: Status: UNVERIFIED
+msgid "Successful logins to Captive Portal."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-success.json
+#: Status: UNVERIFIED
+msgid "Login Success User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-pass-rule-events.json
+#: Status: UNVERIFIED
+msgid "Sessions matching passed hosts."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-pass-rule-events.json
+#: Status: UNVERIFIED
+msgid "Passed Session Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/event-summary.json
+#: Status: UNVERIFIED
+msgid "A summary of Captive Portal activity."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/event-summary.json
+#: Status: UNVERIFIED
+msgid "Activity Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-events.json
+#: Status: UNVERIFIED
+msgid "All user sessions processed by Captive Portal."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-events.json
+#: Status: UNVERIFIED
+msgid "All User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-user-logout.json
+#: Status: UNVERIFIED
+msgid "All user logout events."
+msgstr ""
+
+#: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-user-logout.json
+#: Status: UNVERIFIED
+msgid "User Logout User Events"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.json
+#: Status: UNVERIFIED
+msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.json
+#: Status: UNVERIFIED
+msgid "Ignored Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.json
+#: Status: UNVERIFIED
+msgid "All sessions detected by SSL Inspector."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.json
+#: Status: UNVERIFIED
+msgid "The amount of SSL sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.json
+#: Status: UNVERIFIED
+msgid "A summary of SSL Inspector actions."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.json
+#: Status: UNVERIFIED
+msgid "SSL Inspector Summary"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.json
+#: Status: UNVERIFIED
+msgid "The amount of inspected SSL sessions over time."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.json
+#: Status: UNVERIFIED
+msgid "Sessions Inspected"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.json
+#: Status: UNVERIFIED
+msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.json
+#: Status: UNVERIFIED
+msgid "Inspected Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.json
+#: Status: UNVERIFIED
+msgid "Events where traffic was blocked because the server certificate could not be authenticated."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.json
+#: Status: UNVERIFIED
+msgid "Untrusted Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.json
+#: Status: UNVERIFIED
+msgid "The number of inspected sessions grouped by site."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.json
+#: Status: UNVERIFIED
+msgid "Top Inspected Sites"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.json
+#: Status: UNVERIFIED
+msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.json
+#: Status: UNVERIFIED
+msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.json
+#: Status: UNVERIFIED
+msgid "Abandoned Sessions"
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.json
+#: Status: UNVERIFIED
+msgid "The number of ignored sessions grouped by site."
+msgstr ""
+
+#: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.json
+#: Status: UNVERIFIED
+msgid "Top Ignored Sites"
 msgstr ""
