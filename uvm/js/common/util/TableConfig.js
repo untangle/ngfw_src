@@ -3201,6 +3201,18 @@ Ext.define('TableConfig', {
             }]
         },
         intrusion_prevention_events: {
+            setupGrid: function(){
+                this.refresh();
+            },
+            refresh: function(){
+                var me = this;
+                var policy = Ext.getStore('policies').findRecord('policyId', 1);
+                var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
+                    return inst.appName === "intrusion-prevention";
+                });
+                me.app = Rpc.directData('rpc.appManager.app', appInstance.id);
+                me.settings = Rpc.directData(me.app, 'getSettings');
+            },
             fields: [{
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -3320,6 +3332,84 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'msg'
+            },{
+                xtype: 'actioncolumn',
+                dataIndex: 'blocked',
+                header: "Block".t(),
+                bind:{
+                    hidden: '{context !== "ADMIN"}'
+                },
+                align: 'center',
+                width: Renderer.actionWidth,
+                items: [{
+                    iconCls: 'fa fa-ban fa-black',
+                    tooltip: 'Create Block Rule'.t(),
+                    isDisabled: function(table, rowIndex, colIndex, item, record){
+                        var disabled = (record.get('blocked') == true) ? true : false;
+                        if(disabled == false){
+                            var recordGid = record.get('gen_id');
+                            var recordSid = record.get('sig_id');
+                            this.up('eventreport').getController().tableConfig.settings.rules.list.forEach(function(rule){
+                                var sidMatch = false;
+                                var gidMatch = false;
+                                rule.conditions.list.forEach(function(condition){
+                                    if(condition['type'] == 'SID' && condition['value'] == recordSid ){
+                                        sidMatch = true;
+                                    }else if(condition['type'] == 'GID' && condition['value'] == recordGid ){
+                                        gidMatch = true;
+                                    }
+                                });
+                                if(sidMatch && gidMatch){
+                                    disabled = true;
+                                }
+                            });
+                        }
+                        return disabled;
+                    },
+                    handler: function(grid, rowindex, colIndex, item, e, record){
+                        var v = grid.up('eventreport'),
+                            tableConfig = grid.up('eventreport').getController().tableConfig;
+
+                        var newRule = {
+                            'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
+                            'enabled': true,
+                            'id': -1,
+                            'description': 'Event Block'.t() + ': \"' + record.get('msg') + '\"',
+                            'conditions': {
+                                'javaClass': "java.util.LinkedList",
+                                'list': [{
+                                    'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition',
+                                    'type': 'SID',
+                                    'comparator': '=',
+                                    'value': record.get('sig_id')
+                                },{
+                                    'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition',
+                                    'type': 'GID',
+                                    'comparator': '=',
+                                    'value': record.get('gen_id')
+                                }]
+                            },
+                            'action': 'block'
+                        };
+
+                        v.setLoading(true);
+
+                        tableConfig.setupGrid();
+                        tableConfig.settings.rules.list.unshift(newRule);
+
+                        Rpc.asyncData(tableConfig.app, 'setSettings', tableConfig.settings)
+                        .then(function(result){
+                            if(Util.isDestroyed(v, grid, tableConfig)){
+                                return;
+                            }
+                            v.setLoading(false);
+                            grid.refresh();
+                            Util.successToast(Ext.String.format('Added block rule: {0}'.t(), newRule['description']));
+                        }, function(ex) {
+                            Util.handleException(ex);
+                        });
+                    }
+                }]
             }]
         },
         openvpn_events: {
