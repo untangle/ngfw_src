@@ -15595,304 +15595,304 @@ msgstr "XThe Category URL Cache was cleared succesfully.X"
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/model/AppState.js:35
 #: Status: UNVERIFIED
 msgid "Powering on"
-msgstr ""
+msgstr "XPowering onX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/model/AppState.js:37
 #: Status: UNVERIFIED
 msgid "Enabled but is not active"
-msgstr ""
+msgstr "XEnabled but is not activeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/model/AppState.js:43
 #: Status: UNVERIFIED
 msgid "Powering off"
-msgstr ""
+msgstr "XPowering offX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/model/AppState.js:45
 #: Status: UNVERIFIED
 msgid "Disabled but active"
-msgstr ""
+msgstr "XDisabled but activeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Wizard.js:127
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Interfaces.js:198
 #: Status: UNVERIFIED
 msgid "Loading interfaces..."
-msgstr ""
+msgstr "XLoading interfaces...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Wizard.js:130
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Interfaces.js:201
 #: Status: UNVERIFIED
 msgid "Unable to load interfaces."
-msgstr ""
+msgstr "XUnable to load interfaces.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Main.js:25
 #: Status: UNVERIFIED
 msgid "A wizard will guide you through the initial setup and configuration of the {0} Server."
-msgstr ""
+msgstr "XA wizard will guide you through the initial setup and configuration of the {0} Server.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Main.js:40
 #: Status: UNVERIFIED
 msgid "Resume Setup Wizard"
-msgstr ""
+msgstr "XResume Setup WizardX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Main.js:49
 #: Status: UNVERIFIED
 msgid "{!resuming ? \"Run Setup Wizard\" : \"Restart\"}"
-msgstr ""
+msgstr "X{!resuming ? \"Run Setup Wizard\" : \"Restart\"}X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Main.js:90
 #: Status: UNVERIFIED
 msgid "Authentication required"
-msgstr ""
+msgstr "XAuthentication requiredX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/Main.js:91
 #: Status: UNVERIFIED
 msgid "Please enter admin password"
-msgstr ""
+msgstr "XPlease enter admin passwordX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Wireless.js:5
 #: Status: UNVERIFIED
 msgid "Wireless Settings"
-msgstr ""
+msgstr "XWireless SettingsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:5
 #: Status: UNVERIFIED
 msgid "Server Settings"
-msgstr ""
+msgstr "XServer SettingsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:32
 #: Status: UNVERIFIED
 msgid "Admin account"
-msgstr ""
+msgstr "XAdmin accountX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:37
 #: Status: UNVERIFIED
 msgid "Choose a password for the <strong>admin</strong> account"
-msgstr ""
+msgstr "XChoose a password for the <strong>admin</strong> accountX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:89
 #: Status: UNVERIFIED
 msgid "Choose Type"
-msgstr ""
+msgstr "XChoose TypeX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:90
 #: Status: UNVERIFIED
 msgid "Select"
-msgstr ""
+msgstr "XSelectX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Complete.js:18
 #: Status: UNVERIFIED
 msgid "</h1><br/><br/>You are now ready to configure the applications."
-msgstr ""
+msgstr "X</h1><br/><br/>You are now ready to configure the applications.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:106
 #: Status: UNVERIFIED
 msgid "Secondary DNS (optional)"
-msgstr ""
+msgstr "XSecondary DNS (optional)X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:203
 #: Status: UNVERIFIED
 msgid "Unable to fetch Network Settings."
-msgstr ""
+msgstr "XUnable to fetch Network Settings.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:221
 #: Status: UNVERIFIED
 msgid "Unable to get WAN status."
-msgstr ""
+msgstr "XUnable to get WAN status.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:232
 #: Status: UNVERIFIED
 msgid "Unable to set Network Settings."
-msgstr ""
+msgstr "XUnable to set Network Settings.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:306
 #: Status: UNVERIFIED
 msgid "Invalid settings"
-msgstr ""
+msgstr "XInvalid settingsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Internet.js:306
 #: Status: UNVERIFIED
 msgid "Some fields have invalid values."
-msgstr ""
+msgstr "XSome fields have invalid values.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Interfaces.js:161
 #: Status: UNVERIFIED
 msgid "Untangle must be installed \"in-line\" as a gateway. <br/>This usually requires at least 2 network cards (NICs) and fewer than 2 NICs were detected."
-msgstr ""
+msgstr "XUntangle must be installed \"in-line\" as a gateway. <br/>This usually requires at least 2 network cards (NICs) and fewer than 2 NICs were detected.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Interfaces.js:166
 #: Status: UNVERIFIED
 msgid "Continue anyway"
-msgstr ""
+msgstr "XContinue anywayX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/AutoUpgrades.js:77
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/Interfaces.js:387
 #: Status: UNVERIFIED
 msgid "Saving Settings ..."
-msgstr ""
+msgstr "XSaving Settings ...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/AutoUpgrades.js:5
 #: Status: UNVERIFIED
 msgid "Auto Upgrades"
-msgstr ""
+msgstr "XAuto UpgradesX"
 
 #: /ngfw/ngfw_src/reports/js/MainController.js:259
 #: Status: UNVERIFIED
 msgid "Send Email Report"
-msgstr ""
+msgstr "XSend Email ReportX"
 
 #: /ngfw/ngfw_src/reports/js/MainController.js:285
 #: Status: UNVERIFIED
 msgid "Reports processing"
-msgstr ""
+msgstr "XReports processingX"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/UserNotificationApi.js:51
 #: Status: UNVERIFIED
 msgid "If you use an Active Directory server, you should install the Active Directory Login Monitor on the server as described by the help documentation.  Otherwise, you will need to download and install the following script on all clients."
-msgstr ""
+msgstr "XIf you use an Active Directory server, you should install the Active Directory Login Monitor on the server as described by the help documentation.  Otherwise, you will need to download and install the following script on all clients.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:18
 #: Status: UNVERIFIED
 msgid "This allows the server to connect to an {0}Active Directory Server{1} for authentication of username/passwords and building of a user-group map."
-msgstr ""
+msgstr "XThis allows the server to connect to an {0}Active Directory Server{1} for authentication of username/passwords and building of a user-group map.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:24
 #: Status: UNVERIFIED
 msgid "{0}NOTE:{1}  Additional steps are required to associate hosts and sessions with usernames, such as using Captive Portal, the Active Directory Server Login Monitor Agent, or the Login Script."
-msgstr ""
+msgstr "X{0}NOTE:{1}  Additional steps are required to associate hosts and sessions with usernames, such as using Captive Portal, the Active Directory Server Login Monitor Agent, or the Login Script.X"
 
 #: /ngfw/ngfw_src/directory-connector/js/view/ActiveDirectory.js:25
 #: Status: UNVERIFIED
 msgid "See {0}Help{1} for more details."
-msgstr ""
+msgstr "XSee {0}Help{1} for more details.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/js/view/GreNetworks.js:100 standard
 #: input:160
 #: Status: UNVERIFIED
 msgid "TTL"
-msgstr ""
+msgstr "XTTLX"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:815
 #: Status: UNVERIFIED
 msgid "This may negatively affect Web Filter performance."
-msgstr ""
+msgstr "XThis may negatively affect Web Filter performance.X"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:984
 #: Status: UNVERIFIED
 msgid "The timezone has been changed since boot. A reboot is required."
-msgstr ""
+msgstr "XThe timezone has been changed since boot. A reboot is required.X"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/CertificateManagerImpl.java:936
 #: Status: UNVERIFIED
 msgid "Certificate not found"
-msgstr ""
+msgstr "XCertificate not foundX"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:533
 #: Status: UNVERIFIED
 msgid "Add Global Condition"
-msgstr ""
+msgstr "XAdd Global ConditionX"
 
 #: /ngfw/ngfw_src/uvm/js/common/ungrid/GridFilter.js:37
 #: Status: UNVERIFIED
 msgid "Search ..."
-msgstr ""
+msgstr "XSearch ...X"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:3346
 #: Status: UNVERIFIED
 msgid "Create Block Rule"
-msgstr ""
+msgstr "XCreate Block RuleX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:3377
 #: Status: UNVERIFIED
 msgid "Event Block"
-msgstr ""
+msgstr "XEvent BlockX"
 
 #: /ngfw/ngfw_src/uvm/js/common/util/TableConfig.js:3407
 #: Status: UNVERIFIED
 msgid "Added block rule: {0}"
-msgstr ""
+msgstr "XAdded block rule: {0}X"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:95
 #: Status: UNVERIFIED
 msgid "Higher Education"
-msgstr ""
+msgstr "XHigher EducationX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:96
 #: Status: UNVERIFIED
 msgid "State & Local Government"
-msgstr ""
+msgstr "XState & Local GovernmentX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:97
 #: Status: UNVERIFIED
 msgid "Federal Government"
-msgstr ""
+msgstr "XFederal GovernmentX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:98
 #: Status: UNVERIFIED
 msgid "Nonprofit"
-msgstr ""
+msgstr "XNonprofitX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:99
 #: Status: UNVERIFIED
 msgid "Hospitality & Retail"
-msgstr ""
+msgstr "XHospitality & RetailX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:100
 #: Status: UNVERIFIED
 msgid "Healthcare"
-msgstr ""
+msgstr "XHealthcareX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:101
 #: Status: UNVERIFIED
 msgid "Banking & Financial"
-msgstr ""
+msgstr "XBanking & FinancialX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/ServerSettings.js:103
 #: Status: UNVERIFIED
 msgid "Student"
-msgstr ""
+msgstr "XStudentX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/AutoUpgrades.js:6
 #: Status: UNVERIFIED
 msgid "Automatic Upgrades and Command Center Access"
-msgstr ""
+msgstr "XAutomatic Upgrades and Command Center AccessX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/AutoUpgrades.js:30
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Support.js:22
 #: Status: UNVERIFIED
 msgid "Connect to Command Center"
-msgstr ""
+msgstr "XConnect to Command CenterX"
 
 #: /ngfw/ngfw_src/uvm/servlets/setup/app/view/step/AutoUpgrades.js:35
 #: Status: UNVERIFIED
 msgid "Remain securely connected to the Command Center for cloud management, hot fixes, and support access."
-msgstr ""
+msgstr "XRemain securely connected to the Command Center for cloud management, hot fixes, and support access.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/MainHeading.js:79
 #: Status: UNVERIFIED
 msgid "Suggest Idea"
-msgstr ""
+msgstr "XSuggest IdeaX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:146
 #: Status: UNVERIFIED
 msgid "No Conditions! Add from the menu..."
-msgstr ""
+msgstr "XNo Conditions! Add from the menu...X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:164
 #: Status: UNVERIFIED
 msgid "{type} <strong>{comparator} <span class=\"cond-val\"> {value}</span></strong>"
-msgstr ""
+msgstr "X{type} <strong>{comparator} <span class=\"cond-val\"> {value}</span></strong>X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:398
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:131
 #: Status: UNVERIFIED
 msgid "<"
-msgstr ""
+msgstr "X<X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:400
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:133
 #: Status: UNVERIFIED
 msgid "<="
-msgstr ""
+msgstr "X<=X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:402
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/AppRemove.js:414
@@ -15900,7 +15900,7 @@ msgstr ""
 #: input:151 input:163
 #: Status: UNVERIFIED
 msgid "="
-msgstr ""
+msgstr "X=X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:404
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/AppRemove.js:416
@@ -15908,3122 +15908,3122 @@ msgstr ""
 #: input:153 input:165
 #: Status: UNVERIFIED
 msgid "!="
-msgstr ""
+msgstr "X!=X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:406
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:139
 #: Status: UNVERIFIED
 msgid ">="
-msgstr ""
+msgstr "X>=X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:408
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:141
 #: Status: UNVERIFIED
 msgid ">"
-msgstr ""
+msgstr "X>X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:418
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:143 standard
 #: input:155 input:167
 #: Status: UNVERIFIED
 msgid "Contains"
-msgstr ""
+msgstr "XContainsX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/ConditionsEditor.js:420
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:145 standard
 #: input:157 input:169
 #: Status: UNVERIFIED
 msgid "Does not contain"
-msgstr ""
+msgstr "XDoes not containX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/AppMemory.js:5
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/cmp/AppMemoryController.js:179
 #: Status: UNVERIFIED
 msgid "Memory Usage"
-msgstr ""
+msgstr "XMemory UsageX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:478
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/Main.js:575
 #: Status: UNVERIFIED
 msgid "Server Certificate"
-msgstr ""
+msgstr "XServer CertificateX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:486
 #: Status: UNVERIFIED
 msgid "Certificate Key"
-msgstr ""
+msgstr "XCertificate KeyX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:494
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/Main.js:583
 #: Status: UNVERIFIED
 msgid "Optional Intermediate Certificates"
-msgstr ""
+msgstr "XOptional Intermediate CertificatesX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:508
 #: Status: UNVERIFIED
 msgid "Import a certificate or key file"
-msgstr ""
+msgstr "XImport a certificate or key fileX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:531
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/Main.js:619
 #: Status: UNVERIFIED
 msgid "Certificate Upload Success"
-msgstr ""
+msgstr "XCertificate Upload SuccessX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:535
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/Main.js:623
 #: Status: UNVERIFIED
 msgid "Certificate Upload Error"
-msgstr ""
+msgstr "XCertificate Upload ErrorX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:540
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/Main.js:628
 #: Status: UNVERIFIED
 msgid "Clear Form"
-msgstr ""
+msgstr "XClear FormX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:565
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/view/Certificates.js:235
 #: Status: UNVERIFIED
 msgid "Import Signing Request Certificate"
-msgstr ""
+msgstr "XImport Signing Request CertificateX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:597
 #: Status: UNVERIFIED
 msgid "Import a certificate file"
-msgstr ""
+msgstr "XImport a certificate fileX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:703
 #: Status: UNVERIFIED
 msgid "Please choose a file to import."
-msgstr ""
+msgstr "XPlease choose a file to import.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:731
 #: Status: UNVERIFIED
 msgid "Import Failure"
-msgstr ""
+msgstr "XImport FailureX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/about/MainController.js:44
 #: Status: UNVERIFIED
 msgid "Serial Number"
-msgstr ""
+msgstr "XSerial NumberX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/about/view/Server.js:21
 #: Status: UNVERIFIED
 msgid "Do not publicly post or share the system or account information."
-msgstr ""
+msgstr "XDo not publicly post or share the system or account information.X"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/upgrade/view/Upgrade.js:79
 #: Status: UNVERIFIED
 msgid "Any week day"
-msgstr ""
+msgstr "XAny week dayX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/upgrade/view/Upgrade.js:79
 #: Status: UNVERIFIED
 msgid "Specific days"
-msgstr ""
+msgstr "XSpecific daysX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/events/MainController.js:54
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:249
 #: Status: UNVERIFIED
 msgid "False"
-msgstr ""
+msgstr "XFalseX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/src/com/untangle/app/intrusion_prevention/IntrusionPreventionApp.java:131
 #: Status: UNVERIFIED
 msgid "Memory usage"
-msgstr ""
+msgstr "XMemory usageX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/src/com/untangle/app/intrusion_prevention/IntrusionPreventionApp.java:564
 #: /ngfw/ngfw_src/intrusion-prevention/src/com/untangle/app/intrusion_prevention/IntrusionPreventionApp.java:603
 #: Status: UNVERIFIED
 msgid "default-rule-path"
-msgstr ""
+msgstr "Xdefault-rule-pathX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:47
 #: Status: UNVERIFIED
 msgid "Loading signatures..."
-msgstr ""
+msgstr "XLoading signatures...X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:446
 #: Status: UNVERIFIED
 msgid "Rule: {0}, Action:{1}"
-msgstr ""
+msgstr "XRule: {0}, Action:{1}X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:446
 #: Status: UNVERIFIED
 msgid ")"
-msgstr ""
+msgstr "X)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:460
 #: Status: UNVERIFIED
 msgid "No rule match"
-msgstr ""
+msgstr "XNo rule matchX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:579
 #: Status: UNVERIFIED
 msgid "Affected signatures:"
-msgstr ""
+msgstr "XAffected signatures:X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:609
 #: Status: UNVERIFIED
 msgid "Gid must be numeric"
-msgstr ""
+msgstr "XGid must be numericX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:663
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:664
 #: Status: UNVERIFIED
 msgid "Gid/Sid already in use."
-msgstr ""
+msgstr "XGid/Sid already in use.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:709
 #: Status: UNVERIFIED
 msgid "Signature is invalid."
-msgstr ""
+msgstr "XSignature is invalid.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:876
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Signatures.js:121
 #: Status: UNVERIFIED
 msgid "Rule Action"
-msgstr ""
+msgstr "XRule ActionX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/MainController.js:1189
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Variables.js:64
 #: Status: UNVERIFIED
 msgid "Variable is used by one or more signatures."
-msgstr ""
+msgstr "XVariable is used by one or more signatures.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:89 standard input:100
 #: Status: UNVERIFIED
 msgid "Disable"
-msgstr ""
+msgstr "XDisableX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:97
 #: Status: UNVERIFIED
 msgid "Enable Log"
-msgstr ""
+msgstr "XEnable LogX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:98
 #: Status: UNVERIFIED
 msgid "Enable Block if Recommended is Enabled"
-msgstr ""
+msgstr "XEnable Block if Recommended is EnabledX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:99
 #: Status: UNVERIFIED
 msgid "Enable Block"
-msgstr ""
+msgstr "XEnable BlockX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:152
 #: Status: UNVERIFIED
 msgid "General rules"
-msgstr ""
+msgstr "XGeneral rulesX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:157
 #: Status: UNVERIFIED
 msgid "{0} ({1})"
-msgstr ""
+msgstr "X{0} ({1})X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:167
 #: Status: UNVERIFIED
 msgid "This category contains signatures that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves."
-msgstr ""
+msgstr "XThis category contains signatures that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:169
 #: Status: UNVERIFIED
 msgid "These are designed to catch the results of a successful attack. Things like 'id=root', or error messages that indicate a compromise may have happened. Note: Trojan and virus post-infection activity is included generally in the VIRUS signature set, not here."
-msgstr ""
+msgstr "XThese are designed to catch the results of a successful attack. Things like 'id=root', or error messages that indicate a compromise may have happened. Note: Trojan and virus post-infection activity is included generally in the VIRUS signature set, not here.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:170
 #: Status: UNVERIFIED
 msgid "This category contains URI, USER-AGENT, DNS, and IP address signatures that have been determined to be indicators of malicious activity. These signatures are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources."
-msgstr ""
+msgstr "XThis category contains URI, USER-AGENT, DNS, and IP address signatures that have been determined to be indicators of malicious activity. These signatures are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:180
 #: Status: UNVERIFIED
 msgid "General community shared signatures."
-msgstr ""
+msgstr "XGeneral community shared signatures.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:181
 #: Status: UNVERIFIED
 msgid "Signatures to block known hostile or compromised hosts."
-msgstr ""
+msgstr "XSignatures to block known hostile or compromised hosts.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:182
 #: Status: UNVERIFIED
 msgid "This category contains any signature that utilizes the replace functionality inside of Snort."
-msgstr ""
+msgstr "XThis category contains any signature that utilizes the replace functionality inside of Snort.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:183
 #: Status: UNVERIFIED
 msgid "Signatures identified by various alert agencies."
-msgstr ""
+msgstr "XSignatures identified by various alert agencies.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:186
 #: Status: UNVERIFIED
 msgid "When a signature has been deprecated or replaced it is moved to this categories. Signatures are never totally removed from the signature set, they are moved here."
-msgstr ""
+msgstr "XWhen a signature has been deprecated or replaced it is moved to this categories. Signatures are never totally removed from the signature set, they are moved here.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:187
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the DNS protocol or vulnerabilities in the DNS protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the DNS protocol or vulnerabilities in the DNS protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:192
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are specifically tailored to detect exploit kit activity. This does not include post-compromise signatures (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category."
-msgstr ""
+msgstr "XThis category contains signatures that are specifically tailored to detect exploit kit activity. This does not include post-compromise signatures (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:193
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities that are found or are delivered through executable files, regardless of platform."
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities that are found or are delivered through executable files, regardless of platform.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:194
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked."
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:195
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)"
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:196
 #: Status: UNVERIFIED
 msgid "This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different signature."
-msgstr ""
+msgstr "XThis category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different signature.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:197
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities present inside of multimedia files (mp3, movies, wmv)"
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities present inside of multimedia files (mp3, movies, wmv)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:198
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)"
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:199
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:200
 #: Status: UNVERIFIED
 msgid "This category contains signatures for vulnerabilities present inside a file, that doesn't fit into the other categories above."
-msgstr ""
+msgstr "XThis category contains signatures for vulnerabilities present inside a file, that doesn't fit into the other categories above.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:201 standard
 #: input:230
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:202
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of gaming protocols or vulnerabilities in the gaming protocols on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of gaming protocols or vulnerabilities in the gaming protocols on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:203 standard
 #: input:231
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:205 standard
 #: input:232
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:207
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are clearly to be used only for the detection of a positively compromised system, false positives may occur."
-msgstr ""
+msgstr "XThis category contains signatures that are clearly to be used only for the detection of a positively compromised system, false positives may occur.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:208
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are clearly used only for the detection of obfuscated content. Like encoded JavaScript signatures."
-msgstr ""
+msgstr "XThis category contains signatures that are clearly used only for the detection of obfuscated content. Like encoded JavaScript signatures.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:209
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.signatures."
-msgstr ""
+msgstr "XThis category contains signatures that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.signatures.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:210
 #: Status: UNVERIFIED
 msgid "Signatures that attempt to send informaton to commonly known malware sites."
-msgstr ""
+msgstr "XSignatures that attempt to send informaton to commonly known malware sites.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:211
 #: Status: UNVERIFIED
 msgid "This category contains signatures for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent."
-msgstr ""
+msgstr "XThis category contains signatures for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:213
 #: Status: UNVERIFIED
 msgid "This category contains signatures that deal with tools that can be considered malicious in nature. For example, LOIC."
-msgstr ""
+msgstr "XThis category contains signatures that deal with tools that can be considered malicious in nature. For example, LOIC.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:214
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are malware related, but don't fit into one of the other malware categories."
-msgstr ""
+msgstr "XThis category contains signatures that are malware related, but don't fit into one of the other malware categories.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:216
 #: Status: UNVERIFIED
 msgid "This category contains signatures for the detection of traffic on mobile devices."
-msgstr ""
+msgstr "XThis category contains signatures for the detection of traffic on mobile devices.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:217
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of NetBIOS traffic or vulnerabilities in NetBIOS on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of NetBIOS traffic or vulnerabilities in NetBIOS on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:218
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself."
-msgstr ""
+msgstr "XThis category contains signatures that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:219
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS."
-msgstr ""
+msgstr "XThis category contains signatures that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:220
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS."
-msgstr ""
+msgstr "XThis category contains signatures that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:221
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are looking for vulnerabilities in an OS that is not listed above."
-msgstr ""
+msgstr "XThis category contains signatures that are looking for vulnerabilities in an OS that is not listed above.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:223
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the pop3 protocol or vulnerabilities in the pop3 protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the pop3 protocol or vulnerabilities in the pop3 protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:224
 #: Status: UNVERIFIED
 msgid "This category contains signatures that are looking for vulnerabilities via portscans."
-msgstr ""
+msgstr "XThis category contains signatures that are looking for vulnerabilities via portscans.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:225
 #: Status: UNVERIFIED
 msgid "This category contains signatures that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia."
-msgstr ""
+msgstr "XThis category contains signatures that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:226
 #: Status: UNVERIFIED
 msgid "This category contains signatures for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)"
-msgstr ""
+msgstr "XThis category contains signatures for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:227
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may violate the end-users corporate policy bud do not fall into any of the other policy categories first."
-msgstr ""
+msgstr "XThis category is for signatures that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:228
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of spam on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of spam on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:229
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:233
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:234
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:235
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:249
 #: Status: UNVERIFIED
 msgid "This category contains signatures that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself."
-msgstr ""
+msgstr "XThis category contains signatures that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:250
 #: Status: UNVERIFIED
 msgid "This category contains signatures that detect vulnerabilities in or attacks against servers that are not detailed in the above list."
-msgstr ""
+msgstr "XThis category contains signatures that detect vulnerabilities in or attacks against servers that are not detailed in the above list.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:252
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the SMTP protocol or vulnerabilities in the SMTP protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the SMTP protocol or vulnerabilities in the SMTP protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:253
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the SNMP protocol or vulnerabilities in the SNMP protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the SNMP protocol or vulnerabilities in the SNMP protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/Main.js:255
 #: Status: UNVERIFIED
 msgid "This category is for signatures that may indicate the presence of the TFTP protocol or vulnerabilities in the TFTP protocol on the network."
-msgstr ""
+msgstr "XThis category is for signatures that may indicate the presence of the TFTP protocol or vulnerabilities in the TFTP protocol on the network.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:26
 #: Status: UNVERIFIED
 msgid "Content Processing"
-msgstr ""
+msgstr "XContent ProcessingX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:32
 #: Status: UNVERIFIED
 msgid "Maximum scan depth (bytes)"
-msgstr ""
+msgstr "XMaximum scan depth (bytes)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:40
 #: Status: UNVERIFIED
 msgid "Signature Options"
-msgstr ""
+msgstr "XSignature OptionsX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:46
 #: Status: UNVERIFIED
 msgid "Block action"
-msgstr ""
+msgstr "XBlock actionX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:53
 #: Status: UNVERIFIED
 msgid "reject (default)"
-msgstr ""
+msgstr "Xreject (default)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Advanced.js:54
 #: Status: UNVERIFIED
 msgid "drop"
-msgstr ""
+msgstr "XdropX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Signatures.js:116
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:187 standard
 #: input:253
 #: Status: UNVERIFIED
 msgid "Recommended Action"
-msgstr ""
+msgstr "XRecommended ActionX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Signatures.js:133
 #: Status: UNVERIFIED
 msgid "[enter gid]"
-msgstr ""
+msgstr "X[enter gid]X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Signatures.js:181
 #: Status: UNVERIFIED
 msgid "[enter msg]"
-msgstr ""
+msgstr "X[enter msg]X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Signatures.js:205
 #: Status: UNVERIFIED
 msgid "[enter signature]"
-msgstr ""
+msgstr "X[enter signature]X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:16
 #: Status: UNVERIFIED
 msgid "No Rules Defined"
-msgstr ""
+msgstr "XNo Rules DefinedX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:35
 #: Status: UNVERIFIED
 msgid "{0}Signatures affected:{1} Log: {2}, Block: {3}, Disabled: {4}"
-msgstr ""
+msgstr "X{0}Signatures affected:{1} Log: {2}, Block: {3}, Disabled: {4}X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:114
 #: Status: UNVERIFIED
 msgid "For all signatures that match the following conditions:"
-msgstr ""
+msgstr "XFor all signatures that match the following conditions:X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:115
 #: Status: UNVERIFIED
 msgid "Modify each signature as:"
-msgstr ""
+msgstr "XModify each signature as:X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:175
 #: Status: UNVERIFIED
 msgid "Signature Identifier"
-msgstr ""
+msgstr "XSignature IdentifierX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:180
 #: Status: UNVERIFIED
 msgid "Group Identifier"
-msgstr ""
+msgstr "XGroup IdentifierX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:203
 #: Status: UNVERIFIED
 msgid "Message"
-msgstr ""
+msgstr "XMessageX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:238
 #: Status: UNVERIFIED
 msgid "Any part of signature"
-msgstr ""
+msgstr "XAny part of signatureX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:243
 #: Status: UNVERIFIED
 msgid "Custom signature"
-msgstr ""
+msgstr "XCustom signatureX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/IpsRules.js:262
 #: Status: UNVERIFIED
 msgid "System Memory"
-msgstr ""
+msgstr "XSystem MemoryX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:37
 #: Status: UNVERIFIED
 msgid "Overview"
-msgstr ""
+msgstr "XOverviewX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:51
 #: Status: UNVERIFIED
 msgid "Signatures available"
-msgstr ""
+msgstr "XSignatures availableX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:82
 #: Status: UNVERIFIED
 msgid "{0}Warning:{1} No signatures are enabled for Log or Block."
-msgstr ""
+msgstr "X{0}Warning:{1} No signatures are enabled for Log or Block.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:94
 #: Status: UNVERIFIED
 msgid "Last check"
-msgstr ""
+msgstr "XLast checkX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:102
 #: Status: UNVERIFIED
 msgid "{0}Note:{1} {2} continues to maintain the recommended signature settings through automatic updates. You are free to add signatures, however it is not required."
-msgstr ""
+msgstr "X{0}Note:{1} {2} continues to maintain the recommended signature settings through automatic updates. You are free to add signatures, however it is not required.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-tx.json
 #: Status: UNVERIFIED
 msgid "The total received data usage by interface."
-msgstr ""
+msgstr "XThe total received data usage by interface.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-tx.json
 #: Status: UNVERIFIED
 msgid "Data Tx-Usage (by interface)"
-msgstr ""
+msgstr "XData Tx-Usage (by interface)X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-summary.json
 #: Status: UNVERIFIED
 msgid "A summary of network traffic."
-msgstr ""
+msgstr "XA summary of network traffic.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-summary.json
 #: Status: UNVERIFIED
 msgid "Network Summary"
-msgstr ""
+msgstr "XNetwork SummaryX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/server-events.json
 #: Status: UNVERIFIED
 msgid "All system status events."
-msgstr ""
+msgstr "XAll system status events.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/server-events.json
 #: Status: UNVERIFIED
 msgid "Server Status Events"
-msgstr ""
+msgstr "XServer Status EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-country-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by server (destination) country."
-msgstr ""
+msgstr "XThe number of sessions grouped by server (destination) country.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-country-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Server Countries"
-msgstr ""
+msgstr "XTop Server CountriesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-additions.json
 #: Status: UNVERIFIED
 msgid "The amount of devices add and removed from the device table over time."
-msgstr ""
+msgstr "XThe amount of devices add and removed from the device table over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-additions.json
 #: Status: UNVERIFIED
 msgid "Devices Additions"
-msgstr ""
+msgstr "XDevices AdditionsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-scanned.json
 #: Status: UNVERIFIED
 msgid "The amount of total, scanned, and bypassed sessions over time."
-msgstr ""
+msgstr "XThe amount of total, scanned, and bypassed sessions over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-hour.json
 #: Status: UNVERIFIED
 msgid "The amount of total, scanned, and bypassed sessions created per hour."
-msgstr ""
+msgstr "XThe amount of total, scanned, and bypassed sessions created per hour.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-hour.json
 #: Status: UNVERIFIED
 msgid "Sessions Per Hour"
-msgstr ""
+msgstr "XSessions Per HourX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/bandwidth-usage.json
 #: Status: UNVERIFIED
 msgid "The approximate averaged data transfer rate (total, sent, received) over time."
-msgstr ""
+msgstr "XThe approximate averaged data transfer rate (total, sent, received) over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/bandwidth-usage.json
 #: Status: UNVERIFIED
 msgid "Bandwidth Usage"
-msgstr ""
+msgstr "XBandwidth UsageX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates.json
 #: Status: UNVERIFIED
 msgid "All updates to devices in the device table."
-msgstr ""
+msgstr "XAll updates to devices in the device table.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates.json
 #: Status: UNVERIFIED
 msgid "Devices Events"
-msgstr ""
+msgstr "XDevices EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-penalty-box.json
 #: Status: UNVERIFIED
 msgid "Shows when hosts are tagged with penalty-box or have the tag removed."
-msgstr ""
+msgstr "XShows when hosts are tagged with penalty-box or have the tag removed.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-penalty-box.json
 #: Status: UNVERIFIED
 msgid "Penalty Box Events"
-msgstr ""
+msgstr "XPenalty Box EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/interface-stats.json
 #: Status: UNVERIFIED
 msgid "The RX rate of each interface over time."
-msgstr ""
+msgstr "XThe RX rate of each interface over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/interface-stats.json
 #: Status: UNVERIFIED
 msgid "Interface Usage"
-msgstr ""
+msgstr "XInterface UsageX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-minute.json
 #: Status: UNVERIFIED
 msgid "The amount of total, scanned, and bypassed sessions created per minute."
-msgstr ""
+msgstr "XThe amount of total, scanned, and bypassed sessions created per minute.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/sessions-per-minute.json
 #: Status: UNVERIFIED
 msgid "Sessions Per Minute"
-msgstr ""
+msgstr "XSessions Per MinuteX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total-by-day.json
 #: Status: UNVERIFIED
 msgid "The data usage of each interface by day"
-msgstr ""
+msgstr "XThe data usage of each interface by dayX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total-by-day.json
 #: Status: UNVERIFIED
 msgid "Data Usage per Day (by interface)"
-msgstr ""
+msgstr "XData Usage per Day (by interface)X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-blocked-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions blocked by filter rules."
-msgstr ""
+msgstr "XAll sessions blocked by filter rules.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-blocked-sessions.json
 #: Status: UNVERIFIED
 msgid "Blocked Sessions"
-msgstr ""
+msgstr "XBlocked SessionsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-protocols-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by IP protocol number."
-msgstr ""
+msgstr "XThe number of sessions grouped by IP protocol number.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-protocols-by-session.json
 #: Status: UNVERIFIED
 msgid "Top IP Protocols"
-msgstr ""
+msgstr "XTop IP ProtocolsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-updates.json
 #: Status: UNVERIFIED
 msgid "All updates to hosts in the host table."
-msgstr ""
+msgstr "XAll updates to hosts in the host table.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/hosts-updates.json
 #: Status: UNVERIFIED
 msgid "Hosts Events"
-msgstr ""
+msgstr "XHosts EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/users-updates.json
 #: Status: UNVERIFIED
 msgid "All updates to users in the user table."
-msgstr ""
+msgstr "XAll updates to users in the user table.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/users-updates.json
 #: Status: UNVERIFIED
 msgid "Users Events"
-msgstr ""
+msgstr "XUsers EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-clients-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by client (source) address."
-msgstr ""
+msgstr "XThe number of sessions grouped by client (source) address.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-clients-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Client Addresses"
-msgstr ""
+msgstr "XTop Client AddressesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-bypassed-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions matching a bypass rule and bypassed."
-msgstr ""
+msgstr "XAll sessions matching a bypass rule and bypassed.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates-report.json
 #: Status: UNVERIFIED
 msgid "The number of updates to the device table over time."
-msgstr ""
+msgstr "XThe number of updates to the device table over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/devices-updates-report.json
 #: Status: UNVERIFIED
 msgid "Devices Updates"
-msgstr ""
+msgstr "XDevices UpdatesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-size.json
 #: Status: UNVERIFIED
 msgid "The amount of active hosts by time."
-msgstr ""
+msgstr "XThe amount of active hosts by time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-size.json
 #: Status: UNVERIFIED
 msgid "Hosts Active"
-msgstr ""
+msgstr "XHosts ActiveX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/admin-logins.json
 #: Status: UNVERIFIED
 msgid "The number of total, successful, and failed admin logins over time."
-msgstr ""
+msgstr "XThe number of total, successful, and failed admin logins over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/admin-logins.json
 #: Status: UNVERIFIED
 msgid "Admin Logins"
-msgstr ""
+msgstr "XAdmin LoginsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-logins.json
 #: Status: UNVERIFIED
 msgid "All local administrator logins."
-msgstr ""
+msgstr "XAll local administrator logins.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-logins.json
 #: Status: UNVERIFIED
 msgid "Admin Login Events"
-msgstr ""
+msgstr "XAdmin Login EventsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-port-forwarded-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions match a port forward rule."
-msgstr ""
+msgstr "XAll sessions match a port forward rule.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-port-forwarded-sessions.json
 #: Status: UNVERIFIED
 msgid "Port Forwarded Sessions"
-msgstr ""
+msgstr "XPort Forwarded SessionsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-updates.json
 #: Status: UNVERIFIED
 msgid "The number of updates to the host table over time."
-msgstr ""
+msgstr "XThe number of updates to the host table over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-updates.json
 #: Status: UNVERIFIED
 msgid "Hosts Updates"
-msgstr ""
+msgstr "XHosts UpdatesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-scanned-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions that were not bypassed."
-msgstr ""
+msgstr "XAll sessions that were not bypassed.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions handled by Untangle."
-msgstr ""
+msgstr "XAll sessions handled by Untangle.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-sessions.json
 #: Status: UNVERIFIED
 msgid "All Sessions"
-msgstr ""
+msgstr "XAll SessionsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-servers-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by server (destination) address."
-msgstr ""
+msgstr "XThe number of sessions grouped by server (destination) address.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-servers-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Server Addresses"
-msgstr ""
+msgstr "XTop Server AddressesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-port-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by server (destination) port."
-msgstr ""
+msgstr "XThe number of sessions grouped by server (destination) port.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-port-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Server Ports"
-msgstr ""
+msgstr "XTop Server PortsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total.json
 #: Status: UNVERIFIED
 msgid "The total data usage by interface."
-msgstr ""
+msgstr "XThe total data usage by interface.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-total.json
 #: Status: UNVERIFIED
 msgid "Data Usage (by interface)"
-msgstr ""
+msgstr "XData Usage (by interface)X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/settings-changes.json
 #: Status: UNVERIFIED
 msgid "The number of settings changes over time."
-msgstr ""
+msgstr "XThe number of settings changes over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/settings-changes.json
 #: Status: UNVERIFIED
 msgid "Settings Changes"
-msgstr ""
+msgstr "XSettings ChangesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-settings-changes.json
 #: Status: UNVERIFIED
 msgid "All settings changes performed by an administrator."
-msgstr ""
+msgstr "XAll settings changes performed by an administrator.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/administration-settings-changes.json
 #: Status: UNVERIFIED
 msgid "All Settings Changes"
-msgstr ""
+msgstr "XAll Settings ChangesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-data-rx.json
 #: Status: UNVERIFIED
 msgid "Data Rx-Usage (by interface)"
-msgstr ""
+msgstr "XData Rx-Usage (by interface)X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-session-minutes.json
 #: Status: UNVERIFIED
 msgid "All sessions by minute."
-msgstr ""
+msgstr "XAll sessions by minute.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-all-session-minutes.json
 #: Status: UNVERIFIED
 msgid "All Session Minutes"
-msgstr ""
+msgstr "XAll Session MinutesX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-additions.json
 #: Status: UNVERIFIED
 msgid "The amount of hosts add and removed from the host table over time."
-msgstr ""
+msgstr "XThe amount of hosts add and removed from the host table over time.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/host-table-additions.json
 #: Status: UNVERIFIED
 msgid "Hosts Additions"
-msgstr ""
+msgstr "XHosts AdditionsX"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-natd-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions that have been NATd by Untangle."
-msgstr ""
+msgstr "XAll sessions that have been NATd by Untangle.X"
 
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/network-natd-sessions.json
 #: Status: UNVERIFIED
 msgid "NATd Sessions"
-msgstr ""
+msgstr "XNATd SessionsX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-cookie-events.json
 #: Status: UNVERIFIED
 msgid "Requests blocked by cookie filters."
-msgstr ""
+msgstr "XRequests blocked by cookie filters.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-cookie-events.json
 #: Status: UNVERIFIED
 msgid "Blocked Cookie Events"
-msgstr ""
+msgstr "XBlocked Cookie EventsX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of ad blocker actions."
-msgstr ""
+msgstr "XA summary of ad blocker actions.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Ad Blocker Summary"
-msgstr ""
+msgstr "XAd Blocker SummaryX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/top-sites-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked ads grouped by website."
-msgstr ""
+msgstr "XThe number of blocked ads grouped by website.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/top-sites-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Ad Sites"
-msgstr ""
+msgstr "XTop Blocked Ad SitesX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-blocked-events.json
 #: Status: UNVERIFIED
 msgid "HTTP requests blocked by Ad Blocker."
-msgstr ""
+msgstr "XHTTP requests blocked by Ad Blocker.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-blocked-events.json
 #: Status: UNVERIFIED
 msgid "Blocked Ad Events"
-msgstr ""
+msgstr "XBlocked Ad EventsX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/web-usage-all.json
 #: Status: UNVERIFIED
 msgid "The amount of detected and blocked ads over time."
-msgstr ""
+msgstr "XThe amount of detected and blocked ads over time.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/web-usage-all.json
 #: Status: UNVERIFIED
 msgid "Ads Blocked"
-msgstr ""
+msgstr "XAds BlockedX"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-all-events.json
 #: Status: UNVERIFIED
 msgid "All HTTP requests scanned by Ad Blocker."
-msgstr ""
+msgstr "XAll HTTP requests scanned by Ad Blocker.X"
 
 #: /ngfw/ngfw_src/ad-blocker/hier/usr/share/untangle/lib/ad-blocker/reports/ad-blocker-all-events.json
 #: Status: UNVERIFIED
 msgid "All Ad Events"
-msgstr ""
+msgstr "XAll Ad EventsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of scanned session grouped by hostname."
-msgstr ""
+msgstr "XThe number of scanned session grouped by hostname.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Scanned Hostnames"
-msgstr ""
+msgstr "XTop Scanned HostnamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/sessions-scanned.json
 #: Status: UNVERIFIED
 msgid "The amount of scanned, flagged, and blocked sessions over time."
-msgstr ""
+msgstr "XThe amount of scanned, flagged, and blocked sessions over time.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of firewall actions."
-msgstr ""
+msgstr "XA summary of firewall actions.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Firewall Summary"
-msgstr ""
+msgstr "XFirewall SummaryX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-flagged-events.json
 #: Status: UNVERIFIED
 msgid "Events flagged by Firewall App."
-msgstr ""
+msgstr "XEvents flagged by Firewall App.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-flagged-events.json
 #: Status: UNVERIFIED
 msgid "Flagged Events"
-msgstr ""
+msgstr "XFlagged EventsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged session grouped by hostname."
-msgstr ""
+msgstr "XThe number of flagged session grouped by hostname.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Hostnames"
-msgstr ""
+msgstr "XTop Flagged HostnamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged session grouped by client."
-msgstr ""
+msgstr "XThe number of flagged session grouped by client.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Clients"
-msgstr ""
+msgstr "XTop Flagged ClientsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Clients"
-msgstr ""
+msgstr "XTop Blocked ClientsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-blocked-events.json
 #: Status: UNVERIFIED
 msgid "Events blocked by Firewall App."
-msgstr ""
+msgstr "XEvents blocked by Firewall App.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-blocked-events.json
 #: Status: UNVERIFIED
 msgid "Blocked Events"
-msgstr ""
+msgstr "XBlocked EventsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged session grouped by username."
-msgstr ""
+msgstr "XThe number of flagged session grouped by username.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Usernames"
-msgstr ""
+msgstr "XTop Flagged UsernamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Usernames"
-msgstr ""
+msgstr "XTop Blocked UsernamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of scanned session grouped by server (destination) port."
-msgstr ""
+msgstr "XThe number of scanned session grouped by server (destination) port.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Scanned Server Ports"
-msgstr ""
+msgstr "XTop Scanned Server PortsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-all-events.json
 #: Status: UNVERIFIED
 msgid "All events scanned by Firewall App."
-msgstr ""
+msgstr "XAll events scanned by Firewall App.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/firewall-all-events.json
 #: Status: UNVERIFIED
 msgid "All Events"
-msgstr ""
+msgstr "XAll EventsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of scanned session grouped by username."
-msgstr ""
+msgstr "XThe number of scanned session grouped by username.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-username-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Scanned Usernames"
-msgstr ""
+msgstr "XTop Scanned UsernamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-session.json
 #: Status: UNVERIFIED
 msgid "The number of scanned session grouped by client."
-msgstr ""
+msgstr "XThe number of scanned session grouped by client.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-client-by-session.json
 #: Status: UNVERIFIED
 msgid "Top Scanned Clients"
-msgstr ""
+msgstr "XTop Scanned ClientsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked sessions grouped by hostname."
-msgstr ""
+msgstr "XThe number of blocked sessions grouped by hostname.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-hostname-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Hostnames"
-msgstr ""
+msgstr "XTop Blocked HostnamesX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of flagged session grouped by server (destination) port."
-msgstr ""
+msgstr "XThe number of flagged session grouped by server (destination) port.X"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Server Ports"
-msgstr ""
+msgstr "XTop Blocked Server PortsX"
 
 #: /ngfw/ngfw_src/firewall/hier/usr/share/untangle/lib/firewall/reports/top-port-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Server Ports"
-msgstr ""
+msgstr "XTop Flagged Server PortsX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of intrusion detection and prevention actions."
-msgstr ""
+msgstr "XA summary of intrusion detection and prevention actions.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Intrusion Prevention Summary"
-msgstr ""
+msgstr "XIntrusion Prevention SummaryX"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by classtype."
-msgstr ""
+msgstr "XThe number of intrusions blocked by classtype.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Classtypes (blocked)"
-msgstr ""
+msgstr "XTop Classtypes (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-all.json
 #: Status: UNVERIFIED
 msgid "The amount of detected and blocked intrusions over time."
-msgstr ""
+msgstr "XThe amount of detected and blocked intrusions over time.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-all.json
 #: Status: UNVERIFIED
 msgid "Intrusion Detection (all)"
-msgstr ""
+msgstr "XIntrusion Detection (all)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by category."
-msgstr ""
+msgstr "XThe number of intrusions blocked by category.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Categories (blocked)"
-msgstr ""
+msgstr "XTop Categories (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by destination IP address."
-msgstr ""
+msgstr "XThe number of intrusions blocked by destination IP address.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Destination IP Addresses (blocked)"
-msgstr ""
+msgstr "XTop Destination IP Addresses (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by signature."
-msgstr ""
+msgstr "XThe number of intrusions blocked by signature.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Signatures (blocked)"
-msgstr ""
+msgstr "XTop Signatures (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by source port."
-msgstr ""
+msgstr "XThe number of intrusions blocked by source port.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Source Port (blocked)"
-msgstr ""
+msgstr "XTop Source Port (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by category."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by category.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-categories-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Categories (logged)"
-msgstr ""
+msgstr "XTop Categories (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-blocked.json
 #: Status: UNVERIFIED
 msgid "The amount of blocked intrusions over time."
-msgstr ""
+msgstr "XThe amount of blocked intrusions over time.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-blocked.json
 #: Status: UNVERIFIED
 msgid "Intrusion Detection (blocked)"
-msgstr ""
+msgstr "XIntrusion Detection (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by source IP address."
-msgstr ""
+msgstr "XThe number of intrusions blocked by source IP address.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Source IP Addresses (blocked)"
-msgstr ""
+msgstr "XTop Source IP Addresses (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by protocol."
-msgstr ""
+msgstr "XThe number of intrusions blocked by protocol.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Protocols (blocked)"
-msgstr ""
+msgstr "XTop Protocols (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions blocked by destination port."
-msgstr ""
+msgstr "XThe number of intrusions blocked by destination port.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Destination Port (blocked)"
-msgstr ""
+msgstr "XTop Destination Port (blocked)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by source IP address."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by source IP address.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-ip-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Source IP Addresses (logged)"
-msgstr ""
+msgstr "XTop Source IP Addresses (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/intrusion-prevention-blocked-events.json
 #: Status: UNVERIFIED
 msgid "All sessions matching Intrusion Prevention signatures and blocked."
-msgstr ""
+msgstr "XAll sessions matching Intrusion Prevention signatures and blocked.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by source port."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by source port.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-source-port-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Source Ports (logged)"
-msgstr ""
+msgstr "XTop Source Ports (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-logged.json
 #: Status: UNVERIFIED
 msgid "The amount of detected intrusions over time."
-msgstr ""
+msgstr "XThe amount of detected intrusions over time.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/ips-usage-logged.json
 #: Status: UNVERIFIED
 msgid "Intrusion Detection (logged)"
-msgstr ""
+msgstr "XIntrusion Detection (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by protocol."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by protocol.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-protocols-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Protocols (logged)"
-msgstr ""
+msgstr "XTop Protocols (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by signature."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by signature.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-signatures-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Signatures (logged)"
-msgstr ""
+msgstr "XTop Signatures (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by destination port."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by destination port.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-port-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Destination Ports (logged)"
-msgstr ""
+msgstr "XTop Destination Ports (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by destination IP address."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by destination IP address.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-destination-ip-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Destination IP Addresses (logged)"
-msgstr ""
+msgstr "XTop Destination IP Addresses (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-logged.json
 #: Status: UNVERIFIED
 msgid "The number of intrusions detected grouped by classtype."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by classtype.X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/top-classtypes-by-logged.json
 #: Status: UNVERIFIED
 msgid "Top Classtypes (logged)"
-msgstr ""
+msgstr "XTop Classtypes (logged)X"
 
 #: /ngfw/ngfw_src/intrusion-prevention/hier/usr/share/untangle/lib/intrusion-prevention/reports/intrusion-prevention-all-events.json
 #: Status: UNVERIFIED
 msgid "All sessions scanned by Intrusion Prevention."
-msgstr ""
+msgstr "XAll sessions scanned by Intrusion Prevention.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of OpenVPN actions."
-msgstr ""
+msgstr "XA summary of OpenVPN actions.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/summary.json
 #: Status: UNVERIFIED
 msgid "OpenVPN Summary"
-msgstr ""
+msgstr "XOpenVPN SummaryX"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/bandwidth-usage.json
 #: Status: UNVERIFIED
 msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
+msgstr "XThe approximate amount of data transfered over openvpn connections.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/bandwidth-usage.json
 #: Status: UNVERIFIED
 msgid "OpenVPN Bandwidth Usage"
-msgstr ""
+msgstr "XOpenVPN Bandwidth UsageX"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-events.json
 #: Status: UNVERIFIED
 msgid "The amount of login and logout events over time."
-msgstr ""
+msgstr "XThe amount of login and logout events over time.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-events.json
 #: Status: UNVERIFIED
 msgid "OpenVPN Events"
-msgstr ""
+msgstr "XOpenVPN EventsX"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/top-username-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
+msgstr "XThe number of bytes transferred grouped by remote client.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/top-username-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Clients (by usage)"
-msgstr ""
+msgstr "XTop Clients (by usage)X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-sessions.json
 #: Status: UNVERIFIED
 msgid "The amount of openvpn sessions over time."
-msgstr ""
+msgstr "XThe amount of openvpn sessions over time.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-sessions.json
 #: Status: UNVERIFIED
 msgid "OpenVPN Sessions"
-msgstr ""
+msgstr "XOpenVPN SessionsX"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-connect-events.json
 #: Status: UNVERIFIED
 msgid "OpenVPN client connection events."
-msgstr ""
+msgstr "XOpenVPN client connection events.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-connect-events.json
 #: Status: UNVERIFIED
 msgid "Connection Events"
-msgstr ""
+msgstr "XConnection EventsX"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-statistics.json
 #: Status: UNVERIFIED
 msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
+msgstr "XShows all OpenVPN connection traffic statistics events.X"
 
 #: /ngfw/ngfw_src/openvpn/hier/usr/share/untangle/lib/openvpn/reports/openvpn-statistics.json
 #: Status: UNVERIFIED
 msgid "Statistic Events"
-msgstr ""
+msgstr "XStatistic EventsX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-receivers.json
 #: Status: UNVERIFIED
 msgid "The number of email addresses with phish."
-msgstr ""
+msgstr "XThe number of email addresses with phish.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-receivers.json
 #: Status: UNVERIFIED
 msgid "Top Phish Recipients"
-msgstr ""
+msgstr "XTop Phish RecipientsX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of phish blocking actions for email activity."
-msgstr ""
+msgstr "XA summary of phish blocking actions for email activity.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Phish Blocker Summary"
-msgstr ""
+msgstr "XPhish Blocker SummaryX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-phish-events.json
 #: Status: UNVERIFIED
 msgid "All email sessions detected as phishing attempts."
-msgstr ""
+msgstr "XAll email sessions detected as phishing attempts.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-phish-events.json
 #: Status: UNVERIFIED
 msgid "All Phish Events"
-msgstr ""
+msgstr "XAll Phish EventsX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-all.json
 #: Status: UNVERIFIED
 msgid "The amount of scanned, clean, and phish email over time."
-msgstr ""
+msgstr "XThe amount of scanned, clean, and phish email over time.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-all.json
 #: Status: UNVERIFIED
 msgid "Email Usage (all)"
-msgstr ""
+msgstr "XEmail Usage (all)X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-spam.json
 #: Status: UNVERIFIED
 msgid "The amount of phish email over time."
-msgstr ""
+msgstr "XThe amount of phish email over time.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-spam.json
 #: Status: UNVERIFIED
 msgid "Email Usage (phish)"
-msgstr ""
+msgstr "XEmail Usage (phish)X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-email-events.json
 #: Status: UNVERIFIED
 msgid "All email sessions scanned by Phish Blocker."
-msgstr ""
+msgstr "XAll email sessions scanned by Phish Blocker.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-all-email-events.json
 #: Status: UNVERIFIED
 msgid "All Email Events"
-msgstr ""
+msgstr "XAll Email EventsX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-quarantined-events.json
 #: Status: UNVERIFIED
 msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr ""
+msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/phish-blocker-quarantined-events.json
 #: Status: UNVERIFIED
 msgid "Quarantined Events"
-msgstr ""
+msgstr "XQuarantined EventsX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-clean.json
 #: Status: UNVERIFIED
 msgid "The amount of clean email over time."
-msgstr ""
+msgstr "XThe amount of clean email over time.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-clean.json
 #: Status: UNVERIFIED
 msgid "Email Usage (clean)"
-msgstr ""
+msgstr "XEmail Usage (clean)X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-sender-hosts.json
 #: Status: UNVERIFIED
 msgid "The number of IP addresses sending phish."
-msgstr ""
+msgstr "XThe number of IP addresses sending phish.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/top-spam-sender-hosts.json
 #: Status: UNVERIFIED
 msgid "Top Phish Sender Addresses"
-msgstr ""
+msgstr "XTop Phish Sender AddressesX"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-scanned.json
 #: Status: UNVERIFIED
 msgid "The amount of scanned email over time."
-msgstr ""
+msgstr "XThe amount of scanned email over time.X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/email-usage-scanned.json
 #: Status: UNVERIFIED
 msgid "Email Usage (scanned)"
-msgstr ""
+msgstr "XEmail Usage (scanned)X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/spam-ratio.json
 #: Status: UNVERIFIED
 msgid "The ratio of phish (true) to ham (false)"
-msgstr ""
+msgstr "XThe ratio of phish (true) to ham (false)X"
 
 #: /ngfw/ngfw_src/phish-blocker/hier/usr/share/untangle/lib/phish-blocker/reports/spam-ratio.json
 #: Status: UNVERIFIED
 msgid "Phish Ratio"
-msgstr ""
+msgstr "XPhish RatioX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/detection-stats.json
 #: Status: UNVERIFIED
 msgid "The number of logged and blocked sessions over time."
-msgstr ""
+msgstr "XThe number of logged and blocked sessions over time.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/detection-stats.json
 #: Status: UNVERIFIED
 msgid "Detection Statistics"
-msgstr ""
+msgstr "XDetection StatisticsX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-hosts.json
 #: Status: UNVERIFIED
 msgid "The top logged sessions by host."
-msgstr ""
+msgstr "XThe top logged sessions by host.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-hosts.json
 #: Status: UNVERIFIED
 msgid "Top Logged Hosts"
-msgstr ""
+msgstr "XTop Logged HostsX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "The top logged sessions by protocol."
-msgstr ""
+msgstr "XThe top logged sessions by protocol.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "Top Logged Protocols"
-msgstr ""
+msgstr "XTop Logged ProtocolsX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-users.json
 #: Status: UNVERIFIED
 msgid "The top blocked sessions by user."
-msgstr ""
+msgstr "XThe top blocked sessions by user.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-users.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Users"
-msgstr ""
+msgstr "XTop Blocked UsersX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Application Control Lite actions."
-msgstr ""
+msgstr "XA summary of Application Control Lite actions.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Application Control Lite Summary"
-msgstr ""
+msgstr "XApplication Control Lite SummaryX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "The top blocked sessions by protocol."
-msgstr ""
+msgstr "XThe top blocked sessions by protocol.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Protocols"
-msgstr ""
+msgstr "XTop Blocked ProtocolsX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/application-control-lite-blocked-events.json
 #: Status: UNVERIFIED
 msgid "All sessions matching an application signature and blocked."
-msgstr ""
+msgstr "XAll sessions matching an application signature and blocked.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-hosts.json
 #: Status: UNVERIFIED
 msgid "The top blocked sessions by host."
-msgstr ""
+msgstr "XThe top blocked sessions by host.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-blocked-hosts.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Hosts"
-msgstr ""
+msgstr "XTop Blocked HostsX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-users.json
 #: Status: UNVERIFIED
 msgid "The top logged sessions by user."
-msgstr ""
+msgstr "XThe top logged sessions by user.X"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/top-logged-users.json
 #: Status: UNVERIFIED
 msgid "Top Logged Users"
-msgstr ""
+msgstr "XTop Logged UsersX"
 
 #: /ngfw/ngfw_src/application-control-lite/hier/usr/share/untangle/lib/application-control-lite/reports/application-control-lite-all-events.json
 #: Status: UNVERIFIED
 msgid "All sessions scanned by Application Control Lite."
-msgstr ""
+msgstr "XAll sessions scanned by Application Control Lite.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap-percent.json
 #: Status: UNVERIFIED
 msgid "The swap utilization over time as a percent of total swap size ."
-msgstr ""
+msgstr "XThe swap utilization over time as a percent of total swap size .X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap-percent.json
 #: Status: UNVERIFIED
 msgid "Swap Usage"
-msgstr ""
+msgstr "XSwap UsageX"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/memory.json
 #: Status: UNVERIFIED
 msgid "The amount of free memory over time."
-msgstr ""
+msgstr "XThe amount of free memory over time.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/disk.json
 #: Status: UNVERIFIED
 msgid "The disk utilization over time."
-msgstr ""
+msgstr "XThe disk utilization over time.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/disk.json
 #: Status: UNVERIFIED
 msgid "Disk Usage"
-msgstr ""
+msgstr "XDisk UsageX"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/cpu.json
 #: Status: UNVERIFIED
 msgid "The CPU load over time."
-msgstr ""
+msgstr "XThe CPU load over time.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/alerts.json
 #: Status: UNVERIFIED
 msgid "Alerts over time."
-msgstr ""
+msgstr "XAlerts over time.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/all-alert-events.json
 #: Status: UNVERIFIED
 msgid "Log of all alerts created by alert rules."
-msgstr ""
+msgstr "XLog of all alerts created by alert rules.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/all-alert-events.json
 #: Status: UNVERIFIED
 msgid "Alert Events"
-msgstr ""
+msgstr "XAlert EventsX"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap.json
 #: Status: UNVERIFIED
 msgid "The swap utilization over time."
-msgstr ""
+msgstr "XThe swap utilization over time.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/swap.json
 #: Status: UNVERIFIED
 msgid "Swap Usage Bytes"
-msgstr ""
+msgstr "XSwap Usage BytesX"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/top-alerts.json
 #: Status: UNVERIFIED
 msgid "The top alerts."
-msgstr ""
+msgstr "XThe top alerts.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/top-alerts.json
 #: Status: UNVERIFIED
 msgid "Top Alerts"
-msgstr ""
+msgstr "XTop AlertsX"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/active.json
 #: Status: UNVERIFIED
 msgid "The highest number of active hosts."
-msgstr ""
+msgstr "XThe highest number of active hosts.X"
 
 #: /ngfw/ngfw_src/reports/hier/usr/share/untangle/lib/reports/reports/active.json
 #: Status: UNVERIFIED
 msgid "Highest Active Hosts"
-msgstr ""
+msgstr "XHighest Active HostsX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-receivers.json
 #: Status: UNVERIFIED
 msgid "The number of email addresses with spam."
-msgstr ""
+msgstr "XThe number of email addresses with spam.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-receivers.json
 #: Status: UNVERIFIED
 msgid "Top Spam Recipients"
-msgstr ""
+msgstr "XTop Spam RecipientsX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-tarpit-events.json
 #: Status: UNVERIFIED
 msgid "All email sessions that were tarpitted."
-msgstr ""
+msgstr "XAll email sessions that were tarpitted.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-tarpit-events.json
 #: Status: UNVERIFIED
 msgid "Tarpit Events"
-msgstr ""
+msgstr "XTarpit EventsX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of spam blocking actions for email activity."
-msgstr ""
+msgstr "XA summary of spam blocking actions for email activity.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Spam Blocker Lite Summary"
-msgstr ""
+msgstr "XSpam Blocker Lite SummaryX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-all.json
 #: Status: UNVERIFIED
 msgid "The amount of scanned, clean, and spam email over time."
-msgstr ""
+msgstr "XThe amount of scanned, clean, and spam email over time.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-spam.json
 #: Status: UNVERIFIED
 msgid "The amount of spam email over time."
-msgstr ""
+msgstr "XThe amount of spam email over time.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/email-usage-spam.json
 #: Status: UNVERIFIED
 msgid "Email Usage (spam)"
-msgstr ""
+msgstr "XEmail Usage (spam)X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-email-events.json
 #: Status: UNVERIFIED
 msgid "All emails scanned by Spam Blocker."
-msgstr ""
+msgstr "XAll emails scanned by Spam Blocker.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-sender-hosts.json
 #: Status: UNVERIFIED
 msgid "The number of IP addresses sending spam."
-msgstr ""
+msgstr "XThe number of IP addresses sending spam.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/top-spam-sender-hosts.json
 #: Status: UNVERIFIED
 msgid "Top Spam Sender Addresses"
-msgstr ""
+msgstr "XTop Spam Sender AddressesX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-spam-events.json
 #: Status: UNVERIFIED
 msgid "All emails marked as Spam."
-msgstr ""
+msgstr "XAll emails marked as Spam.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-all-spam-events.json
 #: Status: UNVERIFIED
 msgid "All Spam Events"
-msgstr ""
+msgstr "XAll Spam EventsX"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-blocker-lite-quarantined-events.json
 #: Status: UNVERIFIED
 msgid "All emails marked as Spam and quarantined."
-msgstr ""
+msgstr "XAll emails marked as Spam and quarantined.X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-ratio.json
 #: Status: UNVERIFIED
 msgid "The ratio of spam (true) to ham (false)"
-msgstr ""
+msgstr "XThe ratio of spam (true) to ham (false)X"
 
 #: /ngfw/ngfw_src/spam-blocker-lite/hier/usr/share/untangle/lib/spam-blocker-lite/reports/spam-ratio.json
 #: Status: UNVERIFIED
 msgid "Spam Ratio"
-msgstr ""
+msgstr "XSpam RatioX"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Directory Connector actions."
-msgstr ""
+msgstr "XA summary of Directory Connector actions.X"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Directory Connector Summary"
-msgstr ""
+msgstr "XDirectory Connector SummaryX"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-usage.json
 #: Status: UNVERIFIED
 msgid "The amount of login, update and logout user notification API events over time."
-msgstr ""
+msgstr "XThe amount of login, update and logout user notification API events over time.X"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-usage.json
 #: Status: UNVERIFIED
 msgid "API Usage"
-msgstr ""
+msgstr "XAPI UsageX"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-events.json
 #: Status: UNVERIFIED
 msgid "Events from the user notification API."
-msgstr ""
+msgstr "XEvents from the user notification API.X"
 
 #: /ngfw/ngfw_src/directory-connector/hier/usr/share/untangle/lib/directory-connector/reports/api-events.json
 #: Status: UNVERIFIED
 msgid "API Events"
-msgstr ""
+msgstr "XAPI EventsX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-prioritized-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions prioritized by Bandwidth Control."
-msgstr ""
+msgstr "XAll sessions prioritized by Bandwidth Control.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-prioritized-sessions.json
 #: Status: UNVERIFIED
 msgid "Prioritized Sessions"
-msgstr ""
+msgstr "XPrioritized SessionsX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage by priority."
-msgstr ""
+msgstr "XThe bandwidth usage by priority.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-usage.json
 #: Status: UNVERIFIED
 msgid "Top Priorities Usage"
-msgstr ""
+msgstr "XTop Priorities UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by Application Control category."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by Application Control category.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Category (by total bytes)"
-msgstr ""
+msgstr "XTop Category (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by country."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by country.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Countries (by total bytes)"
-msgstr ""
+msgstr "XTop Countries (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Bandwidth Control actions."
-msgstr ""
+msgstr "XA summary of Bandwidth Control actions.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Bandwidth Control Summary"
-msgstr ""
+msgstr "XBandwidth Control SummaryX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by priority."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by priority.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-priority-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Priorities (by total bytes)"
-msgstr ""
+msgstr "XTop Priorities (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-sent.json
 #: Status: UNVERIFIED
 msgid "The sum of the data sent grouped by Application Control application."
-msgstr ""
+msgstr "XThe sum of the data sent grouped by Application Control application.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-sent.json
 #: Status: UNVERIFIED
 msgid "Top Application (by sent bytes)"
-msgstr ""
+msgstr "XTop Application (by sent bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bypassed-by-usage.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by bypassed."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by bypassed.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bypassed-by-usage.json
 #: Status: UNVERIFIED
 msgid "Bypassed (by total bytes)"
-msgstr ""
+msgstr "XBypassed (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage by top countries."
-msgstr ""
+msgstr "XThe bandwidth usage by top countries.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-country-usage.json
 #: Status: UNVERIFIED
 msgid "Top Countries Usage"
-msgstr ""
+msgstr "XTop Countries UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage by top server port."
-msgstr ""
+msgstr "XThe bandwidth usage by top server port.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-usage.json
 #: Status: UNVERIFIED
 msgid "Top Server Port Usage"
-msgstr ""
+msgstr "XTop Server Port UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage of the top applications."
-msgstr ""
+msgstr "XThe bandwidth usage of the top applications.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-usage.json
 #: Status: UNVERIFIED
 msgid "Top Applications Usage"
-msgstr ""
+msgstr "XTop Applications UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by server port."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by server port.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Ports (by total bytes)"
-msgstr ""
+msgstr "XTop Ports (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage of the top clients."
-msgstr ""
+msgstr "XThe bandwidth usage of the top clients.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-usage.json
 #: Status: UNVERIFIED
 msgid "Top Clients Usage"
-msgstr ""
+msgstr "XTop Clients UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-received.json
 #: Status: UNVERIFIED
 msgid "The sum of the received data grouped by hostname."
-msgstr ""
+msgstr "XThe sum of the received data grouped by hostname.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-received.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames (by received bytes)"
-msgstr ""
+msgstr "XTop Hostnames (by received bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-sent.json
 #: Status: UNVERIFIED
 msgid "The sum of the data sent grouped by server port."
-msgstr ""
+msgstr "XThe sum of the data sent grouped by server port.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-sent.json
 #: Status: UNVERIFIED
 msgid "Top Ports (by sent bytes)"
-msgstr ""
+msgstr "XTop Ports (by sent bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage of the top hostnames."
-msgstr ""
+msgstr "XThe bandwidth usage of the top hostnames.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-usage.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames Usage"
-msgstr ""
+msgstr "XTop Hostnames UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/bandwidth-control-all-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions processed by Bandwidth Control."
-msgstr ""
+msgstr "XAll sessions processed by Bandwidth Control.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by username."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by username.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Usernames (by total bytes)"
-msgstr ""
+msgstr "XTop Usernames (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage of the top usernames."
-msgstr ""
+msgstr "XThe bandwidth usage of the top usernames.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-username-usage.json
 #: Status: UNVERIFIED
 msgid "Top Usernames Usage"
-msgstr ""
+msgstr "XTop Usernames UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by client address."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by client address.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-client-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Clients (by total bytes)"
-msgstr ""
+msgstr "XTop Clients (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-sent.json
 #: Status: UNVERIFIED
 msgid "The sum of the sent data grouped by hostname."
-msgstr ""
+msgstr "XThe sum of the sent data grouped by hostname.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-sent.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames (by sent bytes)"
-msgstr ""
+msgstr "XTop Hostnames (by sent bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by hostname."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by hostname.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-hostname-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames (by total bytes)"
-msgstr ""
+msgstr "XTop Hostnames (by total bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-usage.json
 #: Status: UNVERIFIED
 msgid "The bandwidth usage of the top application categories."
-msgstr ""
+msgstr "XThe bandwidth usage of the top application categories.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-category-usage.json
 #: Status: UNVERIFIED
 msgid "Top Categories Usage"
-msgstr ""
+msgstr "XTop Categories UsageX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-received.json
 #: Status: UNVERIFIED
 msgid "The sum of the data received grouped by server port."
-msgstr ""
+msgstr "XThe sum of the data received grouped by server port.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-port-by-received.json
 #: Status: UNVERIFIED
 msgid "Top Ports (by received bytes)"
-msgstr ""
+msgstr "XTop Ports (by received bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/quota-events.json
 #: Status: UNVERIFIED
 msgid "Shows when quotas are assigned or expired."
-msgstr ""
+msgstr "XShows when quotas are assigned or expired.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/quota-events.json
 #: Status: UNVERIFIED
 msgid "Quota Events"
-msgstr ""
+msgstr "XQuota EventsX"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-received.json
 #: Status: UNVERIFIED
 msgid "Top Application (by received bytes)"
-msgstr ""
+msgstr "XTop Application (by received bytes)X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-bytes.json
 #: Status: UNVERIFIED
 msgid "The sum of the data transferred grouped by Application Control application."
-msgstr ""
+msgstr "XThe sum of the data transferred grouped by Application Control application.X"
 
 #: /ngfw/ngfw_src/bandwidth-control/hier/usr/share/untangle/lib/bandwidth-control/reports/top-application-by-bytes.json
 #: Status: UNVERIFIED
 msgid "Top Application (by total bytes)"
-msgstr ""
+msgstr "XTop Application (by total bytes)X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of configuration backup actions."
-msgstr ""
+msgstr "XA summary of configuration backup actions.X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Configuration Backup Summary"
-msgstr ""
+msgstr "XConfiguration Backup SummaryX"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-failed.json
 #: Status: UNVERIFIED
 msgid "The amount of failed configuration backups over time."
-msgstr ""
+msgstr "XThe amount of failed configuration backups over time.X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-failed.json
 #: Status: UNVERIFIED
 msgid "Backup Usage (failed)"
-msgstr ""
+msgstr "XBackup Usage (failed)X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-passed.json
 #: Status: UNVERIFIED
 msgid "The amount of successful configuration backups over time."
-msgstr ""
+msgstr "XThe amount of successful configuration backups over time.X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-passed.json
 #: Status: UNVERIFIED
 msgid "Backup Usage (success)"
-msgstr ""
+msgstr "XBackup Usage (success)X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/configuration-backup-backup-events.json
 #: Status: UNVERIFIED
 msgid "All Configuration Backup events."
-msgstr ""
+msgstr "XAll Configuration Backup events.X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/configuration-backup-backup-events.json
 #: Status: UNVERIFIED
 msgid "Backup Events"
-msgstr ""
+msgstr "XBackup EventsX"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-all.json
 #: Status: UNVERIFIED
 msgid "The amount of successes, and failures of configuration backup over time."
-msgstr ""
+msgstr "XThe amount of successes, and failures of configuration backup over time.X"
 
 #: /ngfw/ngfw_src/configuration-backup/hier/usr/share/untangle/lib/configuration-backup/reports/backup-usage-all.json
 #: Status: UNVERIFIED
 msgid "Backup Usage (all)"
-msgstr ""
+msgstr "XBackup Usage (all)X"
 
 #: /ngfw/ngfw_src/spam-blocker/hier/usr/share/untangle/lib/spam-blocker/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Spam Blocker Summary"
-msgstr ""
+msgstr "XSpam Blocker SummaryX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of WAN Failover actions."
-msgstr ""
+msgstr "XA summary of WAN Failover actions.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/summary.json
 #: Status: UNVERIFIED
 msgid "WAN Failover Summary"
-msgstr ""
+msgstr "XWAN Failover SummaryX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/failures-by-wan.json
 #: Status: UNVERIFIED
 msgid "The number of disconnect events grouped by WAN."
-msgstr ""
+msgstr "XThe number of disconnect events grouped by WAN.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/failures-by-wan.json
 #: Status: UNVERIFIED
 msgid "WAN Disconnect Events"
-msgstr ""
+msgstr "XWAN Disconnect EventsX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-failed-test-events.json
 #: Status: UNVERIFIED
 msgid "All tests that resulted in failure."
-msgstr ""
+msgstr "XAll tests that resulted in failure.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-failed-test-events.json
 #: Status: UNVERIFIED
 msgid "Failed Test Events"
-msgstr ""
+msgstr "XFailed Test EventsX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-success-test-events.json
 #: Status: UNVERIFIED
 msgid "All tests that resulted in success."
-msgstr ""
+msgstr "XAll tests that resulted in success.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-success-test-events.json
 #: Status: UNVERIFIED
 msgid "Success Test Events"
-msgstr ""
+msgstr "XSuccess Test EventsX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outages.json
 #: Status: UNVERIFIED
 msgid "The fails tests of each interface over time."
-msgstr ""
+msgstr "XThe fails tests of each interface over time.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outages.json
 #: Status: UNVERIFIED
 msgid "WAN Interface Outages"
-msgstr ""
+msgstr "XWAN Interface OutagesX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-test-events.json
 #: Status: UNVERIFIED
 msgid "All test events and their outcome."
-msgstr ""
+msgstr "XAll test events and their outcome.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-test-events.json
 #: Status: UNVERIFIED
 msgid "Test Events"
-msgstr ""
+msgstr "XTest EventsX"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outage-events.json
 #: Status: UNVERIFIED
 msgid "Events where the failure threshold was exceeded and the WAN was considered offline."
-msgstr ""
+msgstr "XEvents where the failure threshold was exceeded and the WAN was considered offline.X"
 
 #: /ngfw/ngfw_src/wan-failover/hier/usr/share/untangle/lib/wan-failover/reports/wan-failover-outage-events.json
 #: Status: UNVERIFIED
 msgid "Outage Events"
-msgstr ""
+msgstr "XOutage EventsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-download.json
 #: Status: UNVERIFIED
 msgid "The top IPsec users grouped by amount of data downloaded."
-msgstr ""
+msgstr "XThe top IPsec users grouped by amount of data downloaded.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-download.json
 #: Status: UNVERIFIED
 msgid "Top Download Users"
-msgstr ""
+msgstr "XTop Download UsersX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of IPsec VPN actions."
-msgstr ""
+msgstr "XA summary of IPsec VPN actions.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/summary.json
 #: Status: UNVERIFIED
 msgid "IPsec VPN Summary"
-msgstr ""
+msgstr "XIPsec VPN SummaryX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-events.json
 #: Status: UNVERIFIED
 msgid "Shows all IPsec VPN tunnel connection events."
-msgstr ""
+msgstr "XShows all IPsec VPN tunnel connection events.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-events.json
 #: Status: UNVERIFIED
 msgid "Tunnel Connection Events"
-msgstr ""
+msgstr "XTunnel Connection EventsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-time-stats.json
 #: Status: UNVERIFIED
 msgid "The amount of IPsec tunnel traffic over time."
-msgstr ""
+msgstr "XThe amount of IPsec tunnel traffic over time.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-time-stats.json
 #: Status: UNVERIFIED
 msgid "Hourly Tunnel Traffic"
-msgstr ""
+msgstr "XHourly Tunnel TrafficX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-traffic-stats.json
 #: Status: UNVERIFIED
 msgid "The amount of traffic for each IPsec tunnel."
-msgstr ""
+msgstr "XThe amount of traffic for each IPsec tunnel.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/tunnel-traffic-stats.json
 #: Status: UNVERIFIED
 msgid "Top Tunnel Traffic"
-msgstr ""
+msgstr "XTop Tunnel TrafficX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-user.json
 #: Status: UNVERIFIED
 msgid "The top IPsec VPN users by number of sessions."
-msgstr ""
+msgstr "XThe top IPsec VPN users by number of sessions.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-user.json
 #: Status: UNVERIFIED
 msgid "Top Active Users"
-msgstr ""
+msgstr "XTop Active UsersX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-all-events.json
 #: Status: UNVERIFIED
 msgid "Shows all user L2TP/Xauth events."
-msgstr ""
+msgstr "XShows all user L2TP/Xauth events.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-vpn-all-events.json
 #: Status: UNVERIFIED
 msgid "L2TP/Xauth Events"
-msgstr ""
+msgstr "XL2TP/Xauth EventsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-upload.json
 #: Status: UNVERIFIED
 msgid "The top IPsec users grouped by amount of data uploaded."
-msgstr ""
+msgstr "XThe top IPsec users grouped by amount of data uploaded.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-users-by-upload.json
 #: Status: UNVERIFIED
 msgid "Top Upload Users"
-msgstr ""
+msgstr "XTop Upload UsersX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-tunnel-stats.json
 #: Status: UNVERIFIED
 msgid "Shows all IPsec tunnel traffic statistics events."
-msgstr ""
+msgstr "XShows all IPsec tunnel traffic statistics events.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/ipsec-tunnel-stats.json
 #: Status: UNVERIFIED
 msgid "Tunnel Traffic Events"
-msgstr ""
+msgstr "XTunnel Traffic EventsX"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "The top IPsec VPN connections by protocol."
-msgstr ""
+msgstr "XThe top IPsec VPN connections by protocol.X"
 
 #: /ngfw/ngfw_src/ipsec-vpn/hier/usr/share/untangle/lib/ipsec-vpn/reports/top-sessions-by-protocol.json
 #: Status: UNVERIFIED
 msgid "Top Protocols"
-msgstr ""
+msgstr "XTop ProtocolsX"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/policy-manager-all-events.json
 #: Status: UNVERIFIED
 msgid "Lists all sessions with the policy manager rack that handled the session."
-msgstr ""
+msgstr "XLists all sessions with the policy manager rack that handled the session.X"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/usage-by-policy.json
 #: Status: UNVERIFIED
 msgid "The amount of bandwidth per policy."
-msgstr ""
+msgstr "XThe amount of bandwidth per policy.X"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/usage-by-policy.json
 #: Status: UNVERIFIED
 msgid "Top Policy Usage"
-msgstr ""
+msgstr "XTop Policy UsageX"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/sessions-by-policy.json
 #: Status: UNVERIFIED
 msgid "The number of sessions for each policy."
-msgstr ""
+msgstr "XThe number of sessions for each policy.X"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/sessions-by-policy.json
 #: Status: UNVERIFIED
 msgid "Sessions By Policy"
-msgstr ""
+msgstr "XSessions By PolicyX"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Policy Manager actions."
-msgstr ""
+msgstr "XA summary of Policy Manager actions.X"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Policy Manager Summary"
-msgstr ""
+msgstr "XPolicy Manager SummaryX"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/traffic-by-policy.json
 #: Status: UNVERIFIED
 msgid "The amount of traffic for each policy."
-msgstr ""
+msgstr "XThe amount of traffic for each policy.X"
 
 #: /ngfw/ngfw_src/policy-manager/hier/usr/share/untangle/lib/policy-manager/reports/traffic-by-policy.json
 #: Status: UNVERIFIED
 msgid "Traffic By Policy"
-msgstr ""
+msgstr "XTraffic By PolicyX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-query-events.json
 #: Status: UNVERIFIED
 msgid "Shows all search querires processed by Web Filter."
-msgstr ""
+msgstr "XShows all search querires processed by Web Filter.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-query-events.json
 #: Status: UNVERIFIED
 msgid "All Query Events"
-msgstr ""
+msgstr "XAll Query EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by category."
-msgstr ""
+msgstr "XThe number of web requests grouped by category.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Categories (by request)"
-msgstr ""
+msgstr "XTop Categories (by request)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by client."
-msgstr ""
+msgstr "XThe number of web requests grouped by client.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Clients (by requests)"
-msgstr ""
+msgstr "XTop Clients (by requests)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of web filter actions."
-msgstr ""
+msgstr "XA summary of web filter actions.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Web Filter Summary"
-msgstr ""
+msgstr "XWeb Filter SummaryX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-flagged.json
 #: Status: UNVERIFIED
 msgid "The amount of flagged, and blocked web requests over time."
-msgstr ""
+msgstr "XThe amount of flagged, and blocked web requests over time.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-flagged.json
 #: Status: UNVERIFIED
 msgid "Web Usage (flagged)"
-msgstr ""
+msgstr "XWeb Usage (flagged)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-flagged-web-events.json
 #: Status: UNVERIFIED
 msgid "Shows all flagged web requests."
-msgstr ""
+msgstr "XShows all flagged web requests.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-flagged-web-events.json
 #: Status: UNVERIFIED
 msgid "Flagged Web Events"
-msgstr ""
+msgstr "XFlagged Web EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by hostname."
-msgstr ""
+msgstr "XThe number of web requests grouped by hostname.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames (by requests)"
-msgstr ""
+msgstr "XTop Hostnames (by requests)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-all-area.json
 #: Status: UNVERIFIED
 msgid "The amount of total, flagged, and blocked web requests over time."
-msgstr ""
+msgstr "XThe amount of total, flagged, and blocked web requests over time.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-all-area.json
 #: Status: UNVERIFIED
 msgid "Web Usage"
-msgstr ""
+msgstr "XWeb UsageX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by username."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by username.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Usernames (by size)"
-msgstr ""
+msgstr "XTop Usernames (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by hostname."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by hostname.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Hostnames (by size)"
-msgstr ""
+msgstr "XTop Hostnames (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-content-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Content (by request)"
-msgstr ""
+msgstr "XTop Content (by request)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-web-events.json
 #: Status: UNVERIFIED
 msgid "Shows all scanned web requests."
-msgstr ""
+msgstr "XShows all scanned web requests.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-web-events.json
 #: Status: UNVERIFIED
 msgid "All Web Events"
-msgstr ""
+msgstr "XAll Web EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web requests grouped by website."
-msgstr ""
+msgstr "XThe number of blocked web requests grouped by website.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Sites"
-msgstr ""
+msgstr "XTop Blocked SitesX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web requests grouped by category."
-msgstr ""
+msgstr "XThe number of flagged web requests grouped by category.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Categories"
-msgstr ""
+msgstr "XTop Flagged CategoriesX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by username."
-msgstr ""
+msgstr "XThe number of web requests grouped by username.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Usernames (by requests)"
-msgstr ""
+msgstr "XTop Usernames (by requests)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by category."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by category.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Categories (by size)"
-msgstr ""
+msgstr "XTop Categories (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web request grouped by hostname."
-msgstr ""
+msgstr "XThe number of flagged web request grouped by hostname.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by website."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by website.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Sites (by size)"
-msgstr ""
+msgstr "XTop Sites (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-content-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Content (by size)"
-msgstr ""
+msgstr "XTop Content (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web request grouped by client."
-msgstr ""
+msgstr "XThe number of flagged web request grouped by client.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-http-events.json
 #: Status: UNVERIFIED
 msgid "Shows all scanned unencrypted HTTP requests."
-msgstr ""
+msgstr "XShows all scanned unencrypted HTTP requests.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-http-events.json
 #: Status: UNVERIFIED
 msgid "All HTTP Events"
-msgstr ""
+msgstr "XAll HTTP EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web requests grouped by category."
-msgstr ""
+msgstr "XThe number of blocked web requests grouped by category.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-category-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Categories"
-msgstr ""
+msgstr "XTop Blocked CategoriesX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web requests grouped by domain."
-msgstr ""
+msgstr "XThe number of flagged web requests grouped by domain.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Domains"
-msgstr ""
+msgstr "XTop Flagged DomainsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web requests grouped by domain."
-msgstr ""
+msgstr "XThe number of blocked web requests grouped by domain.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Domains"
-msgstr ""
+msgstr "XTop Blocked DomainsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-https-events.json
 #: Status: UNVERIFIED
 msgid "Shows all encrypted HTTPS requests."
-msgstr ""
+msgstr "XShows all encrypted HTTPS requests.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-all-https-events.json
 #: Status: UNVERIFIED
 msgid "All HTTPS Events"
-msgstr ""
+msgstr "XAll HTTPS EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web request grouped by client."
-msgstr ""
+msgstr "XThe number of blocked web request grouped by client.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web requests grouped by website."
-msgstr ""
+msgstr "XThe number of flagged web requests grouped by website.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Sites"
-msgstr ""
+msgstr "XTop Flagged SitesX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged web request grouped by username."
-msgstr ""
+msgstr "XThe number of flagged web request grouped by username.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-username-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web request grouped by username."
-msgstr ""
+msgstr "XThe number of blocked web request grouped by username.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by website."
-msgstr ""
+msgstr "XThe number of web requests grouped by website.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-sites-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Sites (by request)"
-msgstr ""
+msgstr "XTop Sites (by request)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-blocked.json
 #: Status: UNVERIFIED
 msgid "Web Usage (blocked)"
-msgstr ""
+msgstr "XWeb Usage (blocked)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-unblocked-web-events.json
 #: Status: UNVERIFIED
 msgid "Shows all unblocked web requests"
-msgstr ""
+msgstr "XShows all unblocked web requestsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-unblocked-web-events.json
 #: Status: UNVERIFIED
 msgid "Unblocked Web Events"
-msgstr ""
+msgstr "XUnblocked Web EventsX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-usage.json
 #: Status: UNVERIFIED
 msgid "The amount of web requests per top domain."
-msgstr ""
+msgstr "XThe amount of web requests per top domain.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-usage.json
 #: Status: UNVERIFIED
 msgid "Top Domains Usage"
-msgstr ""
+msgstr "XTop Domains UsageX"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by domain."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by domain.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Domains (by size)"
-msgstr ""
+msgstr "XTop Domains (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-request.json
 #: Status: UNVERIFIED
 msgid "The number of web requests grouped by domain."
-msgstr ""
+msgstr "XThe number of web requests grouped by domain.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-domains-by-request.json
 #: Status: UNVERIFIED
 msgid "Top Domains (by request)"
-msgstr ""
+msgstr "XTop Domains (by request)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-usage-scanned.json
 #: Status: UNVERIFIED
 msgid "Web Usage (scanned)"
-msgstr ""
+msgstr "XWeb Usage (scanned)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-size.json
 #: Status: UNVERIFIED
 msgid "The sum of the size of requested web content grouped by client."
-msgstr ""
+msgstr "XThe sum of the size of requested web content grouped by client.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-client-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Clients (by size)"
-msgstr ""
+msgstr "XTop Clients (by size)X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/top-hostname-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked web request grouped by hostname."
-msgstr ""
+msgstr "XThe number of blocked web request grouped by hostname.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-blocked-web-events.json
 #: Status: UNVERIFIED
 msgid "Shows all blocked web requests."
-msgstr ""
+msgstr "XShows all blocked web requests.X"
 
 #: /ngfw/ngfw_src/web-filter/hier/usr/share/untangle/lib/web-filter/reports/web-filter-blocked-web-events.json
 #: Status: UNVERIFIED
 msgid "Blocked Web Events"
-msgstr ""
+msgstr "XBlocked Web EventsX"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of WAN Balancer actions."
-msgstr ""
+msgstr "XA summary of WAN Balancer actions.X"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/summary.json
 #: Status: UNVERIFIED
 msgid "WAN Balancer Summary"
-msgstr ""
+msgstr "XWAN Balancer SummaryX"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/sessions-by-inteface.json
 #: Status: UNVERIFIED
 msgid "The number of sessions destined to each interface."
-msgstr ""
+msgstr "XThe number of sessions destined to each interface.X"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/sessions-by-inteface.json
 #: Status: UNVERIFIED
 msgid "Sessions By Interface"
-msgstr ""
+msgstr "XSessions By InterfaceX"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/bytes-by-interface.json
 #: Status: UNVERIFIED
 msgid "The number of bytes destined to each interface."
-msgstr ""
+msgstr "XThe number of bytes destined to each interface.X"
 
 #: /ngfw/ngfw_src/wan-balancer/hier/usr/share/untangle/lib/wan-balancer/reports/bytes-by-interface.json
 #: Status: UNVERIFIED
 msgid "Bytes By Interface"
-msgstr ""
+msgstr "XBytes By InterfaceX"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/web-cache-webcache-events.json
 #: Status: UNVERIFIED
 msgid "All HTTP events processed by Web Cache."
-msgstr ""
+msgstr "XAll HTTP events processed by Web Cache.X"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/web-cache-webcache-events.json
 #: Status: UNVERIFIED
 msgid "Web Cache Events"
-msgstr ""
+msgstr "XWeb Cache EventsX"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Web Cache actions."
-msgstr ""
+msgstr "XA summary of Web Cache actions.X"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Web Cache Summary"
-msgstr ""
+msgstr "XWeb Cache SummaryX"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/size-stats.json
 #: Status: UNVERIFIED
 msgid "The amount of cached and uncached web data over time."
-msgstr ""
+msgstr "XThe amount of cached and uncached web data over time.X"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/size-stats.json
 #: Status: UNVERIFIED
 msgid "Cache Size Statistics"
-msgstr ""
+msgstr "XCache Size StatisticsX"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/cache-stats.json
 #: Status: UNVERIFIED
 msgid "The number of cache hits, misses, and sessions bypassed over time."
-msgstr ""
+msgstr "XThe number of cache hits, misses, and sessions bypassed over time.X"
 
 #: /ngfw/ngfw_src/web-cache/hier/usr/share/untangle/lib/web-cache/reports/cache-stats.json
 #: Status: UNVERIFIED
 msgid "Cache Hit-Miss Statistics"
-msgstr ""
+msgstr "XCache Hit-Miss StatisticsX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged sessions grouped by application."
-msgstr ""
+msgstr "XThe number of flagged sessions grouped by application.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-flagged.json
 #: Status: UNVERIFIED
 msgid "Top Flagged Applications"
-msgstr ""
+msgstr "XTop Flagged ApplicationsX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked sessions grouped by application."
-msgstr ""
+msgstr "XThe number of blocked sessions grouped by application.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-blocked.json
 #: Status: UNVERIFIED
 msgid "Top Blocked Applications"
-msgstr ""
+msgstr "XTop Blocked ApplicationsX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-blocked-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions matching an application control signature and blocked."
-msgstr ""
+msgstr "XAll sessions matching an application control signature and blocked.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-scanned.json
 #: Status: UNVERIFIED
 msgid "Scanned Sessions (all)"
-msgstr ""
+msgstr "XScanned Sessions (all)X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Application Control actions."
-msgstr ""
+msgstr "XA summary of Application Control actions.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Application Control Summary"
-msgstr ""
+msgstr "XApplication Control SummaryX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-flagged.json
 #: Status: UNVERIFIED
 msgid "The amount of flagged, and blocked sessions over time."
-msgstr ""
+msgstr "XThe amount of flagged, and blocked sessions over time.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-flagged.json
 #: Status: UNVERIFIED
 msgid "Scanned Sessions (flagged)"
-msgstr ""
+msgstr "XScanned Sessions (flagged)X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-flagged-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions matching an application control signature and flagged."
-msgstr ""
+msgstr "XAll sessions matching an application control signature and flagged.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-flagged-sessions.json
 #: Status: UNVERIFIED
 msgid "Flagged Sessions"
-msgstr ""
+msgstr "XFlagged SessionsX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/sessions-blocked.json
 #: Status: UNVERIFIED
 msgid "Scanned Sessions (blocked)"
-msgstr ""
+msgstr "XScanned Sessions (blocked)X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-classified-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions matching an application control signature."
-msgstr ""
+msgstr "XAll sessions matching an application control signature.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-classified-sessions.json
 #: Status: UNVERIFIED
 msgid "Classified Sessions"
-msgstr ""
+msgstr "XClassified SessionsX"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/application-control-all-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions scanned by Application Control."
-msgstr ""
+msgstr "XAll sessions scanned by Application Control.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-usage.json
 #: Status: UNVERIFIED
 msgid "The amount of bandwidth per top application."
-msgstr ""
+msgstr "XThe amount of bandwidth per top application.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-hostname-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged sessions grouped by hostname."
-msgstr ""
+msgstr "XThe number of flagged sessions grouped by hostname.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-size.json
 #: Status: UNVERIFIED
 msgid "The number of bytes grouped by application."
-msgstr ""
+msgstr "XThe number of bytes grouped by application.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-size.json
 #: Status: UNVERIFIED
 msgid "Top Applications (by size)"
-msgstr ""
+msgstr "XTop Applications (by size)X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-client-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged sessions grouped by client."
-msgstr ""
+msgstr "XThe number of flagged sessions grouped by client.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-client-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked sessions grouped by client."
-msgstr ""
+msgstr "XThe number of blocked sessions grouped by client.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-username-by-flagged.json
 #: Status: UNVERIFIED
 msgid "The number of flagged sessions grouped by username."
-msgstr ""
+msgstr "XThe number of flagged sessions grouped by username.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-username-by-blocked.json
 #: Status: UNVERIFIED
 msgid "The number of blocked sessions grouped by username."
-msgstr ""
+msgstr "XThe number of blocked sessions grouped by username.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-sessions.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by application."
-msgstr ""
+msgstr "XThe number of sessions grouped by application.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-application-by-sessions.json
 #: Status: UNVERIFIED
 msgid "Top Applications (by sessions)"
-msgstr ""
+msgstr "XTop Applications (by sessions)X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-category-by-sessions.json
 #: Status: UNVERIFIED
 msgid "The number of sessions grouped by category."
-msgstr ""
+msgstr "XThe number of sessions grouped by category.X"
 
 #: /ngfw/ngfw_src/application-control/hier/usr/share/untangle/lib/application-control/reports/top-category-by-sessions.json
 #: Status: UNVERIFIED
 msgid "Top Categories (by sessions)"
-msgstr ""
+msgstr "XTop Categories (by sessions)X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Captive Portal actions."
-msgstr ""
+msgstr "XA summary of Captive Portal actions.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/summary.json
 #: Status: UNVERIFIED
 msgid "Captive Portal Summary"
-msgstr ""
+msgstr "XCaptive Portal SummaryX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-rule-events.json
 #: Status: UNVERIFIED
 msgid "All sessions processed by Captive Portal."
-msgstr ""
+msgstr "XAll sessions processed by Captive Portal.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-rule-events.json
 #: Status: UNVERIFIED
 msgid "All Session Events"
-msgstr ""
+msgstr "XAll Session EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-idle-timeout.json
 #: Status: UNVERIFIED
 msgid "Sessions that reached the idle timeout."
-msgstr ""
+msgstr "XSessions that reached the idle timeout.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-idle-timeout.json
 #: Status: UNVERIFIED
 msgid "Idle Timeout User Events"
-msgstr ""
+msgstr "XIdle Timeout User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/top-blocked-clients.json
 #: Status: UNVERIFIED
 msgid "The top clients that were blocked by Captive Portal because they were not logged in."
-msgstr ""
+msgstr "XThe top clients that were blocked by Captive Portal because they were not logged in.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-session-timeout.json
 #: Status: UNVERIFIED
 msgid "Sessions that reached the session timeout."
-msgstr ""
+msgstr "XSessions that reached the session timeout.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-session-timeout.json
 #: Status: UNVERIFIED
 msgid "Session Timeout User Events"
-msgstr ""
+msgstr "XSession Timeout User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-capture-rule-events.json
 #: Status: UNVERIFIED
 msgid "Sessions matching capture rules."
-msgstr ""
+msgstr "XSessions matching capture rules.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-capture-rule-events.json
 #: Status: UNVERIFIED
 msgid "Captured Session Events"
-msgstr ""
+msgstr "XCaptured Session EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-admin-logout.json
 #: Status: UNVERIFIED
 msgid "Sessions logged off by the admin."
-msgstr ""
+msgstr "XSessions logged off by the admin.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-admin-logout.json
 #: Status: UNVERIFIED
 msgid "Admin Logout User Events"
-msgstr ""
+msgstr "XAdmin Logout User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/top-active-users.json
 #: Status: UNVERIFIED
 msgid "The top active users that logged in to Captive Portal."
-msgstr ""
+msgstr "XThe top active users that logged in to Captive Portal.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-failure.json
 #: Status: UNVERIFIED
 msgid "Failed logins to Captive Portal."
-msgstr ""
+msgstr "XFailed logins to Captive Portal.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-failure.json
 #: Status: UNVERIFIED
 msgid "Login Failure User Events"
-msgstr ""
+msgstr "XLogin Failure User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-success.json
 #: Status: UNVERIFIED
 msgid "Successful logins to Captive Portal."
-msgstr ""
+msgstr "XSuccessful logins to Captive Portal.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-login-success.json
 #: Status: UNVERIFIED
 msgid "Login Success User Events"
-msgstr ""
+msgstr "XLogin Success User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-pass-rule-events.json
 #: Status: UNVERIFIED
 msgid "Sessions matching passed hosts."
-msgstr ""
+msgstr "XSessions matching passed hosts.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-pass-rule-events.json
 #: Status: UNVERIFIED
 msgid "Passed Session Events"
-msgstr ""
+msgstr "XPassed Session EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/event-summary.json
 #: Status: UNVERIFIED
 msgid "A summary of Captive Portal activity."
-msgstr ""
+msgstr "XA summary of Captive Portal activity.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/event-summary.json
 #: Status: UNVERIFIED
 msgid "Activity Summary"
-msgstr ""
+msgstr "XActivity SummaryX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-events.json
 #: Status: UNVERIFIED
 msgid "All user sessions processed by Captive Portal."
-msgstr ""
+msgstr "XAll user sessions processed by Captive Portal.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-all-events.json
 #: Status: UNVERIFIED
 msgid "All User Events"
-msgstr ""
+msgstr "XAll User EventsX"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-user-logout.json
 #: Status: UNVERIFIED
 msgid "All user logout events."
-msgstr ""
+msgstr "XAll user logout events.X"
 
 #: /ngfw/ngfw_src/captive-portal/hier/usr/share/untangle/lib/captive-portal/reports/captive-portal-user-logout.json
 #: Status: UNVERIFIED
 msgid "User Logout User Events"
-msgstr ""
+msgstr "XUser Logout User EventsX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.json
 #: Status: UNVERIFIED
 msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
-msgstr ""
+msgstr "XEvents where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-ignored-sessions.json
 #: Status: UNVERIFIED
 msgid "Ignored Sessions"
-msgstr ""
+msgstr "XIgnored SessionsX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-all-sessions.json
 #: Status: UNVERIFIED
 msgid "All sessions detected by SSL Inspector."
-msgstr ""
+msgstr "XAll sessions detected by SSL Inspector.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-scanned.json
 #: Status: UNVERIFIED
 msgid "The amount of SSL sessions over time."
-msgstr ""
+msgstr "XThe amount of SSL sessions over time.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.json
 #: Status: UNVERIFIED
 msgid "A summary of SSL Inspector actions."
-msgstr ""
+msgstr "XA summary of SSL Inspector actions.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/summary.json
 #: Status: UNVERIFIED
 msgid "SSL Inspector Summary"
-msgstr ""
+msgstr "XSSL Inspector SummaryX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.json
 #: Status: UNVERIFIED
 msgid "The amount of inspected SSL sessions over time."
-msgstr ""
+msgstr "XThe amount of inspected SSL sessions over time.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/sessions-inspected.json
 #: Status: UNVERIFIED
 msgid "Sessions Inspected"
-msgstr ""
+msgstr "XSessions InspectedX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.json
 #: Status: UNVERIFIED
 msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
-msgstr ""
+msgstr "XEvents where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-inspected-sessions.json
 #: Status: UNVERIFIED
 msgid "Inspected Sessions"
-msgstr ""
+msgstr "XInspected SessionsX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.json
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because the server certificate could not be authenticated."
-msgstr ""
+msgstr "XEvents where traffic was blocked because the server certificate could not be authenticated.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-untrusted-sessions.json
 #: Status: UNVERIFIED
 msgid "Untrusted Sessions"
-msgstr ""
+msgstr "XUntrusted SessionsX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.json
 #: Status: UNVERIFIED
 msgid "The number of inspected sessions grouped by site."
-msgstr ""
+msgstr "XThe number of inspected sessions grouped by site.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-inspected.json
 #: Status: UNVERIFIED
 msgid "Top Inspected Sites"
-msgstr ""
+msgstr "XTop Inspected SitesX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-blocked-sessions.json
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled."
-msgstr ""
+msgstr "XEvents where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.json
 #: Status: UNVERIFIED
 msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
-msgstr ""
+msgstr "XEvents where traffic was blocked due to an underlying problems with the SSL session.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/ssl-inspector-abandoned-sessions.json
 #: Status: UNVERIFIED
 msgid "Abandoned Sessions"
-msgstr ""
+msgstr "XAbandoned SessionsX"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.json
 #: Status: UNVERIFIED
 msgid "The number of ignored sessions grouped by site."
-msgstr ""
+msgstr "XThe number of ignored sessions grouped by site.X"
 
 #: /ngfw/ngfw_src/ssl-inspector/hier/usr/share/untangle/lib/ssl-inspector/reports/top-sites-by-ignored.json
 #: Status: UNVERIFIED
 msgid "Top Ignored Sites"
-msgstr ""
+msgstr "XTop Ignored SitesX"
