@@ -9,7 +9,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     viewConfig: {
         listeners: {
-            drop: 'updateRuleStatus'
+            drop: 'onDragDrop'
         }
     },
 
