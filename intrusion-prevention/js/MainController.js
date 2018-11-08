@@ -109,14 +109,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         vm.set('signaturesList', signatures);
 
-        // var collect = {
-        //     lnet: {}, 
-        //     lport: {}, 
-        //     direction: {}, 
-        //     rnet: {}, 
-        //     rport: {}
-        // };
-
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
         var protocols = conditions['PROTOCOL'].values;
@@ -132,14 +124,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(found == false){
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
-            // collect['lnet'][signature.get('lnet')] = true;
-            // collect['lport'][signature.get('lport')] = true;
-            // collect['direction'][signature.get('direction')] = true;
-            // collect['rnet'][signature.get('rnet')] = true;
-            // collect['rport'][signature.get('rport')] = true;
-
         });
-        // console.log(collect);
         v.setLoading(false);
 
         // console.log('buildSignatures complete');
@@ -919,13 +904,10 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             if(!vm.get('filterConditions')[newValue].store){
                 vm.get('filterConditions')[newValue].store = Ext.create('Ext.data.ArrayStore', {
                     fields: [ 'value', 'description' ],
-                    sorters: [{
-                        property: 'value',
-                        direction: 'ASC'
-                    }],
                     data: vm.get('filterConditions')[newValue].values
                 });
             }
+            vm.set('searchValue', vm.get('filterConditions')[newValue].store.first().get('value'));
             vm.set('valuesData', Ext.Array.pluck(vm.get('filterConditions')[newValue].store.getRange(), 'data'));
             vm.set('filterValueDisabled', false);
             vm.set('filterSearchDisabled', true);
@@ -985,7 +967,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             }
         });
 
-        var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule);
+        var status = me.getView().up('apppanel').getController().ruleSignatureMatches(rule, vm.get('filterConditions'));
         store.getFilters().add(function (record) {
             for(var action in status){
                 if(status[action][record.data['id']]){
@@ -1518,6 +1500,9 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         me.get('conditions').list.forEach(function(condition){
             var match = true;
             var editorCondition = editorConditions[condition.type];
+            if(!editorCondition){
+                console.log('Unable to find condition: ' + condition.type);
+            }
 
             var targetConditionValue = null;
             var conditionKey = condition.type.toLowerCase();
