@@ -487,6 +487,10 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         });
         return comparators;
+    },
+
+    onDragDrop: function(){
+        this.getView().up('apppanel').getController().signaturesChanged();
     }
 });
 
@@ -1000,7 +1004,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             comparator = vm.get('comparator'),
             value = vm.get('searchValue');
 
-        button.up('tabpanel').setActiveTab('rules').getController().addRecord(null, null, {
+        var newRule = {
             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
             'enabled': true,
             'id': -1,
@@ -1015,7 +1019,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 }]
             },
             'action': 'log'
-        });
+        };
+        var rulesTab = button.up('tabpanel').setActiveTab('rules');
+
+        var dt = new Ext.util.DelayedTask( Ext.bind(function(){
+            rulesTab.getController().addRecord(null, null, newRule);
+        }, me));
+        dt.delay(100);
     }
 });
 
