@@ -59,7 +59,8 @@ Ext.define('Ung.view.reports.EventReport', {
         control: {
             '#': {
                 afterrender: 'onAfterRender',
-                deactivate: 'onDeactivate'
+                deactivate: 'onDeactivate',
+                refresh: 'onRefresh'
             }
         },
 
@@ -116,6 +117,11 @@ Ext.define('Ung.view.reports.EventReport', {
             }
 
             me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
+
+            if(me.tableConfig.setupGrid){
+                me.tableConfig.setupGrid(me);
+            }
+
             me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
 
             Ext.Array.each(me.tableConfig.fields, function (field) {
@@ -127,6 +133,9 @@ Ext.define('Ung.view.reports.EventReport', {
             Ext.Array.each(me.tableConfig.columns, function (column) {
                 if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
                     column.hidden = true;
+                }
+                if(!column.renderer && column.xtype != 'actioncolumn'){
+                    column.renderer = Ung.view.reports.EventReport.renderer;
                 }
                 // TO REVISIT THIS BECASE OF STATEFUL
                 // grid.initComponentColumn(column);
@@ -163,11 +172,16 @@ Ext.define('Ung.view.reports.EventReport', {
             });
         },
 
-
         onDeactivate: function () {
             this.modFields = { uniqueId: null };
             this.getView().down('grid').getStore().loadData([]);
             this.getView().down('grid').getSelectionModel().deselectAll();
+        },
+
+        onRefresh: function(){
+            if(this.tableConfig.refresh){
+                this.tableConfig.refresh();
+            }
         },
 
         fetchData: function (reset, cb) {
@@ -284,5 +298,12 @@ Ext.define('Ung.view.reports.EventReport', {
                 v.down('grid').getSelectionModel().select(0);
             }
         }
+    },
+    statics:{
+        renderer: function(value, meta, record, x,y, z, table){
+            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( value ) + '"';
+            return value;
+        },
+
     }
 });
