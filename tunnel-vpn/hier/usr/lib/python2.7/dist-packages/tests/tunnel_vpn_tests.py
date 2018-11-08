@@ -18,7 +18,7 @@ import global_functions
 
 default_policy_id = 1
 app = None
-vpn_tunnel_file = "http://10.111.56.29/openvpn-tunnel-vpn-config.zip"
+vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
 
 def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
     return {
