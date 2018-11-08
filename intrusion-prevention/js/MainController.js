@@ -13,7 +13,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
-        var t0 = performance.now();
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getAppStatus'),
             Rpc.directPromise('rpc.companyName'),
@@ -33,8 +32,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-
-            var t1 = performance.now();
+            var status = result[0];
             vm.set({
                 lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
                 lastUpdate: (status['lastUpdate'] && status['lastUpdate'] !== null && status['lastUpdate'].time !== 0 ) ? Renderer.timestamp(status['lastUpdate']) : "Never".t(),
