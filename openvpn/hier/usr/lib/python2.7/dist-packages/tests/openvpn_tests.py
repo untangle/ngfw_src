@@ -843,7 +843,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_80_OpenVPNTunnelVPNConflict(self):
         """test conflict of OpenVPN and TunnelVPN when 'boundInterfaceId' is set to the first wan IP"""
         global tunnelApp
-        vpn_tunnel_file = "http://10.111.56.29/openvpn-tunnel-vpn-config.zip"
+        vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
         index_of_wans = global_functions.get_wan_tuples()
         if index_of_wans == []:
             raise unittest2.SkipTest("No static or auto WAN")
