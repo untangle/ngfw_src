@@ -647,6 +647,9 @@
         "url": "/admin/index.do#apps/1/intrusion-prevention/rules",
         "type": "remove_nav"
     },{
+        "url": "/admin/index.do#apps/1/intrusion-prevention/signatures",
+        "type": "remove_nav"
+    },{
         "url": "/admin/index.do#apps/1/intrusion-prevention/variables",
         "type": "remove_nav"
 
