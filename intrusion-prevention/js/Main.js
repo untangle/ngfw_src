@@ -114,7 +114,6 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             data: [
             [ "attempted-admin", "Attempted Administrator Privilege Gain".t(), "high"],
             [ "attempted-user", "Attempted User Privilege Gain".t(), "high" ],
-            [ "inappropriate-content", "Inappropriate Content was Detected".t(), "high" ],
             [ "policy-violation", "Potential Corporate Privacy Violation".t(), "high" ],
             [ "shellcode-detect", "Executable code was detected".t(), "high" ],
             [ "successful-admin", "Successful Administrator Privilege Gain".t(), "high" ],
@@ -140,16 +139,12 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             [ "unusual-client-port-connection", "A client was using an unusual port".t(), "medium" ],
             [ "web-application-activity", "Access to a potentially vulnerable web application".t(), "medium" ],
 
-            [ "icmp-event", "Generic ICMP event".t(), "low" ],
             [ "misc-activity", "Misc activity".t(), "low" ],
             [ "network-scan", "Detection of a Network Scan".t(), "low" ],
             [ "not-suspicious", "Not Suspicious Traffic".t(), "low" ],
             [ "protocol-command-decode", "Generic Protocol Command Decode".t(), "low" ],
             [ "string-detect", "A suspicious string was detected".t(), "low" ],
-            [ "unknown", "Unknown Traffic".t(), "low" ],
-
-            [ "tcp-connection", "A TCP connection was detected".t(), "low" ],
-            [ "general", "General rules".t(), "low"]
+            [ "unknown", "Unknown Traffic".t(), "low" ]
             ]
         }),
 
