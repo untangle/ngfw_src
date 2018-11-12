@@ -99,7 +99,7 @@
         "remove_nav": [{
             "action": "crop_by_dimension",
             "x": 0,
-            "y": 88,
+            "y": 84,
             "height": "auto",
             "width": "auto"
         }],
