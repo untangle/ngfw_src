@@ -201,6 +201,7 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
 
         view.conditionsOrder = classFields[classValue]['conditionsOrder'];
         view.conditions = classFields[classValue]['conditions'];
+        view.comparators = Ext.clone(Ung.cmp.ConditionsEditor.comparators);
         me.buildConditions(view);
         me.updateTargetFields();
         
