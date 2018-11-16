@@ -68,8 +68,12 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
     result = ""
     while result == "" and timeout > 0:
         timeout -= 1
+        time.sleep(1)
         if localcall:
-            result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
+            try:
+                result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
+            except:
+                pass
         else:
             result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
     result = result.rstrip()
