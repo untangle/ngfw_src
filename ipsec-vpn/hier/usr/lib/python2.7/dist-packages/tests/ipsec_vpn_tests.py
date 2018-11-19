@@ -250,13 +250,34 @@ class IPsecTests(unittest2.TestCase):
         found = False
         # Send command for Windows VPN connect.
         vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
-        while not found and timeout > 0:
-            timeout -= 1
-            time.sleep(1)
-            virtUsers = app.getVirtualUsers()
-            for user in virtUsers['list']:
-                if user['clientUsername'] == l2tpLocalUser:
-                    found = True
+        if vpnServerResult == 0:
+            while not found and timeout > 0:
+                timeout -= 1
+                time.sleep(1)
+                virtUsers = app.getVirtualUsers()
+                for user in virtUsers['list']:
+                    if user['clientUsername'] == l2tpLocalUser:
+                        found = True
+            # Send command for Windows VPN disconnect.
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        assert(found)
+        # Use same user with different password
+        new_user_password = "testtest"
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
+        createL2TPconfig("LOCAL_DIRECTORY")
+        timeout = 480
+        found = False
+        # Send command for Windows VPN connect.
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,new_user_password), host=l2tpClientHost)
+        if vpnServerResult == 0:
+            while not found and timeout > 0:
+                timeout -= 1
+                time.sleep(1)
+                virtUsers = app.getVirtualUsers()
+                for user in virtUsers['list']:
+                    if user['clientUsername'] == l2tpLocalUser:
+                        found = True
         # Send command for Windows VPN disconnect.
         vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
