@@ -78,7 +78,7 @@ def createL2TPconfig(authType="LOCAL_DIRECTORY"):
     ipsecSettings["vpnflag"] = True
     app.setSettings(ipsecSettings);
 
-def createLocalDirectoryUser():
+def createLocalDirectoryUser(userpassword=l2tpLocalPassword):
     return {'javaClass': 'java.util.LinkedList', 
         'list': [{
             'username': l2tpLocalUser, 
@@ -86,7 +86,7 @@ def createLocalDirectoryUser():
             'lastName': '[lastName]', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
             'expirationTime': 0, 
-            'passwordBase64Hash': base64.b64encode(l2tpLocalPassword),
+            'passwordBase64Hash': base64.b64encode(userpassword),
             'email': 'test@example.com'
             },]
     }
