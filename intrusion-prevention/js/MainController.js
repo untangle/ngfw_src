@@ -323,7 +323,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     statics:{
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
-            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value).get('description');
+            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value, 0, false, false, true).get('description');
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
             return displayValue;
         },
@@ -340,7 +340,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
-            var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('value', value);
+            var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('value', value, 0, false, false, true);
             var description = value;
             if( classtypeRecord != null ){
                 description = classtypeRecord.get('description');
@@ -352,7 +352,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
-            var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('value', value);
+            var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('value', value, 0, false, false, true);
             if( categoryRecord != null ){
                 description = categoryRecord.get('description');
             }
@@ -408,7 +408,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
             var vm = this.getViewModel();
             var description = value;
-            var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', value);
+            var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', value, 0, false, false, true);
             if( actionRecord != null ){
                 description = actionRecord.get('description');
             }
@@ -421,25 +421,25 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var actionDescription = value;
             var ruleDescription = '';
 
-            rule = v.up('apppanel').getViewModel().get('rules').findRecord('id', value);
+            rule = v.up('apppanel').getViewModel().get('rules').findRecord('id', value, 0, false, false, true);
             if(rule != null){
                 var ruleAction = rule.get('action');
                 var signatureRecommendedAction = record.get('recommendedAction');
                 actionDescription = rule.get('action');
-                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', ruleAction).get('description'));
+                ruleDescription = Ext.String.format( ' (' + 'Rule: {0}, Action:{1}'.t() + ')'.t(), rule.get('description'), Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', ruleAction, 0, false, false, true).get('description'));
                 if(ruleAction == 'default'){
-                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', signatureRecommendedAction).get('description');
+                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', signatureRecommendedAction, 0, false, false, true).get('description');
                 }else if(ruleAction == 'blocklog'){
                     if(signatureRecommendedAction == 'log'){
-                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block').get('description');
+                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'block', 0, false, false, true).get('description');
                     }else{
-                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
+                        actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable', 0, false, false, true).get('description');
                     }
                 }else{
-                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', actionDescription).get('description');
+                    actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', actionDescription, 0, false, false, true).get('description');
                 }
             }else{
-                actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable').get('description');
+                actionDescription = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', 'disable', 0, false, false, true).get('description');
                 ruleDescription = ' (' + 'No rule match'.t() + ')';
             }
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionDescription  ) + Ext.String.htmlEncode( ruleDescription  ) + '"';
@@ -988,7 +988,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
             'enabled': true,
             'id': -1,
-            'description': '"' + vm.get('fields').findRecord( 'value', field).get('description') + '" ' + vm.get('comparators').findRecord('value', comparator).get('description') + ' "' + value + '"',
+            'description': '"' + vm.get('fields').findRecord( 'value', field, 0, false, false, true).get('description') + '" ' + vm.get('comparators').findRecord('value', comparator, 0, false, false, true).get('description') + ' "' + value + '"',
             'conditions': {
                 'javaClass': "java.util.LinkedList",
                 'list': [{
