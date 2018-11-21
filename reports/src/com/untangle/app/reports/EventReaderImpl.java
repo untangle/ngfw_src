@@ -115,7 +115,7 @@ public class EventReaderImpl
 
         } catch ( Exception e ) {
             logger.warn("Failed to query database. query: " + statement, e );
-            throw new RuntimeException( "Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
     
@@ -158,7 +158,7 @@ public class EventReaderImpl
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database. query: " + statement, e );
-            throw new RuntimeException( "Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
 
@@ -200,7 +200,7 @@ public class EventReaderImpl
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database. query: " + sql, e );
-            throw new RuntimeException( "Failed to query database. query: " + sql, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
     
