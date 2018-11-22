@@ -452,7 +452,11 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             values: Util.getInterfaceList(true, true),
         },{
             name:"SRC_MAC",
-            displayName: "Source MAC".t(), 
+            displayName: "Client MAC Address".t(), 
+            type: 'textfield'
+        },{
+            name:'DST_MAC',
+            displayName: 'Server MAC Address'.t(),
             type: 'textfield'
         },{
             name:"PROTOCOL",
@@ -521,14 +525,6 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             displayName: 'Server Hostname'.t(),
             type: 'textfield',
             visible: false
-        },{
-            name:'SRC_MAC',
-            displayName: 'Client MAC Address'.t(),
-            type: 'textfield'
-        },{
-            name:'DST_MAC',
-            displayName: 'Server MAC Address'.t(),
-            type: 'textfield'
         },{
             name:'CLIENT_MAC_VENDOR',
             displayName: 'Client MAC Vendor'.t(),
