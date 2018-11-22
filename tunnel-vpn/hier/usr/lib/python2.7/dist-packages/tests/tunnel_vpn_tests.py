@@ -117,6 +117,45 @@ class TunnelVpnTests(unittest2.TestCase):
         assert(connected)
         assert(connectStatus == "CONNECTED")
 
+    def test_030_createVPNAnyTunnel(self):
+        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
+        if (result != 0):
+            raise unittest2.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
+        currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        if (currentWanIP == ""):
+            raise unittest2.SkipTest("Unable to get WAN IP")
+        print("Original WAN IP: " + currentWanIP)
+        app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+
+        appData = app.getSettings()
+        appData['rules']['list'].append(create_tunnel_rule(vpn_tunnel_id=-1))
+        appData['tunnels']['list'].append(create_tunnel_profile())
+        app.setSettings(appData)
+
+        # wait for vpn tunnel to form
+        timeout = 60
+        connected = False
+        while (not connected and timeout > 0):
+            newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+            if (currentWanIP != newWanIP):
+                listOfConnections = app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
+                connected = True
+                listOfConnections = app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
+            else:
+                time.sleep(1)
+                timeout-=1
+
+        # remove the added tunnel
+        appData['rules']['list'][:] = []
+        appData['tunnels']['list'][:] = []
+        app.setSettings(appData)
+
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(connected)
+        assert(connectStatus == "CONNECTED")
+
     @staticmethod
     def finalTearDown(self):
         global app

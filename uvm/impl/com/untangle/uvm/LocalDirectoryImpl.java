@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,6 +22,9 @@ import java.util.Formatter;
 import java.util.FormatterClosedException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Local Directory stores a local list of users
@@ -322,7 +326,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      * Unfortunately there is no easy fix to this because there is no way to
      * tell xl2tpd/pppd to use a separate secretes file. The solution would be
      * to move local directory into network settings or change sync-settings to
-     * read local directory settings (or all settings
+     * read local directory settings (or ideally all settings)
      * 
      * @param list
      *        The list of LocalDirectoryUsers
@@ -332,12 +336,26 @@ public class LocalDirectoryImpl implements LocalDirectory
         if (list == null) return;
         if (list.size() == 0) return;
         String chapFile = "/etc/ppp/chap-secrets";
-
+        List<String> chapData;
         FileWriter chap = null;
-        try {
-            // append all the username/password pairs to chap-secrets file
-            chap = new FileWriter(chapFile, true);
 
+        try {
+            // read all the lines from the existing file
+            chapData = Files.readAllLines(Paths.get(chapFile), Charset.forName("UTF-8"));
+
+            // now that we have the contents write to the file without append
+            chap = new FileWriter(chapFile, false);
+
+            // start by writing everything except our local directory users to the file 
+            for (String line : chapData) {
+                String[] fields = line.split("\\s+");
+                // if this is one of our user entries just ignore it
+                if ((fields.length > 3) && (fields[1].equals("untangle-l2tp"))) continue;
+                // not one of ours so write to the file as-is
+                chap.write(line + "\n");
+            }
+
+            // now append all the username/password pairs to the file
             for (LocalDirectoryUser user : list) {
                 if (user.getUsername() == null || user.getPasswordBase64Hash() == null) continue;
                 byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
