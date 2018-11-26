@@ -62,7 +62,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
             }, {
                 xtype: 'button',
                 iconCls: 'fa fa-download',
-                text: 'Download Root Certificate'.t(),
+                text: 'Download Root Certificate Authority (CA)'.t(),
                 handler: 'downloadRootCertificate'
             }, {
                 xtype: 'component',
@@ -72,7 +72,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
             }, {
                 xtype: 'button',
                 iconCls: 'fa fa-download',
-                text: 'Download Root Certificate Installer'.t(),
+                text: 'Download Root Certificate Authority (CA) Installer'.t(),
                 handler: 'downloadRootCertificateInstaller'
             }, {
                 xtype: 'component',
