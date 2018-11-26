@@ -85,7 +85,7 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['freedns','FreeDNS'],
                     ['google','Google'],
                     ['googledomains','Google Domains'],
-                    ['cloudflare','Cloudflare'],
+                    //['cloudflare','Cloudflare'],
                     ['duckdns','DuckDNS']
                    ]
         }, {
