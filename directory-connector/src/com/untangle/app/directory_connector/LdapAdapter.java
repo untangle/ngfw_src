@@ -608,6 +608,7 @@ abstract class LdapAdapter
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
         ldapEnv.put(Context.SECURITY_CREDENTIALS, pass);
         // add timeout - https://docs.oracle.com/javase/tutorial/jndi/newstuff/readtimeout.html
+        ldapEnv.put("com.sun.jndi.ldap.connect.timeout", "30000");
         ldapEnv.put("com.sun.jndi.ldap.read.timeout", "30000");
         return new InitialDirContext(ldapEnv);
     }
