@@ -15,7 +15,7 @@
     "colors": [
         "#396c2b"
     ],
-    "timeDataInterval": "HOUR",
+    "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
     "title": "Swap Usage Bytes",
     "type": "TIME_GRAPH",
