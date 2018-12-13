@@ -210,7 +210,7 @@ def write_route_file( file, verbosity=0 ):
             interfaceId = int(intf.get('interfaceId'))
             weight = int(settings.get('weights')[intf.get('interfaceId') - 1])
             if ( weight != 0 ):
-                file.write("if [ ! -z  \"`ip rule ls | grep fwmark | grep uplink.%i 2>/dev/null`\" ] ; then " % (interfaceId) + "\n")
+                file.write("if [ ! -z  \"`ip rule ls | grep fwmark | egrep 'uplink.%i\s' 2>/dev/null`\" ] ; then " % (interfaceId) + "\n")
                 file.write("    ROUTE_STR=\"$ROUTE_STR `ip route show table uplink.%i | sed -e 's/default/nexthop/'` weight %i\"" % (interfaceId, weight) + "\n")
                 file.write("fi" + "\n")
     file.write("\n");
