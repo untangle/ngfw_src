@@ -436,7 +436,7 @@ class NetworkTests(unittest2.TestCase):
         return "network"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1459,7 +1459,7 @@ class NetworkTests(unittest2.TestCase):
         assert(result == 0)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)

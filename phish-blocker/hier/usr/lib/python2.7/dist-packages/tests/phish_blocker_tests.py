@@ -58,7 +58,7 @@ class PhishBlockerTests(unittest2.TestCase):
         return "ssl-inspector"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, appData, appSP, appDataSP, appSSL, canRelay
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
@@ -232,7 +232,7 @@ class PhishBlockerTests(unittest2.TestCase):
                                             'phish_blocker_action', 'D')
     
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appSSL
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

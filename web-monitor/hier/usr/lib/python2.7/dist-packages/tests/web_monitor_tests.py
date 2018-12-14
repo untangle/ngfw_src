@@ -36,7 +36,7 @@ class WebMonitorTests(WebFilterBaseTests):
         return "Web Monitor"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -62,7 +62,7 @@ class WebMonitorTests(WebFilterBaseTests):
         assert(pre_events_block == post_events_block)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

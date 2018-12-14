@@ -162,7 +162,7 @@ class IPsecTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, radiusResult
         tunnelUp = False
         if (uvmContext.appManager().isInstantiated(self.appName())):
@@ -344,7 +344,7 @@ class IPsecTests(unittest2.TestCase):
         assert(pre_events_enabled < post_events_enabled)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appAD
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)

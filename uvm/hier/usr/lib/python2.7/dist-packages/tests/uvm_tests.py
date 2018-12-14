@@ -111,7 +111,7 @@ class UvmTests(unittest2.TestCase):
         return "smtp"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         pass
 
     def setUp(self):
