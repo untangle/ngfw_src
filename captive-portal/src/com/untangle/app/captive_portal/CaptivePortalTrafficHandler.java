@@ -61,13 +61,6 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // if the https inspector has attached the session manager then
-        // we can allow the traffic since it will come later as http
-        if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
-            sessreq.release();
-            return;
-        }
-
         // next check is to see if the user is already authenticated
         if (app.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
@@ -105,6 +98,18 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             app.logEvent(logevt);
 
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            sessreq.release();
+            return;
+        }
+
+        // If the traffic needs to be captured and ssl inspector is active then
+        // we set a special flag to force it to inspect even if it would
+        // otherwise be ignored. This will let us capture the HTTP session
+        // and ensure any redirect is sent using the MitM certificate which
+        // will eliminate errors on capture redirect even to pages that we
+        // aren't ultimately going to inspect once the client has authenticated.
+        if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
+            sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, new Boolean(true));
             sessreq.release();
             return;
         }
