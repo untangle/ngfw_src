@@ -77,7 +77,7 @@ class SslInspectorTests(unittest2.TestCase):
         return "web-filter"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, appData, appWeb, appWebData
         if uvmContext.appManager().isInstantiated(self.appName()):
             raise Exception('app %s already instantiated' % self.appName())
@@ -185,7 +185,7 @@ class SslInspectorTests(unittest2.TestCase):
             assert( found )
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appWeb
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

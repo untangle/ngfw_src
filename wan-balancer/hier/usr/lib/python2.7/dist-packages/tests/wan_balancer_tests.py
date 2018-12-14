@@ -187,7 +187,7 @@ class WanBalancerTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global index_of_wans, app, app_data, app_wan_failover, app_data_wan_failover, orig_netsettings, ip_address_testdestination
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -565,7 +565,7 @@ class WanBalancerTests(unittest2.TestCase):
         assert(pre_count < post_count)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, app_wan_failover
         # Restore original settings to return to initial settings
         if app != None:

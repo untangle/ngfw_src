@@ -189,7 +189,7 @@ class OpenVpnTests(unittest2.TestCase):
         return "Untangle"
         
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, appWeb, appDC, tunnelApp, appData, vpnHostResult, vpnClientResult, vpnServerResult, vpnUserPassHostResult, adResult, radiusResult
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -945,7 +945,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert(connected)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appWeb, appDC, tunnelApp
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

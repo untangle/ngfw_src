@@ -117,7 +117,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         return found
     
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
         app = uvmContext.appManager().instantiate(self.appName(), default_policy_id)
@@ -584,7 +584,7 @@ class WebFilterBaseTests(unittest2.TestCase):
             assert( found )
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         if self.app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
             self.app = None

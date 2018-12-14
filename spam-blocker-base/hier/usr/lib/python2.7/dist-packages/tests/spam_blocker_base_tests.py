@@ -84,7 +84,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         return "ssl-inspector"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, appData, appSP, appDataSP, appSSL, appSSLData, canRelay
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
@@ -313,7 +313,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         assert( found ) 
             
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app,appSSL
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

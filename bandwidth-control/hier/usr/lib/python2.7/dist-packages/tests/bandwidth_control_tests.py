@@ -200,7 +200,7 @@ class BandwidthControlTests(unittest2.TestCase):
         return "Bandwidth Control"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, app_web_filter, orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -609,7 +609,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert((event != None))
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, app_web_filter, orig_network_settings
         # Restore original settings to return to initial settings
         if orig_network_settings != None:

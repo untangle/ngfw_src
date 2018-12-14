@@ -102,7 +102,7 @@ class WanFailoverTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global indexOfWans, appData, app, orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (uvmContext.appManager().isInstantiated(self.appName())):
@@ -350,7 +350,7 @@ class WanFailoverTests(unittest2.TestCase):
         assert(pre_count < post_count)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

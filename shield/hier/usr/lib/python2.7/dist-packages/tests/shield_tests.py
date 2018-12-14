@@ -26,7 +26,7 @@ class ShieldTests(unittest2.TestCase):
         return "shield"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app,default_enabled, orig_netsettings
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -91,7 +91,7 @@ class ShieldTests(unittest2.TestCase):
         assert( not found )
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global orig_netsettings
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
