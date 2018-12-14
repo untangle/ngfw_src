@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.ReleaseToken;
@@ -584,6 +585,24 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             // if the message was null this was unexpected so log a warning
             if (exn.getMessage() == null) logger.warn("Exception parsing SNI hostname", exn);
+        }
+
+        // check for the captive portal session capture flag
+        Boolean captivePortalFlag = (Boolean) session.globalAttachment(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE);
+
+        // if the captive portal flag is set we must do inspection because it
+        // expects to use our unencrypted stream to send the redirect with the
+        // added benefit of a good MitM cert even on sites we'll later ignore 
+        if ((captivePortalFlag != null) && (captivePortalFlag == true)) {
+
+            // craft a wakeup message and send it directly to the server side
+            // casing using simulateClientData inside the server side casing
+            ByteBuffer wakeup = ByteBuffer.allocate(256);
+            wakeup.put(SslInspectorManager.IPC_WAKEUP_MESSAGE);
+            wakeup.flip();
+            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            server.getSession().simulateClientData(wakeup);
+            return;
         }
 
         // wait until after the exception handlers to increment the counter
