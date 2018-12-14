@@ -52,7 +52,7 @@ class BrandingManagerTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global appData, app, appWeb
         if (uvmContextLongTimeout.appManager().isInstantiated(self.appName())):
             print("ERROR: App %s already installed" % self.appName())
@@ -166,7 +166,7 @@ class BrandingManagerTests(unittest2.TestCase):
             assert(True)
         
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appWeb
         if app != None:
             # Restore original settings to return to initial settings

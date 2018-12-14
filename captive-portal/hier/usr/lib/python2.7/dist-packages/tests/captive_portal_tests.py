@@ -242,7 +242,7 @@ class CaptivePortalTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global appData, app, appDataRD, appDataAD, appAD, appWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
         if (uvmContext.appManager().isInstantiated(self.appName())):
             print("ERROR: App %s already installed" % self.appName())
@@ -1027,7 +1027,7 @@ class CaptivePortalTests(unittest2.TestCase):
         
     
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appAD, appWeb
         uvmContext.localDirectory().setUsers(remove_local_directory_user())
         if app != None:

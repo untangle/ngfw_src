@@ -180,13 +180,13 @@ def runTestSuite(suite):
 
     sys.stdout = logfile
     sys.stderr = logfile
-    if "initialSetUp" in dir(suite):
+    if "initial_setup" in dir(suite):
         try:
-            suite.initialSetUp(suite)
+            suite.initial_setup(suite)
         except Exception, e:
-            print "initialSetUp exception: "
+            print "initial_setup exception: "
             traceback.print_exc( e )
-            unittest2.skip("initialSetUp exception: ")(suite)
+            unittest2.skip("initial_setup exception: ")(suite)
     sys.stdout = orig_stdout
     sys.stderr = orig_stderr
 
@@ -231,7 +231,7 @@ def runTestSuite(suite):
             if (parser.fastfail):
                 exit_flag = True
                 # we return here, don't break because we dont
-                # want to run finalTearDown
+                # want to run final_tear_down
                 return failCount, skipCount, totalCount
         elif (len(results.skipped) > 0):
             print "Test skipped : %s %s" % (test_name, timeString)
@@ -239,11 +239,11 @@ def runTestSuite(suite):
         else:
             print "Test success : %s %s " % (test_name, timeString)
 
-    if "finalTearDown" in dir(suite):
+    if "final_tear_down" in dir(suite):
         try:
-            suite.finalTearDown(suite)
+            suite.final_tear_down(suite)
         except Exception, e:
-            print "finalTearDown exception: "
+            print "final_tear_down exception: "
             traceback.print_exc( e )
 
     if (parser.timedTests):

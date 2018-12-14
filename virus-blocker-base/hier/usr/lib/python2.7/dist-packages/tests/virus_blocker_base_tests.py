@@ -84,7 +84,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         return "ssl-inspector"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app,md5StdNum, appSSL, appSSLData, canRelay
         # download eicar and trojan files before installing virus blocker
         self.ftp_user_name, self.ftp_password = global_functions.get_live_account_info("ftp")
@@ -447,7 +447,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert (result != 0)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, appSSL
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

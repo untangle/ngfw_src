@@ -60,7 +60,7 @@ class TunnelVpnTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -157,7 +157,7 @@ class TunnelVpnTests(unittest2.TestCase):
         assert(connectStatus == "CONNECTED")
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )

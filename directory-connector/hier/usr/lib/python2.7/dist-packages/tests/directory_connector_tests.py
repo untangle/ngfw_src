@@ -231,7 +231,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, AD_RESULT, AD_RESULT, RADIUS_RESULT
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -468,7 +468,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert ("success" in test_result_string)
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         """
         Tear down
         """

@@ -163,7 +163,7 @@ class ReportsTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app, orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host, web_app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             # report app is normally installed.
@@ -590,7 +590,7 @@ class ReportsTests(unittest2.TestCase):
         assert (resultLoginPage == 0)
         
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app, web_app
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:

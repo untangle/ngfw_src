@@ -66,7 +66,7 @@ class AdBlockerTests(unittest2.TestCase):
         return "ad-blocker"
 
     @staticmethod
-    def initialSetUp(self):
+    def initial_setup(self):
         global app
         if (uvmContext.appManager().isInstantiated(self.appName())):
             raise Exception('app %s already instantiated' % self.appName())
@@ -182,7 +182,7 @@ class AdBlockerTests(unittest2.TestCase):
         assert((today_str in result) or (yesterday_str in result))
 
     @staticmethod
-    def finalTearDown(self):
+    def final_tear_down(self):
         global app
         if app != None:
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
