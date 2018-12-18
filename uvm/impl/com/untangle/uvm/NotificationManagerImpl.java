@@ -112,6 +112,11 @@ public class NotificationManagerImpl implements NotificationManager
             logger.warn("Notification test exception", e);
         }
         try {
+            testUpgradeErrors(notificationList);
+        } catch (Exception e) {
+            logger.warn("Notification test exception", e);
+        }
+        try {
             testDupeApps(notificationList);
         } catch (Exception e) {
             logger.warn("Notification test exception", e);
@@ -336,6 +341,21 @@ public class NotificationManagerImpl implements NotificationManager
         }
     }
 
+    /**
+     * Looks for interrupted apt/dpkg issues
+     * 
+     * @param notificationList - the current list of notifications
+     */
+    private void testUpgradeErrors(List<String> notificationList)
+    {
+        ExecManagerResult result;
+
+        result = this.execManager.exec("/bin/egrep -q '^Status:.*(half-configured|triggers-pending)' /var/lib/dpkg/status");
+        if (result.getResult() == 0) {
+            notificationList.add(i18nUtil.tr("An upgrade process has been interrupted."));
+        }
+    }
+    
     /**
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
