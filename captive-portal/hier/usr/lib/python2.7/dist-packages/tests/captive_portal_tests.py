@@ -25,6 +25,8 @@ app = None
 appDataAD = None
 appAD = None
 appWeb = None
+appSSL = None
+appSSLData = None
 local_user_name = 'test20'
 adUserName = 'atsadmin'
 captureIP = None
@@ -238,12 +240,16 @@ class CaptivePortalTests(unittest2.TestCase):
         return "web-filter"
 
     @staticmethod
+    def appNameSSLInspector():
+        return "ssl-inspector"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     @staticmethod
     def initial_setup(self):
-        global appData, app, appDataRD, appDataAD, appAD, appWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
+        global appData, app, appDataRD, appDataAD, appAD, appWeb, appSSL, appSSLData, adResult, radiusResult, test_untangle_com_ip, captureIP
         if (uvmContext.appManager().isInstantiated(self.appName())):
             print("ERROR: App %s already installed" % self.appName())
             raise unittest2.SkipTest('app %s already instantiated' % self.appName())
@@ -259,6 +265,11 @@ class CaptivePortalTests(unittest2.TestCase):
             print("ERROR: App %s already installed" % self.appNameWeb())
             raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), default_policy_id)
+        if (uvmContext.appManager().isInstantiated(self.appNameSSLInspector())):
+            print("ERROR: App %s already installed" % self.appNameSSLInspector())
+            raise unittest2.SkipTest('app %s already instantiated' % self.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
+        appSSLData = appSSL.getSettings()
         adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
@@ -464,6 +475,22 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_027.out")
         assert (search != 0)
+
+    def test_028_captive_ssl_inspector(self):
+        global app, appData, appSSL, aapSSL
+        # Add SSL Inspector and check that HTTPS pages not inspected still show captive pages
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(2))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
+
+        appSSL.start()
+        result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_028.out --insecure https://test.untangle.com/")
+        appSSL.stop()
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_028.out")
+        assert (search == 0)
 
     def test_030_login_local_directory(self):
         global app, appData
@@ -1039,5 +1066,8 @@ class CaptivePortalTests(unittest2.TestCase):
         if appWeb != None:
             uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
+        if appSSL != None:
+            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            appSSL = None
 
 test_registry.registerApp("captive-portal", CaptivePortalTests)
