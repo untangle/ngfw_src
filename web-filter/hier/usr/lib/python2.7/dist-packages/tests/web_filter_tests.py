@@ -130,6 +130,13 @@ class WebFilterTests(WebFilterBaseTests):
         self.pass_url_list_clear()
         assert( resultReferer == 0 )
 
+    def test_300_block_ip_only_hosts(self):
+        settings = self.app.getSettings()
+        settings["blockAllIpHosts"]=True
+        self.app.setSettings(settings)
+        result = self.get_web_request_results(url=global_functions.test_server_ip, expected="blockpage")
+        assert(result == 0)
+
     def test_700_safe_search_enabled(self):
         """Check google safe search"""
         settings = self.app.getSettings()
