@@ -575,7 +575,6 @@ public class IntrusionPreventionApp extends AppBase
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         UvmContextFactory.context().daemonManager().incrementUsageCount( DAEMON_NAME );
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring( DAEMON_NAME, 3600, DAEMON_NAME);
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
         updateMetricsMemory();
