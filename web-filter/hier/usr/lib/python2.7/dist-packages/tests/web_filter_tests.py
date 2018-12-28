@@ -131,11 +131,44 @@ class WebFilterTests(WebFilterBaseTests):
         assert( resultReferer == 0 )
 
     def test_300_block_ip_only_hosts(self):
+        """Enable 'block IP only hosts', then check that traffic to an IP is blocked"""
         settings = self.app.getSettings()
         settings["blockAllIpHosts"]=True
         self.app.setSettings(settings)
         result = self.get_web_request_results(url=global_functions.test_server_ip, expected="blockpage")
         assert(result == 0)
+
+    def test_301_block_QUIC(self):
+        """Enable 'block QUIC (UDP port 443)' setting then check that UDP traffic over 443 is blocked (using netcat server/client)"""
+        #check for passwordless sudo access for the host first, if not, skip test
+        if(remote_control.run_command("sudo ls -l",stdout=False,nowait=True) != 0):
+            raise unittest2.SkipTest('no passwordless sudo access')
+        else:
+            #set block to false first to verify netcat works
+            settings = self.app.getSettings()
+            settings["blockQuic"]=False
+            self.app.setSettings(settings)
+            
+            serverHost = global_functions.LIST_SYSLOG_SERVER
+
+            #set up netcat server/client connection and check that it works first
+            remote_control.run_command("sudo rm -f /tmp/nc_quic_false.txt",host=serverHost)
+            remote_control.run_command("sudo nc -l -u -w 2 443 >/tmp/nc_quic_false.txt",host=serverHost,stdout=False,nowait=True)
+            remote_control.run_command("echo TEST | sudo nc -u -w 1 %s 443 | sleep 2" % serverHost)
+            first_result =remote_control.run_command("grep TEST /tmp/nc_quic_false.txt",host=serverHost)
+            assert(first_result == 0)
+
+            #set block to true
+            settings["blockQuic"]=True
+            self.app.setSettings(settings)
+
+            #retry netcat connection, verify it fails correctly
+            remote_control.run_command("sudo rm -f /tmp/nc_quic_true.txt",host=serverHost)
+            remote_control.run_command("sudo nc -l -u -w 2 443 >/tmp/nc_quic_true.txt",host=serverHost,stdout=False,nowait=True)
+            remote_control.run_command("echo TEST | sudo nc -u -w 1 %s 443 | sleep 2" % serverHost)
+            second_result =remote_control.run_command("grep TEST /tmp/nc_quic_true.txt",host=serverHost)
+            assert(second_result != 0)
+
 
     def test_700_safe_search_enabled(self):
         """Check google safe search"""
