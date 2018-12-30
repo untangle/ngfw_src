@@ -934,7 +934,7 @@ class OpenVpnTests(unittest2.TestCase):
         tunnelAppData['rules']['list'][:] = []
         for i in range(len(tunnelAppData['tunnels']['list'])):
             tunnelAppData['tunnels']['list'][i]['enabled'] = False
-            print tunnelAppData['tunnels']['list'][i]['enabled']
+            print(tunnelAppData['tunnels']['list'][i]['enabled'])
         tunnelApp.setSettings(tunnelAppData)
 
         #stop tunnel here
