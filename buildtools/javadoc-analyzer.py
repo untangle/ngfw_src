@@ -25,7 +25,7 @@ class JavaParser:
         try:
             self.tree = javalang.parse.parse(source)
         except:
-            print file_path
+            print(file_path)
 
     def get_node(self, tree):
         result = {}
