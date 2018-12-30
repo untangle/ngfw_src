@@ -21,7 +21,6 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
     onAfterRender: function (component) {
         var me = this;
         var view = this.getView();
-        var vm = this.getViewModel();
 
         this.masterGrid = component.up('grid');
         this.recordeditor = component.up('window');
