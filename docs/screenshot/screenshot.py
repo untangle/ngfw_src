@@ -201,9 +201,9 @@ class WebBrowser:
                 if entry['source'] == 'network':
                     continue
                 if entry['source'] == 'console-api':
-                    print entry
+                    print(entry)
                     return True
-                print entry
+                print(entry)
         return False
 
     def crop_by_dimension(self, x, y, height, width):
