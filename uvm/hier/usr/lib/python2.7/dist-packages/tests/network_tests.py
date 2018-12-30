@@ -868,7 +868,7 @@ class NetworkTests(unittest2.TestCase):
             try: 
                 subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
             except subprocess.CalledProcessError:
-                print "Unexpected error:", sys.exc_info()
+                print("Unexpected error:", sys.exc_info())
             except OSError:
                 pass # executable environment not ready
             # time.sleep(10)
