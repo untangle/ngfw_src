@@ -111,7 +111,7 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
             }
             switch(value.actionType) {
                 case 'SET_PRIORITY':
-                    var priostr = value.priority;
+                    var priostr;
                     switch(value.priority) {
                         case 1: priostr = 'Very High'.t(); break;
                         case 2: priostr = 'High'.t(); break;
