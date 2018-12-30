@@ -18,5 +18,5 @@ try:
     reportsApp.runFixedReports()
 except Exception as e:
     # can timeout - just ignore
-    print e
+    print(e)
     pass
