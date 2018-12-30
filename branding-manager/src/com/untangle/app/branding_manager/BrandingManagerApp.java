@@ -398,8 +398,9 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
 
             StringBuilder parsed = new StringBuilder();
             Matcher match = null;
+            BufferedReader reader = null;
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(filename));
+                reader = new BufferedReader(new FileReader(filename));
                 for (String line = reader.readLine(); null != line; line = reader.readLine()) {
                     /*
                      * When parsing the nsi file we only want to replace strings within quotes and
@@ -434,6 +435,14 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
             } catch (Exception x) {
                 logger.warn("Unable to open installer configuration file: " + filename );
                 return;
+            } finally {
+                if (reader != null){
+                    try {
+                        reader.close();
+                    } catch (Exception x) {
+                        logger.warn("Unable to close installer configuration file: " + filename );
+                    }
+                }
             }
 
             FileOutputStream fos = null;
