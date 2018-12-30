@@ -1138,22 +1138,34 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private static int getLienencyGift()
     {
+        BufferedReader reader = null;
+        int returnValue = 0;
         try {
             File giftFile = new File(LIENENCY_GIFT_FILE);
             if (!giftFile.exists())
                 return 0;
             
-            BufferedReader reader = new BufferedReader(new FileReader(giftFile));
+            reader = new BufferedReader(new FileReader(giftFile));
             Integer i = Integer.parseInt(reader.readLine());
-            if ( i == null )
-                return 0;
+            if ( i != null )
+                returnValue = 0;
             else
-                return i;
+                returnValue = i;
 
         } catch (Exception x) {
             logger.warn("Exception",x);
-            return 0;
+            returnValue = 0;
+        }finally{
+            if(reader != null){
+                try {
+                    reader.close();
+                } catch( Exception x ){
+                    logger.warn("Exception",x);
+                }
+            }
         }
+
+        return returnValue;
     }
 
     /**
