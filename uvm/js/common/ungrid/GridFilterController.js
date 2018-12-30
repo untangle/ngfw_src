@@ -11,7 +11,6 @@ Ext.define('Ung.cmp.GridFilterController', {
 
     setStore: function(){
         var me = this,
-            vm = me.getViewModel(),
             v = me.getView();
 
         if(v == null){
@@ -121,8 +120,7 @@ Ext.define('Ung.cmp.GridFilterController', {
     },
 
     updateFilterSummary: function(checkReset){
-        var me = this,
-            v = this.getView(),
+        var v = this.getView(),
             vm = this.getViewModel();
 
         if(v == null){
