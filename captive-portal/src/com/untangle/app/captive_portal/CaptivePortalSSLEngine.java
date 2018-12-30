@@ -67,10 +67,12 @@ public class CaptivePortalSSLEngine
         this.appStr = appStr;
         this.captureApp = appPtr;
 
+        FileInputStream webCertFileIS = null;
         try {
             // use the web server certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(webCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
+            webCertFileIS = new FileInputStream(webCertFile);
+            keyStore.load(webCertFileIS, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             kmf.init(keyStore, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
 
@@ -84,10 +86,17 @@ public class CaptivePortalSSLEngine
             sslEngine.setUseClientMode(false);
             sslEngine.setNeedClientAuth(false);
             sslEngine.setWantClientAuth(false);
-        }
-
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Exception creating CaptivePortalSSLEngine()", exn);
+        } finally {
+            if (webCertFileIS != null){
+                try {
+                    webCertFileIS.close();
+                } catch (Exception exn) {
+                    logger.error("Exception closing web cert file()", exn);
+
+                }
+            }
         }
     }
 

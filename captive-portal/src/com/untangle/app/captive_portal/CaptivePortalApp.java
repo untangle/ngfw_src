@@ -1327,9 +1327,10 @@ public class CaptivePortalApp extends AppBase
              * make sure we have a valid zip file and check the contents to see
              * if there is either a custom.html or custom.py script
              */
+            ZipFile zipFile = null;
             try {
                 int checker = 0;
-                ZipFile zipFile = new ZipFile(tempFile);
+                zipFile = new ZipFile(tempFile);
                 Enumeration<? extends ZipEntry> zipList = zipFile.entries();
 
                 while (zipList.hasMoreElements()) {
@@ -1340,8 +1341,6 @@ public class CaptivePortalApp extends AppBase
                     if (fileName.equals("custom.py") == true) checker += 1;
                 }
 
-                zipFile.close();
-
                 if (checker == 0) {
                     tempFile.delete();
                     return new ExecManagerResult(1, "The uploaded ZIP file does not contain custom.html or custom.py in the base/parent directory");
@@ -1350,11 +1349,17 @@ public class CaptivePortalApp extends AppBase
             } catch (ZipException zip) {
                 tempFile.delete();
                 return new ExecManagerResult(1, "The uploaded file does not appear to be a valid ZIP archive");
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 tempFile.delete();
                 return new ExecManagerResult(1, exn.getMessage());
+            } finally {
+                if (zipFile != null){
+                    try{
+                        zipFile.close();
+                    } catch (Exception exn) {
+                        return new ExecManagerResult(1, exn.getMessage());
+                    }
+                }
             }
 
             /*
