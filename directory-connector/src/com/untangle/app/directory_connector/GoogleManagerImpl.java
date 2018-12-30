@@ -94,15 +94,19 @@ public class GoogleManagerImpl
             } catch (Exception ex) {
                 logger.warn("Error writing credentials.json.", ex);
             }finally{
-                try{
-                    if(fw != null){
+                if(fw != null){
+                    try{
                         fw.close();
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
                     }
-                    if(bw != null){
+                }
+                if(bw != null){
+                    try{
                         bw.close();
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
                     }
-                }catch(IOException ex){
-                    logger.error("Unable to close file", ex);
                 }
             }
         } else {
