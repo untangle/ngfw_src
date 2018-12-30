@@ -816,6 +816,7 @@ public class OpenVpnAppImpl extends AppBase
         if (list == null) return;
         if (list.length == 0) return;
 
+        BufferedReader br;
         for (String name : list) {
             // check for a name that ends with the server config extension
             if (!name.endsWith(".conf")) continue;
@@ -840,25 +841,37 @@ public class OpenVpnAppImpl extends AppBase
             // no matching server so get rid of the config file and keys
             logger.info("Cleanup removing: " + target);
 
-            File trash = new File(target);
-            BufferedReader br = new BufferedReader(new FileReader(trash));
-            String[] part;
-            String junk;
-            String line;
+            br = null;
+            try{
+                File trash = new File(target);
+                br = new BufferedReader(new FileReader(trash));
+                String[] part;
+                String junk;
+                String line;
 
-            while ((line = br.readLine()) != null) {
+                while ((line = br.readLine()) != null) {
 
-                if ((line.startsWith("cert ")) || (line.startsWith("key ")) || (line.startsWith("ca "))) {
-                    part = line.split(" ");
-                    junk = (directory + "/" + part[1]);
-                    logger.info("Cleanup removing: " + junk);
-                    File wipe = new File(junk);
-                    wipe.delete();
+                    if ((line.startsWith("cert ")) || (line.startsWith("key ")) || (line.startsWith("ca "))) {
+                        part = line.split(" ");
+                        junk = (directory + "/" + part[1]);
+                        logger.info("Cleanup removing: " + junk);
+                        File wipe = new File(junk);
+                        wipe.delete();
+                    }
+                }
+
+                trash.delete();
+            } catch(Exception e ){
+                logger.warn("Unable to clear settings", e);
+            } finally {
+                if( br != null){
+                    try {
+                        br.close();
+                    } catch( Exception e){
+                        logger.warn("Unable to close reader", e);
+                    }
                 }
             }
-
-            br.close();
-            trash.delete();
         }
     }
 
@@ -915,7 +928,9 @@ public class OpenVpnAppImpl extends AppBase
     {
         List<JSONObject> results = new LinkedList<JSONObject>();
 
+        BufferedReader reader;
         for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
+            reader = null;
             try {
                 JSONObject result = new JSONObject();
                 File statusFile = new File("/var/run/openvpn/" + server.getName() + ".status");
@@ -931,7 +946,7 @@ public class OpenVpnAppImpl extends AppBase
                     continue;
                 }
 
-                BufferedReader reader = new BufferedReader(new FileReader(statusFile));
+                reader = new BufferedReader(new FileReader(statusFile));
                 String currentLine;
 
                 while ((currentLine = reader.readLine()) != null) {
@@ -984,6 +999,14 @@ public class OpenVpnAppImpl extends AppBase
                 results.add(result);
             } catch (Exception e) {
                 logger.warn("Malformed openvpn status file: " + "/var/run/openvpn/" + server.getName() + ".status", e);
+            } finally {
+                if(reader != null){
+                    try {
+                        reader.close();
+                    } catch( Exception e){
+                        logger.warn("Unable to close reader", e);
+                    }
+                }
             }
         }
 
