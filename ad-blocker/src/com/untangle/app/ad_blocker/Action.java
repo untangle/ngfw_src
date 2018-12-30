@@ -11,8 +11,8 @@ public enum Action
     PASS('P', "pass"),
     BLOCK('B', "block");
 
-    public static char PASS_KEY = 'P';
-    public static char BLOCK_KEY = 'B';
+    final public static char PASS_KEY = 'P';
+    final public static char BLOCK_KEY = 'B';
 
     private final char key;
     private final String name;
