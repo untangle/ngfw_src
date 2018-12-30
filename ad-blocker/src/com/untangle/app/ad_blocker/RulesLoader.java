@@ -51,9 +51,10 @@ public class RulesLoader
         }
 
         LinkedList<GenericRule> rules = new LinkedList<>();
+        BufferedReader in = null;
         try {
             File file = new File(RULE_FILE);
-            BufferedReader in = new BufferedReader(new FileReader(file));
+            in = new BufferedReader(new FileReader(file));
             String line;
             boolean block = false;
             
@@ -92,9 +93,16 @@ public class RulesLoader
                 
                 rules.add(rule);
             }
-            in.close();
         } catch (IOException e) {
             logger.error("Unable to read ad blocking rules", e);
+        } finally {
+            if(in != null){
+                try {
+                    in.close();
+                }catch(Exception e){
+                    logger.error("Unable to close read ad blocking rules", e);
+                }
+            }
         }
 
         settings.setRules(rules);
@@ -113,9 +121,10 @@ public class RulesLoader
             currentCookiesMap.put( rule.getString(), rule );
         }
         
+        BufferedReader in = null;
         try {
             File file = new File(COOKIE_LIST_GHOSTERY);
-            BufferedReader in = new BufferedReader(new FileReader(file));
+            in = new BufferedReader(new FileReader(file));
             String line;
             while ((line = in.readLine()) != null) {
                 line = line.replaceFirst("\\{", "{ \"javaClass\" : \"com.untangle.app.ad_blocker.cookies.CookieElement\", ");
@@ -149,11 +158,18 @@ public class RulesLoader
                     cookieRules.add(new GenericRule(c, c, null, null, enabled));
                 }
             }
-            in.close();
         } catch (Exception e) {
             if (e instanceof RuntimeException)
                 throw new RuntimeException(e);
             logger.error("could not read cookie list: " + COOKIE_LIST_GHOSTERY, e);
+        }finally{
+            if(in != null){
+                try{
+                    in.close();
+                }catch(Exception e){
+                    logger.error("could not close cookie list: " + COOKIE_LIST_GHOSTERY, e);
+                }
+            }
         }
         settings.setCookies(cookieRules);
     }
