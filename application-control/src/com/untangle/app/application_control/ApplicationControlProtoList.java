@@ -161,9 +161,10 @@ public class ApplicationControlProtoList
         LinkedList<ApplicationControlProtoRule> ruleList = new LinkedList<ApplicationControlProtoRule>();
         ApplicationControlProtoRule protoRule = null;
 
+        BufferedReader reader = null;
         try {
             File protofile = new File("/usr/share/untangle-classd/protolist.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(protofile));
+            reader = new BufferedReader(new FileReader(protofile));
             StringBuilder[] field = new StringBuilder[10];
             String grabstr;
             boolean eflag, qflag;
@@ -231,10 +232,16 @@ public class ApplicationControlProtoList
 
                 ruleList.add(protoRule);
             }
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("buildProtoList()", e);
+        } finally{
+            if(reader != null){
+                try{
+                    reader.close();
+                } catch (Exception e) {
+                    logger.error("buildProtoList(), unable to close reader", e);
+                }
+            }
         }
 
         // set flagging on any of the proxy categories
