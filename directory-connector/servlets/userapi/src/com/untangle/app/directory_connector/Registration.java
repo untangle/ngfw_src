@@ -233,15 +233,19 @@ public class Registration extends HttpServlet
         } catch ( IOException e ) {
             logger.info( "IOError while reading from file " + AD_DOWNLOAD_NAME);
         }finally{
-            try{
-                if( fr != null ){
+            if( fr != null ){
+                try{
                     fr.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-                if( br != null ){
+            }
+            if( br != null ){
+                try{
                     br.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-            }catch(IOException ex){
-                logger.error("Unable to close file", ex);
             }
         }
     }
