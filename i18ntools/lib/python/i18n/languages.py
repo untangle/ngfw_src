@@ -66,4 +66,3 @@ class Languages:
             if language["id"] in ids:
                 enabled.append(language)
         return enabled
-        return None
