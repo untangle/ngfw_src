@@ -350,15 +350,21 @@ public class ApplicationControlApp extends AppBase
      */
     protected boolean daemonCheck()
     {
-        Socket sock = new Socket();
-
+        Socket sock = null;
         try {
+            sock = new Socket();
             sock.connect(daemonAddress, 1000);
-            sock.close();
-        }
 
-        catch (Exception exn) {
+        } catch (Exception exn) {
             return (false);
+        } finally {
+            if(sock != null){
+                try{
+                    sock.close();
+                }catch (Exception exn) {
+                    return (false);
+                }
+            }
         }
 
         return (true);
