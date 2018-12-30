@@ -32,7 +32,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "variables", "debug"] )
     except getopt.GetoptError as error:
-        print error
+        print(error)
         usage()
         sys.exit(2)
     for opt, arg in opts:
