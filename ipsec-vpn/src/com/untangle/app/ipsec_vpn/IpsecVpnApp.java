@@ -819,21 +819,45 @@ public class IpsecVpnApp extends AppBase
         String line;
 
         FileReader fileReader = new FileReader(cfgfile);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        BufferedReader bufferedReader = null;
+        try{
+            bufferedReader = new BufferedReader(fileReader);
 
-        while ((line = bufferedReader.readLine()) != null) {
-            if (line.contains("timeout =") == true) {
-                line = ("    timeout = " + STRONGSWAN_STROKE_TIMEOUT);
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("timeout =") == true) {
+                    line = ("    timeout = " + STRONGSWAN_STROKE_TIMEOUT);
+                }
+                buffer.append(line);
+                buffer.append("\n");
             }
-            buffer.append(line);
-            buffer.append("\n");
+            fileReader.close();
+        } catch( Exception ex){
+            logger.error("Unable to write to file", ex);
+        } finally {
+            if( bufferedReader != null){
+                try{
+                    bufferedReader.close();
+                } catch( Exception ex){
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
 
-        fileReader.close();
-
-        FileWriter fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
-        fileWriter.write(buffer.toString());
-        fileWriter.close();
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
+            fileWriter.write(buffer.toString());
+        } catch ( Exception ex ){
+            logger.error("Unable to write file", ex);
+        } finally{
+            if ( fileWriter != null ){
+                try {
+                    fileWriter.close();
+                } catch (Exception ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+        }
     }
 
     /**
