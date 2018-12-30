@@ -119,7 +119,6 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
         var me = this,
             view = me.getView(),
             vm = this.getViewModel(),
-            recordEditorView = component.up('window'),
             record = vm.get('record');
 
         var className = '';
@@ -192,7 +191,6 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
     onClassChange: function( combo, newValue, oldValue ){
         var me = this,
             view = me.getView(),
-            vm = me.getViewModel(),
             appVm = view.up('config-events').getViewModel(),
             classFields = appVm.get('allClassFields'),
             classValue = newValue;
@@ -235,8 +233,7 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
     },
 
     classChangeFields: function( newClassName, oldClassName ){
-        var vm = this.getViewModel(),
-            view = this.getView(),
+        var view = this.getView(),
             appVm = view.up('config-events').getViewModel();
 
         // Remove fields if they do not exist in new class.
