@@ -37,7 +37,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "home_net=", "debug"] )
     except getopt.GetoptError as error:
-        print error
+        print(error)
         usage()
         sys.exit(2)
     for opt, arg in opts:
@@ -57,7 +57,7 @@ def main(argv):
     settings = get_app_settings("intrusion-prevention")
 
     if settings is None:
-        print "Unable to read settings"
+        print("Unable to read settings")
         sys.exit(2)
 
     SuricataSignature.block_action = settings["blockAction"]
@@ -128,7 +128,7 @@ def main(argv):
                 signature_action_counts["log"] += 1
             else:
                 print("Unknown Action")
-                print action
+                print(action)
 
         print(signature_action_counts)
 
