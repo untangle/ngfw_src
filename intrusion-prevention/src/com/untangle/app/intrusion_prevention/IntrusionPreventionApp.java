@@ -983,7 +983,6 @@ public class IntrusionPreventionApp extends AppBase
                      */
                     writer = new BufferedWriter( new FileWriter(tempPatchName));
                     writer.write(changedSet);
-                    writer.close();
 
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
@@ -996,8 +995,17 @@ public class IntrusionPreventionApp extends AppBase
 
                 }catch( IOException e ){
                     logger.warn("Failed to synchronize export IPS settings");
+                }finally{
+                    if(writer != null){
+                        try{
+                            writer.close();
+                        }catch( Exception e ){
+                            logger.warn("Failed to synchronize export IPS settings");
+                        }
+                    }
                 }
 
+                FileInputStream fis = null;
                 try{
                     String oemName = UvmContextFactory.context().oemManager().getOemName();
                     String version = UvmContextFactory.context().version().replace(".","_");
@@ -1011,19 +1019,26 @@ public class IntrusionPreventionApp extends AppBase
 
                     byte[] buffer = new byte[1024];
                     int read;
-                    FileInputStream fis = new FileInputStream(tempSettingsName);
+                    fis = new FileInputStream(tempSettingsName);
                     OutputStream out = resp.getOutputStream();
                 
                     while ( ( read = fis.read( buffer ) ) > 0 ) {
                         out.write( buffer, 0, read);
                     }
 
-                    fis.close();
                     out.flush();
                     out.close();
 
                 } catch (Exception e) {
                     logger.warn("Failed to export IPS settings",e);
+                } finally {
+                    if (fis != null){
+                        try {
+                            fis.close();
+                        }catch(Exception e){
+                            logger.warn("Unable to cloe IPS settings",e);
+                        }
+                    }
                 }
             }
         }
