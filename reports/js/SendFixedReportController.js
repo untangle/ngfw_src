@@ -145,7 +145,6 @@ Ext.define('Ung.apps.reports.SendFixedReportController', {
 
         var disabledDates = [];
         var disabledDate = new Date(minDate.getTime());
-        disabledDate = new Date(minDate.getTime());
         var i;
         var day;
         while(disabledDate <= maxDate){
