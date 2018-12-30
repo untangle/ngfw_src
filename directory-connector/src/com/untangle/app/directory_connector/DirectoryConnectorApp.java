@@ -743,21 +743,33 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         }catch (Exception exn) {
             logger.warn("Exception writing /etc/radiusclient configuration files" + exn);
         }finally{
-            try{
-                if(server != null){
+            if(server != null){
+                try{
                     server.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-                if(client != null){
+            }
+            if(client != null){
+                try{
                     client.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-                if(xauth != null){
+            }
+            if(xauth != null){
+                try{
                     xauth.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-                if(peers != null){
+            }
+            if(peers != null){
+                try{
                     peers.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
                 }
-            }catch(IOException ex){
-                logger.error("Unable to close file", ex);
             }
         }
     }
