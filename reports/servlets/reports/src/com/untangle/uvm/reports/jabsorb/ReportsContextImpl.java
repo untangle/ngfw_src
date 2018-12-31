@@ -57,17 +57,25 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
      */
     private TimeZone getTimeZone()
     {
+        TimeZone current = TimeZone.getDefault();
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            in = new BufferedReader(new FileReader(TIMEZONE_FILE));
             String str = in.readLine();
             str = str.trim();
-            in.close();
-            TimeZone current = TimeZone.getTimeZone(str);
-            return current;
+            current = TimeZone.getTimeZone(str);
         } catch (Exception x) {
             logger.warn("Unable to get timezone, using java default:" , x);
-            return TimeZone.getDefault();
+        } finally {
+            if (in != null){
+                try{
+                    in.close();
+                } catch (Exception x) {
+                    logger.warn("Unable to get timezone, using java default:" , x);
+                }
+            }
         }
+        return current;
     }
 
     /**
