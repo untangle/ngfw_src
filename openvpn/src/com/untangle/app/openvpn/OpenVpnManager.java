@@ -574,6 +574,9 @@ public class OpenVpnManager
         /**
          * Copy the config file for all enabled remote servers
          */
+        BufferedReader cfgReader;
+        BufferedWriter cfgWriter;
+        BufferedWriter authWriter;
         for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
             if (!server.getEnabled()) continue;
 
@@ -588,11 +591,14 @@ public class OpenVpnManager
              * old method of using a shell copy command.
              */
 
+            cfgReader = null;
+            cfgWriter = null;
+            authWriter = null;
             try {
                 File readFile = new File(System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf");
                 File writeFile = new File("/etc/openvpn/" + name + ".conf");
-                BufferedReader cfgReader = new BufferedReader(new FileReader(readFile));
-                BufferedWriter cfgWriter = new BufferedWriter(new FileWriter(writeFile));
+                cfgReader = new BufferedReader(new FileReader(readFile));
+                cfgWriter = new BufferedWriter(new FileWriter(writeFile));
                 String line;
 
                 while ((line = cfgReader.readLine()) != null) {
@@ -622,10 +628,9 @@ public class OpenVpnManager
                 // if user+pass auth is enabled create the auth file
                 if (server.getAuthUserPass()) {
                     File authFile = new File("/etc/openvpn/" + name + ".auth");
-                    BufferedWriter authWriter = new BufferedWriter(new FileWriter(authFile));
+                    authWriter = new BufferedWriter(new FileWriter(authFile));
                     authWriter.write(server.getAuthUsername() + "\n");
                     authWriter.write(server.getAuthPassword() + "\n");
-                    authWriter.close();
                 }
 
                 count += 1;
@@ -633,6 +638,28 @@ public class OpenVpnManager
                 logger.warn("Exception adjusting remote server configuration.", exn);
                 String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
                 UvmContextFactory.context().execManager().exec(cpCmd);
+            } finally {
+                if (cfgReader != null ){
+                    try{
+                        cfgReader.close();
+                    }catch(Exception exn){
+                        logger.warn("Exception closing cfgReader", exn);
+                    }
+                }
+                if (cfgWriter != null ){
+                    try{
+                        cfgWriter.close();
+                    }catch(Exception exn){
+                        logger.warn("Exception closing cfgWriter", exn);
+                    }
+                }
+                if (authWriter != null ){
+                    try{
+                        authWriter.close();
+                    }catch(Exception exn){
+                        logger.warn("Exception closing authWriter", exn);
+                    }
+                }
             }
         }
 
@@ -837,13 +864,14 @@ public class OpenVpnManager
             if (server.getEnabled()) maxNumTunDevices++;
         }
 
+        FileWriter iptablesScript = null;
         try {
             logger.info("Writing File: " + IPTABLES_SCRIPT);
 
             int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
             int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
 
-            FileWriter iptablesScript = new FileWriter(IPTABLES_SCRIPT, false);
+            iptablesScript = new FileWriter(IPTABLES_SCRIPT, false);
 
             iptablesScript.write("#!/bin/dash" + "\n");
             iptablesScript.write("## Auto Generated on " + new Date() + "\n");
@@ -913,15 +941,17 @@ public class OpenVpnManager
                     }
                 }
             }
-
-            iptablesScript.close();
-
-            UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_SCRIPT);
-
-            return;
-
         } catch (java.io.IOException exc) {
             logger.error("Error writing iptables script", exc);
+        } finally{
+            if(iptablesScript != null){
+                try{
+                    iptablesScript.close();
+                    UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_SCRIPT);
+                }catch( Exception ex){
+                    logger.error("Error writing iptables script", ex);
+                }
+            }
         }
     }
 
