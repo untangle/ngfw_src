@@ -299,7 +299,13 @@ class OpenVpnMonitor implements Runnable
         } finally {
             if (out != null) out.close();
             if (in != null) in.close();
-            if (socket != null) socket.close();
+            if (socket != null){
+                try{
+                    socket.close();
+                }catch( Exception e){
+                    logger.warn("Failed to close socket.", e);
+                }
+            }
         }
     }
 
@@ -489,14 +495,16 @@ class OpenVpnMonitor implements Runnable
      */
     private void checkRemoteServerProcesses()
     {
+        BufferedReader reader;
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             if (!server.getEnabled()) continue;
 
+            reader = null;
             try {
                 File pidFile = new File("/var/run/openvpn." + server.getName() + ".pid");
                 if (!pidFile.exists()) continue;
 
-                BufferedReader reader = new BufferedReader(new FileReader(pidFile));
+                reader = new BufferedReader(new FileReader(pidFile));
                 String currentLine;
                 String contents = "";
                 while ((currentLine = reader.readLine()) != null) {
@@ -519,6 +527,14 @@ class OpenVpnMonitor implements Runnable
 
             } catch (Exception e) {
                 logger.warn("Failed to check openvpn pid file.", e);
+            } finally {
+                if (reader != null){
+                    try{
+                        reader.close();
+                    } catch (Exception e) {
+                        logger.warn("Failed to check openvpn pid file.", e);
+                    }
+                }
             }
         }
     }
@@ -531,11 +547,12 @@ class OpenVpnMonitor implements Runnable
     {
         if (!this.app.getSettings().getServerEnabled()) return;
 
+        BufferedReader reader = null;
         try {
             File pidFile = new File("/var/run/openvpn.server.pid");
             if (!pidFile.exists()) return;
 
-            BufferedReader reader = new BufferedReader(new FileReader(pidFile));
+            reader = new BufferedReader(new FileReader(pidFile));
             String currentLine;
             String contents = "";
             while ((currentLine = reader.readLine()) != null) {
@@ -557,6 +574,14 @@ class OpenVpnMonitor implements Runnable
             }
         } catch (Exception e) {
             logger.warn("Failed to check openvpn pid file.", e);
+        } finally {
+            if (reader != null){
+                try{
+                    reader.close();
+                } catch (Exception e) {
+                    logger.warn("Failed to check openvpn pid file.", e);
+                }
+            }
         }
     }
 
