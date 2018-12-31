@@ -563,26 +563,36 @@ public class ReportEntry implements Serializable, JSONString
     {
         EventReaderImpl.checkConnection( conn );
 
+        String[] results = null;
+
+        java.sql.ResultSet resultSet = null;
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
             SqlCondition.setPreparedStatementValues( statement, conditions, table );
 
             logger.info("Getting distinct values: " + statement);
-            java.sql.ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             LinkedList<String> values = new LinkedList<String>();
             while (resultSet.next()) {
                 values.add( resultSet.getString(1) );
             }
 
-            String[] array = new String[values.size()];
-            array = values.toArray(array);
-
-            return array;
+            results = new String[values.size()];
+            results = values.toArray(results);
         } catch (Exception e) {
             logger.warn("Exception:",e);
-            return null;
+        } finally {
+            if (resultSet != null){
+                try{
+                    resultSet.close();
+                }catch( Exception e ){
+                    logger.warn("Exception:",e);
+                }
+            }
         }
+
+        return results;
     }
 
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
