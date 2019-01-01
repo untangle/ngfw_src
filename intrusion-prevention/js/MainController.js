@@ -796,9 +796,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 change: 'changeFilterSearch',
                 buffer: 500
             },
+            listConfig: {
+                itemTpl: '<div data-qtip="{description}">{value}</div>'
+            },
             queryMode: 'local',
             valueField: 'value',
-            displayField: 'description',
+            displayField: 'value',
             triggers: {
                 clear: {
                     cls: 'x-form-clear-trigger',
