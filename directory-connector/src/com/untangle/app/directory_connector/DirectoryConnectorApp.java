@@ -149,7 +149,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             /* 13.1 - convert ouFilter to array */
             String ouFilter = readSettings.getActiveDirectorySettings().getOUFilter();
             if(!ouFilter.equals("") ){
-                LinkedList<String> ouFilters = new LinkedList<String>();
+                LinkedList<String> ouFilters = new LinkedList<>();
                 ouFilters.add(ouFilter);
                 readSettings.getActiveDirectorySettings().setOUFilters(ouFilters);
                 readSettings.getActiveDirectorySettings().setOUFilter("");
@@ -271,7 +271,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public List<UserEntry> getRuleConditonalUserEntries()
     {
-        LinkedList<UserEntry> users = new LinkedList<UserEntry>();
+        LinkedList<UserEntry> users = new LinkedList<>();
 
         /* add all AD users */
         boolean found;
@@ -308,7 +308,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public List<GroupEntry> getRuleConditionalGroupEntries()
     {
-        LinkedList<GroupEntry> groups = new LinkedList<GroupEntry>();
+        LinkedList<GroupEntry> groups = new LinkedList<>();
 
         /* add all AD groups */
         boolean found;
@@ -461,7 +461,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public List<String> memberOfDomain(String user)
     {
         if (!isLicenseValid()) {
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
 
         return this.groupManager.memberOfDomain(user);
@@ -497,7 +497,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public List<String> memberOfGroup(String user)
     {
         if (!isLicenseValid()) {
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
 
         return this.groupManager.memberOfGroup(user);
@@ -516,7 +516,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public List<String> memberOfGroup(String user, String domain)
     {
         if (!isLicenseValid()) {
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
 
         return this.groupManager.memberOfGroup(user, domain);
@@ -610,7 +610,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             adSettings.setLDAPPort(-1);
             adSettings.setOUFilters(null);
 
-            LinkedList<ActiveDirectoryServer> adServers = new LinkedList<ActiveDirectoryServer>();
+            LinkedList<ActiveDirectoryServer> adServers = new LinkedList<>();
             adServers.push(adServer);
             adSettings.setServers( adServers );
         }

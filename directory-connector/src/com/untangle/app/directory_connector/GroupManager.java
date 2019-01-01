@@ -177,7 +177,7 @@ public class GroupManager
      */
     public List<String> memberOfDomain(String user)
     {
-        List<String> myDomains = new LinkedList<String>();
+        List<String> myDomains = new LinkedList<>();
 
         if (this.domainsGroupsUsersMap == null)
             return myDomains;
@@ -353,7 +353,7 @@ public class GroupManager
      */
     public List<String> memberOfGroup(String user)
     {
-        List<String> myGroups = new LinkedList<String>();
+        List<String> myGroups = new LinkedList<>();
 
         if (this.domainsGroupsUsersMap == null)
             return myGroups;
@@ -392,7 +392,7 @@ public class GroupManager
      */
     public List<String> memberOfGroup(String user, String targetDomain)
     {
-        List<String> myGroups = new LinkedList<String>();
+        List<String> myGroups = new LinkedList<>();
 
         if (this.domainsGroupsUsersMap == null)
             return myGroups;
@@ -481,8 +481,8 @@ public class GroupManager
                 return;
             }
 
-            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersMap = new ConcurrentHashMap<String,Map<String,Map<String,Boolean>>>(domains.size());
-            Map<String,Map<String,Set<String>>> domainsGroupsChildrenMap = new ConcurrentHashMap<String,Map<String,Set<String>>>(domains.size());
+            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersMap = new ConcurrentHashMap<>(domains.size());
+            Map<String,Map<String,Set<String>>> domainsGroupsChildrenMap = new ConcurrentHashMap<>(domains.size());
             for( String domain : domains){
                 List<GroupEntry> groupList = null;
                 try {
@@ -495,9 +495,9 @@ public class GroupManager
 
                 /** Create new user and group maps */
                 int numGroups = groupList.size();
-                Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<String,Map<String,Boolean>>(numGroups);
-                Map<String,String> groupDNToAccountName = new ConcurrentHashMap<String,String>(numGroups);
-                Map<String,Set<String>> groupsChildrenMap = new ConcurrentHashMap<String,Set<String>>(numGroups);
+                Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
+                Map<String,String> groupDNToAccountName = new ConcurrentHashMap<>(numGroups);
+                Map<String,Set<String>> groupsChildrenMap = new ConcurrentHashMap<>(numGroups);
 
                 /* Build a mapping of all of the groups to users, this has to recurse. */
                 for ( GroupEntry groupEntry : groupList ) {
@@ -507,7 +507,7 @@ public class GroupManager
                     /* Update the mapping from the dn to the account name */
                     groupDNToAccountName.put(groupEntry.getDN(), groupName);
 
-                    Map<String,Boolean> groupUsers = new ConcurrentHashMap<String,Boolean>();
+                    Map<String,Boolean> groupUsers = new ConcurrentHashMap<>();
 
                     /* Get all of the groups and users in this group. */
                     try {
@@ -534,12 +534,12 @@ public class GroupManager
 
                     Set<String> children = groupsChildrenMap.get(groupName);
                     if (children == null) {
-                        children = new HashSet<String>();
+                        children = new HashSet<>();
                         groupsChildrenMap.put(groupName, children);
                     }
 
                     /* Now add all of the items that this group is a member of */
-                    Set<String> groupParentSet = new HashSet<String>();
+                    Set<String> groupParentSet = new HashSet<>();
 
                     for ( String parent : groupEntry.getMemberOf()) {
                         /* Convert from DN to parentName */
@@ -555,7 +555,7 @@ public class GroupManager
                          */
                         children = groupsChildrenMap.get(parentName);
                         if (children == null) {
-                            children = new HashSet<String>();
+                            children = new HashSet<>();
                             groupsChildrenMap.put(parentName, children);
                         }
                         logger.debug("Building Group Cache: Processing Group Mapping: " + parentName + " adding child: " + groupName);
@@ -575,7 +575,7 @@ public class GroupManager
                         String groupName = groupEntry.getSAMAccountName();
                         logger.debug("Building Group Cache: Processing Group Hierarchy: " + groupName);
                         Set<String> childSet = groupsChildrenMap.get(groupName);
-                        Set<String> newChildren = new HashSet<String>();
+                        Set<String> newChildren = new HashSet<>();
 
                         if ( childSet == null ) {
                             /* should never happen */

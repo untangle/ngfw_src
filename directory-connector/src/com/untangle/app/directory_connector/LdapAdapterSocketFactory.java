@@ -11,7 +11,7 @@ public abstract class LdapAdapterSocketFactory
   extends SocketFactory
 {
 
-  static ThreadLocal<SocketFactory> local = new ThreadLocal<SocketFactory>();
+  static ThreadLocal<SocketFactory> local = new ThreadLocal<>();
 
   /**
    * getDefault
