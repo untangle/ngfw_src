@@ -149,7 +149,7 @@ public class BandwidthControlApp extends AppBase
         logger.info("Initializing Settings...");
 
         this.settings = new BandwidthControlSettings();
-        List<BandwidthControlRule> rules = new LinkedList<BandwidthControlRule>();
+        List<BandwidthControlRule> rules = new LinkedList<>();
 
         this.settings.setRules(rules);
         this.setSettings(this.settings);
@@ -241,7 +241,7 @@ public class BandwidthControlApp extends AppBase
         newRule0Action.setQuotaBytes(quotaBytes);
         BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.HOST_HAS_NO_QUOTA, "true");
         BandwidthControlRuleCondition newRule0Matcher2 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_INTF, "non_wan");
-        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<BandwidthControlRuleCondition>();
+        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<>();
         newRule0matchers.add(newRule0Matcher);
         newRule0matchers.add(newRule0Matcher2);
         newRule0.setAction(newRule0Action);
@@ -257,7 +257,7 @@ public class BandwidthControlApp extends AppBase
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
         newRule1Action.setPriority(new Integer(overQuotaPriority));
         BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.HOST_QUOTA_EXCEEDED, "true");
-        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<BandwidthControlRuleCondition>();
+        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<>();
         newRule1matchers.add(newRule1Matcher);
         newRule1.setAction(newRule1Action);
         newRule1.setConditions(newRule1matchers);
@@ -291,7 +291,7 @@ public class BandwidthControlApp extends AppBase
         newRule0Action.setQuotaBytes(quotaBytes);
         BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.USER_HAS_NO_QUOTA, "true");
         BandwidthControlRuleCondition newRule0Matcher2 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_INTF, "non_wan");
-        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<BandwidthControlRuleCondition>();
+        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<>();
         newRule0matchers.add(newRule0Matcher);
         newRule0matchers.add(newRule0Matcher2);
         newRule0.setAction(newRule0Action);
@@ -307,7 +307,7 @@ public class BandwidthControlApp extends AppBase
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
         newRule1Action.setPriority(new Integer(overQuotaPriority));
         BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.USER_QUOTA_EXCEEDED, "true");
-        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<BandwidthControlRuleCondition>();
+        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<>();
         newRule1matchers.add(newRule1Matcher);
         newRule1.setAction(newRule1Action);
         newRule1.setConditions(newRule1matchers);
