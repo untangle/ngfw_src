@@ -33,9 +33,9 @@ public class CaptivePortalSettings implements Serializable, org.json.JSONString
         DISABLE_DETECTION, CHECK_CERTIFICATE, REQUIRE_CERTIFICATE
     };
 
-    private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
-    private List<PassedAddress> passedClients = new LinkedList<PassedAddress>();
-    private List<PassedAddress> passedServers = new LinkedList<PassedAddress>();
+    private List<CaptureRule> captureRules = new LinkedList<>();
+    private List<PassedAddress> passedClients = new LinkedList<>();
+    private List<PassedAddress> passedServers = new LinkedList<>();
 
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
@@ -81,7 +81,7 @@ public class CaptivePortalSettings implements Serializable, org.json.JSONString
     public List<CaptureRule> getCaptureRules()
     {
         if (this.captureRules == null) {
-            this.captureRules = new LinkedList<CaptureRule>();
+            this.captureRules = new LinkedList<>();
         }
 
         return this.captureRules;
