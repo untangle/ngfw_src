@@ -388,7 +388,7 @@ public class ApplicationControlApp extends AppBase
      */
     private LinkedList<ApplicationControlLogicRule> buildDefaultRules()
     {
-        LinkedList<ApplicationControlLogicRule> logicRules = new LinkedList<ApplicationControlLogicRule>();
+        LinkedList<ApplicationControlLogicRule> logicRules = new LinkedList<>();
 
         int ruleNumber = 1;
         ApplicationControlLogicRule rule;
@@ -397,7 +397,7 @@ public class ApplicationControlApp extends AppBase
         ApplicationControlLogicRuleAction action;
 
         rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
+        matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
         ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "443");
         ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/HTTP*", true);
@@ -412,7 +412,7 @@ public class ApplicationControlApp extends AppBase
         logicRules.add(rule);
 
         rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
+        matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
         ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "443");
         ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/YOUTUBE*");
@@ -427,7 +427,7 @@ public class ApplicationControlApp extends AppBase
         logicRules.add(rule);
 
         rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
+        matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
         ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "80");
         ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/HTTP*", true);
@@ -442,7 +442,7 @@ public class ApplicationControlApp extends AppBase
         logicRules.add(rule);
 
         rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
+        matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
         ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "22");
         ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/SSH*", true);
@@ -457,7 +457,7 @@ public class ApplicationControlApp extends AppBase
         logicRules.add(rule);
 
         rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
+        matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_CATEGORY, "Proxy");
         matchers.add(ruleMatcher1);
         action = new ApplicationControlLogicRuleAction(ApplicationControlLogicRuleAction.ActionType.TARPIT, Boolean.TRUE);

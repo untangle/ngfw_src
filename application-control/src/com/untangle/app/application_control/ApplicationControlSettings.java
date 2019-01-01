@@ -39,7 +39,7 @@ public class ApplicationControlSettings implements Serializable, JSONString
 
     public void applyAppRules(ApplicationControlStatistics statistics)
     {
-        this.protoHash = new Hashtable<String, ApplicationControlProtoRule>();
+        this.protoHash = new Hashtable<>();
         long liveCount = 0;
         long flagCount = 0;
         long blockCount = 0;
