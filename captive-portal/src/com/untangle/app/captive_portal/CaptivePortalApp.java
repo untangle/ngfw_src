@@ -231,12 +231,12 @@ public class CaptivePortalApp extends AppBase
         localSettings.setBasicMessageFooter("If you have any questions, please contact your network administrator.");
 
         // create a few example rules
-        List<CaptureRule> ruleList = new LinkedList<CaptureRule>();
+        List<CaptureRule> ruleList = new LinkedList<>();
         LinkedList<CaptureRuleCondition> matcherList = null;
 
         // example interface rule
         CaptureRuleCondition interfaceMatch = new CaptureRuleCondition(CaptureRuleCondition.ConditionType.SRC_INTF, "non_wan");
-        matcherList = new LinkedList<CaptureRuleCondition>();
+        matcherList = new LinkedList<>();
         matcherList.add(interfaceMatch);
         ruleList.add(new CaptureRule(false, matcherList, true, "Capture all traffic on all non-WAN interfaces"));
 

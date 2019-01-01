@@ -29,7 +29,7 @@ public class CaptivePortalUserCookieTable
      */
     public CaptivePortalUserCookieTable()
     {
-        userTable = new ConcurrentHashMap<String, CaptivePortalUserEntry>();
+        userTable = new ConcurrentHashMap<>();
     }
 
     /**

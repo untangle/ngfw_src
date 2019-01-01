@@ -56,7 +56,7 @@ public class CaptivePortalUserTable
     public CaptivePortalUserTable(CaptivePortalApp ownerApp)
     {
         this.ownerApp = ownerApp;
-        activeUserTable = new ConcurrentHashMap<String, CaptivePortalUserEntry>();
+        activeUserTable = new ConcurrentHashMap<>();
     }
 
     /**
@@ -66,7 +66,7 @@ public class CaptivePortalUserTable
      */
     public ArrayList<CaptivePortalUserEntry> buildUserList()
     {
-        ArrayList<CaptivePortalUserEntry> userList = new ArrayList<CaptivePortalUserEntry>();
+        ArrayList<CaptivePortalUserEntry> userList = new ArrayList<>();
         userList.addAll(activeUserTable.values());
         return (userList);
     }
@@ -177,7 +177,7 @@ public class CaptivePortalUserTable
      */
     public ArrayList<StaleUser> buildStaleList(long idleTimeout, long userTimeout)
     {
-        ArrayList<StaleUser> wipelist = new ArrayList<StaleUser>();
+        ArrayList<StaleUser> wipelist = new ArrayList<>();
         HostTableEntry entry = null;
         long currentTime = (System.currentTimeMillis() / 1000);
         long idleTrigger = 0;
