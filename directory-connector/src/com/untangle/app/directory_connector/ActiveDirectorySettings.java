@@ -57,7 +57,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
     private String ldapHost;
     private boolean ldapSecure;
     private String ouFilter = "";
-    private List<String> ouFilters = new LinkedList<String>();
+    private List<String> ouFilters = new LinkedList<>();
     private int ldapPort;
 
 
@@ -69,7 +69,7 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
         this.ldapHost = ldapHost;
         this.ldapPort = ldapPort;
         this.ldapSecure = ldapSecure;
-        this.ouFilters = new LinkedList<String>();
+        this.ouFilters = new LinkedList<>();
     }
 
     public String getSuperuser() { return superuser; }

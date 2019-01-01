@@ -156,7 +156,7 @@ abstract class LdapAdapter
                                                                 getListAllUsersSearchString(),
                                                                 getUserEntrySearchControls());
 
-            List<UserEntry> ret = new ArrayList<UserEntry>();
+            List<UserEntry> ret = new ArrayList<>();
 
             if(list == null || list.size() == 0) {
                 return ret;
@@ -550,7 +550,7 @@ abstract class LdapAdapter
     protected final DirContext createContext(String host, int port, boolean secure, String dn, String pass)
         throws NamingException
     {
-        Hashtable<String, String> ldapEnv = new Hashtable<String, String>(5);
+        Hashtable<String, String> ldapEnv = new Hashtable<>(5);
         if( secure ){
             /**
              * Override certificate authentication to allow any certificate.
@@ -686,7 +686,7 @@ abstract class LdapAdapter
     protected final List<Map<String, String[]>> queryAsSuperuser(List<String> searchBases, String searchFilter, SearchControls ctls)
         throws NamingException, ServiceUnavailableException
     {
-        List<Map<String, String[]>> results = new ArrayList<Map<String, String[]>>();
+        List<Map<String, String[]>> results = new ArrayList<>();
 
         for( String searchBase : searchBases){
             results.addAll(queryAsSuperuserImpl(searchBase, searchFilter, ctls, true));
@@ -716,17 +716,17 @@ abstract class LdapAdapter
 
         try {
             NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
-            List<Map<String, String[]>> ret = new ArrayList<Map<String, String[]>>();
+            List<Map<String, String[]>> ret = new ArrayList<>();
             while (answer.hasMoreElements()) {
                 SearchResult sr = answer.next();
                 
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
-                    Map<String, String[]> map = new HashMap<String, String[]>();
+                    Map<String, String[]> map = new HashMap<>();
                     for (NamingEnumeration<?> ae = attrs.getAll();ae.hasMore();) {
                         Attribute attr = (Attribute)ae.next();
                         String attrName = attr.getID();
-                        ArrayList<String> values = new ArrayList<String>();
+                        ArrayList<String> values = new ArrayList<>();
                         NamingEnumeration<?> e = attr.getAll();
                         while(e.hasMore()) {
                             values.add(e.next().toString());
@@ -943,7 +943,7 @@ abstract class LdapAdapter
         String[] memberOf = map.get("memberOf");
         Set<String> memberOfSet = null;
         if ( memberOf != null ) {
-            memberOfSet = new HashSet<String>(memberOf.length);
+            memberOfSet = new HashSet<>(memberOf.length);
             for ( String groupName : memberOf ) {
                 memberOfSet.add(groupName);
             }
@@ -1089,16 +1089,16 @@ abstract class LdapAdapter
     private final Pair<String, String> parseFullName(String str)
     {
         if(str == null) {
-            return new Pair<String, String>(null, null);
+            return new Pair<>(null, null);
         }
         str = str.trim();
 
         int index = str.indexOf(' ');
 
         if(index == -1) {
-            return new Pair<String, String>(str, "");
+            return new Pair<>(str, "");
         }
-        return new Pair<String, String>(str.substring(0, index).trim(), str.substring(index).trim());
+        return new Pair<>(str.substring(0, index).trim(), str.substring(index).trim());
     }
 
     /**
