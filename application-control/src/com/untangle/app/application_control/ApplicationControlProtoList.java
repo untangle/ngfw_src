@@ -55,9 +55,9 @@ public class ApplicationControlProtoList
     public LinkedList<ApplicationControlProtoRule> mergeProtoList(LinkedList<ApplicationControlProtoRule> loadedList)
     {
         LinkedList<ApplicationControlProtoRule> vineyardList = buildProtoList();
-        LinkedList<ApplicationControlProtoRule> masterList = new LinkedList<ApplicationControlProtoRule>();
-        Hashtable<String, ApplicationControlProtoRule> vineyardHash = new Hashtable<String, ApplicationControlProtoRule>();
-        Hashtable<String, ApplicationControlProtoRule> masterHash = new Hashtable<String, ApplicationControlProtoRule>();
+        LinkedList<ApplicationControlProtoRule> masterList = new LinkedList<>();
+        Hashtable<String, ApplicationControlProtoRule> vineyardHash = new Hashtable<>();
+        Hashtable<String, ApplicationControlProtoRule> masterHash = new Hashtable<>();
         ApplicationControlProtoRule local, find;
         int changeCount = 0;
         int x;
@@ -158,7 +158,7 @@ public class ApplicationControlProtoList
      */
     public LinkedList<ApplicationControlProtoRule> buildProtoList()
     {
-        LinkedList<ApplicationControlProtoRule> ruleList = new LinkedList<ApplicationControlProtoRule>();
+        LinkedList<ApplicationControlProtoRule> ruleList = new LinkedList<>();
         ApplicationControlProtoRule protoRule = null;
 
         BufferedReader reader = null;
