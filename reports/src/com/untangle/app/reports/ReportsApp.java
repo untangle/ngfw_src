@@ -724,10 +724,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private String determineDbDriver()
     {
+        BufferedReader reader = null;
         try {
             File keyFile = new File(REPORTS_DB_DRIVER_FILE);
             if (keyFile.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                reader = new BufferedReader(new FileReader(keyFile));
                 String value = reader.readLine();
 
                 switch( value ) {
@@ -742,10 +743,17 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
 
                 ReportsApp.dbDriver = value;
-                return ReportsApp.dbDriver;
             }
         } catch (IOException x) {
             logger.error("Unable to read DB driver", x);
+        } finally {
+            if( reader != null ){
+                try{
+                    reader.close();
+                } catch (Exception x) {
+                    logger.error("Unable to close reader", x);
+                }
+            }
         }
         return ReportsApp.dbDriver;
     }
@@ -790,12 +798,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
 
         // Make it executable
