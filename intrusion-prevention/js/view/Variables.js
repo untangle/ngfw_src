@@ -51,7 +51,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
             fieldLabel: 'Name'.t(),
             emptyText: '[enter name]'.t(),
             labelAlign: 'right',
-            labelWdith: 180,
+            labelWdith: 150,
             allowBlank: false,
             listeners: {
                 change: 'editorVariableChange'
