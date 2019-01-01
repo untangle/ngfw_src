@@ -45,7 +45,6 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.WebBrowser;
 import org.apache.commons.codec.binary.Base64;
 
 /**

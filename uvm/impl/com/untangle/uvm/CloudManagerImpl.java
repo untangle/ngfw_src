@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.HttpGet;
 
 /**

@@ -23,7 +23,6 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * SessionMonitor is a utility class that provides some convenient

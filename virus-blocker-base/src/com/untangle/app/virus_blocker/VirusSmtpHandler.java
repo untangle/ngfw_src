@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.net.InetAddress;
 
 import javax.activation.DataHandler;

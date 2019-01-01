@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.io.FilenameFilter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.nio.file.Files;
 
 import org.apache.log4j.Logger;

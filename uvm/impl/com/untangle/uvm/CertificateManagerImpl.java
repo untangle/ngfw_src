@@ -14,14 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.ByteArrayInputStream;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
