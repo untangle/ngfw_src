@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.servlet;
 
-import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

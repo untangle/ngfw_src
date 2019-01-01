@@ -22,7 +22,6 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.GenericRule;
-import com.untangle.uvm.app.UrlMatcher;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
 

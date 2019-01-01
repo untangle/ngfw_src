@@ -6,9 +6,7 @@ package com.untangle.app.intrusion_prevention;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -42,7 +40,6 @@ import org.apache.commons.codec.binary.Hex;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;

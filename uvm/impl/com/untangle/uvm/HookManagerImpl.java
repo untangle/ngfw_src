@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 
