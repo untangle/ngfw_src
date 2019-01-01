@@ -181,10 +181,10 @@ public class ActiveDirectoryManagerImpl
      */
     public List<GroupEntry> getGroupEntries( String domain, boolean fetchMemberOf )
     {
-        List<GroupEntry> groupList = new LinkedList<GroupEntry>();
+        List<GroupEntry> groupList = new LinkedList<>();
 
         if (!app.isLicenseValid()){
-            return new LinkedList<GroupEntry>();
+            return new LinkedList<>();
         }
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
