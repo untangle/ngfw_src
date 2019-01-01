@@ -381,7 +381,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
             String filename = filenameSet.getValue();
             File file = new File(filename);
             String name = file.getName();
-            HashMap<REGEX_TYPE, Pattern> regexes = new HashMap<REGEX_TYPE, Pattern>();
+            HashMap<REGEX_TYPE, Pattern> regexes = new HashMap<>();
             String quotedString = "";
             int flags = 0;
             if(filenameSet.getKey() == FILE_PARSE_TYPE.QUOTED){
