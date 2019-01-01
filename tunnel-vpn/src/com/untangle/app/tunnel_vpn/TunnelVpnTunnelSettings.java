@@ -4,8 +4,6 @@
 
 package com.untangle.app.tunnel_vpn;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -62,7 +60,7 @@ public class TunnelVpnTunnelSettings implements JSONString, Serializable
 
     public String toJSONString()
     {
-        org.json.JSONObject jO = new org.json.JSONObject(this);
+        JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
 }

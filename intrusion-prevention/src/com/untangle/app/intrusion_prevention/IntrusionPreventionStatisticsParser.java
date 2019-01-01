@@ -9,11 +9,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmContextFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-
 /**
  * Process the snort text log to derive information for metrics.
  */

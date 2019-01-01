@@ -4,7 +4,6 @@
 
 package com.untangle.app.captive_portal;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;

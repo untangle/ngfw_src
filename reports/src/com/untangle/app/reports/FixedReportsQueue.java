@@ -7,14 +7,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.util.Pulse.PulseState;
 
 
 /**

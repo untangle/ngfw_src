@@ -13,7 +13,7 @@ import org.json.JSONString;
  * Log event for a WAN state change (disconnect/reconnect)
  */
 @SuppressWarnings("serial")
-public class WanFailoverEvent extends LogEvent implements Serializable, org.json.JSONString
+public class WanFailoverEvent extends LogEvent implements Serializable, JSONString
 {
     public static enum Action { CONNECTED, DISCONNECTED };
     private Action action;

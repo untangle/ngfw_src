@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Iterator;
-import java.io.BufferedReader;
 
 import org.apache.log4j.Logger;
 import org.apache.http.impl.client.CloseableHttpClient;

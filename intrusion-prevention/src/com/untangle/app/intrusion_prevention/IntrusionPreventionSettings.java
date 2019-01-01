@@ -8,8 +8,6 @@ import org.json.JSONString;
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Settings for Intrusion Prevenion.
