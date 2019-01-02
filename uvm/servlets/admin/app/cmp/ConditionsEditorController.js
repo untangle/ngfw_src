@@ -666,7 +666,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
 
         // If default value not set in model, fill in empty values with first values from
         // associated comparator and value lists (if any).
-        var conditionName = item.text;
+        var conditionName = item.conditionType;
         Ext.ClassManager.get(me.getView().model).fields.forEach( function(field){
             if( ( record.get(field.name) == undefined || record.get(field.name) == "" ) && field.defaultValue == undefined){
                 for(var conditionField in view.fields){
