@@ -51,17 +51,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         value: false,
     }],
 
-    // bbar: [{
-    //     xtype: 'tbtext',
-    //     name: 'searchStatus',
-    //     bind:{
-    //         html: '{searchStatus}'
-    //     },
-    //     listeners: {
-    //         afterrender: 'updateSearchStatusBar'
-    //     }
-    // }],
-
     restrictedRecords: {
         keyMatch: 'reserved',
         valueMatch: true

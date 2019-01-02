@@ -214,7 +214,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if( signatureMatches ) {
                 for( j = 1; j < signatureMatches.length; j++ ) {
                     variableMatches = me.regexSignatureVariable.exec( signatureMatches[j] );
-                    if( variableMatches && variableMatches.shift().indexOf(variable)!= -1) {
+                    if( variableMatches && variableMatches.shift() == '$'+variable){
                         isUsed = true;
                         return false;
                     }
@@ -796,9 +796,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
                 change: 'changeFilterSearch',
                 buffer: 500
             },
+            listConfig: {
+                itemTpl: '<div data-qtip="{description}">{value}</div>'
+            },
             queryMode: 'local',
             valueField: 'value',
-            displayField: 'description',
+            displayField: 'value',
             triggers: {
                 clear: {
                     cls: 'x-form-clear-trigger',
@@ -1115,14 +1118,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
 
         var match = false;
         vm.get('variables').each( function( storeRecord ) {
-            if( ( storeRecord !== v.record ) && ( newValue == storeRecord.get('variable') ) ){
+            if( ( storeRecord !== v.record ) && ( newValue == storeRecord.get('name') ) ){
                 match = true;
             }
         });
         if(match){
             me.setValidation("Variable name already in use.".t());
             return false;
-
         }
         me.setValidation(true);
 
@@ -1165,7 +1167,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
     },
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
-        if( this.getView().up('app-intrusion-prevention').getController().isVariableUsed( record.get('variable') ) ){
+        if( this.getView().up('app-intrusion-prevention').getController().isVariableUsed( record.get('name') ) ){
             Ext.MessageBox.alert( "Cannot Delete Variable".t(), "Variable is used by one or more signatures.".t() );
         }else{
             if (record.get('markedForNew')) {
