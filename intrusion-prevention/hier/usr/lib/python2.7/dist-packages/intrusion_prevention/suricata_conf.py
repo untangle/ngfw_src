@@ -12,6 +12,7 @@ class SuricataConf:
     Suricata configuration file management.
     """
     file_name = "/etc/suricata/suricata.yaml"
+    var_address_regex = re.compile(r'(.+|)\d+\.\d+\.\d+\.\d+')
     
     def __init__(self, _debug=False):
         """[summary]
@@ -110,10 +111,32 @@ class SuricataConf:
         
         Suricata maintains variables in groups which seems slightly excessive for our purposes.
         """
+        found = False
         for group in self.conf["vars"]:
             for variable in self.conf["vars"][group]:
                  if variable == key:
                     self.conf["vars"][group][variable] = value
+                    found = True
+        if found is False:
+            group = None
+
+            # 1 look if variable referenced from existing
+            if value[0] == '$':
+                for lookup_group in self.conf["vars"]:
+                    for variable in self.conf["vars"][lookup_group]:
+                        if variable == value[1:]:
+                            group = lookup_group
+
+            # 2. address-groups: ip, ip range, or any,
+            #    port-groups: port, !port, port range/list.  not any.
+            if group is None:
+                match_address = re.match( self.var_address_regex, value )
+                if match_address:
+                    group = 'address-groups'
+                else:
+                    group = "port-groups"
+
+            self.conf["vars"][group][key] = value
 
     def set_config_from_path(self, path, value, config=None):
         """Set configuration from path
