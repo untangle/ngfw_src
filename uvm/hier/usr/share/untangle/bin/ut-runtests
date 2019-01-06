@@ -6,16 +6,13 @@
 # pylint: disable=protected-access
 # pylint: disable=broad-except
 import sys
+import os
 import getopt
 import signal
 import time
 import traceback
 import unittest
-
-orig_stdout = sys.stdout
-orig_stderr = sys.stderr
-exit_flag = False
-interrupt_count = 0
+import importlib
 
 class ArgumentParser(object):
     """Command line argument parser"""
@@ -153,6 +150,27 @@ def myexit(code):
         print("\nMore details found in %s" % parser.logfile)
     sys.exit(code)
 
+def run_initial_setup(suite):
+    sys.stdout = logfile
+    sys.stderr = logfile
+    if "initial_setup" in dir(suite):
+        try:
+            suite.initial_setup(suite)
+        except Exception:
+            print("initial_setup exception: ")
+            traceback.print_exc()
+            unittest.skip("initial_setup exception: ")(suite)
+    sys.stdout = orig_stdout
+    sys.stderr = orig_stderr
+
+def run_final_tear_down(suite):
+    if "final_tear_down" in dir(suite):
+        try:
+            suite.final_tear_down(suite)
+        except Exception:
+            print("final_tear_down exception: ")
+            traceback.print_exc()
+
 def run_test_suite(suite):
     global parser, logfile, exit_flag
     if exit_flag:
@@ -166,17 +184,7 @@ def run_test_suite(suite):
     time_string = ""
     suite_start_time = time.time()
 
-    sys.stdout = logfile
-    sys.stderr = logfile
-    if "initial_setup" in dir(suite):
-        try:
-            suite.initial_setup(suite)
-        except Exception as e:
-            print("initial_setup exception: ")
-            traceback.print_exc()
-            unittest.skip("initial_setup exception: ")(suite)
-    sys.stdout = orig_stdout
-    sys.stderr = orig_stderr
+    run_initial_setup(suite)
 
     for test in tests_list:
         test_name = test._testMethodName
@@ -224,12 +232,7 @@ def run_test_suite(suite):
         else:
             print("Test success : %s %s " % (test_name, time_string))
 
-    if "final_tear_down" in dir(suite):
-        try:
-            suite.final_tear_down(suite)
-        except Exception as e:
-            print("final_tear_down exception: ")
-            traceback.print_exc(e)
+    run_final_tear_down(suite)
 
     suite_elapsed_time = time.time() - suite_start_time
     print("== testing %s [%.1fs] ==" % (suite.module_name(), suite_elapsed_time))
@@ -239,10 +242,10 @@ def run_environment_tests():
     """Verify the test enviroment is setup correctly"""
     global parser
     global logfile
-    suite = unittest.TestLoader().loadTestsFromTestCase(tests.TestEnvironmentTests)
-    # results = unittest.TextTestRunner(stream=logfile, verbosity=parser.verbosity ).run(suite)
+    suite = tests.test_registry.get_test("environment")
+    test_list = unittest.TestLoader().loadTestsFromTestCase(suite)
     print("== testing environment ==")
-    for test in suite:
+    for test in test_list:
         results = unittest.TextTestRunner(stream=logfile, verbosity=parser.verbosity).run(test)
         if exit_flag:
             break
@@ -254,24 +257,45 @@ def run_environment_tests():
             print("Test success : %s " % test._testMethodName)
     print("== testing environment ==")
 
-def prepend_path(path):
+def load_tests(path):
+    """load all test modules in the specified path"""
+    if not os.path.isdir(path):
+        return
+    testsdir = path+"tests"
+    if not os.path.isdir(testsdir):
+        return
+    print("Loading tests from " + path)
     sys.path.insert(0, path)
+    for i in os.listdir(testsdir):
+        (name, ext) = os.path.splitext(i)
+        if not ext in ['.py']:
+            continue
+        if name.startswith('__'):
+            continue
+        print("Loading: " + path + i)
+        importlib.import_module("tests."+name)
 
-signal.signal(signal.SIGINT, signal_handler)
 
+orig_stdout = sys.stdout
+orig_stderr = sys.stderr
+exit_flag = False
+interrupt_count = 0
 parser = ArgumentParser()
 script_args = parser.parse_args()
 logfile = open(parser.logfile, 'w')
 
-if parser.path is None:
-    prepend_path('./usr/lib/python%d.%d/' % sys.version_info[:2])
-    prepend_path('./usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
-else:
-    prepend_path(parser.path + ('/usr/lib/python%d.%d/' % sys.version_info[:2]))
-    prepend_path(parser.path + ('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2]))
+signal.signal(signal.SIGINT, signal_handler)
 
-import tests
-from tests import *
+if parser.path is None:
+    load_tests('./usr/lib/python%d.%d/' % sys.version_info[:2])
+    load_tests('./usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
+    load_tests('/usr/lib/python%d.%d/' % sys.version_info[:2])
+    load_tests('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
+else:
+    load_tests(parser.path + ('/usr/lib/python%d.%d/' % sys.version_info[:2]))
+    load_tests(parser.path + ('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2]))
+
+tests = importlib.import_module("tests")
 
 if parser.client_ip != None:
     tests.remote_control.client_ip = parser.client_ip
@@ -295,9 +319,9 @@ if "all" in parser.suites_to_run:
     parser.suites_to_run = tests.test_registry.all_modules()
 
 # remove excluded tests
-for test_name in parser.suites_to_exclude:
-    if test_name in parser.suites_to_run:
-        parser.suites_to_run.remove(test_name)
+for suite_name in parser.suites_to_exclude:
+    if suite_name in parser.suites_to_run:
+        parser.suites_to_run.remove(suite_name)
 
 start_time = time.time()
 total_count = 0
