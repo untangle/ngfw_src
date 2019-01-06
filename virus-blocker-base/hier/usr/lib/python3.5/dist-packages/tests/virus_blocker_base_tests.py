@@ -5,7 +5,7 @@ import sys
 import socket
 import platform
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -62,7 +62,7 @@ def createSSLInspectRule(port="25"):
         "ruleId": 1
     };
 
-class VirusBlockerBaseTests(unittest2.TestCase):
+class VirusBlockerBaseTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -101,7 +101,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
             canRelay = False
 
         if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
         self.app = app
 
@@ -139,7 +139,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     # test that client can block virus http download zip
     def test_015_httpEicarBlocked(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         pre_events_scan = global_functions.get_app_metric_value(app,"scan")
         pre_events_block = global_functions.get_app_metric_value(app,"block")
 
@@ -155,21 +155,21 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     # test that client can block virus http download zip
     def test_016_httpVirusBlocked(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_017_httpVirusZipBlocked(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block a partial fetch after full fetch (using cache)
     def test_018_httpPartialVirusBlockedWithCache(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         result = remote_control.run_command("curl -L http://" + testsite + "/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
         result = remote_control.run_command("curl -L -r '5-' http://" + testsite + "/virus/virus.exe 2>&1 | grep -q blocked")
@@ -186,7 +186,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_021_ftpNonVirusNotBlocked(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
 
@@ -194,17 +194,17 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_023_ftpNonVirusPDFNotBlocked(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test/test.pdf")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
     def test_025_ftpVirusBlocked(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
@@ -225,7 +225,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_027_ftpVirusPassSite(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         addPassSite(global_functions.ftp_server)
         remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
@@ -237,7 +237,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_100_eventlog_httpVirus(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         fname = sys._getframe().f_code.co_name
         result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
@@ -265,10 +265,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_102_eventlog_ftpVirus(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
@@ -283,7 +283,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_103_eventlog_ftpNonVirus(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
@@ -297,9 +297,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_104_eventlog_smtpVirus(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testsiteIP)
+            raise unittest.SkipTest('Unable to relay through ' + testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -322,7 +322,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_105_eventlog_smtpNonVirus(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testsite)
+            raise unittest.SkipTest('Unable to relay through ' + testsite)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         print("fname: %s" % fname)
@@ -348,7 +348,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_106_eventlog_smtpVirusPassList(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testsite)
+            raise unittest.SkipTest('Unable to relay through ' + testsite)
         addPassSite(testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
@@ -381,9 +381,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_110_eventlog_smtpSSLVirus(self):
         if platform.machine().startswith('arm'):
-            raise unittest2.SkipTest("local scanner not available on ARM")
+            raise unittest.SkipTest("local scanner not available on ARM")
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testsiteIP)
+            raise unittest.SkipTest('Unable to relay through ' + testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -415,10 +415,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     # test ftp using large test file
     def test_120_ftpLargeClean(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
         remote_control.run_command("rm -f /tmp/temp_120_ftpVirusClean_file")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso")

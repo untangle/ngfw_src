@@ -1,7 +1,7 @@
 """ad_blocker tests"""
 import sys
 import datetime
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -55,7 +55,7 @@ def addPassRule(url, enabled, listName):
            
     app.setSettings(settings)
     
-class AdBlockerTests(unittest2.TestCase):
+class AdBlockerTests(unittest.TestCase):
 
     @staticmethod
     def module_name():

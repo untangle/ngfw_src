@@ -3,7 +3,7 @@ import time
 import platform
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -111,7 +111,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
     def test_250_ftpCloudSmallBlocked(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
@@ -128,7 +128,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
     def test_260_ftpCloudLargeBlocked(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
-            raise unittest2.SkipTest("FTP server not available")
+            raise unittest.SkipTest("FTP server not available")
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.

@@ -1,5 +1,5 @@
 import socket
-import unittest2
+import unittest
 import os
 import sys
 import re
@@ -399,7 +399,7 @@ def set_dyn_dns(login,password,hostname):
 def verify_snmp_walk():
     snmpwalkResult = remote_control.run_command("test -x /usr/bin/snmpwalk")
     if snmpwalkResult:
-        raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
+        raise unittest.SkipTest("Snmpwalk app needs to be installed on client")
 
 def set_snmp_v3_settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol, v3AuthenticationPassphrase, v3PrivacyProtocol, v3PrivacyPassphrase, v3Required ):
     settings['v3Enabled'] = v3Enabled
@@ -427,7 +427,7 @@ def try_snmp_command(command):
         result = remote_control.run_command( command )
     return result
 
-class NetworkTests(unittest2.TestCase):
+class NetworkTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -466,7 +466,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_015_add_vlan(self):
-        raise unittest2.SkipTest("Review changes in test")
+        raise unittest.SkipTest("Review changes in test")
         # Add a test static VLAN
         test_vlan_ip = append_vlan(remote_control.interface)
         if test_vlan_ip:
@@ -475,11 +475,11 @@ class NetworkTests(unittest2.TestCase):
             assert(result == 0)
         else:
             # no VLAN was created so skip test
-            unittest2.SkipTest("No VLAN or IP address available")
+            unittest.SkipTest("No VLAN or IP address available")
 
 
     def test_016_add_alias(self):
-        # raise unittest2.SkipTest("Review changes in test")
+        # raise unittest.SkipTest("Review changes in test")
         # Add Alias IP
         alias_ip = append_aliases()
         if alias_ip:
@@ -489,7 +489,7 @@ class NetworkTests(unittest2.TestCase):
             assert (result == 0)
         else:
             # No alias IP added so just skip
-            unittest2.SkipTest("No alias address available")
+            unittest.SkipTest("No alias address available")
 
     # test basic port forward (tcp port 80)
     def test_020_port_forward_80(self):
@@ -564,10 +564,10 @@ class NetworkTests(unittest2.TestCase):
         # We will use iperf_server for this test. Test to see if we can reach it.
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         if (not iperf_avail):
-            raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
+            raise unittest.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
 
         # start netcat on client
         remote_control.run_command("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
@@ -584,13 +584,13 @@ class NetworkTests(unittest2.TestCase):
         # We will use iperf server and iperf for this test.
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
         iperfAvail = global_functions.verify_iperf_configuration(wan_ip)
         if (not iperfAvail):
-            raise unittest2.SkipTest("iperf_server " + global_functions.iperf_server + " is unreachable, skipping")
+            raise unittest.SkipTest("iperf_server " + global_functions.iperf_server + " is unreachable, skipping")
         # Only if iperf is used
         # if not iperfResult:
-        #     raise unittest2.SkipTest("Iperf server not reachable")
+        #     raise unittest.SkipTest("Iperf server not reachable")
 
         # port forward UDP 5000 to client box
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.client_ip,"5000"),'portForwardRules')
@@ -615,7 +615,7 @@ class NetworkTests(unittest2.TestCase):
         # check if more than one WAN
         index_of_wans = global_functions.get_wan_tuples()
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
+            raise unittest.SkipTest("Need at least two public static WANS for test_050_natRule")
 
         for wan in index_of_wans:
             nuke_first_level_rule("natRules")
@@ -748,9 +748,9 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP (inbound) in active and passive modes (untangle-vm should add port forwards for RELATED session)
     def test_074_ftp_modes_incoming(self):
         if not run_ftp_inbound_tests:
-            raise unittest2.SkipTest("remote client does not have ftp server")
+            raise unittest.SkipTest("remote client does not have ftp server")
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
 
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,""),'portForwardRules')
 
@@ -770,9 +770,9 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP (inbound) in active and passive modes with bypass (nf_nat_ftp should add port forwards for RELATED session, nat filters should allow RELATED)
     def test_075_ftp_modes_incoming_bypassed(self):
         if not run_ftp_inbound_tests:
-            raise unittest2.SkipTest("remote client does not have ftp server")
+            raise unittest.SkipTest("remote client does not have ftp server")
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ create_bypass_condition_rule("DST_PORT","21") ]
         netsettings['portForwardRules']['list'] = [ create_port_forward_triple_condition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,"") ]
@@ -824,11 +824,11 @@ class NetworkTests(unittest2.TestCase):
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest("Skipping a time consuming test")
+            raise unittest.SkipTest("Skipping a time consuming test")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         index_of_wans = global_functions.get_wan_tuples()
         if (len(index_of_wans) > 1):
-            raise unittest2.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
+            raise unittest.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
@@ -836,13 +836,13 @@ class NetworkTests(unittest2.TestCase):
 
         dyn_hostname = get_usable_name(outside_IP)
         if dyn_hostname == "":
-            raise unittest2.SkipTest("Skipping since all dyndns names already used")
+            raise unittest.SkipTest("Skipping since all dyndns names already used")
         else:
             print(("Using name: %s" % dyn_hostname))
         dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
         # account not found if message returned
         if dyn_DNS_user_name == "message":
-            raise unittest2.SkipTest("no dyn user")
+            raise unittest.SkipTest("no dyn user")
 
         # Clear the ddclient cache and set DynDNS info
         ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
@@ -886,7 +886,7 @@ class NetworkTests(unittest2.TestCase):
     def test_110_vrrp(self):
         "Test that a VRRP alias is pingable"
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Find a static interface
         i=0
@@ -898,7 +898,7 @@ class NetworkTests(unittest2.TestCase):
             i += 1
         # Verify interface is found
         if interfaceNotFound:
-            raise unittest2.SkipTest("No static enabled interface found")
+            raise unittest.SkipTest("No static enabled interface found")
         interface = netsettings['interfaces']['list'][i]
         interfaceId = interface.get('interfaceId')
         interfaceIP = interface.get('v4StaticAddress')
@@ -911,9 +911,9 @@ class NetworkTests(unittest2.TestCase):
         try:
             result = subprocess.check_output("mii-tool " + interface.get('symbolicDev') + " 2>/dev/null", shell=True)
             if not "link ok" in result:
-                raise unittest2.SkipTest('LAN not connected')
+                raise unittest.SkipTest('LAN not connected')
         except:
-            raise unittest2.SkipTest('LAN not connected')
+            raise unittest.SkipTest('LAN not connected')
 
         ipStep = 1
         loopCounter = 10
@@ -934,7 +934,7 @@ class NetworkTests(unittest2.TestCase):
             loopCounter -= 1
             ip = newip
         if (vrrpIP == None):
-            raise unittest2.SkipTest("No IP found for VRRP")
+            raise unittest.SkipTest("No IP found for VRRP")
 
         # Set VRRP values
         netsettings['interfaces']['list'][i]['vrrpAliases'] = {
@@ -1208,7 +1208,7 @@ class NetworkTests(unittest2.TestCase):
     # Test logging of blocked sessions via untangle-nflogd
     def test_150_filter_rules_blocked_event_log(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
 
@@ -1307,7 +1307,7 @@ class NetworkTests(unittest2.TestCase):
         remote_control.run_command("pkill netcat")
         assert(found_host != None)
         if found_host.get('macAddress') == None:
-            raise unittest2.SkipTest('Skipping because we dont know the MAC')
+            raise unittest.SkipTest('Skipping because we dont know the MAC')
         
         print((found_host.get('macAddress')))
         # verify port 80 is open
@@ -1354,7 +1354,7 @@ class NetworkTests(unittest2.TestCase):
     def test_160_traceroute_udp(self):
         traceroute_exists = remote_control.run_command("test -x /usr/sbin/traceroute")
         if traceroute_exists != 0:
-            raise unittest2.SkipTest("Traceroute app needs to be installed on client")
+            raise unittest.SkipTest("Traceroute app needs to be installed on client")
         result = remote_control.run_command("/usr/sbin/traceroute test.untangle.com", stdout=True)
         # 3 occurances of ms per line so check for at least two lines of ms times.
         assert(result.count('ms') > 4) 
@@ -1363,9 +1363,9 @@ class NetworkTests(unittest2.TestCase):
     def test_170_upnp_disabled(self):
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
-            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+            raise unittest.SkipTest("Upnpc app needs to be installed on client")
         if global_functions.is_bridged(wan_ip):
-            raise unittest2.SkipTest("Unable to disable upnp on bridged configurations")
+            raise unittest.SkipTest("Unable to disable upnp on bridged configurations")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -1376,7 +1376,7 @@ class NetworkTests(unittest2.TestCase):
     def test_171_upnp_enabled_defaults(self):
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
-            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+            raise unittest.SkipTest("Upnpc app needs to be installed on client")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -1387,7 +1387,7 @@ class NetworkTests(unittest2.TestCase):
     def test_172_upnp_secure_mode_enabled(self):
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
-            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+            raise unittest.SkipTest("Upnpc app needs to be installed on client")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = True
@@ -1401,7 +1401,7 @@ class NetworkTests(unittest2.TestCase):
     def test_173_upnp_secure_mode_disabled(self):
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
-            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+            raise unittest.SkipTest("Upnpc app needs to be installed on client")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = False
@@ -1415,7 +1415,7 @@ class NetworkTests(unittest2.TestCase):
     def test_174_upnp_rules_deny_all(self):
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
-            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+            raise unittest.SkipTest("Upnpc app needs to be installed on client")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['upnpRules'] = {

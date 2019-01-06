@@ -5,7 +5,7 @@ import random
 import subprocess
 import urllib3
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -210,7 +210,7 @@ def find_name_in_host_table (hostname='test'):
     remote_control.run_command("pkill netcat")
     return found_test_session
 
-class DirectoryConnectorTests(unittest2.TestCase):
+class DirectoryConnectorTests(unittest.TestCase):
     """
     Directory connector tests
     """
@@ -260,7 +260,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Test and save settings for test AD server, non secure
         """
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
         print('result %s' % result)
 
@@ -271,7 +271,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Test and save settings for test AD server, secure
         """
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No secure AD server available")
+            raise unittest.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
         print('result %s' % result)
 
@@ -368,7 +368,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Check AD settings, non-secure
         """
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
         print('result %s' % result)
         assert (result == 0)
@@ -386,7 +386,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Check AD settings, secure
         """
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No secure AD server available")
+            raise unittest.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
         print('result %s' % result)
         assert (result == 0)
@@ -405,7 +405,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         global appData
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=False)
         print('result %s' % result)
@@ -429,7 +429,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         global appData
         if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         # Check for a list of Active Directory Users
         result = add_ad_settings(ldap_secure=True)
         print('result %s' % result)
@@ -452,7 +452,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Test and save settings for test Radius server
         """
         if (RADIUS_RESULT != 0):
-            raise unittest2.SkipTest("No RADIUS server available")
+            raise unittest.SkipTest("No RADIUS server available")
         app.setSettings(create_radius_settings())
 
         attempts = 0

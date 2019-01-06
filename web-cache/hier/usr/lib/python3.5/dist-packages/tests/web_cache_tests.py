@@ -1,7 +1,7 @@
 """web_cache tests"""
 import time
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -12,7 +12,7 @@ from uvm import Uvm
 default_policy_id = 1
 app = None
 
-class WebCacheTests(unittest2.TestCase):
+class WebCacheTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -39,7 +39,7 @@ class WebCacheTests(unittest2.TestCase):
 
     def test_020_testBasicWebCache(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         pre_events_hit = global_functions.get_app_metric_value(app,"hit")
 
         app.clearSquidCache()

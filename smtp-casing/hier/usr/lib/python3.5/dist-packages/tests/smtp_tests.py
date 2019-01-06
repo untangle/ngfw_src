@@ -1,6 +1,6 @@
 """smtp tests"""
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -11,7 +11,7 @@ from uvm import Uvm
 default_policy_id = 1
 app = None
 
-class SmtpTests(unittest2.TestCase):
+class SmtpTests(unittest.TestCase):
 
     @staticmethod
     def module_name():

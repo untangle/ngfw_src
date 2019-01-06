@@ -4,7 +4,7 @@ import subprocess
 import ast
 import filecmp
 import glob
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -15,7 +15,7 @@ from uvm import Uvm
 app = None
 default_policy_id = 1
 
-class ConfigurationBackupTests(unittest2.TestCase):
+class ConfigurationBackupTests(unittest.TestCase):
     
     @staticmethod
     def module_name():
@@ -58,7 +58,7 @@ class ConfigurationBackupTests(unittest2.TestCase):
         assert( os.path.isfile("/etc/cron.d/untangle-configuration-backup-nightly")  )
 
     def test_140_compare_cloud_backup(self):
-        raise unittest2.SkipTest("dependent on python3-requests, skipping for now")
+        raise unittest.SkipTest("dependent on python3-requests, skipping for now")
         """Compare a cloud backup with a local backup"""
         global app
         boxUID = uvmContext.getServerUID()

@@ -11,7 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 from html.parser import HTMLParser
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -140,7 +140,7 @@ def fetch_email( filename, email_address, tries=40 ):
                 return True
     return False
 
-class ReportsTests(unittest2.TestCase):
+class ReportsTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -197,7 +197,7 @@ class ReportsTests(unittest2.TestCase):
 
     def test_040_remote_syslog(self):
         if (not can_syslog):
-            raise unittest2.SkipTest('Unable to syslog through ' + syslog_server_host)
+            raise unittest.SkipTest('Unable to syslog through ' + syslog_server_host)
 
         firewall_app = None
         if (uvmContext.appManager().isInstantiated("firewall")):
@@ -327,9 +327,9 @@ class ReportsTests(unittest2.TestCase):
         - Administrator email account gets
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
+            raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # create settings to receive test_email_address 
         configure_mail_relay()
@@ -392,9 +392,9 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
+            raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create settings to receive test_email_address 
         configure_mail_relay()
@@ -437,9 +437,9 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
+            raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create settings to receive test_email_address 
         configure_mail_relay()
@@ -506,9 +506,9 @@ class ReportsTests(unittest2.TestCase):
         """
         global app,apps_list,apps_name_list
         if (not can_relay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
+            raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # create settings to receive test_email_address 
         configure_mail_relay()

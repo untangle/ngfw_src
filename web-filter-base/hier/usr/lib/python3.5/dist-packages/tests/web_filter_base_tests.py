@@ -2,7 +2,7 @@
 import sys
 import datetime
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -10,7 +10,7 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-class WebFilterBaseTests(unittest2.TestCase):
+class WebFilterBaseTests(unittest.TestCase):
 
     @staticmethod
     def module_name():

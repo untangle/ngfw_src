@@ -1,5 +1,5 @@
 import socket
-import unittest2
+import unittest
 import os
 import subprocess
 import sys
@@ -94,7 +94,7 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
-class UvmTests(unittest2.TestCase):
+class UvmTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -124,7 +124,7 @@ class UvmTests(unittest2.TestCase):
         subprocess.call("wget -q -4 -t 2 --timeout=5 http://test.untangle.com/test/help_links.json -O " + helpLinkFile, shell=True)
         # if the links file was not found skip this test
         if not os.path.isfile(helpLinkFile):
-            raise unittest2.SkipTest("Skipping test since " + helpLinkFile + " is missing")
+            raise unittest.SkipTest("Skipping test since " + helpLinkFile + " is missing")
         # read file as JSON object and delete the temp file.
         with open(helpLinkFile) as dataFile:    
             helpLinks = json.load(dataFile)    
@@ -212,7 +212,7 @@ class UvmTests(unittest2.TestCase):
 
     def test_030_test_smtp_settings(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.appManager().isInstantiated(self.appNameSpamCase())):
             print("smtp case present")
@@ -327,7 +327,7 @@ class UvmTests(unittest2.TestCase):
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
-            raise unittest2.SkipTest('Skipping no accound found:' + str(untanglePassword))
+            raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
         result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword )
         assert result.get('success')

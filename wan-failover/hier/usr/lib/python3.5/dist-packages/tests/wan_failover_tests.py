@@ -1,7 +1,7 @@
 """wan_failover tests"""
 import time
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -83,7 +83,7 @@ def nuke_rules():
     appData["tests"]["list"] = []
     app.setSettings(appData)
 
-class WanFailoverTests(unittest2.TestCase):
+class WanFailoverTests(unittest.TestCase):
     
     @staticmethod
     def module_name():
@@ -128,9 +128,9 @@ class WanFailoverTests(unittest2.TestCase):
         
     def test_025_ping_test_wan_offline(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_025_addPingFailTestForWans")
+            raise unittest.SkipTest("Need at least two WANS for test_025_addPingFailTestForWans")
         nuke_rules()
         orig_offline_count = offline_wan_count()
         for wanIndexTup in indexOfWans:
@@ -152,7 +152,7 @@ class WanFailoverTests(unittest2.TestCase):
         
     def test_030_arp_test_wan_online(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -167,9 +167,9 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_035_arp_test_wan_offline(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_035_addArpFailTestForWans")
+            raise unittest.SkipTest("Need at least two WANS for test_035_addArpFailTestForWans")
         nuke_rules()
         orig_offline_count = offline_wan_count()
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -195,7 +195,7 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_040_dns_test_wan_online(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -209,9 +209,9 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_045_dns_test_wan_offline(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_045_addDNSFailTestForWans")
+            raise unittest.SkipTest("Need at least two WANS for test_045_addDNSFailTestForWans")
 
         nuke_rules()
         orig_offline_count = offline_wan_count()
@@ -239,7 +239,7 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_050_http_test_wan_online(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -255,9 +255,9 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_055_http_test_wan_offline(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_055_addHTTPFailTestForWans")
+            raise unittest.SkipTest("Need at least two WANS for test_055_addHTTPFailTestForWans")
         nuke_rules()
         orig_offline_count = offline_wan_count()
         for wanIndexTup in indexOfWans:
@@ -273,7 +273,7 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_060_one_wan_offline(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         invalidWanIP = None
         offlineWanIndex = None
         for upWanIndexTup in indexOfWans:
@@ -304,9 +304,9 @@ class WanFailoverTests(unittest2.TestCase):
 
     def test_065_all_wan_offline_but_one(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_065_downAllButOneWan")
+            raise unittest.SkipTest("Need at least two WANS for test_065_downAllButOneWan")
         pre_count = global_functions.get_app_metric_value(app,"changed")
 
         validWanIP = None

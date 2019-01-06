@@ -7,7 +7,7 @@ import calendar
 import socket
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -143,10 +143,10 @@ class WebFilterTests(WebFilterBaseTests):
         """Enable 'block QUIC (UDP port 443)' setting then check that UDP traffic over 443 is blocked (using netcat server/client)"""
         #check for passwordless sudo access for the host first, if not, skip test
         if(remote_control.run_command("sudo ls -l",stdout=False,nowait=True) != 0):
-            raise unittest2.SkipTest('no passwordless sudo access')
+            raise unittest.SkipTest('no passwordless sudo access')
         ping_result = subprocess.call(["ping","-c","1",global_functions.LIST_SYSLOG_SERVER ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ping_result != 0):
-            raise unittest2.SkipTest("server not available")
+            raise unittest.SkipTest("server not available")
 
         #set block to false first to verify netcat works
         settings = self.app.getSettings()
@@ -884,7 +884,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
-            raise unittest2.SkipTest('No MAC vendor')
+            raise unittest.SkipTest('No MAC vendor')
         vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("HOST_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
@@ -903,7 +903,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
-            raise unittest2.SkipTest('No MAC vendor')
+            raise unittest.SkipTest('No MAC vendor')
         vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("CLIENT_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
@@ -928,7 +928,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
         entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
-            raise unittest2.SkipTest('Entry exists')
+            raise unittest.SkipTest('Entry exists')
         self.rule_add("SERVER_MAC_VENDOR",'*')
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
@@ -939,7 +939,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
-            raise unittest2.SkipTest('No MAC vendor')
+            raise unittest.SkipTest('No MAC vendor')
         vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("HOST_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
@@ -958,7 +958,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
-            raise unittest2.SkipTest('No MAC vendor')
+            raise unittest.SkipTest('No MAC vendor')
         vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("CLIENT_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
@@ -983,7 +983,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
         entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
-            raise unittest2.SkipTest('Entry exists')
+            raise unittest.SkipTest('Entry exists')
         self.rule_add("SERVER_MAC_VENDOR",'*')
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
@@ -994,7 +994,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         mac = entry.get('macAddress')
         if mac == None:
-            raise unittest2.SkipTest('No MAC address')
+            raise unittest.SkipTest('No MAC address')
         self.rule_add("HOST_MAC",mac)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -1012,7 +1012,7 @@ class WebFilterTests(WebFilterBaseTests):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         mac = entry.get('macAddress')
         if mac == None:
-            raise unittest2.SkipTest('No MAC address')
+            raise unittest.SkipTest('No MAC address')
         self.rule_add("SRC_MAC",mac)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -1036,7 +1036,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test DST_MAC if no host entry exists - * should not match null"
         entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
-            raise unittest2.SkipTest('Entry exists')
+            raise unittest.SkipTest('Entry exists')
         self.rule_add("DST_MAC",'*')
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
@@ -1210,7 +1210,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test HTTP_USER_AGENT"
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('httpUserAgent') == None or not('linux' in entry.get('httpUserAgent')):
-            raise unittest2.SkipTest('No usable user agent')
+            raise unittest.SkipTest('No usable user agent')
         self.rule_add("HTTP_USER_AGENT","*linux*")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
