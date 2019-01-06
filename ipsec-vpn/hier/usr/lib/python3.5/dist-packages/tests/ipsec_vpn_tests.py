@@ -3,7 +3,7 @@ import time
 import subprocess
 import base64
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -143,7 +143,7 @@ def addDNSRule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)  
 
-class IPsecTests(unittest2.TestCase):
+class IPsecTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -165,7 +165,7 @@ class IPsecTests(unittest2.TestCase):
             raise Exception('app %s already instantiated' % self.module_name())
         app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
         if (uvmContext.appManager().isInstantiated(self.appNameAD())):
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
@@ -188,7 +188,7 @@ class IPsecTests(unittest2.TestCase):
     def test_020_createIpsecTunnel(self):
         global tunnelUp
         if (ipsecHostResult != 0):
-            raise unittest2.SkipTest("No paried IPSec server available")
+            raise unittest.SkipTest("No paried IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -201,7 +201,7 @@ class IPsecTests(unittest2.TestCase):
                 appendTunnel(addIPSecTunnel(ipsecHost,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
                 pairMatchNotFound = False
         if (pairMatchNotFound):
-            raise unittest2.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
+            raise unittest.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
         timeout = 10
         ipsecHostLANResult = 1
         while (ipsecHostLANResult != 0 and timeout > 0):
@@ -222,7 +222,7 @@ class IPsecTests(unittest2.TestCase):
         # save a setting in networking and test ipsec tunnel is set connected.
         global tunnelUp
         if (not tunnelUp):
-            raise unittest2.SkipTest("Test test_020_createIpsecTunnel success required ")
+            raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(10) # wait for networking to restart
@@ -237,9 +237,9 @@ class IPsecTests(unittest2.TestCase):
     def test_040_windowsL2TPlocalDirectory(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (l2tpClientHostResult != 0):
-            raise unittest2.SkipTest("l2tpClientHostResult not available")
+            raise unittest.SkipTest("l2tpClientHostResult not available")
         if (not wan_IP in l2tpServerHosts):
-            raise unittest2.SkipTest("No paried L2TP client available")
+            raise unittest.SkipTest("No paried L2TP client available")
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         createL2TPconfig("LOCAL_DIRECTORY")
         timeout = 480
@@ -283,11 +283,11 @@ class IPsecTests(unittest2.TestCase):
         global appAD
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (radiusResult != 0):
-            raise unittest2.SkipTest("No RADIUS server available")
+            raise unittest.SkipTest("No RADIUS server available")
         if (l2tpClientHostResult != 0):
-            raise unittest2.SkipTest("l2tpClientHostResult not available")
+            raise unittest.SkipTest("l2tpClientHostResult not available")
         if (not wan_IP in l2tpServerHosts):
-            raise unittest2.SkipTest("No paried L2TP client available")
+            raise unittest.SkipTest("No paried L2TP client available")
         # Configure RADIUS settings
         appAD.setSettings(createRadiusSettings())
         createL2TPconfig("RADIUS_SERVER")
@@ -307,7 +307,7 @@ class IPsecTests(unittest2.TestCase):
 
     def test_060_createIpsecTunnelHostname(self):
         if (ipsecHostResult != 0):
-            raise unittest2.SkipTest("No paried IPSec server available")
+            raise unittest.SkipTest("No paried IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -325,7 +325,7 @@ class IPsecTests(unittest2.TestCase):
                 appendTunnel(addIPSecTunnel(ipsecHostname,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
                 pairMatchNotFound = False
         if (pairMatchNotFound):
-            raise unittest2.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
+            raise unittest.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
         timeout = 10
         ipsecHostLANResult = 1
         while (ipsecHostLANResult != 0 and timeout > 0):

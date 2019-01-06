@@ -4,7 +4,7 @@ import sys
 import subprocess
 import socket
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -166,7 +166,7 @@ def same_wan_network(indexWANs):
             previousExtIP = currentExtIP    
     return wan_match
             
-class WanBalancerTests(unittest2.TestCase):
+class WanBalancerTests(unittest.TestCase):
     
     @staticmethod
     def module_name():
@@ -220,7 +220,7 @@ class WanBalancerTests(unittest2.TestCase):
     def test_030_heavyWeightWan(self):
         # Set the one WAN as 100 weight and the other as zero and vice versa.
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_030_heavyWeightWan")
+            raise unittest.SkipTest("Need at least two WANS for test_030_heavyWeightWan")
         set_wan_weight("all", 0)
         for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
@@ -239,7 +239,7 @@ class WanBalancerTests(unittest2.TestCase):
         
     def test_040_balanced(self):
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
+            raise unittest.SkipTest("Need at least two WANS for test_040_routedByIPWan")
         # Set weighting to default 
         set_wan_weight("all", 50)
 
@@ -258,7 +258,7 @@ class WanBalancerTests(unittest2.TestCase):
 
     def test_050_routedByIPWan(self):
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_050_routedByIPWan")
+            raise unittest.SkipTest("Need at least two WANS for test_050_routedByIPWan")
         # Set weighting to default 
         set_wan_weight("all", 50)
 
@@ -278,7 +278,7 @@ class WanBalancerTests(unittest2.TestCase):
     def test_060_routedByPortWan(self):        
         # Test that route rules override weighted rules on 2 WANs
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_060_routedByPortWan")
+            raise unittest.SkipTest("Need at least two WANS for test_060_routedByPortWan")
         nuke_wan_balancer_route_rules()
 
         set_wan_weight("all", 50)
@@ -301,7 +301,7 @@ class WanBalancerTests(unittest2.TestCase):
     def test_070_weightVsRoutedWan(self):        
         # Test that route rules override weighted rules
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_070_weightVsRoutedWan")
+            raise unittest.SkipTest("Need at least two WANS for test_070_weightVsRoutedWan")
             
         for x in range(0, 2):
             nuke_wan_balancer_route_rules()
@@ -329,7 +329,7 @@ class WanBalancerTests(unittest2.TestCase):
     def test_080_routedWanVsNetworkRoute(self):    
         # Test that Networking routes override routed rules in WAN Balancer
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_080_routedWanVsNetworkRoute")
+            raise unittest.SkipTest("Need at least two WANS for test_080_routedWanVsNetworkRoute")
         netsettings = netsettings = uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_route_rules()
 
@@ -356,7 +356,7 @@ class WanBalancerTests(unittest2.TestCase):
         # Set the one WAN as 100 weight and the other as zero and down the 100 weight wan
         # if there are more than one WAN
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
+            raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
         # initialize all the weights to 50
         nuke_wan_balancer_rules()
         # create valid failover tests
@@ -401,11 +401,11 @@ class WanBalancerTests(unittest2.TestCase):
         # create a source route and then down the wan which the route is set to
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
+            raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
         if same_wan_network(index_of_wans):
-            raise unittest2.SkipTest("WANS on same network")
+            raise unittest.SkipTest("WANS on same network")
 
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for wanIndexTup in index_of_wans:
@@ -447,9 +447,9 @@ class WanBalancerTests(unittest2.TestCase):
         # create a network route and then down the wan which the route is set to
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
+            raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_rules();
 
@@ -501,13 +501,13 @@ class WanBalancerTests(unittest2.TestCase):
         # create a 1:1 NAT and then down the wan which the NAT is set to
         # if there are more than one WAN
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
+            raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
 
         pre_count = global_functions.get_app_metric_value(app_wan_failover,"changed")
         
-        # raise unittest2.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
+        # raise unittest.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_rules();
         nuke_wan_failover_rules()

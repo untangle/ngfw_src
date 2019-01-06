@@ -1,7 +1,7 @@
 """spam_blocker tests"""
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -38,7 +38,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
     # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
     def test_021_check_for_mailshell(self):
         if (not self.canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
+            raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,8)
         if events != None:
             assert( events.get('list') != None )
@@ -49,6 +49,6 @@ class SpamBlockerTests(SpamBlockerBaseTests):
                     break
             assert(found)
         else:
-            raise unittest2.SkipTest('No events to check for MAIL_SHELL')
+            raise unittest.SkipTest('No events to check for MAIL_SHELL')
 
 test_registry.register_module("spam-blocker", SpamBlockerTests)

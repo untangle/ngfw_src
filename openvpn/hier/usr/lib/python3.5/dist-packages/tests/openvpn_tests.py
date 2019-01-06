@@ -7,7 +7,7 @@ import re
 import subprocess
 import base64
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -172,7 +172,7 @@ def createDirectoryConnectorSettings(ad_enable=False, radius_enable=False, ldap_
         }
     }
 
-class OpenVpnTests(unittest2.TestCase):
+class OpenVpnTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -225,7 +225,7 @@ class OpenVpnTests(unittest2.TestCase):
         global tunnelUp
         tunnelUp = False
         if (vpnHostResult != 0):
-            raise unittest2.SkipTest("No paried VPN server available")
+            raise unittest.SkipTest("No paried VPN server available")
         # Download remote system VPN config
         result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip", shell=True)
         assert (result == 0) # verify the download was successful
@@ -245,7 +245,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_030_disableRemoteClientVPNTunnel(self):
         global tunnelUp 
         if (not tunnelUp):
-            raise unittest2.SkipTest("previous test test_020_createVPNTunnel failed")
+            raise unittest.SkipTest("previous test test_020_createVPNTunnel failed")
         appData = app.getSettings()
         # print(appData)
         i=0
@@ -270,7 +270,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_035_createVPNTunnel_userpass(self):
         """Create Site-to-Site connection with local username/password authentication"""
         if (vpnUserPassHostResult != 0):
-            raise unittest2.SkipTest("User/Pass VPN server not available")
+            raise unittest.SkipTest("User/Pass VPN server not available")
 
         # Download remote system VPN config
         result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteUserPassFile + " -O /tmp/UserPassConfig.zip", shell=True)
@@ -309,7 +309,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_040_createClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
@@ -326,7 +326,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
             
         appData = app.getSettings()
         appData["serverEnabled"]=True
@@ -381,12 +381,12 @@ class OpenVpnTests(unittest2.TestCase):
     def test_050_createClientVPNFullTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
         appData = app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']  
@@ -444,7 +444,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_060_createDeleteClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if(vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
         
         pre_events_connect = global_functions.get_app_metric_value(app, "connect")
 
@@ -461,7 +461,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
 
         appData = app.getSettings()
         appData["serverEnabled"] = True
@@ -586,7 +586,7 @@ class OpenVpnTests(unittest2.TestCase):
     def test_070_createClientVPNTunnelLocalUserPass(self):
         global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
@@ -603,7 +603,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
             
         appData = app.getSettings()
         appData["serverEnabled"]=True
@@ -668,12 +668,12 @@ class OpenVpnTests(unittest2.TestCase):
     def test_075_createClientVPNTunnelRadiusUserPass(self):
         global appData, vpnServerResult, vpnClientResult, appDC
         if (vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
 
         if (radiusResult != 0):
-            raise unittest2.SkipTest("No RADIUS server available")
+            raise unittest.SkipTest("No RADIUS server available")
         appNameDC = "directory-connector"
         if (uvmContext.appManager().isInstantiated(appNameDC)):
             print("App %s already installed" % appNameDC)
@@ -695,7 +695,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
             
         appData = app.getSettings()
         appData["serverEnabled"]=True
@@ -755,12 +755,12 @@ class OpenVpnTests(unittest2.TestCase):
     def test_079_createClientVPNTunnelADUserPass(self):
         global appData, vpnServerResult, vpnClientResult, appDC
         if (vpnClientResult != 0 or vpnServerResult != 0):
-            raise unittest2.SkipTest("No paried VPN client available")
+            raise unittest.SkipTest("No paried VPN client available")
 
         pre_events_connect = global_functions.get_app_metric_value(app,"connect")
 
         if (adResult != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         appNameDC = "directory-connector"
         if (uvmContext.appManager().isInstantiated(appNameDC)):
             print("App %s already installed" % appNameDC)
@@ -782,7 +782,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:
-            raise unittest2.SkipTest("OpenVPN test machine already in use")
+            raise unittest.SkipTest("OpenVPN test machine already in use")
             
         appData = app.getSettings()
         appData["serverEnabled"]=True
@@ -844,7 +844,7 @@ class OpenVpnTests(unittest2.TestCase):
         vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
         index_of_wans = global_functions.get_wan_tuples()
         if index_of_wans == []:
-            raise unittest2.SkipTest("No static or auto WAN")
+            raise unittest.SkipTest("No static or auto WAN")
         # print(index_of_wans[0])
 
         def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
@@ -897,10 +897,10 @@ class OpenVpnTests(unittest2.TestCase):
         #set up TunnelVPN
         result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
         if (result != 0):
-            raise unittest2.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
+            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
         currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
         if (currentWanIP == ""):
-            raise unittest2.SkipTest("Unable to get WAN IP")
+            raise unittest.SkipTest("Unable to get WAN IP")
         # print("Original WAN IP: " + currentWanIP)
         tunnelApp.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 

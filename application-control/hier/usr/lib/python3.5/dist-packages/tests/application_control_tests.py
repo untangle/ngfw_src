@@ -1,7 +1,7 @@
 """application_control tests"""
 import time
 import subprocess
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -67,7 +67,7 @@ def appendLogicRule(newRule):
     appSettings['logicRules']['list'].append(newRule)
     app.setSettings(appSettings)
 
-class ApplicationControlTests(unittest2.TestCase):
+class ApplicationControlTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -124,7 +124,7 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result2 != 0)
 
     def test_024_protoRule_Dns(self):
-        raise unittest2.SkipTest("Test not consistent, disabling.")
+        raise unittest.SkipTest("Test not consistent, disabling.")
         touchProtoRule("DNS",False,False)
         result1 = remote_control.run_command("host -4 -W3 test.untangle.com 8.8.8.8")
         touchProtoRule("DNS",True,True)
@@ -137,7 +137,7 @@ class ApplicationControlTests(unittest2.TestCase):
         touchProtoRule("FTP",False,False)
         pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if pingResult:
-            raise unittest2.SkipTest(global_functions.ftp_server + " not reachable")
+            raise unittest.SkipTest(global_functions.ftp_server + " not reachable")
         ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")            
         result1 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftp_server + "/")
         touchProtoRule("FTP",True,True)
@@ -218,7 +218,7 @@ class ApplicationControlTests(unittest2.TestCase):
 
     def test_500_classdDaemonReconnect(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         for i in range(10):
             print("Test %i" % i)
             result = subprocess.call("systemctl restart untangle-classd >/dev/null 2>&1", shell=True)

@@ -1,6 +1,6 @@
 """application_control_lite tests"""
 import time
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -36,7 +36,7 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
     settings["patterns"] = patterns
     app.setSettings(settings)
 
-class ApplicationControlLiteTests(unittest2.TestCase):
+class ApplicationControlLiteTests(unittest.TestCase):
 
     @staticmethod
     def module_name():

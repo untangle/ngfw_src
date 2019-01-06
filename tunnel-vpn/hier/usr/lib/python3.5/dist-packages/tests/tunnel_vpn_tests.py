@@ -2,7 +2,7 @@
 import time
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -43,7 +43,7 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel
     }
 
 
-class TunnelVpnTests(unittest2.TestCase):
+class TunnelVpnTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -75,10 +75,10 @@ class TunnelVpnTests(unittest2.TestCase):
     def test_020_createVPNTunnel(self):
         result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
         if (result != 0):
-            raise unittest2.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
+            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
         currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
         if (currentWanIP == ""):
-            raise unittest2.SkipTest("Unable to get WAN IP")
+            raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
         app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
@@ -114,10 +114,10 @@ class TunnelVpnTests(unittest2.TestCase):
     def test_030_createVPNAnyTunnel(self):
         result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
         if (result != 0):
-            raise unittest2.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
+            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
         currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
         if (currentWanIP == ""):
-            raise unittest2.SkipTest("Unable to get WAN IP")
+            raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
         app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
