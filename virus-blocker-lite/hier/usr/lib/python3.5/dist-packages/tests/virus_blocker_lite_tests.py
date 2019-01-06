@@ -2,7 +2,7 @@
 import time
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry

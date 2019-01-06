@@ -3,7 +3,7 @@ import time
 import socket
 import re
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -65,7 +65,7 @@ def createSSLInspectRule(port="25"):
         "ruleId": 1
     };
 
-class SpamBlockerBaseTests(unittest2.TestCase):
+class SpamBlockerBaseTests(unittest.TestCase):
 
     @staticmethod
     def shortName():
@@ -83,7 +83,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     def initial_setup(self):
         global app, appData, appSP, appDataSP, appSSL, appSSLData, canRelay
         if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
         appData = app.getSettings()
         appSP = uvmContext.appManager().app(self.appNameSpamCase())
@@ -119,7 +119,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_020_smtpTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
         app.setSettings(appData)
@@ -142,7 +142,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_030_adminQuarantine(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
@@ -151,7 +151,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
        
         if (events == None):
-            raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
+            raise unittest.SkipTest('Unable to run admin quarantine since there are no quarantine events')
         
         # Get adminstrative quarantine list of email addresses
         addressFound = False
@@ -164,7 +164,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_040_userQuarantine(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
@@ -179,7 +179,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_050_userQuarantinePurge(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
@@ -201,7 +201,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     def test_060_adminQuarantineDeleteAccount(self):
         # Get adminstrative quarantine list of email addresses
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
@@ -217,7 +217,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_070_checkForSMTPHeaders(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
 
         appData['smtpConfig']['blockSuperSpam'] = False
         appData['smtpConfig']['scanWanMail'] = True
@@ -264,7 +264,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_080_checkAllowTLS(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         app.setSettings(appData)
         # Make sure SSL Inspector is off
@@ -281,7 +281,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     
     def test_090_checkTLSwSSLInspector(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         test_untangle_IP = socket.gethostbyname(smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['allowTls'] = False

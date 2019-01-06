@@ -1,6 +1,6 @@
 """branding_manager tests"""
 import re
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -28,7 +28,7 @@ def setDefaultBrandingManagerSettings():
     }
     app.setSettings(appData)
     
-class BrandingManagerTests(unittest2.TestCase):
+class BrandingManagerTests(unittest.TestCase):
     
     @staticmethod
     def module_name():

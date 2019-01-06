@@ -7,7 +7,7 @@ import re
 import subprocess
 import copy
 import socket
-import unittest2
+import unittest
 
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
@@ -177,7 +177,7 @@ def print_results( wget_speed_pre, wget_speed_post, expected_speed, allowed_spee
         print("Allowed Post  : %s KB/s" % str(allowed_speed))
         print("Summary: %s < %s = %s" % (wget_speed_post, allowed_speed, str( wget_speed_post < allowed_speed )))
 
-class BandwidthControlTests(unittest2.TestCase):
+class BandwidthControlTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -293,12 +293,12 @@ class BandwidthControlTests(unittest2.TestCase):
         global wan_limit_mbit
         targetSpeedMbit = str(wan_limit_mbit)+"M"
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         iperfAvailable = global_functions.verify_iperf_configuration(wan_IP)
         if (not iperfAvailable):
-            raise unittest2.SkipTest("Iperf server and/or iperf not available")
+            raise unittest.SkipTest("Iperf server and/or iperf not available")
 
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'].append( create_bypass_condition_rule("DST_PORT","5000") )
@@ -378,12 +378,12 @@ class BandwidthControlTests(unittest2.TestCase):
         # which can interfere with the test
         targetSpeedMbit = str(wan_limit_mbit*.3)+"M"
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         iperfAvailable = global_functions.verify_iperf_configuration(wan_IP)
         if (not iperfAvailable):
-            raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
+            raise unittest.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Enabled QoS
         netsettings = uvmContext.networkManager().getNetworkSettings()
         nuke_rules()
@@ -445,7 +445,7 @@ class BandwidthControlTests(unittest2.TestCase):
  
     def test_060_host_quota(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         global app
         nuke_rules()
         priority_level = 7 # Severely Limited 
@@ -500,7 +500,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     def test_061_user_quota(self):
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         global app
         nuke_rules()
         priority_level = 7 # Severely Limited 

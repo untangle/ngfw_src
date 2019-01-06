@@ -3,7 +3,7 @@ import re
 import socket
 import base64
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -123,7 +123,7 @@ def removeLocalDirectoryUser():
         'list': []
     }
 
-class PolicyManagerTests(unittest2.TestCase):
+class PolicyManagerTests(unittest.TestCase):
 
     @staticmethod
     def module_name():

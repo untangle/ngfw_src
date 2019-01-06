@@ -2,7 +2,7 @@
 import time
 import subprocess
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -60,7 +60,7 @@ def wait_for_daemon_ready():
             break
         time.sleep(10)
 
-class IntrusionPreventionTests(unittest2.TestCase):
+class IntrusionPreventionTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -101,7 +101,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         appSettings['signatures']['list'].append(create_signature( gid = "1", 
                                                 sid = "1999999", 
@@ -142,11 +142,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         rule_desc = appSettings['rules']['list'][0]['description']
         if rule_desc != "ATS rule":
-            raise unittest2.SkipTest('Skipping as test test_030_rule_add is needed')
+            raise unittest.SkipTest('Skipping as test test_030_rule_add is needed')
         else:
             appSettings['rules']['list'][0]['action'] = "log"
             app.setSettings(appSettings, True)
@@ -177,16 +177,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
         if (not iperf_avail):
-            raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
+            raise unittest.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
 
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="log", rule_type="CATEGORY", type_value="scan"))
@@ -215,7 +215,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
     def test_054_functional_udp_block(self):
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         appSettings['signatures']['list'].append(create_signature( gid = "1", 
                                                 sid = "1999998", 
@@ -253,7 +253,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # clear out the signature list
         appSettings['signatures']['list'] = [] 
@@ -310,16 +310,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
     def test_080_nmap_log(self):
         global app, appSettings
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
-            raise unittest2.SkipTest("Not on office network, skipping")
+            raise unittest.SkipTest("Not on office network, skipping")
         if (not iperf_avail):
-            raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
+            raise unittest.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
 
         startTime = datetime.now()
         # start nmap on client

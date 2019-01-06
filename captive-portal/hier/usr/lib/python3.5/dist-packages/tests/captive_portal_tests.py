@@ -5,7 +5,7 @@ import subprocess
 import base64
 import copy
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -217,7 +217,7 @@ def set_http_https_ports(httpPort, httpsPort):
     netsettings['httpsPort'] = httpsPort
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-class CaptivePortalTests(unittest2.TestCase):
+class CaptivePortalTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -244,22 +244,22 @@ class CaptivePortalTests(unittest2.TestCase):
         global appData, app, appDataRD, appDataAD, appAD, appWeb, appSSL, appSSLData, adResult, radiusResult, test_untangle_com_ip, captureIP
         if (uvmContext.appManager().isInstantiated(self.module_name())):
             print("ERROR: App %s already installed" % self.module_name())
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
         appData = app.getSettings()
         if (uvmContext.appManager().isInstantiated(self.appNameAD())):
             print("ERROR: App %s already installed" % self.appNameAD())
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
         appDataAD = appAD.getSettings().get('activeDirectorySettings')
         appDataRD = appAD.getSettings().get('radiusSettings')
         if (uvmContext.appManager().isInstantiated(self.appNameWeb())):
             print("ERROR: App %s already installed" % self.appNameWeb())
-            raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
+            raise unittest.SkipTest('app %s already instantiated' % self.appNameWeb())
         appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), default_policy_id)
         if (uvmContext.appManager().isInstantiated(self.appNameSSLInspector())):
             print("ERROR: App %s already installed" % self.appNameSSLInspector())
-            raise unittest2.SkipTest('app %s already instantiated' % self.appNameSSLInspector())
+            raise unittest.SkipTest('app %s already instantiated' % self.appNameSSLInspector())
         appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
         appSSLData = appSSL.getSettings()
         adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -369,7 +369,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_024_login_anonymous_timeout(self):
         global app, appData
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
@@ -559,7 +559,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_035_login_active_directory(self):
         global appData, app, appDataAD, appAD
         if (adResult != 0):
-            raise unittest2.SkipTest("No AD server available")
+            raise unittest.SkipTest("No AD server available")
         # Configure AD settings
         testResultString = appAD.getActiveDirectoryManager().getStatusForSettings(create_directory_connector_settings(ldap_secure=False)["activeDirectorySettings"]["servers"]["list"][0])
         # print('testResultString %s' % testResultString  # debug line)
@@ -625,7 +625,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_040_login_radius(self):
         global appData, app, appDataRD, appDataAD, appAD
         if (radiusResult != 0):
-            raise unittest2.SkipTest("No RADIUS server available")
+            raise unittest.SkipTest("No RADIUS server available")
 
         # Configure RADIUS settings
         appAD.setSettings(create_radius_settings())
@@ -686,7 +686,7 @@ class CaptivePortalTests(unittest2.TestCase):
         """
         global app, appData
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_050.out"
@@ -747,9 +747,9 @@ class CaptivePortalTests(unittest2.TestCase):
         """
         global app, appData
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
         if time_of_client_off():
-            raise unittest2.SkipTest('Client time different than Untangle server')
+            raise unittest.SkipTest('Client time different than Untangle server')
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_051.out"
@@ -806,7 +806,7 @@ class CaptivePortalTests(unittest2.TestCase):
         capture_file_name = "/tmp/capture_test_052.out"
         cookieExistsResults = remote_control.run_command("test -e " + savedCookieFileName)
         if (cookieExistsResults == 1):
-            raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captivePortalCookie_timeout' % savedCookieFileName)
+            raise unittest.SkipTest('Cookie file %s was was not create in test_051_captivePortalCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
@@ -871,7 +871,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_065_login_local_directory_expired_user(self):
         global app, appData
         if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
+            raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []

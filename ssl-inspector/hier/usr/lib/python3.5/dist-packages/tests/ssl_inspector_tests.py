@@ -1,7 +1,7 @@
 """ssl_inspector tests"""
 import datetime
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -61,7 +61,7 @@ def nukeBlockedUrls():
     rules["list"] = []
     appWeb.setBlockedUrls(rules)
 
-class SslInspectorTests(unittest2.TestCase):
+class SslInspectorTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -115,7 +115,7 @@ class SslInspectorTests(unittest2.TestCase):
             result = remote_control.run_command('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
             assert (result == 0)
         else:
-            raise unittest2.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
+            raise unittest.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
 
     def test_030_checkSslInspectorInspectorEventLog(self):
         remote_control.run_command('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))

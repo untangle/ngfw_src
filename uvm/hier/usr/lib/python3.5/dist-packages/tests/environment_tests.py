@@ -1,12 +1,12 @@
 """environment for NGFW tests"""
 # pylint: disable=no-self-use
 # pylint: disable=global-variable-not-assigned
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
 
-class EnvironmentTests(unittest2.TestCase):
+class EnvironmentTests(unittest.TestCase):
     """NGFW environment tests"""
 
     def test_01_uvm_connectivity(self):

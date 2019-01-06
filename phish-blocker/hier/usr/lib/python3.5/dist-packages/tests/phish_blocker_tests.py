@@ -4,7 +4,7 @@ import subprocess
 import socket
 import re
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -34,7 +34,7 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
         mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@test.untangle.com --to=qa@test.untangle.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
-class PhishBlockerTests(unittest2.TestCase):
+class PhishBlockerTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -56,7 +56,7 @@ class PhishBlockerTests(unittest2.TestCase):
     def initial_setup(self):
         global app, appData, appSP, appDataSP, appSSL, canRelay
         if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest2.SkipTest('app %s already instantiated' % self.module_name())
+            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
         app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
         appData = app.getSettings()
         appSP = uvmContext.appManager().app(self.appNameSpamCase())
@@ -102,7 +102,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         pre_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
 
         appData['smtpConfig']['scanWanMail'] = True
@@ -149,7 +149,7 @@ class PhishBlockerTests(unittest2.TestCase):
         
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 5
         appData['smtpConfig']['msgAction'] = "MARK"
@@ -180,7 +180,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_040_smtpDropPhishBlockerTest(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 5
         appData['smtpConfig']['msgAction'] = "DROP"
@@ -201,7 +201,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_050_checkTLSBypass(self):
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         tlsSMTPResult = sendPhishMail(host=smtpServerHost, useTLS=True)
         # print("TLS  : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
@@ -209,7 +209,7 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_060_checkTLSwSSLInspector(self):
         global appSSL
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + smtpServerHost)
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         appSSL.start()
         tlsSMTPResult = sendPhishMail(mailfrom="test060", host=smtpServerHost, useTLS=True)

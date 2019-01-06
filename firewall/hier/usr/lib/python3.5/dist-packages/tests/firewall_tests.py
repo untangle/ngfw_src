@@ -1,11 +1,11 @@
 """firewall tests"""
-import unittest2
+import unittest
 import time
 import sys
 import traceback
 import socket
 
-import unittest2
+import unittest
 from tests.global_functions import uvmContext
 import tests.remote_control as remote_control
 import tests.test_registry as test_registry
@@ -84,7 +84,7 @@ def rule_append(newRule):
     rules["list"].append(newRule)
     app.setRules(rules)
 
-class FirewallTests(unittest2.TestCase):
+class FirewallTests(unittest.TestCase):
 
     @staticmethod
     def module_name():
@@ -714,7 +714,7 @@ class FirewallTests(unittest2.TestCase):
     def test_160_clientMacAddress(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
-            raise unittest2.SkipTest('MAC not known')
+            raise unittest.SkipTest('MAC not known')
         mac = entry.get('macAddress')
 
         rules_clear()
@@ -726,7 +726,7 @@ class FirewallTests(unittest2.TestCase):
     def test_161_clientMacAddressStar(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
-            raise unittest2.SkipTest('MAC not known')
+            raise unittest.SkipTest('MAC not known')
 
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_MAC", "*" ) )
@@ -737,7 +737,7 @@ class FirewallTests(unittest2.TestCase):
     def test_162_clientMacAddressMultiple(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
-            raise unittest2.SkipTest('MAC not known')
+            raise unittest.SkipTest('MAC not known')
         mac = entry.get('macAddress')
 
         rules_clear()
