@@ -18,7 +18,7 @@ class ArgumentParser(object):
     """Command line argument parser"""
     def __init__(self):
         self.client_ip = "192.0.2.2"
-        self.path = None
+        self.paths = []
         self.host_username = None
         self.host_key_file = None
         self.verbosity = 2 # changed to default 2 because jcoffin
@@ -41,7 +41,7 @@ class ArgumentParser(object):
         self.host_username = arg
 
     def set_path(self, arg):
-        self.path = arg
+        self.paths.append(arg)
 
     def set_keyfile(self, arg):
         self.host_key_file = arg
@@ -257,7 +257,7 @@ def run_environment_tests():
             print("Test success : %s " % test._testMethodName)
     print("== testing environment ==")
 
-def load_tests(path):
+def load_modules(path):
     """load all test modules in the specified path"""
     if not os.path.isdir(path):
         return
@@ -286,14 +286,15 @@ logfile = open(parser.logfile, 'w')
 
 signal.signal(signal.SIGINT, signal_handler)
 
-if parser.path is None:
-    load_tests('./usr/lib/python%d.%d/' % sys.version_info[:2])
-    load_tests('./usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
-    load_tests('/usr/lib/python%d.%d/' % sys.version_info[:2])
-    load_tests('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
+if len(parser.paths) == 0:
+    load_modules('./usr/lib/python%d.%d/' % sys.version_info[:2])
+    load_modules('./usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
+    load_modules('/usr/lib/python%d.%d/' % sys.version_info[:2])
+    load_modules('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2])
 else:
-    load_tests(parser.path + ('/usr/lib/python%d.%d/' % sys.version_info[:2]))
-    load_tests(parser.path + ('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2]))
+    for p in parser.paths:
+        load_modules(p + ('/usr/lib/python%d.%d/' % sys.version_info[:2]))
+        load_modules(p + ('/usr/lib/python%d.%d/dist-packages/' % sys.version_info[:2]))
 
 tests = importlib.import_module("tests")
 
