@@ -20,9 +20,8 @@ from jsonrpc import JSONRPCException
 from .global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
-from . import test_registry
-from . import remote_control
-from . import global_functions
+import runtests.test_registry as test_registry
+import runtests.remote_control as remote_control
 
 app = None
 appFW = None

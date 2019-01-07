@@ -1,3 +1,4 @@
+"""ngfw test utilities"""
 import subprocess
 import time
 import re
@@ -8,7 +9,8 @@ import datetime
 import random
 import string
 
-from . import remote_control
+import runtests.remote_control as remote_control
+import runtests
 from . import ipaddr
 import smtplib
 import json
@@ -57,8 +59,6 @@ prefix = "@PREFIX@"
 test_server_ip = socket.gethostbyname(TEST_SERVER_HOST)
 ftp_server = test_server_ip
 iperf_server = ""
-
-test_start_time = None
 
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
     timeout = 4
@@ -221,7 +221,8 @@ def find_event( events, num_events, *args, **kwargs):
         print("No events in list")
         return None
     if kwargs.get('min_date') == None:
-        min_date = test_start_time
+        print("XXX: " + str(runtests.test_start_time))
+        min_date = runtests.test_start_time
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
