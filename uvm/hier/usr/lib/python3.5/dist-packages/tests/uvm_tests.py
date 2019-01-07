@@ -210,7 +210,7 @@ class UvmTests(unittest.TestCase):
         assert(match)
 
     def test_030_test_smtp_settings(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.appManager().isInstantiated(self.appNameSpamCase())):

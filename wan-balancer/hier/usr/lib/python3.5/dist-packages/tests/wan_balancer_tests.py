@@ -400,7 +400,7 @@ class WanBalancerTests(unittest.TestCase):
     def test_100_wanBalancerRouteWanDown(self):
         # create a source route and then down the wan which the route is set to
         # if there are more than one WAN
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
@@ -446,7 +446,7 @@ class WanBalancerTests(unittest.TestCase):
     def test_110_networkRouteWanDown(self):
         # create a network route and then down the wan which the route is set to
         # if there are more than one WAN
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
@@ -500,7 +500,7 @@ class WanBalancerTests(unittest.TestCase):
     def test_120_natOneToOneWanDown(self):
         # create a 1:1 NAT and then down the wan which the NAT is set to
         # if there are more than one WAN
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
