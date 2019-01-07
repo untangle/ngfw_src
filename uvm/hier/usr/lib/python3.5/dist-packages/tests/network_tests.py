@@ -5,7 +5,6 @@ import sys
 import re
 import subprocess
 import pprint
-from . import ipaddr
 import time
 
 from jsonrpc import ServiceProxy
@@ -13,9 +12,10 @@ from jsonrpc import JSONRPCException
 from .global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
-from . import test_registry
-from . import remote_control
+import runtests.test_registry as test_registry
+import runtests.remote_control as remote_control
 from . import global_functions
+from . import ipaddr
 
 
 ftp_file_name = ""
