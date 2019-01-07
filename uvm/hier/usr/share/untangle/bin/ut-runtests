@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo
+echo "FIXME - $0 is obsolete. Use /usr/bin/runtests."
+echo "FIXME - $0 is obsolete. Use /usr/bin/runtests."
+echo "FIXME - $0 is obsolete. Use /usr/bin/runtests."
+echo
+
+/usr/bin/runtests $*
