@@ -414,7 +414,7 @@ class VirusBlockerBaseTests(unittest.TestCase):
 
     # test ftp using large test file
     def test_120_ftpLargeClean(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):

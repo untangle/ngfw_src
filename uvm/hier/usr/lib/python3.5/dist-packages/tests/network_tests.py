@@ -823,7 +823,7 @@ class NetworkTests(unittest.TestCase):
 
     # Test dynamic hostname
     def test_100_dynamic_dns(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest("Skipping a time consuming test")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         index_of_wans = global_functions.get_wan_tuples()
@@ -885,7 +885,7 @@ class NetworkTests(unittest.TestCase):
     # Test VRRP is active
     def test_110_vrrp(self):
         "Test that a VRRP alias is pingable"
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Find a static interface
@@ -1207,7 +1207,7 @@ class NetworkTests(unittest.TestCase):
 
     # Test logging of blocked sessions via untangle-nflogd
     def test_150_filter_rules_blocked_event_log(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")

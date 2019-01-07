@@ -380,7 +380,7 @@ class OpenVpnTests(unittest.TestCase):
         
     def test_050_createClientVPNFullTunnel(self):
         global appData, vpnServerResult, vpnClientResult
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
