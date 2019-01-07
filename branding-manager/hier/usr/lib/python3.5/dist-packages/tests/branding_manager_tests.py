@@ -45,15 +45,15 @@ class BrandingManagerTests(unittest.TestCase):
     @staticmethod
     def initial_setup(self):
         global appData, app, appWeb
-        if (uvmContextLongTimeout.appManager().isInstantiated(self.module_name())):
+        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(self.module_name())):
             print("ERROR: App %s already installed" % self.module_name())
             raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContextLongTimeout.appManager().instantiate(self.module_name(), default_policy_id)
+        app = global_functions.uvmContextLongTimeout.appManager().instantiate(self.module_name(), default_policy_id)
         appData = app.getSettings()
-        if (uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
+        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
             print("ERROR: App %s already installed" % self.appNameWeb())
             raise Exception('app %s already instantiated' % self.appNameWeb())
-        appWeb = uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), default_policy_id)
+        appWeb = global_functions.uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), default_policy_id)
 
     def setUp(self):
         pass
@@ -64,7 +64,7 @@ class BrandingManagerTests(unittest.TestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContextLongTimeout.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContextLongTimeout.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_changeBranding(self):
         global app, appWeb, appData
@@ -162,10 +162,10 @@ class BrandingManagerTests(unittest.TestCase):
         if app != None:
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings()
-            uvmContextLongTimeout.appManager().destroy( app.getAppSettings()["id"] )
+            global_functions.uvmContextLongTimeout.appManager().destroy( app.getAppSettings()["id"] )
             app = None
         if appWeb != None:
-            uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
+            global_functions.uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
 
 test_registry.register_module("branding-manager", BrandingManagerTests)
