@@ -359,6 +359,7 @@ Depends: ${misc:Depends},
          untangle-libuvmcore,
          untangle-libuvmthirdparty,
 	 untangle-sync-settings,
+	 untangle-python3-runtests,
 	 unzip,
          zip
 Description: UVM Platform
