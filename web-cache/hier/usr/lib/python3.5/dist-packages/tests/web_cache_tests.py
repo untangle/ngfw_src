@@ -38,7 +38,7 @@ class WebCacheTests(unittest.TestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_testBasicWebCache(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         pre_events_hit = global_functions.get_app_metric_value(app,"hit")
 

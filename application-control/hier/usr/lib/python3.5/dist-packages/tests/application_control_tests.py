@@ -217,7 +217,7 @@ class ApplicationControlTests(unittest.TestCase):
         assert( found )
 
     def test_500_classdDaemonReconnect(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         for i in range(10):
             print("Test %i" % i)

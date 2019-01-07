@@ -1,8 +1,10 @@
 """intrusion_prevention tests"""
 import time
 import subprocess
+import datetime
 
 import unittest
+import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -100,7 +102,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         Custom rule and rule to enable it
         """
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         appSettings['signatures']['list'].append(create_signature( gid = "1", 
@@ -118,7 +120,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
         wait_for_daemon_ready()
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         loopLimit = 4
         # Send four requests for test rebustnewss 
         while (loopLimit > 0):
@@ -141,7 +143,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         Modify existing rule and rule to enable it
         """
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         rule_desc = appSettings['rules']['list'][0]['description']
@@ -153,7 +155,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
         wait_for_daemon_ready()
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         loopLimit = 4
         # Send four requests for test rebustnewss 
         while (loopLimit > 0):
@@ -176,7 +178,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         Check for ICMP (ping)
         """
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
@@ -194,7 +196,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
         wait_for_daemon_ready()
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         loopLimit = 4
         # Send four requests for test rebustnewss 
         while (loopLimit > 0):
@@ -214,7 +216,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
     def test_054_functional_udp_block(self):
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         appSettings['signatures']['list'].append(create_signature( gid = "1", 
@@ -233,7 +235,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
         wait_for_daemon_ready()
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
 
         app.forceUpdateStats()
@@ -252,7 +254,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         Checks that the scan, detect, and block stats are properly incremented
         """
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # clear out the signature list
@@ -276,7 +278,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         pre_events_detect = global_functions.get_app_metric_value(app,"detect")
         pre_events_block = global_functions.get_app_metric_value(app,"block")
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         loopLimit = 4
         # Send four requests for test rebustnewss 
         while (loopLimit > 0):
@@ -309,7 +311,7 @@ class IntrusionPreventionTests(unittest.TestCase):
 
     def test_080_nmap_log(self):
         global app, appSettings
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
@@ -321,7 +323,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         if (not iperf_avail):
             raise unittest.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
 
-        startTime = datetime.now()
+        startTime = datetime.datetime.now()
         # start nmap on client
         remote_control.run_command("nmap " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
         app.forceUpdateStats()

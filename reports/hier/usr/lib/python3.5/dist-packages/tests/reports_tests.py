@@ -328,7 +328,7 @@ class ReportsTests(unittest.TestCase):
         """
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # create settings to receive test_email_address 
@@ -393,7 +393,7 @@ class ReportsTests(unittest.TestCase):
         """
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create settings to receive test_email_address 
@@ -438,7 +438,7 @@ class ReportsTests(unittest.TestCase):
         """
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create settings to receive test_email_address 
@@ -507,7 +507,7 @@ class ReportsTests(unittest.TestCase):
         global app,apps_list,apps_name_list
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # create settings to receive test_email_address 

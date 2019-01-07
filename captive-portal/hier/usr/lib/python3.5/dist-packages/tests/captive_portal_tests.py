@@ -368,7 +368,7 @@ class CaptivePortalTests(unittest.TestCase):
 
     def test_024_login_anonymous_timeout(self):
         global app, appData
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
@@ -685,7 +685,7 @@ class CaptivePortalTests(unittest.TestCase):
         Cookie test
         """
         global app, appData
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # variable for local test
@@ -746,7 +746,7 @@ class CaptivePortalTests(unittest.TestCase):
         Cookie expiration
         """
         global app, appData
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         if time_of_client_off():
             raise unittest.SkipTest('Client time different than Untangle server')
@@ -870,7 +870,7 @@ class CaptivePortalTests(unittest.TestCase):
 
     def test_065_login_local_directory_expired_user(self):
         global app, appData
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page

@@ -292,7 +292,7 @@ class BandwidthControlTests(unittest.TestCase):
     def test_014_qos_bypass_custom_rules_udp(self):
         global wan_limit_mbit
         targetSpeedMbit = str(wan_limit_mbit)+"M"
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -377,7 +377,7 @@ class BandwidthControlTests(unittest.TestCase):
         # really high levels will actually be limited by the untangle-vm throughput instead of QoS
         # which can interfere with the test
         targetSpeedMbit = str(wan_limit_mbit*.3)+"M"
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -444,7 +444,7 @@ class BandwidthControlTests(unittest.TestCase):
         assert(pre_count < post_count)
  
     def test_060_host_quota(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         global app
         nuke_rules()
@@ -499,7 +499,7 @@ class BandwidthControlTests(unittest.TestCase):
         assert( found )
 
     def test_061_user_quota(self):
-        if remote_control.quickTestsOnly:
+        if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         global app
         nuke_rules()
