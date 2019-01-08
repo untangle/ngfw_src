@@ -459,7 +459,7 @@ def user_quota_give(username, bytes_size, seconds):
     uvmContext.userTable().giveUserQuota( username, bytes_size, seconds, "test" )
     
 def random_email(length=10):
-   return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + TEST_SERVER_HOST
+   return ''.join(random.choice(string.ascii_lowercase) for i in range(length)) + "@" + TEST_SERVER_HOST
     
 def __get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
