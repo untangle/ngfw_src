@@ -4,8 +4,9 @@ import socket
 import subprocess
 import base64
 import copy
-
 import unittest
+import runtests
+
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -84,6 +85,7 @@ def create_capture_allow_https_rule(id_value):
 
 def create_local_directory_user(directory_user=local_user_name,expire_time=0):
     user_email = directory_user + "@test.untangle.com"
+    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList',
         'list': [{
             'username': directory_user,
@@ -91,7 +93,7 @@ def create_local_directory_user(directory_user=local_user_name,expire_time=0):
             'lastName': '[lastName]',
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser',
             'expirationTime': expire_time,
-            'passwordBase64Hash': base64.b64encode('passwd'),
+            'passwordBase64Hash': passwd_encoded.decode("utf-8"),
             'email': user_email
             },]
     }
