@@ -973,6 +973,7 @@ class NetworkTests(unittest.TestCase):
         # Get current MTU value due to bug 11599
         arg = "ip addr show dev %s" % target_device
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
+        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
         # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
@@ -989,6 +990,7 @@ class NetworkTests(unittest.TestCase):
         # Verify the MTU is set
         arg = "ip addr show dev %s" % target_device
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
+        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
         # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtuValue = None
@@ -1003,6 +1005,7 @@ class NetworkTests(unittest.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         arg = "ip addr show dev %s" % target_device
         ipAddrShowResults = subprocess.check_output(arg, shell=True)
+        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
         # print("ipAddrShowResults: %s" % ipAddrShowResults)
         reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
         mtu2Value = None
