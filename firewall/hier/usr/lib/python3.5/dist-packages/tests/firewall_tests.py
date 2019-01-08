@@ -303,7 +303,7 @@ class FirewallTests(unittest.TestCase):
         # check if a multi-wan box.
         indexOfWans = global_functions.get_wan_tuples()
         if (len(indexOfWans) < 2):
-            rule_append( create_rule_single_condition( "DST_INTF", remote_control.interfaceExternal ) )
+            rule_append( create_rule_single_condition( "DST_INTF", remote_control.interface_external ) )
         else:
             for wanIndexTup in indexOfWans:
                 wanIndex = wanIndexTup[0]
@@ -314,7 +314,7 @@ class FirewallTests(unittest.TestCase):
     # verify dst intf number rule doesnt match everythin
     def test_052_intfWrongIntf(self):
         rules_clear()
-        rule_append( create_rule_single_condition( "DST_INTF", int(remote_control.interfaceExternal) + 1 ) )
+        rule_append( create_rule_single_condition( "DST_INTF", int(remote_control.interface_external) + 1 ) )
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -324,7 +324,7 @@ class FirewallTests(unittest.TestCase):
         # check if a multi-wan box.
         indexOfWans = global_functions.get_wan_tuples()
         if (len(indexOfWans) < 2):
-            rule_append( create_rule_single_condition( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) )
+            rule_append( create_rule_single_condition( "DST_INTF", "99," + str(remote_control.interface_external) +  ", 100" ) )
         else:
             interfaces_str = "99"
             for wanIndexTup in indexOfWans:
