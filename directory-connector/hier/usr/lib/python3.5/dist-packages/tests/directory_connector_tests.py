@@ -3,7 +3,7 @@ import time
 import string
 import random
 import subprocess
-import urllib3
+import requests
 
 import unittest
 from tests.global_functions import uvmContext
@@ -285,7 +285,7 @@ class DirectoryConnectorTests(unittest.TestCase):
         http_admin = global_functions.get_http_url()
         assert(http_admin)
 
-        test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
+        test_name = "randomName-" + "".join( [random.choice(string.ascii_letters) for i in range(15)] )
         test_name_lower = test_name.lower()
         result = register_username(http_admin, test_name)
         user_list = get_list_of_username_mapped()
@@ -312,7 +312,7 @@ class DirectoryConnectorTests(unittest.TestCase):
         http_admin = global_functions.get_http_url().title()
         assert(http_admin)
 
-        test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
+        test_name = "randomName-" + "".join( [random.choice(string.ascii_letters) for i in range(15)] )
         # Force at least one upper-case character
         result = register_username(http_admin, test_name.title())
         user_list = get_list_of_username_mapped()
@@ -333,7 +333,7 @@ class DirectoryConnectorTests(unittest.TestCase):
         http_admin = global_functions.get_http_url()
         assert(http_admin)
 
-        test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
+        test_name = "randomName-" + "".join( [random.choice(string.ascii_letters) for i in range(15)] )
         test_name = test_name.lower()
         result = register_username_old(http_admin, test_name)
         user_list = get_list_of_username_mapped()
@@ -355,13 +355,12 @@ class DirectoryConnectorTests(unittest.TestCase):
         
         script_uri = "userapi/registration?download=download"
         script_url = http_admin + script_uri
-        response = urllib3.urlopen(script_url)
-        user_script = response.read()
+        response = requests.get(script_url)
         # print(user_script)
 
-        assert ("serverLocation" in user_script)
-        assert ("secret" in user_script)
-        assert ("urlProtocol" in user_script)
+        assert ("serverLocation" in response.text)
+        assert ("secret" in response.text)
+        assert ("urlProtocol" in response.text)
 
     def test_040_checkADSettings_NonSecure(self):
         """
