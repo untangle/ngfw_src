@@ -6,6 +6,7 @@ import re
 import subprocess
 import pprint
 import time
+import runtests
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
