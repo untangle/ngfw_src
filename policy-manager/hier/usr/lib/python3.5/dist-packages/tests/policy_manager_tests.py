@@ -106,6 +106,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
         };
 
 def createLocalDirectoryUser():
+    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList', 
         'list': [{
             'username': 'test20', 
@@ -113,7 +114,7 @@ def createLocalDirectoryUser():
             'lastName': '[lastName]', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
             'expirationTime': 0, 
-            'passwordBase64Hash': base64.b64encode('passwd'),
+            'passwordBase64Hash': passwd_encoded.decode("utf-8"),
             'email': 'test20@example.com'
             },]
     }
