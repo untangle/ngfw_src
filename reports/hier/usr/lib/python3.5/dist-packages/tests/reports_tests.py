@@ -11,6 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 from html.parser import HTMLParser
 
+import runtests
 import unittest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -79,6 +80,7 @@ def create_firewall_rule( conditionType, value, blocked=True ):
         }
 
 def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False):
+    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
     return  {
             "emailAddress": profile_email,
             "emailSummaries": True,
@@ -91,7 +93,7 @@ def create_reports_user(profile_email=test_email_address, email_template_id=1, a
             },
             "javaClass": "com.untangle.app.reports.ReportsUser",
             "onlineAccess": access,
-            "passwordHashBase64": base64.b64encode('passwd')
+            "passwordHashBase64": passwd_encoded.decode("utf-8")
     }
 
 def create_admin_user(useremail=test_email_address):
@@ -319,7 +321,7 @@ class ReportsTests(unittest.TestCase):
         subprocess.call(("wget -q -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
         result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
         print("Result of wc on %s : %s" % (csv_tmp,str(result)))
-        assert(result > 3)
+        assert(int.from_bytes(result,byteorder='little') > 3)
 
     def test_100_email_report_admin(self):
         """
@@ -364,7 +366,7 @@ class ReportsTests(unittest.TestCase):
 
         ## Verify that all images are intact.
         # copy mail from remote client
-        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.hostKeyFile, remote_control.client_ip), shell=True)
+        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_100_email_report_admin_file /tmp/" % (remote_control.host_key_file, remote_control.client_ip), shell=True)
         fp = open("/tmp/test_100_email_report_admin_file")
         email_string = fp.read()
         fp.close()
@@ -477,7 +479,7 @@ class ReportsTests(unittest.TestCase):
 
         # Verify that all images are less than 3502350.
         # copy mail from remote client
-        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.hostKeyFile, remote_control.client_ip), shell=True)
+        subprocess.call("scp -q -i %s testshell@%s:/tmp/test_102_email_admin_override_custom_report_mobile_file /tmp/" % (remote_control.host_key_file, remote_control.client_ip), shell=True)
         fp = open("/tmp/test_102_email_admin_override_custom_report_mobile_file")
         email_string = fp.read()
         fp.close()
