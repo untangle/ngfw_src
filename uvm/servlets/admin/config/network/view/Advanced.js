@@ -1316,7 +1316,6 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                             editorXtype: 'ung.cmp.unospfarearecordeditor',
                             editorFields: [
-                                Field.enableRule(),
                                 Field.description,
                             {
                                 xtype:'textfield',
