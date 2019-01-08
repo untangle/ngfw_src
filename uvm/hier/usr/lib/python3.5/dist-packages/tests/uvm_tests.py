@@ -15,9 +15,11 @@ import ssl
 import json
 import glob
 
+import runtests
+import tests.global_functions as global_functions
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
-from .global_functions import uvmContext
+from tests.global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import runtests.test_registry as test_registry
@@ -164,6 +166,7 @@ class UvmTests(unittest.TestCase):
                 time.sleep(.1) # dont flood wiki
                 assert(ret)
                 result = ret.read()
+                result = result.decode('utf-8')
                 assert(result)
                 patmatch = pat.match( result )
                 assert(patmatch)
