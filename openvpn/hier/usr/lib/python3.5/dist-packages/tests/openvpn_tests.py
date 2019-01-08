@@ -7,6 +7,7 @@ import re
 import subprocess
 import base64
 
+import runtests
 import unittest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
