@@ -1,5 +1,6 @@
 """shield tests"""
 import time
+import datetime
 
 import unittest
 from tests.global_functions import uvmContext
@@ -51,7 +52,7 @@ class ShieldTests(unittest.TestCase):
         settings['shieldEnabled'] = True
         app.setSettings(settings)
 
-        start_time = datetime.now()
+        start_time = datetime.datetime.now()
         result = remote_control.run_command("nmap -PN -sT -T5 --min-parallelism 15 -p10000-11000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
 
@@ -73,7 +74,7 @@ class ShieldTests(unittest.TestCase):
         settings['shieldEnabled'] = False
         app.setSettings(settings)
 
-        start_time = datetime.now()
+        start_time = datetime.datetime.now()
         result = remote_control.run_command("nmap -PN -sT -T5 --min-parallelism 15 -p10000-10100 1.2.3.5 2>&1 >/dev/null")
         assert (result == 0)
 
