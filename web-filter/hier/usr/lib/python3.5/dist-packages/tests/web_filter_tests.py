@@ -373,7 +373,7 @@ class WebFilterTests(WebFilterBaseTests):
         # check if a multi-wan box.
         indexOfWans = global_functions.get_wan_tuples()
         if (len(indexOfWans) < 2):
-            self.rule_add("DST_INTF",remote_control.interfaceExternal)
+            self.rule_add("DST_INTF",remote_control.interface_external)
         else:
             for wanIndexTup in indexOfWans:
                 wanIndex = wanIndexTup[0]
