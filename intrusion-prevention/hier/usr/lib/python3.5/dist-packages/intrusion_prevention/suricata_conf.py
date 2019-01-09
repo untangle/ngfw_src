@@ -3,7 +3,6 @@ Suricata configuration file management
 """
 import os
 import re
-import sys
 import ruamel.yaml
 from ruamel.yaml.compat import text_type
 
@@ -13,12 +12,12 @@ class SuricataConf:
     """
     file_name = "/etc/suricata/suricata.yaml"
     var_address_regex = re.compile(r'(.+|)\d+\.\d+\.\d+\.\d+')
-    
+
     def __init__(self, _debug=False):
-        """[summary]
-        
-        [description]
-        
+        """
+
+        Initialize configuration.
+
         Keyword Arguments:
             _debug {bool} -- [description] (default: {False})
         """
@@ -29,10 +28,10 @@ class SuricataConf:
         self.setup_yaml()
 
     def setup_yaml(self):
-        """[summary]
-        
+        """
+
         [description]
-        
+
         Returns:
             [type] -- [description]
         """
@@ -59,10 +58,10 @@ class SuricataConf:
         with open(SuricataConf.file_name, 'r') as stream:
             try:
                 # self.conf = yaml.load(stream)
-                self.conf = ruamel.yaml.load(stream, ruamel.yaml.RoundTripLoader, preserve_quotes=True )
+                self.conf = ruamel.yaml.load(stream, ruamel.yaml.RoundTripLoader, preserve_quotes=True)
             except ruamel.yaml.YAMLError as yaml_error:
                 print(yaml_error)
-        
+
     def save(self):
         """
         Save suricata configuration
@@ -71,21 +70,21 @@ class SuricataConf:
         with open(temp_file_name, 'w') as stream:
             try:
                 #yaml.dump(self.conf, stream, default_flow_style=False)
-                ruamel.yaml.dump(self.conf, stream=stream, Dumper=ruamel.yaml.RoundTripDumper, version=(1,1), explicit_start=True)
+                ruamel.yaml.dump(self.conf, stream=stream, Dumper=ruamel.yaml.RoundTripDumper, version=(1, 1), explicit_start=True)
                 #, Dumper=ruamel.yaml.RoundTripDumper)
             except ruamel.yaml.YAMLError as yaml_error:
                 print(yaml_error)
 
         backup_file_name = SuricataConf.file_name + ".bak"
-        if os.path.isfile(backup_file_name):        
+        if os.path.isfile(backup_file_name):
             os.remove(backup_file_name)
-        os.rename(SuricataConf.file_name,backup_file_name)
+        os.rename(SuricataConf.file_name, backup_file_name)
 
         if os.path.getsize(temp_file_name) != 0:
             os.rename(temp_file_name, SuricataConf.file_name)
             os.remove(backup_file_name)
         else:
-            os.rename(backup_file_name,SuricataConf.file_name)
+            os.rename(backup_file_name, SuricataConf.file_name)
 
     def get_variables(self):
         """
@@ -101,20 +100,20 @@ class SuricataConf:
         """
         for group in self.conf["vars"]:
             for variable in self.conf["vars"][group]:
-                 if variable == key:
+                if variable == key:
                     return self.conf["vars"][group][variable]
         return None
 
     def set_variable(self, key, value):
         """
         Set a variable's value.
-        
+
         Suricata maintains variables in groups which seems slightly excessive for our purposes.
         """
         found = False
         for group in self.conf["vars"]:
             for variable in self.conf["vars"][group]:
-                 if variable == key:
+                if variable == key:
                     self.conf["vars"][group][variable] = value
                     found = True
         if found is False:
@@ -130,7 +129,7 @@ class SuricataConf:
             # 2. address-groups: ip, ip range, or any,
             #    port-groups: port, !port, port range/list.  not any.
             if group is None:
-                match_address = re.match( self.var_address_regex, value )
+                match_address = re.match(self.var_address_regex, value)
                 if match_address:
                     group = 'address-groups'
                 else:
@@ -140,13 +139,13 @@ class SuricataConf:
 
     def set_config_from_path(self, path, value, config=None):
         """Set configuration from path
-        
+
         From a list path, walk down config to set the value.
-        
+
         Arguments:
             path {[list]} -- Path to walk
             value {[dict]} -- value to set last element
-        
+
         Keyword Arguments:
             config {[type]} -- Current position in configuration (default: {None})
         """
@@ -162,7 +161,7 @@ class SuricataConf:
                     if len(path) == 1:
                         config[key] = value
                     else:
-                        if config[key] == None and len(path[1:]) == 1:
+                        if config[key] is None and len(path[1:]) == 1:
                             config[key] = {}
                             # Bizzare hack for retaining nfq comments.
                             # The first two items refer to the comment prefix.
@@ -178,11 +177,11 @@ class SuricataConf:
     def set(self, config_path, read_path=None):
         """Set configuration from path
 
-        Build path and value used by set_config_from_path.        
-        
+        Build path and value used by set_config_from_path.
+
         Arguments:
             config_path {[dict]} -- Recursive dict where entry is a key pair.
-        
+
         Keyword Arguments:
             read_path {[list]} -- Currend read_path list (default: {None})
         """

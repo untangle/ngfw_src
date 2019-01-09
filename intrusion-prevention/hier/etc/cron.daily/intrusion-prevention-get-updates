@@ -1,28 +1,25 @@
-#!/usr/bin/python
+#!/usr/bin/python3.5
 """
 Get signature updates
 """
+import sys
 import getopt
-import json
 import os
 import re
-import sys
 import shutil
-import subprocess
 import tarfile
-import urllib2
+import requests
 
-
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
-if ( "@PREFIX@" != ''):
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
+if "@PREFIX@" != '':
     sys.path.insert(0, UNTANGLE_DIR)
-
-import uvm
+    sys.path.insert(0, UNTANGLE_DIR + "/dist-packages")
+#pylint: disable=wrong-import-position
 from uvm import Manager
 from uvm import AppManager
 from uvm import Uvm
-
 import intrusion_prevention
+#pylint: disable=wrong-import-position
 
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
@@ -42,7 +39,7 @@ class Update:
         self.working_directory = self.base_directory + "/update"
         self.signatures_working_directory = self.working_directory + "/new"
         self.url = url
-        self.signatures_file_name = self.url.split( "/" )[-1].split("?")[0]
+        self.signatures_file_name = self.url.split("/")[-1].split("?")[0]
         self.url_file_name = self.working_directory + "/" + self.signatures_file_name
         self.live_signatures_file_name = self.base_directory + "/" + self.signatures_file_name
         self.app_ids = []
@@ -52,71 +49,67 @@ class Update:
         """
         Setup working directory
         """
-        if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] ))
-            
-        if os.path.isdir( self.working_directory ) == True:
+        if self.debug is True:
+            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "cleanup and create work directories"]))
+
+        if os.path.isdir(self.working_directory) is True:
             try:
-                shutil.rmtree( self.working_directory )
+                shutil.rmtree(self.working_directory)
             except:
-                self.errors.append( {
-			        'msg': "Cannot remove existing working directory=" + self.working_directory,
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
-		        })
+                self.errors.append({
+                    'msg': "Cannot remove existing working directory=" + self.working_directory,
+                    'error': "\n".join(str(v) for v in sys.exc_info())
+                })
                 return False
-            
+
         try:
-            os.makedirs( self.working_directory )
+            os.makedirs(self.working_directory)
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Cannot create working directory=" + self.working_directory,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
 
-        uvmContext = Uvm().getUvmContext( hostname="localhost", username=None, password=None, timeout=60 )
-        self.app_manager = uvmContext.appManager()
+        uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
+        self.app_manager = uvm_context.appManager()
 
         ##
-        ## Easier to parse the api for instances than reproducing what 
+        ## Easier to parse the api for instances than reproducing what
         ## it does with object.
         ##
-        nm = AppManager(uvmContext)
-        for instance in nm.get_instances():
-            if instance[1] == "intrusion-prevention" and ( instance[3] == "RUNNING" or FORCE_SYNC):
+        for instance in AppManager(uvm_context).get_instances():
+            if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING" or FORCE_SYNC):
                 self.app_ids.append(instance[0])
-        
+
         return True
 
     def download(self):
         """
         Download
         """
-        if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get signature set" ] ))
+        if self.debug is True:
+            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "get signature set"]))
 
         ## Get file size to determine if we need to download
-        if os.path.isfile( self.live_signatures_file_name  ) == True:
-            live_signatures_file_size = os.path.getsize( self.live_signatures_file_name )
+        if os.path.isfile(self.live_signatures_file_name) is True:
+            live_signatures_file_size = os.path.getsize(self.live_signatures_file_name)
         else:
             live_signatures_file_size = 0
 
+        request = None
         try:
-            r = urllib2.Request(self.url)
-            r.get_method = lambda: 'HEAD'
-            response = urllib2.urlopen(r)
-            meta = response.info()
-            headers = meta.getheaders( "Content-length" )
+            request = requests.get(self.url)
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Cannot open url=" + self.url,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
 
-        url_file_size = int( headers[0] )
+        url_file_size = int(request.headers['content-length'])
         if url_file_size == 0:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Content length",
                 'error': "Content length is 0"
             })
@@ -124,35 +117,35 @@ class Update:
 
         if live_signatures_file_size == url_file_size:
             if self.debug:
-                print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_signatures_file_size ) ] ))
+                print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "live and url sizes are the same=" + str(live_signatures_file_size)]))
             return False
 
         try:
-            url = urllib2.urlopen( self.url )
+            url = urllib3.urlopen(self.url)
         except:
-            self.errors.append( {
-		        'msg': "Cannot open url=" + self.url,
-			    'error': "\n".join( str(v) for v in sys.exc_info() )
+            self.errors.append({
+                'msg': "Cannot open url=" + self.url,
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
-        
+
         try:
-            write_file = open( self.url_file_name, 'wb' )
+            write_file = open(self.url_file_name, 'wb')
         except:
-            self.errors.append( {
-		        'msg': "Cannot create url_file_name=" + url_file_name,
-			    'error': "\n".join( str(v) for v in sys.exc_info() )
+            self.errors.append({
+                'msg': "Cannot create url_file_name=" + self.url_file_name,
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
-        
+
         url_bytes_read = 0
         while url_bytes_read < url_file_size:
             try:
-                data = url.read( CHUNK_SIZE )
+                data = url.read(CHUNK_SIZE)
             except:
-                self.errors.append( {
-		            'msg': "Cannot read content at " + str( url_bytes_read ),
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
+                self.errors.append({
+                    'msg': "Cannot read content at " + str(url_bytes_read),
+                    'error': "\n".join(str(v) for v in sys.exc_info())
                 })
                 return False
 
@@ -161,9 +154,9 @@ class Update:
             try:
                 write_file.write(data)
             except:
-                self.errors.append( {
-		            'msg': "Cannot write content at " + str( url_bytes_read ),
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
+                self.errors.append({
+                    'msg': "Cannot write content at " + str(url_bytes_read),
+                    'error': "\n".join(str(v) for v in sys.exc_info())
                 })
                 return False
         write_file.close()
@@ -173,105 +166,105 @@ class Update:
         """
         Validate
         """
-        if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract signatures" ] ))
-            
+        if self.debug is True:
+            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "extract signatures"]))
+
         try:
-            tar = tarfile.open( self.url_file_name )
-            tar.extractall( path = self.signatures_working_directory )
+            tar = tarfile.open(self.url_file_name)
+            tar.extractall(path=self.signatures_working_directory)
             tar.close()
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Unable to extract downloaded file=" + self.url_file_name + " to signatures working directory=" + self.signatures_working_directory,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
-        
+
         return True
-    
+
     def install(self):
         """
         Install to live
         """
-        if self.debug == True:
-            print(":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] ))
-            
-        live_new_directory =  self.base_directory + "/new"
-        live_previous_directory =  self.base_directory + "/previous"
-        live_current_directory =  self.base_directory + "/current"
-            
+        if self.debug is True:
+            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "move to live"]))
+
+        live_new_directory = self.base_directory + "/new"
+        live_previous_directory = self.base_directory + "/previous"
+        live_current_directory = self.base_directory + "/current"
+
         ## Copy to live directory as "new"
-        if os.path.isdir( live_new_directory ) == True:
+        if os.path.isdir(live_new_directory) is True:
             try:
-                shutil.rmtree( live_new_directory )
+                shutil.rmtree(live_new_directory)
             except:
-                self.errors.append( {
-			        'msg': "Cannot remove existing live new directory=" + live_new_directory,
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
-		        })
+                self.errors.append({
+                    'msg': "Cannot remove existing live new directory=" + live_new_directory,
+                    'error': "\n".join(str(v) for v in sys.exc_info())
+                })
                 return False
-            
+
         try:
-            shutil.copytree( self.signatures_working_directory, live_new_directory )
+            shutil.copytree(self.signatures_working_directory, live_new_directory)
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Unable to copy tree from working directory " + self.signatures_working_directory + " to live directory " + live_new_directory,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
-        
+
         ## remove previous
-        if os.path.isdir( live_previous_directory ) == True:
+        if os.path.isdir(live_previous_directory) is True:
             try:
-                shutil.rmtree( live_previous_directory )
+                shutil.rmtree(live_previous_directory)
             except:
-                self.errors.append( {
-			        'msg': "Cannot remove existing live previous directory=" + live_previous_directory,
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
-		        })
+                self.errors.append({
+                    'msg': "Cannot remove existing live previous directory=" + live_previous_directory,
+                    'error': "\n".join(str(v) for v in sys.exc_info())
+                })
                 return False
-        
+
         ## rename current to previous
-        if os.path.isdir( live_current_directory ) == True:
+        if os.path.isdir(live_current_directory) is True:
             try:
-                shutil.move( live_current_directory, live_previous_directory )
+                shutil.move(live_current_directory, live_previous_directory)
             except:
-                self.errors.append( {
-			        'msg': "Cannot rename existing current directory " + live_current_directory + " to previous " + live_previous_directory,
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
-		        })
+                self.errors.append({
+                    'msg': "Cannot rename existing current directory " + live_current_directory + " to previous " + live_previous_directory,
+                    'error': "\n".join(str(v) for v in sys.exc_info())
+                })
                 return False
-            
+
         ## rename current.new to current
         try:
-            shutil.move( live_new_directory, live_current_directory )
+            shutil.move(live_new_directory, live_current_directory)
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Cannot rename existing new directory " + live_new_directory + " to currret " + live_current_directory,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
 
         # move tarball to live
-        if os.path.isfile( self.live_signatures_file_name ) == True:
+        if os.path.isfile(self.live_signatures_file_name) is True:
             try:
-                os.remove( self.live_signatures_file_name )
+                os.remove(self.live_signatures_file_name)
             except:
-                self.errors.append( {
-			        'msg': "Cannot remove existing live signatures file=" + self.live_signatures_file_name,
-			        'error': "\n".join( str(v) for v in sys.exc_info() )
-		        })
+                self.errors.append({
+                    'msg': "Cannot remove existing live signatures file=" + self.live_signatures_file_name,
+                    'error': "\n".join(str(v) for v in sys.exc_info())
+                })
                 return False
-        
+
         try:
-            shutil.copyfile( self.url_file_name, self.live_signatures_file_name )
+            shutil.copyfile(self.url_file_name, self.live_signatures_file_name)
         except:
-            self.errors.append( {
+            self.errors.append({
                 'msg': "Cannot copy new signatures file " + self.url_file_name + " to live " + self.live_signatures_file_name,
-                'error': "\n".join( str(v) for v in sys.exc_info() )
+                'error': "\n".join(str(v) for v in sys.exc_info())
             })
             return False
-        
+
         return True
 
     def synchronize(self):
@@ -285,7 +278,7 @@ class Update:
             changed = app.synchronizeSettingsWithDefaults() or changed
             changed = app.synchronizeSettingsWithClassifications() or changed
             changed = app.synchronizeSettingsWithVariables() or changed
-            
+
             if changed:
                 app.setSettings(app.getSettings())
 
@@ -298,7 +291,7 @@ def usage():
     print("usage")
     print("help\t\tusage")
     print("signatures_template_directory\t\tSuricata signature template directory")
-        
+
 def main(argv):
     """
     Main
@@ -309,38 +302,38 @@ def main(argv):
     url = "https://ids.untangle.com/suricatasignatures.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
     force_download = False
-	
+
     try:
         opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug", "force_download"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
-        
+
     for opt, arg in opts:
-        if opt in ( "-h", "--help"):
+        if opt in ("-h", "--help"):
             usage()
             sys.exit()
-        elif opt in ( "-d", "--debug"):
+        elif opt in ("-d", "--debug"):
             DEBUG = True
-        elif opt in ( "-s", "--force_sync"):
+        elif opt in ("-s", "--force_sync"):
             FORCE_SYNC = True
-        elif opt in ( "-s", "--force_download"):
+        elif opt in ("-s", "--force_download"):
             force_download = True
-        elif opt in ( "-r", "--signatures_template_directory"):
+        elif opt in ("-r", "--signatures_template_directory"):
             signatures_template_directory = arg
-        elif opt in ( "-u", "--url"):
+        elif opt in ("-u", "--url"):
             url = arg
 
-    if DEBUG == True:
+    if DEBUG is True:
         print("signatures_template_directory = " + signatures_template_directory)
         print("url = " + url)
 
-    update = Update( signatures_template_directory, url )
+    update = Update(signatures_template_directory, url)
     update.setup()
     if FORCE_SYNC is True:
         update.synchronize()
     else:
-        if ( force_download or len(update.app_ids) > 0 ) and update.download() == True and update.validate() and update.install():
+        if (force_download or update.app_ids) and update.download() is True and update.validate() and update.install():
             update.synchronize()
 
     """
@@ -349,14 +342,14 @@ def main(argv):
     Otherwise customers will call to complain.
     """
     if os.path.exists(update_ran_file_name):
-        os.utime(update_ran_file_name,None)
+        os.utime(update_ran_file_name, None)
     else:
-        th = open(update_ran_file_name, "a" )
-        th.close()
+        update_ran_file = open(update_ran_file_name, "a")
+        update_ran_file.close()
 
-    if len( update.errors ):
+    if update.errors:
         print(update.errors)
     sys.exit()
 
 if __name__ == "__main__":
-    main( sys.argv[1:] )
+    main(sys.argv[1:])
