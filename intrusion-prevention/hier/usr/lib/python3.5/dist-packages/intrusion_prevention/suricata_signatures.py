@@ -16,7 +16,7 @@ class SuricataSignatures:
 
     """
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
-    file_name_category_regex =re.compile(r'(/|\-)([^/\-]+)\.rules$')
+    file_name_category_regex = re.compile(r'(/|\-)([^/\-]+)\.rules$')
 
     signature_paths = ["rules", "preproc_rules", "emerging_rules"]
 
@@ -36,23 +36,23 @@ class SuricataSignatures:
             # Parse directory trees
             #
             for signature_path in SuricataSignatures.signature_paths:
-                parse_path = path + "/" + signature_path 
-                if os.path.isdir(parse_path) == False:
+                parse_path = path + "/" + signature_path
+                if os.path.isdir(parse_path) is False:
                     continue
-                for file_name in os.listdir( parse_path ):
-                    extension = os.path.splitext( file_name )[1]
+                for file_name in os.listdir(parse_path):
+                    extension = os.path.splitext(file_name)[1]
                     if extension != ".rules":
                         continue
-                    self.load_file( parse_path + "/" + file_name, signature_path )
+                    self.load_file(parse_path + "/" + file_name, signature_path)
 
-    # !! wan to remove signature path, but need to confirm that order doesn't matter.            
+    # !! wan to remove signature path, but need to confirm that order doesn't matter.
     def load_file(self, file_name, signature_path="rules"):
         """
-        Category based on "major" file name separator. 
+        Category based on "major" file name separator.
         e.g., web-cgi = web
         """
-        name = os.path.split( file_name )[1]
-        name = os.path.splitext( name )[0]
+        name = os.path.split(file_name)[1]
+        name = os.path.splitext(name)[0]
         category = name
 
         signature_count = 0
@@ -61,21 +61,21 @@ class SuricataSignatures:
         if match_file_name_category:
             category = self.format_category(match_file_name_category.group(2))
 
-        signatures_file = open( file_name )
+        signatures_file = open(file_name)
         for line in signatures_file:
             # Alternate category match from pulledpork output
-            match_category = re.search( SuricataSignatures.category_regex, line )
+            match_category = re.search(SuricataSignatures.category_regex, line)
             if match_category:
                 category = match_category.group(1)
             else:
-                ## ?? are these regexes compiled on each instance?            
-                match_signature = re.search( SuricataSignature.text_regex, line )
+                ## ?? are these regexes compiled on each instance?
+                match_signature = re.search(SuricataSignature.text_regex, line)
                 if match_signature:
-                    self.add_signature(SuricataSignature( match_signature, category, signature_path))
+                    self.add_signature(SuricataSignature(match_signature, category, signature_path))
                     signature_count = signature_count + 1
         signatures_file.close()
 
-    ## just save to passed filename            
+    ## just save to passed filename
     ### classtypes, categories, msgs don't matter!
     # def save(self, path=None, classtypes=None, categories=None, msgs=None):
     def save(self):
@@ -98,22 +98,22 @@ class SuricataSignatures:
         # signature_path = os.path.split( path )[1]
 
         temp_file_name = self.output_file_name + ".tmp"
-        signatures_file = open( temp_file_name, "w" )
+        signatures_file = open(temp_file_name, "w")
         category = "undefined"
         # ? order by category
         for signature in self.signatures.values():
             # if ( signature.get_enabled() == True ) and ( signature.path == signature_path ):
-            if ( signature.get_enabled() == True ):
+            if signature.get_enabled() is True:
                 if signature.category != category:
                     category = signature.category
                     signatures_file.write("\n\n# ---- Begin " + category + " Rules Category ----#" + "\n\n")
-                
-                signatures_file.write( signature.build() + "\n" )
+
+                signatures_file.write(signature.build() + "\n")
         signatures_file.close()
-        
-        if os.path.isfile( self.output_file_name ):
-            os.remove( self.output_file_name )
-        os.rename( temp_file_name, self.output_file_name )
+
+        if os.path.isfile(self.output_file_name):
+            os.remove(self.output_file_name)
+        os.rename(temp_file_name, self.output_file_name)
 
     def add_signature(self, signature):
         """
@@ -146,7 +146,7 @@ class SuricataSignatures:
         """
         Remove signature.
         """
-        del(self.signatures[signature_id])
+        del self.signatures[signature_id]
 
     def filter_group(self, profile, defaults_profile=None):
         """
@@ -171,7 +171,7 @@ class SuricataSignatures:
         for rid in self.signatures:
             signature = self.signatures[rid]
             # If signature was modified by user, keep those settings instead of disabling the signature.
-            if signature.match(classtypes_selected, categories_selected, signature_ids_selected) == False:
+            if signature.match(classtypes_selected, categories_selected, signature_ids_selected) is False:
                 signature_untangle_modified = False
                 if signature.options["metadata"] is not None:
                     signature_metadata = signature.get_metadata()
@@ -203,8 +203,7 @@ class SuricataSignatures:
         #           Set action on signature
         #       if rule.delete:
         #           Unset action on signature.  Unless untangle modified?  Maybe another field modifier for rules?
-        #       
-
+        # 
 
         #
         # Signature management
@@ -213,29 +212,29 @@ class SuricataSignatures:
         deleted_signature_rids = []
         modified_signature_rids = []
 
-        if previous_signatures != None:
+        if previous_signatures is not None:
             #
             # Deleted signatures: Those only in previous and not in current
-            # 
+            #
             for rid in previous_signatures.get_signatures():
-                if current_signatures.get_signatures().has_key(rid) == False:
+                if current_signatures.get_signatures().has_key(rid) is False:
                     deleted_signature_rids.append(rid)
 
         for rid in current_signatures.get_signatures():
-            if previous_signatures == None or previous_signatures.get_signatures().has_key(rid) == False:
-                # 
+            if previous_signatures is None or previous_signatures.get_signatures().has_key(rid) is False:
+                #
                 # New signatures: Only in current
                 #
                 added_signature_rids.append(rid)
-            elif previous_signatures != None and ( current_signatures.get_signatures()[rid].build() != previous_signatures.get_signatures()[rid].build() ):
+            elif previous_signatures is not None and (current_signatures.get_signatures()[rid].build() != previous_signatures.get_signatures()[rid].build()):
                 #
                 # Modified signatures: In both but different
-                # 
+                #
                 modified_signature_rids.append(rid)
 
         #
         # Remove deleted signatures
-        # 
+        #
         for rid in deleted_signature_rids:
             if self.get_signatures().has_key(rid):
                 self.delete_signature(rid)
@@ -247,39 +246,39 @@ class SuricataSignatures:
             if self.get_signatures().has_key(rid):
                 #
                 # Replace modified signature
-                # 
-                self.modify_signature( current_signatures.get_signatures()[rid], reset_signatures )
+                #
+                self.modify_signature(current_signatures.get_signatures()[rid], reset_signatures)
             else:
-                # 
+                #
                 # Add new signature
                 #
-                self.add_signature( current_signatures.get_signatures()[rid] )
+                self.add_signature(current_signatures.get_signatures()[rid])
 
                 # Variable management
                 # Only interested in adding from current set.
                 # Clearly we don't want to modify values and deletion could
                 # be problematic if a custom signature is using it.
-                # 
+                #
                 for variable in current_signatures.get_signatures()[rid].get_variables():
-                    if settings.get_variable(variable) == None:
+                    if settings.get_variable(variable) is None:
                         if variable == "HOME_NET":
                             ## Ignore HOME_NET
                             continue
 
                         definition = "default value"
                         description = "default description"
-        
+
                         for default_variable in conf.get_variables():
                             if default_variable["key"] == variable:
                                 definition = default_variable["value"]
                                 description = default_variable["description"]
                                 break
-        
-                        settings.settings["variables"]["list"].append( { 
+
+                        settings.settings["variables"]["list"].append({ 
                             "variable": variable,
                             "definition": definition,
                             "description": description
-                        } )
+                        })
 
         if ( len(added_signature_rids) > 0 and len(added_signature_rids) != len(current_signatures.get_signatures()) ) or len(modified_signature_rids) > 0 or len(deleted_signature_rids) > 0:
             #
@@ -288,9 +287,9 @@ class SuricataSignatures:
             # doesn't equal the number of initial signature population.
             #
             settings.set_updated({
-                "signatures": { 
-                    "added" : added_signature_rids, 
-                    "modified" : modified_signature_rids, 
+                "signatures": {
+                    "added" : added_signature_rids,
+                    "modified" : modified_signature_rids,
                     "deleted": deleted_signature_rids
                 }
             })
@@ -324,7 +323,17 @@ class SuricataSignatures:
                     self.modify_signature(signature)
 
     def format_category(self, category):
-        category = category.replace("_","-")
+        """
+
+        Format the category properly.
+
+        Arguments:
+            category {string} -- Category string to format.
+
+        Returns:
+            string -- formatted category
+        """
+        category = category.replace("_", "-")
         return category
 
     def get_signatures(self):
@@ -338,7 +347,7 @@ class SuricataSignatures:
         Set signatures
         """
         self.signatures = signatures
-    
+
     def get_variables(self):
         """
         Get variables

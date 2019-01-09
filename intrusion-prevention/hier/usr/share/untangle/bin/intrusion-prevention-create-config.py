@@ -1,24 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3.5
 """
 Create IPS configuration filesfrom settings
 """
-import json
-import os
 import getopt
 import sys
 import re
-from netaddr import IPNetwork
 from subprocess import call
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
-if ( "@PREFIX@" != ''):
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
+if "@PREFIX@" != '':
     sys.path.insert(0, UNTANGLE_DIR)
-
+    sys.path.insert(0, UNTANGLE_DIR + "/dist-packages")
+#pylint: disable=wrong-import-position
 from uvm.settings_reader import get_app_settings
-
 import intrusion_prevention
 from intrusion_prevention import SuricataSignature
 from intrusion_prevention import IntrusionPreventionRule
+#pylint: disable=wrong-import-position
 
 def usage():
     """
@@ -35,18 +33,18 @@ def main(argv):
     default_home_net = ""
 
     try:
-        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "home_net=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "home_net=", "debug"])
     except getopt.GetoptError as error:
         print(error)
         usage()
         sys.exit(2)
     for opt, arg in opts:
-        if opt in ( "-h", "--help"):
+        if opt in ("-h", "--help"):
             usage()
             sys.exit()
-        elif opt in ( "-d", "--debug"):
+        elif opt in ("-d", "--debug"):
             _debug = True
-        elif opt in ( "-v", "--home_net"):
+        elif opt in ("-v", "--home_net"):
             default_home_net = arg
             if default_home_net.find(",") != -1:
                 default_home_net = "[" + default_home_net + "]"
@@ -78,9 +76,9 @@ def main(argv):
         ##
         ## Add a custom new rule.
         ##
-        match_signature = re.search( SuricataSignature.text_regex, settings_signature['signature'] )
+        match_signature = re.search(SuricataSignature.text_regex, settings_signature['signature'])
         if match_signature:
-            signatures.add_signature(SuricataSignature( match_signature, settings_signature['category']))
+            signatures.add_signature(SuricataSignature(match_signature, settings_signature['category']))
 
 
     if _debug is True:
@@ -139,12 +137,12 @@ def main(argv):
     ##
     if _debug is True:
         print("Creating event map")
-    intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap( signatures )
+    intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap(signatures)
     intrusion_prevention_event_map.save()
 
     if _debug is True:
         print("Modifying suricata configuration")
-    suricata_conf = intrusion_prevention.SuricataConf( _debug=_debug )
+    suricata_conf = intrusion_prevention.SuricataConf(_debug=_debug)
 
     ##
     ## Override suricata configuration variables with settings variables
@@ -160,7 +158,7 @@ def main(argv):
             if settings_variable["value"] == "default":
                 value = "any"
 
-        suricata_conf.set_variable( name, value )
+        suricata_conf.set_variable(name, value)
 
     if "suricataSettings" in settings:
         suricata_conf.set(settings["suricataSettings"])
@@ -174,6 +172,6 @@ def main(argv):
         text_file.write("[Service]\n")
         text_file.write("Environment=\"NFQUEUE={0}\"\n".format(settings["iptablesNfqNumber"]))
     call(["systemctl", "daemon-reload"])
-    
+
 if __name__ == "__main__":
     main(sys.argv[1:])
