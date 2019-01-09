@@ -2,6 +2,7 @@
 import time
 
 import unittest
+import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
