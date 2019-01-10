@@ -39,7 +39,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 companyName: result[1],
                 system_memory: result[2],
                 settings: result[3],
-                isExpertMode: result[4]
+                isExpertMode: result[4],
+                homeNetworks: (status.homeNetworks != null ? '[' + status.homeNetworks.join(', ') + ']' : '')
             });
 
             v.setLoading('Loading signatures...'.t());
@@ -198,8 +199,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     },
 
-    regexSignatureVariable :  /^\$([A-Za-z0-9\_]+)/,
-    regexSignature: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
     isVariableUsed: function(variable) {
         var me = this, vm = this.getViewModel();
 
@@ -210,10 +209,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var signature, originalId, signatureMatches, variableMatches, j, internalId, d;
         var isUsed = false;
         vm.get('signatures').each(function(record){
-            var signatureMatches = me.regexSignature.exec( record.get('signature') );
+            var signatureMatches = Ung.apps.intrusionprevention.MainController.regexSignature.exec( record.get('signature') );
             if( signatureMatches ) {
                 for( j = 1; j < signatureMatches.length; j++ ) {
-                    variableMatches = me.regexSignatureVariable.exec( signatureMatches[j] );
+                    variableMatches = Ung.apps.intrusionprevention.MainController.regexSignatureVariable.exec( signatureMatches[j] );
                     if( variableMatches && variableMatches.shift() == '$'+variable){
                         isUsed = true;
                         return false;
@@ -322,6 +321,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     statics:{
+        // regexSignatureVariable :  /^\$([A-Za-z0-9\_]+)/,
+        regexSignatureVariable :  /\$([A-Za-z0-9\_]+)/,
+        regexSignature: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
             var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value, 0, false, false, true).get('description');
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
@@ -444,6 +447,43 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionDescription  ) + Ext.String.htmlEncode( ruleDescription  ) + '"';
             return Ext.String.htmlEncode( actionDescription );
+        },
+
+        variableProcessValue: function(name, value, vm){
+            if(value == 'default'){
+                switch(name){
+                    case 'HOME_NET':
+                        value = vm.get('homeNetworks');
+                        break;
+                    default:
+                        value = 'unknown';
+                }
+            }
+            return value;
+        },
+
+        variableValueRenderer: function(value, metaData, record, rowIdx, colIdx, store){
+            var v = this.getView(),
+                vm = v.up('apppanel').getViewModel(),
+                variablesStore = vm.get('variables'),
+                expandedValue = value,
+                resolvedRecord = null,
+                variableMatches = null,
+                resolvedValue = null;
+
+            do{
+                variableMatches = Ung.apps.intrusionprevention.MainController.regexSignatureVariable.exec( expandedValue );
+                if(variableMatches){
+                    resolvedRecord = variablesStore.findRecord('name', variableMatches[1], 0, false, false, true);
+                    if(resolvedRecord){
+                        resolvedValue = resolvedRecord.get('value');
+                        expandedValue = expandedValue.replace(variableMatches[0], Ung.apps.intrusionprevention.MainController.variableProcessValue(variableMatches[1], resolvedValue, vm));
+                    }
+                }
+            }while(variableMatches != null);
+
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( Ung.apps.intrusionprevention.MainController.variableProcessValue(record.get('name'), expandedValue, vm) ) + '"';
+            return value;
         }
 }
 });

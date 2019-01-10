@@ -34,6 +34,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
         width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'value',
+        renderer: Ung.apps.intrusionprevention.MainController.variableValueRenderer,
         editor: {
             xtype:'textfield',
             emptyText: "[enter value]".t(),
