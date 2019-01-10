@@ -108,6 +108,10 @@ public class IntrusionPreventionApp extends AppBase
 
     private List<IPMaskedAddress> homeNetworks = null;
 
+    private long statScanCurrent = 0;
+    private long statDetectCurrent = 0;
+    private long statBlockCurrent = 0;
+
     /**
      * Setup IPS application
      *
@@ -731,7 +735,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setMetricsScanCount( long value )
     {
-        this.setMetric(STAT_SCAN, value);
+        if( value < this.getMetric(STAT_SCAN).getValue() ){
+            this.statScanCurrent = this.getMetric(STAT_SCAN).getValue();
+        }
+        this.setMetric(STAT_SCAN, this.statScanCurrent + value);
     }
 
     /**
@@ -741,7 +748,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setMetricsDetectCount( long value)
     {
-        this.setMetric(STAT_DETECT, value);
+        if( value < this.getMetric(STAT_DETECT).getValue() ){
+            this.statDetectCurrent = this.getMetric(STAT_DETECT).getValue();
+        }
+        this.setMetric(STAT_DETECT, this.statDetectCurrent + value);
     }
 
     /**
@@ -751,7 +761,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setMetricsBlockCount( long value )
     {
-        this.setMetric(STAT_BLOCK, value);
+        if( value < this.getMetric(STAT_BLOCK).getValue() ){
+            this.statBlockCurrent = this.getMetric(STAT_BLOCK).getValue();
+        }
+        this.setMetric(STAT_BLOCK, this.statBlockCurrent + value);
     }
 
     /**
