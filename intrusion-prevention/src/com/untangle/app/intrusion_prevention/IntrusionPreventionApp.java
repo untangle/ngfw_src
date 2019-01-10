@@ -680,6 +680,7 @@ public class IntrusionPreventionApp extends AppBase
             status = new JSONObject();
 
             status.put("daemonReady", daemonReady);
+            status.put("homeNetworks", this.homeNetworks);
 
             String result = null;
             long timeSeconds = 0;
