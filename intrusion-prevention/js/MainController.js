@@ -404,7 +404,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         },
 
         signatureRenderer: function(value, metaData, record, rowIdx, colIdx, store){
-            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
+            if(record.build){
+                metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
+            }
             return Ext.String.htmlEncode( value );
         },
 
