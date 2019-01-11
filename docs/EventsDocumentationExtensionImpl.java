@@ -306,7 +306,7 @@ public class ExtensionImpl implements Runnable
         classSpecificAttributeDescriptions.put("SmtpMessageAddressEvent",specificDescriptions);
 
         specificDescriptions = new HashMap<String,String>();
-        specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
+        specificDescriptions.put("blocked","True if blocked, false otherwise");
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
 
         specificDescriptions = new HashMap<String,String>();
