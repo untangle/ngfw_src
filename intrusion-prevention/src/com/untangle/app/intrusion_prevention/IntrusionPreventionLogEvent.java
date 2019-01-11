@@ -33,7 +33,7 @@ public class IntrusionPreventionLogEvent extends LogEvent
 	private short protocol = 0;
 	private short impactFlag = 0;
 	private short impact = 0;
-	private short blocked = 0;
+	private boolean blocked = false;
     private long mplsLabel = 0;
     private int vlanId = 0;
     private int padding = 0;
@@ -95,8 +95,8 @@ public class IntrusionPreventionLogEvent extends LogEvent
 	public short getImpact() { return this.impact; }
 	public void setImpact(short impact) { this.impact = impact; }
 	
-	public short getBlocked() { return this.blocked; }
-	public void setBlocked(short blocked) { this.blocked = blocked; }
+	public boolean getBlocked() { return this.blocked; }
+	public void setBlocked(boolean blocked) { this.blocked = blocked; }
     
 	public long getMplsLabel() { return this.mplsLabel; }
 	public void setMplsLabel( long mplsLabel) { this.mplsLabel = mplsLabel; }
@@ -139,7 +139,7 @@ public class IntrusionPreventionLogEvent extends LogEvent
         pstmt.setObject(++i, getIpDestination().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, ( getDportIcode() & 0xffff ) );
         pstmt.setInt(++i, getProtocol() );
-        pstmt.setBoolean(++i, ( getBlocked() != 0 ) ? true : false  );
+        pstmt.setBoolean(++i, getBlocked() );
 
         pstmt.setString(++i, getCategory() );
         pstmt.setString(++i, getClasstype() );
@@ -153,7 +153,7 @@ public class IntrusionPreventionLogEvent extends LogEvent
     public String toSummaryString()
     {
         String action;
-        if ( getBlocked() == 1 ? true : false )
+        if ( getBlocked() )
             action = I18nUtil.marktr("blocked");
         else
             action = I18nUtil.marktr("detected");
