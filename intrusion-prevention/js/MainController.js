@@ -13,25 +13,35 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
+        var getSignatures = function(){};
+        var buildAllSignatures = false;
+        if(vm.get('signaturesList') == null){
+            buildAllSignatures = true;
+            getSignatures = function(){
+                return Ext.Ajax.request({
+                    url: "/admin/download",
+                    method: 'POST',
+                    params: {
+                        type: "IntrusionPreventionSettings",
+                        arg1: "signatures",
+                        arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null
+                    },
+                    timeout: 600000});
+            };
+        }
+
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getAppStatus'),
             Rpc.directPromise('rpc.companyName'),
             Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
             Rpc.asyncPromise(v.appManager, 'getSettings'),
             Rpc.directPromise('rpc.isExpertMode'),
-            function(){ return Ext.Ajax.request({
-                url: "/admin/download",
-                method: 'POST',
-                params: {
-                    type: "IntrusionPreventionSettings",
-                    arg1: "signatures",
-                    arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null
-                },
-                timeout: 600000});
-        }]).then(function(result){
+            getSignatures
+        ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }
+
             var status = result[0];
             vm.set({
                 lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
@@ -45,7 +55,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
             v.setLoading('Loading signatures...'.t());
             var dt = new Ext.util.DelayedTask( Ext.bind(function(){
-                me.buildSignatures(result[5], vm.get('settings'));
+                me.buildSignatures(result[5]);
+                v.setLoading('');
+                v.setLoading(false);
             }, me));
             dt.delay(100);
             vm.set('panel.saveDisabled', false);
@@ -59,48 +71,65 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
     },
 
-    buildSignatures: function(reserved, settings){
+    buildSignatures: function(reserved){
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         var t0 = performance.now();
         var t1 = performance.now();
         var t2 = performance.now();
 
-        var filenameRegex = new RegExp("^# filename: (emerging\-|)(.+)\.rules$");
-        var filenameStrips = ['emerging-'];
-        var matches;
-        var category;
         var signatures = [];
-        reserved.responseText.split("\n").forEach(function(line){
-            // if(category == 'attack_response'){
-            // if(category == 'games'){
-            //     return false;
-            // }
-            line = line.trim();
-            if(line){
-                // if(line.startsWith('# filename')){
-                //     console.log(line);
-                // }
-            // if(line && line != "#" && !line.startsWith("# ") && !line.startsWith("#**") ){
-                if( filenameRegex.test( line ) ){
-                    var matches = line.match(filenameRegex);
-                    if( matches ){
-                        category = matches[2];
-                        // console.log(category);
-                    }
-                }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
-                    // if(category == 'files'){
-                        // console.log(line);
-                        signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
-                    // }
-                // }else{
-                //     console.log("invalid signature:" + line);
+        if(typeof(reserved) == 'undefined'){
+            /**
+             * Rebuild using exisitng list, removing custom signatures.
+             */
+            var newSignatures = [];
+            vm.get('signaturesList').forEach( function(signature){
+                if(signature.get('default') == true){
+                    newSignatures.push(signature);
                 }
-            }
-        });
+            });
+            signatures = newSignatures;
+        }else{
+            /**
+             * Build from default signature database.
+             */
+            var filenameRegex = new RegExp("^# filename: (emerging\-|)(.+)\.rules$");
+            var filenameStrips = ['emerging-'];
+            var matches;
+            var category;
+            reserved.responseText.split("\n").forEach(function(line){
+                // if(category == 'attack_response'){
+                // if(category == 'games'){
+                //     return false;
+                // }
+                line = line.trim();
+                if(line){
+                    // if(line.startsWith('# filename')){
+                    //     console.log(line);
+                    // }
+                    // if(line && line != "#" && !line.startsWith("# ") && !line.startsWith("#**") ){
+                    if( filenameRegex.test( line ) ){
+                        var matches = line.match(filenameRegex);
+                        if( matches ){
+                            category = matches[2];
+                            // console.log(category);
+                        }
+                    }else if( Ung.model.intrusionprevention.signature.isValid( line ) ){
+                        // if(category == 'files'){
+                            // console.log(line);
+                            signatures.push(new Ung.model.intrusionprevention.signature(line, category, true));
+                        // }
+                    // }else{
+                    //     console.log("invalid signature:" + line);
+                    }
+                }
+            });
+        }
         // console.log(signatures);
         // t1 = performance.now();
         // console.log('build signatures: ' + (t1-t0));
+        // console.log(signatures.length);
 
         // Process custom signatures
         vm.get('settings.signatures.list').forEach(function(settingsSignature){
@@ -124,9 +153,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
         });
-        v.setLoading(false);
-
-        // console.log('buildSignatures complete');
     },
 
     setSettings: function (additionalChanged) {
@@ -186,7 +212,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
-        //             v.down('appstate').getController().reload();
             me.getSettings();
             Ext.fireEvent('resetfields', v);
         }, function(ex) {
