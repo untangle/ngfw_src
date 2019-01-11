@@ -30,7 +30,7 @@ class SuricataSignature:
         self.category = category
         self.path = path
         self.custom = path is None
-        if match.group(1) > 0 and (match.group(1)[0] == "#"):
+        if match.group(1) and (match.group(1)[0] == "#"):
             self.enabled = False
         else:
             self.enabled = True
