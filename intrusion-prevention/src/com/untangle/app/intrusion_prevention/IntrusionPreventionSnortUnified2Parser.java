@@ -430,7 +430,7 @@ public class IntrusionPreventionSnortUnified2Parser
         // ipsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
         // pos += IDS_EVENT_IMPACT_SIZE;
         //
-		ipsEvent.setBlocked( (short) bufIdsEvent.get( pos ) );
+		ipsEvent.setBlocked( bufIdsEvent.get( pos ) != 0 ? true : false );
         pos += IDS_EVENT_BLOCKED_SIZE;
   
         if( ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2 ) ||
