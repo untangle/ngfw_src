@@ -1493,8 +1493,8 @@
     fields: [
         {
         name: "blocked",
-        type: "short",
-        description: "1 if blocked, 0 otherwise",
+        type: "boolean",
+        description: "True if blocked, False otherwise",
         },
         {
         name: "category",
