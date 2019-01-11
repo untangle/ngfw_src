@@ -21,7 +21,7 @@ class IntrusionPreventionRule:
     def __init__(self, settingsRule):
         self.rule = settingsRule
 
-        if IntrusionPreventionRule.global_values is None:
+        if not IntrusionPreventionRule.global_values:
             IntrusionPreventionRule.build_global_values()
 
     @staticmethod
@@ -116,7 +116,7 @@ class IntrusionPreventionRule:
             elif condition["type"] == "DST_PORT":
                 match = self.matches_port(signature.rport.lower(), comparator, target_value.lower())
             elif condition["type"] == "SYSTEM_MEMORY":
-                match = self.matches_numeric(int(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"]), comparator, int(target_value))
+                match = self.matches_numeric(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"], comparator, int(target_value))
             elif condition["type"] == "SIGNATURE":
                 match = self.matches_text(signature.build().lower(), comparator, target_value.lower())
             elif condition["type"] == "CUSTOM":
