@@ -682,7 +682,11 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                                 break;
                             case 'value':
                                 if(view.conditions[conditionName].values){
-                                    record.set(field.name, view.conditions[conditionName].values[0]);
+                                    if(typeof(view.conditions[conditionName].values[0]) == 'object'){
+                                        record.set(field.name, view.conditions[conditionName].values[0][0]);
+                                    }else{
+                                        record.set(field.name, view.conditions[conditionName].values[0]);
+                                    }
                                 }
                                 break;
                         }
