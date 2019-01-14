@@ -371,15 +371,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 context.setCredentialsProvider(credsProvider);
 
                 try {
-
                     String url = "https://dl.zvelo.com/oem/dia.key";
                     logger.debug("Fetch URL: \"" + url + "\"");
                     HttpGet get = new HttpGet(url);
                     response = httpClient.execute(get, context);
+                    logger.debug("Fetched URL: \"" + url + "\"");
 
                     if (response != null && response.getStatusLine().getStatusCode() == 200) {
                         String s = EntityUtils.toString(response.getEntity(), "UTF-8");
                         s = s.trim();
+                        logger.debug("DIA key response: " + s);
 
                         if (s.toUpperCase().startsWith("ERROR")) {
                             logger.warn("Could not get a dia key: " + s.substring(0, 10));
@@ -568,8 +569,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
                         if (resultStr.startsWith("FAILURE:") || resultStr.startsWith("REFUSED:")) {
                             synchronized (this) {
                                 failures++;
-                                if (failures > 15) {
-                                    logger.warn("15 fails with key: " + diaKey);
+                                if (failures > 1000) {
+                                    logger.warn("1000 fails with key: " + diaKey);
                                     diaKey = null;
                                 }
                             }
