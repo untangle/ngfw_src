@@ -9,7 +9,7 @@
     "orderDesc": false,
     "units": "bytes",
     "pieGroupColumn": "tunnel_name",
-    "pieSumColumn": "sum(in_bytes::int + out_bytes::int)",
+    "pieSumColumn": "sum(in_bytes + out_bytes)",
     "readOnly": true,
     "table": "tunnel_vpn_stats",
     "title": "Top Tunnel Traffic",
