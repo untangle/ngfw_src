@@ -9,9 +9,9 @@
     "units": "bytes",
     "readOnly": true,
     "table": "tunnel_vpn_stats",
-"timeDataColumns": [
-        "sum(in_bytes::int) as recv",
-        "sum(out_bytes::int) as xmit"
+    "timeDataColumns": [
+        "sum(in_bytes) as recv",
+        "sum(out_bytes) as xmit"
     ],
     "colors": [
         "#396c2b",
