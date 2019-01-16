@@ -322,16 +322,16 @@ class DhcpMonitor implements Runnable
          * Lookup the host entry for this IP and check the mac address.
          * If it has changed go ahead and forget all state about that host.
          */
-        HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( ip );
-        //DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( mac );
-        if ( hostEntry != null ) {
-            String currentMac = hostEntry.getMacAddress();
-            if ( currentMac != null && !currentMac.equals("") ) {
-                if ( !currentMac.equals( mac ) ) {
-                    logger.warn("Host " + ip + " changed MAC address " + currentMac + " -> " + mac + ". Deleting host entry...");
-                    UvmContextFactory.context().hostTable().removeHostTableEntry( ip );
-                }
-            }
-        }
+        // HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( ip );
+        // //DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( mac );
+        // if ( hostEntry != null ) {
+        //     String currentMac = hostEntry.getMacAddress();
+        //     if ( currentMac != null && !currentMac.equals("") ) {
+        //         if ( !currentMac.equals( mac ) ) {
+        //             logger.warn("Host " + ip + " changed MAC address " + currentMac + " -> " + mac + ". Deleting host entry...");
+        //             UvmContextFactory.context().hostTable().removeHostTableEntry( ip );
+        //         }
+        //     }
+        // }
     }
 }
