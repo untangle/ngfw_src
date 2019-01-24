@@ -154,7 +154,7 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
         iperfRunning = remote_control.run_command("pidof iperf", host=receiverip)
 
     lines = report.split("\n")
-    udp_speed = None
+    udp_speed = 0
     for line in lines:
         if '%' in line: # results line contains a '%'
             match = re.search(r'([0-9.]+) ([KM])Bytes/sec', line)
