@@ -657,9 +657,9 @@ public class CertificateManagerImpl implements CertificateManager
         int keyLen = 0;
 
         // make sure all of the strings passed have a trailing newline character
-        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData.concat("\n");
-        if ((keyData.length() > 0) && (!keyData.endsWith("\n"))) keyData.concat("\n");
-        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData.concat("\n");
+        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
+        if ((keyData.length() > 0) && (!keyData.endsWith("\n"))) keyData = keyData.concat("\n");
+        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
 
         int certTop = certData.indexOf(MARKER_CERT_HEAD);
         int certEnd = certData.indexOf(MARKER_CERT_TAIL);
@@ -797,8 +797,8 @@ public class CertificateManagerImpl implements CertificateManager
         int keyLen = 0;
 
         // make sure all of the strings passed have a trailing newline character
-        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData.concat("\n");
-        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData.concat("\n");
+        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
+        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
 
         int certTop = certData.indexOf(MARKER_CERT_HEAD);
         int certEnd = certData.indexOf(MARKER_CERT_TAIL);
