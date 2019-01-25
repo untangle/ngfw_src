@@ -90,10 +90,11 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
 
 def configureVPNClientForConnection(clientLink):
     "download client config from passed link, unzip, and copy to correct location"
+    result = 1
     #download config
     subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost" + clientLink + " -O /tmp/clientconfig.zip", shell=True)
     #copy config to remote host
-    subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/dist-packages/tests/test_shell.key /tmp/clientconfig.zip testshell@" + global_functions.VPN_CLIENT_IP + ":/tmp/>/dev/null 2>&1", shell=True)
+    subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + remote_control.host_key_file + " /tmp/clientconfig.zip testshell@" + global_functions.VPN_CLIENT_IP + ":/tmp/>/dev/null 2>&1", shell=True)
     #unzip files
     unzipFiles = remote_control.run_command("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.VPN_CLIENT_IP)
     #remove any existing openvpn config files
@@ -105,6 +106,7 @@ def configureVPNClientForConnection(clientLink):
     return result
 
 def createLocalDirectoryUser():
+    passwd_encoded = base64.b64encode(ovpnPasswd.encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList', 
         'list': [{
             'username': ovpnlocaluser, 
@@ -112,7 +114,7 @@ def createLocalDirectoryUser():
             'lastName': 'OVPNlname', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
             'expirationTime': 0, 
-            'passwordBase64Hash': base64.b64encode(ovpnPasswd),
+            'passwordBase64Hash': passwd_encoded.decode("utf-8"),
             'email': 'test@example.com'
             },]
     }
