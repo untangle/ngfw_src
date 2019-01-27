@@ -330,7 +330,7 @@ def get_live_account_info(accounttype):
     # remove old file if it exist
     account_url = "http://" + ACCOUNT_FILE_SERVER + "/account_login.json"
     response = urllib.request.urlopen(account_url)
-    accounts = json.loads(response.read())
+    accounts = json.loads((response.read()).decode("utf-8"))
 
     for account in accounts: #i is each student's name, class, and number
         if account[0] == accounttype:
