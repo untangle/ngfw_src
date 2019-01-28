@@ -20,6 +20,8 @@ public class IntrusionPreventionRule implements Serializable, JSONString
     private String description = "";
     private Boolean enabled = false;
     private String id = "unid";
+    private String sourceNetworks = "recommended";
+    private String destinationNetworks = "recommended";
 
     public IntrusionPreventionRule() { }
 
@@ -46,6 +48,12 @@ public class IntrusionPreventionRule implements Serializable, JSONString
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public String getSourceNetworks() { return sourceNetworks; }
+    public void setSourceNetworks(String sourceNetworks) { this.sourceNetworks = sourceNetworks; }
+
+    public String getDestinationNetworks() { return destinationNetworks; }
+    public void setDestinationNetworks(String destinationNetworks) { this.destinationNetworks = destinationNetworks; }
 
     public String toJSONString()
     {
