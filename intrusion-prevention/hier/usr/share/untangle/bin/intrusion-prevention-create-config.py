@@ -92,6 +92,17 @@ def main(argv):
         rules.append(IntrusionPreventionRule(settings_rule))
 
     ##
+    ## Network rules
+    ##
+    for signature in signatures.get_signatures().values():
+        for rule in rules:
+            if not rule.get_enabled():
+                continue
+            if rule.matches(signature) and rule.get_action() == "whitelist":
+                rule.add_signature_network("source", signature, True)
+                rule.add_signature_network("destination", signature, True)
+
+    ##
     ## Process rules in order.
     ##
     for signature in signatures.get_signatures().values():
@@ -99,9 +110,10 @@ def main(argv):
             if not rule.get_enabled():
                 continue
             if rule.matches(signature):
-                rule.set_signature_action(signature)
-                # break from rest of rules - action is taken from the first matching rule
-                break
+                if rule.get_action() != "whitelist":
+                    rule.set_signature_action(signature)
+                    break
+
 
     ##
     ## Disable signatures not modified by any rule.
