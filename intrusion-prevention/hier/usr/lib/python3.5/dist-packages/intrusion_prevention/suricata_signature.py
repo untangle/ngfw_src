@@ -1,6 +1,7 @@
 """
 Suricata signature
 """
+import copy
 import re
 
 class SuricataSignature:
@@ -9,6 +10,7 @@ class SuricataSignature:
     """
     text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
     var_regex = re.compile(r'^\$(.+)')
+    custom_gid = 2400
 
     options_key_regexes = {}
 
@@ -23,6 +25,7 @@ class SuricataSignature:
     }]
 
     action_changed = False
+    network_changed = False
 
     block_action = "reject"
 
@@ -68,9 +71,29 @@ class SuricataSignature:
                         in_quote = True
                     self.options[key] = value.strip()
 
-        self.signature_id = self.options["sid"] + "_" + self.options["gid"]
+        # self.signature_id = self.options["sid"] + "_" + self.options["gid"]
+        self.update_signature_id()
 
         self.initial_action = self.get_action()
+
+    def copy(self):
+        """
+
+        Return a copy of this signature
+
+        Returns:
+            signature -- Copy of this signature
+        """
+        new_signature =  copy.deepcopy(self)
+
+        gid = int(new_signature.get_gid())
+        if gid < SuricataSignature.custom_gid:
+            gid = SuricataSignature.custom_gid
+        else:
+            gid += 1
+        new_signature.set_gid(str(gid))
+
+        return new_signature
 
     def dump(self):
         """
@@ -131,6 +154,23 @@ class SuricataSignature:
         """
         return self.action_changed
 
+    def set_lnet(self, lnet):
+        self.lnet = lnet
+        self.network_changed = True
+
+    def get_lnet(self):
+        return self.lnet
+
+    def set_rnet(self, rnet):
+        self.rnet = rnet
+        self.network_changed = True
+
+    def get_rnet(self):
+        return self.rnet
+
+    def get_network_changed(self):
+        return self.network_changed
+
     def set_options(self, key, value):
         """
         Set options on key with value
@@ -175,22 +215,42 @@ class SuricataSignature:
 
     def set_sid(self, sid):
         """
-        Set sid
+        Get sid
         """
         self.set_options("sid", sid)
+        self.update_signature_id()
 
     def get_sid(self):
         """
-        Set sid
+        Get sid
         """
         return self.get_options("sid")
 
+    def set_gid(self, gid):
+        """
+        Set gid
+        """
+        self.set_options("gid", gid)
+        self.update_signature_id()
+
     def get_gid(self):
         """
-        Set sid
+        Get gid
         """
         return self.get_options("gid")
 
+    def get_signature_id(self):
+        """
+        Get signature id
+        """
+        return self.signature_id
+
+
+    def update_signature_id(self):
+        """
+        Set signature id
+        """
+        self.signature_id = self.options["sid"] + "_" + self.options["gid"]
 
     def set_classtype(self, classtype):
         """

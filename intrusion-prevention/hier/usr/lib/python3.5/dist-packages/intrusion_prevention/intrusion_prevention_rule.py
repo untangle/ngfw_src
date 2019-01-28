@@ -342,3 +342,36 @@ class IntrusionPreventionRule:
             signature.set_action(True, True)
         elif self.rule["action"] == "disable":
             signature.set_action(False, False)
+
+    def add_signature_network(self, source_type, signature, negate=False):
+        """
+
+        Modify networks on target signature with rules.
+
+        Arguments:
+            source_type -- Network target source or destinatiion
+            signature -- signature to modify
+        """
+        if self.rule[source_type + "Networks"] != "recommended":
+            network = None
+            if source_type == "source":
+                network = signature.get_lnet()
+            else:
+                network = signature.get_rnet()
+
+            if network.find('[') > -1:
+                network = network[network.find('[')+1:network.rfind(']')]
+
+            add_network = self.rule[source_type+"Networks"]
+            if negate is True:
+                add_network = '!'+add_network
+
+            if network == "any":
+                network = add_network
+            else:
+                network = "[{0},{1}]".format(network, add_network)
+
+            if source_type == "source":
+                signature.set_lnet(network)
+            else:
+                signature.set_rnet(network)
