@@ -16,7 +16,11 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             rules: {
                 storeId: 'rulesStore',
                 model: 'Ung.model.intrusionprevention.rule',
-                data: '{settings.rules.list}'
+                data: '{settings.rules.list}',
+                listeners:{
+                    update: 'rulesChanged',
+                    datachanged: 'rulesChanged'
+                }
             },
             signatures: {
                 storeId: 'signaturesStore',
@@ -58,9 +62,18 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'variable',
                     direction: 'ASC'
                 }],
-                // listeners:{
-                //     datachanged: 'storeDataChanged'
-                // }
+                listeners:{
+                    update: 'variablesChanged',
+                    datachanged: 'variablesChanged'
+                }
+            },
+            networkVariables: {
+                fields: [{
+                    name: 'value'
+                },{
+                    name: 'description'
+                }],
+                data: '{networkVariablesList}'
             }
         }
     },
@@ -97,10 +110,18 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                 [ 'log', 'Enable Log'.t() ],
                 [ 'blocklog', 'Enable Block if Recommended is Enabled'.t() ],
                 [ 'block', 'Enable Block'.t()],
-                [ 'disable', 'Disable'.t() ]
+                [ 'disable', 'Disable'.t() ],
+                [ 'whitelist', 'Whitelist'.t() ]
             ]
         }),
 
+        actionNetworks: [{
+            label: 'Match source networks'.t(),
+            key: 'sourceNetworks' 
+        },{
+            label: 'Match destination networks'.t(),
+            key: 'destinationNetworks'
+        }],
         actionRenderer: function(value, meta, record){
             return record.get('description');
         },

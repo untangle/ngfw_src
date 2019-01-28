@@ -50,11 +50,13 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 system_memory: result[2],
                 settings: result[3],
                 isExpertMode: result[4],
-                homeNetworks: (status.homeNetworks != null ? '[' + status.homeNetworks.join(', ') + ']' : '')
+                homeNetworks: (status.homeNetworks != null ? '[' + status.homeNetworks.join(', ') + ']' : ''),
+                defaultNetwork: (status.homeNetworks != null ? status.homeNetworks[0] : '192.168.1.0/24')
             });
 
             v.setLoading('Loading signatures...'.t());
             var dt = new Ext.util.DelayedTask( Ext.bind(function(){
+                me.buildVariables();
                 me.buildSignatures(result[5]);
                 v.setLoading('');
                 v.setLoading(false);
@@ -69,6 +71,27 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
             Util.handleException(ex);
         });
+    },
+
+    buildVariables: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        var networkVariablesList = [{
+            value: 'recommended', 
+            description: 'Recommended'.t() 
+        }];
+
+        vm.get('variables').each( function(variable){
+            var value = Ung.apps.intrusionprevention.MainController.variableValueResolve.call(me, variable);
+            if(Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(value)){
+                networkVariablesList.push({
+                    value: '$' + variable.get('name'),
+                    description: Ext.String.format( '{0} - {1}', variable.get('name'), variable.get('value')),
+                    detail: value
+                });
+            }
+        });
+        vm.set('networkVariablesList', networkVariablesList);
     },
 
     buildSignatures: function(reserved){
@@ -232,24 +255,58 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }
 
         var signature, originalId, signatureMatches, variableMatches, j, internalId, d;
-        var isUsed = false;
+        // var isUsed = false;
+        var isUsed = {};
+
         vm.get('signatures').each(function(record){
             var signatureMatches = Ung.apps.intrusionprevention.MainController.regexSignature.exec( record.get('signature') );
             if( signatureMatches ) {
                 for( j = 1; j < signatureMatches.length; j++ ) {
                     variableMatches = Ung.apps.intrusionprevention.MainController.regexSignatureVariable.exec( signatureMatches[j] );
                     if( variableMatches && variableMatches.shift() == '$'+variable){
-                        isUsed = true;
-                        return false;
+                        // isUsed = true;
+                        if(!('signatures' in isUsed)){
+                            isUsed['signatures'] = [];
+                        }
+                        // isUsed['signatures'].push(record.get('id'));
+                        isUsed['signatures'].push(record);
+                        // return false;
                     }
                 }
             }
-
         });
+
+        vm.get('rules').each(function(rule){
+            if(rule.get('action') == 'whitelist'){
+                if( rule.get('sourceNetworks') == '$'+variable || 
+                    rule.get('destinationNetworks') == '$'+variable){
+                    if(!('rules' in isUsed)){
+                        isUsed['rules'] = [];
+                    }
+                    // isUsed['rules'].push(rule.get('id'));
+                    isUsed['rules'].push(rule);
+                }
+            }
+        });
+
         return isUsed;
     },
 
+    rulesChanged: function(store, record, action, recordActions, data){
+        console.log('rulesChanges');
+        this.getViewModel().get('signatures').each(function(signature){
+            var matchingRules = signature.get('matchingRules'); 
+            var index = matchingRules.indexOf(record);
+            if(index != -1){
+                matchingRules.splice(index, 1);
+                signature.set('matchingRules', matchingRules);
+            }
+        });
+        this.getView().down('[itemId=signatures]').getView().refresh();
+    },
+
     signaturesChanged: function(store){
+        console.log('signaturesChanged');
         var me = this,
             vm = this.getViewModel();
 
@@ -270,6 +327,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
         }, me) );
         me.watchSignatureStoreTask.delay( 500 );
+    },
+
+    variablesChanged: function(store){
+        this.buildVariables();
+        this.getView().down('[itemId=rules]').getView().refresh();
     },
 
     /**
@@ -313,13 +375,19 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         signatures.each( function(signature){
             signatureRecommendedAction = signature.get('recommendedAction');
             if(!matchRule){
-                signature.data['ruleAction'] = 'disable';
-                signature.data['ruleMatch'] = 'disable';
+                // signature.data['ruleAction'] = 'disable';
+                //signature.data['ruleMatch'] = 'disable';
+                signature.data['matchingRules'] = [];
             }
             rules.each(function(rule){
                 if(rule.get('enabled')){
+                    var action = rule.get('action');
+
                     if(rule.matchSignature(signature, conditions, vm) == true){
-                        var action = rule.get('action');
+                        if(action == 'whitelist'){
+                            signature.data['matchingRules'].push(rule);
+                            return true;
+                        }
                         if(action == 'default'){
                             action = signatureRecommendedAction;
                         }
@@ -327,17 +395,20 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                             action = ( signatureRecommendedAction == 'log' || signatureRecommendedAction == 'block') ? 'block' : 'disable';
                         }
                         if(!matchRule){
-                            signature.data['ruleAction'] = action;
-                            signature.data['ruleMatch'] = rule.get('id');
+                            // signature.data['ruleAction'] = action;
+                            //signature.data['ruleMatch'] = rule.get('id');
+                            signature.data['matchingRules'].push(rule);
                         }
                         status[action][signature.get('id')] = true;
                         return false;
                     }
                 }
             });
-            if(!matchRule && signature.data['ruleAction'] == 'disable'){
-                status['disable'][signature.get('id')] = true;
-            }
+
+            // !!! change to look at rules with non whitelist
+            // if(!matchRule && signature.data['ruleAction'] == 'disable'){
+            //     status['disable'][signature.get('id')] = true;
+            // }
         }, this, true);
         // console.log(performance.now()- t0);
         // console.log(status);
@@ -351,9 +422,34 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         regexSignature: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
 
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
-            var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value, 0, false, false, true).get('description');
-            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
-            return displayValue;
+            // var displayValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value, 0, false, false, true).get('description');
+            // meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( displayValue ) + '"';
+            // return displayValue;
+            var me = this;
+
+            var variableStore = me.getView().up('apppanel').getViewModel().get('variables');
+
+            var actionValue = Ung.apps.intrusionprevention.Main.ruleActions.findRecord('value', value, 0, false, false, true).get('description');
+            var summarySuffix = '';
+            var detailSuffix = '';
+            if( value == 'whitelist' ){
+                var summaryEntries = [];
+                var detailEntries = [];
+                Ung.apps.intrusionprevention.Main.actionNetworks.forEach( function(network){
+                    var value = record.get(network['key']);
+                    if(value == 'recommended'){
+                        summaryEntries.push('Recommended'.t());
+                        detailEntries.push('Recommended'.t());
+                    }else{
+                        summaryEntries.push(network['label'] + ': !' + value);
+                        detailEntries.push(network['label'] + ': !' + Ung.apps.intrusionprevention.MainController.variableValueResolve.call(me, variableStore.findRecord('name', value.substr(1), 0, false, false, true)));
+                    }
+                });
+                summarySuffix = ' [' + summaryEntries.join(', ') + ']';
+                detailSuffix = ' [' + detailEntries.join(', ') + ']';
+            }
+            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( actionValue + detailSuffix ) + '"';
+            return actionValue + summarySuffix;
         },
 
         idRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
@@ -451,7 +547,14 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var actionDescription = value;
             var ruleDescription = '';
 
-            rule = v.up('apppanel').getViewModel().get('rules').findRecord('id', value, 0, false, false, true);
+            var rule = null;
+            record.get('matchingRules').forEach( function(matchingRule){
+                if(matchingRule.get('action') != 'whitelist'){
+                    rule = matchingRule;
+                    return false;
+                }
+            } );
+
             if(rule != null){
                 var ruleAction = rule.get('action');
                 var signatureRecommendedAction = record.get('recommendedAction');
@@ -476,7 +579,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             return Ext.String.htmlEncode( actionDescription );
         },
 
-        variableProcessValue: function(name, value, vm){
+        variableProcessValue: function(name, value){
+            var vm = (this.getView().up('apppanel') || this.getView()).getViewModel();
+
             if(value == 'default'){
                 switch(name){
                     case 'HOME_NET':
@@ -489,11 +594,10 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             return value;
         },
 
-        variableValueRenderer: function(value, metaData, record, rowIdx, colIdx, store){
-            var v = this.getView(),
-                vm = v.up('apppanel').getViewModel(),
+        variableValueResolve: function(record){
+            var vm = (this.getView().up('apppanel') || this.getView()).getViewModel(),
                 variablesStore = vm.get('variables'),
-                expandedValue = value,
+                expandedValue = record.get('value'),
                 resolvedRecord = null,
                 variableMatches = null,
                 resolvedValue = null;
@@ -504,12 +608,16 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     resolvedRecord = variablesStore.findRecord('name', variableMatches[1], 0, false, false, true);
                     if(resolvedRecord){
                         resolvedValue = resolvedRecord.get('value');
-                        expandedValue = expandedValue.replace(variableMatches[0], Ung.apps.intrusionprevention.MainController.variableProcessValue(variableMatches[1], resolvedValue, vm));
+                        expandedValue = expandedValue.replace(variableMatches[0], Ung.apps.intrusionprevention.MainController.variableProcessValue.call(this, variableMatches[1], resolvedValue));
                     }
                 }
             }while(variableMatches != null);
 
-            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( Ung.apps.intrusionprevention.MainController.variableProcessValue(record.get('name'), expandedValue, vm) ) + '"';
+            return Ung.apps.intrusionprevention.MainController.variableProcessValue.call(this, record.get('name'), expandedValue);
+        },
+
+        variableValueRenderer: function(value, metaData, record, rowIdx, colIdx, store){
+            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( Ung.apps.intrusionprevention.MainController.variableValueResolve.call(this, record) ) + '"';
             return value;
         }
 }
@@ -518,6 +626,25 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.unintrusionrulegrid',
+
+    // !!! need to run on grid initializer
+    processRuleSignature: function(record){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel(),
+            signatures = vm.get('signatures');
+        console.log('processRule');
+        console.log(record);
+        console.log(signatures);
+        // foreach signature:
+        // if networks != recommended (or new flag to indicate signature change):
+        //      Lookup rule in signatures.
+        //      Perform deep copy
+        //      set "rule generated signature" flag.
+        //      Modify signature as appropriate but keep default flag.
+        //      
+        this.getView().up('apppanel').getController().signaturesChanged();
+    },
 
     getConditions: function(){
         var conditions = {};
@@ -541,7 +668,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
     onDragDrop: function(){
         this.getView().up('apppanel').getController().signaturesChanged();
-    }
+    },
+
+    // deleteRecord: function(view, rowIndex, colIndex, item, e, record){
+    //     this.processRule(record);
+    //     this.callParent(arguments);
+    // }
+
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
@@ -553,7 +686,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     doDestroy: function(){
         var masterGrid = this.getController().masterGrid;
         this.callParent();
-        masterGrid.up('apppanel').getController().signaturesChanged();
+        // delete using rule id lookup.
+        //masterGrid.up('apppanel').getController().signaturesChanged();
+        // console.log(this);
+        // console.log(this.getController());
+        //masterGrid.getController().processRuleSignature(this.record);
     }
 
 });
@@ -1196,8 +1333,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
         me.setValidation(true);
 
         var activeVariable = v.up('app-intrusion-prevention').getController().isVariableUsed(newValue);
-        me.setReadOnly(activeVariable);
-        me.up("").down("[name=activeVariable]").setVisible(activeVariable);
+        if(!Ext.Object.isEmpty(v.up('app-intrusion-prevention').getController().isVariableUsed(newValue))){
+            me.setReadOnly(true);
+            me.up("").down("[name=activeVariable]").setVisible(true);
+        }else{
+            me.setReadOnly(false);
+            me.up("").down("[name=activeVariable]").setVisible(false);
+        }
     }
 
 });
@@ -1234,8 +1376,29 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
     },
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
-        if( this.getView().up('app-intrusion-prevention').getController().isVariableUsed( record.get('name') ) ){
-            Ext.MessageBox.alert( "Cannot Delete Variable".t(), "Variable is used by one or more signatures.".t() );
+        var isUsed = this.getView().up('app-intrusion-prevention').getController().isVariableUsed( record.get('name') );
+        if( !Ext.Object.isEmpty(isUsed)){
+            var messages = [];
+            if('rules' in isUsed){
+                isUsed['rules'].forEach( function(rule){
+                    messages.push(Ext.String.format( '{0}Rule:{1} {0}{1}{2}'.t(), '<b>', '</b>', rule.get('description') ));
+                });
+            }
+            if('signatures' in isUsed){
+                var maxShow = 5;
+                var remaining = isUsed['signatures'].length - maxShow; 
+                Ext.Array.each(isUsed['signatures'], function(signature){
+                    messages.push(Ext.String.format( '{0}Signature:{1} {0}{1}{2}'.t(), '<b>', '</b>', signature.build()));
+                    maxShow--;
+                    if(!maxShow){
+                        return false;
+                    }
+                });
+                if(remaining){
+                    messages.push(Ext.String.format('{0} more affected signatures...'.t(), remaining));
+                }
+            }
+            Ext.MessageBox.alert( Ext.String.format("Cannot Delete Variable {0}".t(), record.get('name')), "Variable in use:".t() + "<ul>" + '<li>'+messages.join("<li>") + "</ul>");
         }else{
             if (record.get('markedForNew')) {
                 record.drop();
@@ -1284,12 +1447,14 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     },{
         name: 'recommendedAction',
         type: 'string'
+    // },{
+    //     name: 'ruleAction',
+    //     type: 'string'
+    // },{
+    //     name: 'ruleMatch',
+    //     type: 'string'
     },{
-        name: 'ruleAction',
-        type: 'string'
-    },{
-        name: 'ruleMatch',
-        type: 'string'
+        name: 'matchingRules'
     },{
         name: 'sid',
         type: 'string'
@@ -1305,6 +1470,9 @@ Ext.define('Ung.model.intrusionprevention.signature',{
     },{
         name: 'defaultSignature',
         type: 'string'
+    },{
+        name: 'networkChanged',
+        type: 'boolean'
     }],
 
     optionsMapIndexes: {},
@@ -1326,10 +1494,12 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 options: [],
                 category: category,
                 recommendedAction: 'log',
-                ruleAction: 'disable',
-                ruleMatch: 'disable',
+                // ruleAction: 'disable',
+                // ruleMatch: 'disable',
+                matchingRules: [],
                 sid: '1',
-                gid: '1'
+                gid: '1',
+                networkChanged: false
             };
 
             var action = 'alert';
@@ -1408,6 +1578,8 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                     me.setOption(option.name, newValue);
                 }
             });
+        }else if(fieldName == 'lnet' || fieldName == 'rnet'){
+            me.set('networkChanged', true);
         }
 
         return result;
@@ -1488,6 +1660,7 @@ Ext.define('Ung.model.intrusionprevention.signature',{
         }
     },
 
+    // option to build as recommmended and with rule
     build: function(){
         var me = this;
 
@@ -1499,17 +1672,46 @@ Ext.define('Ung.model.intrusionprevention.signature',{
             signatureAction = '#' + signatureAction;
         }
 
+        // Modify lnet/rnet if whitelist rule attached
+        var lnet = this.get('lnet');
+        var rnet = this.get('rnet');
+        this.get('matchingRules').forEach( function(rule){
+            if(rule.get('action') == 'whitelist'){
+                lnet = rule.addSignatureNetwork("source", lnet, true);
+                rnet = rule.addSignatureNetwork("destination", rnet, true);
+            }
+        });
+
         return signatureAction + " " +
             (this.get('protocol') ? this.get('protocol') + ' ' : '') +
-            (this.get('lnet') ? this.get('lnet') + ' ' : '') +
+            (this.get('lnet') ? lnet + ' ' : '') +
             (this.get('lport') ? this.get('lport') + ' ' : '') +
             (this.get('direction') ? this.get('direction') + ' ' : '') +
-            (this.get('rnet') ? this.get('rnet') + ' ' : '') +
+            (this.get('rnet') ? rnet + ' ' : '') +
             (this.get('rport') ? this.get('rport') + ' ' : '') +
             "(" + this.get('options').join(';') + ")";
     },
+
+    copy: function(){
+        var newSignature = new Ung.model.intrusionprevention.signature(this.build(), this.get('category'), this.get('reserved'));
+        Ext.Object.merge(newSignature.data, this.data);
+
+        var gid = parseInt(newSignature.get('gid'), 10);
+        if( gid < Ung.model.intrusionprevention.signature.customGid){
+            gid = Ung.model.intrusionprevention.signature.customGid;
+        }else{
+            gid += 1;
+        }
+        newSignature.set('gid', gid.toString());
+        newSignature.setId();
+
+        // Somethng about id?
+
+        return newSignature;
+    },
     
     statics:{
+        customGid: 2400,
         signatureRegex: /^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|<>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)/,
         optionsMap: [{
             name: 'gid',
@@ -1556,7 +1758,21 @@ Ext.define('Ung.model.intrusionprevention.rule',{
     },{
         name: 'id',
         type: 'string'
+    },{
+        name: 'sourceNetworks',
+        type: 'string',
+        defaultValue: 'recommended'
+    },{
+        name: 'destinationNetworks',
+        type: 'string',
+        defaultValue: 'recommended'
     }],
+
+    hasCustomNetworks: function(){
+        // If true, this rule creates a signature copy.  Otherwise it does not.
+        var me = this;
+        return ( me.get('sourceNetworks') != 'recommended' ) || ( me.get('destinationNetworks') != 'recommended' );
+    },
 
     matchSignature: function(signature, editorConditions, vm){
         var me = this;
@@ -1604,9 +1820,9 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 case 'action':
                     targetConditionValue = signature.data['recommendedAction'];
                     break;
-                case 'actionr':
-                    targetConditionValue = signature.data['ruleAction'];
-                    break;
+                // case 'ruleAction':
+                //     targetConditionValue = signature.data['ruleAction'];
+                //     break;
                 default:
                     targetConditionValue = signature.data[conditionKey];
             }
@@ -1816,6 +2032,29 @@ Ext.define('Ung.model.intrusionprevention.rule',{
 
         return false;
     },
+
+    addSignatureNetwork: function(sourceType, network, negate){
+        if(this.get(sourceType+"Networks") != "recommended"){
+            if(network.indexOf('[') > -1){
+                network = network.substr(network.indexOf('[') + 1, network.lastIndexOf(']') -1);
+                console.log(network);
+            }
+
+            addNetwork = this.get(sourceType+"Networks");
+            if(negate == true){
+                addNetwork = '!' + addNetwork;
+            }
+
+            if(network == 'any'){
+                network = addNetwork;
+            }else{
+                network = Ext.String.format( '[{0},{1}]', network, addNetwork);
+            }
+        }
+        return network;
+    },
+
+
     statics:{
         ipv4NetworkRegex: /((\d{1,3}\.){3,3}\d{1,3})(\/(\d{1,2}|)|)/
     }
