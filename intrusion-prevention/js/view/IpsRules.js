@@ -52,7 +52,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             javaClass: "java.util.LinkedList",
             'list': []
         },
-        action: 'default'
+        action: 'default',
+        sourceNetworks: 'recommended',
+        destinationNetworks: 'recommended'
     },
 
     columns: [{
@@ -70,9 +72,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             emptyText: '[no description]'.t(),
             allowBlank: false,
             blankText: 'The description cannot be blank.'.t(),
-            // listeners: {
-            //     change: 'editorTitleChange'
-            // }
         }
     },{
         header: "Conditions".t(),
@@ -93,7 +92,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             store: Ung.apps.intrusionprevention.Main.ruleActions,
             displayField: 'description',
             valueField: 'value'
-        },
+        }
     }],
 
     editorXtype: 'ung.cmp.unintrusionrulesrecordeditor',
@@ -278,5 +277,57 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         typeField: 'type',
         displayField: 'description',
         valueField: 'value'
+    },{
+        fieldLabel: 'Match source networks'.t(),
+        xtype: 'combo',
+        labelAlign: 'right',
+        width: 400,
+        bind: {
+            store: '{networkVariables}',
+            value: '{record.sourceNetworks}',
+            hidden: '{record.action != "whitelist"}'
+        },
+        listConfig:   {
+            itemTpl: '<div data-qtip="{detail}">{description}</div>'
+        },
+        queryMode: 'local',
+        editable: false,
+        typeField: 'type',
+        displayField: 'description',
+        valueField: 'value',
+        matchFieldWidth: false
+    },{
+        fieldLabel: 'Match destination networks'.t(),
+        xtype: 'combo',
+        labelAlign: 'right',
+        width: 400,
+        bind: {
+            store: '{networkVariables}',
+            value: '{record.destinationNetworks}',
+            hidden: '{record.action != "whitelist"}'
+        },
+        listConfig:   {
+            itemTpl: '<div data-qtip="{detail}">{description}</div>'
+        },
+        queryMode: 'local',
+        editable: false,
+        typeField: 'type',
+        displayField: 'description',
+        valueField: 'value',
+        matchFieldWidth: false
+    },{
+        xtype: 'component',
+        style: 'background-color: yellow;',
+        padding: '10px 0px 10px 0px',
+        bind:{
+            html: Ext.String.format("{0}Warning:{1} No variables found with excluded like '!{2}'.".t(), '<b>', '</b>', '{defaultNetwork}'),
+            hidden: '{record.action != "whitelist" || networkVariablesList.length > 1}'
+        }
+    },{
+        xtype: 'component',
+        bind:{
+            html: Ext.String.format("{0}NOTE:{1} Affected signatures use Recommended action.".t(), '<b>', '</b>'),
+            hidden: '{record.action != "whitelist"}'
+        }
     }]
 });
