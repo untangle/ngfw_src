@@ -74,14 +74,15 @@ class IntrusionPreventionRule:
             # print(condition)
 
             comparator = condition['comparator']
-            target_value = condition["value"]
+            condition_value = condition["value"]
 
             if condition["type"] == "SID":
-                match = self.matches_numeric(int(signature.options["sid"]), comparator, int(target_value))
+                match = self.matches_numeric(int(signature.options["sid"]), comparator, condition_value)
             elif condition["type"] == "GID":
-                match = self.matches_numeric(int(signature.options["gid"]), comparator, int(target_value))
+                ## stop parsing condition_value
+                match = self.matches_numeric(int(signature.options["gid"]), comparator, condition_value)
             elif condition["type"] == "ID":
-                match = self.matches_text(signature.signature_id, comparator, target_value)
+                match = self.matches_text(signature.signature_id, comparator, condition_value)
             elif condition["type"] == "CATEGORY":
                 if not isinstance(condition["value"], list):
                     condition["value"] = condition["value"].split(',')
@@ -102,25 +103,26 @@ class IntrusionPreventionRule:
                     action = "block"
                 match = self.matches_in(action, comparator, condition["value"])
             elif condition["type"] == "MSG":
-                match = self.matches_text(signature.options["msg"].lower(), comparator, target_value.lower())
+                match = self.matches_text(signature.options["msg"].lower(), comparator, condition_value.lower())
             elif condition["type"] == "PROTOCOL":
                 if not isinstance(condition["value"], list):
                     condition["value"] = condition["value"].split(',')
                 match = self.matches_in(signature.protocol, comparator, condition["value"])
             elif condition["type"] == "SRC_ADDR":
-                match = self.matches_network(signature.lnet.lower(), comparator, target_value.lower())
+                match = self.matches_network(signature.lnet.lower(), comparator, condition_value.lower())
             elif condition["type"] == "SRC_PORT":
-                match = self.matches_port(signature.lport.lower(), comparator, target_value.lower())
+                match = self.matches_port(signature.lport.lower(), comparator, condition_value.lower())
             elif condition["type"] == "DST_ADDR":
-                match = self.matches_network(signature.rnet.lower(), comparator, target_value.lower())
+                match = self.matches_network(signature.rnet.lower(), comparator, condition_value.lower())
             elif condition["type"] == "DST_PORT":
-                match = self.matches_port(signature.rport.lower(), comparator, target_value.lower())
+                match = self.matches_port(signature.rport.lower(), comparator, condition_value.lower())
             elif condition["type"] == "SYSTEM_MEMORY":
-                match = self.matches_numeric(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"], comparator, int(target_value))
+                ## stop parsing condition_value
+                match = self.matches_numeric(IntrusionPreventionRule.global_values["SYSTEM_MEMORY"], comparator, condition_value)
             elif condition["type"] == "SIGNATURE":
-                match = self.matches_text(signature.build().lower(), comparator, target_value.lower())
+                match = self.matches_text(signature.build().lower(), comparator, condition_value.lower())
             elif condition["type"] == "CUSTOM":
-                match = self.matches_in(signature.custom, comparator, [True if target_value.lower() == "true" else False])
+                match = self.matches_in(signature.custom, comparator, [True if condition_value.lower() == "true" else False])
             else:
                 ### exception
                 print("UNKNOWN")
@@ -135,51 +137,65 @@ class IntrusionPreventionRule:
 
         return match
 
-    def matches_numeric(self, source_value, comparator, target_value):
+    def matches_numeric(self, source_value, comparator, condition_value):
         """
         Perform numeric comparison
 
         Arguments:
             source_value {[type]} -- [description]
             comparator {[type]} -- [description]
-            target_value {[type]} -- [description]
+            condition_value {[type]} -- [description]
 
         Returns:
             boolean -- True if matches, otherwise False
         """
         result = False
-        if comparator == "=":
-            result = source_value == target_value
-        elif comparator == "!=":
-            result = source_value != target_value
-        elif comparator == "<=":
-            result = source_value <= target_value
-        elif comparator == "<":
-            result = source_value < target_value
-        elif comparator == ">":
-            result = source_value > target_value
-        elif comparator == ">=":
-            result = source_value >= target_value
-        elif comparator == "substr":
-            result = str(target_value) in str(source_value)
-        elif comparator == "!substr":
-            result = str(target_value) not in str(source_value)
+
+        if ',' in condition_value:
+            condition_values = [int(x) for x in condition_value.split(",")]
+            result = self.matches_in(source_value, comparator, condition_values)
+        elif '-' in condition_value:
+            [condition_start_value, condition_stop_value] = [int(x) for x in condition_value.split("-")]
+            result = self.matches_in(source_value, comparator, condition_start_value, condition_stop_value)
+        else:
+            condition_value = int(condition_value)
+            if comparator == "=":
+                result = source_value == condition_value
+            elif comparator == "!=":
+                result = source_value != condition_value
+            elif comparator == "<=":
+                result = source_value <= condition_value
+            elif comparator == "<":
+                result = source_value < condition_value
+            elif comparator == ">":
+                result = source_value > condition_value
+            elif comparator == ">=":
+                result = source_value >= condition_value
+            elif comparator == "substr":
+                result = str(condition_value) in str(source_value)
+            elif comparator == "!substr":
+                result = str(condition_value) not in str(source_value)
 
         return result
 
-    def matches_in(self, source_value, comparator, target_value):
+    def matches_in(self, source_value, comparator, condition_start_value, condition_stop_value=None):
         """
         Perform match in list.
 
         Arguments:
             source_value {[type]} -- [description]
             comparator {[type]} -- [description]
-            target_value {[type]} -- [description]
+            condition_start_value {[type]} -- [description]
+            condition_stop_value {[type]} -- [description]
 
         Returns:
-            boolean -- True if source_value is in target_value, otherwise False
+            boolean -- True if source_value is in condition_value, otherwise False
         """
-        is_in = source_value in (( value.lower() if hasattr(value, "lower") else value) for value in target_value)
+        is_in = False
+        if condition_stop_value is not None:
+            is_in = int(condition_start_value) <= source_value <= int(condition_stop_value)
+        else:
+            is_in = source_value in ((value.lower() if hasattr(value, "lower") else value) for value in condition_start_value)
 
         result = False
         if comparator == "=":
@@ -189,27 +205,27 @@ class IntrusionPreventionRule:
 
         return result
 
-    def matches_text(self, source_value, comparator, target_value):
+    def matches_text(self, source_value, comparator, condition_value):
         """
         Perform text match
 
         Arguments:
             source_value {[type]} -- [description]
             comparator {[type]} -- [description]
-            target_value {[type]} -- [description]
+            condition_value {[type]} -- [description]
 
         Returns:
             boolean -- True if match, otherwise False
         """
         result = False
         if comparator == "=":
-            result = source_value == target_value
+            result = source_value == condition_value
         elif comparator == "!=":
-            result = source_value != target_value
+            result = source_value != condition_value
         elif comparator == "substr":
-            result = target_value in source_value
+            result = condition_value in source_value
         elif comparator == "!substr":
-            result = not target_value in source_value
+            result = not condition_value in source_value
 
         return result
 
@@ -222,14 +238,14 @@ class IntrusionPreventionRule:
         """
         return ''.join('{:08b}'.format(int(x)) for x in address.split('.'))
 
-    def matches_network(self, source_value, comparator, target_value):
+    def matches_network(self, source_value, comparator, condition_value):
         """
         Perform network match
 
         Arguments:
             source_value {[type]} -- [description]
             comparator {[type]} -- [description]
-            target_value {[type]} -- [description]
+            condition_value {[type]} -- [description]
 
         Returns:
             boolean -- True if match, otherwise False
@@ -243,11 +259,11 @@ class IntrusionPreventionRule:
             source_values.append(source_value)
 
         target_prefix = 32
-        match_signature = re.search(IntrusionPreventionRule.ipv4NetworkRegex, target_value)
+        match_signature = re.search(IntrusionPreventionRule.ipv4NetworkRegex, condition_value)
         if equal_comparator and match_signature:
             if match_signature.group(4):
                 target_prefix = int(match_signature.group(4))
-            target_value = self.address_to_bits(match_signature.group(1))[:target_prefix]
+            condition_value = self.address_to_bits(match_signature.group(1))[:target_prefix]
 
         record = None
         for value in source_values:
@@ -258,11 +274,11 @@ class IntrusionPreventionRule:
                 if match_signature:
                     match_value = self.address_to_bits(match_signature.group(1))[:target_prefix]
 
-                if match_value == target_value:
+                if match_value == condition_value:
                     record = value
                     break
             else:
-                if target_value in value:
+                if condition_value in value:
                     record = value
 
         result = False
@@ -277,14 +293,14 @@ class IntrusionPreventionRule:
 
         return result
 
-    def matches_port(self, source_value, comparator, target_value):
+    def matches_port(self, source_value, comparator, condition_value):
         """
         Perform port match
 
         Arguments:
             source_value {[type]} -- [description]
             comparator {[type]} -- [description]
-            target_value {[type]} -- [description]
+            condition_value {[type]} -- [description]
 
         Returns:
             boolean -- True if match, otherwise False
@@ -302,11 +318,11 @@ class IntrusionPreventionRule:
             match_value = value
 
             if equal_comparator:
-                if match_value == target_value:
+                if match_value == condition_value:
                     record = value
                     break
             else:
-                if target_value in value:
+                if condition_value in value:
                     record = value
 
         result = False
