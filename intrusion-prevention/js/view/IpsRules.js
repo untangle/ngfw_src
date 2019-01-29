@@ -173,12 +173,14 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name: "SID",
             displayName: "Signature Identifier".t(),
             type: "textfield",
-            comparator: 'numeric'
+            comparator: 'numeric',
+            validator: Ung.apps.intrusionprevention.MainController.conditionValidateNumeric
         },{
             name:"GID",
             displayName: "Group Identifier".t(),
             type: 'textfield',
-            comparator: 'numeric'
+            comparator: 'numeric',
+            validator: Ung.apps.intrusionprevention.MainController.conditionValidateNumeric
         },{
             name:"CATEGORY",
             displayName: "Category".t(),
@@ -260,7 +262,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
             name:"SYSTEM_MEMORY",
             displayName: "System Memory".t(),
             type: 'sizefield',
-            comparator: 'numeric'
+            comparator: 'numeric',
+            validator: Ung.apps.intrusionprevention.MainController.conditionValidateNumeric
         }]
     }),
     {
