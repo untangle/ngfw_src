@@ -293,7 +293,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     rulesChanged: function(store, record, action, recordActions, data){
-        console.log('rulesChanged');
+        // console.log('rulesChanged');
         this.getViewModel().get('signatures').each(function(signature){
             var matchingRules = signature.get('matchingRules'); 
             var index = matchingRules.indexOf(record);
@@ -325,7 +325,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     signaturesChanged: function(store){
-        console.log('signaturesChanged');
+        // console.log('signaturesChanged');
         var me = this,
             vm = this.getViewModel();
 
@@ -637,7 +637,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         variableValueRenderer: function(value, metaData, record, rowIdx, colIdx, store){
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( Ung.apps.intrusionprevention.MainController.variableValueResolve.call(this, record) ) + '"';
             return value;
-        }
+        },
+
+        regexNumericCondition :  /^(\d+|(\d+\-\d+)|[\d+,]+)$/,
+        conditionValidateNumeric: function(value){
+            return Ung.apps.intrusionprevention.MainController.regexNumericCondition.exec(value) ? true : 'Invalid numeric value'.t();
+        },
 }
 });
 
@@ -692,6 +697,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     //     this.processRule(record);
     //     this.callParent(arguments);
     // }
+    //
 
 });
 
@@ -1797,70 +1803,70 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 console.log('Unable to find condition: ' + condition.type);
             }
 
-            var targetConditionValue = null;
+            var signatureValue = null;
             var conditionKey = condition.type.toLowerCase();
             switch(conditionKey){
                 case 'system_memory':
-                    targetConditionValue = vm.get('system_memory');
+                    signatureValue = vm.get('system_memory');
                     break;
                 case 'signature':
-                    targetConditionValue = signature.data['signature'];
+                    signatureValue = signature.data['signature'];
                     break;
                 case 'classtype':
-                    targetConditionValue = signature.data['classtype'];
+                    signatureValue = signature.data['classtype'];
                     break;
                 case 'msg':
-                    targetConditionValue = signature.data['msg'];
+                    signatureValue = signature.data['msg'];
                     break;
                 case 'src_addr':
-                    targetConditionValue = signature.data['lnet'];
+                    signatureValue = signature.data['lnet'];
                     break;
                 case 'src_port':
-                    targetConditionValue = signature.data['lport'];
+                    signatureValue = signature.data['lport'];
                     break;
                 case 'dst_addr':
-                    targetConditionValue = signature.data['rnet'];
+                    signatureValue = signature.data['rnet'];
                     break;
                 case 'dst_port':
-                    targetConditionValue = signature.data['rport'];
+                    signatureValue = signature.data['rport'];
                     break;
                 case 'custom':
-                    targetConditionValue = signature.data['reserved'] ? "false" : "true";
+                    signatureValue = signature.data['reserved'] ? "false" : "true";
                     break;
                 case 'action':
-                    targetConditionValue = signature.data['recommendedAction'];
+                    signatureValue = signature.data['recommendedAction'];
                     break;
                 default:
-                    targetConditionValue = signature.data[conditionKey];
+                    signatureValue = signature.data[conditionKey];
             }
 
-            if(typeof(targetConditionValue) == 'string'){
-                targetConditionValue = targetConditionValue.toLowerCase();
+            if(typeof(signatureValue) == 'string'){
+                signatureValue = signatureValue.toLowerCase();
             }
 
             switch(editorCondition.comparator){
                 case 'numeric':
-                    match = me.matchesNumeric(parseInt(targetConditionValue, 10), condition.comparator, parseInt(condition.value, 10) );
+                    match = me.matchesNumeric(parseInt(signatureValue, 10), condition.comparator, condition.value);
                     break;
                 case 'boolean':
-                    var listValue = condition.value;
-                    if(typeof(listValue) != 'object'){
-                        if( typeof(listValue) == 'string' ){
-                            listValue = listValue.toLowerCase().split(',');
+                    var conditionValue = condition.value;
+                    if(typeof(conditionValue) != 'object'){
+                        if( typeof(conditionValue) == 'string' ){
+                            conditionValue = conditionValue.toLowerCase().split(',');
                         }else{
-                            listValue = ["true"];
+                            conditionValue = ["true"];
                         }
                     }
-                    match = me.matchesIn(targetConditionValue, condition.comparator, listValue);
+                    match = me.matchesIn(signatureValue, condition.comparator, conditionValue);
                     break;
                 case 'text':
-                    match = me.matchesText(targetConditionValue, condition.comparator, condition.value.toLowerCase());
+                    match = me.matchesText(signatureValue, condition.comparator, condition.value.toLowerCase());
                     break;
                 case 'network':
-                    match = me.matchesNetwork(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    match = me.matchesNetwork(signatureValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
                     break;
                 case 'port':
-                    match = me.matchesPort(targetConditionValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
+                    match = me.matchesPort(signatureValue.toLowerCase(), condition.comparator, condition.value.toLowerCase());
                     break;
                 default:
                     // !!! throw exception
@@ -1876,31 +1882,49 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return allMatch;
     },
 
-    matchesNumeric: function(sourceValue, comparator, targetValue){
+    matchesNumeric: function(signatureValue, comparator, conditionValue){
+        var me = this,
+            conditionValues;
+        if(conditionValue.indexOf(',') != -1){
+            conditionValues = conditionValue.split(',');
+            conditionValues.forEach( function(number, index){
+                conditionValues[index] = parseInt(number, 10);
+            });
+            return me.matchesIn(signatureValue, comparator, conditionValues);
+        }else if(conditionValue.indexOf('-') != -1){
+            conditionValues = conditionValue.split('-');
+            return me.matchesIn(signatureValue, comparator, conditionValues[0].trim(), conditionValues[1].trim());
+        }
+        conditionValue = parseInt(conditionValue, 10);
         switch(comparator){
             case "=":
-                return sourceValue == targetValue;
+                return signatureValue == conditionValue;
             case "!=":
-                return sourceValue != targetValue;
+                return signatureValue != conditionValue;
             case "<=":
-                return sourceValue <= targetValue;
+                return signatureValue <= conditionValue;
             case "<":
-                return sourceValue < targetValue;
+                return signatureValue < conditionValue;
             case ">":
-                return sourceValue > targetValue;
+                return signatureValue > conditionValue;
             case ">=":
-                return sourceValue >= targetValue;
+                return signatureValue >= conditionValue;
             case "substr":
-                return sourceValue.toString().indexOf(targetValue.toString()) != -1;
+                return signatureValue.toString().indexOf(conditionValue.toString()) != -1;
             case "!substr":
-                return sourceValue.toString().indexOf(targetValue.toString()) == -1;
+                return signatureValue.toString().indexOf(conditionValue.toString()) == -1;
         }
 
         return false;
     },
 
-    matchesIn: function(sourceValue, comparator, targetValue){
-        var isIn = Ext.Array.contains(targetValue, sourceValue);
+    matchesIn: function(signatureValue, comparator, conditionStartValue, conditionStopValue){
+        var isIn;
+        if(conditionStopValue){
+            isIn = (signatureValue >= parseInt(conditionStartValue, 10) && signatureValue <= parseInt(conditionStopValue, 10));
+        }else{
+            isIn = Ext.Array.contains(conditionStartValue, signatureValue);
+        }
 
         if(comparator == "="){
             return isIn;
@@ -1911,16 +1935,16 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
-    matchesText: function(sourceValue, comparator, targetValue){
+    matchesText: function(signatureValue, comparator, conditionValue){
         switch(comparator){
             case "=":
-                return sourceValue == targetValue;
+                return signatureValue == conditionValue;
             case "!=":
-                return sourceValue != targetValue;
+                return signatureValue != conditionValue;
             case "substr":
-                return sourceValue.indexOf(targetValue) != -1;
+                return signatureValue.indexOf(conditionValue) != -1;
             case "!substr":
-                return sourceValue.indexOf(targetValue) == -1;
+                return signatureValue.indexOf(conditionValue) == -1;
         }
 
         return false;
@@ -1944,46 +1968,46 @@ Ext.define('Ung.model.intrusionprevention.rule',{
      * = or !=              Exact string match or signature contains exact network match.
      * substr or !substr    Text substring match.
      *
-     * If sourceValue is a list, any match of the list is considered a valid match.
-     * For example, if the list contains a lit of IP addresses like [1.2.3.4, 2.3.4.5], a targetValue
+     * If signatureValue is a list, any match of the list is considered a valid match.
+     * For example, if the list contains a lit of IP addresses like [1.2.3.4, 2.3.4.5], a conditionValue
      * of 1.2.3.0/24 or 2.0.0.0/8 would match even though it's not matching the entire list.
      *
-     * @param  {[type]} sourceValue Either a single value or a list if it is inside square brackets.
+     * @param  {[type]} signatureValue Either a single value or a list if it is inside square brackets.
      * @param  {[type]} comparator  =, !=, substr, ~substr
-     * @param  {[type]} targetValue Value to check.
+     * @param  {[type]} conditionValue Value to check.
      * @return {[type]}             true if match, false if not.
      */
-    matchesNetwork: function(sourceValue, comparator, targetValue){
+    matchesNetwork: function(signatureValue, comparator, conditionValue){
         var equalComparator = comparator.substring(comparator.length-1) == '=';
 
         var matches;
-        var sourceValues = [];
-        if(sourceValue[0] == '['){
-            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        var signatureValues = [];
+        if(signatureValue[0] == '['){
+            signatureValues = signatureValue.substring(1,signatureValue.length-1).split(/\s*,\s*/);
         }else{
-            sourceValues.push(sourceValue);
+            signatureValues.push(signatureValue);
         }
 
         var targetPrefix = 32;
         if( equalComparator &&
-            Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(targetValue)){
-            matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(targetValue);
+            Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(conditionValue)){
+            matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(conditionValue);
             targetPrefix = matches[4] ? parseInt(matches[4], 10) : 32;
-            targetValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
+            conditionValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
         }
 
-        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+        var record = Ext.Array.findBy(signatureValues, Ext.bind(function(value){
             var matchValue = value;
             if(equalComparator){
                 if(Ung.model.intrusionprevention.rule.ipv4NetworkRegex.test(value)){
                     matches = Ung.model.intrusionprevention.rule.ipv4NetworkRegex.exec(value);
                     matchValue = this.ipv4NetworkToLong(matches[1], targetPrefix);
                 }
-                if(matchValue == targetValue){
+                if(matchValue == conditionValue){
                     return true;
                 }
             }else{
-                if(value.indexOf(targetValue) != -1 ){
+                if(value.indexOf(conditionValue) != -1 ){
                     return true;
                 }
             }
@@ -2003,24 +2027,24 @@ Ext.define('Ung.model.intrusionprevention.rule',{
         return false;
     },
 
-    matchesPort: function(sourceValue, comparator, targetValue){
+    matchesPort: function(signatureValue, comparator, conditionValue){
         var equalComparator = comparator.substring(comparator.length-1) == '=';
 
-        var sourceValues = [];
-        if(sourceValue[0] == '['){
-            sourceValues = sourceValue.substring(1,sourceValue.length-1).split(/\s*,\s*/);
+        var signatureValues = [];
+        if(signatureValue[0] == '['){
+            signatureValues = signatureValue.substring(1,signatureValue.length-1).split(/\s*,\s*/);
         }else{
-            sourceValues.push(sourceValue);
+            signatureValues.push(signatureValue);
         }
 
-        var record = Ext.Array.findBy(sourceValues, Ext.bind(function(value){
+        var record = Ext.Array.findBy(signatureValues, Ext.bind(function(value){
             var matchValue = value;
             if(equalComparator){
-                if(matchValue == targetValue){
+                if(matchValue == conditionValue){
                     return true;
                 }
             }else{
-                if(value.indexOf(targetValue) != -1 ){
+                if(value.indexOf(conditionValue) != -1 ){
                     return true;
                 }
             }
