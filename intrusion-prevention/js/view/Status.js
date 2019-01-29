@@ -41,12 +41,45 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             padding: 10,
             collapsed: true,
             disabled: true,
+            hidden: true,
             bind: {
                 collapsed: '{state.on !== true || state.power === true}',
-                disabled: '{state.on !== true || state.power === true}'
+                disabled: '{state.on !== true || state.power === true}',
+                hidden: '{state.on !== true || state.power === true}'
             },
 
             items: [{
+                xtype: 'container',
+                layout: 'hbox',
+                padding: '0 0 10 0',
+                flex: 1,
+                hidden: true,
+                bind: {
+                    hidden: '{!daemonErrors}',
+                },
+                items:[{
+                    fieldLabel: 'Warnings'.t(),
+                    xtype: 'textarea',
+                    height: 100,
+                    autoWidth: true,
+                    flex: 1,
+                    fieldStyle: {
+                        fontFamily: 'monospace',
+                        border: 'solid 5px yellow'
+                    },
+                    bind: {
+                        value: '{daemonErrors}'
+                    }
+                }]
+            },{
+                xtype: 'component',
+                html: 'One or more signatures are not running.'.t(),
+                padding: '0 0 10 0',
+                hidden: true,
+                bind: {
+                    hidden: '{!daemonErrors}',
+                },
+            },{
                 xtype: 'displayfield',
                 fieldLabel: "Signatures available".t(),
                 bind:{

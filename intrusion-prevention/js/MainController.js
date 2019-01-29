@@ -43,9 +43,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             }
 
             var status = result[0];
+
             vm.set({
                 lastUpdateCheck: (status['lastUpdateCheck'] && status['lastUpdateCheck'] !== null && status['lastUpdateCheck'].time !== 0 ) ? Renderer.timestamp(status['lastUpdateCheck']) : "Never".t(),
                 lastUpdate: (status['lastUpdate'] && status['lastUpdate'] !== null && status['lastUpdate'].time !== 0 ) ? Renderer.timestamp(status['lastUpdate']) : "Never".t(),
+                daemonErrors: "",
                 companyName: result[1],
                 system_memory: result[2],
                 settings: result[3],
@@ -58,6 +60,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             var dt = new Ext.util.DelayedTask( Ext.bind(function(){
                 me.buildVariables();
                 me.buildSignatures(result[5]);
+                me.buildErrors(status["errors"]);
                 v.setLoading('');
                 v.setLoading(false);
             }, me));
@@ -176,6 +179,21 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 protocols.push([signatureProtocol, signatureProtocol]);
             }
         });
+    },
+
+
+    buildErrors: function(errors){
+        var me = this,
+            parsedErrors = [],
+            vm = this.getViewModel();
+
+        errors.split("\n").forEach( function(error){
+            var matches = Ung.apps.intrusionprevention.MainController.regexDaemonError.exec(error);
+            if(matches){
+                parsedErrors.push(matches[1]);
+            }
+        });
+        vm.set('daemonErrors', parsedErrors.join("\n"));
     },
 
     setSettings: function (additionalChanged) {
@@ -438,8 +456,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     statics:{
-        // regexSignatureVariable :  /^\$([A-Za-z0-9\_]+)/,
-        regexSignatureVariable :  /\$([A-Za-z0-9\_]+)/,
+        // Example: Jan 29 09:57:07 devhostname.example.com suricata[126833]: [126833] <Error> -- [ERRCODE: SC_ERR_INVALID_ACTION(142)] - An invalid...
+        regexDaemonError:  /\] \- (.*)$/,
+        regexSignatureVariable:  /\$([A-Za-z0-9\_]+)/,
         regexSignature: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
 
         ruleActionsRenderer: function(value, meta, record, x,y, z, table){
