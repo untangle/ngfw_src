@@ -237,6 +237,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         value: valueBind
                     },
                     vtype: condition.vtype,
+                    validator: condition.validator,
                     allowBlank: false,
                     listeners:{
                         change: 'forceValidate'
@@ -253,6 +254,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         value: valueBind
                     },
                     vtype: condition.vtype,
+                    validator: condition.validator,
                     allowBlank: false,
                     listeners:{
                         change: 'forceValidate'
@@ -269,6 +271,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         value: valueBind
                     },
                     vtype: condition.vtype,
+                    validator: condition.validator,
                     allowBlank: false,
                     listeners:{
                         change: 'forceValidate'
