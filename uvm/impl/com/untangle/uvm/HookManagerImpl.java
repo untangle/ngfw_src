@@ -224,7 +224,7 @@ public class HookManagerImpl implements HookManager
             boolean result = queue.offer(items);
 
             if (!result) {
-                logger.warn("Hook queue is full! discarding call: " + items);
+                logger.warn("Hook queue [" + hookName + "] is full! discarding call: " + items);
             }
         } catch (Throwable e) {
             logger.warn("Exception: ",e);
