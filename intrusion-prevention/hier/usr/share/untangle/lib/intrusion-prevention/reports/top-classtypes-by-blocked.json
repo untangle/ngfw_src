@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-c4BSL6qq",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by classtype.",
-    "displayOrder": 302,
+    "displayOrder": 303,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-qqyU6Nsv",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by destination IP address.",
-    "displayOrder": 702,
+    "displayOrder": 703,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
