@@ -1,0 +1,18 @@
+{
+    "uniqueId": "intrusion-prevention-h36QI9YSa",
+    "category": "Intrusion Prevention",
+    "description": "The number of intrusions detevted by rule.",
+    "displayOrder": 106,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "rule_id",
+    "pieSumColumn": "count(*)",
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "title": "Top Rules (all)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}
