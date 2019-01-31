@@ -10,7 +10,7 @@ def cleanup_tables(cutoff):
     
 @sql_helper.print_timing
 def __create_intrusion_prevention_events():
-        sql_helper.create_table("""\
+    sql_helper.create_table("""\
 CREATE TABLE reports.intrusion_prevention_events (
         time_stamp timestamp NOT NULL,
         sig_id int8,
@@ -24,4 +24,6 @@ CREATE TABLE reports.intrusion_prevention_events (
         blocked boolean,
         category text,
         classtype text,
-        msg text)""", [], ["time_stamp"])
+        msg text,
+        rid text)""", [], ["time_stamp"])
+    sql_helper.add_column('intrusion_prevention_events', 'rule_id', 'text') #rule_14.2
