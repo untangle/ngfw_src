@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-dTCBcCU6",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by source port.",
-    "displayOrder": 602,
+    "displayOrder": 603,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -18,7 +18,7 @@
     }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Source Port (blocked)",
+    "title": "Top Source Ports (blocked)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

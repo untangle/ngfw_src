@@ -15,6 +15,12 @@
     "colors": [
         "#8c0000"
     ],
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "true"
+    }],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_OVERLAPPED",
     "title": "Intrusion Detection (blocked)",

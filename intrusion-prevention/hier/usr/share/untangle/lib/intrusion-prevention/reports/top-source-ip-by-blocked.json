@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-JwTz13RT",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by source IP address.",
-    "displayOrder": 502,
+    "displayOrder": 503,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
