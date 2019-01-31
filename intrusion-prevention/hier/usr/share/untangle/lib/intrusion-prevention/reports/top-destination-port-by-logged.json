@@ -1,8 +1,8 @@
 {
     "uniqueId": "intrusion-prevention-5vv8yvOs",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions detected grouped by destination port.",
-    "displayOrder": 801,
+    "description": "The number of intrusions logged by destination port.",
+    "displayOrder": 802,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -10,6 +10,12 @@
     "units": "hits",
     "pieGroupColumn": "dest_port",
     "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "false"
+    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Destination Ports (logged)",

@@ -1,18 +1,18 @@
 {
-    "uniqueId": "intrusion-prevention-h36QI9YQ",
+    "uniqueId": "intrusion-prevention-I1utyRyOa",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions logged by signature.",
-    "displayOrder": 202,
+    "description": "The number of intrusions detected by source port.",
+    "displayOrder": 601,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "msg",
+    "pieGroupColumn": "source_port",
     "pieSumColumn": "count(*)",
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Signatures (logged)",
+    "title": "Top Source Ports (all)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

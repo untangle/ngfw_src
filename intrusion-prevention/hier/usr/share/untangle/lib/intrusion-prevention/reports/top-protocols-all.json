@@ -1,14 +1,14 @@
 {
-    "uniqueId": "intrusion-prevention-RTdU0taL",
+    "uniqueId": "intrusion-prevention-NyG6yHMZa",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions logged by classtype.",
-    "displayOrder": 302,
+    "description": "The number of intrusions detected by protocol.",
+    "displayOrder": 901,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "classtype",
+    "pieGroupColumn": "protocol",
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",
@@ -18,7 +18,7 @@
     }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Classtypes (logged)",
+    "title": "Top Protocols (all)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

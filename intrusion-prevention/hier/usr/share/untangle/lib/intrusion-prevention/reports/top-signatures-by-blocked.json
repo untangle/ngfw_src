@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-56KUY1Et",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by signature.",
-    "displayOrder": 202,
+    "displayOrder": 203,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

@@ -1,8 +1,8 @@
 {
     "uniqueId": "intrusion-prevention-NyG6yHMZ",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions detected grouped by protocol.",
-    "displayOrder": 901,
+    "description": "The number of intrusions logged by protocol.",
+    "displayOrder": 902,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -10,6 +10,12 @@
     "units": "hits",
     "pieGroupColumn": "protocol",
     "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "false"
+    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Protocols (logged)",

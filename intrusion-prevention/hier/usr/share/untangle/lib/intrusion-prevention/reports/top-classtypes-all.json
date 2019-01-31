@@ -1,8 +1,8 @@
 {
-    "uniqueId": "intrusion-prevention-RTdU0taL",
+    "uniqueId": "intrusion-prevention-RTdU0taLa",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions logged by classtype.",
-    "displayOrder": 302,
+    "description": "The number of intrusions detected by classtype.",
+    "displayOrder": 301,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -10,15 +10,9 @@
     "units": "hits",
     "pieGroupColumn": "classtype",
     "pieSumColumn": "count(*)",
-    "conditions": [{
-        "column": "blocked",
-        "javaClass": "com.untangle.app.reports.SqlCondition",
-        "operator": "=",
-        "value": "false"
-    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Classtypes (logged)",
+    "title": "Top Classtypes (all)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

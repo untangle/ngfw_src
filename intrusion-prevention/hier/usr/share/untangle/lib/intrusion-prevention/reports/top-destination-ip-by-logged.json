@@ -1,8 +1,8 @@
 {
     "uniqueId": "intrusion-prevention-oBzMcymv",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions detected grouped by destination IP address.",
-    "displayOrder": 701,
+    "description": "The number of intrusions logged by destination IP address.",
+    "displayOrder": 702,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -10,6 +10,12 @@
     "units": "hits",
     "pieGroupColumn": "dest_addr",
     "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "false"
+    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Destination IP Addresses (logged)",

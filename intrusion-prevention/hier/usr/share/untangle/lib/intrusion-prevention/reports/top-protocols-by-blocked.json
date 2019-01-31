@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-nBogCEbx",
     "category": "Intrusion Prevention",
     "description": "The number of intrusions blocked by protocol.",
-    "displayOrder": 902,
+    "displayOrder": 903,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
