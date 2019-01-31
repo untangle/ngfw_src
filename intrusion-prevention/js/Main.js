@@ -24,20 +24,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             },
             signatures: {
                 storeId: 'signaturesStore',
-                fields: [{
-                    name: 'sid',
-                    sortType: 'asInt'
-                },{
-                    name: 'classtype'
-                },{
-                    name: 'category'
-                },{
-                    name: 'msg'
-                },{
-                    name: 'signature'
-                },{
-                    name: 'action'
-                }],
+                model: 'Ung.model.intrusionprevention.signature',
                 data: '{signaturesList}',
                 groupField: 'classtype',
                 sorters: [{
