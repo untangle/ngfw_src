@@ -38,7 +38,7 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
         # give it up to 20 minutes to download signatures for the first time
         print("Waiting for server to start...")
-        for i in xrange(1200):
+        for i in range(1200):
             time.sleep(1)
             result = subprocess.call("netcat -n -z 127.0.0.1 3310 >/dev/null 2>&1", shell=True)
             if result == 0:
