@@ -45,6 +45,16 @@ class IntrusionPreventionRule:
         """
         return self.rule["enabled"]
 
+    def get_id(self):
+        """
+
+        Return rule id
+
+        Returns:
+            String -- rule identifier.
+        """
+        return self.rule["id"]
+
     def get_action(self):
         """
         Get rule's action.
@@ -344,6 +354,8 @@ class IntrusionPreventionRule:
         Arguments:
             signature {SuricataSignature} -- Signature to set
         """
+        signature.set_rule(self)
+
         current_action = signature.get_action()
         if self.rule["action"] == "default":
             signature.set_action(current_action["log"], current_action["block"])

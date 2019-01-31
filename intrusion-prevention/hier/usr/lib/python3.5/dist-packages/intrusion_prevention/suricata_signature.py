@@ -26,6 +26,7 @@ class SuricataSignature:
 
     action_changed = False
     network_changed = False
+    rule = None
 
     block_action = "reject"
 
@@ -321,6 +322,27 @@ class SuricataSignature:
                 fields.append(key + ' ' + metadata[key])
             metadata = ",".join(fields)
         self.set_options("metadata", metadata)
+
+    def get_rule(self):
+        """
+
+        Return currently active rule
+
+        Returns:
+            rule -- Matching rule to set action
+        """
+        return self.rule
+
+    def set_rule(self, rule):
+        """
+
+        Set the active rule
+
+        Arguments:
+            rule  -- Rule that matches and sets signatuee behavior
+        """
+        self.rule = rule
+
 
     def match(self, classtypes, categories, signature_ids):
         """

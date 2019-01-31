@@ -7,6 +7,8 @@ import sys
 import re
 from subprocess import call
 
+sys.exit()
+
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
 if "@PREFIX@" != '':
     sys.path.insert(0, UNTANGLE_DIR)
