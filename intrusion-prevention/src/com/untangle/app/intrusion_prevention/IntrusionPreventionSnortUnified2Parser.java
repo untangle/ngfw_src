@@ -450,6 +450,7 @@ public class IntrusionPreventionSnortUnified2Parser
             ipsEvent.setMsg( mapSignature.getMsg() );
             ipsEvent.setClasstype( mapSignature.getClasstype() );
             ipsEvent.setCategory( mapSignature.getCategory() );
+            ipsEvent.setRid( mapSignature.getRid() );
         }
 
         return ipsEvent;
