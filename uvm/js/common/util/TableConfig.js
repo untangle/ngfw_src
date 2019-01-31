@@ -3205,13 +3205,25 @@ Ext.define('TableConfig', {
                 this.refresh();
             },
             refresh: function(){
-                var me = this;
+                var me = TableConfig.tableConfig.intrusion_prevention_events;
                 var policy = Ext.getStore('policies').findRecord('policyId', 1);
                 var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
                     return inst.appName === "intrusion-prevention";
                 });
                 me.app = Rpc.directData('rpc.appManager.app', appInstance.id);
                 me.settings = Rpc.directData(me.app, 'getSettings');
+            },
+            renderer: function(value, meta){
+                var me = TableConfig.tableConfig.intrusion_prevention_events;
+                if(me.settings){
+                    me.settings.rules.list.forEach(function(rule){
+                        if(value == rule['id']){
+                            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( rule['description'] ) + '"';
+                            value = rule['description'];
+                        }
+                    });
+                }
+                return value;
             },
             fields: [{
                 name: 'time_stamp',
@@ -3259,6 +3271,13 @@ Ext.define('TableConfig', {
                 dataIndex: 'time_stamp',
                 renderer: Renderer.timestamp,
                 filter: Renderer.timestampFilter
+            }, {
+                header: 'Rule Id'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                dataIndex: 'rule_id',
+                filter: Renderer.stringFilter,
+                renderer: function(value, meta){ return TableConfig.tableConfig.intrusion_prevention_events.renderer(value, meta); }
             }, {
                 header: 'Sid'.t(),
                 width: Renderer.portWidth,
@@ -3349,7 +3368,8 @@ Ext.define('TableConfig', {
                         if(disabled == false){
                             var recordGid = record.get('gen_id');
                             var recordSid = record.get('sig_id');
-                            this.up('eventreport').getController().tableConfig.settings.rules.list.forEach(function(rule){
+                            // this.up('eventreport').getController().tableConfig.settings.rules.list.forEach(function(rule){
+                            TableConfig.tableConfig.intrusion_prevention_events.settings.rules.list.forEach(function(rule){
                                 var sidMatch = false;
                                 var gidMatch = false;
                                 rule.conditions.list.forEach(function(condition){
