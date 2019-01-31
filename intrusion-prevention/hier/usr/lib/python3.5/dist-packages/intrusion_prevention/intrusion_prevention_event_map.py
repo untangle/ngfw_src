@@ -33,13 +33,24 @@ class IntrusionPreventionEventMap:
         for signature in self.signatures.get_signatures().values():
             if signature.options["sid"] == "":
                 continue
+            if signature.rule is None:
+                # If no rule, signature is disabled.
+                continue
             msg = signature.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
+
+            rid = signature.get_rule()
+            if rid is None:
+                rid = ""
+            else:
+                rid = rid.get_id()
+
             self.settings["signatures"]["list"].append({
                 "javaClass" : "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature",
                 "sid": int(signature.options["sid"]),
                 "gid": int(signature.options["gid"]),
+                "rid": rid,
                 "category": signature.category,
                 "msg": msg,
                 "classtype": signature.options["classtype"],
