@@ -15,6 +15,7 @@ public class IntrusionPreventionEventMapSignature implements Serializable
     private Long id;
     private Long sid;
     private Long gid;
+    private String rid = "";
     private String category = "";
     private String classtype = "";
     private String msg = "";
@@ -31,6 +32,8 @@ public class IntrusionPreventionEventMapSignature implements Serializable
      *  Signnature id.
      * @param gid
      *  Group id.
+     * @param rid
+     *  Group id.
      * @param category
      *  Category
      * @param classtype
@@ -38,10 +41,11 @@ public class IntrusionPreventionEventMapSignature implements Serializable
      * @param msg
      *  Signature message.
      */
-    public IntrusionPreventionEventMapSignature(Long sid, Long gid, String category, String classtype, String msg )
+    public IntrusionPreventionEventMapSignature(Long sid, Long gid, String rid, String category, String classtype, String msg )
     {
         this.sid = sid;
         this.gid = gid;
+        this.rid = rid;
         this.category = category;
         this.classtype = classtype;
         this.msg = msg;
@@ -76,6 +80,21 @@ public class IntrusionPreventionEventMapSignature implements Serializable
      *  Signauture id.
      */
     public void setSid( Long sid ) { this.sid = sid; }
+
+    /**
+     * Return rule id.
+     *
+     * @return
+     *  Rule id.
+     */
+    public String getRid() { return rid; }
+    /**
+     * Set rule id.
+     *
+     * @param rid
+     *  Rule id.
+     */
+    public void setRid( String rid ) { this.rid = rid; }
 
     /**
      * Return generator id.
