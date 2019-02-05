@@ -590,7 +590,6 @@ public class IntrusionPreventionApp extends AppBase
     protected void postStart( boolean isPermanentTransition )
     {
         iptablesRules();
-
     }
 
     /**
@@ -649,6 +648,8 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn( "Unable to generate suricata.configuration:", e );
         }
         reloadEventMonitorMap();
+
+        iptablesRules();
 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {
