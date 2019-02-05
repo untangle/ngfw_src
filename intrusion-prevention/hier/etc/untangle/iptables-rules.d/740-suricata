@@ -1,5 +1,4 @@
 #!/bin/dash
-
 #
 # Suricata rules are on two tables, mangle and raw for the following reasons:
 #
@@ -17,15 +16,32 @@
 #
 
 IPTABLES=${IPTABLES:-iptables}
+
+SETTINGS=$(\
+python -c "\
+from uvm import Manager; \
+from uvm import AppManager; \
+from uvm import Uvm; \
+uvm_context = Uvm().getUvmContext(hostname='localhost', username=None, password=None, timeout=60); \
+app_manager = uvm_context.appManager();
+app = [ instance for instance in AppManager(uvm_context).get_instances() if instance[1] == 'intrusion-prevention' ][0]; \
+settings = app_manager.app(app[0]).getSettings();\
+print('%s %s %s' % (settings['iptablesProcessing'], settings['iptablesNfqNumber'], settings['iptablesMaxScanSize'])); \
+")
+
+IPTABLES_PROCESSING=$(echo $SETTINGS | cut -d' ' -f 1)
+IPTABLES_NFQ_NUMBER=$(echo $SETTINGS | cut -d' ' -f 2)
+IPTABLES_MAX_SCAN_SIZE=$(echo $SETTINGS | cut -d' ' -f 3)
+
 TABLE_NAME_MANGLE=mangle
 TABLE_NAME_RAW=raw
-CHAIN_NAME=suricata-scanning
-SURICATA_QUEUE_NUM=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','iptablesNfqNumber');")
-SURICATA_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_app_settings_item; print get_app_settings_item('intrusion-prevention','iptablesMaxScanSize');")
+
+CHAIN_NAME_SURICATA=suricata-scanning
+
 SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
 
-CONNBYTES="-m connbytes --connbytes 0:${SURICATA_MAX_SCAN_SIZE} --connbytes-dir both --connbytes-mode bytes"
-if [ ${SURICATA_MAX_SCAN_SIZE} -eq 0 ]; then
+CONNBYTES="-m connbytes --connbytes 0:${IPTABLES_MAX_SCAN_SIZE} --connbytes-dir both --connbytes-mode bytes"
+if [ ${IPTABLES_MAX_SCAN_SIZE} -eq 0 ]; then
     CONNBYTES=
 fi
 
@@ -47,77 +63,77 @@ is_queue_open()
     return 0
 }
 
+flush_suricata_table_iptables_table_chain(){
+    local table=$1
+    local chain=$2
+
+    # Create, flush chain for our traffic
+    ${IPTABLES} -t ${table} -N ${CHAIN_NAME_SURICATA} >/dev/null 2>&1
+    ${IPTABLES} -t ${table} -F ${CHAIN_NAME_SURICATA}
+
+    # Remove previous rule to call the chain if it exists.
+    ${IPTABLES} -t ${table} -D ${chain} -j ${CHAIN_NAME_SURICATA} -m comment --comment "suricata scanning" >/dev/null 2>&1
+
+}
+
 #
 # Create chains, remove rules that go to them.
 #
-flush_suricata_iptables_rules()
+flush_suricata_table_iptables()
 {
-    # mangle: Create and flush a new chain for our traffic
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -N ${CHAIN_NAME} >/dev/null 2>&1
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -F ${CHAIN_NAME}
+    flush_suricata_table_iptables_table_chain "${TABLE_NAME_MANGLE}" "PREROUTING"
+    flush_suricata_table_iptables_table_chain "${TABLE_NAME_RAW}" "PREROUTING"
 
-    # mangle: Remove previous rule to call the chain if it exists.
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -D PREROUTING -j ${CHAIN_NAME} -m comment --comment "suricata scanning" >/dev/null 2>&1
+    flush_suricata_table_iptables_table_chain "${TABLE_NAME_MANGLE}" "POSTROUTING"
+    flush_suricata_table_iptables_table_chain "filter" "FORWARD"
+}
 
-    # raw: Create and flush a new chain for our traffic
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -N ${CHAIN_NAME} >/dev/null 2>&1
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -F ${CHAIN_NAME}
+insert_suricata_iptables_table_chain()
+{
+    local table=$1
+    local chain=$2
 
-    # raw: Remove previous rule to call the chain if it exists.
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -D PREROUTING -j ${CHAIN_NAME} -m comment --comment "suricata scanning" >/dev/null 2>&1
+    # We don't care about traffic to or from loopback addresses
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
+
+    # We also don't want to look at any bypassed traffic
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
+
+    # Ignore UDP/domain traffic
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -p udp --dport 53 -j RETURN -m comment --comment "Ignore UDP/domain traffic"
+
+    # mangle: special hook to allow bypass of a development machine or network
+    if [ ! -z ${SURICATA_DEV_NETWORK} ]; then
+        ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -s ${SURICATA_DEV_NETWORK} -j RETURN
+        ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -d ${SURICATA_DEV_NETWORK} -j RETURN
+    fi
+
+    # all other traffic will be handed off to our netfilter queue
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -j NFQUEUE --queue-num ${IPTABLES_NFQ_NUMBER} --queue-bypass ${CONNBYTES} -m comment --comment "queue for suricata"
+
+    # ----- now that we have created our table we need some rules to send us traffic
+    # ----- these next rules will grab only traffic that we need to classify
+
+    ${IPTABLES} -t ${table} -A ${chain} -j ${CHAIN_NAME_SURICATA} -m comment --comment "suricata scanning" 2>/dev/null
 }
 
 #
 # Add rules to chains and rules to call chains
 #
-insert_suricata_iptables_rules()
+insert_suricata_iptables()
 {
-    # mangle: We don't care about traffic to or from loopback addresses
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
 
-    # mangle: We also don't want to look at any bypassed traffic
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
-
-    # mangle: Ignore UDP/domain traffic
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -p udp --dport 53 -j RETURN -m comment --comment "Ignore UDP/domain traffic"
-
-    # mangle: special hook to allow bypass of a development machine or network
-    if [ ! -z ${SURICATA_DEV_NETWORK} ]; then
-        ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -s ${SURICATA_DEV_NETWORK} -j RETURN
-        ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -d ${SURICATA_DEV_NETWORK} -j RETURN
+    if [ "${IPTABLES_PROCESSING}" = "pre" ] ; then
+        insert_suricata_iptables_table_chain "${TABLE_NAME_MANGLE}" "PREROUTING"
+        insert_suricata_iptables_table_chain "${TABLE_NAME_RAW}" "PREROUTING"
+    else
+        insert_suricata_iptables_table_chain "${TABLE_NAME_MANGLE}" "POSTROUTING"
+#        insert_suricata_iptables_table_chain "filter" "FORWARD"
     fi
 
-    # mangle: all other traffic will be handed off to our netfilter queue
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -j NFQUEUE --queue-num ${SURICATA_QUEUE_NUM} --queue-bypass ${CONNBYTES} -m comment --comment "queue for suricata"
+    return
 
-    # mangle: ----- now that we have created our table we need some rules to send us traffic
-    # mangle: ----- these next rules will grab only traffic that we need to classify
-
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A PREROUTING -j ${CHAIN_NAME} -m comment --comment "suricata scanning" 2>/dev/null
-
-    # raw: we don't care about traffic to or from loopback addresses
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
-
-    # raw: we also don't want to look at any bypassed traffic
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
-
-    # raw: special hook to allow bypass of a development machine or network
-    if [ ! -z ${SURICATA_DEV_NETWORK} ]; then
-        ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -s ${SURICATA_DEV_NETWORK} -j RETURN
-        ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -d ${SURICATA_DEV_NETWORK} -j RETURN
-    fi
-
-    # raw: Only had off UDP/domain  traffic to our netfilter queue
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -p udp --dport 53 -j NFQUEUE --queue-num ${SURICATA_QUEUE_NUM} --queue-bypass -m comment --comment "queue only UDP/domain for suricata"
-
-    # mangle: ----- now that we have created our table we need some rules to send us traffic
-    # mangle: ----- these next rules will grab only traffic that we need to classify
-
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A PREROUTING -j ${CHAIN_NAME} -m comment --comment "suricata scanning" 2>/dev/null
-
-    return 0
 }
 
 ## Start of script
@@ -126,14 +142,14 @@ if [ -f /etc/default/untangle-suricata ]; then
 fi
 
 ## If the queue is open generate the new rules
-flush_suricata_iptables_rules
+flush_suricata_table_iptables
 
 if [ "${SURICATA_RUNNING}" = "0" ]; then
     echo "[`date`] Suricata is not running - not inserting rules for suricata"
 else
     is_queue_open && {
         echo "[`date`] suricata is running. Inserting rules."
-        insert_suricata_iptables_rules
+        insert_suricata_iptables
     }
 fi
 
