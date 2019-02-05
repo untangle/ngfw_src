@@ -81,6 +81,14 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     ],
 
     statics: {
+        processingStage: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'value', 'description', 'detail'],
+            data: [
+                ['pre', 'Before other network processing'.t(), 'More detections in this mode which may not be very useful in a gateway environment.'.t()],
+                ['post', 'After other network processing'.t(), 'Less detections in this mode which is typically more appropiate for a gateway environment.'.t()]
+            ]
+        }),
+
         signatureActions: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'value', 'description'],
             data: [
