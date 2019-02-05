@@ -34,14 +34,44 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
             xtype: 'appstate'
         },{
             xtype: 'fieldset',
+            title: '<i class="fa fa-cogs"></i> ' + "Settings".t(),
+            defaults: {
+                labelWidth: 200
+            },
+            padding: 10,
+            hidden: true,
+            collapsed: true,
+            disabled: true,
+            bind: {
+                collapsed: '{state.on !== true || state.power === true}',
+                disabled: '{state.on !== true || state.power === true}',
+                hidden: '{state.on !== true || state.power === true}'
+            },
+            items:[{
+                xtype: 'combo',
+                fieldLabel: 'When to scan'.t(),
+                bind: '{settings.iptablesProcessing}',
+                queryMode: 'local',
+                editable: false,
+                displayField: 'description',
+                valueField: 'value',
+                matchFieldWidth: false,
+                width: 425,
+                store: Ung.apps.intrusionprevention.Main.processingStage,
+                listConfig:   {
+                    itemTpl: '<div data-qtip="{detail}">{description}</div>'
+                },
+            }]
+        },{
+            xtype: 'fieldset',
             title: '<i class="fa fa-clock-o"></i> ' + "Overview".t(),
             defaults: {
                 labelWidth: 200
             },
             padding: 10,
+            hidden: true,
             collapsed: true,
             disabled: true,
-            hidden: true,
             bind: {
                 collapsed: '{state.on !== true || state.power === true}',
                 disabled: '{state.on !== true || state.power === true}',

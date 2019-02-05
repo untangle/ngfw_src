@@ -24,18 +24,20 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private List<IntrusionPreventionVariable> variables = new LinkedList<>();
     private Integer iptablesNfqNumber = 2930;
     private Integer iptablesMaxScanSize = 1024;
+    private String iptablesProcessing = "pre";
     private String blockAction = "reject";
     private JSONObject suricataSettings = new JSONObject();
 
     public IntrusionPreventionSettings() { }
 
-    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<IntrusionPreventionSignature> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize)
+    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<IntrusionPreventionSignature> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize, String iptablesProcessing)
     {
         this.rules = rules;
         this.signatures = signatures;
         this.variables = variables;
         this.iptablesNfqNumber = iptablesNfqNumber;
         this.iptablesMaxScanSize = iptablesMaxScanSize;
+        this.iptablesProcessing = iptablesProcessing;
     }
 
     public Integer getVersion() { return version; }
@@ -67,6 +69,9 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public Integer getIptablesMaxScanSize() { return iptablesMaxScanSize; }
     public void setIptablesMaxScanSize(Integer iptablesMaxScanSize) { this.iptablesMaxScanSize = iptablesMaxScanSize; }
+
+    public String getIptablesProcessing() { return iptablesProcessing; }
+    public void setIptablesProcessing(String iptablesProcessing) { this.iptablesProcessing = iptablesProcessing; }
 
     public String getBlockAction() { return blockAction; }
     public void setBlockAction(String blockAction) { this.blockAction = blockAction; }
