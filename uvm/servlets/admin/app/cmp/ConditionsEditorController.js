@@ -390,18 +390,20 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                                 if(Util.isDestroyed(field)){
                                     return;
                                 }
-                                Rpc.asyncData( app, 'getRuleConditonalUserEntries')
-                                .then(function(result){
-                                    if(Util.isDestroyed(field)){
-                                        return;
-                                    }
-                                    Ext.Array.each( data.reverse(), function (record) {
-                                        result.list.unshift(record);
+                                if(app){
+                                    Rpc.asyncData( app, 'getRuleConditonalUserEntries')
+                                    .then(function(result){
+                                        if(Util.isDestroyed(field)){
+                                            return;
+                                        }
+                                        Ext.Array.each( data.reverse(), function (record) {
+                                            result.list.unshift(record);
+                                        });
+                                        field.getStore().loadData(result.list);
+                                    }, function(ex) {
+                                        Util.handleException(ex);
                                     });
-                                    field.getStore().loadData(result.list);
-                                }, function(ex) {
-                                    Util.handleException(ex);
-                                });
+                                }
                             }, function(ex) {
                                 Util.handleException(ex);
                             });
@@ -444,18 +446,20 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                                 if(Util.isDestroyed(field)){
                                     return;
                                 }
-                                Rpc.asyncData( app, 'getRuleConditionalGroupEntries')
-                                .then(function(result){
-                                    if(Util.isDestroyed(field)){
-                                        return;
-                                    }
-                                    Ext.Array.each( data.reverse(), function (record) {
-                                        result.list.unshift(record);
+                                if(app){
+                                    Rpc.asyncData( app, 'getRuleConditionalGroupEntries')
+                                    .then(function(result){
+                                        if(Util.isDestroyed(field)){
+                                            return;
+                                        }
+                                        Ext.Array.each( data.reverse(), function (record) {
+                                            result.list.unshift(record);
+                                        });
+                                        field.getStore().loadData(result.list);
+                                    }, function(ex) {
+                                        Util.handleException(ex);
                                     });
-                                    field.getStore().loadData(result.list);
-                                }, function(ex) {
-                                    Util.handleException(ex);
-                                });
+                                }
                             }, function(ex) {
                                 Util.handleException(ex);
                             });
@@ -498,18 +502,20 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                                 if(Util.isDestroyed(field)){
                                     return;
                                 }
-                                Rpc.asyncData( app, 'getRuleConditionalDomainEntries')
-                                .then(function(result){
-                                    if(Util.isDestroyed(field)){
-                                        return;
-                                    }
-                                    Ext.Array.each( result.list, function (record) {
-                                        data.push({value: record, description: record});
+                                if(app){
+                                    Rpc.asyncData( app, 'getRuleConditionalDomainEntries')
+                                    .then(function(result){
+                                        if(Util.isDestroyed(field)){
+                                            return;
+                                        }
+                                        Ext.Array.each( result.list, function (record) {
+                                            data.push({value: record, description: record});
+                                        });
+                                        field.getStore().loadData(data);
+                                    }, function(ex) {
+                                        Util.handleException(ex);
                                     });
-                                    field.getStore().loadData(data);
-                                }, function(ex) {
-                                    Util.handleException(ex);
-                                });
+                                }
                             }, function(ex) {
                                 Util.handleException(ex);
                             });
