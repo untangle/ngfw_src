@@ -29,6 +29,7 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.PolicyManager;
 
 /**
  * Reports manager implementation for reports manager API
@@ -834,6 +835,19 @@ public class ReportsManagerImpl implements ReportsManager
     public List<String> getRecommendedReportIds()
     {
         return FixedReports.ReservedReports;
+    }
+
+    /**
+     * Return list of policies if defined.
+     * @return List of polciies
+     */
+    public ArrayList<JSONObject> getPoliciesInfo(){
+        ArrayList<JSONObject> policies = null;
+        PolicyManager policyManager = (PolicyManager)UvmContextFactory.context().appManager().app( "policy-manager");
+        if (policyManager != null) {
+            return policyManager.getPoliciesInfo();
+        }
+        return policies;
     }
 
     /** 
