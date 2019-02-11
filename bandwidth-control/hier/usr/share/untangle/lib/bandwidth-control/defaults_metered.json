@@ -92,7 +92,7 @@
                         {
                             "conditionType": "DST_PORT",
                             "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
-                            "value": "3389,5300"
+                            "value": "3389,5900"
                         }
                     ]
                 },
