@@ -400,21 +400,6 @@ public class ApplicationControlApp extends AppBase
         matchers = new LinkedList<>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
         ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "443");
-        ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/HTTP*", true);
-        matchers.add(ruleMatcher1);
-        matchers.add(ruleMatcher2);
-        matchers.add(ruleMatcher3);
-        action = new ApplicationControlLogicRuleAction(ApplicationControlLogicRuleAction.ActionType.BLOCK, Boolean.TRUE);
-        rule.setConditions(matchers);
-        rule.setAction(action);
-        rule.setDescription("Block all TCP port 443 traffic that is not HTTP/HTTPS.");
-        rule.setId(ruleNumber++);
-        logicRules.add(rule);
-
-        rule = new ApplicationControlLogicRule();
-        matchers = new LinkedList<>();
-        ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.PROTOCOL, "TCP");
-        ruleMatcher2 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.DST_PORT, "443");
         ruleMatcher3 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_PROTOCHAIN, "*/YOUTUBE*");
         matchers.add(ruleMatcher1);
         matchers.add(ruleMatcher2);
