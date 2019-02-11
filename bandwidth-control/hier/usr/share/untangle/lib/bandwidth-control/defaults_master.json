@@ -76,7 +76,7 @@
                     "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     "conditionType":"PROTOCOL"
                 }, {
-                    "value":"3389,5300",
+                    "value":"3389,5900",
                     "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     "conditionType":"DST_PORT"
                 }]
