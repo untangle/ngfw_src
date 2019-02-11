@@ -289,7 +289,7 @@ Ext.define('Ung.util.Util', {
             details += "<b>" + "Exception java stack".t() +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
         if ( exception.stack )
             details += "<b>" + "Exception js stack".t() +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
-        if ( Rpc.directData('rpc.fullVersionAndRevision') != null )
+        if ( rpc.fullVersionAndRevision != null )
             details += "<b>" + "Build".t() +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
         details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
         if ( exception.response )
