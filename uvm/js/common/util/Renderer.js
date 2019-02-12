@@ -466,15 +466,27 @@ Ext.define('Ung.util.Renderer', {
         return ( value < 0 || value === undefined ) ? 'new'.t() : value;
     },
 
+    policiesMap: null,
     policy_id: function (value) {
         var policyMap = {};
-        Ext.getStore('policiestree').each(function (policy) {
-            policyMap[policy.get('policyId')] = policy.get('name');
-        });
+        if(Renderer.policiesMap == null){
+            var policiesInfo = null;
+            if(Rpc.exists('rpc.reportsManager')){
+                policiesInfo = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
+            }else{
+                policiesInfo = Rpc.directData('rpc.appManager').app('policy-manager').getPoliciesInfo();
+            }
+            if(policiesInfo && policiesInfo.list){
+                Renderer.policiesMap = {};
+                policiesInfo.list.forEach(function(policy){
+                    Renderer.policiesMap[policy.policyId] = policy.name;
+                });
+            }
+        }
         if (!value || value === 0) {
             return 'None'.t() + ' [0]';
         }
-        return policyMap[value] || value.toString();
+        return Renderer.policiesMap[parseInt(value, 10)] || value.toString();
     },
 
 });
