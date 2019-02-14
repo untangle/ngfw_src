@@ -2,7 +2,7 @@
 
 if [ "$1" = "purge" ] ; then
     rm -f /etc/init.d/untangle-vm
-    deb-systemd-helper disable untangle-vm > /dev/null
+    deb-systemd-helper disable untangle-vm.service > /dev/null
 fi
 
 exit 0
