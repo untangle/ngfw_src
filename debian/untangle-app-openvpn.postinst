@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Disable auto-starting of OpenVPN daemon
-deb-systemd-helper disable openvpn
+deb-systemd-helper disable openvpn.service
 
 # Hide "WARN: Could not open database for 1536 bits. skipped" when starting daemon
 # https://help.ubuntu.com/community/OpenVPN
