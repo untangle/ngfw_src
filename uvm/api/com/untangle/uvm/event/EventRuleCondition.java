@@ -202,8 +202,9 @@ public class EventRuleCondition
         String valueStr = valueObj.toString().toLowerCase();
         if (logger.isDebugEnabled()) logger.debug("DEBUG string check: " + valueStr + " against " + fieldValue );
 
-        if ( this.stringGlobMatcher == null )
-            this.stringGlobMatcher = new GlobMatcher( fieldValue );
+        if ( this.stringGlobMatcher == null ){
+            this.stringGlobMatcher = GlobMatcher.getMatcher(fieldValue);
+        }
         if ( this.stringGlobMatcher == null )
             return false;
 
