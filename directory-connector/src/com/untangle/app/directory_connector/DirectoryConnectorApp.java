@@ -22,6 +22,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.GroupMatcher;
+import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 /**
@@ -298,8 +300,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return users;
     }
 
-    // ????? should we be adding these "standard"?  Group adds them manually?
-
     /**
      * Get all groups from all AD for rule conditions
      *
@@ -434,7 +434,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
-     * Determine if user is part of a domain
+     * Determine if user is part of a domain using string.
      *
      * @param user
      *  Username string to lookup.
@@ -448,6 +448,23 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             return false;
         }
         return this.groupManager.isMemberOfDomain(user, domain);
+    }
+
+    /**
+     * Determine if user is part of a domain using a matcher
+     *
+     * @param user
+     *  Username string to lookup.
+     * @param domainMatcher
+     *  Domain marcher to compare
+     * @return
+     *      true if user is in specified domain, false otherwise
+     */
+    public boolean isMemberOfDomain(String user, DomainMatcher domainMatcher){
+        if (!isLicenseValid()) {
+            return false;
+        }
+        return this.groupManager.isMemberOfDomain(user, domainMatcher);
     }
 
     /**
@@ -487,6 +504,27 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Determine if user is part of a group.
+     *
+     * @param user
+     *      Username to check.
+     * @param groupMatcher
+     *      GroupMatcher to check.
+     * @return
+     *      true if user is member, false otherwise.
+     */
+    public boolean isMemberOfGroup(String user, GroupMatcher groupMatcher)
+    {
+        if (!isLicenseValid()) {
+            return false;
+        }
+
+        return this.groupManager.isMemberOfGroup(user, groupMatcher);
+    }
+
+
+
+    /**
      * Determine if user is part of any group.
      *
      * @param user
@@ -504,7 +542,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
-     * Determine if user is part of any group.
+     * Return user group list for a domain.
      *
      * @param user
      *      Username to check.
@@ -653,8 +691,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         if (groupManager == null) {
             this.groupManager = new GroupManager(this);
             this.groupManager.start();
+        }else{
+            this.refreshGroupCache();
         }
-        this.refreshGroupCache();
         this.updateRadiusClient(settings.getRadiusSettings());
     }
 
