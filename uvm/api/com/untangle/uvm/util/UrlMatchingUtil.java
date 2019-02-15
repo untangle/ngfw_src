@@ -93,7 +93,7 @@ public class UrlMatchingUtil
              * and attached to the rule
              */
             if (matcherO == null || !(matcherO instanceof UrlMatcher)) {
-                matcher = new UrlMatcher(rule.getString());
+                matcher = UrlMatcher.getMatcher(rule.getString());
                 rule.attach(matcher);
             } else {
                 matcher = (UrlMatcher) matcherO;
