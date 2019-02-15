@@ -103,7 +103,7 @@ public class TriggerRule extends EventRule
      */
     public void setTagName( String newValue )
     {
-        this.globMatcher = new GlobMatcher( newValue );
+        this.globMatcher = GlobMatcher.getMatcher( newValue );
         this.tagName = newValue;
     }
 
