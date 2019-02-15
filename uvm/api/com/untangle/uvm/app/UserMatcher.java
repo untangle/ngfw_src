@@ -4,7 +4,9 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.util.GlobUtil;
@@ -19,6 +21,13 @@ public class UserMatcher
     private static final String MARKER_AUTHENTICATED = "[authenticated]";
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static Map<String,UserMatcher> MatcherCache;
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+        MatcherCache.put(MARKER_UNAUTHENTICATED, new UserMatcher(MARKER_UNAUTHENTICATED));
+        MatcherCache.put(MARKER_AUTHENTICATED, new UserMatcher(MARKER_AUTHENTICATED));
+    }
 
     /**
      * This stores the string representation of this matcher
@@ -42,7 +51,7 @@ public class UserMatcher
      * This stores the username if this is a single matcher
      */
     private String single = null;
-    private String regexValue = null;
+    private Pattern regex = null;
 
     /**
      * if this user matcher is a list of user matchers, this list stores the
@@ -59,6 +68,21 @@ public class UserMatcher
     public UserMatcher(String matcher)
     {
         initialize(matcher);
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  matcher String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized UserMatcher getMatcher(String matcher){
+        UserMatcher userMatcher = MatcherCache.get(matcher);
+        if(userMatcher == null){
+            userMatcher = new UserMatcher(matcher);
+            MatcherCache.put(matcher, userMatcher);
+        }
+        return userMatcher;
     }
 
     /**
@@ -80,8 +104,7 @@ public class UserMatcher
                 return false;
             }
             if (value.equalsIgnoreCase(this.single)) return true;
-            if (Pattern.matches(this.regexValue, value.toLowerCase())) return true;
-            return false;
+            return this.regex.matcher(value).matches();
 
         case AUTHENTICATED:
             return (value != null && !"".equals(value));
@@ -164,7 +187,7 @@ public class UserMatcher
          */
         this.type = UserMatcherType.SINGLE;
         this.single = matcher;
-        this.regexValue = GlobUtil.globToRegex(matcher);
+        this.regex = Pattern.compile(GlobUtil.globToRegex(matcher));
 
         return;
     }

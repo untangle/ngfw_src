@@ -4,7 +4,9 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -19,6 +21,11 @@ public class GlobMatcher
     private static final String MARKER_SEPERATOR = ",";
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static Map<String,GlobMatcher> MatcherCache;
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     /**
      * This stores the string representation of this matcher
@@ -46,7 +53,7 @@ public class GlobMatcher
     /**
      * This stores the regex string if the single matcher is a glob
      */
-    private Pattern singleRegex = null;
+    private Pattern regex = null;
 
     /**
      * if this port matcher is a list of port matchers, this list stores the
@@ -89,7 +96,7 @@ public class GlobMatcher
                 return false;
             }
             if (str.equalsIgnoreCase(this.single)) return true;
-            if (this.singleRegex.matcher(str).matches()) return true;
+            if (this.regex.matcher(str).matches()) return true;
             return false;
 
         case LIST:
@@ -103,6 +110,21 @@ public class GlobMatcher
             return false;
 
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  matcher String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized GlobMatcher getMatcher(String matcher){
+        GlobMatcher globMatcher = MatcherCache.get(matcher);
+        if(globMatcher == null){
+            globMatcher = new GlobMatcher(matcher);
+            MatcherCache.put(matcher, globMatcher);
+        }
+        return globMatcher;
     }
 
     /**
@@ -152,8 +174,7 @@ public class GlobMatcher
          */
         this.type = GlobMatcherType.SINGLE;
         this.single = matcher;
-        String re = GlobUtil.globToRegex(matcher);
-        this.singleRegex = Pattern.compile(re);
+        this.regex = Pattern.compile(GlobUtil.globToRegex(matcher));
 
         return;
     }

@@ -4,8 +4,11 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -21,6 +24,14 @@ public class GroupMatcher
     private static final String MARKER_NONE = "[none]";
 
     private static GroupMatcher ANY_MATCHER = new GroupMatcher(MARKER_ANY);
+    private static GroupMatcher NONE_MATCHER = new GroupMatcher(MARKER_NONE);
+
+    private static Map<String,GroupMatcher> MatcherCache;
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+        MatcherCache.put(MARKER_ANY, new GroupMatcher(MARKER_ANY));
+        MatcherCache.put(MARKER_NONE, new GroupMatcher(MARKER_NONE));
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -46,7 +57,7 @@ public class GroupMatcher
      * This stores the groupname if this is a single matcher
      */
     public String single = null;
-    private String regexValue = null;
+    Pattern regex = null;
 
     /**
      * if this port matcher is a list of port matchers, this list stores the
@@ -86,8 +97,7 @@ public class GroupMatcher
         case SINGLE:
             if (value == null) return false;
             if (value.equalsIgnoreCase(this.single)) return true;
-            if (Pattern.matches(this.regexValue, value)) return true;
-            return false;
+            return this.regex.matcher(value).matches();
 
         case LIST:
             for (GroupMatcher child : this.children) {
@@ -114,12 +124,52 @@ public class GroupMatcher
 
     /**
      * Get a matcher that will match any group
-     * 
+     *
      * @return The matcher
      */
     public static synchronized GroupMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
+    }
+
+    /**
+     * Get a matcher that will not match any group.
+     *
+     * @return The matcher
+     */
+    public static synchronized GroupMatcher getNoneMatcher()
+    {
+        return NONE_MATCHER;
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  matcher String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized GroupMatcher getMatcher(String matcher){
+        GroupMatcher groupMatcher = MatcherCache.get(matcher);
+        if(groupMatcher == null){
+            groupMatcher = new GroupMatcher(matcher);
+            MatcherCache.put(matcher, groupMatcher);
+        }
+        return groupMatcher;
+    }
+
+    /**
+     * Determine if value is a string that would be a matcher or not.
+     *
+     * @param  candidate String to check.
+     * @return       Boolean true if would be matcher or set, false otherwise.
+     */
+    public static Boolean isMatchable(String candidate){
+        return (candidate.indexOf(';') > -1 ||
+            candidate.indexOf(',') > -1 ||
+            candidate.indexOf('*') > -1  ||
+            candidate.indexOf(MARKER_SEPERATOR) > -1  ||
+            candidate.indexOf(MARKER_ANY) > -1  ||
+            candidate.indexOf(MARKER_NONE) > -1 );
     }
 
     /**
@@ -164,7 +214,7 @@ public class GroupMatcher
             return;
         }
         if (MARKER_NONE.equals(matcher)) {
-            this.type = GroupMatcherType.ANY;
+            this.type = GroupMatcherType.NONE;
             return;
         }
 
@@ -173,7 +223,7 @@ public class GroupMatcher
          */
         this.type = GroupMatcherType.SINGLE;
         this.single = matcher;
-        this.regexValue = GlobUtil.globToRegex(matcher);
+        this.regex = Pattern.compile(GlobUtil.globToRegex(matcher));
 
         return;
     }
