@@ -4,7 +4,9 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -19,6 +21,11 @@ public class UrlMatcher implements java.io.Serializable
 
     private static final String LEFT_SIDE_ANCHOR = "^([a-zA-Z_0-9-]*\\.)*";
     private static final String RIGHT_SIDE_ANCHOR = ".*$";
+
+    private static Map<String,UrlMatcher> MatcherCache;
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     /**
      * Original string value
@@ -105,6 +112,21 @@ public class UrlMatcher implements java.io.Serializable
 
         Matcher matcher = this.regexPattern.matcher(url);
         return matcher.matches();
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  matcher String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized UrlMatcher getMatcher(String matcher){
+        UrlMatcher globMatcher = MatcherCache.get(matcher);
+        if(globMatcher == null){
+            globMatcher = new UrlMatcher(matcher);
+            MatcherCache.put(matcher, globMatcher);
+        }
+        return globMatcher;
     }
 
     /**
