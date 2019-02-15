@@ -18,14 +18,24 @@ public interface DirectoryConnector
     public boolean isMemberOfGroup( String username, String group );
 
     /**
+     * Query if a user is a member of a group (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfGroup( String username, GroupMatcher group );
+
+    /**
      * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
      */
     public List<String> memberOfGroup(String user);
 
     /**
-     * Query if a user is a member of a group (Currently this only applies to Active Directory)
+     * Query if a user is a member of a domain (Currently this only applies to Active Directory)
      */
-    public boolean isMemberOfDomain( String username, String group );
+    public boolean isMemberOfDomain( String username, String domain );
+
+    /**
+     * Query if a user is a member of a domain (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfDomain( String username, DomainMatcher domainMatcher );
 
     /**
      * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
