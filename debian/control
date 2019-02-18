@@ -291,7 +291,7 @@ Architecture: all
 Conflicts: untangle-node-intrusion-prevention
 Replaces: untangle-node-intrusion-prevention
 Provides: untangle-node-intrusion-prevention
-Depends: ${misc:Depends}, untangle-vm, untangle-suricata-config, python, python-ruamel.yaml
+Depends: ${misc:Depends}, untangle-vm, untangle-suricata-config, python, python3-ruamel.yaml
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
