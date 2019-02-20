@@ -197,12 +197,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        loopLimit = 4
-        # Send four requests for test rebustnewss 
-        while (loopLimit > 0):
-            time.sleep(1)
-            loopLimit -= 1
-            remote_control.run_command("ping -c 1 " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
+        remote_control.run_command("nmap -sP " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
