@@ -28,6 +28,7 @@ public class GroupManager
 {
     /* Default amount of time between updating the Group Cache */
     private static long DEFAULT_GROUP_RENEW_MS = (long) 30 * 60 * 1000; /* every 30 minutes */
+    private static long DEFAULT_GROUP_RUN_TIMEOUT = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
 
     private static final int CACHE_COUNT_MAX = 4000;
 
@@ -57,7 +58,7 @@ public class GroupManager
     /**
      * Pulse thread to re-read the AD into cache
      */
-    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", new RenewCache(), DEFAULT_GROUP_RENEW_MS, true);
+    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", new RenewCache(), DEFAULT_GROUP_RENEW_MS, true, DEFAULT_GROUP_RUN_TIMEOUT);
 
     /**
      * This is used to cap the number of negative cache hits. This way someone
@@ -676,7 +677,6 @@ public class GroupManager
              * of control.
              */
             GroupManager.this.cacheCount  = 0;
-
             logger.info("Renewing AD Group Cache: done");
         }
 
