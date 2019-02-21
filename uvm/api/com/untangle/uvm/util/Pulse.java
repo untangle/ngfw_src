@@ -4,6 +4,12 @@
 
 package com.untangle.uvm.util;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -57,12 +63,15 @@ public class Pulse implements Runnable
     /* This is the next time that you should wake up */
     private long nextTask = 0;
 
+    /* Thread run timeout.  If 0, no timeout (default). */
+    private long timeout = 0;
+
     /* The thread priority */
     private int threadPriority;
 
     /**
      * Create a new pulse with the default name and isDaemon setting.
-     * 
+     *
      * @param task
      *        The task
      * @param delay
@@ -75,7 +84,7 @@ public class Pulse implements Runnable
 
     /**
      * Create a new pulse and set its name, task, delay
-     * 
+     *
      * @param name
      *        The name
      * @param task
@@ -90,7 +99,7 @@ public class Pulse implements Runnable
 
     /**
      * Create a new pulse and set its name, task, delay, extraInitialDelay
-     * 
+     *
      * @param name
      *        The name
      * @param task
@@ -107,7 +116,7 @@ public class Pulse implements Runnable
 
     /**
      * Create a new pulse and set its name, task, delay, run
-     * 
+     *
      * @param name
      *        The name
      * @param task
@@ -129,8 +138,34 @@ public class Pulse implements Runnable
     }
 
     /**
+     * Create a new pulse and set its name, task, delay, run
+     *
+     * @param name
+     *        The name
+     * @param task
+     *        The task
+     * @param delay
+     *        The delay
+     * @param runImmediately
+     *        The run immediately flag
+     * @param timeout
+     *        Timeout for process.
+     */
+    public Pulse(String name, Runnable task, long delay, boolean runImmediately, long timeout)
+    {
+        this.name = name;
+        this.task = task;
+        this.delay = delay;
+        if (runImmediately) this.extraInitialDelay = -delay; // no delay on first run
+        else this.extraInitialDelay = 0;
+        this.threadPriority = Thread.MIN_PRIORITY;
+        this.timeout = timeout;
+        this.logPrefix = "Pulse[" + task.getClass().getSimpleName() + "] ";
+    }
+
+    /**
      * Create a new pulse, optionally setting the name and isDaemon setting.
-     * 
+     *
      * @param name
      *        The name
      * @param task
@@ -356,21 +391,41 @@ public class Pulse implements Runnable
             }
 
             /* Run the task */
-            try {
-                long t0 = 0, t1 = 0;
-                if (logger.isDebugEnabled()) {
-                    t0 = System.currentTimeMillis();
-                    logger.debug(logPrefix + "running ...");
+            if (timeout != 0){
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Future<Integer> future = executor.submit( new Callable<Integer>(){
+                    /**
+                     * Call the run task.
+                     * @return Integer value.
+                     * @throws Exception     On error.
+                     */
+                    public Integer call() throws Exception{
+                        task.run();
+                        return 0;
+                    }
+                });
+                try{
+                    future.get(timeout, TimeUnit.MILLISECONDS);
+                }catch(Exception e){
+                    logger.warn(logPrefix + "exception running task", e);
                 }
-                task.run();
-                if (logger.isDebugEnabled()) {
-                    t1 = System.currentTimeMillis();
-                    logger.debug(logPrefix + "running ... done (" + (t1 - t0) + " ms)");
+                executor.shutdownNow();
+            }else{
+                try {
+                    long t0 = 0, t1 = 0;
+                    if (logger.isDebugEnabled()) {
+                        t0 = System.currentTimeMillis();
+                        logger.debug(logPrefix + "running ...");
+                    }
+                    task.run();
+                    if (logger.isDebugEnabled()) {
+                        t1 = System.currentTimeMillis();
+                        logger.debug(logPrefix + "running ... done (" + (t1 - t0) + " ms)");
+                    }
+                } catch (Exception e) {
+                    logger.warn(logPrefix + "exception running task", e);
                 }
-            } catch (Exception e) {
-                logger.warn(logPrefix + "exception running task", e);
             }
-
             /* Notify anyone waiting */
             synchronized (this) {
                 /* Increment the number of counts */
