@@ -94,7 +94,7 @@ Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-stretch-armel | untangle-kernel-modules-stretch-armhf | untangle-kernel-modules-arm64, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-stretch-armel | untangle-kernel-modules-stretch-armhf | untangle-kernel-modules-stretch-arm64, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
 
