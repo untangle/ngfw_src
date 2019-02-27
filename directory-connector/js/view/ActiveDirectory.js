@@ -87,6 +87,20 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                         bind: '{record.domain}'
                     }
                 }, {
+                    xtype: 'checkcolumn',
+                    header: 'Azure'.t(),
+                    dataIndex: 'azure',
+                    width: Renderer.actionWidth,
+                    listeners: {
+                        beforecheckchange: 'azureChanger'
+                    },
+                }, {
+                    header: 'OU Filters'.t(),
+                    width: Renderer.messageWidth,
+                    dataIndex: 'record.OUFilters.list',
+                    renderer: 'ouFilterRenderer',
+                    flex: 1
+                }, {
                     header: 'Host'.t(),
                     dataIndex: 'LDAPHost',
                     flex: 1,
@@ -112,18 +126,13 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                         beforecheckchange: 'portChanger'
                     },
                 }, {
-                    header: 'OU Filters'.t(),
-                    width: Renderer.messageWidth,
-                    dataIndex: 'record.OUFilters.list',
-                    renderer: 'ouFilterRenderer',
-                    flex: 1
-                }, {
                     xtype: 'actioncolumn',
                     header: 'Test'.t(),
                     width: Renderer.actionWidth,
                     iconCls: 'fa fa-cogs',
                     align: 'center',
                     handler: 'serverTest',
+                    isDisabled: 'isServerDisabled'
                 }, {
                     xtype: 'actioncolumn',
                     header: 'Users'.t(),
@@ -131,6 +140,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     iconCls: 'fa fa-user',
                     align: 'center',
                     handler: 'serverUsers',
+                    isDisabled: 'isServerDisabled'
                 }, {
                     xtype: 'actioncolumn',
                     header: 'Map'.t(),
@@ -138,6 +148,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     iconCls: 'fa fa-user',
                     align: 'center',
                     handler: 'serverGroupMap',
+                    isDisabled: 'isServerDisabled'
                 }],
 
                 editorXtype: 'ung.cmp.unactivedirectoryserverrecordeditor',
@@ -150,24 +161,12 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     emptyText: '[no domain]'.t(),
                     allowBlank: false
                 },{
-                    xtype: 'textfield',
-                    fieldLabel: 'Host'.t(),
-                    bind: '{record.LDAPHost}',
-                    emptyText: '[no host]'.t(),
-                    allowBlank: false
-                },{
-                    xtype: 'textfield',
-                    fieldLabel: 'Port'.t(),
-                    bind: '{record.LDAPPort}',
-                    emptyText: '[no port]'.t(),
-                    allowBlank: false
-                },{
                     xtype: 'checkbox',
-                    fieldLabel: 'Secure'.t(),
-                    bind: '{record.LDAPSecure}',
-                    handler: 'portChanger',
+                    fieldLabel: 'Azure'.t(),
+                    bind: '{record.azure}',
+                    handler: 'azureChanger',
                     listeners: {
-                        beforecheckchange: 'portChanger'
+                        beforecheckchange: 'azureChanger'
                     }
                 },{
                     xtype: 'container',
@@ -208,6 +207,26 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                         html: '(optional)'.t(),
                         cls: 'boxlabel'
                     }]
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Host'.t(),
+                    bind: '{record.LDAPHost}',
+                    emptyText: '[no host]'.t(),
+                    allowBlank: false
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Port'.t(),
+                    bind: '{record.LDAPPort}',
+                    emptyText: '[no port]'.t(),
+                    allowBlank: false
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: 'Secure'.t(),
+                    bind: '{record.LDAPSecure}',
+                    handler: 'portChanger',
+                    listeners: {
+                        beforecheckchange: 'portChanger'
+                    }
                 }, {
                     xtype: 'textfield',
                     fieldLabel: 'Authentication Login'.t(),

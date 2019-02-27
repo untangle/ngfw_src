@@ -638,7 +638,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 adSettings.getLDAPHost(),
                 adSettings.getLDAPPort(),
                 adSettings.getLDAPSecure(),
-                adSettings.getOUFilters()
+                adSettings.getOUFilters(),
+                false
             );
             adServer.setEnabled( adSettings.getEnabled() );
             adSettings.setSuperuser(null);
