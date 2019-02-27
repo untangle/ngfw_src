@@ -25,6 +25,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     private List<String> ouFilters = new LinkedList<>();
     private int ldapPort;
     private boolean isEnabled = false;
+    private boolean azure = false;
 
     /**
      * Initialize active directory server.
@@ -48,8 +49,10 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      *      true to access securely, false to use non-secure mode.
      * @param ouFilters
      *      Filters to use in search.
+     * @param azure
+     *      true if Azure enable, otherwise false.
      */
-    public ActiveDirectoryServer(String superuser, String superuserPass, String domain, String ldapHost, int ldapPort, boolean ldapSecure, List<String> ouFilters)
+    public ActiveDirectoryServer(String superuser, String superuserPass, String domain, String ldapHost, int ldapPort, boolean ldapSecure, List<String> ouFilters, boolean azure)
     {
         this.superuser = superuser;
         this.superuserPass = superuserPass;
@@ -58,7 +61,23 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         this.ldapPort = ldapPort;
         this.ldapSecure = ldapSecure;
         this.ouFilters = new LinkedList<>();
+        this.azure = azure;
     }
+
+    /**
+     * Returns true if azure is enabled.
+     *
+     * @return
+     *      true if azure is enabled, otherwise false
+     */
+    public boolean getEnabled() { return isEnabled; }
+    /**
+     * Sets whether azure is enabled.
+     *
+     * @param azure
+     *      true if azure is enabled, otherwise false
+     */
+    public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
 
     /**
      * Returns true if server is enabled.
@@ -66,14 +85,16 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      * @return
      *      true if server is enabled, otherwise false
      */
-    public boolean getEnabled() { return isEnabled; }
+    public boolean getAzure() { return azure; }
     /**
      * Sets whether server is enabled.
      *
-     * @param isEnabled
+     * @param azure
      *      true if server is enabled, otherwise false
      */
-    public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
+    public void setAzure(boolean azure) { this.azure = azure; }
+
+
 
     /**
      * Returns superuser username.

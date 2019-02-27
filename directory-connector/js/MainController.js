@@ -90,22 +90,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         window.open("../userapi/");
     },
 
-    portChanger: function(elem){
-        var vm = this.getViewModel();
-
-        var secureValue = elem.getValue();
-        var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
-        if( secureValue ){
-            if( currentPortValue == "389"){
-                vm.set("settings.activeDirectorySettings.LDAPPort", "636");
-            }
-        }else{
-            if( currentPortValue == "636"){
-                vm.set("settings.activeDirectorySettings.LDAPPort", "389");
-            }
-        }
-    },
-
     closeWindow: function (button) {
         button.up('window').close();
     },
@@ -283,6 +267,27 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
         return record.get('OUFilters').list.join(', ');
     },
 
+    azureChanger: function(elem, rowIndex, checked){
+        var record;
+        if( typeof(rowIndex) == 'object'){
+            record = rowIndex;
+        }else{
+            record = elem.getView().getRecord(rowIndex);
+        }
+
+        var azureValue;
+        if(checked === undefined){
+            azureValue = elem.getValue();
+        }else{
+            azureValue = checked;
+        }
+
+        if(azureValue){
+            record.set('LDAPSecure', true);
+            this.portChanger(null, record, true);
+        }
+    },
+
     portChanger: function(elem, rowIndex, checked){
         var record;
         if( typeof(rowIndex) == 'object'){
@@ -329,7 +334,11 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
 
     serverGroupMap: function( element, rowIndex, columnIndex, column, pos, record){
         this.getView().up('[itemId=appCard]').getController().activeDirectoryGroupMap(record.get('domain'));
-    }
+    },
+
+    isServerDisabled: function(table, rowIndex, colIndex, item, record){
+        return !record.get('enabled');
+    },
 
 });
 
@@ -370,6 +379,10 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditorCo
             v.up('grid').getView().refresh();
         });
         v.close();
+    },
+
+    azureChanger: function(element){
+        this.getView().up('grid').getController().azureChanger(element, this.getViewModel().get('record') );
     },
 
     portChanger: function(element){

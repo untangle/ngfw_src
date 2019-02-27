@@ -47,6 +47,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     
     private static final String[] USER_CLASS_TYPE = { "user" };
     private static final String[] GROUP_CLASS_TYPE = { "group" };
+    private static final String AZURE_USERS_OU = "OU=AADDC Users";
 
     /**
      * Construct a new AD adapter with the given settings
@@ -171,6 +172,9 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
 
         if( bases.isEmpty()){
+            if(settings.getAzure()){
+                bases.add(AZURE_USERS_OU + "," + domainComponents(settings.getDomain()));
+            }
             bases.add(domainComponents(settings.getDomain()));
         }
         return bases;
@@ -260,7 +264,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
             for(Map<String, String[]> map : list) {
                 GroupEntry entry = toGroupEntry(map);
-                if(entry != null) {
+                if(entry != null && !ret.contains(entry)) {
                     ret.add(entry);
                 }
             }
@@ -596,7 +600,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         try {
             String searchStr = "(&"
                     + orStrings("objectClass=", getUserClassType())
-                    + "(sAMAccountName=" + uid + "))";
+                    + "(" + (settings.getAzure() ? "userPrincipalName" : "sAMAccountName") + "=" + uid + "))";
             SearchResult result = queryFirstAsSuperuser(getSearchBases(),
                     searchStr);
             if (result != null)

@@ -164,7 +164,7 @@ abstract class LdapAdapter
 
             for(Map<String, String[]> map : list) {
                 UserEntry entry = toUserEntry(map);
-                if(entry != null) {
+                if(entry != null && !ret.contains(entry)) {
                     ret.add(entry);
                 }
             }
