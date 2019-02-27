@@ -255,18 +255,20 @@ public class ActiveDirectoryManagerImpl
      */
     public boolean authenticate( String username, String pwd )
     {
-        String domain = null;
+        String authUsername = null;
+        String authDomain = null;
         if(username.contains("\\")){
             String[] domainUsername = username.split("\\\\");
-            domain = domainUsername[0];
-            username = domainUsername[1];
+            authDomain = domainUsername[0];
+            authUsername = domainUsername[1];
         }
         if(username.contains("@")){
             String[] domainUsername = username.split("@");
-            username = domainUsername[0];
-            domain = domainUsername[1];
+            authUsername = domainUsername[0];
+            authDomain = domainUsername[1];
         }
 
+        boolean azure = false;
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -274,15 +276,21 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-            if(domain != null ){
-                if(!adAdapter.getSettings().getDomain().equals(domain) &&
-                   !adAdapter.getSettings().getDomain().startsWith(domain+".") ){
-                    continue;
+            azure = adAdapter.getSettings().getAzure();
+            if(!azure){
+                /**
+                 * Azure usernames can be in different domains, so don't do specific matching.
+                 */
+                if(authDomain != null ){
+                    if(!adAdapter.getSettings().getDomain().equals(authDomain) &&
+                    !adAdapter.getSettings().getDomain().startsWith(authDomain+".") ){
+                        continue;
+                    }
                 }
             }
 
             try {
-                if(adAdapter.authenticate(username, pwd)) {
+                if(adAdapter.authenticate(azure ? username : authUsername, pwd)) {
                     return true;
                 }
             } catch (ServiceUnavailableException x) {
