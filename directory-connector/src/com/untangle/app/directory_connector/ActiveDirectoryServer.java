@@ -74,7 +74,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     /**
      * Sets whether azure is enabled.
      *
-     * @param azure
+     * @param isEnabled
      *      true if azure is enabled, otherwise false
      */
     public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
