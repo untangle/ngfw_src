@@ -33,9 +33,17 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectoryGroups', {
         },{
             name:'domain'
         }],
+        viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true,
+            // Workaround for text selection in Ext 6.2
+            getRowClass: function () {
+                return this.enableTextSelection ? 'x-selectable' : '';
+            }
+        },
         columns: [{
             header: 'Name'.t(),
-            dataIndex:'uid',
+            dataIndex:'group',
             sortable: true,
             width: Renderer.usernameWidth,
             flex: 1,
@@ -43,8 +51,8 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectoryGroups', {
                 type: 'string'
             }
         },{
-            header: 'Groups'.t(),
-            dataIndex: 'groups',
+            header: 'Users'.t(),
+            dataIndex: 'users',
             sortable: true,
             width: Renderer.messageWidth,
             flex: 1,
@@ -52,8 +60,8 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectoryGroups', {
                 type: 'string'
             }
         },{
-            header: 'Domain'.t(),
-            dataIndex: 'domain',
+            header: 'Domains'.t(),
+            dataIndex: 'domains',
             sortable: true,
             width: Renderer.hostnameWidth,
             flex: 1,

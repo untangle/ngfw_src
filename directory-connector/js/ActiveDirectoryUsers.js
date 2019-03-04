@@ -31,9 +31,26 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectoryUsers', {
         },{
             name:'domain'
         }],
+        viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true,
+            // Workaround for text selection in Ext 6.2
+            getRowClass: function () {
+                return this.enableTextSelection ? 'x-selectable' : '';
+            }
+        },
         columns: [{
             header: 'Name'.t(),
             dataIndex:'uid',
+            sortable: true,
+            width: Renderer.usernameWidth,
+            flex: 1,
+            filter: {
+                type: 'string'
+            }
+        },{
+            header: 'Groups'.t(),
+            dataIndex:'groups',
             sortable: true,
             width: Renderer.usernameWidth,
             flex: 1,
