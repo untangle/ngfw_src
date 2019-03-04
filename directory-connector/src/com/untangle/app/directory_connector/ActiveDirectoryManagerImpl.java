@@ -209,21 +209,31 @@ public class ActiveDirectoryManagerImpl
         return groupList;
     }
 
+    public static enum STATUS_RESULTS{
+        PASS,
+        WARN_QUERY_NO_USERS,
+        FAIL_EMPTY_SETTINGS,
+        FAIL_QUERY,
+        FAIL_QUERY_NONE
+    }
+
     /**
      * Get AD server status with the specified server settings.
      *
      * @param testServerSettings Server settings to test.
-     * @return String containing status of connection.
+     * @return JSON object indicating status of test.
      */
-    public String getStatusForSettings( ActiveDirectoryServer testServerSettings )
+    public JSONObject getStatusForSettings( ActiveDirectoryServer testServerSettings )
     {
-        String status;
+        JSONObject status = new JSONObject();
 
-        if (testServerSettings == null ){
-            return "Invalid settings (null)";
-        }
-
+        int userCount = 0;
+        ActiveDirectoryLdapAdapter tempAdAdapter = null;
+        STATUS_RESULTS statusResult = STATUS_RESULTS.PASS;
         try {
+            if (testServerSettings == null ){
+                statusResult = STATUS_RESULTS.FAIL_EMPTY_SETTINGS;
+            }
             String ouFiltersString = "";
             for(String ouFilter : testServerSettings.getOUFilters()){
                 ouFiltersString += (ouFiltersString.length() > 0 ? "," : "") + ouFilter;
@@ -236,14 +246,30 @@ public class ActiveDirectoryManagerImpl
                         "domain='" + testServerSettings.getDomain() + "', " +
                         "ou_filters='" + ouFiltersString + "')");
 
-            ActiveDirectoryLdapAdapter temp_adAdapter = new ActiveDirectoryLdapAdapter(testServerSettings);
-            List<UserEntry> adRet = temp_adAdapter.listAll();
-            return "Active Directory authentication success!";
+            tempAdAdapter = new ActiveDirectoryLdapAdapter(testServerSettings);
+            userCount = tempAdAdapter.listAll().size();
+            statusResult = userCount == 0 ? STATUS_RESULTS.WARN_QUERY_NO_USERS : STATUS_RESULTS.PASS;
         } catch (Exception e) {
             logger.warn("Active Directory Test Failure", e);
-            String statusStr = "Active Directory authentication failed: <br/><br/>"+ e.getMessage();
-            return statusStr.replaceAll("\\p{Cntrl}", "");  //remove non-printable chars
+            try{
+                statusResult = e.toString().contains("DSID-03100238") ? STATUS_RESULTS.FAIL_QUERY_NONE : STATUS_RESULTS.FAIL_QUERY;
+                status.put("extras", e.toString());
+            }catch(Exception je){
+                logger.warn("Unable to set status:", je);
+            }
+        }finally{
+            try{
+                status.put("status", statusResult);
+                status.put("userCount", userCount);
+                if(tempAdAdapter != null){
+                    status.put("searchBases", tempAdAdapter.getSearchBases());
+                    status.put("groupCount", tempAdAdapter.listAllGroups(false).size());
+                }
+            }catch(Exception je){
+                logger.warn("Unable to set status:", je);
+            }
         }
+        return status;
     }
 
     /**
