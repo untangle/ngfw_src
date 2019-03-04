@@ -382,6 +382,8 @@ public class ActiveDirectoryManagerImpl
                     try{
                         JSONObject jsonUser = new JSONObject();
                         jsonUser.put("uid", user.getUid());
+                        // jsonUser.put("groups", listToString(app.memberOfGroup(user.getUid(), domain)));
+                        jsonUser.put("groups", app.memberOfGroup(user.getUid(), domain));
                         jsonUser.put("domain", adAdapter.getSettings().getDomain());
                         result.put(jsonUser);
                     } catch (Exception x){
@@ -393,56 +395,6 @@ public class ActiveDirectoryManagerImpl
                 logger.warn("Unable to query Active Directory Users.",x);
             }
         }
-        return result;
-    }
-
-    /**
-     * Get user-group map entries in JSON array format, suitable for UI display.
-     *
-     * @param domain
-     *      Domain to query.  If null, all domains.
-     * @return JSONArray of users with each entry containing fields uid, groups (comma separated list), domain.
-     * @throws ServiceUnavailableException
-     *  If unable to access server.
-     */
-    public JSONArray getUserGroupMap(String domain)
-        throws ServiceUnavailableException
-    {
-        JSONArray result = new JSONArray();
-
-        if (!app.isLicenseValid()){
-            return result;
-        }
-
-        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
-            if(adAdapter == null){
-                continue;
-            }
-            if(!adAdapter.getSettings().getEnabled()){
-                continue;
-            }
-            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
-                continue;
-            }
-
-            try {
-                for(UserEntry user : adAdapter.listAll()){
-                    try{
-                        JSONObject jsonUser = new JSONObject();
-                        jsonUser.put("uid", user.getUid());
-                        jsonUser.put("domain", adAdapter.getSettings().getDomain());
-                        jsonUser.put("groups", listToString(app.memberOfGroup(user.getUid(), domain)));
-                        result.put(jsonUser);
-                    } catch (Exception x){
-                        logger.warn("Unable to query Active Directory Users.",x);
-                    }
-                }
-
-            } catch (ServiceUnavailableException x) {
-                logger.warn("Unable to query Active Directory Users.",x);
-            }
-        }
-
         return result;
     }
 

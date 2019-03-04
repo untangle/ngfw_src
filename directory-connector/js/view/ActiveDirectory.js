@@ -143,7 +143,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     isDisabled: 'isServerDisabled'
                 }, {
                     xtype: 'actioncolumn',
-                    header: 'Map'.t(),
+                    header: 'Groups'.t(),
                     width: Renderer.actionWidth,
                     iconCls: 'fa fa-user',
                     align: 'center',
@@ -284,7 +284,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 cls: 'boxlabel'
             },{
                 xtype: 'button',
-                text: 'User Group Map'.t(),
+                text: 'Groups'.t(),
                 iconCls: 'fa fa-group',
                 handler: 'activeDirectoryGroupMap'
             },{

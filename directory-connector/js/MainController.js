@@ -136,13 +136,39 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             title: 'All Groups'.t()
         });
 
-        Rpc.asyncData( v.appManager.getActiveDirectoryManager(), 'getUserGroupMap', domain)
+        Rpc.asyncData( v.appManager.getActiveDirectoryManager(), 'getUsers', domain)
         .then(function(result){
             if(Util.isDestroyed(v, dialog)){
                 return;
             }
+            var groups = [];
+            result.forEach(function(user){
+                var groupIndex = null;
+                user["groups"].forEach(function(userGroup){
+                    var group = Ext.Array.findBy(groups, function(row, index){
+                        if(row['group'] == userGroup){
+                            return true;
+                        }
+                    });
+                    if(group == null){
+                        groups.push({
+                            'group': userGroup,
+                            'users': [],
+                            'domains': []
+                        });
+                        group = groups[groups.length - 1];
+                    }
+                    if(group['users'].indexOf(user['uid']) == -1){
+                        group['users'].push(user['uid']);
+                    }
+                    if(group['domains'].indexOf(user['domain']) == -1){
+                        group['domains'].push(user['domain']);
+                    }
+                });
+            });
+
             dialog.show();
-            dialog.down("[name=mapGrid]").getStore().loadData(result);
+            dialog.down("[name=mapGrid]").getStore().loadData(groups);
             Ext.MessageBox.close();
         }, function(ex){
             Ext.MessageBox.close();
