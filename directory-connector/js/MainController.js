@@ -318,13 +318,28 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
     serverTest: function( element, rowIndex, columnIndex, column, pos, record){
         var v = this.getView();
 
-        Ext.MessageBox.wait( record.data.domain + "<br/><br/>" + "Testing...".t(), "Active Directory Test".t());
-        Rpc.asyncData( v.up('[itemId=appCard]').appManager.getActiveDirectoryManager(), 'getStatusForSettings', record.data)
-        .then(function(result){
-            Ext.WindowManager.bringToFront(Ext.MessageBox.alert( "Active Directory Test".t(), record.data.domain + "<br/><br/>" + result.t() ));
-        }, function(ex){
-            Ext.MessageBox.close();
-            Util.handleException(ex);
+        settings = Ext.clone(record.data);
+        var ouFilterGrid = v.query('[itemId=unoufiltergrid]');
+        if(ouFilterGrid.length){
+            ouFilterGrid.forEach( function( grid ){
+                // var ouFiltersData = vm.get('record').get('OUFilters');
+                var ouFilters = [];
+                grid.getStore().each( function(record){
+                    if (record.get('markedForDelete')){
+                        return;
+                    }
+                    ouFilters.push(record.get('field1'));
+                });
+                settings.OUFilters.list = ouFilters;
+                settings.ouFiltersQuery = ouFilters.join(',');
+            });
+        }else{
+            settings.ouFiltersQuery = "";
+        }
+
+        Ext.create('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTest', {
+            settings: settings,
+            appManager: v.up('[itemId=appCard]').appManager
         });
     },
 
@@ -341,6 +356,203 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
     },
 
 });
+
+Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTest', {
+    extend: 'Ext.window.Window',
+    modal: true,
+
+    alias: 'widget.apps.directory-connector.activedirectoryservertest',
+
+    controller: 'app.activedirectoryservertest',
+
+    title: 'Active Directory Test'.t(),
+    autoShow: true,
+
+    layout: 'fit',
+    plain: false,
+    bodyBorder: false,
+    border: false,
+
+    items: [{
+        xtype: 'form',
+        layout: 'anchor',
+        items: [{
+            xtype: 'fieldset',
+            title: 'Settings'.t(),
+            items: [{
+                xtype: 'displayfield',
+                fieldLabel: 'Domain',
+                bind:{
+                    value: '{settings.domain}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'OU',
+                hidden: true,
+                bind:{
+                    value: '{settings.ouFiltersQuery}',
+                    hidden: '{settings.ouFiltersQuery == ""}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Azure',
+                bind:{
+                    value: '{settings.azure}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Host',
+                bind:{
+                    value: '{settings.LDAPHost}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Secure',
+                bind:{
+                    value: '{settings.LDAPSecure}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'User',
+                bind:{
+                    value: '{settings.superuser}'
+                }
+            }]
+        }, {
+            xtype: 'progressbar',
+            name: 'checkUpgradesProgressbar',
+            bind:{
+                visible: '{completed == false}',
+                hidden: '{completed == true}'
+            }
+        }, {
+            xtype: 'fieldset',
+            title: 'Status'.t(),
+            hidden: true,
+            bind:{
+                hidden: '{completed == false}'
+            },
+            items: [{
+                xtype: 'displayfield',
+                fieldLabel: 'Result',
+                bind: {
+                    value: '<i class="fa {statusIcon} fa-fw" style="color: {statusIconColor};"></i> <b>{statusText}</b>',
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Search Base(s)',
+                bind:{
+                    value: '{status.searchBases}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Users found',
+                hidden: true,
+                bind:{
+                    value: '{status.userCount}',
+                    hidden: '{statusResult == "FAIL"}'
+                }
+            },{
+                xtype: 'displayfield',
+                fieldLabel: 'Groups found',
+                hidden: true,
+                bind:{
+                    value: '{status.groupCount}',
+                    hidden: '{statusResult == "FAIL"}'
+                }
+            }]
+        }],
+
+        buttons: [{
+            text: 'Ok'.t(),
+            handler: 'close'
+        }]
+    }],
+
+    viewModel: {
+        data: {
+            processingIcon: null,
+            processing: false
+        },
+    }
+
+});
+
+Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.app.activedirectoryservertest',
+
+    control: {
+        '#': {
+            afterrender: 'afterrender',
+        }
+    },
+
+    afterrender: function(){
+        var v = this.getView(), vm = this.getViewModel();
+
+        vm.set('completed', false);
+
+        var progressbar = v.down('progressbar');
+
+        progressbar.wait('Checking...');
+        vm.set('settings', v.settings);
+
+        Rpc.asyncData( v.appManager.getActiveDirectoryManager(), 'getStatusForSettings', vm.get('settings'))
+        .then(function(status){
+            if(Util.isDestroyed(v, vm, progressbar)){
+                return;
+            }
+            progressbar.reset();
+            progressbar.updateText('Completed'.t());
+            console.log(status);
+
+            vm.set('completed', true);
+            var statusResults = status['status'].split('_');
+            vm.set('statusResult', statusResults[0]);
+            var statusIcon = 'fa-close';
+            var statusIconColor = 'red';
+            if(statusResults[0] == 'PASS'){
+                statusIcon = 'fa-check';
+                statusIconColor = 'green';
+            }else if(statusResults[0] == 'WARN'){
+                statusIcon = 'fa-exclamation-triangle';
+                statusIconColor = '#CCCC00';
+            }
+            vm.set('statusIcon', statusIcon);
+            vm.set('statusIconColor', statusIconColor);
+
+            switch(status['status']){
+                case 'WARN_QUERY_NO_USERS':
+                    statusText = 'Successfully queried but no users found.'.t();
+                    break;
+                case 'FAIL_EMPTY_SETTINGS':
+                    statusText = 'Empty settings!'.t();
+                    break;
+                case 'FAIL_QUERY':
+                    statusText = 'Query failed!'.t();
+                    break;
+                case 'FAIL_QUERY_NONE':
+                    statusText = 'Query failed, cannot find object defined by domain and OU'.t();
+                    break;
+                case 'PASS':
+                    statusText = 'Success!'.t();
+                    break;
+            }
+            vm.set('statusText', statusText);
+            vm.set('status', status);
+        }, function(ex){
+            Ext.MessageBox.close();
+            Util.handleException(ex);
+        });
+    },
+
+    close: function () {
+        this.getView().close();
+    }
+
+});
+
 
 Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
