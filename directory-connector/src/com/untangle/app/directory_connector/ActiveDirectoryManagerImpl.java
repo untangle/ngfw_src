@@ -382,7 +382,6 @@ public class ActiveDirectoryManagerImpl
                     try{
                         JSONObject jsonUser = new JSONObject();
                         jsonUser.put("uid", user.getUid());
-                        // jsonUser.put("groups", listToString(app.memberOfGroup(user.getUid(), domain)));
                         jsonUser.put("groups", app.memberOfGroup(user.getUid(), domain));
                         jsonUser.put("domain", adAdapter.getSettings().getDomain());
                         result.put(jsonUser);

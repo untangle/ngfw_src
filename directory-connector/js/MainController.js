@@ -348,7 +348,6 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
         var ouFilterGrid = v.query('[itemId=unoufiltergrid]');
         if(ouFilterGrid.length){
             ouFilterGrid.forEach( function( grid ){
-                // var ouFiltersData = vm.get('record').get('OUFilters');
                 var ouFilters = [];
                 grid.getStore().each( function(record){
                     if (record.get('markedForDelete')){
@@ -357,10 +356,11 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
                     ouFilters.push(record.get('field1'));
                 });
                 settings.OUFilters.list = ouFilters;
-                settings.ouFiltersQuery = ouFilters.join(',');
+                settings.ouFiltersQuery = ouFilters.join('<br>');
             });
         }else{
-            settings.ouFiltersQuery = "";
+            settings.OUFilter = record.get('OUFilters');
+            settings.ouFiltersQuery = record.get('OUFilters')['list'].join('<br>');
         }
 
         Ext.create('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTest', {
@@ -531,7 +531,6 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController
             }
             progressbar.reset();
             progressbar.updateText('Completed'.t());
-            console.log(status);
 
             vm.set('completed', true);
             var statusResults = status['status'].split('_');
@@ -566,6 +565,7 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController
                     break;
             }
             vm.set('statusText', statusText);
+            status.searchBases = status.searchBases.join("<br>");
             vm.set('status', status);
         }, function(ex){
             Ext.MessageBox.close();
