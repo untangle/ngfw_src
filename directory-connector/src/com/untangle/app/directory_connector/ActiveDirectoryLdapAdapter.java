@@ -166,8 +166,8 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         List<String> ouFilters = settings.getOUFilters();
 
         for( String ouFilter: ouFilters ){
-            if (ouFilter != null && !("".equals(ouFilter))){
-                bases.add(ouFilter + "," + domainComponents(settings.getDomain()));
+            if (ouFilter != null){
+                bases.add(ouFilter + (!"".equals(ouFilter) ? ",": "") + domainComponents(settings.getDomain()));
             }
         }
 
