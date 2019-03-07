@@ -13,8 +13,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.app.directory_connector.GroupEntry;
-import com.untangle.app.directory_connector.UserEntry;
+// import com.untangle.app.directory_connector.GroupEntry;
+// import com.untangle.app.directory_connector.UserEntry;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
@@ -514,6 +514,7 @@ public class GroupManager
             }
 
             logger.info("Renewing AD Group Cache...");
+            long startTime = System.currentTimeMillis();
 
             List<String> domains = null;
             try {
@@ -526,136 +527,148 @@ public class GroupManager
             Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
+            Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
             for( String domain : domains){
                 List<GroupEntry> groupList = null;
-                try {
-                    groupList = app.getActiveDirectoryManager().getGroupEntries(domain, true);
-                } catch ( Exception ex ) {
-                    logger.warn("Unable to retrieve the group entries", ex);
-                    return;
-                }
-                Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
+                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain);
 
-                /** Create new user and group maps */
-                int numGroups = groupList.size();
+                int numGroups = 10;
                 Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
                 Map<String,String> groupDNToAccountName = new ConcurrentHashMap<>(numGroups);
                 Map<String,Set<String>> groupsChildrenMap = new ConcurrentHashMap<>(numGroups);
+                for( String searchBase : adAdapter.getSearchBases()){
 
-                /* Build a mapping of all of the groups to users, this has to recurse. */
-                for ( GroupEntry groupEntry : groupList ) {
-                    String groupName = groupEntry.getSAMAccountName();
-                    logger.debug("Building Group Cache: Processing Group: " + groupName);
-
-                    /* Update the mapping from the dn to the account name */
-                    groupDNToAccountName.put(groupEntry.getDN(), groupName);
-
-                    Map<String,Boolean> groupUsers = new ConcurrentHashMap<>();
-
-                    /* Get all of the groups and users in this group. */
                     try {
-                        List<UserEntry> userList = app.getActiveDirectoryManager().getGroupUsers(domain, groupName);
-
-                        for ( UserEntry user : userList ) {
-                            logger.debug("Building Group Cache: Adding User " + user.getUid() + " to " + groupName);
-                            groupUsers.put(user.getUid(),true);
-                            domainUsersMap.put(user.getUid(),true);
-                        }
+                        groupList = adAdapter.listAllGroups(true, searchBase);
                     } catch ( Exception ex ) {
-                        logger.warn("Unable to refresh users",ex);
+                        logger.warn("Unable to retrieve the group entries", ex);
+                        return;
                     }
 
-                    groupsUsersMap.put(groupName, groupUsers);
-                }
+                    // Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
 
-                /**
-                 * Now that all of the DNs are mapped, create an initial child map
-                 */
-                for ( GroupEntry groupEntry : groupList ) {
-                    String groupName = groupEntry.getSAMAccountName();
-                    logger.debug("Building Group Cache: Processing Group Mapping: " + groupName);
+                    /** Create new user and group maps */
+                    // int numGroups = groupList.size();
+                    // Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
+                    // Map<String,String> groupDNToAccountName = new ConcurrentHashMap<>(numGroups);
+                    // Map<String,Set<String>> groupsChildrenMap = new ConcurrentHashMap<>(numGroups);
 
-                    Set<String> children = groupsChildrenMap.get(groupName);
-                    if (children == null) {
-                        children = new HashSet<>();
-                        groupsChildrenMap.put(groupName, children);
-                    }
-
-                    /* Now add all of the items that this group is a member of */
-                    Set<String> groupParentSet = new HashSet<>();
-
-                    for ( String parent : groupEntry.getMemberOf()) {
-                        /* Convert from DN to parentName */
-                        String parentName = groupDNToAccountName.get(parent);
-                        if ( parentName == null ) {
-                            logger.warn( "Missing the account name for the DN: '" + parent + "'");
-                            continue;
-                        }
-
-                        /**
-                         * Add child to childMap 
-                         * Could still be null, so just create an empty set
-                         */
-                        children = groupsChildrenMap.get(parentName);
-                        if (children == null) {
-                            children = new HashSet<>();
-                            groupsChildrenMap.put(parentName, children);
-                        }
-                        logger.debug("Building Group Cache: Processing Group Mapping: " + parentName + " adding child: " + groupName);
-                        children.add(groupName);
-                    }
-                }
-                /**
-                 * Now we must iterate deep into the tree and add grand children, great grand children
-                 * and so on
-                 */
-                boolean hasUpdates = true;
-                int c = 0;
-                for ( c = 0 ; hasUpdates && c < MAX_UPDATE_GROUP_MAPS ; c++ ) {
-                    hasUpdates = false;
-
+                    /* Build a mapping of all of the groups to users, this has to recurse. */
                     for ( GroupEntry groupEntry : groupList ) {
                         String groupName = groupEntry.getSAMAccountName();
-                        logger.debug("Building Group Cache: Processing Group Hierarchy: " + groupName);
-                        Set<String> childSet = groupsChildrenMap.get(groupName);
-                        Set<String> newChildren = new HashSet<>();
+                        // logger.warn("groupName=" + groupName);
+                        logger.debug("Building Group Cache: Processing Group: " + groupName);
 
-                        if ( childSet == null ) {
-                            /* should never happen */
-                            logger.warn("Child set of " + groupName + "is null");
-                            continue;
+                        /* Update the mapping from the dn to the account name */
+                        groupDNToAccountName.put(groupEntry.getDN(), groupName);
+
+                        Map<String,Boolean> groupUsers = new ConcurrentHashMap<>();
+
+                        /* Get all of the groups and users in this group. */
+                        try {
+                            List<UserEntry> userList = adAdapter.listGroupUsers(groupName, searchBase);
+
+                            for ( UserEntry user : userList ) {
+                                logger.debug("Building Group Cache: Adding User " + user.getUid() + " to " + groupName);
+                                groupUsers.put(user.getUid(),true);
+                                domainUsersMap.put(user.getUid(),true);
+                            }
+                        } catch ( Exception ex ) {
+                            logger.warn("Unable to refresh users",ex);
                         }
 
-                        /* Get the children of all of the child groups, and add them as well */
-                        for ( String childGroup : childSet ) {
-                            Set<String> grandChildSet = groupsChildrenMap.get(childGroup);
+                        groupsUsersMap.put(groupName, groupUsers);
+                    }
 
-                            if ( grandChildSet == null ) {
-                                /* should never happen */
-                                logger.warn("Child set of " + childGroup + "is null");
+                    /**
+                     * Now that all of the DNs are mapped, create an initial child map
+                     */
+                    for ( GroupEntry groupEntry : groupList ) {
+                        String groupName = groupEntry.getSAMAccountName();
+                        logger.debug("Building Group Cache: Processing Group Mapping: " + groupName);
+
+                        Set<String> children = groupsChildrenMap.get(groupName);
+                        if (children == null) {
+                            children = new HashSet<>();
+                            groupsChildrenMap.put(groupName, children);
+                        }
+
+                        /* Now add all of the items that this group is a member of */
+                        Set<String> groupParentSet = new HashSet<>();
+
+                        for ( String parent : groupEntry.getMemberOf()) {
+                            /* Convert from DN to parentName */
+                            String parentName = groupDNToAccountName.get(parent);
+                            if ( parentName == null ) {
+                                logger.warn( "Missing the account name for the DN: '" + parent + "'");
                                 continue;
                             }
 
-                            /* Add all of the parents parents */
-                            logger.debug("Building Group Cache: Processing Group Hierarchy: " + groupName + " adding grand-" + c + "-children: " + grandChildSet);
-                            newChildren.addAll(grandChildSet);
-                        }
-
-                        if ( childSet.addAll(newChildren)) {
-                            hasUpdates = true;
+                            /**
+                             * Add child to childMap 
+                             * Could still be null, so just create an empty set
+                             */
+                            children = groupsChildrenMap.get(parentName);
+                            if (children == null) {
+                                children = new HashSet<>();
+                                groupsChildrenMap.put(parentName, children);
+                            }
+                            logger.debug("Building Group Cache: Processing Group Mapping: " + parentName + " adding child: " + groupName);
+                            children.add(groupName);
                         }
                     }
-                }
+                    /**
+                     * Now we must iterate deep into the tree and add grand children, great grand children
+                     * and so on
+                     */
+                    boolean hasUpdates = true;
+                    int c = 0;
+                    for ( c = 0 ; hasUpdates && c < MAX_UPDATE_GROUP_MAPS ; c++ ) {
+                        hasUpdates = false;
 
-                /**
-                 * For debugging
-                 */
-                for ( GroupEntry groupEntry : groupList ) {
-                    String groupName = groupEntry.getSAMAccountName();
-                    logger.debug("Group: " + groupName + " children: " + groupsChildrenMap.get(groupName));
-                }
+                        for ( GroupEntry groupEntry : groupList ) {
+                            String groupName = groupEntry.getSAMAccountName();
+                            logger.debug("Building Group Cache: Processing Group Hierarchy: " + groupName);
+                            Set<String> childSet = groupsChildrenMap.get(groupName);
+                            Set<String> newChildren = new HashSet<>();
 
-                logger.debug( "Required " + c + " Updates to refresh parents." );
+                            if ( childSet == null ) {
+                                /* should never happen */
+                                logger.warn("Child set of " + groupName + "is null");
+                                continue;
+                            }
+
+                            /* Get the children of all of the child groups, and add them as well */
+                            for ( String childGroup : childSet ) {
+                                Set<String> grandChildSet = groupsChildrenMap.get(childGroup);
+
+                                if ( grandChildSet == null ) {
+                                    /* should never happen */
+                                    logger.warn("Child set of " + childGroup + "is null");
+                                    continue;
+                                }
+
+                                /* Add all of the parents parents */
+                                logger.debug("Building Group Cache: Processing Group Hierarchy: " + groupName + " adding grand-" + c + "-children: " + grandChildSet);
+                                newChildren.addAll(grandChildSet);
+                            }
+
+                            if ( childSet.addAll(newChildren)) {
+                                hasUpdates = true;
+                            }
+                        }
+                    }
+
+                    /**
+                     * For debugging
+                     */
+                    for ( GroupEntry groupEntry : groupList ) {
+                        String groupName = groupEntry.getSAMAccountName();
+                        logger.debug("Group: " + groupName + " children: " + groupsChildrenMap.get(groupName));
+                    }
+
+                    logger.debug( "Required " + c + " Updates to refresh parents." );
+                }
 
                 /**
                  * Update the global caches that are used.
@@ -677,7 +690,9 @@ public class GroupManager
              * of control.
              */
             GroupManager.this.cacheCount  = 0;
-            logger.info("Renewing AD Group Cache: done");
+            // logger.info("Renewing AD Group Cache: done");
+            long endTime = System.currentTimeMillis();
+            logger.info("Renewing AD Group Cache: done, elapsed=" + (endTime - startTime) + "ms");
         }
 
         /** 
