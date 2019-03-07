@@ -8,6 +8,7 @@ import threading
 import signal
 import datetime
 import getopt
+import re
 import subprocess
 import syslog
 import platform
@@ -457,14 +458,18 @@ while True:
             # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
             if use_leakdetect:
                 valgrind_cmd = valgrind_cmd + "--leak-check=full "
-            args = (valgrind_cmd + 
-                    "/usr/bin/java " + java_opts + " " + uvm_args + " -XX:UseSSE=0 " + " -Djava.compiler=NONE " + 
-                    " com.untangle.uvm.Main").split();
+            args = re.findall("(?:\'.*?\'|\S)+",
+                    valgrind_cmd +
+                    "/usr/bin/java " +
+                    java_opts + " " + uvm_args +
+                    " -XX:UseSSE=0 " + " -Djava.compiler=NONE "
+                    " com.untangle.uvm.Main")
             os.execv("/usr/bin/valgrind", args);
         else:
-            args = ("/usr/bin/java " + 
-                    java_opts + " " + uvm_args + 
-                    " com.untangle.uvm.Main").split();
+            args = re.findall("(?:\'.*?\'|\S)+",
+                    "/usr/bin/java " +
+                    java_opts + " " + uvm_args +
+                    " com.untangle.uvm.Main")
             os.execv("/usr/bin/java", args);
 
         debug("ERROR: execv returned");
