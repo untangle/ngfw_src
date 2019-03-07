@@ -522,8 +522,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         return this.groupManager.isMemberOfGroup(user, groupMatcher);
     }
 
-
-
     /**
      * Determine if user is part of any group.
      *

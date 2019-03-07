@@ -131,6 +131,27 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
+     * [getAdapter description]
+     * @param  domain [description]
+     * @return        [description]
+     */
+    public ActiveDirectoryLdapAdapter getAdapter(String domain){
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+            return adAdapter;
+        }
+        return null;
+    }
+
+    /**
      * Get user entries from all servers
      *
      * @param domain

@@ -172,10 +172,10 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         }
 
         if( bases.isEmpty()){
+            bases.add(domainComponents(settings.getDomain()));
             if(settings.getAzure()){
                 bases.add(AZURE_USERS_OU + "," + domainComponents(settings.getDomain()));
             }
-            bases.add(domainComponents(settings.getDomain()));
         }
         return bases;
     }
@@ -241,18 +241,47 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     /**
      * Get all of the groups that are available for this adapter.
      *
-     * @param fetchMembersOf 
+     * @param fetchMembersOf
      *      Set to true to indicate that the entries should include the list of groups that the group is a member of.
      * @return List of all groups
      * @throws ServiceUnavailableException if unable to access server.
      */
     @Override
-    public List<GroupEntry> listAllGroups( boolean fetchMembersOf ) 
+    public List<GroupEntry> listAllGroups( boolean fetchMembersOf )
+        throws ServiceUnavailableException
+    {
+        List<GroupEntry> groupEntryList = new ArrayList<>();
+
+        for(String searchBase : getSearchBases()){
+            try {
+                List<GroupEntry> ret = listAllGroups( fetchMembersOf, searchBase);
+                if(ret != null && !ret.isEmpty()) {
+                    groupEntryList.addAll(ret);
+                }
+            }
+            catch(ServiceUnavailableException ex) {
+                logger.warn("Exception listing entries", ex);
+                throw new ServiceUnavailableException(ex.toString());
+            }
+        }
+        return groupEntryList;
+    }
+
+    /**
+     * Get all of the groups that are available for this adapter.
+     *
+     * @param fetchMembersOf
+     *      Set to true to indicate that the entries should include the list of groups that the group is a member of.
+     * @param searchBase String of searchbase to use.
+     * @return List of all groups
+     * @throws ServiceUnavailableException if unable to access server.
+     */
+    public List<GroupEntry> listAllGroups( boolean fetchMembersOf, String searchBase )
         throws ServiceUnavailableException
     {
         try {
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBases(),
+                queryAsSuperuser(searchBase,
                                  getListAllGroupsSearchString(),
                                  getGroupEntrySearchControls(fetchMembersOf));
 
@@ -276,6 +305,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
             throw new ServiceUnavailableException(ex.toString());
         }
     }
+
     
     /**
      * Return string for group search.
@@ -351,6 +381,32 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     @Override
     public List<UserEntry> listGroupUsers( String group ) throws ServiceUnavailableException
     {
+        List<UserEntry> users = new ArrayList<>();
+
+        for(String searchBase : getSearchBases()){
+            try{
+                List<UserEntry> ret = listGroupUsers(group, searchBase);
+                if(ret != null && !ret.isEmpty()) {
+                    users.addAll(ret);
+                }
+            }catch(ServiceUnavailableException ex){
+                throw new ServiceUnavailableException(ex.toString());
+            }
+        }
+        return users;
+    }
+
+    /**
+     * Get all of the users that belong to a group.
+     * @param group
+     *      Name of the group to query.
+     * @param searchBase
+     * @return A list of all of the users that belong to a group.
+     * @throws ServiceUnavailableException if unable to access server.
+     */
+    // @Override
+    public List<UserEntry> listGroupUsers( String group, String searchBase ) throws ServiceUnavailableException
+    {
         GroupEntry groupEntry = getGroupEntry(group,false);
         if ( groupEntry == null ) {
             logger.debug( "The group '" + group + "' doesn't exist.");
@@ -359,7 +415,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
 
         try {
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBases(),
+                queryAsSuperuser(searchBase,
                                  getListUsersSearchString(groupEntry, getUserClassType()),
                                  getUserEntrySearchControls());
 
@@ -380,9 +436,9 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         catch(NamingException ex) {
             logger.warn("Exception listing entries", ex);
             throw new ServiceUnavailableException(ex.toString());
-        }        
+        }
     }
-    
+
     /**
      * Build LDAP query to get all users.
      *
