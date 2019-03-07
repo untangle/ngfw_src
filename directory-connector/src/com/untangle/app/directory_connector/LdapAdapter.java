@@ -30,6 +30,7 @@ import javax.naming.directory.SearchResult;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLContext;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +39,6 @@ import com.untangle.app.directory_connector.GroupEntry;
 import com.untangle.app.directory_connector.ActiveDirectoryServer;
 import com.untangle.app.directory_connector.UserEntry;
 
-
 /**
  * Abstract base class for "Adapters" which call LDAP
  * to perform various operations.
@@ -46,6 +46,7 @@ import com.untangle.app.directory_connector.UserEntry;
  */
 abstract class LdapAdapter
 {
+    private TrustManager[] trustAllCerts = null;
 
     private final Logger logger = Logger.getLogger(LdapAdapter.class);
 
@@ -172,7 +173,6 @@ abstract class LdapAdapter
             Collections.sort(ret);
             return ret;
         }catch(NamingException ex) {
-            logger.warn("Exception listing entries", ex);
             throw new ServiceUnavailableException(ex.getMessage());
         }
     }
@@ -530,7 +530,9 @@ abstract class LdapAdapter
         try {
             ctx.close();
         }
-        catch(Exception ignore) {}
+        catch(Exception ignore) {
+            logger.warn("closeContext:", ignore);
+        }
     }
 
     /**
@@ -550,55 +552,59 @@ abstract class LdapAdapter
     protected final DirContext createContext(String host, int port, boolean secure, String dn, String pass)
         throws NamingException
     {
-        Hashtable<String, String> ldapEnv = new Hashtable<>(5);
+        SSLContext sslCtx = null;
+        Hashtable<String, String> ldapEnv = new Hashtable<>(11);
+
         if( secure ){
             /**
              * Override certificate authentication to allow any certificate.
              * Yes, to be 100% security minded we should only allow specified certificates.
-            */
-            TrustManager[] trustAllCerts = new TrustManager[] { 
-                new X509TrustManager() {     
-                    /**
-                     * Get accepted cert issuers.
-                     * @return
-                     *  Array of X509 certificates
-                     */
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
-                        return new X509Certificate[0];
-                    } 
-                    /**
-                     * Verify that client has a trusted certificate
-                     *
-                     * @param certs
-                     *  Array of x509 certs
-                     * @param authType
-                     *  Ahthentication type
-                     */
-                    public void checkClientTrusted( 
-                        java.security.cert.X509Certificate[] certs, String authType) {
-                    } 
-                    /**
-                     * Verify that server has a trusted certificate
-                     *
-                     * @param certs
-                     *  Array of x509 certs
-                     * @param authType
-                     *  Ahthentication type
-                     */
-                    public void checkServerTrusted( 
-                        java.security.cert.X509Certificate[] certs, String authType) {
+             */
+            if(this.trustAllCerts == null){
+                this.trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        /**
+                         * Get accepted cert issuers.
+                         * @return
+                         *  Array of X509 certificates
+                         */
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[0];
+                        }
+                        /**
+                         * Verify that client has a trusted certificate
+                         *
+                         * @param certs
+                         *  Array of x509 certs
+                         * @param authType
+                         *  Ahthentication type
+                         */
+                        public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                        /**
+                         * Verify that server has a trusted certificate
+                         *
+                         * @param certs
+                         *  Array of x509 certs
+                         * @param authType
+                         *  Ahthentication type
+                         */
+                        public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                        }
                     }
-                }    
-            }; 
-            javax.net.ssl.SSLContext sslCtx = null;
+                };
+            }
             try{
                 sslCtx = javax.net.ssl.SSLContext.getInstance("SSL");
-                sslCtx.init(null, trustAllCerts, null);
+                sslCtx.init(null, this.trustAllCerts, null);
+
                 ldapEnv.put( "java.naming.ldap.factory.socket", LdapAdapterSocketFactory.class.getName() );
                 LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
                 ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
             }catch( Exception e ){
-                 e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
@@ -607,9 +613,10 @@ abstract class LdapAdapter
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
         ldapEnv.put(Context.SECURITY_CREDENTIALS, pass);
-        // add timeout - https://docs.oracle.com/javase/tutorial/jndi/newstuff/readtimeout.html
+        ldapEnv.put("com.sun.jndi.ldap.connect.pool", "true");
         ldapEnv.put("com.sun.jndi.ldap.connect.timeout", "30000");
         ldapEnv.put("com.sun.jndi.ldap.read.timeout", "30000");
+
         return new InitialDirContext(ldapEnv);
     }
 
@@ -696,6 +703,32 @@ abstract class LdapAdapter
     }
 
     /**
+     * Perform the given query as a superuser.  This
+     * method will try "twice" to make sure it is not
+     * trying to reuse a dead connection.
+     *
+     * @param searchBase the base of the search
+     * @param searchFilter the query string
+     * @param ctls the search controls
+     *
+     * @return all returned data
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
+     */
+    protected final List<Map<String, String[]>> queryAsSuperuser(String searchBase, String searchFilter, SearchControls ctls)
+        throws NamingException, ServiceUnavailableException
+    {
+        List<Map<String, String[]>> results = new ArrayList<>();
+
+        results.addAll(queryAsSuperuserImpl(searchBase, searchFilter, ctls, true));
+
+        return results;
+    }
+
+
+    /**
      * Perform the given query (only attempts once as
      * the context was passed-in), and return the specified attributes.
      *
@@ -713,17 +746,18 @@ abstract class LdapAdapter
     protected final List<Map<String, String[]>> query(String searchBase, String searchFilter, SearchControls ctls, DirContext ctx)
         throws ServiceUnavailableException, NamingException
     {
-
         try {
             NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
             List<Map<String, String[]>> ret = new ArrayList<>();
             while (answer.hasMoreElements()) {
                 SearchResult sr = answer.next();
-                
+
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
                     Map<String, String[]> map = new HashMap<>();
-                    for (NamingEnumeration<?> ae = attrs.getAll();ae.hasMore();) {
+
+                    NamingEnumeration<?> ae = null;
+                    for (ae = attrs.getAll(); ae.hasMore(); ) {
                         Attribute attr = (Attribute)ae.next();
                         String attrName = attr.getID();
                         ArrayList<String> values = new ArrayList<>();
@@ -731,7 +765,11 @@ abstract class LdapAdapter
                         while(e.hasMore()) {
                             values.add(e.next().toString());
                         }
+                        e.close();
                         map.put(attrName, values.toArray(new String[values.size()]));
+                    }
+                    if(ae != null){
+                        ae.close();
                     }
                     
                     try {
@@ -742,9 +780,9 @@ abstract class LdapAdapter
                     ret.add(map);
                 }
             }
+            answer.close();
             return ret;
-        }
-        catch(NamingException ex) {
+        }catch(NamingException ex) {
             throw convertToServiceUnavailableException(ex);
         }
     }
